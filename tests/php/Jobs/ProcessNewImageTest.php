@@ -65,15 +65,15 @@ class ProcessNewImageTest extends TestCase
     {
         $volume = VolumeTest::create();
         $image = ImageTest::create([
-            'filename' => 'exif-test.jpg',
             'volume_id' => $volume->id,
-            'attrs' => [
-                'metadata' => ['area' => 2.6],
-            ],
         ]);
 
-        with(new ProcessNewImageMock($image))->handle();
-
+        $job = new ProcessNewImageMock($image);
+        $job->exif = [
+            'GPSImgDirection' => 47.75,
+            'SubjectArea' => 2.6,
+        ];
+        $job->handle();
         $image = $image->fresh();
 
         $this->assertEquals(47.75, $image->metadata['yaw']);
