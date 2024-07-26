@@ -196,7 +196,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $typeId = ReportType::first()->id;
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
-                'only_labels' => [999],
+                'only_labels' => [-1],
             ])
             ->assertStatus(422);
 
