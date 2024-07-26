@@ -55,8 +55,8 @@ export default {
                     formatter: '{b}: {@[0]} ({d}%)',
                 },
                 encode: {
-                    itemName: 'year',
-                    tooltip: 0,
+                    itemName: 'yearmonth',
+                    tooltip:  0,
                     value: 0
                 },
                 itemStyle: {
@@ -81,12 +81,12 @@ export default {
             this.pieObj.encode.value = dimension;
             this.pieObj.encode.tooltip = dimension;
         },
-        extractYear() {
-            // helper-function to get all X-Axis data (years)
+        extractYearMonth() {
+            // helper-function to get all X-Axis data (yearsmonth)
             let xAxis = this.annotationTimeSeries.map((entry) => {
-                return entry.year.toString();
+                return entry.yearmonth.toString();
             });
-            // filter duplicated years
+            // filter duplicated yearsmonth
             xAxis = [...new Set(xAxis)];
 
             // sort the years (increasing)
@@ -99,7 +99,7 @@ export default {
             // returns array of type [xAxis-array, annotation-array-user1, annotation-array-user2, etc.]:
             // [['all', 'year', 2020, 2021, 2022], [1195,"Name1",1195,0,0], [6,"Name2",0,2,4], [...]]
             let dat = this.annotationTimeSeries;
-            let xAxis = this.extractYear();
+            let xAxis = this.extractYearMonth();
             let chartdata = [];
 
             let users = {};
@@ -123,19 +123,19 @@ export default {
 
             // assemble the annotations of each user in correct order of year
             // each user has its own year-timeseries in idDict (e.g. {id: {"2020":10, "2021":4, "2022":6]})
-            for (let year of xAxis) {
+            for (let yearmonth of xAxis) {
                 for (let entry of dat) {
-                    if (entry.year.toString() === year) {
-                        idDict[entry.user_id][year] += entry.count;
+                    if (entry.yearmonth.toString() === yearmonth) {
+                        idDict[entry.user_id][yearmonth] += entry.count;
                     } else {
-                        idDict[entry.user_id][year] += 0;
+                        idDict[entry.user_id][yearmonth] += 0;
                     }
                 }
             }
 
             // setup of whole chartdata object
             // include axis-name in front
-            xAxis.unshift('year');
+            xAxis.unshift('yearmonth');
             // include an entry of the sum over all years
             xAxis.unshift('all');
             chartdata.push(xAxis);
@@ -222,7 +222,7 @@ export default {
                 },
                 xAxis: {
                     type: 'category',
-                    data: this.extractYear()
+                    data: this.extractYearMonth()
                 },
                 yAxis: {
                     gridIndex: 0,
