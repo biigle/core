@@ -15,7 +15,7 @@ export function IDToColor(id) {
     // Use the hash to generate a unique hue
     const hue = id % 360;
     const saturation = 70 + (hash % 31); // Ensure saturation is between 70 and 100
-    const lightness = 50 + (hash % 41);  // Ensure lightness is between 50 and 90
+    const lightness = 70 + (hash % 21);  // Ensure lightness is between 70 and 90
 
     return `hsl(${hue} ${saturation}% ${lightness}%)`;
 }
