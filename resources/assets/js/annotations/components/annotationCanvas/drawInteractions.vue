@@ -4,6 +4,7 @@ import Keyboard from '../../../core/keyboard';
 import Styles from '../../stores/styles';
 import { shiftKeyOnly } from '@biigle/ol/events/condition';
 import snapInteraction from '../../snapInteraction.vue';
+import { Point } from '@biigle/ol/geom';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the draw interactions.
@@ -12,6 +13,7 @@ import snapInteraction from '../../snapInteraction.vue';
  */
 
 let drawInteraction;
+let lastdrawnPoint = {time:0, point: new Point(0,0)};
 
 // Custom OpenLayers freehandCondition that is true if a pen is used for input or
 // if Shift is pressed otherwise.
@@ -104,7 +106,13 @@ export default {
                 });
 
                 drawInteraction.on('drawend', (e) => {
-                    this.handleNewFeature(e);
+                    if (this.isDrawingPoint && new Date().getTime() - lastdrawnPoint['time'] < 400 && lastdrawnPoint['point'].distanceTo(e.feature.getGeometry()) < 5) {
+                        this.annotationSource.removeFeature(e.feature);
+                    } else {
+                        this.handleNewFeature(e);
+                        lastdrawnPoint['time'] = new Date().getTime();
+                        lastdrawnPoint['point'] = e.feature.getGeometry();
+                    }
                     this.drawEnded = true;
                 });
 
