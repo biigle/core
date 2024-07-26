@@ -98,7 +98,7 @@ RUN LC_ALL=C.UTF-8 apt-get update \
         Pillow==10.2.0 \
     && pip3 install --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
         torch==2.2.* \
-        torchvision==0.16.* \
+        torchvision==0.17.* \
     && apt-get purge -y \
         python3-pip \
     && apt-get -y autoremove \
