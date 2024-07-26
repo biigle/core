@@ -65,7 +65,7 @@ class AnnotationSession extends Model
      * @param VolumeFile $file The file to get the annotations from
      * @param User $user The user to whom the restrictions should apply ('own' user)
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getVolumeFileAnnotations(VolumeFile $file, User $user)
     {

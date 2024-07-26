@@ -14,6 +14,8 @@ use Ramsey\Uuid\Uuid;
  * Admins can also manage members and modify the tree (name, visibility etc).
  * Label trees can be public or private. Private trees maintain a list of projects
  * that are authorized to use the tree. This list is maintained by label tree admins.
+ *
+ * @property string $uuid
  */
 class LabelTree extends Model
 {

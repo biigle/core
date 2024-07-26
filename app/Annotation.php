@@ -163,7 +163,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The labels, this annotation got assigned by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationLabel, Annotation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationLabel>
      */
     abstract public function labels();
 

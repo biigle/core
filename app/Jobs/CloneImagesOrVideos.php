@@ -166,23 +166,23 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         // generated (mostly) before the annotation thumbnails.
         $delay = now()->addSeconds(30);
 
-        if (class_exists(ProcessAnnotatedImage::class)) {
-            $volume->images()->whereHas('annotations')
-                ->eachById(function ($image) use ($delay) {
-                    ProcessAnnotatedImage::dispatch($image)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                });
-        }
+        // if (class_exists(ProcessAnnotatedImage::class)) {
+        //     $volume->images()->whereHas('annotations')
+        //         ->eachById(function ($image) use ($delay) {
+        //             ProcessAnnotatedImage::dispatch($image)
+        //                 ->delay($delay)
+        //                 ->onQueue(config('largo.generate_annotation_patch_queue'));
+        //         });
+        // }
 
-        if (class_exists(ProcessAnnotatedVideo::class)) {
-            $volume->videos()
-                ->whereHas('annotations')->eachById(function ($video) use ($delay) {
-                    ProcessAnnotatedVideo::dispatch($video)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                });
-        }
+        // if (class_exists(ProcessAnnotatedVideo::class)) {
+        //     $volume->videos()
+        //         ->whereHas('annotations')->eachById(function ($video) use ($delay) {
+        //             ProcessAnnotatedVideo::dispatch($video)
+        //                 ->delay($delay)
+        //                 ->onQueue(config('largo.generate_annotation_patch_queue'));
+        //         });
+        // }
     }
 
     /**

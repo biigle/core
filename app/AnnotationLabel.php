@@ -23,7 +23,7 @@ abstract class AnnotationLabel extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array<int, string>
+     * @var array<string, string>
      */
     protected $casts = [
         'user_id' => 'int',

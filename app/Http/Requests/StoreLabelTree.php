@@ -11,14 +11,14 @@ class StoreLabelTree extends FormRequest
     /**
      * The project to which the new label tree should be attached (if any).
      *
-     * @var Project
+     * @var Project|null
      */
     public $project;
 
     /**
      * The upstream label tree that should be forked (if any)
      *
-     * @var LabelTree
+     * @var LabelTree|null
      */
     public $upstreamLabelTree;
 
