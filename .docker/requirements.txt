@@ -8,6 +8,6 @@ matplotlib==3.6.*
 PyExcelerate==0.6.7
 Pillow==10.3.0
 Shapely==1.8.1
-torch==2.1.*
+torch==2.2.*
 torchvision==0.16.*
 pandas==1.5.3
