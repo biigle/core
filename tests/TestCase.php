@@ -10,7 +10,6 @@ class TestCase extends BaseTestCase
 {
     use CreatesApplication, MockeryPHPUnitIntegration, RefreshDatabase;
 
-    public static $cachedPdo;
     protected $baseUrl = 'http://localhost';
 
     /**
@@ -30,18 +29,16 @@ class TestCase extends BaseTestCase
         ]]);
     }
 
-    public function tearDown(): void
+    /**
+     * Determine if an in-memory database is being used.
+     *
+     * @return bool
+     */
+    protected function usingInMemoryDatabase()
     {
-        parent::tearDown();
-    }
-
-    protected function beforeRefreshingDatabase()
-    {
-        // Cache PDO for faster tests.
-        if (static::$cachedPdo) {
-            DB::setPdo(static::$cachedPdo);
-        } else {
-            static::$cachedPdo = DB::getPdo();
-        }
+        // We are not using SQLite in-memory (which can be detected automatically) but
+        // Postgres on a ramdisk, so we hardcode this to true. This will make the tests
+        // reuse the PDO object for speedup.
+        return true;
     }
 }

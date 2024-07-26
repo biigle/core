@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Http\Controllers\Views\LabelTrees;
+namespace Biigle\Tests\Http\Controllers\Views\LabelTrees;
 
 use Biigle\Role;
 use Biigle\Tests\LabelTreeTest;

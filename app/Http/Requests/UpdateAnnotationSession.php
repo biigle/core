@@ -12,7 +12,7 @@ class UpdateAnnotationSession extends FormRequest
      *
      * @var AnnotationSession
      */
-    public $session;
+    public $annotationSession;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -21,9 +21,9 @@ class UpdateAnnotationSession extends FormRequest
      */
     public function authorize()
     {
-        $this->session = AnnotationSession::findOrFail($this->route('id'));
+        $this->annotationSession = AnnotationSession::findOrFail($this->route('id'));
 
-        return $this->user()->can('update', $this->session->volume);
+        return $this->user()->can('update', $this->annotationSession->volume);
     }
 
     /**

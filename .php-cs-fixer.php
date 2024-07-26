@@ -14,6 +14,7 @@ $finder = (new PhpCsFixer\Finder())
     ->ignoreVCS(true);
 
 return (new PhpCsFixer\Config())
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRules([
         '@PSR2' => true,
         'ordered_imports' => true,

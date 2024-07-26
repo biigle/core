@@ -16,9 +16,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Jcupitt\Vips\Image as VipsImage;
 use Log;
 use Throwable;
-use VipsImage;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {

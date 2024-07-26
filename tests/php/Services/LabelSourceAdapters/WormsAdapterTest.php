@@ -1,8 +1,9 @@
 <?php
 
-namespace Biigle\Services\LabelSourceAdapters;
+namespace Biigle\Tests\Services\LabelSourceAdapters;
 
 use App;
+use Biigle\Services\LabelSourceAdapters\WormsAdapter;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Illuminate\Http\Request;

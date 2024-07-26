@@ -1,10 +1,8 @@
 <?php
 
 use Biigle\Image;
-use Doctrine\DBAL\Types\Type;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Ramsey\Uuid\Doctrine\UuidType;
 use Ramsey\Uuid\Uuid;
 
 class AddImagesUuidColumn extends Migration
@@ -30,10 +28,6 @@ class AddImagesUuidColumn extends Migration
         Image::reguard();
 
         Schema::table('images', function (Blueprint $table) {
-            // make doctrine/dbal work with uuid type
-            if (!Type::hasType('uuid')) {
-                Type::addType('uuid', UuidType::class);
-            }
             $table->uuid('uuid')
                 ->nullable(false)
                 ->change();

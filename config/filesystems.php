@@ -9,7 +9,7 @@ return [
     |
     | Here you may specify the default filesystem disk that should be used
     | by the framework. A "local" driver, as well as a variety of cloud
-    | based drivers are available for your choosing. Just store away!
+    | based disks are available to your application for file storage.
     |
     | Supported: "local", "ftp", "sftp", "s3"
     |
@@ -22,11 +22,13 @@ return [
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |
-    | Here you may configure as many filesystem "disks" as you wish, and you
-    | may even configure multiple disks of the same driver. Defaults have
-    | been setup for each driver as an example of the required options.
+    | Below you may configure as many filesystem disks as necessary, and you
+    | may even configure multiple disks for the same driver. Examples for
+    | most supported storage drivers are configured here for reference.
     |
-    | Note: Disks with the name "user-[number]" or "disk-[number]" may be reserved
+    | Supported drivers: "local", "ftp", "sftp", "s3"
+    |
+    | NOTE: Disks with the name "user-[number]" or "disk-[number]" may be reserved
     | for the biigle/user-storage and biigle/user-disks modules.
     */
 
