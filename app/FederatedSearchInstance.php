@@ -15,7 +15,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -28,7 +28,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'local_token',
@@ -38,7 +38,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'index_interval' => 'int',
@@ -100,7 +100,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
      */
     public function getRemoteTokenAttribute()
     {
-        if (!isset($this->attributes['remote_token']) || is_null($this->attributes['remote_token'])) {
+        if (!isset($this->attributes['remote_token'])) {
             return null;
         } else {
             return decrypt($this->attributes['remote_token']);

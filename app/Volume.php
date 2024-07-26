@@ -234,7 +234,7 @@ class Volume extends Model
      * session.
      *
      * @param User $user
-     * @return AnnotationSession
+     * @return AnnotationSession|null
      */
     public function getActiveAnnotationSession(User $user)
     {

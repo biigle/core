@@ -38,7 +38,7 @@ class UpdateVideoMetadata extends Command
     /**
      * The FFProbe video instance.
      *
-     * @var FFProbe
+     * @var FFProbe|null
      */
     protected $ffprobe;
 

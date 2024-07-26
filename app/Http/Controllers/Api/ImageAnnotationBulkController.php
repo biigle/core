@@ -90,7 +90,9 @@ class ImageAnnotationBulkController extends Controller
 
             $annotation->points = $input['points'];
             $annotation->image_id = $input['image_id'];
+            /** @phpstan-ignore-next-line */
             $annotation->label_id = $input['label_id'];
+            /** @phpstan-ignore-next-line */
             $annotation->confidence = $input['confidence'];
 
             return $annotation;
@@ -98,10 +100,12 @@ class ImageAnnotationBulkController extends Controller
 
         DB::transaction(function () use ($request, $annotations) {
             $annotations->each(function ($annotation) use ($request) {
+                /** @phpstan-ignore-next-line */
                 $label = $request->labels[$annotation->label_id];
+                /** @phpstan-ignore-next-line */
                 $confidence = $annotation->confidence;
                 unset($annotation->label_id, $annotation->confidence);
-                
+
                 $this->authorize('attach-label', [$annotation, $label]);
                 $annotation->save();
 

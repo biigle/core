@@ -9,6 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * A role of a user. Users have one global role and can have many project-
  * specific roles.
+ *
+ * @method static Role admin()
+ * @method static int adminId()
+ * @method static Role expert()
+ * @method static int expertId()
+ * @method static Role editor()
+ * @method static int editorId()
+ * @method static Role guest()
+ * @method static int guestId()
  */
 class Role extends Model
 {

@@ -21,7 +21,7 @@ class AnnouncementController extends Controller
      * @apiParam (Optional parameters) {Number} show_until Date and time until the announcement should be shown. Only one announcement can be shown at a time. If not specified, the announcement will be shown indefinitely.
      *
      * @param StoreAnnouncement $request
-     * @return Announcement
+     * @return Announcement|\Illuminate\Http\RedirectResponse
      */
     public function store(StoreAnnouncement $request)
     {
@@ -47,7 +47,7 @@ class AnnouncementController extends Controller
      * @apiParam {Number} id The announcement ID.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy($id)
     {

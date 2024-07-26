@@ -73,7 +73,7 @@ class ImageAnnotationLabelController extends Controller
      * ]
      *
      * @param int $id ImageAnnotation ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection<int, ImageAnnotationLabel>
      */
     public function index($id)
     {
@@ -161,7 +161,7 @@ class ImageAnnotationLabelController extends Controller
      * }
      *
      * @param StoreImageAnnotationLabel $request
-     * @return \Illuminate\Http\Response
+     * @return ImageAnnotationLabel|null
      */
     public function store(StoreImageAnnotationLabel $request)
     {
@@ -187,7 +187,7 @@ class ImageAnnotationLabelController extends Controller
 
             AnnotationLabelAttached::dispatch($annotationLabel);
 
-            return response($annotationLabel, 201);
+            return $annotationLabel;
         } catch (QueryException $e) {
             // Although we check for existence above, this error happened some time.
             // I suspect some kind of race condition between PHP FPM workers.

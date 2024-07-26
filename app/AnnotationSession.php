@@ -18,7 +18,7 @@ class AnnotationSession extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'starts_at' => 'datetime',
@@ -31,7 +31,7 @@ class AnnotationSession extends Model
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $appends = [
         'starts_at_iso8601',
@@ -65,7 +65,7 @@ class AnnotationSession extends Model
      * @param VolumeFile $file The file to get the annotations from
      * @param User $user The user to whom the restrictions should apply ('own' user)
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getVolumeFileAnnotations(VolumeFile $file, User $user)
     {
@@ -113,7 +113,7 @@ class AnnotationSession extends Model
      *
      * This is **not** an Eloquent relation!
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<ImageAnnotation>|\Illuminate\Database\Eloquent\Builder<VideoAnnotation>
      */
     public function annotations()
     {

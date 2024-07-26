@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Volumes can contain either images or videos as media type.
+ *
+ * @method static MediaType image()
+ * @method static int imageId()
+ * @method static MediaType video()
+ * @method static int videoId()
  */
 class MediaType extends Model
 {

@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  * with `rock`.
  *
  * Labels can be ordered in a tree-like structure.
+ *
+ * @property string $uuid
  */
 class Label extends Model
 {

@@ -26,7 +26,7 @@ class VolumeImageAreaController extends Controller
      * }
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection<int|string, mixed>
      */
     public function index($id)
     {

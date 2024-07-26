@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * The visibility of a model.
+ *
+ * @method static Visibility public()
+ * @method static int publicId()
+ * @method static Visibility private()
+ * @method static int privateId()
  */
 class Visibility extends Model
 {

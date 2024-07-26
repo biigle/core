@@ -7,6 +7,9 @@ use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ */
 abstract class VolumeFile extends Model implements FileContract
 {
     use HasJsonAttributes, HasFactory;
@@ -164,7 +167,7 @@ abstract class VolumeFile extends Model implements FileContract
     /**
      * The annotations that belong to this file.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Biigle\Annotation, \Biigle\VolumeFile>
      */
     abstract public function annotations();
 }

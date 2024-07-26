@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property string $uuid
+ */
 class User extends Authenticatable
 {
     use Notifiable, HasJsonAttributes, HasFactory;

@@ -33,7 +33,7 @@ class VideoAnnotation extends Annotation
     /**
      * The video, this annotation belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Video, VideoAnnotation>
      */
     public function video()
     {
@@ -41,9 +41,7 @@ class VideoAnnotation extends Annotation
     }
 
     /**
-     * The file, this annotation belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * {@inheritdoc}
      */
     public function file()
     {
@@ -61,9 +59,7 @@ class VideoAnnotation extends Annotation
     }
 
     /**
-     * The labels that are attached to this annotation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * {@inheritdoc}
      */
     public function labels()
     {

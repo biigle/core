@@ -60,7 +60,7 @@ class ImageAnnotationController extends Controller
      *
      * @param Request $request
      * @param int $id image id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection<int, ImageAnnotation>
      */
     public function index(Request $request, $id)
     {
@@ -266,7 +266,6 @@ class ImageAnnotationController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {

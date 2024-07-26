@@ -28,7 +28,7 @@ class AnnotationUserController extends Controller
      * @param Request $request
      * @param  int  $tid
      * @param  int  $uid
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection<int|string, mixed>
      */
     public function index(Request $request, $tid, $uid)
     {

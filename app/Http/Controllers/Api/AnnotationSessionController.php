@@ -42,7 +42,6 @@ class AnnotationSessionController extends Controller
      * }
      *
      * @param UpdateAnnotationSession $request
-     * @return \Illuminate\Http\Response
      */
     public function update(UpdateAnnotationSession $request)
     {
@@ -157,7 +156,6 @@ class AnnotationSessionController extends Controller
      *
      * @param DestroyAnnotationSession $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy(DestroyAnnotationSession $request, $id)
     {
