@@ -17,9 +17,6 @@ First, install the following software:
 
 On Linux: Make sure to add your user to the new `docker` group with `sudo usermod -aG docker $(whoami)`, then log out and back in. Otherwise you have to call all `docker` or `docker compose` commands with `sudo`.
 
-> [!NOTE]
-> Older versions of Docker Compose used the `docker-compose` command. Newer versions use `docker compose`.
-
 Now you can proceed with the development setup:
 
 ### 1. Download the project files
