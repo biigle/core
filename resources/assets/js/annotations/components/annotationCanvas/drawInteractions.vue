@@ -12,6 +12,7 @@ import snapInteraction from '../../snapInteraction.vue';
  */
 
 let drawInteraction;
+let lastdrawnPoint = 0;
 
 // Custom OpenLayers freehandCondition that is true if a pen is used for input or
 // if Shift is pressed otherwise.
@@ -104,6 +105,14 @@ export default {
                 });
 
                 drawInteraction.on('drawend', (e) => {
+                    // Prevent double click from creating two points.
+                    if (this.isDrawingPoint){
+                        const now = new Date().getTime();
+                        if (now - lastdrawnPoint < 400) {
+                            return;
+                        }
+                        lastdrawnPoint = new Date().getTime();
+                    }
                     this.handleNewFeature(e);
                     this.drawEnded = true;
                 });
