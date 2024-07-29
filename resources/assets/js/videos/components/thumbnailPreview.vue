@@ -155,8 +155,17 @@ export default {
             nextImg.src = nextSpriteUrl;
         },
         removeOldSprites() {
-            delete this.preloadedSprites[this.getSpriteUrl(this.spriteIdx - 2)];
-            delete this.preloadedSprites[this.getSpriteUrl(this.spriteIdx + 2)];
+            let preloadedSprites = {}
+            for (let i = this.spriteIdx - 1; i < this.spriteIdx + 2; i++) {
+                if (i !== 0 || i !== this.lastSpriteIdx) {
+                    let url = this.getSpriteUrl(i);
+                    let img = this.preloadedSprites[url];
+                    if (img) {
+                        preloadedSprites[url] = img;
+                    }
+                }
+            }
+            this.preloadedSprites = preloadedSprites;
         },
         updateSprite() {
             let spriteUrl = this.getSpriteUrl(this.spriteIdx);
