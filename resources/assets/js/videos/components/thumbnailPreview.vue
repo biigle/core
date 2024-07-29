@@ -313,6 +313,7 @@ export default {
         this.hovertimeCanvas.width = this.hoverTimeBarWidth;
         this.hovertimeCanvas.height = this.hoverTimeBarHeight;
 
+        this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
         this.updateSprite();
     }
 };
