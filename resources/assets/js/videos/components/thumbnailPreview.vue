@@ -104,7 +104,7 @@ export default {
         },
         fontSizeInPx() {
             return this.fontSize * 0.75;
-        }
+        },
     },
     methods: {
         preloadPreviousSprite() {
@@ -122,7 +122,7 @@ export default {
             }
             let prevImg = new Image();
             prevImg.onload = () => {
-                this.preloadedSprites[prevIdx] = prevImg;
+                this.preloadedSprites[prevSpriteUrl] = prevImg;
             }
             prevImg.onerror = () => {
                 if (prevSpriteUrl in this.triedUrls) {
@@ -145,7 +145,7 @@ export default {
             }
             let nextImg = new Image();
             nextImg.onload = () => {
-                this.preloadedSprites[nextIdx] = nextImg;
+                this.preloadedSprites[nextSpriteUrl] = nextImg;
             }
             nextImg.onerror = () => {
                 if (nextSpriteUrl in this.triedUrls) {
@@ -155,26 +155,25 @@ export default {
             nextImg.src = nextSpriteUrl;
         },
         removeOldSprites() {
-            delete this.preloadedSprites[this.spriteIdx - 2];
-            delete this.preloadedSprites[this.spriteIdx + 2];
+            delete this.preloadedSprites[this.getSpriteUrl(this.spriteIdx - 2)];
+            delete this.preloadedSprites[this.getSpriteUrl(this.spriteIdx + 2)];
         },
         updateSprite() {
-            this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
-            let SpriteUrl = this.getSpriteUrl(this.spriteIdx);
+            let spriteUrl = this.getSpriteUrl(this.spriteIdx);
 
-            if (!this.triedUrls[SpriteUrl]) {
-                this.triedUrls[SpriteUrl] = 0
+            if (!this.triedUrls[spriteUrl]) {
+                this.triedUrls[spriteUrl] = 0
             }
-            if (this.triedUrls[SpriteUrl] < this.retryAttempts) {
-                if (this.spriteIdx in this.preloadedSprites) {
+            if (this.triedUrls[spriteUrl] < this.retryAttempts) {
+                if (spriteUrl in this.preloadedSprites && this.triedUrls[spriteUrl] === 0) {
                     let onloadFunc = this.sprite.onload;
-                    let onErrFunc = this.sprite.onerror;
-                    this.sprite = this.preloadedSprites[this.spriteIdx];
+                    let onerrFunc = this.sprite.onerror;
+                    this.sprite = this.preloadedSprites[spriteUrl];
                     onloadFunc.call(this.sprite, new Event('load'));
                     this.sprite.onload = onloadFunc;
-                    this.sprite.onerror = onErrFunc;
+                    this.sprite.onerror = onerrFunc;
                 } else {
-                    this.sprite.src = SpriteUrl;
+                    this.sprite.src = spriteUrl;
                 }
             } else {
                 this.spriteNotFound = true;
@@ -265,11 +264,7 @@ export default {
     },
     watch: {
         hoverTime() {
-            let spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
-            if (this.spriteIdx !== spriteIdx){
-                this.spriteIdx = spriteIdx;
-                this.updateSprite();
-            }
+            this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
 
             if (this.spriteNotFound) {
                 this.viewHoverTimeBar();
@@ -277,6 +272,9 @@ export default {
                 this.viewThumbnailPreview();
             }
         },
+        spriteIdx() {
+            this.updateSprite();
+        }
     },
     created() {
         this.setSpritesFolderpath();
@@ -286,7 +284,7 @@ export default {
 
         this.sprite.onload = () => {
             this.spriteNotFound = false;
-            this.preloadedSprites[this.spriteIdx] = this.sprite;
+            this.preloadedSprites[this.sprite.src] = this.sprite;
             this.initDimensions();
             // Call viewThumbnailPreview here again to prevent glitching thumbnails
             this.viewThumbnailPreview();
