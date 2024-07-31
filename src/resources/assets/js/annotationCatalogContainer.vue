@@ -14,6 +14,7 @@ export default {
     data() {
         return {
             labelTrees: [],
+            showAnnotationOutlines: false,
         };
     },
     methods: {
@@ -22,6 +23,12 @@ export default {
             let videoPromise = LabelsApi.queryVideoAnnotations({id: label.id});
 
             return Vue.Promise.all([imagePromise, videoPromise]);
+        },
+        showOutlines() {
+            this.showAnnotationOutlines = true;
+        },
+        hideOutlines() {
+            this.showAnnotationOutlines = false;
         },
     },
     created() {

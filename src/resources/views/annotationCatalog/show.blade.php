@@ -42,8 +42,10 @@
     </div>
     <sidebar :show-buttons="false" open-tab="labels">
         <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label tree">
+            <power-toggle v-cloak class="largo-tab__button" :active="showAnnotationOutlines" title-off="Show annotation outlines" title-on="Hide annotation outlines" v-on:on="showOutlines" v-on:off="hideOutlines">Show annotation outlines</power-toggle>
             <label-trees class="largo-tab__label-trees" :trees="labelTrees" :collapsible="false" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </sidebar-tab>
+        
     </sidebar>
 </div>
 
