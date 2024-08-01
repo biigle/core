@@ -99,6 +99,39 @@ let randomSorter = {
     },
 };
 
+let annotationTime = {
+    id: 'annotationTime',
+    types: ['image', 'video'],
+    component: {
+        mixins: [SortComponent],
+        data() {
+            return {
+                timestamps: [],
+                title: 'Sort images by last created annotation',
+                text: 'Last annotated',
+                id: 'annotationTime',
+            };
+        },
+        computed: {
+            sortedAnnotations() {
+                return Object.entries(this.timestamps).sort(this.compare);
+            }
+        },
+        methods: {
+            getSequence() {
+                let ids = this.sortedAnnotations.map(e => e[0]);
+                return new Vue.Promise.resolve(ids);
+            },
+            compare(a, b) {
+                return Date.parse(b[1]) - Date.parse(a[1]);
+            }
+        },
+        created() {
+            this.timestamps = biigle.$require('volumes.annotationTimestamps');
+        },
+    },
+};
+
 /**
  * Store for the volume image sorters
  */
@@ -107,4 +140,5 @@ export default [
     filenameSorter,
     idSorter,
     randomSorter,
+    annotationTime,
 ];

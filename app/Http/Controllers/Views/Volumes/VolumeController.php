@@ -107,13 +107,21 @@ class VolumeController extends Controller
 
         $type = $volume->mediaType->name;
 
+        $annotations = $volume->files->mapWithKeys(fn ($f) => [$f->id => $f->annotations]);
+        $lastAnnotationTimestamps = $annotations->mapWithKeys(fn ($as, $i) => [
+            $i => $as->isEmpty() ?
+            Carbon::minValue()->toDateTimeString() :
+            ($as->map(fn ($a) => $a->created_at->toDateTimeString()))->max()
+        ]);
+
         return view('volumes.show', compact(
             'volume',
             'labelTrees',
             'projects',
             'fileIds',
             'thumbUriTemplate',
-            'type'
+            'type',
+            'lastAnnotationTimestamps'
         ));
     }
 
