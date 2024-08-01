@@ -55,6 +55,7 @@
     > a {
         width: 100%;
     }
+    @extend .image-grid__image--largo
 }
 
 .image-grid__image--relabel {

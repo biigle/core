@@ -14,8 +14,12 @@ export default {
     data() {
         return {
             labelTrees: [],
-            showAnnotationOutlines: false,
         };
+    },
+    computed: {
+        noLabelSelected() {
+            return this.selectedLabel === null;
+        }
     },
     methods: {
         queryAnnotations(label) {
@@ -31,9 +35,17 @@ export default {
             this.showAnnotationOutlines = false;
         },
     },
+    watch: {
+        noLabelSelected() {
+            if (this.noLabelSelected) {
+                this.showAnnotationOutlines = false;
+            }
+        }
+    },
     created() {
         let labelTree = biigle.$require('annotationCatalog.labelTree');
         this.labelTrees = [labelTree];
+        this.showAnnotationOutlines = false;
     },
 };
 </script>
