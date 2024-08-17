@@ -23,7 +23,7 @@ class UsersController extends Controller
      */
     public function get(Request $request)
     {
-        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'role_id', 'affiliation')
+        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'created_at', 'role_id', 'affiliation')
             ->when($request->has('q'), function ($query) use ($request) {
                 $q = $request->get('q');
                 $query->where(function ($query) use ($q) {
@@ -44,11 +44,51 @@ class UsersController extends Controller
             Role::guestId() => 'Guest',
         ];
 
+        $usersCount = User::whereDate('created_at', '>=', now()->subDays(7)->setTime(0, 0, 0)->toDateTimeString())
+            ->count();
+
         return view('admin.users', [
             'users' => $users,
             'roleClass' => $this->roleClassMap(),
             'roleNames' => $roleNames,
             'query' => $request->get('q'),
+            'usersCount' => $usersCount
+        ]);
+    }
+
+    /**
+     * Shows newest users.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getRecentUsers()
+    {
+        /*
+        <form class="form-inline inline-block-form" action="{{route('admin-users')}}" method="get">
+            <button class="button">Recently joined</button>
+            <span class="badge" href="{{route('admin-users')}}">{{$usersCount}}</span>
+        </form>*/
+        // Fetch users created in the last 7 days
+        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'created_at', 'role_id', 'affiliation')
+            // Orders by created_at in descending order
+            ->whereDate('created_at', '>=', now()->subDays(7)->setTime(0, 0, 0)->toDateTimeString())
+            ->orderBy('created_at', 'desc')
+            ->paginate(100);
+            
+        $roleNames = [
+            Role::adminId() => 'Admin',
+            Role::editorId() => 'Editor',
+            Role::guestId() => 'Guest',
+        ];
+
+        // $usersCount = User::whereDate('created_at', '>=', now()->subDays(7)->setTime(0, 0, 0)->toDateTimeString())->count();
+        $usersCount = $users->total();
+
+        return view('admin.users.recent', [
+            'users' => $users,
+            'roleNames' => $roleNames,
+            'usersCount' => $usersCount,
+            'roleClass' => $this->roleClassMap(),
         ]);
     }
 
