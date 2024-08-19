@@ -54,7 +54,7 @@ class ImageLabelControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/images/{$id}/labels");
         $response->assertStatus(422);
 
-        $this->assertEquals(0, $this->image->labels()->count());
+        $this->assertSame(0, $this->image->labels()->count());
 
         $this->beUser();
         $response = $this->post("/api/v1/images/{$id}/labels", [
@@ -73,7 +73,7 @@ class ImageLabelControllerTest extends ApiTestCase
             'label_id' => $this->labelRoot()->id,
         ]);
         $response->assertSuccessful();
-        $this->assertEquals(1, $this->image->labels()->count());
+        $this->assertSame(1, $this->image->labels()->count());
 
         $this->beAdmin();
         // the same label cannot be attached twice
@@ -81,13 +81,13 @@ class ImageLabelControllerTest extends ApiTestCase
             'label_id' => $this->labelRoot()->id,
         ]);
         $response->assertStatus(400);
-        $this->assertEquals(1, $this->image->labels()->count());
+        $this->assertSame(1, $this->image->labels()->count());
 
         $response = $this->json('POST', "/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelChild()->id,
         ]);
         $response->assertSuccessful();
-        $this->assertEquals(2, $this->image->labels()->count());
+        $this->assertSame(2, $this->image->labels()->count());
         $response->assertJsonFragment([
             'id' => $this->labelChild()->id,
             'name' => $this->labelChild()->name,

@@ -120,7 +120,7 @@ class ApiGuardTest extends TestCase
         $token->updated_at = Carbon::now(-5);
         $token->save();
 
-        $this->assertEquals($token->updated_at, $token->fresh()->updated_at);
+        $this->assertSame($token->updated_at->toDateTimeString(), $token->fresh()->updated_at->toDateTimeString());
 
         $response = $this->call('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,

@@ -51,19 +51,19 @@ class FederatedSearchInstanceTest extends ModelTestCase
     public function testSetRemoteTokenAttribute()
     {
         $this->model->remote_token = 'test';
-        $this->assertEquals('test', decrypt($this->model->getAttributes()['remote_token']));
+        $this->assertSame('test', decrypt($this->model->getAttributes()['remote_token']));
     }
 
     public function testGetRemoteTokenAttribute()
     {
         $this->model->setRawAttributes(['remote_token' => encrypt('test')]);
-        $this->assertEquals('test', $this->model->remote_token);
+        $this->assertSame('test', $this->model->remote_token);
     }
 
     public function testCreateLocalToken()
     {
         $token = $this->model->createLocalToken();
-        $this->assertEquals(64, strlen($token));
-        $this->assertEquals(hash('sha256', $token), $this->model->local_token);
+        $this->assertSame(64, strlen($token));
+        $this->assertSame(hash('sha256', $token), $this->model->local_token);
     }
 }

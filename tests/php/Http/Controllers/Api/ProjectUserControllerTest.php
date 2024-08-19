@@ -74,14 +74,14 @@ class ProjectUserControllerTest extends ApiTestCase
             ->assertStatus(422)
             ->assertJsonFragment(['The last admin of '.$this->project()->name.' cannot be removed. The admin status must be passed on to another user first.']);
 
-        $this->assertEquals(2, $this->project()->users()->find($this->editor()->id)->project_role_id);
+        $this->assertSame(2, $this->project()->users()->find($this->editor()->id)->project_role_id);
 
         $response = $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id, [
             'project_role_id' => Role::guestId(),
         ]);
 
         $response->assertStatus(200);
-        $this->assertEquals(3, $this->project()->users()->find($this->editor()->id)->project_role_id);
+        $this->assertSame(3, $this->project()->users()->find($this->editor()->id)->project_role_id);
     }
 
     public function testUpdateGlobalGuest()
@@ -144,8 +144,8 @@ class ProjectUserControllerTest extends ApiTestCase
 
         $response->assertStatus(200);
         $newUser = $this->project()->users()->find($id);
-        $this->assertEquals($id, $newUser->id);
-        $this->assertEquals(Role::editorId(), $newUser->project_role_id);
+        $this->assertSame($id, $newUser->id);
+        $this->assertSame(Role::editorId(), $newUser->project_role_id);
     }
 
     public function testAttachGlobalGuest()

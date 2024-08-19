@@ -34,11 +34,11 @@ class VisibilityTest extends ModelTestCase
 
     public function testPublic()
     {
-        $this->assertEquals('public', Visibility::public()->name);
+        $this->assertSame('public', Visibility::public()->name);
     }
 
     public function testPrivate()
     {
-        $this->assertEquals('private', Visibility::private()->name);
+        $this->assertSame('private', Visibility::private()->name);
     }
 }

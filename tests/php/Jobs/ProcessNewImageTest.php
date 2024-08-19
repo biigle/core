@@ -34,14 +34,14 @@ class ProcessNewImageTest extends TestCase
 
         $image = $image->fresh();
 
-        $this->assertEquals('2011-12-31 17:07:29', (string) $image->taken_at);
+        $this->assertSame('2011-12-31 17:07:29', (string) $image->taken_at);
         $this->assertEqualsWithDelta(12.486211944, $image->lng, 0.000001);
         $this->assertEqualsWithDelta(41.8898575, $image->lat, 0.000001);
-        $this->assertEquals(56.819, $image->metadata['gps_altitude']);
-        $this->assertEquals(500, $image->width);
-        $this->assertEquals(375, $image->height);
-        $this->assertEquals(62411, $image->size);
-        $this->assertEquals('image/jpeg', $image->mimetype);
+        $this->assertSame(56.819, $image->metadata['gps_altitude']);
+        $this->assertSame(500, $image->width);
+        $this->assertSame(375, $image->height);
+        $this->assertSame(62411, $image->size);
+        $this->assertSame('image/jpeg', $image->mimetype);
         $this->assertTrue($volume->hasGeoInfo());
     }
 
@@ -58,7 +58,7 @@ class ProcessNewImageTest extends TestCase
         $job->exif = ['DateTimeOriginal' => '0000-00-00 00:00:00'];
         $job->handle();
         $image = $image->fresh();
-        $this->assertEquals(null, $image->taken_at);
+        $this->assertSame(null, $image->taken_at);
     }
 
     public function testHandleCollectMetadataAreaYaw()
@@ -76,8 +76,8 @@ class ProcessNewImageTest extends TestCase
         $job->handle();
         $image = $image->fresh();
 
-        $this->assertEquals(47.75, $image->metadata['yaw']);
-        $this->assertEquals(2.6, $image->metadata['area']);
+        $this->assertSame(47.75, floatval($image->metadata['yaw']));
+        $this->assertSame(2.6, floatval($image->metadata['area']));
     }
 
     public function testHandleMakeThumbnail()
@@ -209,7 +209,7 @@ class ProcessNewImageTest extends TestCase
             'distance_to_ground' => 5,
             'gps_altitude' => 500,
         ];
-        $this->assertEquals($expect, $image->metadata);
+        $this->assertSame($expect, $image->metadata);
     }
 }
 

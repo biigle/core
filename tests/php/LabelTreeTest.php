@@ -116,7 +116,7 @@ class LabelTreeTest extends ModelTestCase
     {
         $this->assertFalse($this->model->members()->exists());
         $this->model->addMember(UserTest::create(), Role::admin());
-        $this->assertEquals(Role::adminId(), $this->model->members()->first()->role_id);
+        $this->assertSame(Role::adminId(), $this->model->members()->first()->role_id);
     }
 
     public function testAddMemberUserExists()
@@ -143,9 +143,9 @@ class LabelTreeTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->addMember($user, Role::editor());
-        $this->assertEquals(Role::editorId(), $this->model->members()->first()->role_id);
+        $this->assertSame(Role::editorId(), $this->model->members()->first()->role_id);
         $this->model->updateMember($user, Role::admin());
-        $this->assertEquals(Role::adminId(), $this->model->members()->first()->role_id);
+        $this->assertSame(Role::adminId(), $this->model->members()->first()->role_id);
     }
 
     public function testProjects()
@@ -190,7 +190,7 @@ class LabelTreeTest extends ModelTestCase
         // label trees without users are attached by default
         $tree->authorizedProjects()->attach($authorized->id);
         $tree->detachUnauthorizedProjects();
-        $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
+        $this->assertSame([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
     }
 
     public function testDetachUnauthorizedProjectsPropagateToVersions()
@@ -206,7 +206,7 @@ class LabelTreeTest extends ModelTestCase
         $version->labelTree->authorizedProjects()->attach($authorized->id);
         $this->model->authorizedProjects()->attach($authorized->id);
         $version->labelTree->detachUnauthorizedProjects();
-        $this->assertEquals([$authorized->id], $this->model->projects()->pluck('id')->all());
+        $this->assertSame([$authorized->id], $this->model->projects()->pluck('id')->all());
     }
 
     public function testOrderLabelsByName()
@@ -220,7 +220,7 @@ class LabelTreeTest extends ModelTestCase
             'name' => 'a',
         ]);
 
-        $this->assertEquals('a', $this->model->labels()->first()->name);
+        $this->assertSame('a', $this->model->labels()->first()->name);
     }
 
     public function testScopeAccessibleBy()
@@ -232,18 +232,18 @@ class LabelTreeTest extends ModelTestCase
         $tree3 = self::create(['visibility_id' => Visibility::privateId()]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
-        $this->assertEquals([$tree->id], $ids);
+        $this->assertSame([$tree->id], $ids);
 
         $tree2->addMember($user, Role::editor());
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
-        $this->assertEquals([$tree->id, $tree2->id], $ids);
+        $this->assertSame([$tree->id, $tree2->id], $ids);
 
         $project = ProjectTest::create(['creator_id' => $user->id]);
         $project->labelTrees()->attach($tree3);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
-        $this->assertEquals([$tree->id, $tree2->id, $tree3->id], $ids);
+        $this->assertSame([$tree->id, $tree2->id, $tree3->id], $ids);
     }
 
     public function testScopeAccessibleByAdmin()
@@ -265,9 +265,9 @@ class LabelTreeTest extends ModelTestCase
 
     public function testVersions()
     {
-        $this->assertEquals(0, $this->model->versions()->count());
+        $this->assertSame(0, $this->model->versions()->count());
         $version = LabelTreeVersionTest::create(['label_tree_id' => $this->model->id]);
-        $this->assertEquals(1, $this->model->versions()->count());
+        $this->assertSame(1, $this->model->versions()->count());
     }
 
     public function testCascadeDeleteMaster()
@@ -297,7 +297,7 @@ class LabelTreeTest extends ModelTestCase
         $version = LabelTreeVersionTest::create();
         $this->model->version_id = $version->id;
         $this->model->save();
-        $this->assertEquals([$version->label_tree_id], LabelTree::withoutVersions()->pluck('id')->all());
+        $this->assertSame([$version->label_tree_id], LabelTree::withoutVersions()->pluck('id')->all());
     }
 
     public function testScopeGlobal()
@@ -307,7 +307,7 @@ class LabelTreeTest extends ModelTestCase
         $this->model->save();
 
         $ids = LabelTree::global()->pluck('id')->all();
-        $this->assertEquals([$version->label_tree_id], $ids);
+        $this->assertSame([$version->label_tree_id], $ids);
         $version->labelTree->addMember(UserTest::create(), Role::adminId());
         $this->assertFalse(LabelTree::global()->exists());
     }
@@ -322,8 +322,8 @@ class LabelTreeTest extends ModelTestCase
         $this->model->version_id = $version->id;
         $this->model->save();
 
-        $this->assertEquals('master tree', $version->labelTree->versionedName);
-        $this->assertEquals('versioned tree @ v1.0', $this->model->versionedName);
+        $this->assertSame('master tree', $version->labelTree->versionedName);
+        $this->assertSame('versioned tree @ v1.0', $this->model->versionedName);
     }
 
     public function testReplicateLabelsOf()
@@ -341,6 +341,6 @@ class LabelTreeTest extends ModelTestCase
         $this->assertNotNull($newParent);
         $newChild = $tree->labels()->where('name', $child->name)->first();
         $this->assertNotNull($newChild);
-        $this->assertEquals($newParent->id, $newChild->parent_id);
+        $this->assertSame($newParent->id, $newChild->parent_id);
     }
 }

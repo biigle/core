@@ -95,9 +95,9 @@ class VolumeControllerTest extends ApiTestCase
             'media_type_id' => MediaType::videoId(),
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('the new volume', $this->volume()->fresh()->name);
+        $this->assertSame('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
-        $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
+        $this->assertSame(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
         Queue::assertNothingPushed();
     }
 
@@ -120,7 +120,7 @@ class VolumeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
         $this->volume()->refresh();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
+        $this->assertSame('10.3389/fmars.2017.00083', $this->volume()->handle);
 
         // Some DOIs can contain multiple slashes.
         $this
@@ -169,7 +169,7 @@ class VolumeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
+        $this->assertSame('editor-test://volumes', $this->volume()->fresh()->url);
 
         $this->beGlobalAdmin();
         $this
@@ -182,7 +182,7 @@ class VolumeControllerTest extends ApiTestCase
                 'url' => 'admin-test://volumes',
             ])
             ->assertStatus(200);
-        $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
+        $this->assertSame('admin-test://volumes', $this->volume()->fresh()->url);
         Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 
@@ -201,7 +201,7 @@ class VolumeControllerTest extends ApiTestCase
             'url' => 'admin-test://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         ])->assertStatus(422);
         
-        $this->assertEquals('The url must not be greater than 256 characters.', $response->exception->getMessage());
+        $this->assertSame('The url must not be greater than 256 characters.', $response->exception->getMessage());
         Queue::assertNothingPushed();
     }
 
