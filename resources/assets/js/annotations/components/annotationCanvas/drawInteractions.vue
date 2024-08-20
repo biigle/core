@@ -6,6 +6,13 @@ import { shiftKeyOnly } from '@biigle/ol/events/condition';
 import snapInteraction from '../../snapInteraction.vue';
 import { Point } from '@biigle/ol/geom';
 
+
+function computeDistance(point1, point2) {
+    let p1=point1.getCoordinates();
+    let p2=point2.getCoordinates();
+    return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
+}
+
 /**
  * Mixin for the annotationCanvas component that contains logic for the draw interactions.
  *
@@ -106,7 +113,7 @@ export default {
                 });
 
                 drawInteraction.on('drawend', (e) => {
-                    if (this.isDrawingPoint && new Date().getTime() - lastdrawnPoint['time'] < 400 && lastdrawnPoint['point'].distanceTo(e.feature.getGeometry()) < 5) {
+                    if (this.isDrawingPoint && new Date().getTime() - lastdrawnPoint['time'] < 400 && computeDistance(lastdrawnPoint['point'],e.feature.getGeometry()) < 5) {
                         this.annotationSource.removeFeature(e.feature);
                     } else {
                         this.handleNewFeature(e);
