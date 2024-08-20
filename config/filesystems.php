@@ -64,13 +64,6 @@ return [
             'driver' => 'local',
             'root' => storage_path('ifdos'),
         ],
-
-        'geo-overlays' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/geo-overlays'),
-            'url' => env('APP_URL').'/storage/geo-overlays',
-            'visibility' => 'public',
-        ],
     ],
 
     /*
