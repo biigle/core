@@ -48,7 +48,7 @@ class VideosCleanupListenerTest extends TestCase
         ];
 
         Queue::assertPushed(function (RemoveVideoAnnotationPatches $job) use ($expect) {
-            $this->assertEquals($expect, $job->annotationIds);
+            $this->assertSame($expect, $job->annotationIds);
 
             return true;
         });
@@ -68,7 +68,7 @@ class VideosCleanupListenerTest extends TestCase
         ];
 
         Queue::assertPushed(function (RemoveVideoAnnotationPatches $job) use ($expect) {
-            $this->assertEquals($expect, $job->annotationIds);
+            $this->assertSame($expect, $job->annotationIds);
 
             return true;
         });

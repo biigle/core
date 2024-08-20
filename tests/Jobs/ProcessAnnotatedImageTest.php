@@ -48,7 +48,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.jpg");
-        $this->assertEquals('abc123', $content);
+        $this->assertSame('abc123', $content);
         $disk->assertExists("{$prefix}/{$annotation->id}.svg");
     }
 
@@ -71,7 +71,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.jpg");
-        $this->assertEquals('abc123', $content);
+        $this->assertSame('abc123', $content);
         $disk->assertExists("{$prefix}/{$annotation->id}.svg");
     }
 
@@ -98,7 +98,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100" cy="100" r="6" fill="#fff" /><circle cx="100" cy="100" r="5" fill="#666" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleCircle()
@@ -127,7 +127,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"><g><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandlePolygon()
@@ -153,7 +153,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="190 190 120 120"><g><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleLineString()
@@ -179,7 +179,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="190 190 120 120"><g><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleRectangle()
@@ -207,7 +207,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleEllipse()
@@ -233,7 +233,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleContainedNegative()
@@ -466,15 +466,15 @@ class ProcessAnnotatedImageTest extends TestCase
         $filename = array_keys($input)[0];
         $this->assertArrayHasKey($annotation->id, $input[$filename]);
         $box = $input[$filename][$annotation->id];
-        $this->assertEquals([88, 88, 312, 312], $box);
+        $this->assertSame([88, 88, 312, 312], $box);
 
         $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(1, $vectors);
-        $this->assertEquals($annotationLabel->id, $vectors[0]->id);
-        $this->assertEquals($annotationLabel->label_id, $vectors[0]->label_id);
-        $this->assertEquals($annotationLabel->label->label_tree_id, $vectors[0]->label_tree_id);
-        $this->assertEquals($annotation->image->volume_id, $vectors[0]->volume_id);
-        $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
+        $this->assertSame($annotationLabel->id, $vectors[0]->id);
+        $this->assertSame($annotationLabel->label_id, $vectors[0]->label_id);
+        $this->assertSame($annotationLabel->label->label_tree_id, $vectors[0]->label_tree_id);
+        $this->assertSame($annotation->image->volume_id, $vectors[0]->volume_id);
+        $this->assertSame(range(0, 383), $vectors[0]->vector->toArray());
     }
 
     public function testGenerateFeatureVectorManyLabels()
@@ -500,13 +500,13 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(2, $vectors);
-        $this->assertEquals($annotationLabel1->id, $vectors[0]->id);
-        $this->assertEquals($annotationLabel1->label_id, $vectors[0]->label_id);
-        $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
+        $this->assertSame($annotationLabel1->id, $vectors[0]->id);
+        $this->assertSame($annotationLabel1->label_id, $vectors[0]->label_id);
+        $this->assertSame(range(0, 383), $vectors[0]->vector->toArray());
 
-        $this->assertEquals($annotationLabel2->id, $vectors[1]->id);
-        $this->assertEquals($annotationLabel2->label_id, $vectors[1]->label_id);
-        $this->assertEquals(range(0, 383), $vectors[1]->vector->toArray());
+        $this->assertSame($annotationLabel2->id, $vectors[1]->id);
+        $this->assertSame($annotationLabel2->label_id, $vectors[1]->label_id);
+        $this->assertSame(range(0, 383), $vectors[1]->vector->toArray());
     }
 
     public function testGenerateFeatureVectorUpdate()
@@ -543,9 +543,9 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->handle();
 
         $count = ImageAnnotationLabelFeatureVector::count();
-        $this->assertEquals(2, $count);
-        $this->assertEquals(range(1, 384), $iafv->fresh()->vector->toArray());
-        $this->assertEquals(range(1, 384), $iafv2->fresh()->vector->toArray());
+        $this->assertSame(2, $count);
+        $this->assertSame(range(1, 384), $iafv->fresh()->vector->toArray());
+        $this->assertSame(range(1, 384), $iafv2->fresh()->vector->toArray());
     }
 
     public function testHandlePatchOnly()
@@ -571,7 +571,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $disk->assertExists("{$prefix}/{$annotation->id}.jpg");
         $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
-        $this->assertEquals(0, ImageAnnotationLabelFeatureVector::count());
+        $this->assertSame(0, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleFeatureVectorOnly()
@@ -592,7 +592,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $disk->assertMissing("{$prefix}/{$annotation->id}.jpg");
         $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
-        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+        $this->assertSame(1, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleSvgOnly()
@@ -615,7 +615,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $disk->assertMissing("{$prefix}/{$annotation->id}.jpg");
         $disk->assertExists("{$prefix}/{$annotation->id}.svg");
-        $this->assertEquals(0, ImageAnnotationLabelFeatureVector::count());
+        $this->assertSame(0, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleMultipleAnnotations()
@@ -652,7 +652,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk->assertExists("{$prefix}/{$annotation2->id}.jpg");
         $disk->assertExists("{$prefix}/{$annotation1->id}.svg");
         $disk->assertExists("{$prefix}/{$annotation2->id}.svg");
-        $this->assertEquals(2, ImageAnnotationLabelFeatureVector::count());
+        $this->assertSame(2, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleOnlyAnnotations()
@@ -686,7 +686,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk->assertExists("{$prefix}/{$annotation1->id}.svg");
         $disk->assertMissing("{$prefix}/{$annotation2->id}.jpg");
         $disk->assertMissing("{$prefix}/{$annotation2->id}.svg");
-        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+        $this->assertSame(1, ImageAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleInvalidShape()
@@ -743,7 +743,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
-        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+        $this->assertSame(1, ImageAnnotationLabelFeatureVector::count());
 
         $input = $job->input;
         $this->assertCount(1, $input);
@@ -751,7 +751,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertArrayHasKey($annotation->id, $input[$filename]);
         $box = $input[$filename][$annotation->id];
         // These are the coordinates of the cropped image.
-        $this->assertEquals([0, 0, 224, 224], $box);
+        $this->assertSame([0, 0, 224, 224], $box);
     }
 
     public function testHandleFeatureVectorTiledImageLargePatch()
@@ -787,7 +787,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
-        $this->assertEquals(1, ImageAnnotationLabelFeatureVector::count());
+        $this->assertSame(1, ImageAnnotationLabelFeatureVector::count());
 
         $input = $job->input;
         $this->assertCount(1, $input);
@@ -795,7 +795,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertArrayHasKey($annotation->id, $input[$filename]);
         $box = $input[$filename][$annotation->id];
         // These are the coordinates of the cropped image.
-        $this->assertEquals([0, 0, 5000, 5000], $box);
+        $this->assertSame([0, 0, 5000, 5000], $box);
     }
 
     public function testHandleFlatLineStringVector()
@@ -814,7 +814,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $filename = array_keys($input)[0];
         $box = $input[$filename][$annotation->id];
         // The height is padded to ensure a minimum size of 32 px.
-        $this->assertEquals([300, 284, 400, 316], $box);
+        $this->assertSame([300, 284, 400, 316], $box);
     }
 
     protected function getImageMock($times = 1)

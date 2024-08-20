@@ -38,12 +38,12 @@ class InitializeFeatureVectorChunkTest extends TestCase
 
         $model = ImageAnnotationLabelFeatureVector::find($al->id);
         $this->assertNotNull($model);
-        $this->assertEquals($al->annotation_id, $model->annotation_id);
-        $this->assertEquals($al->annotation_id, $model->annotation_id);
-        $this->assertEquals($al->label_id, $model->label_id);
-        $this->assertEquals($al->label->label_tree_id, $model->label_tree_id);
-        $this->assertEquals($al->annotation->image->volume_id, $model->volume_id);
-        $this->assertEquals(range(0, 383), $model->vector->toArray());
+        $this->assertSame($al->annotation_id, $model->annotation_id);
+        $this->assertSame($al->annotation_id, $model->annotation_id);
+        $this->assertSame($al->label_id, $model->label_id);
+        $this->assertSame($al->label->label_tree_id, $model->label_tree_id);
+        $this->assertSame($al->annotation->image->volume_id, $model->volume_id);
+        $this->assertSame(range(0, 383), $model->vector->toArray());
     }
 
     public function testHandleVideos()
@@ -58,12 +58,12 @@ class InitializeFeatureVectorChunkTest extends TestCase
 
         $model = VideoAnnotationLabelFeatureVector::find($al->id);
         $this->assertNotNull($model);
-        $this->assertEquals($al->annotation_id, $model->annotation_id);
-        $this->assertEquals($al->annotation_id, $model->annotation_id);
-        $this->assertEquals($al->label_id, $model->label_id);
-        $this->assertEquals($al->label->label_tree_id, $model->label_tree_id);
-        $this->assertEquals($al->annotation->video->volume_id, $model->volume_id);
-        $this->assertEquals(range(0, 383), $model->vector->toArray());
+        $this->assertSame($al->annotation_id, $model->annotation_id);
+        $this->assertSame($al->annotation_id, $model->annotation_id);
+        $this->assertSame($al->label_id, $model->label_id);
+        $this->assertSame($al->label->label_tree_id, $model->label_tree_id);
+        $this->assertSame($al->annotation->video->volume_id, $model->volume_id);
+        $this->assertSame(range(0, 383), $model->vector->toArray());
     }
 
     public function testHandleSkipMissingAnnotations()
@@ -91,7 +91,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $job->output = $v->annotation_id.',"'.json_encode(range(1, 384)).'"';
         $job->handle();
 
-        $this->assertEquals(range(0, 383), $v->fresh()->vector->toArray());
+        $this->assertSame(range(0, 383), $v->fresh()->vector->toArray());
     }
 
     public function testHandleSkipMissingThumbnails()
@@ -130,21 +130,21 @@ class InitializeFeatureVectorChunkTest extends TestCase
 
         $model = ImageAnnotationLabelFeatureVector::find($al->id);
         $this->assertNotNull($model);
-        $this->assertEquals($al->annotation_id, $model->annotation_id);
-        $this->assertEquals($al->annotation_id, $model->annotation_id);
-        $this->assertEquals($al->label_id, $model->label_id);
-        $this->assertEquals($al->label->label_tree_id, $model->label_tree_id);
-        $this->assertEquals($al->annotation->image->volume_id, $model->volume_id);
-        $this->assertEquals(range(0, 383), $model->vector->toArray());
+        $this->assertSame($al->annotation_id, $model->annotation_id);
+        $this->assertSame($al->annotation_id, $model->annotation_id);
+        $this->assertSame($al->label_id, $model->label_id);
+        $this->assertSame($al->label->label_tree_id, $model->label_tree_id);
+        $this->assertSame($al->annotation->image->volume_id, $model->volume_id);
+        $this->assertSame(range(0, 383), $model->vector->toArray());
 
         $model = ImageAnnotationLabelFeatureVector::find($al2->id);
         $this->assertNotNull($model);
-        $this->assertEquals($al2->annotation_id, $model->annotation_id);
-        $this->assertEquals($al2->annotation_id, $model->annotation_id);
-        $this->assertEquals($al2->label_id, $model->label_id);
-        $this->assertEquals($al2->label->label_tree_id, $model->label_tree_id);
-        $this->assertEquals($al2->annotation->image->volume_id, $model->volume_id);
-        $this->assertEquals(range(0, 383), $model->vector->toArray());
+        $this->assertSame($al2->annotation_id, $model->annotation_id);
+        $this->assertSame($al2->annotation_id, $model->annotation_id);
+        $this->assertSame($al2->label_id, $model->label_id);
+        $this->assertSame($al2->label->label_tree_id, $model->label_tree_id);
+        $this->assertSame($al2->annotation->image->volume_id, $model->volume_id);
+        $this->assertSame(range(0, 383), $model->vector->toArray());
     }
 
     public function testHandlePoint()
@@ -167,7 +167,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $input = $job->input;
         $path = array_keys($input)[0];
         $item = $input[$path];
-        $this->assertEquals([23, 0, 158, 135], $item[$a->id]);
+        $this->assertSame([23, 0, 158, 135], $item[$a->id]);
     }
 
     public function testHandleCircle()
@@ -190,7 +190,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $input = $job->input;
         $path = array_keys($input)[0];
         $item = $input[$path];
-        $this->assertEquals([70, 47, 110, 87], $item[$a->id]);
+        $this->assertSame([70, 47, 110, 87], $item[$a->id]);
     }
 
     public function testHandlePolygon()
@@ -213,7 +213,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $input = $job->input;
         $path = array_keys($input)[0];
         $item = $input[$path];
-        $this->assertEquals([70, 47, 110, 87], $item[$a->id]);
+        $this->assertSame([70, 47, 110, 87], $item[$a->id]);
     }
 
     public function testHandleWholeFrame()
@@ -235,7 +235,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $input = $job->input;
         $path = array_keys($input)[0];
         $item = $input[$path];
-        $this->assertEquals([0, 0, 180, 135], $item[$a->id]);
+        $this->assertSame([0, 0, 180, 135], $item[$a->id]);
     }
 }
 
