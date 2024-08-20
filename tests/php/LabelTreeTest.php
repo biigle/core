@@ -242,7 +242,7 @@ class LabelTreeTest extends ModelTestCase
         $project = ProjectTest::create(['creator_id' => $user->id]);
         $project->labelTrees()->attach($tree3);
 
-        $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
+        $ids = LabelTree::accessibleBy($user)->orderBy('id')->pluck('id')->toArray();
         $this->assertEquals([$tree->id, $tree2->id, $tree3->id], $ids);
     }
 
