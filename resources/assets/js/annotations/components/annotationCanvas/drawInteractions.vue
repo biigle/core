@@ -13,7 +13,9 @@ import { Point } from '@biigle/ol/geom';
  */
 
 let drawInteraction;
-let lastdrawnPoint = {time:0, point: new Point(0,0)};
+
+const POINT_CLICK_COOLDOWN = 400;
+const POINT_CLICK_DISTANCE = 5;
 
 // Custom OpenLayers freehandCondition that is true if a pen is used for input or
 // if Shift is pressed otherwise.
@@ -32,6 +34,8 @@ export default {
     data() {
         return {
             drawEnded: true,
+            lastDrawnPoint: new Point(0, 0),
+            lastDrawnPointTime: 0,
         }
     },
     computed: {
@@ -106,20 +110,28 @@ export default {
                 });
 
                 drawInteraction.on('drawend', (e) => {
-                    if (this.isDrawingPoint && new Date().getTime() - lastdrawnPoint['time'] < 400 && lastdrawnPoint['point'].distanceTo(e.feature.getGeometry()) < 5) {
-                        this.annotationSource.removeFeature(e.feature);
-                    } else {
-                        this.handleNewFeature(e);
-                        lastdrawnPoint['time'] = new Date().getTime();
-                        lastdrawnPoint['point'] = e.feature.getGeometry();
-                    }
                     this.drawEnded = true;
+
+                    if (this.isDrawingPoint) {
+                        if (this.isPointDoubleClick(e)) {
+                            this.annotationSource.removeFeature(e.feature);
+                            return;
+                        }
+                        this.lastDrawnPointTime = new Date().getTime();
+                        this.lastDrawnPoint = e.feature.getGeometry();
+                    }
+
+                    this.handleNewFeature(e);
                 });
 
                 drawInteraction.on('drawabort', () => {
-                        this.drawEnded = true;
-                    });
+                    this.drawEnded = true;
+                });
             }
+        },
+        isPointDoubleClick(e) {
+            return new Date().getTime() - this.lastDrawnPointTime < POINT_CLICK_COOLDOWN
+                && this.lastDrawnPoint.distanceTo(e.feature.getGeometry()) < POINT_CLICK_DISTANCE;
         },
     },
     watch: {
