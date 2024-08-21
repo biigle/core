@@ -10,12 +10,12 @@
 
             <div class="sidebar-tab__section">
                 <h5 title="Set the opacity of annotations on the map">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
-                <input id="annotationOpacity" type="range" min="0" max="1" step="0.1" v-model="annotationOpacity" v-on:click='removeFocus("annotationOpacity")'>
+                <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
             </div>
 
             <div class="sidebar-tab__section">
                 <h5 title="Set the number of caches images ">Cached Images (<span v-text="cachedImagesCount"></span>)</h5>
-                <input id="cachedImagesCount" type="range" min="1" max="50" step="1" v-model="cachedImagesCount" v-on:click='removeFocus("cachedImagesCount")'>
+                <input type="range" min="1" max="50" step="1" v-model="cachedImagesCount">
             </div>
 
             <div class="sidebar-tab__section">

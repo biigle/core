@@ -116,9 +116,6 @@ export default {
                 this.annotationOpacity = 1;
             }
         },
-        removeFocus(id) {
-            document.getElementById(id).blur();
-        }
     },
     watch: {
         annotationOpacity(opacity) {
