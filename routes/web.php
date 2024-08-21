@@ -114,11 +114,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'UsersController@get',
         ]);
 
-        $router->get('users/recent', [
-            'as' => 'admin-users-recent',
-            'uses' => 'UsersController@getRecentUsers',
-        ]);
-
         $router->get('users/new', [
             'as' => 'admin-users-new',
             'uses' => 'UsersController@newUser',
