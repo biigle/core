@@ -121,7 +121,12 @@ export default {
 
                     if (this.isDrawingPoint) {
                         if (this.isPointDoubleClick(e)) {
-                            this.annotationSource.removeFeature(e.feature);
+                            // The feature is added to the source only after this event
+                            // is handled, so removel has to happen after the addfeature
+                            // event.
+                            this.annotationSource.once('addfeature', function () {
+                                this.removeFeature(e.feature);
+                            });
                             return;
                         }
                         this.lastDrawnPointTime = new Date().getTime();
