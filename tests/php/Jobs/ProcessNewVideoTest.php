@@ -18,10 +18,10 @@ class ProcessNewVideoTest extends TestCase
         config(['videos.thumbnail_count' => 3]);
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->duration = 10;
+        $job->duration = 10.0;
 
         $job->handle();
-        $this->assertSame(10, intval($video->fresh()->duration));
+        $this->assertSame(10.0, $video->fresh()->duration);
         $this->assertSame([0.5, 5.0, 9.5], $job->times);
 
         $disk = Storage::disk('video-thumbs');
