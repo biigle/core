@@ -23,10 +23,17 @@ export default {
 
             return Vue.Promise.all([imagePromise, videoPromise]);
         },
+        showOutlines() {
+            this.showAnnotationOutlines = true;
+        },
+        hideOutlines() {
+            this.showAnnotationOutlines = false;
+        },
     },
     created() {
         let labelTree = biigle.$require('annotationCatalog.labelTree');
         this.labelTrees = [labelTree];
+        this.showAnnotationOutlines = false;
     },
 };
 </script>
