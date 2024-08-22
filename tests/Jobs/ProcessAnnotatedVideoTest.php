@@ -51,7 +51,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
         $content = $disk->get("{$prefix}/v-{$annotation->id}.jpg");
-        $this->assertEquals('abc123', $content);
+        $this->assertSame('abc123', $content);
         // SVGs are not generated for whole frame annotations.
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
@@ -77,7 +77,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
 
         $content = $disk->get("{$prefix}/v-{$annotation->id}.jpg");
-        $this->assertEquals('abc123', $content);
+        $this->assertSame('abc123', $content);
         // SVGs are not generated for whole frame annotations.
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
     }
@@ -106,12 +106,12 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handle();
-        $this->assertEquals([1], $job->times);
+        $this->assertSame([1.0], $job->times);
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100.4" cy="100.4" r="6" fill="#fff" /><circle cx="100.4" cy="100.4" r="5" fill="#666" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleCircle()
@@ -139,12 +139,12 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handle();
-        $this->assertEquals([1], $job->times);
+        $this->assertSame([1.0], $job->times);
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"><g><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandlePolygon()
@@ -179,7 +179,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleLineString()
@@ -212,7 +212,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleRectangle()
@@ -242,7 +242,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleEllipse()
@@ -272,7 +272,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleSingleFrame()
@@ -298,12 +298,12 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handle();
-        $this->assertEquals([1], $job->times);
+        $this->assertSame([1.0], $job->times);
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
         $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100" cy="100" r="6" fill="#fff" /><circle cx="100" cy="100" r="5" fill="#666" /></g></svg>';
-        $this->assertEquals($svg, $content);
+        $this->assertSame($svg, $content);
     }
 
     public function testHandleContainedNegative()
@@ -329,7 +329,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handle();
-        $this->assertEquals([1], $job->times);
+        $this->assertSame([1.0], $job->times);
     }
 
     public function testHandleContainedPositive()
@@ -355,7 +355,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handle();
-        $this->assertEquals([1], $job->times);
+        $this->assertSame([1.0], $job->times);
     }
 
     public function testHandleContainedTooLarge()
@@ -384,7 +384,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $video->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
         $job->handle();
-        $this->assertEquals([1], $job->times);
+        $this->assertSame([1.0], $job->times);
     }
 
     public function testHandleMinDimension()
@@ -509,15 +509,15 @@ class ProcessAnnotatedVideoTest extends TestCase
         $filename = array_keys($input)[0];
         $this->assertArrayHasKey($annotation->id, $input[$filename]);
         $box = $input[$filename][$annotation->id];
-        $this->assertEquals([88, 88, 312, 312], $box);
+        $this->assertSame([88, 88, 312, 312], $box);
 
         $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(1, $vectors);
-        $this->assertEquals($annotationLabel->id, $vectors[0]->id);
-        $this->assertEquals($annotationLabel->label_id, $vectors[0]->label_id);
-        $this->assertEquals($annotationLabel->label->label_tree_id, $vectors[0]->label_tree_id);
-        $this->assertEquals($annotation->video->volume_id, $vectors[0]->volume_id);
-        $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
+        $this->assertSame($annotationLabel->id, $vectors[0]->id);
+        $this->assertSame($annotationLabel->label_id, $vectors[0]->label_id);
+        $this->assertSame($annotationLabel->label->label_tree_id, $vectors[0]->label_tree_id);
+        $this->assertSame($annotation->video->volume_id, $vectors[0]->volume_id);
+        $this->assertSame(range(0, 383), $vectors[0]->vector->toArray());
     }
 
     public function testGenerateFeatureVectorManyLabels()
@@ -544,13 +544,13 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(2, $vectors);
-        $this->assertEquals($annotationLabel1->id, $vectors[0]->id);
-        $this->assertEquals($annotationLabel1->label_id, $vectors[0]->label_id);
-        $this->assertEquals(range(0, 383), $vectors[0]->vector->toArray());
+        $this->assertSame($annotationLabel1->id, $vectors[0]->id);
+        $this->assertSame($annotationLabel1->label_id, $vectors[0]->label_id);
+        $this->assertSame(range(0, 383), $vectors[0]->vector->toArray());
 
-        $this->assertEquals($annotationLabel2->id, $vectors[1]->id);
-        $this->assertEquals($annotationLabel2->label_id, $vectors[1]->label_id);
-        $this->assertEquals(range(0, 383), $vectors[1]->vector->toArray());
+        $this->assertSame($annotationLabel2->id, $vectors[1]->id);
+        $this->assertSame($annotationLabel2->label_id, $vectors[1]->label_id);
+        $this->assertSame(range(0, 383), $vectors[1]->vector->toArray());
     }
 
     public function testGenerateFeatureVectorUpdate()
@@ -588,9 +588,9 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->handle();
 
         $count = VideoAnnotationLabelFeatureVector::count();
-        $this->assertEquals(2, $count);
-        $this->assertEquals(range(1, 384), $iafv->fresh()->vector->toArray());
-        $this->assertEquals(range(1, 384), $iafv2->fresh()->vector->toArray());
+        $this->assertSame(2, $count);
+        $this->assertSame(range(1, 384), $iafv->fresh()->vector->toArray());
+        $this->assertSame(range(1, 384), $iafv2->fresh()->vector->toArray());
     }
 
     public function testGenerateFeatureVectorWholeFrame()
@@ -622,7 +622,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $filename = array_keys($input)[0];
         $this->assertArrayHasKey($annotation->id, $input[$filename]);
         $box = $input[$filename][$annotation->id];
-        $this->assertEquals([0, 0, 1000, 750], $box);
+        $this->assertSame([0, 0, 1000, 750], $box);
     }
 
     public function testHandlePatchOnly()
@@ -649,7 +649,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $disk->assertExists("{$prefix}/v-{$annotation->id}.jpg");
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
-        $this->assertEquals(0, VideoAnnotationLabelFeatureVector::count());
+        $this->assertSame(0, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleFeatureVectorOnly()
@@ -673,7 +673,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.jpg");
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
-        $this->assertEquals(1, VideoAnnotationLabelFeatureVector::count());
+        $this->assertSame(1, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleSvgOnly()
@@ -698,7 +698,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.jpg");
         $disk->assertExists("{$prefix}/v-{$annotation->id}.svg");
-        $this->assertEquals(0, VideoAnnotationLabelFeatureVector::count());
+        $this->assertSame(0, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleMultipleAnnotations()
@@ -737,7 +737,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $disk->assertExists("{$prefix}/v-{$annotation2->id}.jpg");
         $disk->assertExists("{$prefix}/v-{$annotation1->id}.svg");
         $disk->assertExists("{$prefix}/v-{$annotation2->id}.svg");
-        $this->assertEquals(2, VideoAnnotationLabelFeatureVector::count());
+        $this->assertSame(2, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleOnlyAnnotations()
@@ -773,7 +773,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $disk->assertExists("{$prefix}/v-{$annotation1->id}.svg");
         $disk->assertMissing("{$prefix}/v-{$annotation2->id}.jpg");
         $disk->assertMissing("{$prefix}/v-{$annotation2->id}.svg");
-        $this->assertEquals(1, VideoAnnotationLabelFeatureVector::count());
+        $this->assertSame(1, VideoAnnotationLabelFeatureVector::count());
     }
 
     public function testHandleInvalidShape()
@@ -857,7 +857,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $input = $job->input;
         $filename = array_keys($input)[0];
         $box = $input[$filename][$annotation->id];
-        $this->assertEquals([300, 284, 400, 316], $box);
+        $this->assertSame([300, 284, 400, 316], $box);
     }
 
     protected function getFrameMock($times = 1)

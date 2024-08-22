@@ -49,8 +49,8 @@ class ApplyLargoSessionTest extends TestCase
         $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
         $job->handle();
 
-        $this->assertEquals(1, $a1->labels()->count());
-        $this->assertEquals($al2->id, $a1->labels()->first()->id);
+        $this->assertSame(1, $a1->labels()->count());
+        $this->assertSame($al2->id, $a1->labels()->first()->id);
     }
 
     public function testChangedAlreadyExistsVideoAnnotations()
@@ -79,8 +79,8 @@ class ApplyLargoSessionTest extends TestCase
         $job = new ApplyLargoSession('job_id', $user, [], [], $dismissed, $changed, false);
         $job->handle();
 
-        $this->assertEquals(1, $a1->labels()->count());
-        $this->assertEquals($al2->id, $a1->labels()->first()->id);
+        $this->assertSame(1, $a1->labels()->count());
+        $this->assertSame($al2->id, $a1->labels()->first()->id);
     }
 
     public function testChangedDuplicateImageAnnotations()
@@ -104,8 +104,8 @@ class ApplyLargoSessionTest extends TestCase
         $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
         $job->handle();
 
-        $this->assertEquals(1, $a1->labels()->count());
-        $this->assertEquals($l2->id, $a1->labels()->first()->label_id);
+        $this->assertSame(1, $a1->labels()->count());
+        $this->assertSame($l2->id, $a1->labels()->first()->label_id);
     }
 
     public function testChangedDuplicateVideoAnnotations()
@@ -129,8 +129,8 @@ class ApplyLargoSessionTest extends TestCase
         $job = new ApplyLargoSession('job_id', $user, [], [], $dismissed, $changed, false);
         $job->handle();
 
-        $this->assertEquals(1, $a1->labels()->count());
-        $this->assertEquals($l2->id, $a1->labels()->first()->label_id);
+        $this->assertSame(1, $a1->labels()->count());
+        $this->assertSame($l2->id, $a1->labels()->first()->label_id);
     }
 
     public function testAnnotationMeanwhileDeletedImageAnnotations()
@@ -162,7 +162,7 @@ class ApplyLargoSessionTest extends TestCase
         $a2->delete();
         $job->handle();
 
-        $this->assertEquals($l2->id, $a1->labels()->first()->label_id);
+        $this->assertSame($l2->id, $a1->labels()->first()->label_id);
     }
 
     public function testAnnotationMeanwhileDeletedVideoAnnotations()
@@ -194,7 +194,7 @@ class ApplyLargoSessionTest extends TestCase
         $a2->delete();
         $job->handle();
 
-        $this->assertEquals($l2->id, $a1->labels()->first()->label_id);
+        $this->assertSame($l2->id, $a1->labels()->first()->label_id);
     }
 
     public function testLabelMeanwhileDeletedImageAnnotations()
@@ -227,8 +227,8 @@ class ApplyLargoSessionTest extends TestCase
         $l2->delete();
         $job->handle();
 
-        $this->assertEquals($l1->id, $a1->labels()->first()->label_id);
-        $this->assertEquals($l3->id, $a2->labels()->first()->label_id);
+        $this->assertSame($l1->id, $a1->labels()->first()->label_id);
+        $this->assertSame($l3->id, $a2->labels()->first()->label_id);
     }
 
     public function testLabelMeanwhileDeletedVideoAnnotations()
@@ -261,8 +261,8 @@ class ApplyLargoSessionTest extends TestCase
         $l2->delete();
         $job->handle();
 
-        $this->assertEquals($l1->id, $a1->labels()->first()->label_id);
-        $this->assertEquals($l3->id, $a2->labels()->first()->label_id);
+        $this->assertSame($l1->id, $a1->labels()->first()->label_id);
+        $this->assertSame($l3->id, $a2->labels()->first()->label_id);
     }
 
     public function testDismissImageAnnotations()
@@ -339,7 +339,7 @@ class ApplyLargoSessionTest extends TestCase
 
         // al1 was dismissed and then changed, should have a new annotation label
         $this->assertNull($al1->fresh());
-        $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        $this->assertSame($l1->id, $annotation->labels()->first()->label_id);
         Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
@@ -357,7 +357,7 @@ class ApplyLargoSessionTest extends TestCase
 
         // al1 was dismissed and then changed, should have a new annotation label
         $this->assertNull($al1->fresh());
-        $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        $this->assertSame($l1->id, $annotation->labels()->first()->label_id);
         Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
@@ -378,7 +378,7 @@ class ApplyLargoSessionTest extends TestCase
         // should get a new additional label.
         $this->assertNotNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
-        $this->assertEquals(2, $annotation->labels()->count());
+        $this->assertSame(2, $annotation->labels()->count());
         Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
@@ -399,7 +399,7 @@ class ApplyLargoSessionTest extends TestCase
         // should get a new additional label.
         $this->assertNotNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
-        $this->assertEquals(2, $annotation->labels()->count());
+        $this->assertSame(2, $annotation->labels()->count());
         Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
@@ -418,7 +418,7 @@ class ApplyLargoSessionTest extends TestCase
 
         $this->assertNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
-        $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        $this->assertSame($l1->id, $annotation->labels()->first()->label_id);
         Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
@@ -437,7 +437,7 @@ class ApplyLargoSessionTest extends TestCase
 
         $this->assertNull($al1->fresh());
         $this->assertNotNull($annotation->fresh());
-        $this->assertEquals($l1->id, $annotation->labels()->first()->label_id);
+        $this->assertSame($l1->id, $annotation->labels()->first()->label_id);
         Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
@@ -600,8 +600,8 @@ class ApplyLargoSessionTest extends TestCase
         $job->handle();
 
         Event::assertDispatched(function (LargoSessionSaved $event) use ($user) {
-            $this->assertEquals($user->id, $event->user->id);
-            $this->assertEquals('job_id', $event->id);
+            $this->assertSame($user->id, $event->user->id);
+            $this->assertSame('job_id', $event->id);
             return true;
         });
     }
@@ -623,8 +623,8 @@ class ApplyLargoSessionTest extends TestCase
         }
 
         Event::assertDispatched(function (LargoSessionFailed $event) use ($user) {
-            $this->assertEquals($user->id, $event->user->id);
-            $this->assertEquals('job_id', $event->id);
+            $this->assertSame($user->id, $event->user->id);
+            $this->assertSame('job_id', $event->id);
             return true;
         });
     }
@@ -647,7 +647,7 @@ class ApplyLargoSessionTest extends TestCase
         $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $al1->annotation_id)->get();
         $this->assertCount(1, $vectors);
         $this->assertNotEquals($al1->id, $vectors[0]->id);
-        $this->assertEquals($l1->id, $vectors[0]->label_id);
+        $this->assertSame($l1->id, $vectors[0]->label_id);
         $this->assertEquals($vector1->vector, $vectors[0]->vector);
     }
 
@@ -669,7 +669,7 @@ class ApplyLargoSessionTest extends TestCase
         $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $al1->annotation_id)->get();
         $this->assertCount(1, $vectors);
         $this->assertNotEquals($al1->id, $vectors[0]->id);
-        $this->assertEquals($l1->id, $vectors[0]->label_id);
+        $this->assertSame($l1->id, $vectors[0]->label_id);
         $this->assertEquals($vector1->vector, $vectors[0]->vector);
     }
 

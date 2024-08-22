@@ -57,9 +57,9 @@ jobs:
         docker pull ghcr.io/biigle/worker:latest
 
     - name: Start test database
-      run: docker-compose up -d --no-build database_testing && sleep 5
+      run: docker compose up -d --no-build database_testing && sleep 5
       working-directory: ../core
 
     - name: Run tests
-      run: docker-compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order --filter 'Biigle\\Tests\\Modules\\'${MODULE_NAME}
+      run: docker compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order --filter 'Biigle\\Tests\\Modules\\'${MODULE_NAME}
       working-directory: ../core
