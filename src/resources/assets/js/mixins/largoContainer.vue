@@ -45,8 +45,12 @@ export default {
             // The second level key is the sorting key. The cached value is an array
             // of annotation IDs sorted in ascending order.
             sortingSequenceCache: {},
+            sortingSequence: [],
             sortingDirection: SORT_DIRECTION.DESCENDING,
             sortingKey: SORT_KEY.ANNOTATION_ID,
+            needsSimilarityReference: false,
+            similarityReference: null,
+            pinnedImage: null,
         };
     },
     provide() {
@@ -75,25 +79,26 @@ export default {
             return [];
         },
         sortedAnnotations() {
-            let annotations = this.annotations.slice();
+            let annotations = this.annotations;
 
-            // This will always be missing for the default sorting.
-            const sequence = this.sortingSequenceCache?.[this.selectedLabel?.id]?.[this.sortingKey];
+            if (annotations.length === 0) {
+                return annotations;
+            }
 
-            if (sequence) {
+            // This will be empty for the default sorting.
+            if (this.sortingSequence.length > 0) {
                 const map = {};
-                sequence.forEach((id, idx) => map[id] = idx);
+                annotations.forEach((a) => {
+                    // Image annotation IDs are prefixed with 'i', video annotations with
+                    // 'v' to avoid duplicate IDs whe sorting both types of annotations.
+                    map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] = a;
+                });
 
-                // Image annotation IDs are prefixed with 'i', video annotations with
-                // 'v' to avoid duplicate IDs whe sorting both types of annotations.
-                annotations.sort((a, b) =>
-                    map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] -
-                    map[b.type === VIDEO_ANNOTATION ? ('v' + b.id) : ('i' + b.id)]
-                );
+                annotations = this.sortingSequence.map(id => map[id]);
             }
 
             if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
-                return annotations.reverse();
+                return annotations.slice().reverse();
             }
 
             return annotations;
@@ -148,6 +153,9 @@ export default {
         sortingIsActive() {
             return this.isInDismissStep && (this.sortingKey !== SORT_KEY.ANNOTATION_ID || this.sortingDirection !== SORT_DIRECTION.DESCENDING);
         },
+        imagesPinnable() {
+            return this.needsSimilarityReference || this.sortingKey === SORT_KEY.SIMILARITY;
+        },
     },
     methods: {
         getAnnotations(label) {
@@ -163,13 +171,12 @@ export default {
                 promise1 = Vue.Promise.resolve();
             }
 
-            const sequence = this.sortingSequenceCache?.[label.id]?.[this.sortingKey];
-            if (this.sortingIsActive && !sequence) {
-                if (!this.loading) {
-                    this.startLoading();
-                }
-                promise2 = this.fetchSortingSequence(this.sortingKey, label.id)
-                    .catch(handleErrorResponse);
+            if (this.sortingKey === SORT_KEY.SIMILARITY) {
+                promise2 = this.resetSorting();
+            } else if (this.sortingIsActive) {
+                this.sortingSequence = [];
+                // Reload sequence for new label.
+                promise2 = this.updateSortKey(this.sortingKey);
             } else {
                 promise2 = Vue.Promise.resolve();
             }
@@ -387,9 +394,20 @@ export default {
             this.sortingDirection = direction;
         },
         fetchSortingSequence(key, labelId) {
+            const sequence = this.sortingSequenceCache?.[labelId]?.[key];
+            if (sequence) {
+                return Vue.Promise.resolve(sequence);
+            }
+
             let promise;
-            if (key === SORT_KEY.OUTLIER) {
+            if (!this.selectedLabel) {
+                promise = Vue.Promise.resolve([]);
+            } else if (key === SORT_KEY.OUTLIER) {
                 promise = this.querySortByOutlier(labelId)
+                    .then(response => response.body);
+            } else if (key === SORT_KEY.SIMILARITY) {
+                // Skip cacheing for this sorting method.
+                return this.querySortBySimilarity(labelId, this.similarityReference)
                     .then(response => response.body);
             } else {
                 promise = Vue.Promise.resolve([]);
@@ -403,19 +421,51 @@ export default {
             }
 
             this.sortingSequenceCache[labelId][key] = sequence;
+
+            return sequence;
         },
         updateSortKey(key) {
-            const labelId = this.selectedLabel?.id;
-            const sequence = this.sortingSequenceCache?.[labelId]?.[key];
-            if (labelId && !sequence) {
-                this.startLoading();
-                this.fetchSortingSequence(key, labelId)
-                    .then(() => this.sortingKey = key)
-                    .catch(handleErrorResponse)
-                    .finally(this.finishLoading);
-            } else {
-                this.sortingKey = key;
+            if (key !== SORT_KEY.SIMILARITY) {
+                this.similarityReference = null;
+                this.pinnedImage = null;
             }
+
+            const labelId = this.selectedLabel?.id;
+            this.startLoading();
+            return this.fetchSortingSequence(key, labelId)
+                .then((sequence) => {
+                    this.sortingKey = key;
+                    this.sortingSequence = sequence;
+                    if (key === SORT_KEY.SIMILARITY) {
+                        this.needsSimilarityReference = false;
+                        this.pinnedImage = this.similarityReference;
+                    }
+                })
+                .catch((r) => {
+                    this.handleErrorResponse(r);
+                    this.similarityReference = null;
+                })
+                .finally(this.finishLoading);
+        },
+        handleInitSimilaritySort() {
+            if (this.sortingKey !== SORT_KEY.SIMILARITY) {
+                this.needsSimilarityReference = true;
+            }
+        },
+        handleCancelSimilaritySort() {
+            this.needsSimilarityReference = false;
+        },
+        handlePinImage(image) {
+            if (this.pinnedImage?.id === image.id) {
+                this.resetSorting();
+            } else if (this.imagesPinnable) {
+                this.similarityReference = image;
+                this.updateSortKey(SORT_KEY.SIMILARITY);
+            }
+        },
+        resetSorting() {
+            return this.updateSortKey(SORT_KEY.ANNOTATION_ID)
+                .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
     },
     watch: {

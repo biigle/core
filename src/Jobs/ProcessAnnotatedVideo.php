@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
-use VipsImage;
+use Jcupitt\Vips\Image as VipsImage;
 
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 {

@@ -1,4 +1,4 @@
 Pillow==10.3.0
-torch==2.1.*
-torchvision==0.16.*
+torch==2.2.*
+torchvision==0.17.*
 xformers==0.0.23

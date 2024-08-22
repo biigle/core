@@ -1,6 +1,7 @@
 <script>
 import LargoContainer from './mixins/largoContainer';
 import ProjectsApi from './api/projects';
+import {IMAGE_ANNOTATION} from './constants';
 
 /**
  * View model for the main Largo container (for projects)
@@ -25,6 +26,20 @@ export default {
         },
         querySortByOutlier(labelId) {
             return ProjectsApi.sortAnnotationsByOutlier({id: this.projectId, label_id: labelId});
+        },
+        querySortBySimilarity(labelId, reference) {
+            let params = {
+                id: this.projectId,
+                label_id: labelId,
+            };
+
+            if (reference.type === IMAGE_ANNOTATION) {
+                params.image_annotation_id = reference.id;
+            } else {
+                params.video_annotation_id = reference.id;
+            }
+
+            return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
     },
     created() {

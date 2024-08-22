@@ -1,6 +1,28 @@
 <div class="sidebar-container__content">
-    <dismiss-image-grid v-if="isInDismissStep" ref="dismissGrid" :images="sortedAnnotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleSelectedImageDismiss" :selectable="true" selected-icon="times"></dismiss-image-grid>
-    <relabel-image-grid v-cloak v-else :images="dismissedAnnotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleSelectedImageRelabel" :selectable="true"></relabel-image-grid>
+    <dismiss-image-grid
+        v-if="isInDismissStep"
+        ref="dismissGrid"
+        empty-url="{{ asset(config('thumbnails.empty_url')) }}"
+        selected-icon="times"
+        :images="sortedAnnotations"
+        :width="{{config('thumbnails.width')}}"
+        :height="{{config('thumbnails.height')}}"
+        :selectable="true"
+        :pinnable="imagesPinnable"
+        :pinned-image="pinnedImage"
+        v-on:select="handleSelectedImageDismiss"
+        v-on:pin="handlePinImage"
+        ></dismiss-image-grid>
+    <relabel-image-grid
+        v-cloak
+        v-else
+        empty-url="{{ asset(config('thumbnails.empty_url')) }}"
+        :images="dismissedAnnotations"
+        :width="{{config('thumbnails.width')}}"
+        :height="{{config('thumbnails.height')}}"
+        :selectable="true"
+        v-on:select="handleSelectedImageRelabel"
+        ></relabel-image-grid>
     <div class="largo-images__alerts" :class="{block: loading}">
         <div v-cloak v-if="loading">
             <loader :active="true" :fancy="true"></loader>
@@ -36,8 +58,13 @@
     </sidebar-tab>
     <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">
         <sorting-tab
+            :needs-similarity-reference="needsSimilarityReference"
+            :sort-key="sortingKey"
+            :sort-direction="sortingDirection"
             v-on:change-direction="updateSortDirection"
             v-on:change-key="updateSortKey"
+            v-on:init-similarity="handleInitSimilaritySort"
+            v-on:cancel-similarity="handleCancelSimilaritySort"
             ></sorting-tab>
     </sidebar-tab>
     <sidebar-tab name="settings" icon="cog" title="Settings">

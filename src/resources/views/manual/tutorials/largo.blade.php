@@ -122,6 +122,14 @@
                     Sorting by unusual annotation patches can help you to quickly identify errors. If most of the patches show objects with a similar visual appearance, those patches that show different objects will be shown at the top and you can quickly select them.
                 </p>
             </li>
+            <li>
+                <p>
+                    <strong>Similarity</strong>: Sort the annotation patches by similarity to a reference annotation. When this sorting method is selected, you have to select a reference annotation by clicking on the <button class="btn btn-default btn-xs"><i class="fa fa-thumbtack fa-fw"></i></button> button of an annotation patch next. Once the reference annotation is selected, the patches are sorted. In descending order, the annotations looking most similar to the reference annotation are shown first.
+                </p>
+                <p>
+                    The selected reference annotation will be pinned to the top left of the grid of annotation patches. You can select a new reference annotation by clicking on its <button class="btn btn-default btn-xs"><i class="fa fa-thumbtack fa-fw"></i></button> button. If you select a different label while similarity sorting is active, the sorting method will be reset, as the reference annotation is no longer available.
+                </p>
+            </li>
         </ul>
 
         <h4>Settings</h4>
@@ -156,7 +164,7 @@
         <h4>Two step annotation process</h4>
 
         <p>
-            The first step of a two step annotation process is to find objects of interest in the images or videos you annotate. You don't care what kinds of objects you see but just mark all with the same label (maybe "Interesting"). In the second step you sort these interesting objects into their specific label categories. For this step you can use Largo. Select the "Interesting" label and all of your annotations will be displayed. Now you pick one label (e.g. "Starfish") and dismiss all starfishes that you see. In the relabel step, you simply relabel all dismissed annotations as starfish and save. Then continue with the next label.
+            The first step of a two step annotation process is to find objects of interest in the images or videos you annotate. You don't care what kinds of objects you see but just mark all with the same label (maybe "Interesting"). In the second step you sort these interesting objects into their specific label categories. For this step you can use Largo. Select the "Interesting" label and all of your annotations will be displayed. Now you pick one label (e.g. "Starfish") and dismiss all starfishes that you see. Use the sort by similarity feature described above for extra speed! In the relabel step, you simply relabel all dismissed annotations as starfish and save. Then continue with the next label.
         </p>
 
         <p>
