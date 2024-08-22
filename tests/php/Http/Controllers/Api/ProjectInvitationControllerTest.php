@@ -41,7 +41,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
     
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
-        $this->assertSame($timestamp->toDateTimeString(), $invitation->expires_at->tz($timestamp->timezone)->toDateTimeString());
+        $this->assertEquals($timestamp, $invitation->expires_at);
         $this->assertSame(0, $invitation->current_uses);
         $this->assertNotNull($invitation->uuid);
         $this->assertNull($invitation->max_uses);
