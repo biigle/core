@@ -70,14 +70,14 @@ class ProcessNewImageTest extends TestCase
 
         $job = new ProcessNewImageMock($image);
         $job->exif = [
-            'GPSImgDirection' => 47.75,
-            'SubjectArea' => 2.6,
+            'GPSImgDirection' => "191/4",
+            'SubjectArea' => "13/5",
         ];
         $job->handle();
         $image = $image->fresh();
 
-        $this->assertSame(47.75, floatval($image->metadata['yaw']));
-        $this->assertSame(2.6, floatval($image->metadata['area']));
+        $this->assertSame(47.75, $image->metadata['yaw']);
+        $this->assertSame(2.6, $image->metadata['area']);
     }
 
     public function testHandleMakeThumbnail()
