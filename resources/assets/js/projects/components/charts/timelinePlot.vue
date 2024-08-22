@@ -91,14 +91,14 @@ export default {
 
             // filter duplicated yearsmonth
             xAxis = [...new Set(xAxis)];
-
+            
             // fill in the missing yearmonths
             for (let i = 0; i < xAxis.length - 1; i++) {
                 let currentYearMonth = xAxis[i];
                 let nextYearMonth = xAxis[i + 1];
                 let currentDate = new Date(currentYearMonth);
                 let nextDate = new Date(nextYearMonth);
-                while (currentDate < nextDate) {
+                while (currentDate.getMonth() < nextDate.getMonth() - 1 || currentDate.getFullYear() < nextDate.getFullYear()) {
                     currentDate.setMonth(currentDate.getMonth() + 1);
                     let year = currentDate.getFullYear();
                     let month = currentDate.getMonth() + 1;
@@ -137,8 +137,8 @@ export default {
                 }
                 idDict[id] = yearDict;
             }
-            // console.log('xAxis: ', xAxis);
-            // console.log('ID: ', id_unique);
+        
+        
 
             // assemble the annotations of each user in correct order of year
             // each user has its own year-timeseries in idDict (e.g. {id: {"2020":10, "2021":4, "2022":6]})
