@@ -24,8 +24,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a) {
-            $this->assertEquals($a->image_id, $job->file->id);
-            $this->assertEquals([$a->id], $job->only);
+            $this->assertSame($a->image_id, $job->file->id);
+            $this->assertSame([$a->id], $job->only);
 
             return true;
         });
@@ -55,8 +55,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing');
         Bus::assertDispatched(ProcessAnnotatedVideo::class, function ($job) use ($a) {
-            $this->assertEquals($a->video_id, $job->file->id);
-            $this->assertEquals([$a->id], $job->only);
+            $this->assertSame($a->video_id, $job->file->id);
+            $this->assertSame([$a->id], $job->only);
 
             return true;
         });
@@ -130,7 +130,7 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan("largo:generate-missing --volume={$a1->image->volume_id}");
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1) {
-            $this->assertEquals($a1->image_id, $job->file->id);
+            $this->assertSame($a1->image_id, $job->file->id);
 
             return true;
         });
@@ -175,7 +175,7 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing --queue=special');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) {
-            $this->assertEquals('special', $job->queue);
+            $this->assertSame('special', $job->queue);
 
             return true;
         });
@@ -195,8 +195,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing --newer-than=2024-01-23');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1) {
-            $this->assertEquals($a1->image_id, $job->file->id);
-            $this->assertEquals([$a1->id], $job->only);
+            $this->assertSame($a1->image_id, $job->file->id);
+            $this->assertSame([$a1->id], $job->only);
 
             return true;
         });
@@ -216,8 +216,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing --older-than=2024-01-23');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a2) {
-            $this->assertEquals($a2->image_id, $job->file->id);
-            $this->assertEquals([$a2->id], $job->only);
+            $this->assertSame($a2->image_id, $job->file->id);
+            $this->assertSame([$a2->id], $job->only);
 
             return true;
         });
@@ -234,8 +234,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing --skip-vectors');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a2) {
-            $this->assertEquals($a2->image_id, $job->file->id);
-            $this->assertEquals([$a2->id], $job->only);
+            $this->assertSame($a2->image_id, $job->file->id);
+            $this->assertSame([$a2->id], $job->only);
             $this->assertTrue($job->skipFeatureVectors);
             $this->assertFalse($job->skipPatches);
             $this->assertFalse($job->skipSvgs);
@@ -259,8 +259,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing --skip-patches');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a2) {
-            $this->assertEquals($a2->image_id, $job->file->id);
-            $this->assertEquals([$a2->id], $job->only);
+            $this->assertSame($a2->image_id, $job->file->id);
+            $this->assertSame([$a2->id], $job->only);
             $this->assertFalse($job->skipFeatureVectors);
             $this->assertTrue($job->skipPatches);
             $this->assertFalse($job->skipSvgs);
@@ -284,8 +284,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing --skip-svgs');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a2) {
-            $this->assertEquals($a2->image_id, $job->file->id);
-            $this->assertEquals([$a2->id], $job->only);
+            $this->assertSame($a2->image_id, $job->file->id);
+            $this->assertSame([$a2->id], $job->only);
             $this->assertFalse($job->skipFeatureVectors);
             $this->assertFalse($job->skipPatches);
             $this->assertTrue($job->skipSvgs);
@@ -311,8 +311,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1, $a2, $a3) {
-            $this->assertEquals($a1->image_id, $job->file->id);
-            $this->assertEquals([$a1->id, $a2->id, $a3->id], $job->only);
+            $this->assertSame($a1->image_id, $job->file->id);
+            $this->assertSame([$a1->id, $a2->id, $a3->id], $job->only);
 
             return true;
         });
@@ -330,8 +330,8 @@ class GenerateMissingTest extends TestCase
         Bus::fake();
         $this->artisan('largo:generate-missing --skip-svgs --skip-patches --force');
         Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1) {
-            $this->assertEquals($a1->image_id, $job->file->id);
-            $this->assertEquals([$a1->id], $job->only);
+            $this->assertSame($a1->image_id, $job->file->id);
+            $this->assertSame([$a1->id], $job->only);
             $this->assertFalse($job->skipFeatureVectors);
             $this->assertTrue($job->skipPatches);
             $this->assertTrue($job->skipSvgs);

@@ -20,7 +20,7 @@ class AttachLabelListenerTest extends TestCase
         with(new AttachLabelListener)->handle(new AnnotationLabelAttached($al));
 
         Queue::assertPushed(function (CopyImageAnnotationFeatureVector $job) use ($al) {
-            $this->assertEquals($al, $job->annotationLabel);
+            $this->assertSame($al, $job->annotationLabel);
 
             return true;
         });
@@ -33,7 +33,7 @@ class AttachLabelListenerTest extends TestCase
         with(new AttachLabelListener)->handle(new AnnotationLabelAttached($al));
 
         Queue::assertPushed(function (CopyVideoAnnotationFeatureVector $job) use ($al) {
-            $this->assertEquals($al, $job->annotationLabel);
+            $this->assertSame($al, $job->annotationLabel);
 
             return true;
         });
