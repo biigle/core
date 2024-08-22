@@ -63,12 +63,12 @@ class MetadataControllerTest extends ApiTestCase
         $this->assertSame('2016-12-19 12:27:00', $jpg->taken_at->toDateTimeString());
         $this->assertSame(52.220, $jpg->lng);
         $this->assertSame(28.123, $jpg->lat);
-        $this->assertSame(-1500, intval($jpg->metadata['gps_altitude']));
-        $this->assertSame(2.6, floatval($jpg->metadata['area']));
+        $this->assertSame(-1500, $jpg->metadata['gps_altitude']);
+        $this->assertSame(2.6, $jpg->metadata['area']);
         // Import should update but not destroy existing metadata.
-        $this->assertSame(10, intval($jpg->metadata['distance_to_ground']));
+        $this->assertSame(10, $jpg->metadata['distance_to_ground']);
         $this->assertSame(4000, $jpg->metadata['water_depth']);
-        $this->assertSame(180, intval($jpg->metadata['yaw']));
+        $this->assertSame(180, $jpg->metadata['yaw']);
 
         $this->assertNull($png->taken_at);
         $this->assertNull($png->lng);
@@ -107,8 +107,8 @@ class MetadataControllerTest extends ApiTestCase
 
         $image->refresh();
         $this->assertSame(4000, $image->metadata['water_depth']);
-        $this->assertSame(10, intval($image->metadata['distance_to_ground']));
-        $this->assertSame(2.6, floatval($image->metadata['area']));
+        $this->assertSame(10, $image->metadata['distance_to_ground']);
+        $this->assertSame(2.6, $image->metadata['area']);
     }
 
     public function testStoreImageMetadataText()
@@ -131,8 +131,8 @@ class MetadataControllerTest extends ApiTestCase
 
         $image->refresh();
         $this->assertSame(4000, $image->metadata['water_depth']);
-        $this->assertSame(10, intval($image->metadata['distance_to_ground']));
-        $this->assertSame(2.5, floatval($image->metadata['area']));
+        $this->assertSame(10, $image->metadata['distance_to_ground']);
+        $this->assertSame(2.5, $image->metadata['area']);
     }
 
     public function testStoreVideoMetadataCsv()

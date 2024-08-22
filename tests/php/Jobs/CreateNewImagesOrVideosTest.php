@@ -69,7 +69,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $filenames = ['a.jpg'];
         $metadata = [
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
-            ['a.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
+            ['a.jpg', '2016-12-19 12:27:00', '52.220', '28.123', -1500, 10, 2.6, 180],
         ];
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
@@ -77,10 +77,10 @@ class CreateNewImagesOrVideosTest extends TestCase
         $this->assertSame('2016-12-19 12:27:00', $image->taken_at->toDateTimeString());
         $this->assertSame(52.220, $image->lng);
         $this->assertSame(28.123, $image->lat);
-        $this->assertSame(-1500, intval($image->metadata['gps_altitude']));
-        $this->assertSame(2.6, floatval($image->metadata['area']));
-        $this->assertSame(10, intval($image->metadata['distance_to_ground']));
-        $this->assertSame(180, intval($image->metadata['yaw']));
+        $this->assertSame(-1500, $image->metadata['gps_altitude']);
+        $this->assertSame(2.6, $image->metadata['area']);
+        $this->assertSame(10, $image->metadata['distance_to_ground']);
+        $this->assertSame(180, $image->metadata['yaw']);
     }
 
     public function testHandleImageMetadataEmptyCells()
