@@ -16,11 +16,6 @@ export default {
             labelTrees: [],
         };
     },
-    computed: {
-        noLabelSelected() {
-            return this.selectedLabel === null;
-        }
-    },
     methods: {
         queryAnnotations(label) {
             let imagePromise = LabelsApi.queryImageAnnotations({id: label.id});
@@ -34,13 +29,6 @@ export default {
         hideOutlines() {
             this.showAnnotationOutlines = false;
         },
-    },
-    watch: {
-        noLabelSelected() {
-            if (this.noLabelSelected) {
-                this.showAnnotationOutlines = false;
-            }
-        }
     },
     created() {
         let labelTree = biigle.$require('annotationCatalog.labelTree');
