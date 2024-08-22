@@ -86,11 +86,30 @@ export default {
             let xAxis = this.annotationTimeSeries.map((entry) => {
                 return entry.yearmonth.toString();
             });
+            // sort the yearmonths entries
+            xAxis = xAxis.sort();
+
             // filter duplicated yearsmonth
             xAxis = [...new Set(xAxis)];
 
+            // fill in the missing yearmonths
+            for (let i = 0; i < xAxis.length - 1; i++) {
+                let currentYearMonth = xAxis[i];
+                let nextYearMonth = xAxis[i + 1];
+                let currentDate = new Date(currentYearMonth);
+                let nextDate = new Date(nextYearMonth);
+                while (currentDate < nextDate) {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    let year = currentDate.getFullYear();
+                    let month = currentDate.getMonth() + 1;
+                    let yearMonth = year + '-' + (month < 10 ? '0' + month : month);
+                    xAxis.splice(i + 1, 0, yearMonth);
+                    i++;
+                }
+            }
+
             // sort the years (increasing)
-            return xAxis.sort();
+            return xAxis;
         },
     },
     computed: {
@@ -123,6 +142,7 @@ export default {
 
             // assemble the annotations of each user in correct order of year
             // each user has its own year-timeseries in idDict (e.g. {id: {"2020":10, "2021":4, "2022":6]})
+
             for (let yearmonth of xAxis) {
                 for (let entry of dat) {
                     if (entry.yearmonth.toString() === yearmonth) {
@@ -132,6 +152,7 @@ export default {
                     }
                 }
             }
+            console.log('idDict: ', idDict);
 
             // setup of whole chartdata object
             // include axis-name in front
@@ -142,6 +163,7 @@ export default {
 
             // reduce user-timeseries to values only
             Object.entries(idDict).forEach(entry => {
+                console.log('entry: ', entry);
                 // calculate the sum over all years and include in the array on position 0
                 let sum = 0;
                 Object.values(entry[1]).forEach(val => {
@@ -156,6 +178,7 @@ export default {
                     chartdata.push([sum, name, ...Object.values(entry[1]),userid]);
                 }
             });
+            console.log('chartdata: ', chartdata);
             return chartdata;
         },
         createTimelineSeries() {
