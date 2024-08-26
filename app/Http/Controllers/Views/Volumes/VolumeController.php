@@ -113,7 +113,7 @@ class VolumeController extends Controller
             'projects',
             'fileIds',
             'thumbUriTemplate',
-            'type',
+            'type'
         ));
     }
 

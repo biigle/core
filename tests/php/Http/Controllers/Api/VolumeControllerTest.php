@@ -7,13 +7,13 @@ use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Role;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Queue;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ImageTest;
 
 class VolumeControllerTest extends ApiTestCase
 {
@@ -310,7 +310,8 @@ class VolumeControllerTest extends ApiTestCase
         Queue::assertPushed(CloneImagesOrVideos::class);
     }
 
-    public function testGetAnnotationTimestamps(){
+    public function testGetAnnotationTimestamps()
+    {
 
         $volume = $this
             ->volume([
@@ -342,10 +343,10 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->be(UserTest::create());
         $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
-        
+
         $this->beGuest();
         $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
-        
+
         $response->assertSuccessful();
         $content = json_decode($response->getContent(), true);
 
