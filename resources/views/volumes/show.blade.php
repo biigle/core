@@ -8,7 +8,6 @@
         biigle.$declare('volumes.type', '{!! $type !!}');
         {{-- Add file IDs as array, too, because the ordering is important! --}}
         biigle.$declare('volumes.fileIds', {!! $fileIds->keys() !!});
-        biigle.$declare('volumes.annotationTimestamps', {!! $lastAnnotationTimestamps !!});
         biigle.$declare('volumes.fileUuids', {!! $fileIds !!});
         biigle.$declare('volumes.thumbUri', '{{ $thumbUriTemplate }}');
         @if ($volume->isImageVolume())

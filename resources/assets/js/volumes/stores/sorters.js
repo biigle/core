@@ -1,4 +1,5 @@
 import SortComponent from '../components/sortComponent';
+import VolumeApi from '../api/volumes';
 
 let filenameSorter = {
     id: 'filename',
@@ -106,28 +107,33 @@ let annotationTime = {
         mixins: [SortComponent],
         data() {
             return {
-                timestamps: [],
+                volumeId: -1,
+                fileIds: [],
                 title: 'Sort images by last created annotation',
                 text: 'Last annotated',
                 id: 'annotationTime',
+
             };
-        },
-        computed: {
-            sortedAnnotations() {
-                return Object.entries(this.timestamps).sort(this.compare);
-            }
         },
         methods: {
             getSequence() {
-                let ids = this.sortedAnnotations.map(e => e[0]);
-                return new Vue.Promise.resolve(ids);
+                return VolumeApi.getAnnotationTimestamps({'id': this.volumeId})
+                .then((res) => res.body)
+                .then((timestamps) => {
+                    let sorted = Object.entries(timestamps).sort(this.compare);
+                    sorted = sorted.map(e => parseInt(e[0]));
+                    let diff = this.fileIds.filter(id => !sorted.includes(id));
+                    sorted = sorted.concat(diff);
+                    return sorted;                   
+                });
             },
             compare(a, b) {
                 return Date.parse(b[1]) - Date.parse(a[1]);
             }
         },
         created() {
-            this.timestamps = biigle.$require('volumes.annotationTimestamps');
+            this.volumeId = biigle.$require('volumes.volumeId');
+            this.fileIds = biigle.$require('volumes.fileIds');
         },
     },
 };

@@ -282,6 +282,9 @@ $router->post(
     'volumes/{id}/clone-to/{id2}', 'VolumeController@clone'
 );
 
+$router->get(
+    'volumes/{id}/files/annotation-timestamps', 'VolumeController@getAnnotationTimestamps');
+
 $router->resource('volumes', 'VolumeController', [
     'only' => ['index', 'show', 'update'],
     'parameters' => ['volumes' => 'id'],

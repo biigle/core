@@ -209,4 +209,36 @@ class VolumeController extends Controller
             ->with('messageType', 'success');
 
     }
+
+    /**
+     * Return volume's annotation timestamps of newest annotations
+     *
+     * @param int $id
+     * @return object
+     * @api {get} volumes{/id}/files/annotation-timestamps Get the newest annotation timestamps of the volume
+     * @apiGroup Volumes
+     * @apiPermission projectMember
+     *
+     * @apiParam {Number} id The volume ID.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     *  1: "2024-08-23T07:06:31.000000Z", 
+     *  2: "2024-08-23T06:40:29.000000Z", 
+     *  3: "2024-08-23T06:40:35.000000Z", 
+     * }
+     *
+     */
+    public function getAnnotationTimestamps($id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
+
+        $timestamps = $volume->files
+            ->flatMap(fn ($file) => $file->annotations)
+            ->groupBy('file_id')
+            ->map(fn ($annotations) => $annotations->max('created_at'));
+
+        return $timestamps;
+    }
 }
