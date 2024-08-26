@@ -11,6 +11,9 @@ use Biigle\Tests\ProjectTest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Queue;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ImageTest;
 
 class VolumeControllerTest extends ApiTestCase
 {
@@ -305,5 +308,51 @@ class VolumeControllerTest extends ApiTestCase
         $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
         $response->assertStatus(201);
         Queue::assertPushed(CloneImagesOrVideos::class);
+    }
+
+    public function testGetAnnotationTimestamps(){
+
+        $volume = $this
+            ->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+            ])
+            ->fresh();
+
+        $img = ImageTest::create([
+            'filename' => 'test123.jpg',
+            'volume_id' => $volume->id,
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2023-11-09 06:37:00',
+            'image_id' => $img->id,
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2020-11-09 06:37:00',
+            'image_id' => $img->id,
+        ]);
+        $img2 = ImageTest::create([
+            'filename' => 'test321.jpg',
+            'volume_id' => $volume->id
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2024-11-09 14:37:00',
+            'image_id' => $img2->id,
+        ]);
+
+        $this->be(UserTest::create());
+        $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
+        
+        $this->beGuest();
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+        
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(2, $content);
+        $this->assertNotNull($content[$img->id]);
+        $this->assertNotNull($content[$img2->id]);
+        $this->assertSame($content[$img->id], "2023-11-09T05:37:00.000000Z");
+        $this->assertSame($content[$img2->id], "2024-11-09T13:37:00.000000Z");
     }
 }
