@@ -168,6 +168,7 @@ export default {
             this.preloadedSprites = preloadedSprites;
         },
         updateSprite() {
+            this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
             let spriteUrl = this.getSpriteUrl(this.spriteIdx);
 
             if (!this.triedUrls[spriteUrl]) {
@@ -273,17 +274,16 @@ export default {
     },
     watch: {
         hoverTime() {
-            this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
-
+            let spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
+            if(this.spriteIdx != spriteIdx) {
+                this.updateSprite();
+            }
             if (this.spriteNotFound) {
                 this.viewHoverTimeBar();
             } else {
                 this.viewThumbnailPreview();
             }
         },
-        spriteIdx() {
-            this.updateSprite();
-        }
     },
     created() {
         this.setSpritesFolderpath();
