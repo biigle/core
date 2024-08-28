@@ -1,19 +1,8 @@
 <template>
-    <div 
-        class="thumbnail-preview" 
-        ref="thumbnailPreview" 
-        :style="thumbnailStyle"
-        >
-        <canvas 
-            v-cloak
-            class="thumbnail-canvas"
-            ref="thumbnailCanvas"
-            v-show="!spriteNotFound">
+    <div class="thumbnail-preview" ref="thumbnailPreview" :style="thumbnailStyle">
+        <canvas v-cloak class="thumbnail-canvas" ref="thumbnailCanvas" v-show="!spriteNotFound">
         </canvas>
-        <canvas 
-            v-cloak
-            class="thumbnail-canvas" 
-            ref="hovertimeCanvas">
+        <canvas v-cloak class="thumbnail-canvas" ref="hovertimeCanvas">
         </canvas>
     </div>
 </template>
@@ -121,9 +110,8 @@ export default {
                 this.triedUrls[prevSpriteUrl] = 0
             }
             let prevImg = new Image();
-            prevImg.onload = () => {
-                this.preloadedSprites[prevSpriteUrl] = prevImg;
-            }
+            this.preloadedSprites[prevSpriteUrl] = prevImg;
+
             prevImg.onerror = () => {
                 if (prevSpriteUrl in this.triedUrls) {
                     this.triedUrls[prevSpriteUrl]++;
@@ -144,9 +132,8 @@ export default {
                 this.triedUrls[nextSpriteUrl] = 0
             }
             let nextImg = new Image();
-            nextImg.onload = () => {
-                this.preloadedSprites[nextSpriteUrl] = nextImg;
-            }
+            this.preloadedSprites[nextSpriteUrl] = nextImg;
+
             nextImg.onerror = () => {
                 if (nextSpriteUrl in this.triedUrls) {
                     this.triedUrls[nextSpriteUrl]++;
@@ -174,20 +161,22 @@ export default {
             if (!this.triedUrls[spriteUrl]) {
                 this.triedUrls[spriteUrl] = 0
             }
-            if (this.triedUrls[spriteUrl] < this.retryAttempts) {
-                if (spriteUrl in this.preloadedSprites && this.triedUrls[spriteUrl] === 0) {
-                    let onloadFunc = this.sprite.onload;
-                    let onerrFunc = this.sprite.onerror;
-                    this.sprite = this.preloadedSprites[spriteUrl];
-                    onloadFunc.call(this.sprite, new Event('load'));
-                    this.sprite.onload = onloadFunc;
-                    this.sprite.onerror = onerrFunc;
-                } else {
-                    this.sprite.src = spriteUrl;
-                }
+
+            let preloadedSprite = this.preloadedSprites[spriteUrl];
+
+            if (preloadedSprite && this.finishedLoading(preloadedSprite) && this.triedUrls[spriteUrl] < this.retryAttempts) {
+                let onloadFunc = this.sprite.onload;
+                let onerrFunc = this.sprite.onerror;
+                this.sprite = preloadedSprite;
+                onloadFunc.call(this.sprite, new Event('load'));
+                this.sprite.onload = onloadFunc;
+                this.sprite.onerror = onerrFunc;
+            } else if (!preloadedSprite && this.triedUrls[spriteUrl] < this.retryAttempts) {
+                this.sprite.src = spriteUrl;
             } else {
                 this.spriteNotFound = true;
             }
+
             this.preloadPreviousSprite();
             this.preloadNextSprite();
             this.removeOldSprites();
@@ -211,7 +200,7 @@ export default {
             // draw the current thumbnail to the canvas
             let context = this.thumbnailCanvas.getContext('2d');
             context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
-        
+
             // Call viewHoverTimeBar here to prevent flickering hover time bar
             this.viewHoverTimeBar();
         },
@@ -271,11 +260,17 @@ export default {
             this.hovertimeCanvas.width = this.hoverTimeBarWidth;
             this.hovertimeCanvas.height = this.hoverTimeBarHeight;
         },
+        finishedLoading(sprite) {
+            if (!sprite) {
+                return false;
+            }
+            return sprite.complete && sprite.naturalWidth && sprite.naturalWidth !== 0
+        }
     },
     watch: {
         hoverTime() {
             let spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
-            if(this.spriteIdx != spriteIdx) {
+            if (this.spriteIdx != spriteIdx) {
                 this.updateSprite();
             }
             if (this.spriteNotFound) {
@@ -295,8 +290,6 @@ export default {
             this.spriteNotFound = false;
             this.preloadedSprites[this.sprite.src] = this.sprite;
             this.initDimensions();
-            // Call viewThumbnailPreview here again to prevent glitching thumbnails
-            this.viewThumbnailPreview();
         }
         this.sprite.onerror = () => {
             this.spriteNotFound = true;
