@@ -55,7 +55,7 @@ class TileSingleImageTest extends TestCase
         config(['image.tiles.queue' => 'myqueue']);
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
-        $this->assertEquals('myqueue', $job->queue);
+        $this->assertSame('myqueue', $job->queue);
     }
 }
 

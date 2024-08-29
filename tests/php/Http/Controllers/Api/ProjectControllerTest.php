@@ -88,8 +88,8 @@ class ProjectControllerTest extends ApiTestCase
         $response->assertStatus(200);
 
         $project = $this->project()->fresh();
-        $this->assertEquals('my test', $project->name);
-        $this->assertEquals('this is my test', $project->description);
+        $this->assertSame('my test', $project->name);
+        $this->assertSame('this is my test', $project->description);
         $this->assertNotEquals(0, $project->creator_id);
     }
 
@@ -102,7 +102,7 @@ class ProjectControllerTest extends ApiTestCase
         $response = $this->json('POST', '/api/v1/projects');
         $response->assertStatus(422);
 
-        $this->assertEquals(1, Project::count());
+        $this->assertSame(1, Project::count());
 
         $response = $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
@@ -114,7 +114,7 @@ class ProjectControllerTest extends ApiTestCase
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertStringContainsString('"name":"test project"', $content);
-        $this->assertEquals(2, Project::count());
+        $this->assertSame(2, Project::count());
     }
 
     public function testStoreAuthorization()

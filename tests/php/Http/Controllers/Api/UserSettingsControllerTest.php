@@ -40,7 +40,7 @@ class UserSettingsControllerTest extends ApiTestCase
         $this->putJson("/api/v1/users/my/settings", ['test' => 123])
             ->assertStatus(200);
 
-        $this->assertEquals(['test' => 123], $this->user()->fresh()->settings);
+        $this->assertSame(['test' => 123], $this->user()->fresh()->settings);
     }
 
     public function testUpdateIncludeFederatedSearch()

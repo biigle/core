@@ -101,8 +101,9 @@ class MetadataController extends Controller
             }
             $image->fillable(ImageMetadata::ALLOWED_ATTRIBUTES);
             $image->fill($fill->toArray());
-
-            $metadata = $row->only(ImageMetadata::ALLOWED_METADATA);
+            $metadata = $row
+                ->only(ImageMetadata::ALLOWED_METADATA)
+                ->map(fn ($str) => strpos($str, '.') ? floatval($str) : intval($str));
             $image->metadata = array_merge($image->metadata, $metadata->toArray());
             $image->save();
         }

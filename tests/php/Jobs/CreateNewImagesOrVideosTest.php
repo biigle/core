@@ -69,18 +69,18 @@ class CreateNewImagesOrVideosTest extends TestCase
         $filenames = ['a.jpg'];
         $metadata = [
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
-            ['a.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
+            ['a.jpg', '2016-12-19 12:27:00', '52.220', '28.123', -1500, 10, 2.6, 180],
         ];
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
         $image = $volume->images()->first();
-        $this->assertEquals('2016-12-19 12:27:00', $image->taken_at);
-        $this->assertEquals(52.220, $image->lng);
-        $this->assertEquals(28.123, $image->lat);
-        $this->assertEquals(-1500, $image->metadata['gps_altitude']);
-        $this->assertEquals(2.6, $image->metadata['area']);
-        $this->assertEquals(10, $image->metadata['distance_to_ground']);
-        $this->assertEquals(180, $image->metadata['yaw']);
+        $this->assertSame('2016-12-19 12:27:00', $image->taken_at->toDateTimeString());
+        $this->assertSame(52.220, $image->lng);
+        $this->assertSame(28.123, $image->lat);
+        $this->assertSame(-1500, $image->metadata['gps_altitude']);
+        $this->assertSame(2.6, $image->metadata['area']);
+        $this->assertSame(10, $image->metadata['distance_to_ground']);
+        $this->assertSame(180, $image->metadata['yaw']);
     }
 
     public function testHandleImageMetadataEmptyCells()
@@ -96,8 +96,8 @@ class CreateNewImagesOrVideosTest extends TestCase
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
         $image = $volume->images()->first();
-        $this->assertEquals(52.220, $image->lng);
-        $this->assertEquals(28.123, $image->lat);
+        $this->assertSame(52.220, $image->lng);
+        $this->assertSame(28.123, $image->lat);
         $this->assertEmpty($image->metadata);
     }
 
@@ -113,7 +113,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         ];
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
-        $this->assertEquals(2, $volume->images()->count());
+        $this->assertSame(2, $volume->images()->count());
     }
 
     public function testHandleVideoMetadata()
@@ -136,12 +136,12 @@ class CreateNewImagesOrVideosTest extends TestCase
             Carbon::parse('2016-12-19 12:28:00'),
         ];
         $this->assertEquals($expect, $video->taken_at);
-        $this->assertEquals([52.220, 52.230], $video->lng);
-        $this->assertEquals([28.123, 28.133], $video->lat);
-        $this->assertEquals([-1500, -1505], $video->metadata['gps_altitude']);
-        $this->assertEquals([2.6, 1.6], $video->metadata['area']);
-        $this->assertEquals([10, 5], $video->metadata['distance_to_ground']);
-        $this->assertEquals([180, 181], $video->metadata['yaw']);
+        $this->assertSame([52.220, 52.230], $video->lng);
+        $this->assertSame([28.123, 28.133], $video->lat);
+        $this->assertSame([-1500, -1505], $video->metadata['gps_altitude']);
+        $this->assertSame([2.6, 1.6], $video->metadata['area']);
+        $this->assertSame([10, 5], $video->metadata['distance_to_ground']);
+        $this->assertSame([180, 181], $video->metadata['yaw']);
     }
 
     public function testHandleVideoMetadataEmptyCells()
@@ -227,7 +227,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         ];
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
-        $this->assertEquals(2, $volume->videos()->count());
+        $this->assertSame(2, $volume->videos()->count());
     }
 
     public function testHandleMetadataDateParsing()
@@ -243,6 +243,6 @@ class CreateNewImagesOrVideosTest extends TestCase
 
         with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
         $image = $volume->images()->first();
-        $this->assertEquals('2019-05-01 10:35:00', $image->taken_at);
+        $this->assertSame('2019-05-01 10:35:00', $image->taken_at->toDateTimeString());
     }
 }

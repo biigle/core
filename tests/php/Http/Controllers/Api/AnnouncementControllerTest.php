@@ -40,7 +40,7 @@ class AnnouncementControllerTest extends ApiTestCase
             // show_until must be in the future
             ->assertStatus(422);
 
-        $this->assertEquals(0, Announcement::count());
+        $this->assertSame(0, Announcement::count());
 
         $this
             ->json('POST', '/api/v1/announcements', [

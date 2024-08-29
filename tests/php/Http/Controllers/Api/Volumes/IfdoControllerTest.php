@@ -29,7 +29,7 @@ class IfdoControllerTest extends ApiTestCase
 
         $response = $this->getJson("/api/v1/volumes/{$id}/ifdo");
         $response->assertStatus(200);
-        $this->assertEquals("attachment; filename=biigle-volume-{$id}-ifdo.yaml", $response->headers->get('content-disposition'));
+        $this->assertSame("attachment; filename=biigle-volume-{$id}-ifdo.yaml", $response->headers->get('content-disposition'));
     }
 
     public function testDestroy()

@@ -154,21 +154,21 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         $response->assertStatus(200);
 
-        $this->assertEquals('my test', $tree->fresh()->name);
+        $this->assertSame('my test', $tree->fresh()->name);
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'description' => 'this is my test',
         ]);
         $response->assertStatus(200);
 
-        $this->assertEquals('this is my test', $tree->fresh()->description);
+        $this->assertSame('this is my test', $tree->fresh()->description);
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'visibility_id' => Visibility::publicId(),
         ]);
         $response->assertStatus(200);
 
-        $this->assertEquals(Visibility::publicId(), $tree->fresh()->visibility_id);
+        $this->assertSame(Visibility::publicId(), $tree->fresh()->visibility_id);
     }
 
     public function testUpdateFormRequest()
@@ -185,7 +185,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $response = $this->put("/api/v1/label-trees/{$id}", [
             'name' => 'abc',
         ]);
-        $this->assertEquals('abc', $tree->fresh()->name);
+        $this->assertSame('abc', $tree->fresh()->name);
         $response->assertRedirect('/');
         $response->assertSessionHas('saved', true);
 
@@ -193,7 +193,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'description' => 'abc',
             '_redirect' => 'settings',
         ]);
-        $this->assertEquals('abc', $tree->fresh()->description);
+        $this->assertSame('abc', $tree->fresh()->description);
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
     }
@@ -217,7 +217,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => strval(Visibility::privateId()),
         ]);
 
-        $this->assertEquals($authorized->id, $tree->projects()->pluck('id')->first());
+        $this->assertSame($authorized->id, $tree->projects()->pluck('id')->first());
     }
 
     public function testUpdatePropagateVisibility()
@@ -236,7 +236,7 @@ class LabelTreeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals(Visibility::publicId(), $tree->fresh()->visibility_id);
+        $this->assertSame(Visibility::publicId(), $tree->fresh()->visibility_id);
     }
 
     public function testUpdatePropagateName()
@@ -255,7 +255,7 @@ class LabelTreeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals('My Cool Tree', $tree->fresh()->name);
+        $this->assertSame('My Cool Tree', $tree->fresh()->name);
     }
 
     public function testStore()
@@ -286,7 +286,7 @@ class LabelTreeControllerTest extends ApiTestCase
         // visibility must exist
         $response->assertStatus(422);
 
-        $this->assertEquals(0, LabelTree::count());
+        $this->assertSame(0, LabelTree::count());
 
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
@@ -295,7 +295,7 @@ class LabelTreeControllerTest extends ApiTestCase
         // description is optional
         $response->assertSuccessful();
 
-        $this->assertEquals(1, LabelTree::count());
+        $this->assertSame(1, LabelTree::count());
 
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
@@ -305,7 +305,7 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         $response->assertSuccessful();
 
-        $this->assertEquals(2, LabelTree::count());
+        $this->assertSame(2, LabelTree::count());
 
         $tree = LabelTree::orderBy('id', 'desc')->first();
         $this->assertNotNull($tree->uuid);
@@ -314,7 +314,7 @@ class LabelTreeControllerTest extends ApiTestCase
         // creator gets first label tree admin
         $member = $tree->members()->find($this->user()->id);
         $this->assertNotNull($member);
-        $this->assertEquals(Role::adminId(), $member->role_id);
+        $this->assertSame(Role::adminId(), $member->role_id);
     }
 
     public function testStoreAuthorization()
@@ -368,8 +368,8 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         $response->assertSuccessful();
         $tree = LabelTree::first();
-        $this->assertEquals($this->project()->id, $tree->projects()->first()->id);
-        $this->assertEquals($this->project()->id, $tree->authorizedProjects()->first()->id);
+        $this->assertSame($this->project()->id, $tree->projects()->first()->id);
+        $this->assertSame($this->project()->id, $tree->authorizedProjects()->first()->id);
     }
 
     public function testStoreFormRequest()
@@ -381,7 +381,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => Visibility::publicId(),
             'description' => 'my description',
         ]);
-        $this->assertEquals(1, LabelTree::count());
+        $this->assertSame(1, LabelTree::count());
 
         $response = $this->post('/api/v1/label-trees', [
             'name' => 'abc',
@@ -389,7 +389,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'description' => 'my description',
             '_redirect' => 'settings',
         ]);
-        $this->assertEquals(2, LabelTree::count());
+        $this->assertSame(2, LabelTree::count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('newTree');
     }
@@ -443,14 +443,14 @@ class LabelTreeControllerTest extends ApiTestCase
             ->assertSuccessful();
 
         $tree = LabelTree::orderBy('id', 'desc')->first();
-        $this->assertEquals('abc', $tree->name);
-        $this->assertEquals('my description', $tree->description);
+        $this->assertSame('abc', $tree->name);
+        $this->assertSame('my description', $tree->description);
         $this->assertTrue($tree->members()->where('id', $this->guest()->id)->exists());
         $parent = $tree->labels()->where('name', $baseParent->name)->first();
         $this->assertNotNull($parent);
         $child = $tree->labels()->where('name', $baseChild->name)->first();
         $this->assertNotNull($child);
-        $this->assertEquals($parent->id, $child->parent_id);
+        $this->assertSame($parent->id, $child->parent_id);
     }
 
     public function testDestroy()
