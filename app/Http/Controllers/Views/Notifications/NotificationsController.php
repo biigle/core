@@ -13,12 +13,11 @@ class NotificationsController extends Controller
      *
      * @param Request $request
      * @param Guard $auth
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request, Guard $auth)
     {
-        $all = (boolean) $request->input('all', false);
         $user = $auth->user();
+        $all = (boolean) $request->input('all', false);
         $notifications = $all ? $user->notifications : $user->unreadNotifications;
 
         foreach ($notifications as $n) {

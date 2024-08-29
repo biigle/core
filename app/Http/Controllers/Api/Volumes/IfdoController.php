@@ -17,7 +17,7 @@ class IfdoController extends Controller
      ~
      * @param int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function show($id)
     {
@@ -36,8 +36,6 @@ class IfdoController extends Controller
      * @apiPermission projectAdmin
      ~
      * @param int $id
-     *
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {

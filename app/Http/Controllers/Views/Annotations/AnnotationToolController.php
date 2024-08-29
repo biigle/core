@@ -19,8 +19,6 @@ class AnnotationToolController extends Controller
      *
      * @param Request $request
      * @param int $id the image ID
-     *
-     * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
     {

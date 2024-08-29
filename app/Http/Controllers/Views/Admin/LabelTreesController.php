@@ -9,8 +9,6 @@ class LabelTreesController extends Controller
 {
     /**
      * Show the label tree admin page.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {

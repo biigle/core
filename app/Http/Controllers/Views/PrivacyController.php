@@ -9,8 +9,6 @@ class PrivacyController extends Controller
 {
     /**
      * Show the the privacy view.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function show()
     {

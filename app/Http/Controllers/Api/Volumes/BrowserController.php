@@ -33,7 +33,7 @@ class BrowserController extends Controller
      *
      * @param  Request $request
      * @param  string $disk
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function indexDirectories(Request $request, $disk)
     {
@@ -82,7 +82,7 @@ class BrowserController extends Controller
      *
      * @param  Request $request
      * @param  string $disk
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function indexImages(Request $request, $disk)
     {
@@ -114,7 +114,7 @@ class BrowserController extends Controller
      *
      * @param  Request $request
      * @param  string $disk
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function indexVideos(Request $request, $disk)
     {
@@ -132,7 +132,7 @@ class BrowserController extends Controller
      * @param string $disk
      * @param string $regex
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     protected function indexFiles(Request $request, $disk, $regex)
     {

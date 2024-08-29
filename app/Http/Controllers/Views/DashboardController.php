@@ -26,7 +26,6 @@ class DashboardController extends Controller
      * Show the application dashboard to the user.
      *
      * @param Guard $auth
-     * @return \Illuminate\Http\Response
      */
     public function index(Guard $auth)
     {
@@ -41,8 +40,6 @@ class DashboardController extends Controller
      * Show the dashboard for a logged in user.
      *
      * @param User $user
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function indexDashboard(User $user)
     {
@@ -162,8 +159,6 @@ class DashboardController extends Controller
 
     /**
      * Show the landing page if no user is authenticated.
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function indexLandingPage()
     {

@@ -27,7 +27,7 @@ class ProjectInvitationController extends Controller
      *
      * @param Request $request
      * @param string $uuid Invitation UUID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show(Request $request, $uuid)
     {

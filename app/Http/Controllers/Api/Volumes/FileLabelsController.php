@@ -44,7 +44,7 @@ class FileLabelsController extends Controller
      * }
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index($id)
     {

@@ -21,7 +21,6 @@ class SearchController extends Controller
      * @param Guard $auth
      * @param Request $request
      * @param Modules $modules
-     * @return \Illuminate\Http\Response
      */
     public function index(Guard $auth, Request $request, Modules $modules)
     {
@@ -88,7 +87,7 @@ class SearchController extends Controller
                     });
                 });
 
-            $queryBuilder = $queryBuilder->union($queryBuilder2);
+            $queryBuilder = $queryBuilder->union(fn () => $queryBuilder2);
         }
 
 
@@ -103,6 +102,7 @@ class SearchController extends Controller
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                /** @phpstan-ignore property.notFound */
                 if ($item->external) {
                     return $external[$item->id];
                 }
@@ -159,7 +159,7 @@ class SearchController extends Controller
                     });
                 });
 
-            $queryBuilder = $queryBuilder->union($queryBuilder2);
+            $queryBuilder = $queryBuilder->union(fn () => $queryBuilder2);
         }
 
 
@@ -174,6 +174,7 @@ class SearchController extends Controller
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                /** @phpstan-ignore property.notFound */
                 if ($item->external) {
                     return $external[$item->id];
                 }
@@ -224,7 +225,7 @@ class SearchController extends Controller
                     });
                 });
 
-            $queryBuilder = $queryBuilder->union($queryBuilder2);
+            $queryBuilder = $queryBuilder->union(fn () => $queryBuilder2);
         }
 
 
@@ -239,6 +240,7 @@ class SearchController extends Controller
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                /** @phpstan-ignore property.notFound */
                 if ($item->external) {
                     return $external[$item->id];
                 }
