@@ -21,7 +21,7 @@ class MediaType extends Model
     /**
      * The constant instances of this model.
      *
-     * @var array
+     * @var array<string, string>
      */
     const INSTANCES = [
         'image' => 'image',

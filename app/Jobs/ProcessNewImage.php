@@ -296,18 +296,14 @@ class ProcessNewImage extends Job implements ShouldQueue
         $parts = explode('/', $frac);
         $count = count($parts);
 
-        if ($count === 0) {
-            return 0;
-        } elseif ($count === 1) {
-            return $parts[0];
+        // Don't use !== 0 to catch all incorrect values.
+        if ($count === 2 && $parts[1] != 0) {
+            return floatval($parts[0]) / floatval($parts[1]);
+        } elseif (is_numeric($parts[0])) {
+            return floatval($parts[0]);
         }
 
-        // Don't use === to catch all incorrect values.
-        if ($parts[1] == 0) {
-            return 0;
-        }
-
-        return floatval($parts[0]) / floatval($parts[1]);
+        return 0;
     }
 
     /**

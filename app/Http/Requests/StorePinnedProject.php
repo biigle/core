@@ -48,7 +48,7 @@ class StorePinnedProject extends FormRequest
         $validator->after(function ($validator) {
             $pinnedCount = $this->user()->projects()->where('pinned', true)->count();
 
-            if ($pinnedCount === 3 && !$this->project->pivot->pinned) {
+            if ($pinnedCount === 3 && !$this->project->getRelationValue('pivot')->pinned) {
                 $validator->errors()->add('id', 'You cannot pin more than three projects.');
             }
         });

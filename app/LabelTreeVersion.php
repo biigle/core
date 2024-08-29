@@ -19,7 +19,7 @@ class LabelTreeVersion extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'label_tree_id' => 'int',
@@ -28,7 +28,7 @@ class LabelTreeVersion extends Model
     /**
      * The "master" label tree of this version.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, LabelTreeVersion>
      */
     public function labelTree()
     {

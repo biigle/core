@@ -5,9 +5,7 @@ namespace Biigle;
 class ImageLabel extends VolumeFileLabel
 {
     /**
-     * The file, this volume file label belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * {@inheritdoc}
      */
     public function file()
     {
@@ -17,7 +15,7 @@ class ImageLabel extends VolumeFileLabel
     /**
      * The image, this image label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Image, ImageLabel>
      */
     public function image()
     {

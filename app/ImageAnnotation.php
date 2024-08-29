@@ -11,7 +11,7 @@ class ImageAnnotation extends Annotation
     /**
     * The attributes that should be casted to native types.
     *
-    * @var array
+    * @var array<string, string>
     */
     protected $casts = [
         'image_id' => 'int',

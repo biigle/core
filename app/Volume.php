@@ -44,7 +44,7 @@ class Volume extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'pivot',
@@ -54,7 +54,7 @@ class Volume extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'attrs' => 'array',
@@ -71,7 +71,7 @@ class Volume extends Model
     public static function parseFilesQueryString(string $string)
     {
         // Remove whitespace as well as enclosing '' or "".
-        return preg_split('/[\"\'\s]*,[\"\'\s]*/', trim($string, " \t\n\r\0\x0B'\""), null, PREG_SPLIT_NO_EMPTY);
+        return preg_split('/[\"\'\s]*,[\"\'\s]*/', trim($string, " \t\n\r\0\x0B'\""), 0, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -100,7 +100,7 @@ class Volume extends Model
     /**
      * The user that created the volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Volume>
      */
     public function creator()
     {
@@ -110,7 +110,7 @@ class Volume extends Model
     /**
      * The media type of this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<MediaType, Volume>
      */
     public function mediaType()
     {
@@ -120,7 +120,7 @@ class Volume extends Model
     /**
      * The images belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Image>
      */
     public function images()
     {
@@ -130,7 +130,7 @@ class Volume extends Model
     /**
      * The videos belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Video>
      */
     public function videos()
     {
@@ -140,7 +140,7 @@ class Volume extends Model
     /**
      * The images or videos belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFile>
      */
     public function files()
     {
@@ -155,7 +155,7 @@ class Volume extends Model
      * The images belonging to this volume ordered by filename (ascending).
      *
      * @deprecated Use `orderedFiles` instead.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VolumeFile>
      */
     public function orderedImages()
     {
@@ -165,7 +165,7 @@ class Volume extends Model
     /**
      * The images belonging to this volume ordered by filename (ascending).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VolumeFile>
      */
     public function orderedFiles()
     {
@@ -194,7 +194,7 @@ class Volume extends Model
     /**
      * The project(s), this volume belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
      */
     public function projects()
     {
@@ -204,7 +204,7 @@ class Volume extends Model
     /**
      * The annotation sessions of this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationSession>
      */
     public function annotationSessions()
     {
@@ -214,7 +214,7 @@ class Volume extends Model
     /**
      * The active annotation sessions of this volume (if any).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<AnnotationSession>
      */
     public function activeAnnotationSession()
     {
@@ -259,7 +259,7 @@ class Volume extends Model
     public function hasConflictingAnnotationSession(AnnotationSession $session)
     {
         return $this->annotationSessions()
-            ->when(!is_null($session->id), fn ($query) => $query->where('id', '!=', $session->id))
+            ->when($session->id, fn ($query) => $query->where('id', '!=', $session->id))
             ->where(function ($query) use ($session) {
                 $query->where(function ($query) use ($session) {
                     $query->where('starts_at', '<=', $session->starts_at)
@@ -291,7 +291,7 @@ class Volume extends Model
     /**
      * An image that can be used as unique thumbnail for this volume.
      *
-     * @return Image
+     * @return Image|null
      */
     public function getThumbnailAttribute()
     {
@@ -303,7 +303,7 @@ class Volume extends Model
     /**
      * URL to the thumbnail image of this volume.
      *
-     * @return string
+     * @return string|null
      */
     public function getThumbnailUrlAttribute()
     {
@@ -341,7 +341,7 @@ class Volume extends Model
      */
     public function getThumbnailsUrlAttribute()
     {
-        return $this->thumbnails->map(fn ($file) => $file->thumbnailUrl);
+        return $this->thumbnails->map(fn ($file) => $file->thumbnailUrl)->toArray();
     }
 
     /**
@@ -391,7 +391,7 @@ class Volume extends Model
     /**
      * Set the creating_async attribute of this volume.
      *
-     * @param string $value
+     * @param bool $value
      */
     public function setCreatingAsyncAttribute($value)
     {
@@ -403,11 +403,11 @@ class Volume extends Model
     /**
      * Get the creating_async attribute of this volume.
      *
-     * @return string
+     * @return bool
      */
     public function getCreatingAsyncAttribute()
     {
-        return $this->getJsonAttr('creating_async', false);
+        return (bool) $this->getJsonAttr('creating_async', false);
     }
 
     /**
@@ -485,7 +485,7 @@ class Volume extends Model
     /**
      * Download the iFDO that is attached to this volume.
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function downloadIfdo()
     {

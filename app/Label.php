@@ -23,7 +23,7 @@ class Label extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'uuid',
@@ -32,7 +32,7 @@ class Label extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'parent_id' => 'int',
@@ -84,7 +84,7 @@ class Label extends Model
     /**
      * The parent label if the labels are ordered in a tree-like structure.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, Label>
      */
     public function parent()
     {
@@ -94,7 +94,7 @@ class Label extends Model
     /**
      * The label tree this label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, Label>
      */
     public function tree()
     {
@@ -105,7 +105,7 @@ class Label extends Model
      * The child labels of this label if they are ordered in a tree-like
      * structue.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label>
      */
     public function children()
     {

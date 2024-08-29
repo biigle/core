@@ -9,7 +9,7 @@ class VideoAnnotation extends Annotation
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'video_id',
@@ -21,7 +21,7 @@ class VideoAnnotation extends Annotation
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'video_id' => 'int',

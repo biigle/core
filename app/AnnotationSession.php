@@ -41,7 +41,7 @@ class AnnotationSession extends Model
     /**
      * The volume, this annotation session belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Volume, AnnotationSession>
      */
     public function volume()
     {
@@ -51,7 +51,7 @@ class AnnotationSession extends Model
     /**
      * The users, this annotation session is restricted to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
      */
     public function users()
     {

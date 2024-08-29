@@ -21,7 +21,7 @@ class Visibility extends Model
     /**
      * The constant instances of this model.
      *
-     * @var array
+     * @var array<string, string>
      */
     const INSTANCES = [
         'public' => 'public',

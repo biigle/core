@@ -26,7 +26,7 @@ class Role extends Model
     /**
      * The constant instances of this model.
      *
-     * @var array
+     * @var array<string, string>
      */
     const INSTANCES = [
         'admin' => 'admin',
