@@ -337,11 +337,11 @@ class Volume extends Model
     /**
      * URLs to the thumbnail images of this volume.
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function getThumbnailsUrlAttribute()
     {
-        return $this->thumbnails->map(fn ($file) => $file->thumbnailUrl)->toArray();
+        return $this->thumbnails->map(fn ($file) => $file->thumbnailUrl);
     }
 
     /**

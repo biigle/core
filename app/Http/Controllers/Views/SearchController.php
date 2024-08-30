@@ -75,6 +75,7 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
+            /** @var \Illuminate\Database\Query\Builder $queryBuilder2 */
             $queryBuilder2 = $user->federatedSearchModels()
                 ->labelTrees()
                 ->selectRaw("id, name, description, updated_at, true as external")
@@ -87,7 +88,7 @@ class SearchController extends Controller
                     });
                 });
 
-            $queryBuilder = $queryBuilder->union(fn () => $queryBuilder2);
+            $queryBuilder = $queryBuilder->union($queryBuilder2);
         }
 
 
@@ -147,6 +148,7 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
+            /** @var \Illuminate\Database\Query\Builder $queryBuilder2 */
             $queryBuilder2 = $user->federatedSearchModels()
                 ->projects()
                 ->selectRaw("id, name, description, updated_at, true as external")
@@ -159,7 +161,7 @@ class SearchController extends Controller
                     });
                 });
 
-            $queryBuilder = $queryBuilder->union(fn () => $queryBuilder2);
+            $queryBuilder = $queryBuilder->union($queryBuilder2);
         }
 
 
@@ -214,6 +216,7 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
+            /** @var \Illuminate\Database\Query\Builder $queryBuilder2 */
             $queryBuilder2 = $user->federatedSearchModels()
                 ->volumes()
                 ->selectRaw("id, name, updated_at, true as external")
@@ -225,7 +228,7 @@ class SearchController extends Controller
                     });
                 });
 
-            $queryBuilder = $queryBuilder->union(fn () => $queryBuilder2);
+            $queryBuilder = $queryBuilder->union($queryBuilder2);
         }
 
 
