@@ -247,6 +247,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
                 $baseImageIndex = ($page - 1) * $chunkSize;
+                /** @var Image $image */
                 foreach ($chunk as $index => $image) {
                     $newImageId = $newImageIds[$baseImageIndex + $index];
                     // Collect relevant image IDs for the annotation query below.
@@ -271,6 +272,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     ->orderBy('id')
                     ->pluck('id');
                 $insertData = [];
+                /** @var Image $image */
                 foreach ($chunk as $image) {
                     foreach ($image->annotations as $annotation) {
                         if ($annotation->labels->isEmpty()) {
@@ -390,6 +392,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
                 $baseVideoIndex = ($page - 1) * $chunkSize;
+                /** @var Video $video */
                 foreach ($chunk as $index => $video) {
                     $newVideoId = $newVideoIds[$baseVideoIndex + $index];
                     // Collect relevant video IDs for the annotation query below.
@@ -415,6 +418,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     ->orderBy('id')
                     ->pluck('id');
                 $insertData = [];
+                /** @var Video $video */
                 foreach ($chunk as $video) {
                     foreach ($video->annotations as $annotation) {
                         if ($annotation->labels->isEmpty()) {

@@ -83,7 +83,7 @@ class ProjectInvitationController extends Controller
                 if ($invitation->add_to_sessions) {
                     AnnotationSession::join('project_volume', 'annotation_sessions.volume_id', '=', 'project_volume.volume_id')
                         ->where('project_volume.project_id', $project->id)
-                        ->eachById(fn ($session) => $session->users()->syncWithoutDetaching([$userId]));
+                        ->eachById(fn (AnnotationSession $session) => $session->users()->syncWithoutDetaching([$userId]));
                 }
             }
 

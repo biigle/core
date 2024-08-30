@@ -90,19 +90,19 @@ class ImageAnnotationBulkController extends Controller
 
             $annotation->points = $input['points'];
             $annotation->image_id = $input['image_id'];
-            /** @phpstan-ignore-next-line */
+            /** @phpstan-ignore property.notFound */
             $annotation->label_id = $input['label_id'];
-            /** @phpstan-ignore-next-line */
+            /** @phpstan-ignore property.notFound */
             $annotation->confidence = $input['confidence'];
 
             return $annotation;
         });
 
         DB::transaction(function () use ($request, $annotations) {
-            $annotations->each(function ($annotation) use ($request) {
-                /** @phpstan-ignore-next-line */
+            $annotations->each(function (ImageAnnotation $annotation) use ($request) {
+                /** @phpstan-ignore property.notFound */
                 $label = $request->labels[$annotation->label_id];
-                /** @phpstan-ignore-next-line */
+                /** @phpstan-ignore property.notFound */
                 $confidence = $annotation->confidence;
                 unset($annotation->label_id, $annotation->confidence);
 
