@@ -62,9 +62,6 @@ class ProcessNewImageTest extends TestCase
 
     public function testHandleMakeThumbnail()
     {
-        if (!function_exists('vips_call')) {
-            $this->markTestSkipped('Requires the PHP vips extension.');
-        }
         Storage::fake('test-thumbs');
         config(['thumbnails.storage_disk' => 'test-thumbs']);
 
