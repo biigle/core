@@ -58,8 +58,7 @@ class FederatedSearchModel extends Model
     /**
      * The instance, this model belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Feder
-     * , FederatedSearchModel>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<FederatedSearchInstance, FederatedSearchModel>
      */
     public function instance()
     {

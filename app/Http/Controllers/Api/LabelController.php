@@ -46,7 +46,6 @@ class LabelController extends Controller
      * @apiParam {Number} id The label ID
      *
      * @param DestroyLabel $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(DestroyLabel $request)
     {

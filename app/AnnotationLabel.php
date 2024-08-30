@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $annotation_id
  * @property int $user_id
+ * @property int $label_id
  */
 abstract class AnnotationLabel extends Model
 {

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * Labels can be ordered in a tree-like structure.
  *
+ * @property int $id
  * @property string $uuid
  */
 class Label extends Model

@@ -33,7 +33,7 @@ class ProjectInvitationController extends Controller
      * @apiParam (Optional attributes) {Boolean} add_to_sessions If set to `true`, all users joining the project will automatically be added to all annotation sessions of all volumes that belong to the project.
      *
      * @param StoreProjectInvitation $request
-     * @return \Illuminate\Http\Response
+     * @return ProjectInvitation
      */
     public function store(StoreProjectInvitation $request)
     {
@@ -62,7 +62,7 @@ class ProjectInvitationController extends Controller
      * @param JoinProjectInvitation $request
      * @param int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function join(JoinProjectInvitation $request, $id)
     {
@@ -108,7 +108,6 @@ class ProjectInvitationController extends Controller
      * @apiParam {Number} id The invitation ID.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {

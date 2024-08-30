@@ -118,6 +118,7 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'item' => $item,
+                    /** @phpstan-ignore property.notFound */
                     'created_at' => $item->annotation_labels_created_at,
                     'include' => 'annotations.dashboardActivityItem',
                 ];
@@ -150,6 +151,7 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'item' => $item,
+                    /** @phpstan-ignore property.notFound */
                     'created_at' => $item->video_annotation_labels_created_at,
                     'include' => 'videos.dashboardActivityItem',
                 ];

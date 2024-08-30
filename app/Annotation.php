@@ -179,7 +179,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The shape of this annotation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, Annotation>
      */
     public function shape()
     {
