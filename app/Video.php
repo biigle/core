@@ -214,9 +214,9 @@ class Video extends VolumeFile
      */
     public function getTakenAtAttribute()
     {
-        $array = json_decode($this->attributes['taken_at'] ?? null);
+        $array = json_decode($this->attributes['taken_at'] ?? '[]');
 
-        if (!is_array($array)) {
+        if (empty($array) || !is_array($array)) {
             return null;
         }
 
