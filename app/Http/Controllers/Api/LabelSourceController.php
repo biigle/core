@@ -20,7 +20,7 @@ class LabelSourceController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function find(Request $request, $id)
     {

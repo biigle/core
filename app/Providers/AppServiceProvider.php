@@ -24,8 +24,6 @@ class AppServiceProvider extends ServiceProvider
         // via dependency injection.
         $this->app->alias('modules', \Biigle\Services\Modules::class);
 
-        $this->app->bind('vips-image', fn () => new \Jcupitt\Vips\Image(null));
-
         // The custom implementation allows "config resolvers" which are required by
         // the user-storage and user-disks modules, for example.
         Storage::swap(new FilesystemManager($this->app));

@@ -10,7 +10,7 @@ class SettingsController extends Controller
     /**
      * Redirects to the profile settings.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function index()
     {
@@ -21,7 +21,6 @@ class SettingsController extends Controller
      * Shows the profile settings.
      *
      * @param Guard $auth
-     * @return \Illuminate\Http\Response
      */
     public function profile(Guard $auth)
     {
@@ -34,7 +33,6 @@ class SettingsController extends Controller
      * Shows the account settings.
      *
      * @param Guard $auth
-     * @return \Illuminate\Http\Response
      */
     public function account(Guard $auth)
     {
@@ -48,7 +46,6 @@ class SettingsController extends Controller
      * Shows the authentication settings.
      *
      * @param Guard $auth
-     * @return \Illuminate\Http\Response
      */
     public function authentication(Guard $auth)
     {
@@ -61,7 +58,6 @@ class SettingsController extends Controller
      * Shows the tokens settings.
      *
      * @param Guard $auth
-     * @return \Illuminate\Http\Response
      */
     public function tokens(Guard $auth)
     {
@@ -76,8 +72,6 @@ class SettingsController extends Controller
 
     /**
      * Shows the notification settings.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function notifications()
     {

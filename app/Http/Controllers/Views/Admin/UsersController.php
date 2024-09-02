@@ -19,7 +19,6 @@ class UsersController extends Controller
      * Shows the admin users page.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
     public function get(Request $request)
     {
@@ -62,8 +61,6 @@ class UsersController extends Controller
 
     /**
      * Shows the admin new user page.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function newUser()
     {
@@ -72,8 +69,6 @@ class UsersController extends Controller
 
     /**
      * Shows the admin edit user page.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
@@ -88,8 +83,6 @@ class UsersController extends Controller
 
     /**
      * Shows the admin delete user page.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function delete($id)
     {
@@ -102,7 +95,6 @@ class UsersController extends Controller
      *
      * @param Modules $modules
      * @param int $id User ID
-     * @return \Illuminate\Http\Response
      */
     public function show(Modules $modules, $id)
     {

@@ -1,7 +1,7 @@
 # FROM nginx:1.21-alpine
 FROM nginx@sha256:5a0df7fb7c8c03e4158ae9974bfbd6a15da2bdfdeded4fb694367ec812325d31
-MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
-LABEL org.opencontainers.image.source https://github.com/biigle/core
+LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
+LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
 ADD .docker/vhost.conf /etc/nginx/conf.d/default.conf
 ADD .docker/ffdhe2048.txt /etc/nginx/conf.d/ffdhe2048.txt

@@ -26,7 +26,7 @@ class AnnotationController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection<int|string, mixed>
      */
     public function index(Request $request, $id)
     {

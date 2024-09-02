@@ -9,8 +9,6 @@ class ManualController extends Controller
 {
     /**
      * Show the application manual to the user.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -22,7 +20,6 @@ class ManualController extends Controller
      *
      * @param string $module Name of the module or name of the article
      * @param string $article Article name (only if the article belongs to a module)
-     * @return \Illuminate\Http\Response
      */
     public function tutorialsArticle($module, $article = null)
     {
@@ -44,7 +41,6 @@ class ManualController extends Controller
      *
      * @param string $module Name of the module or name of the article
      * @param string $article Article name (only if the article belongs to a module)
-     * @return \Illuminate\Http\Response
      */
     public function documentationArticle($module, $article = null)
     {

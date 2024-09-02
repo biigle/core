@@ -54,7 +54,7 @@ class MetadataController extends Controller
      *
      * @param StoreVolumeMetadata $request
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function store(StoreVolumeMetadata $request)
     {
@@ -188,9 +188,11 @@ class MetadataController extends Controller
         $origTakenAtNull = $origTakenAt->combine($origTakenAt->map(fn ($x) => null));
         $newTakenAtNull = $newTakenAt->combine($newTakenAt->map(fn ($x) => null));
 
+        /** @var \Illuminate\Support\Collection<string, mixed> */
         $originalAttributes = collect(VideoMetadata::ALLOWED_ATTRIBUTES)
             ->mapWithKeys(fn ($key) => [$key => $video->$key]);
 
+        /** @var \Illuminate\Support\Collection<string, mixed> */
         $originalMetadata = collect(VideoMetadata::ALLOWED_METADATA)
             ->mapWithKeys(fn ($key) => [$key => null])
             ->merge($video->metadata);

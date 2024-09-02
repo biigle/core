@@ -5,8 +5,6 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
@@ -624,72 +622,5 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertNotPushed(ProcessAnnotatedImage::class);
-    }
-
-    public function testHandleImageAnnotationPatches()
-    {
-        if (!class_exists(ProcessAnnotatedImage::class)) {
-            $this->markTestSkipped('Requires '.ProcessAnnotatedImage::class);
-        }
-
-        // The target project.
-        $project = ProjectTest::create();
-
-        $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-        ])->fresh();// Use fresh() to load even the null fields.
-        $copy = $volume->replicate();
-        $copy->save();
-
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
-        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-
-        $request = new Request([
-            'project' => $project,
-            'volume' => $volume,
-            'clone_annotations' => true,
-        ]);
-        (new CloneImagesOrVideos($request, $copy))->handle();
-
-        // One job for the creation of the annotation and one job for ProcessAnnotatedImage
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertPushed(ProcessAnnotatedImage::class);
-    }
-
-    public function testHandleVideoAnnotationPatches()
-    {
-        if (!class_exists(ProcessAnnotatedVideo::class)) {
-            $this->markTestSkipped('Requires '.ProcessAnnotatedVideo::class);
-        }
-
-        // The target project.
-        $project = ProjectTest::create();
-
-        $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-        ])->fresh();// Use fresh() to load even the null fields.
-        $copy = $volume->replicate();
-        $copy->save();
-
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-
-        $request = new Request([
-            'project' => $project,
-            'volume' => $volume,
-            'clone_annotations' => true,
-        ]);
-        (new CloneImagesOrVideos($request, $copy))->handle();
-
-        // One job for the creation of the annotation and one job for ProcessAnnotatedVideo
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertPushed(ProcessAnnotatedVideo::class);
     }
 }

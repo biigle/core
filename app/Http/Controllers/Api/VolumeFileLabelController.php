@@ -28,11 +28,12 @@ abstract class VolumeFileLabelController extends Controller
      * Creates a new label for the specified file.
      *
      * @param StoreVolumeFileLabel $request
-     * @return \Illuminate\Http\Response
+     * @return \Biigle\VolumeFileLabel
      */
     public function baseStore(StoreVolumeFileLabel $request)
     {
         $model = $this->getFileLabelModel();
+        /** @var \Biigle\VolumeFileLabel */
         $fileLabel = new $model;
         $fileLabel->user()->associate($request->user());
         $fileLabel->label()->associate($request->label);
@@ -58,7 +59,6 @@ abstract class VolumeFileLabelController extends Controller
      * Deletes the specified file label.
      *
      * @param int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {

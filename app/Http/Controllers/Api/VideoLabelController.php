@@ -72,7 +72,7 @@ class VideoLabelController extends VolumeFileLabelController
      * }
      *
      * @param StoreVideoLabel $request
-     * @return \Illuminate\Http\Response
+     * @return \Biigle\VolumeFileLabel
      */
     public function store(StoreVideoLabel $request)
     {

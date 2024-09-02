@@ -68,7 +68,7 @@ class VideoFileController extends Controller
             $offset = $range[0];
             $length = $range[1] - $range[0] + 1;
             $total = $video->size;
-            $response->headers->set('Content-Length', $length);
+            $response->headers->set('Content-Length', "$length");
             $response->headers->set('Content-Range', 'bytes '.implode('-', $range).'/'.$total);
             $response->setStatusCode(206);
 

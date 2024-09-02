@@ -143,7 +143,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
                 'updated_at' => $volume->updated_at,
                 'url' => "/volumes/{$volume->id}",
                 'thumbnail_url' => $volume->thumbnailUrl,
-                'thumbnail_urls' => $volume->thumbnailUrls,
+                'thumbnail_urls' => $volume->thumbnailsUrl,
             ]
         ];
 

@@ -20,7 +20,7 @@ class ParseIfdoController extends Controller
      *
      * @param StoreParseIfdo $request
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function store(StoreParseIfdo $request)
     {

@@ -130,7 +130,7 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             ]);
 
             $metadata = collect($metadataMap->get($filename));
-            if ($metadata) {
+            if ($metadata->isNotEmpty()) {
                 // Remove empty cells.
                 $metadata = $metadata->filter();
                 $insert = array_merge(
