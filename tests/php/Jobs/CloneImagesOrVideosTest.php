@@ -5,8 +5,6 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;
@@ -624,6 +622,5 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertNotPushed(ProcessAnnotatedImage::class);
     }
 }
