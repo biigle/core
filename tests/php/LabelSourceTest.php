@@ -42,6 +42,6 @@ class LabelSourceTest extends ModelTestCase
 
         $source = self::create(['name' => 'ab_cd']);
 
-        $this->assertEquals($mock, $source->getAdapter());
+        $this->assertSame($mock, $source->getAdapter());
     }
 }

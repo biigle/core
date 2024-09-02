@@ -67,7 +67,10 @@ export default {
                 showLabelTooltip: false,
                 showMousePosition: false,
                 playbackRate: 1.0,
+                jumpStep: 5.0,
                 showProgressIndicator: true,
+                enableJumpByFrame: false,
+                muteVideo: true,
             },
             openTab: '',
             urlParams: {
@@ -93,6 +96,7 @@ export default {
             attachingLabel: false,
             swappingLabel: false,
             disableJobTracking: false,
+            supportsJumpByFrame: false,
         };
     },
     computed: {
@@ -200,6 +204,9 @@ export default {
             this.video.currentTime = time;
 
             return promise;
+        },
+        startSeeking() {
+            this.seeking = true;
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -670,6 +677,9 @@ export default {
         'settings.playbackRate'(rate) {
             this.video.playbackRate = rate;
         },
+        'settings.muteVideo'(mute) {
+            this.video.muted = mute;
+        },
         urlParams: {
             deep: true,
             handler(params) {
@@ -696,7 +706,7 @@ export default {
 
         this.initAnnotationFilters();
         this.restoreUrlParams();
-        this.video.muted = true;
+        this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
@@ -719,6 +729,10 @@ export default {
 
         if (this.canEdit) {
             this.initializeEcho();
+        }
+
+        if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+            this.supportsJumpByFrame = true;
         }
     },
     mounted() {

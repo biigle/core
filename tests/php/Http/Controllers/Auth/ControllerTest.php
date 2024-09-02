@@ -70,7 +70,7 @@ class ControllerTest extends TestCase
 
         // login_at attribute should be set after login
         $this->assertNotNull($user->fresh()->login_at);
-        $this->assertEquals($user->id, Auth::user()->id);
+        $this->assertSame($user->id, Auth::user()->id);
         $response->assertRedirect('/');
     }
 
@@ -88,7 +88,7 @@ class ControllerTest extends TestCase
             'password' => 'password',
         ]);
 
-        $this->assertEquals($user->id, Auth::user()->id);
+        $this->assertSame($user->id, Auth::user()->id);
     }
 
     public function testLogout()

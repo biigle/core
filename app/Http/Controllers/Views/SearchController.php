@@ -21,7 +21,6 @@ class SearchController extends Controller
      * @param Guard $auth
      * @param Request $request
      * @param Modules $modules
-     * @return \Illuminate\Http\Response
      */
     public function index(Guard $auth, Request $request, Modules $modules)
     {
@@ -76,6 +75,7 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
+            /** @var \Illuminate\Database\Query\Builder $queryBuilder2 */
             $queryBuilder2 = $user->federatedSearchModels()
                 ->labelTrees()
                 ->selectRaw("id, name, description, updated_at, true as external")
@@ -103,6 +103,7 @@ class SearchController extends Controller
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                /** @phpstan-ignore property.notFound */
                 if ($item->external) {
                     return $external[$item->id];
                 }
@@ -147,6 +148,7 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
+            /** @var \Illuminate\Database\Query\Builder $queryBuilder2 */
             $queryBuilder2 = $user->federatedSearchModels()
                 ->projects()
                 ->selectRaw("id, name, description, updated_at, true as external")
@@ -174,6 +176,7 @@ class SearchController extends Controller
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                /** @phpstan-ignore property.notFound */
                 if ($item->external) {
                     return $external[$item->id];
                 }
@@ -213,6 +216,7 @@ class SearchController extends Controller
             });
 
         if ($includeFederatedSearch) {
+            /** @var \Illuminate\Database\Query\Builder $queryBuilder2 */
             $queryBuilder2 = $user->federatedSearchModels()
                 ->volumes()
                 ->selectRaw("id, name, updated_at, true as external")
@@ -239,6 +243,7 @@ class SearchController extends Controller
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
+                /** @phpstan-ignore property.notFound */
                 if ($item->external) {
                     return $external[$item->id];
                 }

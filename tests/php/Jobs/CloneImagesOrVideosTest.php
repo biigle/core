@@ -6,8 +6,6 @@ use ApiTestCase;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -71,7 +69,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $this->assertFalse($copy->creating_async);
 
         $ignore = ['id', 'created_at', 'updated_at'];
-        $this->assertEquals(
+        $this->assertSame(
             $volume->makeHidden($ignore)->toArray(),
             $copy->makeHidden($ignore)->toArray()
         );
@@ -153,21 +151,21 @@ class CloneImagesOrVideosTest extends ApiTestCase
 
         $this->assertNotNull($newImageLabel);
         $this->assertNotNull($newImage);
-        $this->assertEquals($volume->images()->count(), $copy->images()->count());
+        $this->assertSame($volume->images()->count(), $copy->images()->count());
         $this->assertNotEquals($oldImage->id, $newImage->id);
         $this->assertNotEquals($oldImage->uuid, $newImage->uuid);
-        $this->assertEquals($copy->id, $newImage->volume_id);
+        $this->assertSame($copy->id, $newImage->volume_id);
         $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
         $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
 
         $ignore = ['id', 'volume_id', 'uuid'];
-        $this->assertEquals(
+        $this->assertSame(
             $oldImage->makeHidden($ignore)->toArray(),
             $newImage->makeHidden($ignore)->toArray(),
         );
 
         $ignore = ['id', 'image_id'];
-        $this->assertEquals(
+        $this->assertSame(
             $oldImageLabel->makeHidden($ignore)->toArray(),
             $newImageLabel->makeHidden($ignore)->toArray(),
         );
@@ -215,7 +213,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $newImage = $copy->images()->first();
         $newImageLabel = $newImage->labels()->get();
 
-        $this->assertEquals(2, $newImageLabel->count());
+        $this->assertSame(2, $newImageLabel->count());
         $this->assertContains($l2->label_id, $newImageLabel->pluck('label_id'));
         $this->assertContains($l3->label_id, $newImageLabel->pluck('label_id'));
     }
@@ -261,10 +259,10 @@ class CloneImagesOrVideosTest extends ApiTestCase
 
         $this->assertNotNull($newVideo);
         $this->assertNotNull($newVideoLabel);
-        $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
+        $this->assertSame($volume->videos()->count(), $copy->videos()->count());
         $this->assertNotEquals($oldVideo->id, $newVideo->id);
         $this->assertNotEquals($oldVideo->uuid, $newVideo->uuid);
-        $this->assertEquals($copy->id, $newVideo->volume_id);
+        $this->assertSame($copy->id, $newVideo->volume_id);
         $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
         $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
 
@@ -322,7 +320,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $newVideo = $copy->videos()->first();
         $newVideoLabels = $newVideo->labels()->get();
 
-        $this->assertEquals(2, $newVideoLabels->count());
+        $this->assertSame(2, $newVideoLabels->count());
         $this->assertContains($l2->label_id, $newVideoLabels->pluck('label_id'));
         $this->assertContains($l3->label_id, $newVideoLabels->pluck('label_id'));
     }
@@ -367,9 +365,9 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
         $this->assertNotEquals($oldAnnotation->image_id, $newAnnotation->image_id);
-        $this->assertEquals($newAnnotation->image_id, $newImage->id);
+        $this->assertSame($newAnnotation->image_id, $newImage->id);
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
-        $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
+        $this->assertSame($newAnnotation->id, $newAnnotationLabel->annotation_id);
 
         $ignore = ['id', 'image_id'];
         $this->assertEquals(
@@ -401,7 +399,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
         $oldImage->volume_id = $volume->id;
         $oldImage->save();
-        // there are three labels in total
+        $l1 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l3 = ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
@@ -419,7 +417,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $newAnnotation = $newImage->annotations()->first();
         $newAnnotationLabels = $newAnnotation->labels()->get();
 
-        $this->assertEquals(2, $newAnnotationLabels->count());
+        $this->assertSame(2, $newAnnotationLabels->count());
         $this->assertContains($l2->label_id, $newAnnotationLabels->pluck('label_id'));
         $this->assertContains($l3->label_id, $newAnnotationLabels->pluck('label_id'));
     }
@@ -489,9 +487,9 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
         $this->assertNotEquals($oldAnnotation->video_id, $newAnnotation->video_id);
-        $this->assertEquals($newVideo->id, $newAnnotation->video_id);
+        $this->assertSame($newVideo->id, $newAnnotation->video_id);
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
-        $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
+        $this->assertSame($newAnnotation->id, $newAnnotationLabel->annotation_id);
 
         $ignore = ['id', 'video_id'];
         $this->assertEquals(
@@ -524,7 +522,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
         $oldVideo->volume_id = $volume->id;
         $oldVideo->save();
-        // there are three labels in total
+        $l1 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
         $l3 = VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
 
@@ -542,7 +540,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $newAnnotation = $newVideo->annotations()->first();
         $newAnnotationLabels = $newAnnotation->labels()->get();
 
-        $this->assertEquals(2, $newAnnotationLabels->count());
+        $this->assertSame(2, $newAnnotationLabels->count());
         $this->assertContains($l2->label_id, $newAnnotationLabels->pluck('label_id'));
         $this->assertContains($l3->label_id, $newAnnotationLabels->pluck('label_id'));
     }
@@ -604,7 +602,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
 
         $this->assertTrue($copy->hasMetadata());
         $this->assertNotNull($copy->getMetadata());
-        $this->assertEquals(ImageCsvParser::class, $copy->metadata_parser);
+        $this->assertSame(ImageCsvParser::class, $copy->metadata_parser);
     }
 
     public function testHandleVolumeImages()
@@ -626,72 +624,5 @@ class CloneImagesOrVideosTest extends ApiTestCase
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertNotPushed(ProcessAnnotatedImage::class);
-    }
-
-    public function testHandleImageAnnotationPatches()
-    {
-        if (!class_exists(ProcessAnnotatedImage::class)) {
-            $this->markTestSkipped('Requires '.ProcessAnnotatedImage::class);
-        }
-
-        // The target project.
-        $project = ProjectTest::create();
-
-        $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-        ])->fresh();// Use fresh() to load even the null fields.
-        $copy = $volume->replicate();
-        $copy->save();
-
-        $oldImage = ImageTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = ImageAnnotationTest::create(['image_id' => $oldImage->id]);
-        ImageAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-
-        $request = new Request([
-            'project' => $project,
-            'volume' => $volume,
-            'clone_annotations' => true,
-        ]);
-        (new CloneImagesOrVideos($request, $copy))->handle();
-
-        // One job for the creation of the annotation and one job for ProcessAnnotatedImage
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertPushed(ProcessAnnotatedImage::class);
-    }
-
-    public function testHandleVideoAnnotationPatches()
-    {
-        if (!class_exists(ProcessAnnotatedVideo::class)) {
-            $this->markTestSkipped('Requires '.ProcessAnnotatedVideo::class);
-        }
-
-        // The target project.
-        $project = ProjectTest::create();
-
-        $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
-            'created_at' => '2022-11-09 14:37:00',
-            'updated_at' => '2022-11-09 14:37:00',
-        ])->fresh();// Use fresh() to load even the null fields.
-        $copy = $volume->replicate();
-        $copy->save();
-
-        $oldVideo = VideoTest::create(['volume_id' => $volume->id])->fresh();
-        $oldAnnotation = VideoAnnotationTest::create(['video_id' => $oldVideo->id]);
-        VideoAnnotationLabelTest::create(['annotation_id' => $oldAnnotation->id]);
-
-        $request = new Request([
-            'project' => $project,
-            'volume' => $volume,
-            'clone_annotations' => true,
-        ]);
-        (new CloneImagesOrVideos($request, $copy))->handle();
-
-        // One job for the creation of the annotation and one job for ProcessAnnotatedVideo
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
-        Queue::assertPushed(ProcessAnnotatedVideo::class);
     }
 }

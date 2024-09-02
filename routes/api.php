@@ -143,6 +143,8 @@ $router->resource('media-types', 'MediaTypeController', [
     'parameters' => ['media-types' => 'id'],
 ]);
 
+$router->put('notifications/all', 'NotificationController@updateAll');
+
 $router->resource('notifications', 'NotificationController', [
     'only' => ['update', 'destroy'],
 ]);

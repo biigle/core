@@ -14,8 +14,9 @@ $volume-image-padding: 0.5em;
 }
 
 .navbar-text.navbar-volumes-breadcrumbs {
-    &, a {
-        color: $text-color;
+
+    .annotations-breadcrumb {
+        max-width: 600px;
     }
 }
 
@@ -28,6 +29,12 @@ $volume-image-padding: 0.5em;
 .volume-storage-disk-btn {
     overflow-x: hidden;
     text-overflow: ellipsis;
+}
+
+.file-info-title {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 @import 'components/image-grid';

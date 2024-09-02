@@ -40,7 +40,7 @@ class ApiTokenController extends Controller
      * ]
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection<int, ApiToken>
      */
     public function index(Request $request)
     {
@@ -72,7 +72,7 @@ class ApiTokenController extends Controller
      * }
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return ApiToken|\Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -108,7 +108,7 @@ class ApiTokenController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy(Request $request, $id)
     {

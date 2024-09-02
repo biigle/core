@@ -1,20 +1,22 @@
 <template>
-    <v-chart class="chart grid-col-span-3" :option="option" :update-options="updateOptions" @updateAxisPointer="handleUpdate"></v-chart>
+    <v-chart class="chart grid-col-span-3" :option="option" :update-options="updateOptions"
+        @updateAxisPointer="handleUpdate"></v-chart>
 </template>
 
 <script>
 import * as echarts from 'echarts/core';
 import {
-  DatasetComponent,
-  TooltipComponent,
-  GridComponent,
-  LegendComponent,
-  TitleComponent,
+    DatasetComponent,
+    TooltipComponent,
+    GridComponent,
+    LegendComponent,
+    TitleComponent,
 } from 'echarts/components';
 import { LineChart, PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 import VChart, { THEME_KEY } from "vue-echarts";
+import { IDToColor } from "./IDToColor";
 
 export default {
     props: {
@@ -53,10 +55,15 @@ export default {
                     formatter: '{b}: {@[0]} ({d}%)',
                 },
                 encode: {
-                    itemName: 'year',
+                    itemName: 'yearmonth',
                     tooltip:  0,
                     value: 0
                 },
+                itemStyle: {
+                    color: function (params) {
+                        return IDToColor(params.data[params.data.length - 1]);
+                    }
+                }
             },
         };
     },
@@ -74,17 +81,36 @@ export default {
             this.pieObj.encode.value = dimension;
             this.pieObj.encode.tooltip = dimension;
         },
-        extractYear() {
-            // helper-function to get all X-Axis data (years)
+        extractYearMonth() {
+            // helper-function to get all X-Axis data (yearsmonth)
             let xAxis = this.annotationTimeSeries.map((entry) => {
-                return entry.year.toString();
+                return entry.yearmonth.toString();
             });
-            // filter duplicated years
-            xAxis = [...new Set(xAxis)];
+            // sort the yearmonths entries
+            xAxis = xAxis.sort();
 
-             // sort the years (increasing)
-            return xAxis.sort();
-        }
+            // filter duplicated yearsmonth
+            xAxis = [...new Set(xAxis)];
+            
+            // fill in the missing yearmonths
+            for (let i = 0; i < xAxis.length - 1; i++) {
+                let currentYearMonth = xAxis[i];
+                let nextYearMonth = xAxis[i + 1];
+                let currentDate = new Date(currentYearMonth);
+                let nextDate = new Date(nextYearMonth);
+                while (currentDate.getMonth() < nextDate.getMonth() - 1 || currentDate.getFullYear() < nextDate.getFullYear()) {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    let year = currentDate.getFullYear();
+                    let month = currentDate.getMonth() + 1;
+                    let yearMonth = year + '-' + (month < 10 ? '0' + month : month);
+                    xAxis.splice(i + 1, 0, yearMonth);
+                    i++;
+                }
+            }
+
+            // sort the years (increasing)
+            return xAxis;
+        },
     },
     computed: {
         sourcedata() {
@@ -92,7 +118,7 @@ export default {
             // returns array of type [xAxis-array, annotation-array-user1, annotation-array-user2, etc.]:
             // [['all', 'year', 2020, 2021, 2022], [1195,"Name1",1195,0,0], [6,"Name2",0,2,4], [...]]
             let dat = this.annotationTimeSeries;
-            let xAxis = this.extractYear();
+            let xAxis = this.extractYearMonth();
             let chartdata = [];
 
             let users = {};
@@ -106,32 +132,34 @@ export default {
             // create object with "year-slots" for each user (e.g. {id: {"2020":0, "2021":0, "2022":0]}))
             for (let id in users) {
                 let yearDict = {};
-                for(let y of xAxis) {
+                for (let y of xAxis) {
                     yearDict[y] = 0;
                 }
                 idDict[id] = yearDict;
             }
-            // console.log('xAxis: ', xAxis);
-            // console.log('ID: ', id_unique);
+        
+        
 
             // assemble the annotations of each user in correct order of year
             // each user has its own year-timeseries in idDict (e.g. {id: {"2020":10, "2021":4, "2022":6]})
-            for (let year of xAxis) {
+
+            for (let yearmonth of xAxis) {
                 for (let entry of dat) {
-                    if (entry.year.toString() === year) {
-                        idDict[entry.user_id][year] += entry.count;
+                    if (entry.yearmonth.toString() === yearmonth) {
+                        idDict[entry.user_id][yearmonth] += entry.count;
                     } else {
-                        idDict[entry.user_id][year] += 0;
+                        idDict[entry.user_id][yearmonth] += 0;
                     }
                 }
             }
 
             // setup of whole chartdata object
             // include axis-name in front
-            xAxis.unshift('year');
+            xAxis.unshift('yearmonth');
             // include an entry of the sum over all years
             xAxis.unshift('all');
             chartdata.push(xAxis);
+
             // reduce user-timeseries to values only
             Object.entries(idDict).forEach(entry => {
                 // calculate the sum over all years and include in the array on position 0
@@ -140,14 +168,14 @@ export default {
                     sum += val;
                 })
                 let name = users[entry[0]];
+                let userid = entry[0];
                 // case of deleted account
                 if (name === " ") {
-                    chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1]) ]);
+                    chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1]),userid]);
                 } else { // case of existing user
-                    chartdata.push([sum, name, ...Object.values(entry[1]) ]);
+                    chartdata.push([sum, name, ...Object.values(entry[1]),userid]);
                 }
             });
-
             return chartdata;
         },
         createTimelineSeries() {
@@ -158,7 +186,7 @@ export default {
             // create a series of data which is specific to each user
             // skip first entry (idx=1), as it is an array of x-axis names and not user-data
             // sourcedata-structure: [['all', 'year', 2020, 2021, 2022], [1195,"Name1",1195,0,0], [6,"Name2",0,2,4]]
-            for (let idx=1; idx < this.sourcedata.length; idx++) {
+            for (let idx = 1; idx < this.sourcedata.length; idx++) {
                 let snippet = {
                     name: this.sourcedata[idx][1],
                     type: 'line',
@@ -166,18 +194,17 @@ export default {
                     seriesLayoutBy: 'row',
                     emphasis: { focus: 'series' },
                     // skip first two entries as they are irrelevant for the timeline-data
-                    data: this.sourcedata[idx].slice(2, end)
+                    data: this.sourcedata[idx].slice(2, end),
+                    itemStyle: { "color": IDToColor(this.sourcedata[idx][end]) },
                 };
                 series.push(snippet)
             }
-
             return series;
         },
         option() {
             let seriesObj = this.createTimelineSeries;
             // append the pie-chart specific snippet
             seriesObj.push(this.pieObj);
-
             return {
                 legend: {
                     left: '2%',
@@ -215,7 +242,7 @@ export default {
                 },
                 xAxis: {
                     type: 'category',
-                    data: this.extractYear()
+                    data: this.extractYearMonth()
                 },
                 yAxis: {
                     gridIndex: 0,

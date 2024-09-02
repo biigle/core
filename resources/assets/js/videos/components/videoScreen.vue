@@ -3,7 +3,6 @@
         <minimap
             v-if="showMinimap && !hasError"
             :extent="extent"
-            :render-active="!seeking"
             ></minimap>
         <label-tooltip
             watch="hoverFeatures"
@@ -11,12 +10,32 @@
             :position="mousePosition"
             ></label-tooltip>
         <div class="controls">
-            <div class="btn-group">
-                 <control-button
-                    v-if="showPrevNext"
+            <div v-if="showPrevNext" class="btn-group">
+                <control-button
                     icon="fa-step-backward"
-                    title="Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    :title="enableJumpByFrame ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     @click="emitPrevious"
+                    ></control-button>
+                <control-button
+                    icon="fa-step-forward"
+                    :title="enableJumpByFrame ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    @click="emitNext"
+                    ></control-button>
+            </div>
+            <div class="btn-group">
+                <control-button
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
+                    icon="fa-backward"
+                    :title="jumpBackwardMessage"
+                    @click="jumpBackward"
+                    ></control-button>
+                <control-button
+                    v-if="enableJumpByFrame"
+                    :disabled="seeking"
+                    icon="fa-caret-square-left"
+                    title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="emitPreviousFrame"
                     ></control-button>
                 <control-button
                     v-if="playing"
@@ -33,10 +52,18 @@
                     @click="play"
                     ></control-button>
                 <control-button
-                    v-if="showPrevNext"
-                    icon="fa-step-forward"
-                    title="Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
-                    @click="emitNext"
+                    v-if="enableJumpByFrame"
+                    :disabled="seeking"
+                    icon="fa-caret-square-right"
+                    title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    v-on:click="emitNextFrame"
+                    ></control-button>
+                <control-button
+                    v-if="jumpStep!=0"
+                    :disabled="seeking"
+                    icon="fa-forward"
+                    :title="jumpForwardMessage"
+                    @click="jumpForward"
                     ></control-button>
             </div>
             <div v-if="canAdd" class="btn-group">
@@ -240,7 +267,7 @@ import ControlButton from '../../annotations/components/controlButton';
 import DrawInteractions from './videoScreen/drawInteractions';
 import Indicators from './videoScreen/indicators';
 import Keyboard from '../../core/keyboard';
-import {CancelableMap as Map} from '../../annotations/ol/CancelableMap';
+import Map from '@biigle/ol/Map';
 import Minimap from '../../annotations/components/minimap';
 import ModifyInteractions from './videoScreen/modifyInteractions';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
@@ -285,6 +312,10 @@ export default {
         autoplayDraw: {
             type: Number,
             default: 0,
+        },
+        jumpStep: {
+            type: Number,
+            default: 5.0,
         },
         canAdd: {
             type: Boolean,
@@ -356,7 +387,11 @@ export default {
         reachedTrackedAnnotationLimit: {
             type: Boolean,
             default: false,
-        }
+        },
+        enableJumpByFrame: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -387,6 +422,12 @@ export default {
         },
         disableJobTracking() {
             return this.reachedTrackedAnnotationLimit;
+        },
+        jumpBackwardMessage() {
+            return `Rewind video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄`;
+        },
+        jumpForwardMessage() {
+            return `Advance video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄`;
         },
     },
     methods: {
@@ -510,24 +551,64 @@ export default {
             this.$emit('next');
         },
         reset() {
-            this.setPaused(true);
+            this.setPaused();
             this.resetInteractionMode();
         },
+        adaptKeyboardShortcuts() {
+            if(this.enableJumpByFrame) {
+                Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+            }
+            else {
+                Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+            }
+        }
     },
     watch: {
         selectedAnnotations(annotations) {
+            // This allows selection of annotations outside OpenLayers and forwards
+            // the state to the SelectInteraction.
             let source = this.annotationSource;
             let features = this.selectedFeatures;
-            if (source && features) {
-                let feature;
-                features.clear();
-                annotations.forEach(function (annotation) {
-                    feature = source.getFeatureById(annotation.id);
-                    if (feature) {
-                        features.push(feature);
-                    }
-                });
+            if (!source || !features) {
+                return;
             }
+
+            let featureIdMap = {};
+            let annotationIdMap = {};
+            annotations.forEach(a => annotationIdMap[a.id] = true);
+            let toRemove = [];
+
+            features.forEach(f => {
+                const id = f.getId();
+                if (annotationIdMap[id]) {
+                    featureIdMap[id] = true;
+                } else {
+                    toRemove.push(f);
+                }
+            });
+
+            if (toRemove.length === features.getLength()) {
+                features.clear();
+            } else {
+                toRemove.forEach(f => features.remove(f));
+            }
+
+            annotations
+                .filter(a => !featureIdMap[a.id])
+                .map(a => source.getFeatureById(a.id))
+                // Ignore a==null because the selected annotation may not exist in the
+                // current video frame.
+                .forEach(a => a && features.push(a));
         },
         isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
@@ -540,6 +621,9 @@ export default {
         heightOffset() {
             this.updateSize();
         },
+        enableJumpByFrame() {
+            this.adaptKeyboardShortcuts();
+        },
     },
     created() {
         this.$once('map-ready', this.initLayersAndInteractions);
@@ -549,9 +633,10 @@ export default {
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 
+        this.adaptKeyboardShortcuts();
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-        Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
+        Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);

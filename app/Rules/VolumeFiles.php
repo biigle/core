@@ -90,13 +90,18 @@ class VolumeFiles implements Rule
             return false;
         }
 
-        $lengths = array_map('strlen', $value);
-        $tooLong = array_filter($lengths, fn ($l) => $l > self::FILENAME_MAX_LENGTH);
+        foreach ($value as $filename) {
+            if (strlen($filename) > self::FILENAME_MAX_LENGTH) {
+                $this->message = 'A filename must not be longer than '.self::FILENAME_MAX_LENGTH.' characters.';
 
-        if (!empty($tooLong)) {
-            $this->message = 'A filename must not be longer than '.self::FILENAME_MAX_LENGTH.' characters.';
+                return false;
+            }
 
-            return false;
+            if (preg_match('/[\t\r\n\f]/', $filename) !== 0) {
+                $this->message = 'A filename must not contain characters such as newline or tab.';
+
+                return false;
+            }
         }
 
         if ($this->typeId === MediaType::imageId()) {

@@ -68,7 +68,7 @@ class RegisterController extends Controller
         $rules = (new StoreUser)->rules();
         $additionalRules = [
             'website' => 'honeypot',
-            'homepage' => 'honeytime:5|required',
+            'homepage' => 'honeytime:10|required',
             'affiliation' => 'required|max:255',
         ];
 
@@ -117,7 +117,7 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function showRegistrationForm()
     {
@@ -132,11 +132,11 @@ class RegisterController extends Controller
      * Handle a registration request for the application.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {
-        if ($this->isRegistrationDisabled()) {
+        if ($this->isRegistrationDisabled() || config('biigle.sso_registration_only')) {
             abort(Response::HTTP_NOT_FOUND);
         }
 

@@ -7,6 +7,11 @@ use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $volume_id
+ * @property string $filename
+ */
 abstract class VolumeFile extends Model implements FileContract
 {
     use HasJsonAttributes, HasFactory;
@@ -40,7 +45,7 @@ abstract class VolumeFile extends Model implements FileContract
     /**
      * The volume this video belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Volume, covariant VolumeFile>
      */
     public function volume()
     {
@@ -157,14 +162,14 @@ abstract class VolumeFile extends Model implements FileContract
     /**
      * The labels, this volume file got attached by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFileLabel>
      */
     abstract public function labels();
 
     /**
      * The annotations that belong to this file.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant Annotation>
      */
     abstract public function annotations();
 }

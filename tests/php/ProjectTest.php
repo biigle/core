@@ -53,19 +53,19 @@ class ProjectTest extends ModelTestCase
     {
         $this->model->creator()->dissociate();
         $this->model->save();
-        $this->assertEquals(null, $this->model->creator_id);
+        $this->assertSame(null, $this->model->creator_id);
     }
 
     public function testCreatorOnDeleteSetNull()
     {
         $this->model->creator()->delete();
-        $this->assertEquals(null, $this->model->fresh()->creator);
+        $this->assertSame(null, $this->model->fresh()->creator);
     }
 
     public function testCreator()
     {
         // creator will be user as well
-        $this->assertEquals($this->model->creator->id, $this->model->users()->first()->id);
+        $this->assertSame($this->model->creator->id, $this->model->users()->first()->id);
     }
 
     public function testUsers()
@@ -85,8 +85,8 @@ class ProjectTest extends ModelTestCase
         // the creator doesn't count
         $this->model->creator->delete();
 
-        $this->assertEquals(2, $this->model->users()->count());
-        $this->assertEquals(1, $this->model->admins()->count());
+        $this->assertSame(2, $this->model->users()->count());
+        $this->assertSame(1, $this->model->admins()->count());
     }
 
     public function testEditors()
@@ -97,8 +97,8 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($member->id, Role::guestId());
 
         // count the project creator, too
-        $this->assertEquals(3, $this->model->users()->count());
-        $this->assertEquals(1, $this->model->editors()->count());
+        $this->assertSame(3, $this->model->users()->count());
+        $this->assertSame(1, $this->model->editors()->count());
     }
 
     public function testGuests()
@@ -107,16 +107,16 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($member->id, Role::guestId());
 
         // count the project creator, too
-        $this->assertEquals(2, $this->model->users()->count());
-        $this->assertEquals(1, $this->model->guests()->count());
+        $this->assertSame(2, $this->model->users()->count());
+        $this->assertSame(1, $this->model->guests()->count());
     }
 
     public function testVolumes()
     {
         $volume = VolumeTest::make();
         $this->model->volumes()->save($volume);
-        $this->assertEquals($volume->id, $this->model->volumes()->first()->id);
-        $this->assertEquals(1, $this->model->volumes()->count());
+        $this->assertSame($volume->id, $this->model->volumes()->first()->id);
+        $this->assertSame(1, $this->model->volumes()->count());
     }
 
     public function testAddUserId()
@@ -127,7 +127,7 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($user->id, Role::editorId());
         $user = $this->model->users()->find($user->id);
         $this->assertNotNull($user);
-        $this->assertEquals(Role::editorId(), $user->project_role_id);
+        $this->assertSame(Role::editorId(), $user->project_role_id);
 
         // a user can only be added once regardless the role
         $this->expectException(QueryException::class);
@@ -156,9 +156,9 @@ class ProjectTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->addUserId($user->id, Role::adminId());
-        $this->assertEquals(Role::adminId(), $this->model->users()->find($user->id)->project_role_id);
+        $this->assertSame(Role::adminId(), $this->model->users()->find($user->id)->project_role_id);
         $this->model->changeRole($user->id, Role::editorId());
-        $this->assertEquals(Role::editorId(), $this->model->users()->find($user->id)->project_role_id);
+        $this->assertSame(Role::editorId(), $this->model->users()->find($user->id)->project_role_id);
     }
 
     public function testRemoveVolume()
@@ -221,7 +221,7 @@ class ProjectTest extends ModelTestCase
     {
         $count = $this->model->labelTrees()->count();
         LabelTreeTest::create()->projects()->attach($this->model->id);
-        $this->assertEquals($count + 1, $this->model->labelTrees()->count());
+        $this->assertSame($count + 1, $this->model->labelTrees()->count());
     }
 
     public function testAuthorizedLabelTrees()
@@ -246,12 +246,12 @@ class ProjectTest extends ModelTestCase
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $project = self::create();
         $ids = $project->labelTrees()->pluck('id')->all();
-        $this->assertEquals([$version->labelTree->id], $ids);
+        $this->assertSame([$version->labelTree->id], $ids);
     }
 
     public function testGetThumbnailUrlAttributeNull()
     {
-        $this->assertEquals(null, $this->model->thumbnailUrl);
+        $this->assertSame(null, $this->model->thumbnailUrl);
     }
 
     public function testGetThumbnailUrlAttributeImage()
@@ -299,8 +299,8 @@ class ProjectTest extends ModelTestCase
         $p->volumes()->attach($v);
 
         $projects = Project::inCommon($user, $v->id)->pluck('id');
-        $this->assertEquals(1, $projects->count());
-        $this->assertEquals($this->model->id, $projects[0]);
+        $this->assertSame(1, $projects->count());
+        $this->assertSame($this->model->id, $projects[0]);
 
         $projects = Project::inCommon($user, $v->id, [Role::adminId()])->pluck('id');
         $this->assertEmpty($projects);
@@ -310,20 +310,20 @@ class ProjectTest extends ModelTestCase
     {
         $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
         $this->model->addVolumeId($v->id);
-        $this->assertEquals(0, $this->model->imageVolumes()->count());
+        $this->assertSame(0, $this->model->imageVolumes()->count());
         $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
         $this->model->addVolumeId($v->id);
-        $this->assertEquals(1, $this->model->imageVolumes()->count());
+        $this->assertSame(1, $this->model->imageVolumes()->count());
     }
 
     public function testVideoVolumes()
     {
         $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
         $this->model->addVolumeId($v->id);
-        $this->assertEquals(0, $this->model->videoVolumes()->count());
+        $this->assertSame(0, $this->model->videoVolumes()->count());
         $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
         $this->model->addVolumeId($v->id);
-        $this->assertEquals(1, $this->model->videoVolumes()->count());
+        $this->assertSame(1, $this->model->videoVolumes()->count());
     }
 
     public function testScopeAccessibleBy()

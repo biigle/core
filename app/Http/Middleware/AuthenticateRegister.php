@@ -17,5 +17,7 @@ class AuthenticateRegister extends Middleware
         if (!$request->expectsJson()) {
             return route('register');
         }
+
+        return '';
     }
 }

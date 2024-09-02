@@ -73,7 +73,7 @@ class MetadataController extends Controller
      *
      * @param StoreVolumeMetadata $request
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
     public function store(StoreVolumeMetadata $request)
     {

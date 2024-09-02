@@ -9,7 +9,7 @@ class VideoAnnotation extends Annotation
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'video_id',
@@ -21,7 +21,7 @@ class VideoAnnotation extends Annotation
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'video_id' => 'int',
@@ -33,7 +33,7 @@ class VideoAnnotation extends Annotation
     /**
      * The video, this annotation belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Video, VideoAnnotation>
      */
     public function video()
     {
@@ -41,9 +41,7 @@ class VideoAnnotation extends Annotation
     }
 
     /**
-     * The file, this annotation belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * {@inheritdoc}
      */
     public function file()
     {
@@ -61,9 +59,7 @@ class VideoAnnotation extends Annotation
     }
 
     /**
-     * The labels that are attached to this annotation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * {@inheritdoc}
      */
     public function labels()
     {

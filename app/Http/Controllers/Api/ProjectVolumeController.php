@@ -36,7 +36,7 @@ class ProjectVolumeController extends Controller
      * ]
      *
      * @param int $id Project ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index($id)
     {
@@ -96,7 +96,7 @@ class ProjectVolumeController extends Controller
      * }
      *
      * @param StoreVolume $request
-     * @return Volume
+     * @return Volume|\Illuminate\Http\RedirectResponse
      */
     public function store(StoreVolume $request)
     {
@@ -159,7 +159,6 @@ class ProjectVolumeController extends Controller
      * @param Request $request
      * @param int $projectId
      * @param int $volumeId
-     * @return \Illuminate\Http\Response
      */
     public function attach(Request $request, $projectId, $volumeId)
     {
@@ -191,7 +190,6 @@ class ProjectVolumeController extends Controller
      * @param Request $request
      * @param  int  $projectId
      * @param  int  $volumeId
-     * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $projectId, $volumeId)
     {

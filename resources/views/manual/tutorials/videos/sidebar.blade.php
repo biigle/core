@@ -61,6 +61,10 @@
         </p>
 
         <p>
+            You can set a jump step value in seconds that allows you to jump backaward and forward in the video by that amount of time with the <button class="btn btn-default btn-xs"><i class="fa fa-backward"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-forward"></i></button> control buttons. Set the value to 0 to disable the feature and hide the controls.
+        </p>
+
+        <p>
             The minimap switch enables you to show or hide the minimap.
         </p>
 
@@ -70,6 +74,14 @@
 
         <p>
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the video in pixels.
+        </p>
+
+        <p>
+            <a name="jump-by-frame"></a>The jump by frame switch allows you to navigate frame by frame (forward and backward) in the video. Note that this is an experimental feature as it is only available in Chrome and may not always give the right frame, so please use it with caution. When the feature is enabled, the <button class="btn btn-default btn-xs"><i class="fa fa-caret-square-left"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-caret-square-right"></i></button> control buttons will appear in the tool bar at the bottom of the video. Use these to jump to the previous/next frame. Also, the <a href="{{route('manual-tutorials', ['videos', 'shortcuts'])}}#jump-by-frame">keyboard shortcuts</a> are updated.
+        </p>
+
+        <p>
+            The mute video switch enables or disables the audio track of the video.
         </p>
     </div>
 @endsection

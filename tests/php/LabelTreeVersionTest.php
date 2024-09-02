@@ -46,6 +46,6 @@ class LabelTreeVersionTest extends ModelTestCase
     public function testNormalizeDoi()
     {
         $this->model->doi = 'https://doi.org/10.5281/zenodo.xxxxxxx';
-        $this->assertEquals('10.5281/zenodo.xxxxxxx', $this->model->doi);
+        $this->assertSame('10.5281/zenodo.xxxxxxx', $this->model->doi);
     }
 }

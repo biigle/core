@@ -156,7 +156,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         ]);
         $response->assertSuccessful();
         $content = $response->getContent();
-        $this->assertEquals($count + 1, $this->project()->volumes()->count());
+        $this->assertSame($count + 1, $this->project()->volumes()->count());
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
 
@@ -195,7 +195,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             ])
             ->assertStatus(201);
         $volume = Volume::orderBy('id', 'desc')->first();
-        $this->assertEquals('10.3389/fmars.2017.00083', $volume->handle);
+        $this->assertSame('10.3389/fmars.2017.00083', $volume->handle);
 
         // Some DOIs can contain multiple slashes.
         $this
@@ -421,7 +421,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'files' => '1.mp4, 2.mp4',
         ]);
         $response->assertSuccessful();
-        $this->assertEquals($count + 1, $this->project()->volumes()->count());
+        $this->assertSame($count + 1, $this->project()->volumes()->count());
 
         $id = json_decode($response->getContent())->id;
         Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) use ($id) {

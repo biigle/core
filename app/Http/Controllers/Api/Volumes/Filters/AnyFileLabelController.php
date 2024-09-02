@@ -21,7 +21,7 @@ class AnyFileLabelController extends Controller
      * [1, 5, 6]
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index($id)
     {

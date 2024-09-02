@@ -90,9 +90,9 @@ class AnnotationSessionControllerTest extends ApiTestCase
 
         $session = $session->fresh();
 
-        $this->assertEquals('my cool name', $session->name);
-        $this->assertEquals('2016-09-07', $session->ends_at->format('Y-m-d'));
-        $this->assertEquals([$this->admin()->id], $session->users()->pluck('id')->all());
+        $this->assertSame('my cool name', $session->name);
+        $this->assertSame('2016-09-07', $session->ends_at->format('Y-m-d'));
+        $this->assertSame([$this->admin()->id], $session->users()->pluck('id')->all());
     }
 
     public function testUpdateTimezones()

@@ -33,7 +33,7 @@ class ImageTest extends ModelTestCase
 
     public function testGetUrl()
     {
-        $this->assertEquals($this->model->url, $this->model->getUrl());
+        $this->assertSame($this->model->url, $this->model->getUrl());
     }
 
     public function testHiddenAttributes()
@@ -75,7 +75,7 @@ class ImageTest extends ModelTestCase
     {
         $annotation = ImageAnnotationTest::create(['image_id' => $this->model->id]);
         ImageAnnotationTest::create(['image_id' => $this->model->id]);
-        $this->assertEquals(2, $this->model->annotations()->count());
+        $this->assertSame(2, $this->model->annotations()->count());
         $this->assertNotNull($this->model->annotations()->find($annotation->id));
     }
 
@@ -84,9 +84,9 @@ class ImageTest extends ModelTestCase
         $this->model->mimetype = 'image/jpeg';
         $this->model->size = 123;
         $response = $this->model->getFile();
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
-        $this->assertEquals(123, $response->headers->get('content-length'));
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('image/jpeg', $response->headers->get('content-type'));
+        $this->assertSame(123, intval($response->headers->get('content-length')));
     }
 
     public function testGetFileNotFound()
@@ -102,7 +102,7 @@ class ImageTest extends ModelTestCase
     {
         $this->model->volume->url = 'http://localhost';
         $response = $this->model->getFile();
-        $this->assertEquals($this->model->url, $response->getTargetUrl());
+        $this->assertSame($this->model->url, $response->getTargetUrl());
     }
 
     public function testGetFileTiled()
@@ -146,7 +146,7 @@ class ImageTest extends ModelTestCase
         Storage::shouldReceive('disk')->andReturn($mock);
 
         $response = $this->model->getFile();
-        $this->assertEquals('https://example.com', $response->getTargetUrl());
+        $this->assertSame('https://example.com', $response->getTargetUrl());
     }
 
     public function testGetFileDiskNotFound()
@@ -176,16 +176,16 @@ class ImageTest extends ModelTestCase
     public function testLabels()
     {
         $il = ImageLabelTest::create(['image_id' => $this->model->id]);
-        $this->assertEquals(1, $this->model->labels()->count());
+        $this->assertSame(1, $this->model->labels()->count());
         $label = $this->model->labels()->first();
-        $this->assertEquals($il->id, $label->id);
+        $this->assertSame($il->id, $label->id);
     }
 
     public function testCastsAttrs()
     {
         $this->model->attrs = ['a', 'b', 'c'];
         $this->model->save();
-        $this->assertEquals(['a', 'b', 'c'], $this->model->fresh()->attrs);
+        $this->assertSame(['a', 'b', 'c'], $this->model->fresh()->attrs);
     }
 
     public function testTakenAt()
@@ -193,7 +193,7 @@ class ImageTest extends ModelTestCase
         $now = Carbon::now();
         $this->model->taken_at = $now;
         $this->model->save();
-        $this->assertEquals($now->timestamp, $this->model->fresh()->taken_at->timestamp);
+        $this->assertSame($now->timestamp, $this->model->fresh()->taken_at->timestamp);
     }
 
     public function testLatLng()
@@ -202,8 +202,8 @@ class ImageTest extends ModelTestCase
         $this->model->lng = 44.4;
         $this->model->save();
         $this->model = $this->model->fresh();
-        $this->assertEquals(55.5, $this->model->lat);
-        $this->assertEquals(44.4, $this->model->lng);
+        $this->assertSame(55.5, $this->model->lat);
+        $this->assertSame(44.4, $this->model->lng);
     }
 
     public function testTiledDefaultFalse()
@@ -216,10 +216,10 @@ class ImageTest extends ModelTestCase
 
     public function testSetGetMetadataAttribute()
     {
-        $this->assertEquals([], $this->model->metadata);
+        $this->assertSame([], $this->model->metadata);
         $this->model->metadata = ['water_depth' => 4000];
         $this->model->save();
-        $this->assertEquals(['water_depth' => 4000], $this->model->fresh()->metadata);
+        $this->assertSame(['water_depth' => 4000], $this->model->fresh()->metadata);
     }
 
     public function testSetGetWidthHeight()
@@ -228,8 +228,8 @@ class ImageTest extends ModelTestCase
         $this->model->height = 375;
         $this->model->save();
         $this->model->refresh();
-        $this->assertEquals(500, $this->model->width);
-        $this->assertEquals(375, $this->model->height);
+        $this->assertSame(500, $this->model->width);
+        $this->assertSame(375, $this->model->height);
     }
 
     public function testSetGetSize()
@@ -237,7 +237,7 @@ class ImageTest extends ModelTestCase
         $this->model->size = 12345;
         $this->model->save();
         $this->model->refresh();
-        $this->assertEquals(12345, $this->model->size);
+        $this->assertSame(12345, $this->model->size);
     }
 
     public function testSetGetMimetype()
@@ -245,7 +245,7 @@ class ImageTest extends ModelTestCase
         $this->model->mimetype = 'image/jpeg';
         $this->model->save();
         $this->model->refresh();
-        $this->assertEquals('image/jpeg', $this->model->mimetype);
+        $this->assertSame('image/jpeg', $this->model->mimetype);
     }
 
     public function testSetGetTilingInProgress()

@@ -25,7 +25,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         ];
 
         $index = Cache::get(config('biigle.federated_search.cache_key'));
-        $this->assertEquals($expect, $index);
+        $this->assertSame($expect, $index);
     }
 
     public function testHandleLabelTree()
@@ -54,7 +54,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         ];
         $index = Cache::get(config('biigle.federated_search.cache_key'));
         $this->assertEquals($expectTrees, $index['label_trees']);
-        $this->assertEquals($expectUsers, $index['users']);
+        $this->assertSame($expectUsers, $index['users']);
     }
 
     public function testHandleLabelTreeVersion()
@@ -66,7 +66,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         (new GenerateFederatedSearchIndex)->handle();
         $index = Cache::get(config('biigle.federated_search.cache_key'));
         $this->assertCount(1, $index['label_trees']);
-        $this->assertEquals($version->label_tree_id, $index['label_trees'][0]['id']);
+        $this->assertSame($version->label_tree_id, $index['label_trees'][0]['id']);
     }
 
     public function testHandleLabelTreeGlobal()
@@ -104,7 +104,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         ];
         $index = Cache::get(config('biigle.federated_search.cache_key'));
         $this->assertEquals($expectProjects, $index['projects']);
-        $this->assertEquals($expectUsers, $index['users']);
+        $this->assertSame($expectUsers, $index['users']);
     }
 
     public function testHandleProjectLabelTrees()
@@ -117,7 +117,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         $project->labelTrees()->attach($tree);
         (new GenerateFederatedSearchIndex)->handle();
         $index = Cache::get(config('biigle.federated_search.cache_key'));
-        $this->assertEquals([$tree->id], $index['projects'][0]['label_trees']);
+        $this->assertSame([$tree->id], $index['projects'][0]['label_trees']);
     }
 
     public function testHandleProjectVolumes()
@@ -127,7 +127,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         $project->volumes()->attach($volume);
         (new GenerateFederatedSearchIndex)->handle();
         $index = Cache::get(config('biigle.federated_search.cache_key'));
-        $this->assertEquals([$volume->id], $index['projects'][0]['volumes']);
+        $this->assertSame([$volume->id], $index['projects'][0]['volumes']);
     }
 
     public function testHandleVolume()
@@ -143,7 +143,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
                 'updated_at' => $volume->updated_at,
                 'url' => "/volumes/{$volume->id}",
                 'thumbnail_url' => $volume->thumbnailUrl,
-                'thumbnail_urls' => $volume->thumbnailUrls,
+                'thumbnail_urls' => $volume->thumbnailsUrl,
             ]
         ];
 
@@ -166,6 +166,6 @@ class GenerateFederatedSearchIndexTest extends TestCase
         ];
 
         $index = Cache::get(config('biigle.federated_search.cache_key'));
-        $this->assertEquals($expect, $index['users']);
+        $this->assertSame($expect, $index['users']);
     }
 }

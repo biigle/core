@@ -70,23 +70,23 @@ class VolumeTest extends ModelTestCase
     public function testImages()
     {
         $image = ImageTest::create(['volume_id' => $this->model->id]);
-        $this->assertEquals($image->id, $this->model->images()->first()->id);
+        $this->assertSame($image->id, $this->model->images()->first()->id);
     }
 
     public function testVideos()
     {
         $video = VideoTest::create(['volume_id' => $this->model->id]);
-        $this->assertEquals($video->id, $this->model->videos()->first()->id);
+        $this->assertSame($video->id, $this->model->videos()->first()->id);
     }
 
     public function testFiles()
     {
         $image = ImageTest::create(['volume_id' => $this->model->id]);
         $video = VideoTest::create(['volume_id' => $this->model->id]);
-        $this->assertEquals($image->uuid, $this->model->files()->first()->uuid);
+        $this->assertSame($image->uuid, $this->model->files()->first()->uuid);
         $this->model->media_type_id = MediaType::videoId();
         $this->model->save();
-        $this->assertEquals($video->uuid, $this->model->files()->first()->uuid);
+        $this->assertSame($video->uuid, $this->model->files()->first()->uuid);
     }
 
     public function testIsImageVolume()
@@ -108,34 +108,34 @@ class VolumeTest extends ModelTestCase
     public function testProjects()
     {
         $project = ProjectTest::create();
-        $this->assertEquals(0, $this->model->projects()->count());
+        $this->assertSame(0, $this->model->projects()->count());
         $project->volumes()->attach($this->model);
-        $this->assertEquals(1, $this->model->projects()->count());
+        $this->assertSame(1, $this->model->projects()->count());
     }
 
     public function testCastsAttrs()
     {
         $this->model->attrs = [1, 2, 3];
         $this->model->save();
-        $this->assertEquals([1, 2, 3], $this->model->fresh()->attrs);
+        $this->assertSame([1, 2, 3], $this->model->fresh()->attrs);
     }
 
     public function testParseFilesQueryString()
     {
         $return = Volume::parseFilesQueryString('');
-        $this->assertEquals([], $return);
+        $this->assertSame([], $return);
 
         $return = Volume::parseFilesQueryString(', 1.jpg , , 2.jpg, , , ');
-        $this->assertEquals(['1.jpg', '2.jpg'], $return);
+        $this->assertSame(['1.jpg', '2.jpg'], $return);
 
         $return = Volume::parseFilesQueryString(' 1.jpg ');
-        $this->assertEquals(['1.jpg'], $return);
+        $this->assertSame(['1.jpg'], $return);
 
         $return = Volume::parseFilesQueryString("'1.jpg', '2.jpg'");
-        $this->assertEquals(['1.jpg', '2.jpg'], $return);
+        $this->assertSame(['1.jpg', '2.jpg'], $return);
 
         $return = Volume::parseFilesQueryString('"1.jpg", "2.jpg"');
-        $this->assertEquals(['1.jpg', '2.jpg'], $return);
+        $this->assertSame(['1.jpg', '2.jpg'], $return);
     }
 
     public function testImagesDeletedEventOnDelete()
@@ -180,7 +180,7 @@ class VolumeTest extends ModelTestCase
             'ends_at' => Carbon::yesterday(),
         ]);
 
-        $this->assertEquals($active->id, $this->model->activeAnnotationSession->id);
+        $this->assertSame($active->id, $this->model->activeAnnotationSession->id);
     }
 
     public function testHasConflictingAnnotationSession()
@@ -291,11 +291,11 @@ class VolumeTest extends ModelTestCase
 
         $users = $this->model->users()->get();
         // project creators are counted, too
-        $this->assertEquals(5, $users->count());
-        $this->assertEquals(1, $users->where('id', $u1->id)->count());
-        $this->assertEquals(1, $users->where('id', $u2->id)->count());
-        $this->assertEquals(1, $users->where('id', $u3->id)->count());
-        $this->assertEquals(0, $users->where('id', $u4->id)->count());
+        $this->assertSame(5, $users->count());
+        $this->assertSame(1, $users->where('id', $u1->id)->count());
+        $this->assertSame(1, $users->where('id', $u2->id)->count());
+        $this->assertSame(1, $users->where('id', $u3->id)->count());
+        $this->assertSame(0, $users->where('id', $u4->id)->count());
     }
 
     public function testIsRemote()
@@ -318,7 +318,7 @@ class VolumeTest extends ModelTestCase
             'filename' => 'a.jpg',
             'volume_id' => $this->model->id,
         ]);
-        $this->assertEquals('a.jpg', $this->model->orderedImages()->first()->filename);
+        $this->assertSame('a.jpg', $this->model->orderedImages()->first()->filename);
     }
 
     public function testOrderedFilesImage()
@@ -331,7 +331,7 @@ class VolumeTest extends ModelTestCase
             'filename' => 'a.jpg',
             'volume_id' => $this->model->id,
         ]);
-        $this->assertEquals('a.jpg', $this->model->orderedFiles()->first()->filename);
+        $this->assertSame('a.jpg', $this->model->orderedFiles()->first()->filename);
     }
 
     public function testOrderedFilesVideo()
@@ -346,12 +346,12 @@ class VolumeTest extends ModelTestCase
             'filename' => 'a.mp4',
             'volume_id' => $this->model->id,
         ]);
-        $this->assertEquals('a.mp4', $this->model->orderedFiles()->first()->filename);
+        $this->assertSame('a.mp4', $this->model->orderedFiles()->first()->filename);
     }
 
     public function testGetThumbnailAttributeNull()
     {
-        $this->assertEquals(null, $this->model->thumbnail);
+        $this->assertSame(null, $this->model->thumbnail);
     }
 
     public function testGetThumbnailAttributeImage()
@@ -370,11 +370,11 @@ class VolumeTest extends ModelTestCase
         ]);
 
         // Should be the middle image ordered by name.
-        $this->assertEquals($i2->uuid, $this->model->thumbnail->uuid);
+        $this->assertSame($i2->uuid, $this->model->thumbnail->uuid);
 
         // If the thumbnail is deleted, purge the cache so a new thumbnail is selected.
         $i2->delete();
-        $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+        $this->assertSame($i1->uuid, $this->model->thumbnail->uuid);
     }
 
     public function testGetThumbnailAttributeVideo()
@@ -395,11 +395,11 @@ class VolumeTest extends ModelTestCase
         ]);
 
         // Should be the middle image ordered by name.
-        $this->assertEquals($v2->uuid, $this->model->thumbnail->uuid);
+        $this->assertSame($v2->uuid, $this->model->thumbnail->uuid);
 
         // If the thumbnail is deleted, purge the cache so a new thumbnail is selected.
         $v2->delete();
-        $this->assertEquals($v1->uuid, $this->model->thumbnail->uuid);
+        $this->assertSame($v1->uuid, $this->model->thumbnail->uuid);
     }
 
     public function testHasGeoInfo()
@@ -445,7 +445,7 @@ class VolumeTest extends ModelTestCase
     {
         $this->model->handle = '10.3389/fmars.2017.00083';
         $this->model->save();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->handle);
+        $this->assertSame('10.3389/fmars.2017.00083', $this->model->fresh()->handle);
     }
 
     public function testScopeAccessibleBy()
@@ -466,10 +466,10 @@ class VolumeTest extends ModelTestCase
     public function testSanitizeUrl()
     {
         $this->model->url = 'http://example.com/images/';
-        $this->assertEquals('http://example.com/images', $this->model->url);
+        $this->assertSame('http://example.com/images', $this->model->url);
 
         $this->model->url = 'disk://';
-        $this->assertEquals('disk://', $this->model->url);
+        $this->assertSame('disk://', $this->model->url);
     }
 
     public function testGetThumbnailsAttribute()
@@ -595,6 +595,6 @@ class VolumeTest extends ModelTestCase
         $this->model->metadata_parser = ImageCsvParser::class;
         $metadata = $this->model->getMetadata();
         $fileMeta = $metadata->getFile('1.jpg');
-        $this->assertEquals(2.5, $fileMeta->area);
+        $this->assertSame(2.5, $fileMeta->area);
     }
 }

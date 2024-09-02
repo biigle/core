@@ -18,11 +18,11 @@ class ProcessNewVideoTest extends TestCase
         config(['videos.thumbnail_count' => 3]);
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->duration = 10;
+        $job->duration = 10.0;
 
         $job->handle();
-        $this->assertEquals(10, $video->fresh()->duration);
-        $this->assertEquals([0.5, 5, 9.5], $job->times);
+        $this->assertSame(10.0, $video->fresh()->duration);
+        $this->assertSame([0.5, 5.0, 9.5], $job->times);
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
@@ -40,7 +40,7 @@ class ProcessNewVideoTest extends TestCase
             $job->handle();
             $this->fail('Expected an exception.');
         } catch (Exception $e) {
-            $this->assertEquals(Video::ERROR_NOT_FOUND, $video->fresh()->error);
+            $this->assertSame(Video::ERROR_NOT_FOUND, $video->fresh()->error);
         }
     }
 
@@ -55,7 +55,7 @@ class ProcessNewVideoTest extends TestCase
             $job->handle();
             $this->fail('Expected an exception.');
         } catch (Exception $e) {
-            $this->assertEquals(Video::ERROR_TOO_LARGE, $video->fresh()->error);
+            $this->assertSame(Video::ERROR_TOO_LARGE, $video->fresh()->error);
         }
     }
 
@@ -64,7 +64,7 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->handle();
-        $this->assertEquals('video/mp4', $video->fresh()->mimeType);
+        $this->assertSame('video/mp4', $video->fresh()->mimeType);
     }
 
     public function testHandleInvalidMimeType()
@@ -72,8 +72,8 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test-image.jpg']);
         $job = new ProcessNewVideoStub($video);
         $job->handle();
-        $this->assertEquals('image/jpeg', $video->fresh()->mimeType);
-        $this->assertEquals(Video::ERROR_MIME_TYPE, $video->fresh()->error);
+        $this->assertSame('image/jpeg', $video->fresh()->mimeType);
+        $this->assertSame(Video::ERROR_MIME_TYPE, $video->fresh()->error);
     }
 
     public function testHandleInvalidMimeTypeFileCache()
@@ -87,7 +87,7 @@ class ProcessNewVideoTest extends TestCase
             $job->handle();
             $this->fail('Expected an exception.');
         } catch (Exception $e) {
-            $this->assertEquals(Video::ERROR_MIME_TYPE, $video->fresh()->error);
+            $this->assertSame(Video::ERROR_MIME_TYPE, $video->fresh()->error);
         }
     }
 
@@ -96,7 +96,7 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->handle();
-        $this->assertEquals(104500, $video->fresh()->size);
+        $this->assertSame(104500, $video->fresh()->size);
     }
 
     public function testHandleDimensions()
@@ -104,8 +104,8 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->handle();
-        $this->assertEquals(120, $video->fresh()->width);
-        $this->assertEquals(144, $video->fresh()->height);
+        $this->assertSame(120, $video->fresh()->width);
+        $this->assertSame(144, $video->fresh()->height);
     }
 
     public function testHandleMalformed()
@@ -113,7 +113,7 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test_malformed.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->handle();
-        $this->assertEquals(Video::ERROR_MALFORMED, $video->fresh()->error);
+        $this->assertSame(Video::ERROR_MALFORMED, $video->fresh()->error);
     }
 
     public function testHandleInvalidCodec()
@@ -122,7 +122,7 @@ class ProcessNewVideoTest extends TestCase
         $job = new ProcessNewVideoStub($video);
         $job->codec = 'h265';
         $job->handle();
-        $this->assertEquals(Video::ERROR_CODEC, $video->fresh()->error);
+        $this->assertSame(Video::ERROR_CODEC, $video->fresh()->error);
     }
 
     public function testHandleKeepErrorOnError()
@@ -136,7 +136,7 @@ class ProcessNewVideoTest extends TestCase
             $job->handle();
             $this->fail('Expected an exception.');
         } catch (Exception $e) {
-            $this->assertEquals(Video::ERROR_MALFORMED, $video->fresh()->error);
+            $this->assertSame(Video::ERROR_MALFORMED, $video->fresh()->error);
         }
     }
 
