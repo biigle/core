@@ -13,8 +13,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Jcupitt\Vips\Image as VipsImage;
 use Log;
-use VipsImage;
 
 class ProcessNewImage extends Job implements ShouldQueue
 {
@@ -153,7 +153,7 @@ class ProcessNewImage extends Job implements ShouldQueue
         $image->mimetype = File::mimeType($path);
 
         try {
-            $i = VipsImage::newFromFile($path);
+            $i = $this->getVipsImage($path);
             $image->width = $i->width;
             $image->height = $i->height;
         } catch (Exception $e) {
@@ -296,18 +296,14 @@ class ProcessNewImage extends Job implements ShouldQueue
         $parts = explode('/', $frac);
         $count = count($parts);
 
-        if ($count === 0) {
-            return 0;
-        } elseif ($count === 1) {
-            return $parts[0];
+        // Don't use !== 0 to catch all incorrect values.
+        if ($count === 2 && $parts[1] != 0) {
+            return floatval($parts[0]) / floatval($parts[1]);
+        } elseif (is_numeric($parts[0])) {
+            return floatval($parts[0]);
         }
 
-        // Don't use === to catch all incorrect values.
-        if ($parts[1] == 0) {
-            return 0;
-        }
-
-        return floatval($parts[0]) / floatval($parts[1]);
+        return 0;
     }
 
     /**
@@ -345,5 +341,17 @@ class ProcessNewImage extends Job implements ShouldQueue
         $image->tilingInProgress = true;
         $image->save();
         TileSingleImage::dispatch($image);
+    }
+
+    /**
+     * Get a Vips image instance for the file.
+     *
+     * @param string $path
+     *
+     * @return VipsImage
+     */
+    protected function getVipsImage(string $path)
+    {
+        return VipsImage::newFromFile($path);
     }
 }

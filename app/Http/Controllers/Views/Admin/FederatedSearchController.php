@@ -12,7 +12,6 @@ class FederatedSearchController extends Controller
      * Show the federated search admin page.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {

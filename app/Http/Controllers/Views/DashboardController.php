@@ -26,7 +26,6 @@ class DashboardController extends Controller
      * Show the application dashboard to the user.
      *
      * @param Guard $auth
-     * @return \Illuminate\Http\Response
      */
     public function index(Guard $auth)
     {
@@ -41,8 +40,6 @@ class DashboardController extends Controller
      * Show the dashboard for a logged in user.
      *
      * @param User $user
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function indexDashboard(User $user)
     {
@@ -121,6 +118,7 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'item' => $item,
+                    /** @phpstan-ignore property.notFound */
                     'created_at' => $item->annotation_labels_created_at,
                     'include' => 'annotations.dashboardActivityItem',
                 ];
@@ -153,6 +151,7 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'item' => $item,
+                    /** @phpstan-ignore property.notFound */
                     'created_at' => $item->video_annotation_labels_created_at,
                     'include' => 'videos.dashboardActivityItem',
                 ];
@@ -162,8 +161,6 @@ class DashboardController extends Controller
 
     /**
      * Show the landing page if no user is authenticated.
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function indexLandingPage()
     {

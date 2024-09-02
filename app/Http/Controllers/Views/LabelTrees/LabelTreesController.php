@@ -17,8 +17,6 @@ class LabelTreesController extends Controller
      *
      * @param Request $request
      * @param int $id Label tree ID
-     *
-     * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
     {
@@ -38,7 +36,7 @@ class LabelTreesController extends Controller
      * Show the label tree list.
      *
      * @deprecated This is a legacy route and got replaced by the global search.
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function index()
     {
@@ -49,7 +47,6 @@ class LabelTreesController extends Controller
      * Show the create label tree page.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
     public function create(Request $request)
     {
@@ -89,8 +86,6 @@ class LabelTreesController extends Controller
      *
      * @param LabelTree $tree
      * @param User $user
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function showMasterLabelTree(LabelTree $tree, User $user)
     {
@@ -118,8 +113,6 @@ class LabelTreesController extends Controller
      *
      * @param LabelTree $tree
      * @param User $user
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function showVersionedLabelTree(LabelTree $tree, User $user)
     {

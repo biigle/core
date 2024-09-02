@@ -15,7 +15,7 @@ class Project extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'pivot',
@@ -69,7 +69,7 @@ class Project extends Model
      * The members of this project. Every member has a project-specific
      * `project_role_id` besides their global user role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
      */
     public function users()
     {
@@ -80,7 +80,7 @@ class Project extends Model
     /**
      * All members of this project with the `admin` role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
      */
     public function admins()
     {
@@ -90,7 +90,7 @@ class Project extends Model
     /**
      * All members of this project with the `editor` role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
      */
     public function editors()
     {
@@ -100,7 +100,7 @@ class Project extends Model
     /**
      * All members of this project with the `guest` role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
      */
     public function guests()
     {
@@ -112,7 +112,7 @@ class Project extends Model
      * automatically added to the project's users with the 'admin' role by
      * the ProjectObserver.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Project>
      */
     public function creator()
     {
@@ -122,7 +122,7 @@ class Project extends Model
     /**
      * The project invitations of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ProjectInvitation>
      */
     public function invitations()
     {
@@ -182,7 +182,7 @@ class Project extends Model
     /**
      * The volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume>
      */
     public function volumes()
     {
@@ -192,7 +192,7 @@ class Project extends Model
     /**
      * The image volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume>
      */
     public function imageVolumes()
     {
@@ -202,7 +202,7 @@ class Project extends Model
     /**
      * The video volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume>
      */
     public function videoVolumes()
     {
@@ -218,7 +218,7 @@ class Project extends Model
      */
     public function addVolumeId($id)
     {
-        $this->volumes()->syncWithoutDetaching($id);
+        $this->volumes()->syncWithoutDetaching([$id]);
         // Maybe we get a new thumbnail now.
         Cache::forget("project-thumbnail-url-{$this->id}");
     }
@@ -231,13 +231,8 @@ class Project extends Model
      * @param bool $force Delete the volume completely if this is the last
      * project it belongs to
      */
-    public function removeVolume($volume, $force = false)
+    public function removeVolume(Volume $volume, $force = false)
     {
-        if (!$volume) {
-            // nothing to remove
-            return;
-        }
-
         // this is the last project the volume belongs to, so it should be
         // deleted
         if ($volume->projects()->count() === 1) {
@@ -282,7 +277,7 @@ class Project extends Model
     /**
      * The label trees, this project is using.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree>
      */
     public function labelTrees()
     {
@@ -292,7 +287,7 @@ class Project extends Model
     /**
      * The private label trees that authorized this project to use them.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree>
      */
     public function authorizedLabelTrees()
     {

@@ -11,7 +11,6 @@ use Jcupitt\Vips\Exception as VipsException;
 use Queue;
 use Storage;
 use TestCase;
-use VipsImage;
 
 class ProcessNewImageTest extends TestCase
 {
@@ -63,9 +62,6 @@ class ProcessNewImageTest extends TestCase
 
     public function testHandleMakeThumbnail()
     {
-        if (!function_exists('vips_call')) {
-            $this->markTestSkipped('Requires the PHP vips extension.');
-        }
         Storage::fake('test-thumbs');
         config(['thumbnails.storage_disk' => 'test-thumbs']);
 
@@ -105,12 +101,14 @@ class ProcessNewImageTest extends TestCase
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
-        VipsImage::shouldReceive('newFromFile')
-            ->once()
-            ->andReturn(new ImageMock(100, 200));
+        $job = new ProcessNewImageMock($image);
+        $job->vipsImage = new class {
+            public $width = 100;
+            public $height = 200;
+        };
 
         Queue::fake();
-        with(new ProcessNewImageMock($image))->handle();
+        $job->handle();
 
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tiled);
@@ -123,12 +121,14 @@ class ProcessNewImageTest extends TestCase
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
-        VipsImage::shouldReceive('newFromFile')
-            ->once()
-            ->andReturn(new ImageMock(400, 200));
+        $job = new ProcessNewImageMock($image);
+        $job->vipsImage = new class {
+            public $width = 400;
+            public $height = 200;
+        };
 
         Queue::fake();
-        with(new ProcessNewImageMock($image))->handle();
+        $job->handle();
 
         Queue::assertPushed(TileSingleImage::class, fn ($job) => $job->image->id === $image->id);
         $image->refresh();
@@ -194,22 +194,10 @@ class ProcessNewImageTest extends TestCase
     }
 }
 
-class ImageMock extends \Jcupitt\Vips\Image
-{
-    public $width;
-    public $height;
-
-    public function __construct($width, $height)
-    {
-        parent::__construct(null);
-        $this->width = $width;
-        $this->height = $height;
-    }
-}
-
 class ProcessNewImageMock extends ProcessNewImage
 {
     public $exif = false;
+    public $vipsImage = null;
 
     protected function makeThumbnail(Image $image, $path)
     {
@@ -223,5 +211,10 @@ class ProcessNewImageMock extends ProcessNewImage
         }
 
         return parent::getExif($path);
+    }
+
+    protected function getVipsImage($path)
+    {
+        return $this->vipsImage ?: parent::getVipsImage($path);
     }
 }

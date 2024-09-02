@@ -18,21 +18,21 @@ class StoreImageAnnotations extends FormRequest
     /**
      * Unique image IDs of this request.
      *
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
     public $imageIds;
 
     /**
      * The images on which the annotations should be created.
      *
-     * @var array
+     * @var \Illuminate\Database\Eloquent\Collection<\Biigle\Image>
      */
     public $images;
 
     /**
      * The labels that should be attached to the new annotations.
      *
-     * @var array
+     * @var \Illuminate\Database\Eloquent\Collection<int, Label>
      */
     public $labels;
 

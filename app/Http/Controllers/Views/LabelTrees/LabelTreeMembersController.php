@@ -16,7 +16,6 @@ class LabelTreeMembersController extends Controller
      *
      * @param Request $request
      * @param int $id project ID
-     * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
     {

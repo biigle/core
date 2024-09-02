@@ -209,7 +209,7 @@ class VideoAnnotationController extends Controller
             $points = json_decode($points);
         }
 
-        $annotation = VideoAnnotation::make([
+        $annotation = new VideoAnnotation([
             'video_id' => $request->video->id,
             'shape_id' => $request->input('shape_id'),
             'points' => $points,
@@ -240,6 +240,7 @@ class VideoAnnotationController extends Controller
             $queue = config('videos.track_object_queue');
             Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
             Cache::increment(TrackObject::getRateLimitCacheKey($request->user()));
+            /** @phpstan-ignore property.notFound */
             $annotation->trackingJobLimitReached = $currentJobs === ($maxJobs - 1);
         }
 
@@ -267,7 +268,6 @@ class VideoAnnotationController extends Controller
      * }
      *
      * @param UpdateVideoAnnotation $request
-     * @return \Illuminate\Http\Response
      */
     public function update(UpdateVideoAnnotation $request)
     {
@@ -301,7 +301,6 @@ class VideoAnnotationController extends Controller
      * @apiParam {Number} id The annotation ID.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
