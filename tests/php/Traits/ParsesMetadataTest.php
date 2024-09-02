@@ -17,7 +17,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
         ];
-        $this->assertEquals($expect, $stub->parseMetadata($input));
+        $this->assertSame($expect, $stub->parseMetadata($input));
     }
 
     public function testParseMetadataCaseInsensitive()
@@ -28,7 +28,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area'],
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6'],
         ];
-        $this->assertEquals($expect, $stub->parseMetadata($input));
+        $this->assertSame($expect, $stub->parseMetadata($input));
     }
 
     public function testParseMetadataSynonyms1()
@@ -39,7 +39,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'lng', 'lat', 'yaw'],
             ['abc.jpg', '52.220', '28.123', '180'],
         ];
-        $this->assertEquals($expect, $stub->parseMetadata($input));
+        $this->assertSame($expect, $stub->parseMetadata($input));
     }
 
     public function testParseMetadataSynonyms2()
@@ -50,7 +50,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'lng', 'lat'],
             ['abc.jpg', '52.220', '28.123'],
         ];
-        $this->assertEquals($expect, $stub->parseMetadata($input));
+        $this->assertSame($expect, $stub->parseMetadata($input));
     }
 
     public function testParseMetadataSynonyms3()
@@ -61,7 +61,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
         ];
-        $this->assertEquals($expect, $stub->parseMetadata($input));
+        $this->assertSame($expect, $stub->parseMetadata($input));
     }
 
     public function testParseMetadataEmptyCells()
@@ -72,7 +72,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
             ['abc.jpg', '', '52.220', '28.123', '', '', '', ''],
         ];
-        $this->assertEquals($expect, $stub->parseMetadata($input));
+        $this->assertSame($expect, $stub->parseMetadata($input));
     }
 
     public function testParseMetadataFile()
@@ -84,7 +84,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
         ];
-        $this->assertEquals($expect, $stub->parseMetadataFile($file));
+        $this->assertSame($expect, $stub->parseMetadataFile($file));
     }
 
     public function testParseMetadataFileBOM()
@@ -96,7 +96,7 @@ class ParsesMetadataTest extends TestCase
             ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
             ['abc.jpg', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
         ];
-        $this->assertEquals($expect, $stub->parseMetadataFile($file));
+        $this->assertSame($expect, $stub->parseMetadataFile($file));
     }
 
     public function testParseIfdo()
@@ -112,16 +112,16 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'image',
             'files' => [
                 ['filename'],
                 ['myimage.jpg'],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoHeader()
@@ -146,16 +146,16 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
+            'media_type' => 'image',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
-                ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
+                ['myimage.jpg', 5.0, 2, -2248.0, 11.8581802, -117.0214864, '2019-04-06 04:29:27.000000', 20],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoVideoType()
@@ -172,16 +172,16 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'video',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'video',
             'files' => [
                 ['filename'],
                 ['myvideo.mp4'],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoSlideIsImageType()
@@ -198,16 +198,16 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'image',
             'files' => [
                 ['filename'],
                 ['myimage.jpg'],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoItems()
@@ -230,16 +230,16 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'image',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
-                ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
+                ['myimage.jpg', 5.0, 2, -2248.0, 11.8581802, -117.0214864, '2019-04-06 04:29:27.000000', 20],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoImageArrayItems()
@@ -262,16 +262,17 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'image',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
-                ['myimage.jpg', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
+                ['myimage.jpg', 5.0, 2, -2248.0, 11.8581802, -117.0214864, '2019-04-06 04:29:27.000000', 20],
+
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoItemsOverrideHeader()
@@ -297,16 +298,16 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'image',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
-                ['myimage.jpg', '5.1', '3', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:29:27.000000', '20'],
+                ['myimage.jpg', 5.1, 3, -2248.0, 11.8581802, -117.0214864, '2019-04-06 05:29:27.000000', 20],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoSubItemsOverrideDefaultsAndHeader()
@@ -335,17 +336,17 @@ image-set-items:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'video',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'video',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
-                ['myvideo.mp4', '5.1', '3', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:29:27.000000', '20'],
-                ['myvideo.mp4', '5.1', '4', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 05:30:27.000000', '20'],
+                ['myvideo.mp4', 5.1, 3, -2248.0, 11.8581802, -117.0214864, '2019-04-06 05:29:27.000000', 20],
+                ['myvideo.mp4', 5.1, 4, -2248.0, 11.8581802, -117.0214864, '2019-04-06 05:30:27.000000', 20],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoFile()
@@ -355,17 +356,17 @@ IFDO;
         $file = new UploadedFile($path, 'ifdo.yaml', 'application/yaml', null, true);
         $expect = [
             'name' => 'SO268 SO268-2_100-1_OFOS SO_CAM-1_Photo_OFOS',
-            'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => 'https://hdl.handle.net/20.500.12085/d7546c4b-307f-4d42-8554-33236c577450@data',
+            'media_type' => 'image',
             'files' => [
                 ['filename', 'area', 'distance_to_ground', 'gps_altitude', 'lat', 'lng', 'taken_at', 'yaw'],
-                ['SO268-2_100-1_OFOS_SO_CAM-1_20190406_042927.JPG', '5.0', '2', '-2248.0', '11.8581802', '-117.0214864', '2019-04-06 04:29:27.000000', '20'],
-                ['SO268-2_100-1_OFOS_SO_CAM-1_20190406_052726.JPG', '5.1', '2.1', '-4129.6', '11.8582192', '-117.0214286', '2019-04-06 05:27:26.000000', '21'],
+                ['SO268-2_100-1_OFOS_SO_CAM-1_20190406_042927.JPG', 5.0, 2, -2248.0, 11.8581802, -117.0214864, '2019-04-06 04:29:27.000000', 20],
+                ['SO268-2_100-1_OFOS_SO_CAM-1_20190406_052726.JPG', 5.1, 2.1, -4129.6, 11.8582192, -117.0214286, '2019-04-06 05:27:26.000000', 21],
             ],
         ];
-        $this->assertEquals($expect, $stub->parseIfdoFile($file));
+        $this->assertSame($expect, $stub->parseIfdoFile($file));
     }
 
     public function testParseIfdoNoHeader()
@@ -391,13 +392,13 @@ image-set-header:
 IFDO;
         $expect = [
             'name' => 'myvolume',
-            'url' => '',
             'handle' => '20.500.12085/d7546c4b-307f-4d42-8554-33236c577450',
-            'media_type' => 'image',
             'uuid' => 'd7546c4b-307f-4d42-8554-33236c577450',
+            'url' => '',
+            'media_type' => 'image',
             'files' => [],
         ];
-        $this->assertEquals($expect, $stub->parseIfdo($input));
+        $this->assertSame($expect, $stub->parseIfdo($input));
     }
 
     public function testParseIfdoNoName()

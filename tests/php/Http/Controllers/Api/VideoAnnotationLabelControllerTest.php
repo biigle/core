@@ -52,8 +52,8 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
 
         $label = $annotation->labels()->first();
         $this->assertNotNull($label);
-        $this->assertEquals($this->labelRoot()->id, $label->label_id);
-        $this->assertEquals($this->editor()->id, $label->user_id);
+        $this->assertSame($this->labelRoot()->id, $label->label_id);
+        $this->assertSame($this->editor()->id, $label->user_id);
         Event::assertDispatched(AnnotationLabelAttached::class);
 
         $this

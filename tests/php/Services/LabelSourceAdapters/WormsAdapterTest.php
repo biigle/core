@@ -89,7 +89,7 @@ class WormsAdapterTest extends TestCase
             ],
         ]];
 
-        $this->assertEquals($expect, $results);
+        $this->assertSame($expect, $results);
     }
 
     public function testFindAccepted()
@@ -118,7 +118,7 @@ class WormsAdapterTest extends TestCase
         $adapter->setSoapClient($mock);
         $request = new Request;
         $results = $adapter->find($request);
-        $this->assertEquals([], $results);
+        $this->assertSame([], $results);
     }
 
     public function testFindThrowException()
@@ -139,7 +139,7 @@ class WormsAdapterTest extends TestCase
             $adapter->find($request);
             $this->assertFalse(true);
         } catch (ServiceUnavailableHttpException $e) {
-            $this->assertEquals('The WoRMS server is currently unavailable.', $e->getMessage());
+            $this->assertSame('The WoRMS server is currently unavailable.', $e->getMessage());
         }
     }
 
@@ -176,7 +176,7 @@ class WormsAdapterTest extends TestCase
             $labels = $adapter->create($tree->id, $request);
             $this->assertTrue(false);
         } catch (ValidationException $e) {
-            $this->assertEquals(['source_id' => ['The AphiaID does not exist.']], $e->errors());
+            $this->assertSame(['source_id' => ['The AphiaID does not exist.']], $e->errors());
         }
 
         $request->merge([
@@ -185,12 +185,12 @@ class WormsAdapterTest extends TestCase
 
         $labels = $adapter->create($tree->id, $request);
         $this->assertTrue($tree->labels()->where('id', $labels[0]->id)->exists());
-        $this->assertEquals('My Kolga', $labels[0]->name);
-        $this->assertEquals('bada55', $labels[0]->color);
-        $this->assertEquals('124731', $labels[0]->source_id);
-        $this->assertEquals(1, $labels[0]->label_source_id);
-        $this->assertEquals($label->id, $labels[0]->parent_id);
-        $this->assertEquals($tree->id, $labels[0]->label_tree_id);
+        $this->assertSame('My Kolga', $labels[0]->name);
+        $this->assertSame('bada55', $labels[0]->color);
+        $this->assertSame('124731', $labels[0]->source_id);
+        $this->assertSame(1, $labels[0]->label_source_id);
+        $this->assertSame($label->id, $labels[0]->parent_id);
+        $this->assertSame($tree->id, $labels[0]->label_tree_id);
         $this->assertNotNull($labels[0]->uuid);
     }
 
@@ -214,7 +214,7 @@ class WormsAdapterTest extends TestCase
             $adapter->create($tree->id, $request);
             $this->assertFalse(true);
         } catch (ServiceUnavailableHttpException $e) {
-            $this->assertEquals('The WoRMS server is currently unavailable.', $e->getMessage());
+            $this->assertSame('The WoRMS server is currently unavailable.', $e->getMessage());
         }
     }
 
@@ -267,7 +267,7 @@ class WormsAdapterTest extends TestCase
             $labels = $adapter->create(1, $request);
             $this->assertTrue(false);
         } catch (ValidationException $e) {
-            $this->assertEquals(['parent_id' => ['The label must not have a parent if it should be created recursively.']], $e->errors());
+            $this->assertSame(['parent_id' => ['The label must not have a parent if it should be created recursively.']], $e->errors());
         }
     }
 
@@ -327,7 +327,7 @@ class WormsAdapterTest extends TestCase
 
         $labels = $adapter->create($tree->id, $request);
         $this->assertCount(2, $labels);
-        $this->assertEquals(3, $tree->labels()->count());
+        $this->assertSame(3, $tree->labels()->count());
 
         $parent = $tree->labels()->where('source_id', 123514)->first();
         $expect = [

@@ -22,7 +22,7 @@ class UsersController extends Controller
      */
     public function get(Request $request)
     {
-        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'role_id', 'affiliation')
+        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'created_at', 'role_id', 'affiliation')
             ->when($request->has('q'), function ($query) use ($request) {
                 $q = $request->get('q');
                 $query->where(function ($query) use ($q) {
@@ -31,6 +31,10 @@ class UsersController extends Controller
                         ->orWhere('email', 'ilike', "%$q%");
                 });
             })
+            ->when(
+                $request->get('recent'),
+                fn ($query) => $query->where('created_at', '>=', now()->subWeek())
+            )
             // Orders by login_at in descending order (most recent first) but puts
             // users with login_at=NULL at the end.
             ->orderByRaw('login_at IS NULL, login_at DESC')
@@ -43,11 +47,15 @@ class UsersController extends Controller
             Role::guestId() => 'Guest',
         ];
 
+        $usersCount = User::whereDate('created_at', '>=', now()->subWeek())
+            ->count();
+
         return view('admin.users', [
             'users' => $users,
             'roleClass' => $this->roleClassMap(),
             'roleNames' => $roleNames,
             'query' => $request->get('q'),
+            'usersCount' => $usersCount
         ]);
     }
 

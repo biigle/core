@@ -285,8 +285,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);
-        $this->assertEquals(2, sizeof($annotation->points));
-        $this->assertEquals(1, $annotation->labels()->count());
+        $this->assertSame(2, sizeof($annotation->points));
+        $this->assertSame(1, $annotation->labels()->count());
     }
 
     public function testStoreValidatePoints()
@@ -342,16 +342,16 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->annotation = $this->annotation->fresh();
 
-        $this->assertEquals(4, sizeof($this->annotation->points));
-        $this->assertEquals(15, $this->annotation->points[1]);
+        $this->assertSame(4, sizeof($this->annotation->points));
+        $this->assertSame(15, $this->annotation->points[1]);
 
         $response = $this->json('PUT', "{$url}/{$id}", ['points' => [20, 25]]);
         $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
 
-        $this->assertEquals(2, sizeof($this->annotation->points));
-        $this->assertEquals(25, $this->annotation->points[1]);
+        $this->assertSame(2, sizeof($this->annotation->points));
+        $this->assertSame(25, $this->annotation->points[1]);
     }
 
     public function testUpdateInvalidPoints()
@@ -429,7 +429,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $this->annotation->refresh();
-        $this->assertEquals(Shape::circleId(), $this->annotation->shape_id);
+        $this->assertSame(Shape::circleId(), $this->annotation->shape_id);
     }
 
     public function testDestroy()

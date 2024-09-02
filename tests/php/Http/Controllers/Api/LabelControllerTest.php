@@ -58,9 +58,9 @@ class LabelControllerTest extends ApiTestCase
         $response->assertStatus(200);
 
         $label = $label->fresh();
-        $this->assertEquals('new label name', $label->name);
-        $this->assertEquals('bada55', $label->color);
-        $this->assertEquals($sibling->id, $label->parent_id);
+        $this->assertSame('new label name', $label->name);
+        $this->assertSame('bada55', $label->color);
+        $this->assertSame($sibling->id, $label->parent_id);
     }
 
     public function testUpdateVersionedTree()

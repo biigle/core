@@ -94,12 +94,12 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals(3, $this->annotation->image->annotations()->count());
+        $this->assertSame(3, $this->annotation->image->annotations()->count());
         $annotation = $this->annotation->image->annotations()->orderBy('id', 'desc')->first();
-        $this->assertEquals(Shape::pointId(), $annotation->shape_id);
-        $this->assertEquals([100, 100], $annotation->points);
-        $this->assertEquals(1, $annotation->labels()->count());
-        $this->assertEquals($this->labelRoot()->id, $annotation->labels()->first()->label_id);
+        $this->assertSame(Shape::pointId(), $annotation->shape_id);
+        $this->assertSame([100, 100], $annotation->points);
+        $this->assertSame(1, $annotation->labels()->count());
+        $this->assertSame($this->labelRoot()->id, $annotation->labels()->first()->label_id);
     }
 
     public function testStoreValidation()
@@ -193,7 +193,7 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]])
             ->assertStatus(422);
 
-        $this->assertEquals(1, $this->annotation->image->annotations()->count());
+        $this->assertSame(1, $this->annotation->image->annotations()->count());
 
         $this
             ->postJson($url, [[
@@ -259,7 +259,7 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals(2, $this->annotation->image->annotations()->count());
+        $this->assertSame(2, $this->annotation->image->annotations()->count());
     }
 
     public function testStoreLabelIdIsFloat()

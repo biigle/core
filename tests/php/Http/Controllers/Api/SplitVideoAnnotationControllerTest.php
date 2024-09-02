@@ -69,11 +69,11 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals(2, $this->video->annotations()->count());
+        $this->assertSame(2, $this->video->annotations()->count());
         $this->video->annotations->each(function ($annotation) use ($label) {
             $compare = $annotation->labels()->first();
-            $this->assertEquals($label->label_id, $compare->label_id);
-            $this->assertEquals($label->user_id, $compare->user_id);
+            $this->assertSame($label->label_id, $compare->label_id);
+            $this->assertSame($label->user_id, $compare->user_id);
         });
     }
 

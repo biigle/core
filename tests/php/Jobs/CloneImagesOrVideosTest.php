@@ -67,7 +67,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertFalse($copy->creating_async);
 
         $ignore = ['id', 'created_at', 'updated_at'];
-        $this->assertEquals(
+        $this->assertSame(
             $volume->makeHidden($ignore)->toArray(),
             $copy->makeHidden($ignore)->toArray()
         );
@@ -149,21 +149,21 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $this->assertNotNull($newImageLabel);
         $this->assertNotNull($newImage);
-        $this->assertEquals($volume->images()->count(), $copy->images()->count());
+        $this->assertSame($volume->images()->count(), $copy->images()->count());
         $this->assertNotEquals($oldImage->id, $newImage->id);
         $this->assertNotEquals($oldImage->uuid, $newImage->uuid);
-        $this->assertEquals($copy->id, $newImage->volume_id);
+        $this->assertSame($copy->id, $newImage->volume_id);
         $this->assertNotEquals($oldImageLabel->id, $newImageLabel->id);
         $this->assertNotEquals($oldImageLabel->image_id, $newImageLabel->image_id);
 
         $ignore = ['id', 'volume_id', 'uuid'];
-        $this->assertEquals(
+        $this->assertSame(
             $oldImage->makeHidden($ignore)->toArray(),
             $newImage->makeHidden($ignore)->toArray(),
         );
 
         $ignore = ['id', 'image_id'];
-        $this->assertEquals(
+        $this->assertSame(
             $oldImageLabel->makeHidden($ignore)->toArray(),
             $newImageLabel->makeHidden($ignore)->toArray(),
         );
@@ -211,7 +211,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $newImage = $copy->images()->first();
         $newImageLabel = $newImage->labels()->get();
 
-        $this->assertEquals(2, $newImageLabel->count());
+        $this->assertSame(2, $newImageLabel->count());
         $this->assertContains($l2->label_id, $newImageLabel->pluck('label_id'));
         $this->assertContains($l3->label_id, $newImageLabel->pluck('label_id'));
     }
@@ -257,10 +257,10 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $this->assertNotNull($newVideo);
         $this->assertNotNull($newVideoLabel);
-        $this->assertEquals($volume->videos()->count(), $copy->videos()->count());
+        $this->assertSame($volume->videos()->count(), $copy->videos()->count());
         $this->assertNotEquals($oldVideo->id, $newVideo->id);
         $this->assertNotEquals($oldVideo->uuid, $newVideo->uuid);
-        $this->assertEquals($copy->id, $newVideo->volume_id);
+        $this->assertSame($copy->id, $newVideo->volume_id);
         $this->assertNotEquals($oldVideoLabel->id, $newVideoLabel->id);
         $this->assertNotEquals($oldVideoLabel->video_id, $newVideoLabel->video_id);
 
@@ -318,7 +318,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $newVideo = $copy->videos()->first();
         $newVideoLabels = $newVideo->labels()->get();
 
-        $this->assertEquals(2, $newVideoLabels->count());
+        $this->assertSame(2, $newVideoLabels->count());
         $this->assertContains($l2->label_id, $newVideoLabels->pluck('label_id'));
         $this->assertContains($l3->label_id, $newVideoLabels->pluck('label_id'));
     }
@@ -363,9 +363,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
         $this->assertNotEquals($oldAnnotation->image_id, $newAnnotation->image_id);
-        $this->assertEquals($newAnnotation->image_id, $newImage->id);
+        $this->assertSame($newAnnotation->image_id, $newImage->id);
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
-        $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
+        $this->assertSame($newAnnotation->id, $newAnnotationLabel->annotation_id);
 
         $ignore = ['id', 'image_id'];
         $this->assertEquals(
@@ -415,7 +415,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $newAnnotation = $newImage->annotations()->first();
         $newAnnotationLabels = $newAnnotation->labels()->get();
 
-        $this->assertEquals(2, $newAnnotationLabels->count());
+        $this->assertSame(2, $newAnnotationLabels->count());
         $this->assertContains($l2->label_id, $newAnnotationLabels->pluck('label_id'));
         $this->assertContains($l3->label_id, $newAnnotationLabels->pluck('label_id'));
     }
@@ -485,9 +485,9 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $this->assertNotNull($newAnnotationLabel);
         $this->assertNotEquals($oldAnnotation->id, $newAnnotation->id);
         $this->assertNotEquals($oldAnnotation->video_id, $newAnnotation->video_id);
-        $this->assertEquals($newVideo->id, $newAnnotation->video_id);
+        $this->assertSame($newVideo->id, $newAnnotation->video_id);
         $this->assertNotEquals($oldAnnotationLabel->id, $newAnnotationLabel->id);
-        $this->assertEquals($newAnnotation->id, $newAnnotationLabel->annotation_id);
+        $this->assertSame($newAnnotation->id, $newAnnotationLabel->annotation_id);
 
         $ignore = ['id', 'video_id'];
         $this->assertEquals(
@@ -538,7 +538,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
         $newAnnotation = $newVideo->annotations()->first();
         $newAnnotationLabels = $newAnnotation->labels()->get();
 
-        $this->assertEquals(2, $newAnnotationLabels->count());
+        $this->assertSame(2, $newAnnotationLabels->count());
         $this->assertContains($l2->label_id, $newAnnotationLabels->pluck('label_id'));
         $this->assertContains($l3->label_id, $newAnnotationLabels->pluck('label_id'));
     }
@@ -600,7 +600,7 @@ class CloneImagesOrVideosTest extends \ApiTestCase
 
         $this->assertNotNull($copy->getIfdo());
         $this->assertTrue($copy->hasIfdo());
-        $this->assertEquals($volume->getIfdo(), $copy->getIfdo());
+        $this->assertSame($volume->getIfdo(), $copy->getIfdo());
     }
 
     public function testHandleVolumeImages()

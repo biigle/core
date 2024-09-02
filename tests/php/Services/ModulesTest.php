@@ -24,7 +24,7 @@ class ModulesTest extends TestCase
         Modules::registerControllerMixin('myModule', 'dashboard', $func);
 
         $this->assertEmpty(Modules::getControllerMixins('nonexistent'));
-        $this->assertEquals(['myModule' => $func], Modules::getControllerMixins('dashboard'));
+        $this->assertSame(['myModule' => $func], Modules::getControllerMixins('dashboard'));
     }
 
     public function testRegister()
@@ -41,7 +41,7 @@ class ModulesTest extends TestCase
 
         $this->assertArrayHasKey('myModule', Modules::getViewMixins('dashboard'));
         $this->assertArrayHasKey('myModule', Modules::getViewMixins('settings'));
-        $this->assertEquals(['myModule' => $func], Modules::getControllerMixins('dashboard'));
+        $this->assertSame(['myModule' => $func], Modules::getControllerMixins('dashboard'));
         $this->assertContains('my/path', Modules::getApidocPaths());
     }
 
@@ -49,7 +49,7 @@ class ModulesTest extends TestCase
     {
         Modules::registerViewMixin('subtest', 'index.test');
         Modules::registerViewMixin('test', 'index');
-        $this->assertEquals(['test' => ['subtest' => []]], Modules::getViewMixins('index'));
+        $this->assertSame(['test' => ['subtest' => []]], Modules::getViewMixins('index'));
     }
 
     public function testCallControllerMixins()
@@ -58,7 +58,7 @@ class ModulesTest extends TestCase
         Modules::registerControllerMixin('myModule2', 'dashboard', ControllerMixinStub::class.'@call');
 
         $values = Modules::callControllerMixins('dashboard', ['arg' => 1]);
-        $this->assertEquals(['callable' => true, 'callableWithAtSign' => true], $values);
+        $this->assertSame(['callable' => true, 'callableWithAtSign' => true], $values);
     }
 }
 
