@@ -9,6 +9,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Modules\Largo\Listeners\AttachLabelListener;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 use Biigle\Modules\Largo\Listeners\VideosCleanupListener;
+use Biigle\Modules\Largo\Listeners\VolumeClonedListener;
 use Biigle\Modules\Largo\Observers\ImageAnnotationObserver;
 use Biigle\Modules\Largo\Observers\VideoAnnotationObserver;
 use Biigle\Services\Modules;
@@ -52,6 +53,7 @@ class LargoServiceProvider extends ServiceProvider
         Event::listen(ImagesDeleted::class, ImagesCleanupListener::class);
         Event::listen(VideosDeleted::class, VideosCleanupListener::class);
         Event::listen(AnnotationLabelAttached::class, AttachLabelListener::class);
+        Event::listen('volume.cloned', VolumeClonedListener::class);
 
         $modules->register('largo', [
             'viewMixins' => [
