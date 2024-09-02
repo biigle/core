@@ -24,7 +24,7 @@ class VolumeFileController extends Controller
      *
      * @param  int  $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index($id)
     {
@@ -70,7 +70,7 @@ class VolumeFileController extends Controller
      *
      *
      * @param StoreVolumeFile $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function store(StoreVolumeFile $request)
     {

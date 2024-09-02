@@ -20,7 +20,6 @@ class VolumeController extends Controller
      * Shows the create volume page.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
     public function create(Request $request)
     {
@@ -64,7 +63,7 @@ class VolumeController extends Controller
         return view('volumes.create', [
             'project' => $project,
             'disks' => $disks,
-            'hasDisks' => !empty($disks),
+            'hasDisks' => $disks->isNotEmpty(),
             'mediaType' => $mediaType,
             'filenames' => $filenames,
             'offlineMode' => $offlineMode,
@@ -77,8 +76,6 @@ class VolumeController extends Controller
      *
      * @param Request $request
      * @param int $id volume ID
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $id)
     {
@@ -122,8 +119,6 @@ class VolumeController extends Controller
      *
      * @param Request $request
      * @param int $id volume ID
-     *
-     * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, $id)
     {

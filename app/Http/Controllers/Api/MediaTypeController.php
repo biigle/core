@@ -26,7 +26,7 @@ class MediaTypeController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index()
     {

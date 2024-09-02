@@ -120,7 +120,7 @@ class AnnotationPolicy extends CachedPolicy
                 ->pluck('project_id');
 
             // User must be editor, expert or admin in one of the projects.
-            return !empty($projectIds)
+            return $projectIds->isNotEmpty()
                 // Label must belong to a label tree that is used by one of the projects.
                 && DB::table('label_tree_project')
                     ->whereIn('project_id', $projectIds)

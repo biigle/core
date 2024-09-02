@@ -25,7 +25,8 @@ class CreateRedisLogger
         $level = $this->level($config);
 
         $client = Redis::connection($connection)->client();
-        $handler = new RedisHandler($client, 'log', $level, true, $capSize);
+        /** @phpstan-ignore property.nonObject */
+        $handler = new RedisHandler($client, 'log', $level->value, true, $capSize);
         $formatter = tap(new JsonFormatter, function ($formatter) {
             $formatter->includeStacktraces();
         });

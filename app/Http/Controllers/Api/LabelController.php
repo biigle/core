@@ -22,7 +22,6 @@ class LabelController extends Controller
      * @apiParam (Attributes that can be updated) {Number} parent_id ID of the parent label for ordering in a tree-like structure.
      *
      * @param UpdateLabel $request
-     * @return \Illuminate\Http\Response
      */
     public function update(UpdateLabel $request)
     {
@@ -47,7 +46,6 @@ class LabelController extends Controller
      * @apiParam {Number} id The label ID
      *
      * @param DestroyLabel $request
-     * @return \Illuminate\Http\Response
      */
     public function destroy(DestroyLabel $request)
     {

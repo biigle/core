@@ -11,7 +11,7 @@ class VideoAnnotationController extends Controller
      * Redirect to the annotator link that shows a specified annotation.
      *
      * @param int $id Video annotation ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function show($id)
     {

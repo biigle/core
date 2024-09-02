@@ -71,7 +71,7 @@ class Video extends VolumeFile
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'filename',
@@ -84,7 +84,7 @@ class Video extends VolumeFile
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'attrs' => 'array',
@@ -96,7 +96,7 @@ class Video extends VolumeFile
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'attrs',
@@ -105,7 +105,7 @@ class Video extends VolumeFile
     /**
      * The annotations that belong to this video.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoAnnotation>
      */
     public function annotations()
     {
@@ -158,7 +158,7 @@ class Video extends VolumeFile
     /**
      * Get the error attribute.
      *
-     * @return string
+     * @return int|null
      */
     public function getErrorAttribute()
     {
@@ -168,7 +168,7 @@ class Video extends VolumeFile
     /**
      * Set the error attribute.
      *
-     * @param string $value
+     * @param int|null $value
      */
     public function setErrorAttribute($value)
     {
@@ -188,7 +188,7 @@ class Video extends VolumeFile
     /**
      * The labels, this video got attached by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoLabel>
      */
     public function labels()
     {
@@ -210,7 +210,7 @@ class Video extends VolumeFile
     /**
      * Get the taken_at timestamps.
      *
-     * @return array
+     * @return array|null
      */
     public function getTakenAtAttribute()
     {
