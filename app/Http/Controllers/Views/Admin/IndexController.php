@@ -15,7 +15,6 @@ class IndexController extends Controller
      * Shows the admin dashboard.
      *
      * @param Modules $modules
-     * @return \Illuminate\Http\Response
      */
     public function get(Modules $modules)
     {

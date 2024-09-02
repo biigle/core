@@ -44,7 +44,7 @@ class VolumeAnnotationSessionController extends Controller
      * ]
      *
      * @param int $id volume id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index($id)
     {

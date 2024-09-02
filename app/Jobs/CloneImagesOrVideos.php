@@ -8,8 +8,6 @@ use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Project;
 use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
@@ -137,7 +135,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
             }
             if ($copy->files()->exists()) {
-                $this->postProcessCloning($copy);
+                ProcessNewVolumeFiles::dispatch($copy);
             }
 
             //save ifdo-file if exist
@@ -148,41 +146,9 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
             $copy->save();
 
-            event('volume.cloned', [$copy->id]);
+            event('volume.cloned', $copy);
         });
 
-    }
-
-    /**
-     * Initiate file thumbnail creation
-     * @param Volume $volume for which thumbnail creation should be started
-     * @return void
-     **/
-    public function postProcessCloning($volume)
-    {
-        ProcessNewVolumeFiles::dispatch($volume);
-
-        // Give the ProcessNewVolumeFiles job a head start so the file thumbnails are
-        // generated (mostly) before the annotation thumbnails.
-        $delay = now()->addSeconds(30);
-
-        if (class_exists(ProcessAnnotatedImage::class)) {
-            $volume->images()->whereHas('annotations')
-                ->eachById(function ($image) use ($delay) {
-                    ProcessAnnotatedImage::dispatch($image)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                });
-        }
-
-        if (class_exists(ProcessAnnotatedVideo::class)) {
-            $volume->videos()
-                ->whereHas('annotations')->eachById(function ($video) use ($delay) {
-                    ProcessAnnotatedVideo::dispatch($video)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                });
-        }
     }
 
     /**
@@ -247,6 +213,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
                 $baseImageIndex = ($page - 1) * $chunkSize;
+                /** @var Image $image */
                 foreach ($chunk as $index => $image) {
                     $newImageId = $newImageIds[$baseImageIndex + $index];
                     // Collect relevant image IDs for the annotation query below.
@@ -271,6 +238,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     ->orderBy('id')
                     ->pluck('id');
                 $insertData = [];
+                /** @var Image $image */
                 foreach ($chunk as $image) {
                     foreach ($image->annotations as $annotation) {
                         if ($annotation->labels->isEmpty()) {
@@ -390,6 +358,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
                 $baseVideoIndex = ($page - 1) * $chunkSize;
+                /** @var Video $video */
                 foreach ($chunk as $index => $video) {
                     $newVideoId = $newVideoIds[$baseVideoIndex + $index];
                     // Collect relevant video IDs for the annotation query below.
@@ -415,6 +384,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     ->orderBy('id')
                     ->pluck('id');
                 $insertData = [];
+                /** @var Video $video */
                 foreach ($chunk as $video) {
                     foreach ($video->annotations as $annotation) {
                         if ($annotation->labels->isEmpty()) {

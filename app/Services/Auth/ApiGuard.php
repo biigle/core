@@ -33,7 +33,7 @@ class ApiGuard extends TokenGuard
         }
 
         if (!empty($user)) {
-            $candidates = ApiToken::where('owner_id', $user->id)
+            $candidates = ApiToken::where('owner_id', $user->getAuthIdentifier())
                 ->select('id', 'hash')
                 ->get();
             foreach ($candidates as $candidate) {

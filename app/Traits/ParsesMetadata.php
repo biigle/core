@@ -45,34 +45,25 @@ trait ParsesMetadata
 
     /**
      * Parse a metadata CSV string to an array.
-     *
-     * @param string $content
-     *
-     * @return array
      */
-    public function parseMetadata($content)
+    public function parseMetadata(string $content): array
     {
         // Split string by rows but respect possible escaped linebreaks.
         $rows = str_getcsv($content, "\n");
         // Now parse individual rows.
         $rows = array_map('str_getcsv', $rows);
 
+        $rows[0][0] = Util::removeBom($rows[0][0]);
 
-        if (!empty($rows) && is_array($rows[0])) {
-            if (!empty($rows[0])) {
-                $rows[0][0] = Util::removeBom($rows[0][0]);
+        $rows[0] = array_map('strtolower', $rows[0]);
+
+        $rows[0] = array_map(function ($column) {
+            if (array_key_exists($column, $this->columnSynonyms)) {
+                return $this->columnSynonyms[$column];
             }
 
-            $rows[0] = array_map('strtolower', $rows[0]);
-
-            $rows[0] = array_map(function ($column) {
-                if (array_key_exists($column, $this->columnSynonyms)) {
-                    return $this->columnSynonyms[$column];
-                }
-
-                return $column;
-            }, $rows[0]);
-        }
+            return $column;
+        }, $rows[0]);
 
         return $rows;
     }

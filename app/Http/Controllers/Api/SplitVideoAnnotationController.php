@@ -79,7 +79,7 @@ class SplitVideoAnnotationController extends Controller
      * ]
      *
      * @param SplitVideoAnnotation $request
-     * @return \Illuminate\Http\Response
+     * @return array<int, VideoAnnotation>
      */
     public function store(SplitVideoAnnotation $request)
     {
@@ -130,7 +130,7 @@ class SplitVideoAnnotationController extends Controller
             }
         }
 
-        $newAnnotation = VideoAnnotation::make([
+        $newAnnotation = new VideoAnnotation([
             'video_id' => $oldAnnotation->video_id,
             'shape_id' => $oldAnnotation->shape_id,
             'points' => $newPoints,

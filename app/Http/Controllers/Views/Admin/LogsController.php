@@ -12,8 +12,6 @@ class LogsController extends Controller
 {
     /**
      * Shows the available logfiles.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
@@ -63,8 +61,6 @@ class LogsController extends Controller
 
     /**
      * Shows a specific logfile.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function show($file)
     {

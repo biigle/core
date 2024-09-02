@@ -36,7 +36,7 @@ class ProjectUserController extends Controller
      * ]
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index($id)
     {
@@ -60,7 +60,6 @@ class ProjectUserController extends Controller
      * @apiParam (Attributes that can be updated) {Number} project_role_id The project role of the member. Users with the global guest role cannot become project admins.
      *
      * @param UpdateProjectUser $request
-     * @return \Illuminate\Http\Response
      */
     public function update(UpdateProjectUser $request)
     {
@@ -84,7 +83,6 @@ class ProjectUserController extends Controller
      * project_role_id: 3
      *
      * @param AttachProjectUser $request
-     * @return \Illuminate\Http\Response
      */
     public function attach(AttachProjectUser $request)
     {
@@ -106,7 +104,6 @@ class ProjectUserController extends Controller
      * @apiParam {Number} uid The user ID of the member.
      *
      * @param DestroyProjectUser $request
-     * @return \Illuminate\Http\Response
      */
     public function destroy(DestroyProjectUser $request)
     {

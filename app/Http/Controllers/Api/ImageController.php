@@ -54,7 +54,7 @@ class ImageController extends Controller
      * @apiParam {Number} id The image ID.
      *
      * @param int $id image id
-     * @return \Illuminate\Http\Response
+     * @return array<string, mixed>|\Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function showFile($id)
     {

@@ -35,7 +35,7 @@ class Handler extends ExceptionHandler
      * Prepare exception for rendering.
      *
      * @param  Throwable  $e
-     * @return \Exception
+     * @return Throwable
      */
     protected function prepareException(Throwable $e)
     {

@@ -10,7 +10,7 @@ class ImageAnnotationLabel extends AnnotationLabel
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'created_at',
@@ -20,7 +20,7 @@ class ImageAnnotationLabel extends AnnotationLabel
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'user_id' => 'int',
@@ -31,7 +31,7 @@ class ImageAnnotationLabel extends AnnotationLabel
     /**
      * The annotation, this annotation label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<ImageAnnotation, ImageAnnotationLabel>
      */
     public function annotation()
     {

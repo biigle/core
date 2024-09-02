@@ -37,7 +37,7 @@ class UsedFileLabelsController extends Controller
      * ]
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection<int, Label>
      */
     public function index($id)
     {

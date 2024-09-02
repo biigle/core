@@ -22,7 +22,7 @@ class LabelTreeUserController extends Controller
      * @apiParam (Required attributes) {Number} role_id ID of the role of the new member (admin or editor).
      *
      * @param StoreLabelTreeUser $request
-     * @return \Illuminate\Http\Response
+     * @return \Biigle\LabelTree|\Illuminate\Http\RedirectResponse
      */
     public function store(StoreLabelTreeUser $request)
     {
@@ -50,7 +50,7 @@ class LabelTreeUserController extends Controller
      * @apiParam (Attributes that can be updated) {Number} role_id New role of the member (admin or editor)
      *
      * @param UpdateLabelTreeUser $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function update(UpdateLabelTreeUser $request)
     {
@@ -77,7 +77,7 @@ class LabelTreeUserController extends Controller
      * @apiParam {Number} uid User ID of the member.
      *
      * @param DestroyLabelTreeUser $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy(DestroyLabelTreeUser $request)
     {
