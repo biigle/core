@@ -35,6 +35,7 @@
         "biigle/laserpoints": "dev-master",
         "biigle/magic-sam": "^1.0",
         "biigle/maia": "dev-master",
+        "biigle/metadata-ifdo": "dev-main",
         "biigle/module": "dev-main",
         "biigle/newsletter": "dev-master",
         "biigle/reports": "dev-master",
