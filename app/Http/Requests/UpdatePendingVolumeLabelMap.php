@@ -87,7 +87,7 @@ class UpdatePendingVolumeLabelMap extends FormRequest
                         ->where('visibility_id', Visibility::publicId())
                         ->union(
                             DB::table('label_tree_user')
-                                ->select('id')
+                                ->select('label_tree_id as id')
                                 ->where('user_id', $this->user()->id)
                         );
                 })
