@@ -54,8 +54,6 @@ abstract class VolumeFile extends Model implements FileContract
 
     /**
      * Set the metadata attribute.
-     *
-     * @param array $value
      */
     public function setMetadataAttribute(?array $value)
     {
@@ -64,10 +62,8 @@ abstract class VolumeFile extends Model implements FileContract
 
     /**
      * Get the metadata attribute.
-     *
-     * @return array
      */
-    public function getMetadataAttribute()
+    public function getMetadataAttribute(): ?array
     {
         return $this->getJsonAttr('metadata', []);
     }

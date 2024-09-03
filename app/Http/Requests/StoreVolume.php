@@ -36,7 +36,7 @@ class StoreVolume extends FormRequest
     /**
      * Filled if an uploaded metadata text was stored in a file.
      *
-     * @var string
+     * @var string|null
      */
     protected $metadataPath;
 

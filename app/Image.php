@@ -16,7 +16,7 @@ class Image extends VolumeFile
     /**
      * Allowed image MIME types.
      *
-     * @var array
+     * @var array<int, string>
      */
     const MIMES = [
         'image/jpeg',
@@ -28,7 +28,7 @@ class Image extends VolumeFile
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'filename',

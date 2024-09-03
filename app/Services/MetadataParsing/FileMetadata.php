@@ -5,7 +5,7 @@ namespace Biigle\Services\MetadataParsing;
 class FileMetadata
 {
     /**
-     * @var array<ImageAnnotation>
+     * @var array<Annotation>
      */
     public array $annotations = [];
 

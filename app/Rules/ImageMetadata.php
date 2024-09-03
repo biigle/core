@@ -3,6 +3,7 @@
 namespace Biigle\Rules;
 
 use Biigle\Services\MetadataParsing\FileMetadata;
+use Biigle\Services\MetadataParsing\ImageMetadata as ImageMetadataObject;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -74,10 +75,10 @@ class ImageMetadata implements Rule
         return $this->message;
     }
 
-    protected function fileMetadataPasses(FileMetadata $file)
+    protected function fileMetadataPasses(ImageMetadataObject $file)
     {
         if (!is_null($file->lng)) {
-            if (!is_numeric($file->lng) || abs($file->lng) > 180) {
+            if (abs($file->lng) > 180) {
                 $this->message = "'{$file->lng}' is no valid longitude for file {$file->name}.";
 
                 return false;
@@ -91,7 +92,7 @@ class ImageMetadata implements Rule
         }
 
         if (!is_null($file->lat)) {
-            if (!is_numeric($file->lat) || abs($file->lat) > 90) {
+            if (abs($file->lat) > 90) {
                 $this->message = "'{$file->lat}' is no valid latitude for file {$file->name}.";
 
                 return false;

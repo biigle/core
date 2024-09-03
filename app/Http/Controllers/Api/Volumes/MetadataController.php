@@ -22,7 +22,7 @@ class MetadataController extends Controller
      ~
      * @param int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function show($id)
     {
@@ -96,8 +96,6 @@ class MetadataController extends Controller
      * volume files.
      ~
      * @param int $id
-     *
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {

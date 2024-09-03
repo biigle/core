@@ -44,7 +44,7 @@ class StorePendingVolume extends FormRequest
         ];
 
         $parserClass = $this->input('metadata_parser', false);
-        if ($this->has('media_type') && $parserClass && ParserFactory::has($this->has('media_type'), $parserClass)) {
+        if ($this->has('media_type') && $parserClass && ParserFactory::has($this->input('media_type'), $parserClass)) {
             $rules['metadata_file'][] = 'mimetypes:'.implode(',', $parserClass::getKnownMimeTypes());
         }
 

@@ -53,7 +53,9 @@ trait HasMetadataFile
 
                 return $parser->getMetadata();
             } finally {
-                fclose($to);
+                if (isset($to) && is_resource($to)) {
+                    fclose($to);
+                }
                 File::delete($tmpPath);
             }
         });

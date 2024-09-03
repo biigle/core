@@ -18,7 +18,6 @@ class PendingVolumeController extends Controller
      * Shows the pending volume page to continue/finish a new volume.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
      */
     public function show(Request $request)
     {
@@ -108,7 +107,7 @@ class PendingVolumeController extends Controller
             'pv' => $pv,
             'project' => $pv->project,
             'disks' => $disks,
-            'hasDisks' => !empty($disks),
+            'hasDisks' => $disks->isNotEmpty(),
             'filenames' => $filenames,
             'offlineMode' => $offlineMode,
             'userDisk' => $userDisk,

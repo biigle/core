@@ -212,7 +212,7 @@ class Project extends Model
     /**
      * The pending volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<PendingVolume>
      */
     public function pendingVolumes()
     {

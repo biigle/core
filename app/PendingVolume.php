@@ -14,7 +14,7 @@ class PendingVolume extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'media_type_id',
@@ -35,7 +35,7 @@ class PendingVolume extends Model
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'metadata_file_path',
@@ -44,7 +44,7 @@ class PendingVolume extends Model
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'only_annotation_labels' => 'array',
@@ -56,7 +56,7 @@ class PendingVolume extends Model
     /**
      * Default values for attributes.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $attributes = [
         'only_annotation_labels' => '[]',
