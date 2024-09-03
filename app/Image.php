@@ -16,13 +16,29 @@ class Image extends VolumeFile
     /**
      * Allowed image MIME types.
      *
-     * @var array
+     * @var array<int, string>
      */
     const MIMES = [
         'image/jpeg',
         'image/png',
         'image/tiff',
         'image/webp',
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'filename',
+        'volume_id',
+        'uuid',
+        'taken_at',
+        'lng',
+        'lat',
+        'attrs',
+        'tiled',
     ];
 
     /**

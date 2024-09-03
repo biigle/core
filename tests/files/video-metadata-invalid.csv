@@ -1,0 +1,3 @@
+filename,taken_at,lng,lat,gps_altitude,distance_to_ground,area,yaw
+abc.mp4,2016-12-19 12:27:00,52.220,28.123,-1500,10,2.6,999
+abc.mp4,2016-12-19 12:28:00,52.230,28.133,-1505,5,1.6,181

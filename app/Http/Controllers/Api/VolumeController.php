@@ -192,6 +192,9 @@ class VolumeController extends Controller
             $copy->name = $request->input('name', $volume->name);
             $copy->creating_async = true;
             $copy->save();
+            if ($volume->hasMetadata()) {
+                $copy->update(['metadata_file_path' => $copy->id.'.'.pathinfo($volume->metadata_file_path, PATHINFO_EXTENSION)]);
+            }
             $project->addVolumeId($copy->id);
 
             $job = new CloneImagesOrVideos($request, $copy);

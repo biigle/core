@@ -263,12 +263,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testCloneVolume()
     {
-        $volume = $this
-            ->volume([
-                'created_at' => '2022-11-09 14:37:00',
-                'updated_at' => '2022-11-09 14:37:00',
-            ])
-            ->fresh();
+        $volume = $this->volume(['metadata_file_path' => 'mymeta.csv']);
         $project = ProjectTest::create();
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
@@ -289,21 +284,34 @@ class VolumeControllerTest extends ApiTestCase
 
         Cache::flush();
 
-        Queue::fake();
-
         $this
             ->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
             ->assertStatus(201);
         Queue::assertPushed(CloneImagesOrVideos::class);
 
-        // The target project.
-        $project = ProjectTest::create();
+        $this->assertTrue($project->volumes()->exists());
+        $copy = $project->volumes()->first();
+        $this->assertEquals($copy->name, $this->volume()->name);
+        $this->assertEquals($copy->media_type_id, $this->volume()->media_type_id);
+        $this->assertEquals($copy->url, $this->volume()->url);
+        $this->assertTrue($copy->creating_async);
+        $this->assertEquals("{$copy->id}.csv", $copy->metadata_file_path);
+    }
 
-        $this->beAdmin();
+    public function testCloneVolumeNewName()
+    {
+        $volume = $this->volume(['name' => 'myvolume']);
+        $project = ProjectTest::create();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(201);
-        Queue::assertPushed(CloneImagesOrVideos::class);
+        $this->beAdmin();
+
+        $this
+            ->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}", [
+                'name' => 'volumecopy',
+            ])
+            ->assertStatus(201);
+        $copy = $project->volumes()->first();
+        $this->assertEquals($copy->name, 'volumecopy');
     }
 }

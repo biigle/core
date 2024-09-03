@@ -9,7 +9,6 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Project;
-use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
@@ -24,7 +23,7 @@ use Ramsey\Uuid\Uuid;
 
 class CloneImagesOrVideos extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels, ChecksMetadataStrings;
+    use InteractsWithQueue, SerializesModels;
 
 
     /**
@@ -138,9 +137,8 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 ProcessNewVolumeFiles::dispatch($copy);
             }
 
-            //save ifdo-file if exist
-            if ($volume->hasIfdo()) {
-                $this->copyIfdoFile($volume->id, $copy->id);
+            if ($volume->hasMetadata()) {
+                $this->copyMetadataFile($volume, $copy);
             }
             $copy->creating_async = false;
 
@@ -378,7 +376,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
                 collect($insertData)->chunk($parameterLimit)->each(fn ($chunk) => VideoAnnotation::insert($chunk->toArray()));
 
-
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = VideoAnnotation::whereIn('video_id', $chunkNewVideoIds)
                     ->orderBy('id')
@@ -443,16 +440,10 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             });
     }
 
-    /** Copies ifDo-Files from given volume to volume copy.
-     *
-     * @param int $volumeId
-     * @param int $copyId
-     **/
-    private function copyIfdoFile($volumeId, $copyId)
+    private function copyMetadataFile(Volume $source, Volume $target): void
     {
-        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-        $iFdoFilename = $volumeId.".yaml";
-        $copyIFdoFilename = $copyId.".yaml";
-        $disk->copy($iFdoFilename, $copyIFdoFilename);
+        $disk = Storage::disk(config('volumes.metadata_storage_disk'));
+        // The target metadata file path was updated in the controller method.
+        $disk->copy($source->metadata_file_path, $target->metadata_file_path);
     }
 }

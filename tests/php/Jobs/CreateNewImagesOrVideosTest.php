@@ -5,10 +5,13 @@ namespace Biigle\Tests\Jobs;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use TestCase;
 
 class CreateNewImagesOrVideosTest extends TestCase
@@ -65,14 +68,17 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at,lng,lat,gps_altitude,distance_to_ground,area,yaw
+        a.jpg,2016-12-19 12:27:00,52.220,28.123,-1500,10,2.6,180
+        CSV);
         $filenames = ['a.jpg'];
-        $metadata = [
-            ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
-            ['a.jpg', '2016-12-19 12:27:00', '52.220', '28.123', -1500, 10, 2.6, 180],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $image = $volume->images()->first();
         $this->assertSame('2016-12-19 12:27:00', $image->taken_at->toDateTimeString());
         $this->assertSame(52.220, $image->lng);
@@ -87,14 +93,17 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,lng,lat,gps_altitude
+        a.jpg,52.220,28.123,
+        CSV);
         $filenames = ['a.jpg'];
-        $metadata = [
-            ['filename', 'lng', 'lat', 'gps_altitude'],
-            ['a.jpg', '52.220', '28.123', ''],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $image = $volume->images()->first();
         $this->assertSame(52.220, $image->lng);
         $this->assertSame(28.123, $image->lat);
@@ -105,14 +114,17 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,lng,lat
+        a.jpg,52.220,28.123
+        CSV);
         $filenames = ['a.jpg', 'b.jpg'];
-        $metadata = [
-            ['filename', 'lng', 'lat'],
-            ['a.jpg', '52.220', '28.123'],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $this->assertSame(2, $volume->images()->count());
     }
 
@@ -120,16 +132,18 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at,lng,lat,gps_altitude,distance_to_ground,area,yaw
+        a.mp4,2016-12-19 12:28:00,52.230,28.133,-1505,5,1.6,181
+        a.mp4,2016-12-19 12:27:00,52.220,28.123,-1500,10,2.6,180
+        CSV);
         $filenames = ['a.mp4'];
-        // Metadata should be sorted by taken_at later.
-        $metadata = [
-            ['filename', 'taken_at', 'lng', 'lat', 'gps_altitude', 'distance_to_ground', 'area', 'yaw'],
-            ['a.mp4', '2016-12-19 12:28:00', '52.230', '28.133', '-1505', '5', '1.6', '181'],
-            ['a.mp4', '2016-12-19 12:27:00', '52.220', '28.123', '-1500', '10', '2.6', '180'],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $video = $volume->videos()->first();
         $expect = [
             Carbon::parse('2016-12-19 12:27:00'),
@@ -148,15 +162,18 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at,gps_altitude,distance_to_ground
+        a.mp4,2016-12-19 12:28:00,,
+        a.mp4,2016-12-19 12:27:00,-1500,
+        CSV);
         $filenames = ['a.mp4'];
-        $metadata = [
-            ['filename', 'taken_at', 'gps_altitude', 'distance_to_ground'],
-            ['a.mp4', '2016-12-19 12:27:00', '-1500', ''],
-            ['a.mp4', '2016-12-19 12:28:00', '', ''],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $video = $volume->videos()->first();
         $expect = ['gps_altitude' => [-1500, null]];
         $this->assertSame($expect, $video->metadata);
@@ -166,14 +183,17 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at,distance_to_ground
+        a.mp4,2016-12-19 12:27:00,0
+        CSV);
         $filenames = ['a.mp4'];
-        $metadata = [
-            ['filename', 'taken_at', 'distance_to_ground'],
-            ['a.mp4', '2016-12-19 12:27:00', '0'],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $video = $volume->videos()->first();
         $expect = ['distance_to_ground' => [0]];
         $this->assertSame($expect, $video->metadata);
@@ -183,15 +203,18 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at,distance_to_ground
+        a.mp4,2016-12-19 12:27:00,0
+        a.mp4,2016-12-19 12:28:00,1
+        CSV);
         $filenames = ['a.mp4'];
-        $metadata = [
-            ['filename', 'taken_at', 'distance_to_ground'],
-            ['a.mp4', '2016-12-19 12:27:00', '0'],
-            ['a.mp4', '2016-12-19 12:28:00', '1'],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $video = $volume->videos()->first();
         $expect = ['distance_to_ground' => [0, 1]];
         $this->assertSame($expect, $video->metadata);
@@ -201,14 +224,17 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,gps_altitude
+        a.mp4,-1500
+        CSV);
         $filenames = ['a.mp4'];
-        $metadata = [
-            ['filename', 'gps_altitude'],
-            ['a.mp4', '-1500'],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $video = $volume->videos()->first();
         $expect = ['gps_altitude' => [-1500]];
         $this->assertSame($expect, $video->metadata);
@@ -219,14 +245,17 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at,lng,lat
+        a.mp4,2016-12-19 12:27:00,52.220,28.123
+        CSV);
         $filenames = ['a.mp4', 'b.mp4'];
-        $metadata = [
-            ['filename', 'taken_at', 'lng', 'lat'],
-            ['a.mp4', '2016-12-19 12:28:00', '52.220', '28.123'],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $this->assertSame(2, $volume->videos()->count());
     }
 
@@ -234,14 +263,17 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => VideoCsvParser::class,
         ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at
+        a.jpg,05/01/2019 10:35
+        CSV);
         $filenames = ['a.jpg'];
-        $metadata = [
-            ['filename', 'taken_at'],
-            ['a.jpg', '05/01/2019 10:35'],
-        ];
 
-        with(new CreateNewImagesOrVideos($volume, $filenames, $metadata))->handle();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $image = $volume->images()->first();
         $this->assertSame('2019-05-01 10:35:00', $image->taken_at->toDateTimeString());
     }

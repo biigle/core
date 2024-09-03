@@ -122,9 +122,14 @@ return [
             'root' => storage_path('framework/cache/laserpoints'),
         ],
 
-        'ifdos' => [
+        'metadata' => [
             'driver' => 'local',
-            'root' => storage_path('ifdos'),
+            'root' => storage_path('metadata'),
+        ],
+
+        'pending-metadata' => [
+            'driver' => 'local',
+            'root' => storage_path('pending-metadata'),
         ],
 
         'user-storage' => [

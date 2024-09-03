@@ -51,7 +51,7 @@ jobs:
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Run Linter
-      run: composer lint
+      run: composer lint -- --error-format=github
 
   cs-php:
 
