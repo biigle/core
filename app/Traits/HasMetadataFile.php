@@ -24,7 +24,7 @@ trait HasMetadataFile
 
     public function saveMetadata(UploadedFile $file): void
     {
-        $this->metadata_file_path = $this->id;
+        $this->metadata_file_path = "$this->id";
         if ($extension = $file->getClientOriginalExtension()) {
             $this->metadata_file_path .= '.'.$extension;
         }
@@ -44,8 +44,8 @@ trait HasMetadataFile
         return Cache::store('array')->remember($key, 60, function () use ($disk) {
             $tmpPath = tempnam(sys_get_temp_dir(), 'metadata');
             try {
-                $from = Storage::disk($disk)->readStream($this->metadata_file_path);
                 $to = fopen($tmpPath, 'w');
+                $from = Storage::disk($disk)->readStream($this->metadata_file_path);
                 stream_copy_to_stream($from, $to);
                 $type = ($this->media_type_id === MediaType::imageId()) ? 'image' : 'video';
 

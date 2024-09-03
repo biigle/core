@@ -17,7 +17,7 @@ class Annotation
 
     /**
      * @param Shape $shape
-     * @param array<float> $points
+     * @param array<float>|array<array<float>> $points
      * @param array<LabelAndUser> $labels
      */
     public function __construct(
@@ -53,5 +53,13 @@ class Annotation
         }
 
         $this->validatePoints($this->points);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPointsAttribute(array $points)
+    {
+        $this->points = array_map(fn ($coordinate) => round($coordinate, 2), $points);
     }
 }

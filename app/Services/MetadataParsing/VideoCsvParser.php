@@ -41,7 +41,9 @@ class VideoCsvParser extends CsvParser
 
             // If the file already exists but takenAt is null, replace the file by newly
             // adding it.
-            if (!is_null($fileData = $data->getFile($name)) && !is_null($takenAt)) {
+            /** @var VideoMetadata|null */
+            $fileData = $data->getFile($name);
+            if (!is_null($fileData) && !is_null($takenAt)) {
                 $fileData->addFrame(
                     takenAt: $takenAt,
                     lat: $this->maybeCastToFloat($getValue($row, 'lat')),
