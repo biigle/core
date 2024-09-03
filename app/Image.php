@@ -28,7 +28,7 @@ class Image extends VolumeFile
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var array<string, string>
      */
     protected $fillable = [
         'filename',
