@@ -121,7 +121,8 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
                 }, $fileMeta->getInsertData());
             }
 
-            $metaKeys += array_keys($insert);
+
+            $metaKeys = array_merge($metaKeys, array_keys($insert));
 
             $insert = array_merge($insert, [
                 'filename' => $filename,
@@ -131,6 +132,8 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
 
             $insertData[] = $insert;
         }
+
+        $metaKeys = array_unique($metaKeys);
 
         // Ensure that each item has the same keys even if some are missing metadata.
         if (!empty($metaKeys)) {

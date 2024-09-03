@@ -8,6 +8,7 @@ use Biigle\Label as DbLabel;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
+use Biigle\Role;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
@@ -438,6 +439,41 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
             'label_map' => [123 => $dbLabel->id],
         ])->assertStatus(422);
+    }
+
+    public function testUpdateLabelMapTryLabelPrivate()
+    {
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'metadata_file_path' => 'mymeta.csv',
+            'volume_id' => $this->volume()->id,
+        ]);
+        $id = $pv->id;
+
+        $dbLabel = DbLabel::factory()->create([
+            'label_tree_id' => LabelTree::factory()->create([
+                'visibility_id' => Visibility::privateId(),
+            ])->id,
+        ]);
+
+        $dbLabel->tree->addMember($this->admin(), Role::admin());
+
+        $this->beAdmin();
+        $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
+            'label_map' => [123 => $dbLabel->id],
+        ])->assertStatus(200);
     }
 
     public function testUpdateLabelMapRedirectToUserMap()
