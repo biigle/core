@@ -3,7 +3,6 @@
 namespace Biigle\Rules;
 
 use Biigle\Services\MetadataParsing\FileMetadata;
-use Biigle\Services\MetadataParsing\ImageMetadata as ImageMetadataObject;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -75,7 +74,7 @@ class ImageMetadata implements Rule
         return $this->message;
     }
 
-    protected function fileMetadataPasses(ImageMetadataObject $file)
+    protected function fileMetadataPasses(FileMetadata $file)
     {
         if (!is_null($file->lng)) {
             if (abs($file->lng) > 180) {

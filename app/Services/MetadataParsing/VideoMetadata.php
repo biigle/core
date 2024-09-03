@@ -19,7 +19,7 @@ class VideoMetadata extends FileMetadata
         public ?float $gpsAltitude = null,
         public ?float $yaw = null
     ) {
-        parent::__construct($name);
+        parent::__construct($name, $lat, $lng, $takenAt, $area, $distanceToGround, $gpsAltitude, $yaw);
 
         $this->frames = collect([]);
 
