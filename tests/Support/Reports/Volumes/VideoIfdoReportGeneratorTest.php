@@ -91,7 +91,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -107,7 +107,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => [100.0, 200.0],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -167,13 +167,13 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
                     ],
                     [
-                        'id' => $al2->label_id,
+                        'id' => "$al2->label_id",
                         'name' => $al2->label->name,
                         'uuid' => $al2->label->uuid,
                         'color' => $al2->label->color,
@@ -189,12 +189,12 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => [100.0],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                                 [
-                                    'label' => $al2->label_id,
+                                    'label' => "$al2->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -267,7 +267,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $vl->label_id,
+                        'id' => "$vl->label_id",
                         'name' => $vl->label->name,
                         'uuid' => $vl->label->uuid,
                         'color' => $vl->label->color,
@@ -282,7 +282,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [],
                             'labels' => [
                                 [
-                                    'label' => $vl->label_id,
+                                    'label' => "$vl->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $vl->created_at->toJson(),
                                 ],
@@ -313,7 +313,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                 ],
@@ -327,7 +327,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -378,11 +378,11 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -398,7 +398,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -410,7 +410,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => [100.0],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -480,7 +480,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -498,7 +498,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                                 'frames' => [100.0],
                                 'labels' => [
                                     [
-                                        'label' => $al->label_id,
+                                        'label' => "$al->label_id",
                                         'annotator' => $user->uuid,
                                         'created-at' => $al->created_at->toJson(),
                                     ],
@@ -564,7 +564,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al2->label_id,
+                        'id' => "$al2->label_id",
                         'name' => $al2->label->name,
                         'uuid' => $al2->label->uuid,
                         'color' => $al2->label->color,
@@ -580,7 +580,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => [100.0],
                             'labels' => [
                                 [
-                                    'label' => $al2->label_id,
+                                    'label' => "$al2->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -666,7 +666,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -682,7 +682,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a1->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -693,7 +693,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $vl1->created_at->toJson(),
                                 ],
@@ -808,7 +808,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                 ],
@@ -821,7 +821,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [10, 20],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -870,7 +870,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -886,7 +886,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => [100.0],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -999,7 +999,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $label->id,
+                        'id' => "$label->id",
                         'name' => $label->name,
                         'uuid' => $label->uuid,
                         'color' => $label->color,
@@ -1015,7 +1015,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a1->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al1->created_at->toJson(),
                                 ],
@@ -1027,7 +1027,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a2->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al2->created_at->toJson(),
                                 ],
@@ -1039,7 +1039,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a3->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al3->created_at->toJson(),
                                 ],
@@ -1051,7 +1051,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a4->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al4->created_at->toJson(),
                                 ],
@@ -1063,7 +1063,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a5->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al5->created_at->toJson(),
                                 ],
@@ -1075,7 +1075,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a6->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al6->created_at->toJson(),
                                 ],
@@ -1087,7 +1087,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a7->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al7->created_at->toJson(),
                                 ],

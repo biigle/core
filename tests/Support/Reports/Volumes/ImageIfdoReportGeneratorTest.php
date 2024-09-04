@@ -89,7 +89,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -104,7 +104,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$al->annotation->points],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -163,13 +163,13 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
                     ],
                     [
-                        'id' => $al2->label_id,
+                        'id' => "$al2->label_id",
                         'name' => $al2->label->name,
                         'uuid' => $al2->label->uuid,
                         'color' => $al2->label->color,
@@ -184,12 +184,12 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$al->annotation->points],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                                 [
-                                    'label' => $al2->label_id,
+                                    'label' => "$al2->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al2->created_at->toJson(),
                                 ],
@@ -262,7 +262,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $il->label_id,
+                        'id' => "$il->label_id",
                         'name' => $il->label->name,
                         'uuid' => $il->label->uuid,
                         'color' => $il->label->color,
@@ -277,7 +277,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [],
                             'labels' => [
                                 [
-                                    'label' => $il->label_id,
+                                    'label' => "$il->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $il->created_at->toJson(),
                                 ],
@@ -308,7 +308,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                 ],
@@ -322,7 +322,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [[10, 20, 20, 30, 30, 20, 20, 10]],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -372,11 +372,11 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -392,7 +392,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [[10, 20, 20, 30, 30, 20, 20, 10]],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -403,7 +403,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$al->annotation->points],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -468,7 +468,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -484,7 +484,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$al->annotation->points],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -553,7 +553,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al1->label_id,
+                        'id' => "$al1->label_id",
                         'name' => $al1->label->name,
                         'uuid' => $al1->label->uuid,
                         'color' => $al1->label->color,
@@ -568,7 +568,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a1->points],
                             'labels' => [
                                 [
-                                    'label' => $al1->label_id,
+                                    'label' => "$al1->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al1->created_at->toJson(),
                                 ],
@@ -629,7 +629,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al2->label_id,
+                        'id' => "$al2->label_id",
                         'name' => $al2->label->name,
                         'uuid' => $al2->label->uuid,
                         'color' => $al2->label->color,
@@ -644,7 +644,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$al->annotation->points],
                             'labels' => [
                                 [
-                                    'label' => $al2->label_id,
+                                    'label' => "$al2->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -730,7 +730,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -745,7 +745,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a1->points],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -756,7 +756,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $il1->created_at->toJson(),
                                 ],
@@ -869,7 +869,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                 ],
@@ -882,7 +882,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [[10, 20]],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -930,7 +930,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -945,7 +945,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$al->annotation->points],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -976,7 +976,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                 ],
@@ -989,7 +989,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [[10, 20]],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -1037,7 +1037,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
                         'uuid' => $al->label->uuid,
                         'color' => $al->label->color,
@@ -1052,7 +1052,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$al->annotation->points],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -1155,7 +1155,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $label->id,
+                        'id' => "$label->id",
                         'name' => $label->name,
                         'uuid' => $label->uuid,
                         'color' => $label->color,
@@ -1170,7 +1170,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a1->points],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al1->created_at->toJson(),
                                 ],
@@ -1181,7 +1181,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a2->points],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al2->created_at->toJson(),
                                 ],
@@ -1192,7 +1192,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a3->points],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al3->created_at->toJson(),
                                 ],
@@ -1203,7 +1203,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a4->points],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al4->created_at->toJson(),
                                 ],
@@ -1214,7 +1214,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a5->points],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al5->created_at->toJson(),
                                 ],
@@ -1225,7 +1225,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [$a6->points],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al6->created_at->toJson(),
                                 ],

@@ -142,7 +142,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                 }
 
                 return [
-                    'label' => $labelId,
+                    'label' => "$labelId",
                     'annotator' => $user->uuid,
                     'created-at' => $aLabel->created_at->toJson(),
                 ];
@@ -178,7 +178,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                 'coordinates' => [],
                 'labels' => [
                     [
-                        'label' => $labelId,
+                        'label' => "$labelId",
                         'annotator' => $user->uuid,
                         'created-at' => $iLabel->created_at->toJson(),
                     ],

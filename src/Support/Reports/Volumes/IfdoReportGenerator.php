@@ -128,7 +128,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
             }
 
             return [
-                'id' => $id,
+                'id' => "$id",
                 'name' => $label->name,
                 'uuid' => $label->uuid,
                 'color' => $label->color,
