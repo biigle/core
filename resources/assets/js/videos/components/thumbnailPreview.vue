@@ -1,8 +1,8 @@
 <template>
     <div class="thumbnail-preview" ref="thumbnailPreview" :style="thumbnailStyle">
-        <canvas v-cloak class="thumbnail-canvas" ref="thumbnailCanvas" v-show="!spriteNotFound">
+        <canvas class="thumbnail-canvas" ref="thumbnailCanvas" v-show="hasAnySprite">
         </canvas>
-        <canvas v-cloak class="thumbnail-canvas" ref="hovertimeCanvas">
+        <canvas class="thumbnail-canvas" ref="hovertimeCanvas">
         </canvas>
     </div>
 </template>
@@ -63,6 +63,7 @@ export default {
             hoverTimeBarWidth: 120,
             preloadedSprites: {},
             lastSpriteIdx: 0,
+            hasAnySprite: false,
         };
     },
     computed: {
@@ -185,6 +186,7 @@ export default {
             return this.spritesFolderPath + "sprite_" + idx + ".webp";
         },
         viewThumbnailPreview() {
+            this.hasAnySprite = true;
             // calculate the current row and column of the sprite
             let thumbnailIndex = Math.floor(this.hoverTime / this.thumbnailInterval) % this.thumbnailsPerSprite;
             if (this.hoverTime >= this.durationRounded) {
