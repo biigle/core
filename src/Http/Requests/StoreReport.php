@@ -145,6 +145,7 @@ class StoreReport extends FormRequest
     {
         return $this->isType([
             ReportType::imageIfdoId(),
+            ReportType::videoIfdoId(),
         ]);
     }
 }
