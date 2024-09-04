@@ -171,7 +171,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             // displayed.
             Log::warning("Could not generate thumbnails for new video {$this->video->id}: {$e->getMessage()}");
         } finally {
-            if (File::exists($tmpDir)) {
+            if (isset($tmpDir) && File::exists($tmpDir)) {
                 File::deleteDirectory($tmpDir);
             }
         }
