@@ -296,6 +296,8 @@ export default {
             this.spriteNotFound = false;
             this.preloadedSprites[this.sprite.src] = this.sprite;
             this.initDimensions();
+            this.viewThumbnailPreview();
+            this.viewHoverTimeBar();
         }
         this.sprite.onerror = () => {
             this.spriteNotFound = true;
@@ -314,6 +316,7 @@ export default {
 
         this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
         this.updateSprite();
+        this.viewHoverTimeBar();
     }
 };
 </script>
