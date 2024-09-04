@@ -98,6 +98,7 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
     ): void {
         $insertAnnotations = [];
         $insertAnnotationLabels = [];
+        $now = now()->toDateTimeString();
 
         foreach ($meta->getAnnotations() as $index => $annotation) {
             // This will remove labels that should be ignored based on $onlyLabels and
@@ -111,11 +112,16 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
                 continue;
             }
 
-            $insertAnnotations[] = $annotation->getInsertData($file->id);
+            $insertAnnotations[] = array_merge($annotation->getInsertData($file->id), [
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
 
             $insertAnnotationLabels[] = array_map(fn ($lau) => [
                 'label_id' => $labelMap[$lau->label->id],
                 'user_id' => $userMap[$lau->user->id],
+                'created_at' => $now,
+                'updated_at' => $now,
             ], $annotationLabels);
 
             // Insert in chunks because a single file can have tens of thousands of
