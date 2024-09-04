@@ -7,8 +7,7 @@ use Biigle\Ifdo\Ifdo;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelSource;
-use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
-use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Shape;
 use Biigle\Video;
 use Biigle\Volume;
@@ -179,7 +178,10 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     /**
      * Determine if the volume has a iFDO metadata file.
      */
-    abstract protected function hasIfdo(Volume $source): bool;
+    protected function hasIfdo(Volume $source): bool
+    {
+        return $source->metadata_parser === IfdoParser::class;
+    }
 
     /**
      * Create the image-set-item entry for an image or video.

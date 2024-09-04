@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects;
 
-use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageIfdoReportGenerator as ReportGenerator;
 use Exception;
 
@@ -37,7 +37,7 @@ class ImageIfdoReportGenerator extends ProjectImageReportGenerator
     public function getProjectSources()
     {
         $volumes = parent::getProjectSources()
-            ->filter(fn ($v) => $v->metadata_parser === ImageIfdoParser::class);
+            ->filter(fn ($v) => $v->metadata_parser === IfdoParser::class);
 
         if ($volumes->isEmpty()) {
             throw new Exception('No volume with iFDO found for this project.');

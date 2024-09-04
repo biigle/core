@@ -4,7 +4,7 @@ namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\LabelSource;
 use Biigle\MediaType;
-use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VideoIfdoReportGenerator;
 use Biigle\Shape;
 use Biigle\Tests\LabelTest;
@@ -43,7 +43,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'media_type_id' => MediaType::videoId(),
             'name' => 'My Cool Volume',
             'metadata_file_path' => 'mymeta.json',
-            'metadata_parser' => VideoIfdoParser::class,
+            'metadata_parser' => IfdoParser::class,
         ]);
 
         $disk = Storage::fake(Volume::$metadataFileDisk);

@@ -4,8 +4,7 @@ namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Biigle\MediaType;
-use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
-use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
@@ -363,7 +362,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         $volume->update([
             'metadata_file_path' => 'mymeta.json',
-            'metadata_parser' => ImageIfdoParser::class,
+            'metadata_parser' => IfdoParser::class,
         ]);
         $disk = Storage::fake(Volume::$metadataFileDisk);
         $disk->put('mymeta.json', 'abc');
@@ -393,7 +392,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         $volume->update([
             'metadata_file_path' => 'mymeta.json',
-            'metadata_parser' => VideoIfdoParser::class,
+            'metadata_parser' => IfdoParser::class,
         ]);
         $disk = Storage::fake(Volume::$metadataFileDisk);
         $disk->put('mymeta.json', 'abc');

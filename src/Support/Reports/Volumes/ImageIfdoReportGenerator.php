@@ -4,7 +4,6 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Image;
 use Biigle\Label;
-use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
 use Biigle\Modules\Reports\Traits\RestrictsToExportArea;
 use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
 use Biigle\Shape;
@@ -111,14 +110,6 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
                     ->where('images.volume_id', $this->source->id);
             })
             ->get();
-    }
-
-    /**
-     * Determine if the volume has a iFDO metadata file.
-     */
-    protected function hasIfdo(Volume $source): bool
-    {
-        return $source->metadata_parser === ImageIfdoParser::class;
     }
 
     /**

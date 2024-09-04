@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
-use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Projects\ImageIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
 use Biigle\Volume;
@@ -23,7 +23,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
     {
         $volume1 = Volume::factory()->create([
             'metadata_file_path' => 'mymeta.json',
-            'metadata_parser' => ImageIfdoParser::class,
+            'metadata_parser' => IfdoParser::class,
         ]);
         $disk = Storage::fake(Volume::$metadataFileDisk);
         $disk->put('mymeta.json', 'abc');

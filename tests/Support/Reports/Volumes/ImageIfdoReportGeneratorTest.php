@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\LabelSource;
-use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Volumes\ImageIfdoReportGenerator;
 use Biigle\Modules\Reports\Volume as ReportVolume;
 use Biigle\Shape;
@@ -42,7 +42,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $volume = Volume::factory()->create([
             'name' => 'My Cool Volume',
             'metadata_file_path' => 'mymeta.json',
-            'metadata_parser' => ImageIfdoParser::class,
+            'metadata_parser' => IfdoParser::class,
         ]);
 
         $disk = Storage::fake(Volume::$metadataFileDisk);

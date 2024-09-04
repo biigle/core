@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
-use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\MediaType;
 use Biigle\Modules\Reports\Support\Reports\Projects\VideoIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
@@ -25,7 +25,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $volume1 = Volume::factory()->create([
             'media_type_id' => MediaType::videoId(),
             'metadata_file_path' => 'mymeta.json',
-            'metadata_parser' => VideoIfdoParser::class,
+            'metadata_parser' => IfdoParser::class,
         ]);
         $disk = Storage::fake(Volume::$metadataFileDisk);
         $disk->put('mymeta.json', 'abc');

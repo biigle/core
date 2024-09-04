@@ -4,7 +4,6 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Image;
 use Biigle\Label;
-use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
 use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
 use Biigle\Shape;
 use Biigle\User;
@@ -108,14 +107,6 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                     ->where('videos.volume_id', $this->source->id);
             })
             ->get();
-    }
-
-    /**
-     * Determine if the volume has a iFDO metadata file.
-     */
-    protected function hasIfdo(Volume $source): bool
-    {
-        return $source->metadata_parser === VideoIfdoParser::class;
     }
 
     /**

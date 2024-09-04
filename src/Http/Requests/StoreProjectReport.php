@@ -3,8 +3,7 @@
 namespace Biigle\Modules\Reports\Http\Requests;
 
 use Biigle\Image;
-use Biigle\Modules\MetadataIfdo\ImageIfdoParser;
-use Biigle\Modules\MetadataIfdo\VideoIfdoParser;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Project;
 use Illuminate\Validation\Rule;
@@ -161,22 +160,14 @@ class StoreProjectReport extends StoreReport
      */
     protected function validateIfdos($validator)
     {
-        if ($this->isType(ReportType::imageIfdoId())) {
-            foreach ($this->project->imageVolumes as $volume) {
-                if ($volume->metadata_parser === ImageIfdoParser::class) {
+        if ($this->isType([ReportType::imageIfdoId(), ReportType::videoIfdoId()])) {
+            foreach ($this->project->volumes as $volume) {
+                if ($volume->metadata_parser === IfdoParser::class) {
                     return;
                 }
             }
 
-            $validator->errors()->add('id', 'The project has no image volumes with attached iFDO files.');
-        } elseif ($this->isType(ReportType::videoIfdoId())) {
-            foreach ($this->project->videoVolumes as $volume) {
-                if ($volume->metadata_parser === VideoIfdoParser::class) {
-                    return;
-                }
-            }
-
-            $validator->errors()->add('id', 'The project has no video volumes with attached iFDO files.');
+            $validator->errors()->add('id', 'The project has no volumes with attached iFDO files.');
         }
     }
 }
