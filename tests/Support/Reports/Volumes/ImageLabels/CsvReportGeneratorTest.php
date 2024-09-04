@@ -36,8 +36,8 @@ class CsvReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new CsvReportGenerator;
-        $this->assertEquals('CSV image label report', $generator->getName());
-        $this->assertEquals('csv_image_label_report', $generator->getFilename());
+        $this->assertSame('CSV image label report', $generator->getName());
+        $this->assertSame('csv_image_label_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 
@@ -319,7 +319,7 @@ class CsvReportGeneratorTest extends TestCase
         $generator->setSource($image->volume);
         $results = $generator->query()->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($il1->id, $results[0]->image_label_id);
+        $this->assertSame($il1->id, $results[0]->image_label_id);
     }
 
     public function testGenerateReportWithDeletedUser()

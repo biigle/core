@@ -20,8 +20,8 @@ class ImageLocationReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new ImageLocationReportGenerator;
-        $this->assertEquals('image location image label report', $generator->getName());
-        $this->assertEquals('image_location_image_label_report', $generator->getFilename());
+        $this->assertSame('image location image label report', $generator->getName());
+        $this->assertSame('image_location_image_label_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 
@@ -345,7 +345,7 @@ class ImageLocationReportGeneratorTest extends TestCase
         $generator->setSource($image->volume);
         $results = $generator->query()->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($il1->image_id, $results[0]->image_id);
-        $this->assertEquals($il1->label_id, $results[0]->label_id);
+        $this->assertSame($il1->image_id, $results[0]->image_id);
+        $this->assertSame($il1->label_id, $results[0]->label_id);
     }
 }

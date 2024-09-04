@@ -25,6 +25,6 @@ class VolumeReportGeneratorTest extends TestCase
         $generator = new VolumeReportGenerator;
         $generator->setSource($volume);
 
-        $this->assertEquals("{$root->name} > {$child->name}", $generator->expandLabelName($child->id));
+        $this->assertSame("{$root->name} > {$child->name}", $generator->expandLabelName($child->id));
     }
 }

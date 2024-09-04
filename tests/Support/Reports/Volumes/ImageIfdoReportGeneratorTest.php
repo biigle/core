@@ -23,8 +23,8 @@ class ImageIfdoReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new ImageIfdoReportGenerator;
-        $this->assertEquals('image iFDO report', $generator->getName());
-        $this->assertEquals('image_ifdo_report', $generator->getFilename());
+        $this->assertSame('image iFDO report', $generator->getName());
+        $this->assertSame('image_ifdo_report', $generator->getFilename());
         $this->assertStringEndsWith('.json', $generator->getFullFilename());
     }
 
@@ -115,7 +115,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMultiLabel()
@@ -200,7 +200,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportEmpty()
@@ -225,7 +225,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportImageLabels()
@@ -288,7 +288,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItems()
@@ -414,7 +414,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItemsArray()
@@ -495,7 +495,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictToExportArea()
@@ -579,7 +579,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictNewestLabel()
@@ -655,7 +655,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictToLabels()
@@ -768,7 +768,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportNoIfdo()
@@ -849,7 +849,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testStripIfdo()
@@ -956,7 +956,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testStripIfdoArray()
@@ -1063,7 +1063,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGeometryTypes()
@@ -1236,7 +1236,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 }
 

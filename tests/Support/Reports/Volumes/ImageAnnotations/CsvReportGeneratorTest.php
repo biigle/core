@@ -42,8 +42,8 @@ class CsvReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new CsvReportGenerator;
-        $this->assertEquals('CSV image annotation report', $generator->getName());
-        $this->assertEquals('csv_image_annotation_report', $generator->getFilename());
+        $this->assertSame('CSV image annotation report', $generator->getName());
+        $this->assertSame('csv_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 

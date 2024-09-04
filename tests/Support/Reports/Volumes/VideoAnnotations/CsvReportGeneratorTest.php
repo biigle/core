@@ -42,8 +42,8 @@ class CsvReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new CsvReportGenerator;
-        $this->assertEquals('CSV video annotation report', $generator->getName());
-        $this->assertEquals('csv_video_annotation_report', $generator->getFilename());
+        $this->assertSame('CSV video annotation report', $generator->getName());
+        $this->assertSame('csv_video_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 
@@ -356,7 +356,7 @@ class CsvReportGeneratorTest extends TestCase
         $generator->setSource($video->volume);
         $results = $generator->initQuery(['video_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($al1->id, $results[0]->id);
+        $this->assertSame($al1->id, $results[0]->id);
     }
 
     public function testRestrictToAnnotationSessionQuery()
@@ -401,7 +401,7 @@ class CsvReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['video_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($al2->id, $results[0]->id);
+        $this->assertSame($al2->id, $results[0]->id);
     }
 
     public function testRestrictToNewestLabelQuery()
@@ -431,7 +431,7 @@ class CsvReportGeneratorTest extends TestCase
         $generator->setSource($a->video->volume);
         $results = $generator->initQuery(['video_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($al3->id, $results[0]->id);
+        $this->assertSame($al3->id, $results[0]->id);
     }
 
     public function testGenerateReportWithDeletedUser()

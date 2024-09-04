@@ -21,8 +21,8 @@ class ExtendedReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new ExtendedReportGenerator;
-        $this->assertEquals('extended image annotation report', $generator->getName());
-        $this->assertEquals('extended_image_annotation_report', $generator->getFilename());
+        $this->assertSame('extended image annotation report', $generator->getName());
+        $this->assertSame('extended_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 

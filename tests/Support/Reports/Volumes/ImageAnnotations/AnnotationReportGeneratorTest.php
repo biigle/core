@@ -80,7 +80,7 @@ class AnnotationReportGeneratorTest extends TestCase
         sort($inside);
         sort($ids);
 
-        $this->assertEquals($inside, $ids);
+        $this->assertSame($inside, $ids);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -181,7 +181,7 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($al2->id, $results[0]->id);
+        $this->assertSame($al2->id, $results[0]->id);
     }
 
     public function testRestrictToNewestLabelQuery()
@@ -211,7 +211,7 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($a->image->volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($al3->id, $results[0]->id);
+        $this->assertSame($al3->id, $results[0]->id);
     }
 
     public function testRestrictToLabels()
@@ -228,6 +228,6 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($a1->image->volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($al1->id, $results[0]->id);
+        $this->assertSame($al1->id, $results[0]->id);
     }
 }

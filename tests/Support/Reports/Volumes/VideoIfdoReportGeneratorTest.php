@@ -23,8 +23,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new VideoIfdoReportGenerator;
-        $this->assertEquals('video iFDO report', $generator->getName());
-        $this->assertEquals('video_ifdo_report', $generator->getFilename());
+        $this->assertSame('video iFDO report', $generator->getName());
+        $this->assertSame('video_ifdo_report', $generator->getFilename());
         $this->assertStringEndsWith('.json', $generator->getFullFilename());
     }
 
@@ -104,7 +104,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150], [200, 200]],
-                            'frames' => [100.0, 200.0],
+                            'frames' => [100, 200],
                             'labels' => [
                                 [
                                     'label' => "$al->label_id",
@@ -118,7 +118,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMultiLabel()
@@ -133,7 +133,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -186,7 +186,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
                                     'label' => "$al->label_id",
@@ -205,7 +205,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportEmpty()
@@ -230,7 +230,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportVideoLabels()
@@ -293,7 +293,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItems()
@@ -343,7 +343,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -407,7 +407,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
                                     'label' => "$al->label_id",
@@ -421,7 +421,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItemsMultiple()
@@ -449,7 +449,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -495,7 +495,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             [
                                 'shape' => 'single-pixel',
                                 'coordinates' => [[150, 150]],
-                                'frames' => [100.0],
+                                'frames' => [100],
                                 'labels' => [
                                     [
                                         'label' => "$al->label_id",
@@ -507,13 +507,13 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         ],
                     ],
                     [
-                        'image-area-square-meter' => 6.0,
+                        'image-area-square-meter' => 6,
                     ],
                 ],
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictNewestLabel()
@@ -528,7 +528,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -577,7 +577,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
                                     'label' => "$al2->label_id",
@@ -591,7 +591,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictToLabels()
@@ -705,7 +705,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportNoIfdo()
@@ -733,7 +733,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -774,7 +774,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
                                     'label' => 'urn:lsid:marinespecies.org:taxname:123999',
@@ -788,7 +788,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testStripIfdo()
@@ -837,7 +837,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -883,7 +883,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
                                     'label' => "$al->label_id",
@@ -897,7 +897,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGeometryTypes()
@@ -1098,7 +1098,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->ifdo);
+        $this->assertSame($expect, $generator->ifdo);
     }
 }
 
