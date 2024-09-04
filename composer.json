@@ -21,7 +21,6 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
-        "ext-yaml": "*",
         "biigle/laravel-file-cache": "^5.0",
         "duncan3dc/bom-string": "^1.1",
         "endroid/qr-code": "^5.0",
