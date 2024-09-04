@@ -49,14 +49,14 @@ class LabelTreeVersionControllerTest extends ApiTestCase
 
         $version = $master->versions()->first();
         $this->assertNotNull($version);
-        $this->assertEquals('v1.0', $version->name);
-        $this->assertEquals($master->id, $version->label_tree_id);
+        $this->assertSame('v1.0', $version->name);
+        $this->assertSame($master->id, $version->label_tree_id);
 
         $versionTree = LabelTree::where('version_id', $version->id)->first();
         $this->assertNotNull($versionTree);
-        $this->assertEquals($master->name, $versionTree->name);
-        $this->assertEquals('First version.', $versionTree->description);
-        $this->assertEquals($master->visibility_id, $versionTree->visibility_id);
+        $this->assertSame($master->name, $versionTree->name);
+        $this->assertSame('First version.', $versionTree->description);
+        $this->assertSame($master->visibility_id, $versionTree->visibility_id);
         $this->assertNotEquals($master->uuid, $versionTree->uuid);
 
         $this->assertNotNull($versionTree->authorizedProjects()->find($this->project()->id));
@@ -66,7 +66,7 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->assertEquals($labels->pluck('name'), $versionLabels->pluck('name'));
         $this->assertEquals($labels->pluck('color'), $versionLabels->pluck('color'));
         $this->assertNotEquals($labels->pluck('uuid'), $versionLabels->pluck('uuid'));
-        $this->assertEquals($versionLabels[0]->parent_id, $versionLabels[1]->id);
+        $this->assertSame($versionLabels[0]->parent_id, $versionLabels[1]->id);
         $this->assertNull($versionLabels[1]->parent_id);
     }
 
@@ -82,7 +82,7 @@ class LabelTreeVersionControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
         $version = $master->versions()->first();
-        $this->assertEquals('10.5281/zenodo.xxxxxxx', $version->doi);
+        $this->assertSame('10.5281/zenodo.xxxxxxx', $version->doi);
     }
 
     public function testStoreDoiEmpty()
@@ -123,7 +123,7 @@ class LabelTreeVersionControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals('10.5281/zenodo.xxxxxxx', $version->fresh()->doi);
+        $this->assertSame('10.5281/zenodo.xxxxxxx', $version->fresh()->doi);
     }
 
     public function testDestroy()

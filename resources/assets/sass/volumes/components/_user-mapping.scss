@@ -1,0 +1,25 @@
+.user-mapping {
+    margin-bottom: 1em;
+}
+
+.user-mapping-item {
+    margin-bottom: $padding-small-vertical;
+    padding: $padding-small-vertical $padding-small-horizontal;
+    padding-right: 0;
+    display: flex;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+        border-radius: $border-radius-small;
+    }
+
+    .user-mapping-item-column {
+        flex: 1;
+    }
+
+    .user-mapping-item-chevron {
+        flex: 0 0 40px;
+        text-align: center;
+    }
+}

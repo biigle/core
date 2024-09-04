@@ -474,14 +474,14 @@ export default {
                 const nextId = this.imagesIds[this.getNextIndex(this.imageIndex + x)];
                 if (!cachedIds.includes(nextId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(nextId));
-                    toCache.push(ImagesStore.fetchImage(nextId));
+                    toCache.push(ImagesStore.fetchImage(nextId, true));
                     cachedIds.push(nextId);
                 }
 
                 const previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex - x)];
                 if (!cachedIds.includes(previousId)) {
                     toCache.push(AnnotationsStore.fetchAnnotations(previousId));
-                    toCache.push(ImagesStore.fetchImage(previousId));
+                    toCache.push(ImagesStore.fetchImage(previousId, false));
                     cachedIds.push(previousId);
                 }
             }
@@ -501,10 +501,9 @@ export default {
             }, 10000);
         },
         updateColorAdjustment(params) {
-            let canvas = this.$refs.canvas;
-            debounce(function () {
+            debounce(() => {
                 ImagesStore.updateColorAdjustment(params);
-                canvas.render();
+                this.$refs.canvas.fireImageSourceChanged();
             }, 100, 'annotations.color-adjustment.update');
         },
         handleSettingsChange(key, value) {
@@ -571,8 +570,27 @@ export default {
         dismissCrossOriginError() {
             this.crossOriginError = false;
         },
-        handleInvalidPolygon() {
-            Messages.danger(`Invalid shape. Polygon needs at least 3 non-overlapping vertices.`);
+        handleInvalidShape(shape) {
+            let count;
+            switch(shape){
+                case 'Circle':
+                    Messages.danger('Invalid shape. Circle needs non-zero radius');
+                    return;
+                case 'LineString':
+                    shape = 'Line'
+                    count = 2;
+                    break;
+                case 'Polygon':
+                    count = 'at least 3';
+                    break;
+                case 'Rectangle':
+                case 'Ellipse':
+                    count = 4;
+                    break;
+                default:
+                    return;
+            }
+            Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
     },
     watch: {

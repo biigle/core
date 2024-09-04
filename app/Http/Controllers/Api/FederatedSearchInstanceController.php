@@ -31,7 +31,7 @@ class FederatedSearchInstanceController extends Controller
      * }
      *
      * @param StoreFederatedSearchInstance $request
-     * @return \Illuminate\Http\Response
+     * @return FederatedSearchInstance|\Illuminate\Http\RedirectResponse
      */
     public function store(StoreFederatedSearchInstance $request)
     {
@@ -61,7 +61,7 @@ class FederatedSearchInstanceController extends Controller
      * @apiParam (Attributes that can be updated) {Boolean} local_token Set to `true` to (re-)set a new token that can be used by the remote instance to authenticate to the local instance. A new token is returned only once in plain text as `new_local_token`. Set this attribute to `false` to clear the local token and thus deny access by the remote instance.
      *
      * @param UpdateFederatedSearchInstance $request
-     * @return \Illuminate\Http\Response
+     * @return FederatedSearchInstance|\Illuminate\Http\RedirectResponse
      */
     public function update(UpdateFederatedSearchInstance $request)
     {
@@ -94,6 +94,7 @@ class FederatedSearchInstanceController extends Controller
 
         if ($this->isAutomatedRequest()) {
             if (isset($token)) {
+                /** @phpstan-ignore-next-line */
                 $instance->new_local_token = $token;
             }
 
@@ -120,7 +121,7 @@ class FederatedSearchInstanceController extends Controller
      * @apiParam {Number} id ID of the instance to disconnect
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy($id)
     {

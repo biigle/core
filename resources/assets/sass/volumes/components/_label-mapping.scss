@@ -1,0 +1,36 @@
+.label-mapping {
+    margin-bottom: 1em;
+}
+
+.label-mapping-item {
+    margin-bottom: $padding-small-vertical;
+    display: flex;
+
+    &:hover {
+        color: white;
+        background-color: $gray-lighter;
+        border-radius: $border-radius-small;
+    }
+
+    .label-tree-label__name {
+        padding-right: 0;
+
+        &:hover {
+            cursor: inherit;
+        }
+    }
+
+    .label-mapping-item-column {
+        flex: 1;
+    }
+
+    .label-mapping-item-chevron {
+        flex: 0 0 40px;
+        padding: $padding-small-vertical 0;
+        text-align: center;
+    }
+
+    .create-form .row:not(:last-child) {
+        padding-bottom: $padding-small-vertical;
+    }
+}

@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Video;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -62,7 +63,7 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
             $query->eachById([ProcessNewImage::class, 'dispatch']);
         } else {
             $queue = config('videos.process_new_video_queue');
-            $query->eachById(fn ($v) => ProcessNewVideo::dispatch($v)->onQueue($queue));
+            $query->eachById(fn (Video $v) => ProcessNewVideo::dispatch($v)->onQueue($queue));
         }
     }
 }

@@ -12,7 +12,7 @@ class ProjectInvitation extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'uuid',
@@ -26,7 +26,7 @@ class ProjectInvitation extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'expires_at' => 'datetime',
@@ -36,7 +36,7 @@ class ProjectInvitation extends Model
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $appends = [
         'expires_at_for_humans',
@@ -45,7 +45,7 @@ class ProjectInvitation extends Model
     /**
      * The project to which this invitation belongs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, ProjectInvitation>
      */
     public function project()
     {

@@ -8,6 +8,9 @@ let defaults = {
     showMousePosition: false,
     showProgressIndicator: true,
     showThumbnailPreview: true,
+    enableJumpByFrame: false,
+    jumpStep: 5.0,
+    muteVideo: true,
 };
 
 export default new Settings({

@@ -54,7 +54,7 @@ class LabelTest extends ModelTestCase
     {
         $parent = self::create();
         $child = self::create(['parent_id' => $parent->id]);
-        $this->assertEquals($parent->id, $child->parent->id);
+        $this->assertSame($parent->id, $child->parent->id);
     }
 
     public function testParentOnDeleteCascade()
@@ -69,7 +69,7 @@ class LabelTest extends ModelTestCase
     {
         $tree = LabelTreeTest::create();
         $label = self::create(['label_tree_id' => $tree->id]);
-        $this->assertEquals($tree->id, $label->tree->id);
+        $this->assertSame($tree->id, $label->tree->id);
     }
 
     public function testLabelTreeOnDeleteCascade()
@@ -84,14 +84,14 @@ class LabelTest extends ModelTestCase
     {
         $parent = self::create();
         $child = self::create(['parent_id' => $parent->id]);
-        $this->assertEquals($child->id, $parent->children()->first()->id);
+        $this->assertSame($child->id, $parent->children()->first()->id);
     }
 
     public function testSetColorAttribute()
     {
         $label = self::create();
         $label->color = '#aabbcc';
-        $this->assertEquals('aabbcc', $label->color);
+        $this->assertSame('aabbcc', $label->color);
     }
 
     public function testIsUsedAnnotationLabel()

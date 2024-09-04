@@ -4,7 +4,7 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <h2 class="col-lg-12 clearfix">
+        <h2 class="col-lg-12 clearfix file-info-title" title="{{ $image->filename }}">
             {{ $image->filename }}
             <span class="pull-right">
                 <a href="{{route('volume', $volume->id)}}" title="Back to {{ $volume->name }}" class="btn btn-default">back</a>
@@ -30,7 +30,13 @@
 
 @section('navbar')
 <div class="navbar-text navbar-volumes-breadcrumbs">
-    @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects])/ <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a>
-    / <strong title="{{$image->filename}}">{{$image->filename}}</strong> @include('volumes.partials.annotationSessionIndicator')
+    <div class="annotations-project-dd">
+        @include('volumes.partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
+    </div>
+    <div class="annotations-breadcrumb">
+        <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
+        <strong title="{{$image->filename}}">{{$image->filename}}</strong>
+    </div>
+    @include('volumes.partials.annotationSessionIndicator')
 </div>
 @endsection

@@ -95,9 +95,9 @@ class VolumeControllerTest extends ApiTestCase
             'media_type_id' => MediaType::videoId(),
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('the new volume', $this->volume()->fresh()->name);
+        $this->assertSame('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
-        $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
+        $this->assertSame(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
         Queue::assertNothingPushed();
     }
 
@@ -120,7 +120,7 @@ class VolumeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
         $this->volume()->refresh();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
+        $this->assertSame('10.3389/fmars.2017.00083', $this->volume()->handle);
 
         // Some DOIs can contain multiple slashes.
         $this
@@ -169,7 +169,7 @@ class VolumeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
+        $this->assertSame('editor-test://volumes', $this->volume()->fresh()->url);
 
         $this->beGlobalAdmin();
         $this
@@ -182,7 +182,7 @@ class VolumeControllerTest extends ApiTestCase
                 'url' => 'admin-test://volumes',
             ])
             ->assertStatus(200);
-        $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
+        $this->assertSame('admin-test://volumes', $this->volume()->fresh()->url);
         Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 
@@ -201,7 +201,7 @@ class VolumeControllerTest extends ApiTestCase
             'url' => 'admin-test://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         ])->assertStatus(422);
         
-        $this->assertEquals('The url must not be greater than 256 characters.', $response->exception->getMessage());
+        $this->assertSame('The url must not be greater than 256 characters.', $response->exception->getMessage());
         Queue::assertNothingPushed();
     }
 
@@ -263,12 +263,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testCloneVolume()
     {
-        $volume = $this
-            ->volume([
-                'created_at' => '2022-11-09 14:37:00',
-                'updated_at' => '2022-11-09 14:37:00',
-            ])
-            ->fresh();
+        $volume = $this->volume(['metadata_file_path' => 'mymeta.csv']);
         $project = ProjectTest::create();
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
@@ -289,21 +284,34 @@ class VolumeControllerTest extends ApiTestCase
 
         Cache::flush();
 
-        Queue::fake();
-
         $this
             ->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
             ->assertStatus(201);
         Queue::assertPushed(CloneImagesOrVideos::class);
 
-        // The target project.
-        $project = ProjectTest::create();
+        $this->assertTrue($project->volumes()->exists());
+        $copy = $project->volumes()->first();
+        $this->assertEquals($copy->name, $this->volume()->name);
+        $this->assertEquals($copy->media_type_id, $this->volume()->media_type_id);
+        $this->assertEquals($copy->url, $this->volume()->url);
+        $this->assertTrue($copy->creating_async);
+        $this->assertEquals("{$copy->id}.csv", $copy->metadata_file_path);
+    }
 
-        $this->beAdmin();
+    public function testCloneVolumeNewName()
+    {
+        $volume = $this->volume(['name' => 'myvolume']);
+        $project = ProjectTest::create();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(201);
-        Queue::assertPushed(CloneImagesOrVideos::class);
+        $this->beAdmin();
+
+        $this
+            ->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}", [
+                'name' => 'volumecopy',
+            ])
+            ->assertStatus(201);
+        $copy = $project->volumes()->first();
+        $this->assertEquals($copy->name, 'volumecopy');
     }
 }

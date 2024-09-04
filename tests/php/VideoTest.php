@@ -22,7 +22,7 @@ class VideoTest extends ModelTestCase
         $this->assertNotNull($this->model->url);
         $this->assertNotNull($this->model->volume);
         $this->assertNotNull($this->model->duration);
-        $this->assertEquals([], $this->model->attrs);
+        $this->assertSame([], $this->model->attrs);
     }
 
     public function testAnnotations()
@@ -64,51 +64,51 @@ class VideoTest extends ModelTestCase
     {
         $this->assertNull($this->model->error);
         $this->model->attrs = ['error' => 'not-found'];
-        $this->assertEquals('not-found', $this->model->error);
+        $this->assertSame('not-found', $this->model->error);
     }
 
     public function testSetErrorAttribute()
     {
         $this->model->error = 'not-found';
-        $this->assertEquals(['error' => 'not-found'], $this->model->attrs);
+        $this->assertSame(['error' => 'not-found'], $this->model->attrs);
     }
 
     public function testGetMimeTypeAttribute()
     {
         $this->assertNull($this->model->mimeType);
         $this->model->attrs = ['mimetype' => 'video/mp4'];
-        $this->assertEquals('video/mp4', $this->model->mimeType);
+        $this->assertSame('video/mp4', $this->model->mimeType);
     }
 
     public function testSetMimeTypeAttribute()
     {
         $this->model->mimeType = 'video/mp4';
-        $this->assertEquals(['mimetype' => 'video/mp4'], $this->model->attrs);
+        $this->assertSame(['mimetype' => 'video/mp4'], $this->model->attrs);
     }
 
     public function testGetSizeAttribute()
     {
         $this->assertNull($this->model->size);
         $this->model->attrs = ['size' => 123];
-        $this->assertEquals(123, $this->model->size);
+        $this->assertSame(123, $this->model->size);
     }
 
     public function testSetSizeAttribute()
     {
         $this->model->size = 123;
-        $this->assertEquals(['size' => 123], $this->model->attrs);
+        $this->assertSame(['size' => 123], $this->model->attrs);
     }
 
     public function testSetWidthAttribute()
     {
         $this->model->width = 123;
-        $this->assertEquals(['width' => 123], $this->model->attrs);
+        $this->assertSame(['width' => 123], $this->model->attrs);
     }
 
     public function testSetHeightAttribute()
     {
         $this->model->height = 123;
-        $this->assertEquals(['height' => 123], $this->model->attrs);
+        $this->assertSame(['height' => 123], $this->model->attrs);
     }
 
     public function testHasBeenProcessed()
@@ -121,9 +121,9 @@ class VideoTest extends ModelTestCase
     public function testLabels()
     {
         $vl = VideoLabelTest::create(['video_id' => $this->model->id]);
-        $this->assertEquals(1, $this->model->labels()->count());
+        $this->assertSame(1, $this->model->labels()->count());
         $label = $this->model->labels()->first();
-        $this->assertEquals($vl->id, $label->id);
+        $this->assertSame($vl->id, $label->id);
     }
 
     public function testImagesDeletedEventOnDelete()
@@ -141,8 +141,8 @@ class VideoTest extends ModelTestCase
         $this->model->taken_at = [$now, $then];
         $this->model->save();
         $takenAt = $this->model->fresh()->taken_at;
-        $this->assertEquals($now->timestamp, $takenAt[0]->timestamp);
-        $this->assertEquals($then->timestamp, $takenAt[1]->timestamp);
+        $this->assertSame($now->timestamp, $takenAt[0]->timestamp);
+        $this->assertSame($then->timestamp, $takenAt[1]->timestamp);
     }
 
     public function testSetGetLngAttribute()
@@ -151,7 +151,7 @@ class VideoTest extends ModelTestCase
         $this->assertNull($this->model->lng);
         $this->model->lng = $expect;
         $this->model->save();
-        $this->assertEquals($expect, $this->model->fresh()->lng);
+        $this->assertSame($expect, $this->model->fresh()->lng);
     }
 
     public function testSetGetLatAttribute()
@@ -160,15 +160,15 @@ class VideoTest extends ModelTestCase
         $this->assertNull($this->model->lat);
         $this->model->lat = $expect;
         $this->model->save();
-        $this->assertEquals($expect, $this->model->fresh()->lat);
+        $this->assertSame($expect, $this->model->fresh()->lat);
     }
 
     public function testSetGetMetadataAttribute()
     {
         $expect = ['area' => [2.6, 1.6]];
-        $this->assertEquals([], $this->model->metadata);
+        $this->assertSame([], $this->model->metadata);
         $this->model->metadata = $expect;
         $this->model->save();
-        $this->assertEquals($expect, $this->model->fresh()->metadata);
+        $this->assertSame($expect, $this->model->fresh()->metadata);
     }
 }

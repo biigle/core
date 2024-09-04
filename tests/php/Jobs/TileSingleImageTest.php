@@ -49,6 +49,14 @@ class TileSingleImageTest extends TestCase
             File::deleteDirectory($job->tempPath);
         }
     }
+
+    public function testQueue()
+    {
+        config(['image.tiles.queue' => 'myqueue']);
+        $image = ImageTest::create();
+        $job = new TileSingleImageStub($image);
+        $this->assertSame('myqueue', $job->queue);
+    }
 }
 
 class TileSingleImageStub extends TileSingleImage

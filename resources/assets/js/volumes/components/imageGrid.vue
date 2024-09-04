@@ -3,7 +3,7 @@
         <div class="image-grid__images" ref="images">
             <image-grid-image
                 v-if="hasPinnedImage"
-                :key="pinnedImage.id"
+                :key="pinnedImageKey"
                 :pinnable="pinnable"
                 :image="pinnedImage"
                 :is-pinned="true"
@@ -159,6 +159,13 @@ export default {
         hasPinnedImage() {
             return this.pinnedImage !== null;
         },
+        pinnedImageKey() {
+            if (!this.hasPinnedImage) {
+                return '';
+            }
+
+            return `r-${this.pinnedImage.id}`;
+        }
     },
     methods: {
         updateDimensions() {

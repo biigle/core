@@ -5,6 +5,7 @@ import AnnouncementsEditForm from './core/announcements/editForm';
 import MessagesDisplay from './core/messages/display';
 import NotificationsList from './core/notifications/list';
 import NotificationsUnreadCount from './core/notifications/unreadCount';
+import RegisterForm from './core/registerForm';
 import TopMenu from './core/topMenu';
 import {mount} from './utils';
 
@@ -16,4 +17,5 @@ mount('help-menu', TopMenu);
 mount('messages-display', MessagesDisplay);
 mount('notifications-list', NotificationsList);
 mount('notifications-unread-count', NotificationsUnreadCount);
+mount('register-form', RegisterForm);
 mount('top-menu', TopMenu);

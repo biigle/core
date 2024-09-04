@@ -1,7 +1,7 @@
 <script>
 import Keyboard from '../../../core/keyboard';
-import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonBrush';
-import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
+import ModifyPolygonBrushInteraction from '../../ol/interaction/ModifyPolygonBrush';
+import PolygonBrushInteraction from '../../ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../stores/styles';
 import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
@@ -26,6 +26,9 @@ export default {
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
         },
+        isNotAPolygonTool() {
+            return !(this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill);
+        }
     },
     methods: {
         togglePolygonBrush() {
@@ -111,19 +114,30 @@ export default {
     },
     watch: {
         isUsingPolygonBrush() {
-            this.resetCurrentInteraction();
-            this.togglePolygonBrushInteraction();
+            if (this.isUsingPolygonBrush) {
+                this.resetCurrentInteraction();
+                this.togglePolygonBrushInteraction();
+            }
         },
         isUsingPolygonEraser() {
-            this.resetCurrentInteraction();
-            this.toggleShiftClickSelectInteraction();
-            this.togglePolygonEraserInteraction();
+            if (this.isUsingPolygonEraser) {
+                this.resetCurrentInteraction();
+                this.toggleShiftClickSelectInteraction();
+                this.togglePolygonEraserInteraction();
+            }
         },
         isUsingPolygonFill() {
-            this.resetCurrentInteraction();
-            this.toggleShiftClickSelectInteraction();
-            this.togglePolygonFillInteraction();
+            if (this.isUsingPolygonFill) {
+                this.resetCurrentInteraction();
+                this.toggleShiftClickSelectInteraction();
+                this.togglePolygonFillInteraction();
+            }
         },
+        isNotAPolygonTool() {
+            if (this.isNotAPolygonTool) {
+                this.resetCurrentInteraction();
+            }
+        }
     },
     created() {
         Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);

@@ -49,8 +49,8 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
 
         $instance = FederatedSearchInstance::first();
         $this->assertNotNull($instance);
-        $this->assertEquals('my instance', $instance->name);
-        $this->assertEquals('https://example.com', $instance->url);
+        $this->assertSame('my instance', $instance->name);
+        $this->assertSame('https://example.com', $instance->url);
         $this->assertNull($instance->local_token);
         $this->assertNull($instance->remote_token);
         $this->assertNull($instance->indexed_at);
@@ -86,8 +86,8 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $instance->refresh();
-        $this->assertEquals('my updated instance', $instance->name);
-        $this->assertEquals('https://www.example.com', $instance->url);
+        $this->assertSame('my updated instance', $instance->name);
+        $this->assertSame('https://www.example.com', $instance->url);
     }
 
     public function testUpdateSetRemoteToken()
@@ -116,12 +116,12 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals('mytoken', $instance->fresh()->remote_token);
+        $this->assertSame('mytoken', $instance->fresh()->remote_token);
         $this->assertCount(1, $container);
         $request = $container[0]['request'];
-        $this->assertEquals('https://example.com/api/v1/federated-search-index', strval($request->getUri()));
-        $this->assertEquals('Bearer mytoken', $request->getHeaderLine('Authorization'));
-        $this->assertEquals('HEAD', $request->getMethod());
+        $this->assertSame('https://example.com/api/v1/federated-search-index', strval($request->getUri()));
+        $this->assertSame('Bearer mytoken', $request->getHeaderLine('Authorization'));
+        $this->assertSame('HEAD', $request->getMethod());
         Bus::assertDispatched(UpdateFederatedSearchIndex::class);
     }
 
@@ -254,9 +254,9 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         Bus::assertNotDispatched(UpdateFederatedSearchIndex::class);
         $this->assertCount(1, $container);
         $request = $container[0]['request'];
-        $this->assertEquals('https://www.example.com/api/v1/federated-search-index', strval($request->getUri()));
-        $this->assertEquals('Bearer mytoken', $request->getHeaderLine('Authorization'));
-        $this->assertEquals('HEAD', $request->getMethod());
+        $this->assertSame('https://www.example.com/api/v1/federated-search-index', strval($request->getUri()));
+        $this->assertSame('Bearer mytoken', $request->getHeaderLine('Authorization'));
+        $this->assertSame('HEAD', $request->getMethod());
     }
 
     public function testUpdateGetLocalToken()

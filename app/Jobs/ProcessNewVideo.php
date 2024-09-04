@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Jcupitt\Vips\Image as VipsImage;
 use Log;
 use Throwable;
-use VipsImage;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {
@@ -40,10 +40,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
     /**
      * The FFMpeg video instance.
-     *
-     * @var \FFMpeg\Media\Video
      */
     protected $ffmpegVideo;
+
+    /**
+     * The FFProbe instance.
+     *
+     * @var FFProbe|null
+     */
+    protected $ffprobe;
 
     /**
      * Ignore this job if the video does not exist any more.

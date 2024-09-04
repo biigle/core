@@ -18,11 +18,8 @@ class AddImageGeoColumns extends Migration
          | coordinates and time where the image was taken.
          */
         Schema::table('images', function (Blueprint $table) {
-            // lat is bounded by +-90 and lng by +-180 so if we take a float with 11
-            // digits and 8 after the decimal point we can store all coordinates with
-            // a resolution up to a mm (http://stackoverflow.com/a/9059066/1796523)
-            $table->float('lat', 11, 8)->nullable();
-            $table->float('lng', 11, 8)->nullable();
+            $table->float('lat')->nullable();
+            $table->float('lng')->nullable();
 
             $table->timestamp('taken_at')->nullable();
         });

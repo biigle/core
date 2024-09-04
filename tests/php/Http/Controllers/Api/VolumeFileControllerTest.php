@@ -74,7 +74,7 @@ class VolumeFileControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/volumes/{$id}/files")->assertStatus(422);
 
-        $this->assertEquals(1, $this->volume()->images()->count());
+        $this->assertSame(1, $this->volume()->images()->count());
 
         $this
             ->json('POST', "/api/v1/volumes/{$id}/files", [
@@ -110,8 +110,8 @@ class VolumeFileControllerTest extends ApiTestCase
 
         $response->assertSimilarJson($images->toArray());
 
-        $this->assertEquals(1, $images->where('filename', '1.jpg')->count());
-        $this->assertEquals(1, $images->where('filename', '2.jpg')->count());
+        $this->assertSame(1, $images->where('filename', '1.jpg')->count());
+        $this->assertSame(1, $images->where('filename', '2.jpg')->count());
         Queue::assertPushed(ProcessNewVolumeFiles::class);
         Event::assertDispatched('images.created');
     }
@@ -178,7 +178,7 @@ class VolumeFileControllerTest extends ApiTestCase
             ])->id;
         VideoTest::create(['filename' => 'no.mp4', 'volume_id' => $id]);
 
-        $this->assertEquals(1, $this->volume()->videos()->count());
+        $this->assertSame(1, $this->volume()->videos()->count());
 
         $this->beAdmin();
 
@@ -216,8 +216,8 @@ class VolumeFileControllerTest extends ApiTestCase
 
         $response->assertSimilarJson($files->toArray());
 
-        $this->assertEquals(1, $files->where('filename', '1.mp4')->count());
-        $this->assertEquals(1, $files->where('filename', '2.mp4')->count());
+        $this->assertSame(1, $files->where('filename', '1.mp4')->count());
+        $this->assertSame(1, $files->where('filename', '2.mp4')->count());
         Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 

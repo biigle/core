@@ -24,6 +24,11 @@ return [
          | a cloud storage disk for this.
          */
         'disk' => env('IMAGE_TILES_DISK', 'tiles'),
+
+        /*
+         | Queue on which the tile image job should run.
+         */
+        'queue' => env('IMAGE_TILES_QUEUE', 'default'),
     ],
 
 ];

@@ -17,7 +17,7 @@ class UserSettingsController extends Controller
      * attributes which cannot be documented here.
      *
      * @param UpdateUserSettings $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function update(UpdateUserSettings $request)
     {

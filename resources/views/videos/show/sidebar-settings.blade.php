@@ -1,6 +1,7 @@
 <sidebar-tab name="settings" icon="cog" title="Settings">
     <settings-tab inline-template
         v-on:update="handleUpdatedSettings"
+        :supports-jump-by-frame="supportsJumpByFrame"
         >
             <div class="annotator-tab settings-tab">
 
@@ -17,6 +18,10 @@
 
                 <div class="sidebar-tab__section">
                     <input type="number" min="0.25" max="4.0" step="0.25" v-model="playbackRate" class="form-control form-control--small" title="Video playback rate"> Playback rate
+                </div>
+
+                <div class="sidebar-tab__section">
+                    <input type="number" min="0" max="60.0" step="0.1" v-model="jumpStep" class="form-control form-control--small" title="Time in seconds that the video will jump (back or forward) with command buttons"> Jump step (s)
                 </div>
 
                 <div class="sidebar-tab__section">
@@ -37,6 +42,15 @@
 
                 <div class="sidebar-tab__section">
                     <power-toggle :active="showThumbnailPreview" title-off="Show Thumbnail" title-on="Hide Thumbnail" v-on:on="handleShowThumbnailPreview" v-on:off="handleHideThumbnailPreview">Thumbnail preview</power-toggle>
+                </div>
+
+                <div class="sidebar-tab__section">
+                    <power-toggle :disabled="jumpByFrameNotSupported" :active="enableJumpByFrame" title-off="Enable jump by frame" title-on="Disable jump by frame" v-on:on="handleEnableJumpByFrame" v-on:off="handleDisableJumpByFrame">Jump by frame</power-toggle>
+                    <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">(experimental)</a>
+                </div>
+
+                <div class="sidebar-tab__section">
+                    <power-toggle :active="muteVideo" title-off="Mute video" title-on="Unmute video" v-on:on="handleMuteVideo" v-on:off="handleUnmuteVideo">Mute Video</power-toggle>
                 </div>
             </div>
     </settings-tab>

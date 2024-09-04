@@ -24,7 +24,7 @@ class FileLabelUserController extends Controller
      *
      * @param  int  $vid
      * @param  int  $uid
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index($vid, $uid)
     {

@@ -186,7 +186,7 @@ class UserControllerTest extends ApiTestCase
             'auth_password' => 'adminpassword',
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('new@email.me', $this->guest()->fresh()->email);
+        $this->assertSame('new@email.me', $this->guest()->fresh()->email);
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'role_id' => 999,
@@ -208,7 +208,7 @@ class UserControllerTest extends ApiTestCase
         // wrong password
         $response->assertStatus(422);
 
-        $this->assertEquals(Role::editorId(), $this->guest()->fresh()->role_id);
+        $this->assertSame(Role::editorId(), $this->guest()->fresh()->role_id);
 
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
             'role_id' => Role::adminId(),
@@ -216,7 +216,7 @@ class UserControllerTest extends ApiTestCase
             '_redirect' => 'settings/profile',
         ]);
         $response->assertRedirect('settings/profile');
-        $this->assertEquals(Role::adminId(), $this->guest()->fresh()->role_id);
+        $this->assertSame(Role::adminId(), $this->guest()->fresh()->role_id);
 
         $this->get('/');
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
@@ -227,8 +227,8 @@ class UserControllerTest extends ApiTestCase
         ]);
         $response->assertRedirect('/');
 
-        $this->assertEquals('jack', $this->guest()->fresh()->firstname);
-        $this->assertEquals('jackson', $this->guest()->fresh()->lastname);
+        $this->assertSame('jack', $this->guest()->fresh()->firstname);
+        $this->assertSame('jackson', $this->guest()->fresh()->lastname);
         $this->assertNotEquals('', $this->guest()->fresh()->password);
     }
 
@@ -253,7 +253,7 @@ class UserControllerTest extends ApiTestCase
             'auth_password' => 'adminpassword',
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
+        $this->assertSame('test2@test.com', $this->guest()->fresh()->email);
     }
 
     public function testUpdateAffiliation()
@@ -263,7 +263,7 @@ class UserControllerTest extends ApiTestCase
         $this->putJson("api/v1/users/{$user->id}", ['affiliation' => 'My Company'])
             ->assertStatus(200);
 
-        $this->assertEquals('My Company', $user->fresh()->affiliation);
+        $this->assertSame('My Company', $user->fresh()->affiliation);
 
         $this->putJson("api/v1/users/{$user->id}", ['affiliation' => ''])
             ->assertStatus(200);
@@ -290,7 +290,7 @@ class UserControllerTest extends ApiTestCase
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
-        $this->assertEquals(Role::editorId(), $user->fresh()->role_id);
+        $this->assertSame(Role::editorId(), $user->fresh()->role_id);
         $this
             ->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::expertId(),
@@ -303,7 +303,7 @@ class UserControllerTest extends ApiTestCase
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
-        $this->assertEquals(Role::adminId(), $user->fresh()->role_id);
+        $this->assertSame(Role::adminId(), $user->fresh()->role_id);
     }
 
     public function testUpdateCanReview()
@@ -421,9 +421,9 @@ class UserControllerTest extends ApiTestCase
 
         $user = $this->guest()->fresh();
         $this->assertTrue(Hash::check('newpassword', $user->password));
-        $this->assertEquals('jack', $user->firstname);
-        $this->assertEquals('jackson', $user->lastname);
-        $this->assertEquals('new@email.me', $user->email);
+        $this->assertSame('jack', $user->firstname);
+        $this->assertSame('jackson', $user->lastname);
+        $this->assertSame('new@email.me', $user->email);
     }
 
     public function testUpdateOwnEmailCaseInsensitive()
@@ -447,7 +447,7 @@ class UserControllerTest extends ApiTestCase
             'auth_password' => 'guest-password',
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
+        $this->assertSame('test2@test.com', $this->guest()->fresh()->email);
     }
 
     public function testUpdateOwnAffiliation()
@@ -456,7 +456,7 @@ class UserControllerTest extends ApiTestCase
         $this->putJson('api/v1/users/my', ['affiliation' => 'My Company'])
             ->assertStatus(200);
 
-        $this->assertEquals('My Company', $this->guest()->fresh()->affiliation);
+        $this->assertSame('My Company', $this->guest()->fresh()->affiliation);
 
         $this->putJson('api/v1/users/my', ['affiliation' => ''])
             ->assertStatus(200);
@@ -493,11 +493,11 @@ class UserControllerTest extends ApiTestCase
         $response->assertSuccessful();
 
         $newUser = User::find(User::max('id'));
-        $this->assertEquals('jack', $newUser->firstname);
-        $this->assertEquals('jackson', $newUser->lastname);
-        $this->assertEquals('new@email.me', $newUser->email);
-        $this->assertEquals('My Company', $newUser->affiliation);
-        $this->assertEquals(Role::editorId(), $newUser->role_id);
+        $this->assertSame('jack', $newUser->firstname);
+        $this->assertSame('jackson', $newUser->lastname);
+        $this->assertSame('new@email.me', $newUser->email);
+        $this->assertSame('My Company', $newUser->affiliation);
+        $this->assertSame(Role::editorId(), $newUser->role_id);
 
         $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
@@ -552,7 +552,7 @@ class UserControllerTest extends ApiTestCase
         ])->assertSuccessful();
 
         $user = User::where('email', 'new2@email.me')->first();
-        $this->assertEquals('c796ccec-c746-308f-8009-9f1f68e2aa62', $user->uuid);
+        $this->assertSame('c796ccec-c746-308f-8009-9f1f68e2aa62', $user->uuid);
 
         $this->json('POST', '/api/v1/users', [
             'password' => 'password',
