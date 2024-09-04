@@ -61,10 +61,14 @@ class ImportVolumeMetadataTest extends TestCase
         $this->assertCount(1, $annotations);
         $this->assertEquals([10, 10], $annotations[0]->points);
         $this->assertEquals(Shape::pointId(), $annotations[0]->shape_id);
+        $this->assertNotNull($annotations[0]->created_at);
+        $this->assertNotNull($annotations[0]->updated_at);
         $annotationLabels = $annotations[0]->labels;
         $this->assertCount(1, $annotationLabels);
         $this->assertEquals($dbUser->id, $annotationLabels[0]->user_id);
         $this->assertEquals($dbLabel->id, $annotationLabels[0]->label_id);
+        $this->assertNotNull($annotationLabels[0]->created_at);
+        $this->assertNotNull($annotationLabels[0]->updated_at);
 
         $fileLabels = $image->labels;
         $this->assertCount(1, $fileLabels);
@@ -114,10 +118,14 @@ class ImportVolumeMetadataTest extends TestCase
         $this->assertEquals([[10, 10]], $annotations[0]->points);
         $this->assertEquals([1], $annotations[0]->frames);
         $this->assertEquals(Shape::pointId(), $annotations[0]->shape_id);
+        $this->assertNotNull($annotations[0]->created_at);
+        $this->assertNotNull($annotations[0]->updated_at);
         $annotationLabels = $annotations[0]->labels;
         $this->assertCount(1, $annotationLabels);
         $this->assertEquals($dbUser->id, $annotationLabels[0]->user_id);
         $this->assertEquals($dbLabel->id, $annotationLabels[0]->label_id);
+        $this->assertNotNull($annotationLabels[0]->created_at);
+        $this->assertNotNull($annotationLabels[0]->updated_at);
 
         $fileLabels = $video->labels;
         $this->assertCount(1, $fileLabels);
