@@ -26,17 +26,6 @@ $volume-image-padding: 0.5em;
     background-color: $gray-lighter;
 }
 
-.ifdo-icon {
-    width: 12px;
-    height: 12px;
-    display: inline-block;
-    margin-top: -3px;
-
-    &.ifdo-icon--btn {
-        margin-top: -2px;
-    }
-}
-
 .volume-storage-disk-btn {
     overflow-x: hidden;
     text-overflow: ellipsis;
@@ -56,6 +45,8 @@ $volume-image-padding: 0.5em;
 @import 'components/sorting-tab';
 @import 'components/volume-image-grid-image';
 @import 'components/file-label-list';
+@import 'components/label-mapping';
+@import 'components/user-mapping';
 
 @import 'edit';
 @import 'search';

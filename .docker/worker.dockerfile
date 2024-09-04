@@ -20,7 +20,6 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && rm -r /var/lib/apt/lists/*
 
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-ADD ".docker/all-php.ini" "$PHP_INI_DIR/conf.d/all.ini"
 # Enable FFI for jcupitt/vips.
 # See: https://github.com/libvips/php-vips?tab=readme-ov-file#install
 RUN echo "ffi.enable = true" > "$PHP_INI_DIR/conf.d/vips.ini"
@@ -57,19 +56,6 @@ RUN LC_ALL=C.UTF-8 apt-get update \
 
 # Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
-
-RUN LC_ALL=C.UTF-8 apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libyaml-dev \
-    && apt-get install -y --no-install-recommends \
-        libyaml-0-2 \
-    && pecl install yaml \
-    && printf "\n" | docker-php-ext-enable yaml \
-    && apt-get purge -y \
-        libyaml-dev \
-    && apt-get -y autoremove \
-    && apt-get clean \
-    && rm -r /var/lib/apt/lists/*
 
 ARG PHPREDIS_VERSION=6.0.2
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
