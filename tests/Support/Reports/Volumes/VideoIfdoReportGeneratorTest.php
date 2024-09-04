@@ -86,6 +86,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -161,6 +162,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -260,6 +262,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -370,6 +373,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -471,6 +475,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -554,6 +559,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -655,6 +661,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -749,6 +756,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -857,6 +865,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -985,6 +994,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [

@@ -84,6 +84,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -157,6 +158,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -255,6 +257,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -364,6 +367,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -459,6 +463,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -543,6 +548,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -618,6 +624,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -718,6 +725,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -810,6 +818,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -916,6 +925,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -1022,6 +1032,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
@@ -1139,6 +1150,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [

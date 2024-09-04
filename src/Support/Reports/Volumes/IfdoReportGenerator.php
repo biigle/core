@@ -90,6 +90,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
             return [
                 'id' => $user->uuid,
                 'name' => "{$user->firstname} {$user->lastname}",
+                'uuid' => $user->uuid,
             ];
         }, $this->imageAnnotationCreators);
 
