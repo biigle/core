@@ -4,10 +4,12 @@ namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Biigle\MediaType;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Volume;
 use Cache;
 use Queue;
 use Storage;
@@ -347,7 +349,8 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreImageIfdo()
     {
-        $volumeId = $this->volume()->id;
+        $volume = $this->volume();
+        $volumeId = $volume->id;
         $typeId = ReportType::imageIfdoId();
 
         $this->beGuest();
@@ -357,8 +360,12 @@ class VolumeReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $disk = Storage::fake('ifdos');
-        $disk->put($volumeId.'.yaml', 'abc');
+        $volume->update([
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => IfdoParser::class,
+        ]);
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', 'abc');
         Cache::flush();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
@@ -370,7 +377,10 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreVideoIfdo()
     {
-        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $volume = $this->volume([
+            'media_type_id' => MediaType::videoId(),
+        ]);
+        $volumeId = $volume->id;
         $typeId = ReportType::videoIfdoId();
 
         $this->beGuest();
@@ -380,8 +390,12 @@ class VolumeReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $disk = Storage::fake('ifdos');
-        $disk->put($volumeId.'.yaml', 'abc');
+        $volume->update([
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => IfdoParser::class,
+        ]);
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', 'abc');
         Cache::flush();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [

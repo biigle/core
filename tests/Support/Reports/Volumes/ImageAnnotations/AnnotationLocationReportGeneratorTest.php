@@ -22,8 +22,8 @@ class AnnotationLocationReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new AnnotationLocationReportGenerator;
-        $this->assertEquals('annotation location image annotation report', $generator->getName());
-        $this->assertEquals('annotation_location_image_annotation_report', $generator->getFilename());
+        $this->assertSame('annotation location image annotation report', $generator->getName());
+        $this->assertSame('annotation_location_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 

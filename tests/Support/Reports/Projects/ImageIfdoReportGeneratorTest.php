@@ -2,9 +2,10 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Projects\ImageIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\VolumeTest;
+use Biigle\Volume;
 use Exception;
 use Storage;
 use TestCase;
@@ -20,11 +21,14 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
     public function testProcessIfdoVolumesOnly()
     {
-        $volume1 = VolumeTest::create();
-        $disk = Storage::fake('ifdos');
-        $disk->put($volume1->id.'.yaml', 'abc');
+        $volume1 = Volume::factory()->create([
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => IfdoParser::class,
+        ]);
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', 'abc');
 
-        $volume2 = VolumeTest::create();
+        $volume2 = Volume::factory()->create();
 
         $project = ProjectTest::create();
         $project->addVolumeId($volume1->id);
@@ -40,7 +44,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
     public function testThrowIfNoIfdo()
     {
-        $volume = VolumeTest::create();
+        $volume = Volume::factory()->create();
         $project = ProjectTest::create();
         $project->addVolumeId($volume->id);
 

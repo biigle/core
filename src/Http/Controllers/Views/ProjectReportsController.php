@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
 use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Project;
 use Illuminate\Http\Request;
@@ -56,7 +57,7 @@ class ProjectReportsController extends Controller
         $hasIfdos = false;
 
         foreach ($project->volumes as $volume) {
-            if ($volume->hasIfdo()) {
+            if ($volume->metadata_parser === IfdoParser::class) {
                 $hasIfdos = true;
                 break;
             }

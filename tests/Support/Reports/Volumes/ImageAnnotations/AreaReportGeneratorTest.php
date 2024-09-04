@@ -36,8 +36,8 @@ class AreaReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new AreaReportGenerator;
-        $this->assertEquals('image annotation area report', $generator->getName());
-        $this->assertEquals('image_annotation_area_report', $generator->getFilename());
+        $this->assertSame('image annotation area report', $generator->getName());
+        $this->assertSame('image_annotation_area_report', $generator->getFilename());
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 

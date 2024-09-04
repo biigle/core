@@ -2,10 +2,11 @@
 
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\MediaType;
 use Biigle\Modules\Reports\Support\Reports\Projects\VideoIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\VolumeTest;
+use Biigle\Volume;
 use Exception;
 use Storage;
 use TestCase;
@@ -21,11 +22,17 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
     public function testProcessIfdoVolumesOnly()
     {
-        $volume1 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $disk = Storage::fake('ifdos');
-        $disk->put($volume1->id.'.yaml', 'abc');
+        $volume1 = Volume::factory()->create([
+            'media_type_id' => MediaType::videoId(),
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => IfdoParser::class,
+        ]);
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', 'abc');
 
-        $volume2 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume2 = Volume::factory()->create([
+            'media_type_id' => MediaType::videoId(),
+        ]);
 
         $project = ProjectTest::create();
         $project->addVolumeId($volume1->id);
@@ -41,7 +48,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
     public function testThrowIfNoIfdo()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = Volume::factory()->create([
+            'media_type_id' => MediaType::videoId(),
+        ]);
         $project = ProjectTest::create();
         $project->addVolumeId($volume->id);
 

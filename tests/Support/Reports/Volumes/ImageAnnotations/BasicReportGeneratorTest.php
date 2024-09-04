@@ -19,8 +19,8 @@ class BasicReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new BasicReportGenerator;
-        $this->assertEquals('basic image annotation report', $generator->getName());
-        $this->assertEquals('basic_image_annotation_report', $generator->getFilename());
+        $this->assertSame('basic image annotation report', $generator->getName());
+        $this->assertSame('basic_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.pdf', $generator->getFullFilename());
     }
 

@@ -4,10 +4,11 @@ namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Image;
 use Biigle\Label;
+use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
 use Biigle\Shape;
 use Biigle\User;
 use Biigle\Video;
-use Biigle\Modules\Reports\Traits\RestrictsToNewestLabels;
+use Biigle\Volume;
 
 class VideoIfdoReportGenerator extends IfdoReportGenerator
 {
@@ -141,7 +142,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                 }
 
                 return [
-                    'label' => $labelId,
+                    'label' => "$labelId",
                     'annotator' => $user->uuid,
                     'created-at' => $aLabel->created_at->toJson(),
                 ];
@@ -177,7 +178,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
                 'coordinates' => [],
                 'labels' => [
                     [
-                        'label' => $labelId,
+                        'label' => "$labelId",
                         'annotator' => $user->uuid,
                         'created-at' => $iLabel->created_at->toJson(),
                     ],

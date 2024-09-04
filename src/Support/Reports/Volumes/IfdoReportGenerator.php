@@ -3,13 +3,18 @@
 namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\Annotation;
+use Biigle\Ifdo\Ifdo;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelSource;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Shape;
 use Biigle\Video;
+use Biigle\Volume;
 use DB;
 use Exception;
+use File;
+use Storage;
 
 abstract class IfdoReportGenerator extends VolumeReportGenerator
 {
@@ -18,7 +23,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
      *
      * @var string
      */
-    public $extension = 'yaml';
+    public $extension = 'json';
 
     /**
      * Labels that have been used in this volume.
@@ -75,16 +80,17 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
 
         $this->query()->eachById([$this, 'processFile']);
 
-        $ifdo = $this->source->getIfdo();
-
-        if (is_null($ifdo)) {
+        if (!$this->hasIfdo($this->source)) {
             throw new Exception("No iFDO file found for the volume.");
         }
+
+        $ifdo = $this->getIfdo($this->source)->getJsonData();
 
         $creators = array_map(function ($user) {
             return [
                 'id' => $user->uuid,
                 'name' => "{$user->firstname} {$user->lastname}",
+                'uuid' => $user->uuid,
             ];
         }, $this->imageAnnotationCreators);
 
@@ -96,13 +102,11 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
                     if ($this->isArrayItem($item)) {
                         foreach ($item as &$entry) {
                             unset($entry['image-annotations']);
-                            unset($entry['image-annotation-geometry-types']);
                         }
                         // Always unset by-reference variables of loops.
                         unset($entry);
                     } else {
                         unset($item['image-annotations']);
-                        unset($item['image-annotation-geometry-types']);
                     }
                 }
                 // Always unset by-reference variables of loops.
@@ -118,16 +122,16 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
         }
 
         $labels = array_map(function ($label) {
+            $id = $label->id;
             if ($this->shouldConvertWormsId($label)) {
-                return [
-                    'id' => $this->getWormsUrn($label),
-                    'name' => $label->name,
-                ];
+                $id = $this->getWormsUrn($label);
             }
 
             return [
-                'id' => $label->id,
+                'id' => "$id",
                 'name' => $label->name,
+                'uuid' => $label->uuid,
+                'color' => $label->color,
             ];
         }, $this->imageAnnotationLabels);
 
@@ -148,7 +152,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
             }
         }
 
-        $this->writeYaml($ifdo, $path);
+        $this->writeIfdo($ifdo, $path);
     }
 
     /**
@@ -173,6 +177,14 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     abstract protected function getLabels();
 
     /**
+     * Determine if the volume has a iFDO metadata file.
+     */
+    protected function hasIfdo(Volume $source): bool
+    {
+        return $source->metadata_parser === IfdoParser::class;
+    }
+
+    /**
      * Create the image-set-item entry for an image or video.
      *
      * @param Image|Video $file
@@ -181,14 +193,33 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     abstract public function processFile(Image|Video $file);
 
     /**
-     * Write the report YAML file.
+     * Get the iFDO object of the volume if it has any.
+     */
+    protected function getIfdo(Volume $source): ?Ifdo
+    {
+        if (!$source->metadata_file_path) {
+            return null;
+        }
+
+        $content = Storage::disk(Volume::$metadataFileDisk)
+            ->get($source->metadata_file_path);
+
+        if (!$content) {
+            return null;
+        }
+
+        return Ifdo::fromString($content);
+    }
+
+    /**
+     * Write the report JSON file.
      *
      * @param array $content
      * @param string $path
      */
-    protected function writeYaml(array $content, string $path)
+    protected function writeIfdo(array $content, string $path)
     {
-        yaml_emit_file($path, $content);
+        File::put($path, json_encode($content));
     }
 
     /**

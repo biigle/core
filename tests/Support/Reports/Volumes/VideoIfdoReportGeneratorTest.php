@@ -3,16 +3,17 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
 use Biigle\LabelSource;
-use Biigle\Shape;
+use Biigle\MediaType;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Support\Reports\Volumes\VideoIfdoReportGenerator;
-use Biigle\Modules\Reports\Volume;
+use Biigle\Shape;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VolumeTest;
+use Biigle\Volume;
 use Exception;
 use Storage;
 use TestCase;
@@ -22,9 +23,9 @@ class VideoIfdoReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new VideoIfdoReportGenerator;
-        $this->assertEquals('video iFDO report', $generator->getName());
-        $this->assertEquals('video_ifdo_report', $generator->getFilename());
-        $this->assertStringEndsWith('.yaml', $generator->getFullFilename());
+        $this->assertSame('video iFDO report', $generator->getName());
+        $this->assertSame('video_ifdo_report', $generator->getFilename());
+        $this->assertStringEndsWith('.json', $generator->getFullFilename());
     }
 
     protected function setUpIfdo($merge = [])
@@ -38,10 +39,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ], $merge);
 
-        $volume = VolumeTest::create(['name' => 'My Cool Volume']);
+        $volume = Volume::factory()->create([
+            'media_type_id' => MediaType::videoId(),
+            'name' => 'My Cool Volume',
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => IfdoParser::class,
+        ]);
 
-        $disk = Storage::fake('ifdos');
-        $disk->put($volume->id.'.yaml', yaml_emit($ifdo));
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', json_encode($ifdo));
 
         return [$volume, $ifdo];
     }
@@ -80,12 +86,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -95,10 +104,10 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150], [200, 200]],
-                            'frames' => [100.0, 200.0],
+                            'frames' => [100, 200],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -109,7 +118,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMultiLabel()
@@ -124,7 +133,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -153,16 +162,21 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                     [
-                        'id' => $al2->label_id,
+                        'id' => "$al2->label_id",
                         'name' => $al2->label->name,
+                        'uuid' => $al2->label->uuid,
+                        'color' => $al2->label->color,
                     ],
                 ],
             ],
@@ -172,15 +186,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
                                 [
-                                    'label' => $al2->label_id,
+                                    'label' => "$al2->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -191,7 +205,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportEmpty()
@@ -216,7 +230,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportVideoLabels()
@@ -248,12 +262,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $vl->label_id,
+                        'id' => "$vl->label_id",
                         'name' => $vl->label->name,
+                        'uuid' => $vl->label->uuid,
+                        'color' => $vl->label->color,
                     ],
                 ],
             ],
@@ -265,7 +282,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [],
                             'labels' => [
                                 [
-                                    'label' => $vl->label_id,
+                                    'label' => "$vl->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $vl->created_at->toJson(),
                                 ],
@@ -276,7 +293,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItems()
@@ -296,7 +313,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                 ],
@@ -310,7 +327,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -326,7 +343,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -356,16 +373,19 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -378,7 +398,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [10, 20, 20, 30, 30, 20, 20, 10],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -387,10 +407,10 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -401,7 +421,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportMergeImageSetItemsMultiple()
@@ -429,7 +449,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -455,12 +475,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -472,10 +495,10 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             [
                                 'shape' => 'single-pixel',
                                 'coordinates' => [[150, 150]],
-                                'frames' => [100.0],
+                                'frames' => [100],
                                 'labels' => [
                                     [
-                                        'label' => $al->label_id,
+                                        'label' => "$al->label_id",
                                         'annotator' => $user->uuid,
                                         'created-at' => $al->created_at->toJson(),
                                     ],
@@ -484,13 +507,13 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         ],
                     ],
                     [
-                        'image-area-square-meter' => 6.0,
+                        'image-area-square-meter' => 6,
                     ],
                 ],
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictNewestLabel()
@@ -505,7 +528,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -536,12 +559,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al2->label_id,
+                        'id' => "$al2->label_id",
                         'name' => $al2->label->name,
+                        'uuid' => $al2->label->uuid,
+                        'color' => $al2->label->color,
                     ],
                 ],
             ],
@@ -551,10 +577,10 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
-                                    'label' => $al2->label_id,
+                                    'label' => "$al2->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -565,7 +591,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportRestrictToLabels()
@@ -635,12 +661,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -653,7 +682,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a1->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -664,7 +693,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [],
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $vl1->created_at->toJson(),
                                 ],
@@ -676,12 +705,12 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGenerateReportNoIfdo()
     {
-        $volume = VolumeTest::create();
+        $volume = Volume::factory()->create();
         $generator = new VideoIfdoReportGeneratorStub();
         $generator->setSource($volume);
         $this->expectException(Exception::class);
@@ -704,7 +733,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -727,12 +756,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
                         'id' => 'urn:lsid:marinespecies.org:taxname:123999',
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -742,7 +774,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
                                     'label' => 'urn:lsid:marinespecies.org:taxname:123999',
@@ -756,7 +788,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testStripIfdo()
@@ -776,7 +808,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => 123321,
+                        'id' => "123321",
                         'name' => 'Test Label',
                     ],
                 ],
@@ -789,7 +821,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'coordinates' => [10, 20],
                             'labels' => [
                                 [
-                                    'label' => 123321,
+                                    'label' => "123321",
                                     'annotator' => '123abc',
                                     'created-at' => '2022-02-10 09:47:00',
                                 ],
@@ -805,7 +837,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $a = VideoAnnotationTest::create([
             'video_id' => $video->id,
             'points' => [[150, 150]],
-            'frames' => [100.0],
+            'frames' => [100],
             'shape_id' => Shape::pointId(),
         ]);
         $al = VideoAnnotationLabelTest::create([
@@ -833,12 +865,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $al->label_id,
+                        'id' => "$al->label_id",
                         'name' => $al->label->name,
+                        'uuid' => $al->label->uuid,
+                        'color' => $al->label->color,
                     ],
                 ],
             ],
@@ -848,10 +883,10 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         [
                             'shape' => 'single-pixel',
                             'coordinates' => [[150, 150]],
-                            'frames' => [100.0],
+                            'frames' => [100],
                             'labels' => [
                                 [
-                                    'label' => $al->label_id,
+                                    'label' => "$al->label_id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al->created_at->toJson(),
                                 ],
@@ -862,7 +897,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 
     public function testGeometryTypes()
@@ -959,12 +994,15 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     [
                         'id' => $user->uuid,
                         'name' => "{$user->firstname} {$user->lastname}",
+                        'uuid' => $user->uuid,
                     ],
                 ],
                 'image-annotation-labels' => [
                     [
-                        'id' => $label->id,
+                        'id' => "$label->id",
                         'name' => $label->name,
+                        'uuid' => $label->uuid,
+                        'color' => $label->color,
                     ],
                 ],
             ],
@@ -977,7 +1015,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a1->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al1->created_at->toJson(),
                                 ],
@@ -989,7 +1027,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a2->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al2->created_at->toJson(),
                                 ],
@@ -1001,7 +1039,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a3->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al3->created_at->toJson(),
                                 ],
@@ -1013,7 +1051,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a4->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al4->created_at->toJson(),
                                 ],
@@ -1025,7 +1063,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a5->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al5->created_at->toJson(),
                                 ],
@@ -1037,7 +1075,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a6->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al6->created_at->toJson(),
                                 ],
@@ -1049,7 +1087,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
                             'frames' => $a7->frames,
                             'labels' => [
                                 [
-                                    'label' => $label->id,
+                                    'label' => "$label->id",
                                     'annotator' => $user->uuid,
                                     'created-at' => $al7->created_at->toJson(),
                                 ],
@@ -1060,16 +1098,16 @@ class VideoIfdoReportGeneratorTest extends TestCase
             ],
         ];
 
-        $this->assertEquals($expect, $generator->yaml);
+        $this->assertSame($expect, $generator->ifdo);
     }
 }
 
 class VideoIfdoReportGeneratorStub extends VideoIfdoReportGenerator
 {
-    public $yaml;
+    public $ifdo;
 
-    protected function writeYaml(array $content, string $path)
+    protected function writeIfdo(array $content, string $path)
     {
-        $this->yaml = $content;
+        $this->ifdo = $content;
     }
 }

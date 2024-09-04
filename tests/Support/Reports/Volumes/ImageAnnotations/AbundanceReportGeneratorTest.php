@@ -19,8 +19,8 @@ class AbundanceReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new AbundanceReportGenerator;
-        $this->assertEquals('abundance image annotation report', $generator->getName());
-        $this->assertEquals('abundance_image_annotation_report', $generator->getFilename());
+        $this->assertSame('abundance image annotation report', $generator->getName());
+        $this->assertSame('abundance_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 

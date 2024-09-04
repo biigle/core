@@ -4,10 +4,12 @@ namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
 use Biigle\MediaType;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Volume;
 use Cache;
 use Queue;
 use Storage;
@@ -316,7 +318,7 @@ class ProjectReportControllerTest extends ApiTestCase
     {
         $projectId = $this->project()->id;
         // Create volume.
-        $this->volume();
+        $volume = $this->volume();
         $typeId = ReportType::imageIfdoId();
 
         $this->beGuest();
@@ -326,8 +328,12 @@ class ProjectReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->volume()->id.'.yaml', 'abc');
+        $volume->update([
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => IfdoParser::class,
+        ]);
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', 'abc');
         Cache::flush();
 
         $this->postJson("api/v1/projects/{$projectId}/reports", [
@@ -341,7 +347,9 @@ class ProjectReportControllerTest extends ApiTestCase
     {
         $projectId = $this->project()->id;
         // Create volume.
-        $this->volume(['media_type_id' => MediaType::videoId()]);
+        $volume = $this->volume([
+            'media_type_id' => MediaType::videoId(),
+        ]);
         $typeId = ReportType::videoIfdoId();
 
         $this->beGuest();
@@ -351,8 +359,12 @@ class ProjectReportControllerTest extends ApiTestCase
             ])
             ->assertStatus(422);
 
-        $disk = Storage::fake('ifdos');
-        $disk->put($this->volume()->id.'.yaml', 'abc');
+        $volume->update([
+            'metadata_file_path' => 'mymeta.json',
+            'metadata_parser' => IfdoParser::class,
+        ]);
+        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk->put('mymeta.json', 'abc');
         Cache::flush();
 
         $this->postJson("api/v1/projects/{$projectId}/reports", [

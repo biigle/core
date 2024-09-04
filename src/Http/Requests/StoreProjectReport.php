@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Reports\Http\Requests;
 
 use Biigle\Image;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Project;
 use Illuminate\Validation\Rule;
@@ -159,15 +160,9 @@ class StoreProjectReport extends StoreReport
      */
     protected function validateIfdos($validator)
     {
-        if ($this->isType(ReportType::imageIfdoId())) {
-            $volumes = $this->project->imageVolumes;
-        } elseif ($this->isType(ReportType::videoIfdoId())) {
-            $volumes = $this->project->videoVolumes;
-        }
-
-        if (isset($volumes)) {
-            foreach ($volumes as $volume) {
-                if ($volume->hasIfdo()) {
+        if ($this->isType([ReportType::imageIfdoId(), ReportType::videoIfdoId()])) {
+            foreach ($this->project->volumes as $volume) {
+                if ($volume->metadata_parser === IfdoParser::class) {
                     return;
                 }
             }

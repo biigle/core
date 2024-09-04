@@ -35,8 +35,8 @@ class CocoReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new CocoReportGenerator;
-        $this->assertEquals('coco image annotation report', $generator->getName());
-        $this->assertEquals('coco_image_annotation_report', $generator->getFilename());
+        $this->assertSame('coco image annotation report', $generator->getName());
+        $this->assertSame('coco_image_annotation_report', $generator->getFilename());
         $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 

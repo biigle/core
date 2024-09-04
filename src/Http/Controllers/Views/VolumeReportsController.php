@@ -4,6 +4,7 @@ namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
+use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Project;
@@ -54,7 +55,12 @@ class VolumeReportsController extends Controller
             })
             ->get();
 
-        $reportPrefix = $volume->isImageVolume() ? 'Image' : 'Video';
+        $hasIfdo = $volume->metadata_parser === IfdoParser::class;
+        if ($volume->isImageVolume()) {
+            $reportPrefix = 'Image';
+        } else {
+            $reportPrefix = 'Video';
+        }
 
         return view('reports::volumeReports', [
             'projects' => $volume->projects,
@@ -63,6 +69,7 @@ class VolumeReportsController extends Controller
             'reportTypes' => $types,
             'labelTrees' => $labelTrees,
             'reportPrefix' => $reportPrefix,
+            'hasIfdo' => $hasIfdo,
         ]);
     }
 }

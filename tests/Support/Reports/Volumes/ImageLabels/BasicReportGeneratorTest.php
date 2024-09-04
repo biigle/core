@@ -19,8 +19,8 @@ class BasicReportGeneratorTest extends TestCase
     public function testProperties()
     {
         $generator = new BasicReportGenerator;
-        $this->assertEquals('basic image label report', $generator->getName());
-        $this->assertEquals('basic_image_label_report', $generator->getFilename());
+        $this->assertSame('basic image label report', $generator->getName());
+        $this->assertSame('basic_image_label_report', $generator->getFilename());
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 
@@ -201,6 +201,6 @@ class BasicReportGeneratorTest extends TestCase
         $generator->setSource($image->volume);
         $results = $generator->query()->get();
         $this->assertCount(1, $results);
-        $this->assertEquals($il1->label_id, $results[0]->label_id);
+        $this->assertSame($il1->label_id, $results[0]->label_id);
     }
 }
