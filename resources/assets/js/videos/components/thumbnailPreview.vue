@@ -41,6 +41,7 @@ export default {
             thumbnailCanvas: null,
             sprite: new Image(),
             spriteIdx: 0,
+            thumbnailIndex: -1,
             thumbProgressBarSpace: 10,
             sideButtonsWidth: 52,
             spritesFolderPath: null,
@@ -192,6 +193,13 @@ export default {
             if (this.hoverTime >= this.durationRounded) {
                 thumbnailIndex = thumbnailIndex === 0 ? this.thumbnailsPerSprite - 1 : this.estimatedThumbnails - 1;
             }
+
+            // Skip redrawing the same thumbnail than before.
+            if (this.thumbnailIndex === thumbnailIndex) {
+                return;
+            }
+            this.thumbnailIndex = thumbnailIndex;
+
             let thumbnailRow = Math.floor(thumbnailIndex / Math.sqrt(this.thumbnailsPerSprite));
             let thumbnailColumn = thumbnailIndex % Math.sqrt(this.thumbnailsPerSprite);
 
@@ -202,9 +210,6 @@ export default {
             // draw the current thumbnail to the canvas
             let context = this.thumbnailCanvas.getContext('2d');
             context.drawImage(this.sprite, sourceX, sourceY, this.thumbnailWidth, this.thumbnailHeight, 0, 0, this.thumbnailCanvas.width, this.thumbnailCanvas.height);
-
-            // Call viewHoverTimeBar here to prevent flickering hover time bar
-            this.viewHoverTimeBar();
         },
         updateThumbnailInterval() {
             let maxThumbnails = biigle.$require('videos.spritesMaxThumbnails');
@@ -275,11 +280,10 @@ export default {
             if (this.spriteIdx != spriteIdx) {
                 this.updateSprite();
             }
-            if (this.spriteNotFound) {
-                this.viewHoverTimeBar();
-            } else {
+            if (!this.spriteNotFound) {
                 this.viewThumbnailPreview();
             }
+            this.viewHoverTimeBar();
         },
     },
     created() {
