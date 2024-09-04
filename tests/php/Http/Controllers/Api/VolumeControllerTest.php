@@ -310,7 +310,7 @@ class VolumeControllerTest extends ApiTestCase
         Queue::assertPushed(CloneImagesOrVideos::class);
     }
 
-    public function testGetAnnotationTimestamps()
+    public function testGetFileIdsSortedByAnnotationTimestamps()
     {
 
         $volume = $this
@@ -351,9 +351,7 @@ class VolumeControllerTest extends ApiTestCase
         $content = json_decode($response->getContent(), true);
 
         $this->assertCount(2, $content);
-        $this->assertNotNull($content[$img->id]);
-        $this->assertNotNull($content[$img2->id]);
-        $this->assertSame($content[$img->id], "2023-11-09T05:37:00.000000Z");
-        $this->assertSame($content[$img2->id], "2024-11-09T13:37:00.000000Z");
+        $this->assertSame($content[0], $img2->id);
+        $this->assertSame($content[1], $img->id);
     }
 }
