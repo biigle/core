@@ -283,7 +283,7 @@ $router->post(
 );
 
 $router->get(
-    'volumes/{id}/files/annotation-timestamps', 'VolumeController@getAnnotationTimestamps'
+    'volumes/{id}/files/annotation-timestamps', 'VolumeController@getFileIdsSortedByAnnotationTimestamps'
 );
 
 $router->resource('volumes', 'VolumeController', [

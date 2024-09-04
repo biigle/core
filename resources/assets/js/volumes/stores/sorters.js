@@ -1,5 +1,6 @@
 import SortComponent from '../components/sortComponent';
 import VolumeApi from '../api/volumes';
+import {handleErrorResponse} from '../../core/messages/store';
 
 let filenameSorter = {
     id: 'filename',
@@ -117,19 +118,10 @@ let annotationTime = {
         },
         methods: {
             getSequence() {
-                return VolumeApi.getAnnotationTimestamps({'id': this.volumeId})
+                return VolumeApi.getFileIdsSortedByAnnotationTimestamps({'id': this.volumeId})
                 .then((res) => res.body)
-                .then((timestamps) => {
-                    let sorted = Object.entries(timestamps).sort(this.compare);
-                    sorted = sorted.map(e => parseInt(e[0]));
-                    let diff = this.fileIds.filter(id => !sorted.includes(id));
-                    sorted = sorted.concat(diff);
-                    return sorted;                   
-                });
+                .catch(handleErrorResponse);           
             },
-            compare(a, b) {
-                return Date.parse(b[1]) - Date.parse(a[1]);
-            }
         },
         created() {
             this.volumeId = biigle.$require('volumes.volumeId');

@@ -211,11 +211,11 @@ class VolumeController extends Controller
     }
 
     /**
-     * Return volume's annotation timestamps of newest annotations
+     * Return file ids which are sorted by annotations.created_at
      *
      * @param int $id
      * @return object
-     * @api {get} volumes{/id}/files/annotation-timestamps Get the newest annotation timestamps of the volume
+     * @api {get} volumes{/id}/files/annotation-timestamps Get sorted file ids of volume
      * @apiGroup Volumes
      * @apiPermission projectMember
      *
@@ -223,22 +223,31 @@ class VolumeController extends Controller
      *
      * @apiSuccessExample {json} Success response:
      * {
-     *  1: "2024-08-23T07:06:31.000000Z",
-     *  2: "2024-08-23T06:40:29.000000Z",
-     *  3: "2024-08-23T06:40:35.000000Z",
+     *  1: 1,
+     *  2: 2,
+     *  3: 3,
      * }
      *
      */
-    public function getAnnotationTimestamps($id)
+    public function getFileIdsSortedByAnnotationTimestamps($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        $timestamps = $volume->files
-            ->flatMap(fn ($file) => $file->annotations)
-            ->groupBy('file_id')
-            ->map(fn ($annotations) => $annotations->max('created_at'));
+        if ($volume->isImageVolume()) {
+            $ids = $volume->files()
+                ->leftJoin('image_annotations', 'images.id', "=", "image_id")
+                ->groupBy('images.id')
+                ->selectRaw('images.id, max(created_at) as created_at');
+        } else {
+            $ids = $volume->files()
+                ->leftJoin('video_annotations', 'videos.id', "=", "video_id")
+                ->groupBy('videos.id')
+                ->selectRaw('videos.id, max(created_at) as created_at');
+        }
 
-        return $timestamps;
+        return $ids->get()
+            ->sortByDesc('created_at')
+            ->pluck('id');
     }
 }
