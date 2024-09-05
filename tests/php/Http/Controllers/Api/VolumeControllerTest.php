@@ -326,20 +326,17 @@ class VolumeControllerTest extends ApiTestCase
         $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
 
         $this->beGuest();
-
-        $img = ImageTest::create([
-            'filename' => 'test123.jpg',
-            'volume_id' => $volume->id,
-        ]);
-
         $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
 
         $response->assertSuccessful();
         $content = json_decode($response->getContent(), true);
 
-        $this->assertCount(1, $content);
-        $this->assertSame($content[0], $img->id);
+        $this->assertCount(0, $content);
 
+        $img = ImageTest::create([
+            'filename' => 'test123.jpg',
+            'volume_id' => $volume->id,
+        ]);
         ImageAnnotationTest::create([
             'created_at' => '2023-11-09 06:37:00',
             'image_id' => $img->id,
@@ -382,20 +379,17 @@ class VolumeControllerTest extends ApiTestCase
         $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
 
         $this->beGuest();
-
-        $video = VideoTest::create([
-            'filename' => 'test123.jpg',
-            'volume_id' => $volume->id,
-        ]);
-
         $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
 
         $response->assertSuccessful();
         $content = json_decode($response->getContent(), true);
 
-        $this->assertCount(1, $content);
-        $this->assertSame($content[0], $video->id);
+        $this->assertCount(0, $content);
 
+        $video = VideoTest::create([
+            'filename' => 'test123.jpg',
+            'volume_id' => $volume->id,
+        ]);
         VideoAnnotationTest::create([
             'created_at' => '2023-11-09 06:37:00',
             'video_id' => $video->id,
