@@ -236,14 +236,14 @@ class VolumeController extends Controller
 
         if ($volume->isImageVolume()) {
             $ids = $volume->files()
-                ->leftJoin('image_annotations', 'images.id', "=", "image_id")
+                ->leftJoin('image_annotations', 'images.id', "=", "image_annotations.image_id")
                 ->groupBy('images.id')
-                ->selectRaw('images.id, max(created_at) as created_at');
+                ->selectRaw('images.id, max(image_annotations.created_at) as created_at');
         } else {
             $ids = $volume->files()
-                ->leftJoin('video_annotations', 'videos.id', "=", "video_id")
+                ->leftJoin('video_annotations', 'videos.id', "=", "video_annotations.video_id")
                 ->groupBy('videos.id')
-                ->selectRaw('videos.id, max(created_at) as created_at');
+                ->selectRaw('videos.id, max(video_annotations.created_at) as created_at');
         }
 
         return $ids->get()
