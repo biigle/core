@@ -7,7 +7,12 @@ use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Role;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Queue;
@@ -313,5 +318,120 @@ class VolumeControllerTest extends ApiTestCase
             ->assertStatus(201);
         $copy = $project->volumes()->first();
         $this->assertEquals($copy->name, 'volumecopy');
+    }
+
+    public function testGetImageIdsSortedByAnnotationTimestamps()
+    {
+
+        $volume = $this
+            ->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+            ])
+            ->fresh();
+
+        $this->be(UserTest::create());
+        $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
+
+        $this->beGuest();
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(0, $content);
+
+        $img = ImageTest::create([
+            'filename' => 'test123.jpg',
+            'volume_id' => $volume->id,
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2023-11-09 06:37:00',
+            'image_id' => $img->id,
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2020-11-09 06:37:00',
+            'image_id' => $img->id,
+        ]);
+        $img2 = ImageTest::create([
+            'filename' => 'test321.jpg',
+            'volume_id' => $volume->id
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2024-11-09 14:37:00',
+            'image_id' => $img2->id,
+        ]);
+        $img3 = ImageTest::create([
+            'filename' => 'test321321.jpg',
+            'volume_id' => $volume->id
+        ]);
+
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(3, $content);
+        $this->assertSame($content[0], $img2->id);
+        $this->assertSame($content[1], $img->id);
+        $this->assertSame($content[2], $img3->id);
+    }
+
+    public function testGetVideoIdsSortedByAnnotationTimestamps()
+    {
+
+        $volume = $this
+            ->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+                'media_type_id' => MediaType::videoId()
+            ])
+            ->fresh();
+
+        $this->be(UserTest::create());
+        $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
+
+        $this->beGuest();
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(0, $content);
+
+        $video = VideoTest::create([
+            'filename' => 'test123.jpg',
+            'volume_id' => $volume->id,
+        ]);
+        VideoAnnotationTest::create([
+            'created_at' => '2023-11-09 06:37:00',
+            'video_id' => $video->id,
+        ]);
+        VideoAnnotationTest::create([
+            'created_at' => '2020-11-09 06:37:00',
+            'video_id' => $video->id,
+        ]);
+        $video2 = VideoTest::create([
+            'filename' => 'test321.jpg',
+            'volume_id' => $volume->id
+        ]);
+        VideoAnnotationTest::create([
+            'created_at' => '2024-11-09 14:37:00',
+            'video_id' => $video2->id,
+        ]);
+        $video3 = VideoTest::create([
+            'filename' => 'test321123.jpg',
+            'volume_id' => $volume->id
+        ]);
+
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(3, $content);
+        $this->assertSame($content[0], $video2->id);
+        $this->assertSame($content[1], $video->id);
+        $this->assertSame($content[2], $video3->id);
     }
 }

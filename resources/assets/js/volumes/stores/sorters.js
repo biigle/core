@@ -1,4 +1,6 @@
 import SortComponent from '../components/sortComponent';
+import VolumeApi from '../api/volumes';
+import {handleErrorResponse} from '../../core/messages/store';
 
 let filenameSorter = {
     id: 'filename',
@@ -99,6 +101,35 @@ let randomSorter = {
     },
 };
 
+let annotationTime = {
+    id: 'annotationTime',
+    types: ['image', 'video'],
+    component: {
+        mixins: [SortComponent],
+        data() {
+            return {
+                volumeId: -1,
+                fileIds: [],
+                title: 'Sort images by last created annotation',
+                text: 'Last annotated',
+                id: 'annotationTime',
+
+            };
+        },
+        methods: {
+            getSequence() {
+                return VolumeApi.getFileIdsSortedByAnnotationTimestamps({'id': this.volumeId})
+                .then((res) => res.body)
+                .catch(handleErrorResponse);           
+            },
+        },
+        created() {
+            this.volumeId = biigle.$require('volumes.volumeId');
+            this.fileIds = biigle.$require('volumes.fileIds');
+        },
+    },
+};
+
 /**
  * Store for the volume image sorters
  */
@@ -107,4 +138,5 @@ export default [
     filenameSorter,
     idSorter,
     randomSorter,
+    annotationTime,
 ];
