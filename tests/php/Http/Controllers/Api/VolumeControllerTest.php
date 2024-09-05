@@ -320,6 +320,17 @@ class VolumeControllerTest extends ApiTestCase
             ])
             ->fresh();
 
+        $this->be(UserTest::create());
+        $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
+
+        $this->beGuest();
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(0, $content);
+
         $img = ImageTest::create([
             'filename' => 'test123.jpg',
             'volume_id' => $volume->id,
@@ -341,10 +352,6 @@ class VolumeControllerTest extends ApiTestCase
             'image_id' => $img2->id,
         ]);
 
-        $this->be(UserTest::create());
-        $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
-
-        $this->beGuest();
         $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
 
         $response->assertSuccessful();
