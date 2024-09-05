@@ -353,15 +353,20 @@ class VolumeControllerTest extends ApiTestCase
             'created_at' => '2024-11-09 14:37:00',
             'image_id' => $img2->id,
         ]);
+        $img3 = ImageTest::create([
+            'filename' => 'test321321.jpg',
+            'volume_id' => $volume->id
+        ]);
 
         $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
 
         $response->assertSuccessful();
         $content = json_decode($response->getContent(), true);
 
-        $this->assertCount(2, $content);
+        $this->assertCount(3, $content);
         $this->assertSame($content[0], $img2->id);
         $this->assertSame($content[1], $img->id);
+        $this->assertSame($content[2], $img3->id);
     }
 
     public function testGetVideoIdsSortedByAnnotationTimestamps()
@@ -406,14 +411,19 @@ class VolumeControllerTest extends ApiTestCase
             'created_at' => '2024-11-09 14:37:00',
             'video_id' => $video2->id,
         ]);
+        $video3 = VideoTest::create([
+            'filename' => 'test321123.jpg',
+            'volume_id' => $volume->id
+        ]);
 
         $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
 
         $response->assertSuccessful();
         $content = json_decode($response->getContent(), true);
 
-        $this->assertCount(2, $content);
+        $this->assertCount(3, $content);
         $this->assertSame($content[0], $video2->id);
         $this->assertSame($content[1], $video->id);
+        $this->assertSame($content[2], $video3->id);
     }
 }
