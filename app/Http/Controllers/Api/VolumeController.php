@@ -238,16 +238,16 @@ class VolumeController extends Controller
             $ids = $volume->files()
                 ->leftJoin('image_annotations', 'images.id', "=", "image_annotations.image_id")
                 ->groupBy('images.id')
-                ->selectRaw('images.id, max(image_annotations.created_at) as created_at');
+                ->selectRaw('images.id, max(image_annotations.created_at) as created_at')
+                ->orderByRaw("created_at desc nulls last");
         } else {
             $ids = $volume->files()
                 ->leftJoin('video_annotations', 'videos.id', "=", "video_annotations.video_id")
                 ->groupBy('videos.id')
-                ->selectRaw('videos.id, max(video_annotations.created_at) as created_at');
+                ->selectRaw('videos.id, max(video_annotations.created_at) as created_at')
+                ->orderByRaw("created_at desc nulls last");
         }
 
-        return $ids->get()
-            ->sortByDesc('created_at')
-            ->pluck('id');
+        return $ids->pluck('id');
     }
 }
