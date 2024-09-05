@@ -74,12 +74,13 @@ class UpdatePendingVolumeLabelMap extends FormRequest
                 }
             }
 
-            $count = Label::whereIn('id', array_values($map))->count();
-            if (count($map) !== $count) {
+            $uniqueIds = array_values(array_unique($map));
+            $count = Label::whereIn('id', $uniqueIds)->count();
+            if (count($uniqueIds) !== $count) {
                 $validator->errors()->add('label_map', 'Some label IDs do not exist in the database.');
             }
 
-            $count = Label::whereIn('id', array_values($map))
+            $count = Label::whereIn('id', $uniqueIds)
                 ->whereIn('label_tree_id', function ($query) {
                     // All public and all accessible private label trees.
                     $query->select('id')
@@ -93,7 +94,7 @@ class UpdatePendingVolumeLabelMap extends FormRequest
                 })
                 ->count();
 
-            if (count($map) !== $count) {
+            if (count($uniqueIds) !== $count) {
                 $validator->errors()->add('label_map', 'You do not have access to some label IDs in the database.');
             }
         });
