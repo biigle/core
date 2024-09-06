@@ -107,7 +107,9 @@ export default {
             let annotations = [];
             for (let id in this.annotationsCache) {
                 if (!this.annotationsCache.hasOwnProperty(id)) continue;
-                Array.prototype.push.apply(annotations, this.annotationsCache[id]);
+                // This MUST use concat() because for lots of annotations, solutions
+                // like a.push(...b) no longer work (exceeding maximum call stack size).
+                annotations = annotations.concat(this.annotationsCache[id]);
             }
 
             return annotations;
