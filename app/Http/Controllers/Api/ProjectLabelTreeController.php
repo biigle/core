@@ -45,7 +45,7 @@ class ProjectLabelTreeController extends Controller
      * ]
      *
      * @param int $id Project ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index($id)
     {
@@ -86,7 +86,7 @@ class ProjectLabelTreeController extends Controller
      * ]
      *
      * @param int $id Project ID
-     * @return \Illuminate\Http\Response
+     * @return array<int, LabelTree>
      */
     public function available($id)
     {
@@ -122,7 +122,7 @@ class ProjectLabelTreeController extends Controller
      * id: 3
      *
      * @param StoreProjectLabelTree $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function store(StoreProjectLabelTree $request)
     {
@@ -147,7 +147,7 @@ class ProjectLabelTreeController extends Controller
      * @param Request $request
      * @param  int  $pid
      * @param  int  $lid
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy(Request $request, $pid, $lid)
     {

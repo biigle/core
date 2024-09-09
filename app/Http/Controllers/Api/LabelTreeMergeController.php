@@ -42,7 +42,7 @@ class LabelTreeMergeController extends Controller
      * }
      *
      * @param StoreLabelTreeMerge $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function store(StoreLabelTreeMerge $request)
     {

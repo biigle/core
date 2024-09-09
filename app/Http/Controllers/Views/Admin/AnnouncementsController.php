@@ -9,8 +9,6 @@ class AnnouncementsController extends Controller
 {
     /**
      * Shows the admin announcements page.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -24,8 +22,6 @@ class AnnouncementsController extends Controller
 
     /**
      * Shows the admin new announcement page.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {

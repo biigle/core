@@ -32,7 +32,7 @@ class ProjectController extends Controller
      * ]
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index(Request $request)
     {
@@ -87,7 +87,7 @@ class ProjectController extends Controller
      * @apiParam (Required attributes) {String} description Description of the new project.
      *
      * @param StoreProject $request
-     * @return Project
+     * @return Project|\Illuminate\Http\RedirectResponse
      */
     public function store(StoreProject $request)
     {
@@ -121,7 +121,7 @@ class ProjectController extends Controller
      * @apiParam (Attributes that can be updated) {String} description Description of the project.
      *
      * @param UpdateProject $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function update(UpdateProject $request)
     {
@@ -153,7 +153,7 @@ class ProjectController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy(Request $request, $id)
     {

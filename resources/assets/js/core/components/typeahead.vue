@@ -19,7 +19,8 @@
         item-key="name"
         >
         <template slot="item" slot-scope="props">
-            <typeahead-item
+            <component
+                :is="itemComponent"
                 @click.native="emitInternalValue"
                 v-for="(item, index) in props.items"
                 :key="index"
@@ -28,7 +29,7 @@
                 :item-key="moreInfo"
                 :class="{active: props.activeIndex === index}"
                 >
-            </typeahead-item>
+            </component>
         </template>
     </typeahead>
 </div>
@@ -46,7 +47,6 @@ import TypeaheadItem from './typeaheadItem';
 export default {
     components: {
         typeahead: Typeahead,
-        typeaheadItem: TypeaheadItem,
     },
     props: {
         items: {
@@ -76,6 +76,10 @@ export default {
         limit: {
             type: Number,
             default: 5,
+        },
+        itemComponent: {
+            type: Object,
+            default: () => TypeaheadItem,
         },
     },
     data() {

@@ -5,6 +5,7 @@ namespace Biigle\Providers;
 use Auth;
 use Biigle\Announcement;
 use Biigle\Support\FilesystemManager;
+use Biigle\User;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
@@ -24,8 +25,6 @@ class AppServiceProvider extends ServiceProvider
         // via dependency injection.
         $this->app->alias('modules', \Biigle\Services\Modules::class);
 
-        $this->app->bind('vips-image', fn () => new \Jcupitt\Vips\Image(null));
-
         // The custom implementation allows "config resolvers" which are required by
         // the user-storage and user-disks modules, for example.
         Storage::swap(new FilesystemManager($this->app));
@@ -40,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
             // Make some variables available in any view.
             $user = Auth::user();
             $view->with('user', $user);
-            if ($user) {
+            if ($user instanceof User) {
                 $view->with('hasNotification', $user->unreadNotifications()->exists());
             }
             $view->with('announcement', Announcement::getActive());

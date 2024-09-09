@@ -16,7 +16,7 @@ class Image extends VolumeFile
     /**
      * Allowed image MIME types.
      *
-     * @var array
+     * @var array<int, string>
      */
     const MIMES = [
         'image/jpeg',
@@ -26,9 +26,25 @@ class Image extends VolumeFile
     ];
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'filename',
+        'volume_id',
+        'uuid',
+        'taken_at',
+        'lng',
+        'lat',
+        'attrs',
+        'tiled',
+    ];
+
+    /**
      * The attributes hidden in the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'labels',
@@ -37,7 +53,7 @@ class Image extends VolumeFile
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'attrs' => 'array',
@@ -50,7 +66,7 @@ class Image extends VolumeFile
     /**
      * The annotations on this image.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ImageAnnotation>
      */
     public function annotations()
     {
@@ -60,7 +76,7 @@ class Image extends VolumeFile
     /**
      * The labels, this image got attached by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ImageLabel>
      */
     public function labels()
     {
@@ -70,7 +86,7 @@ class Image extends VolumeFile
     /**
      * Get the original image as download response.
      *
-     * @return Response
+     * @return array<string, mixed>|\Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function getFile()
     {

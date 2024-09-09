@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property string $uuid
+ */
 class User extends Authenticatable
 {
     use Notifiable, HasJsonAttributes, HasFactory;
@@ -14,7 +17,7 @@ class User extends Authenticatable
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -26,7 +29,7 @@ class User extends Authenticatable
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'role_id' => 'int',
@@ -50,7 +53,7 @@ class User extends Authenticatable
     /**
      * The projects, this user is a member of.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
      */
     public function projects()
     {
@@ -60,7 +63,7 @@ class User extends Authenticatable
     /**
      * The label trees, this user is a member of.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree>
      */
     public function labelTrees()
     {
@@ -70,7 +73,7 @@ class User extends Authenticatable
     /**
      * The global role of this user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, User>
      */
     public function role()
     {
@@ -80,7 +83,7 @@ class User extends Authenticatable
     /**
      * Api tokens of this user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ApiToken>
      */
     public function apiTokens()
     {
@@ -90,7 +93,7 @@ class User extends Authenticatable
     /**
      * The federated search models that the user can access
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<FederatedSearchModel>
      */
     public function federatedSearchModels()
     {

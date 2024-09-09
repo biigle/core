@@ -39,13 +39,13 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertTrue($tree->authorizedProjects()->exists());
 
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
+        $this->assertSame(1, $tree->authorizedProjects()->count());
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/authorized-projects", [
             'id' => $this->project()->id,
         ]);
         // should not fail if same project is authorized twice but should not add it twice
         $response->assertStatus(200);
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
+        $this->assertSame(1, $tree->authorizedProjects()->count());
     }
 
     public function testStoreFormRequest()
@@ -57,7 +57,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $response = $this->post("/api/v1/label-trees/{$tree->id}/authorized-projects", [
             'id' => $this->project()->id,
         ]);
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
+        $this->assertSame(1, $tree->authorizedProjects()->count());
         $response->assertRedirect('/');
         $response->assertSessionHas('saved', true);
 
@@ -65,7 +65,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
             'id' => $this->project()->id,
             '_redirect' => 'settings',
         ]);
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
+        $this->assertSame(1, $tree->authorizedProjects()->count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
     }
@@ -119,25 +119,25 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
-        $this->assertEquals(1, $tree->projects()->count());
+        $this->assertSame(1, $tree->authorizedProjects()->count());
+        $this->assertSame(1, $tree->projects()->count());
         $response = $this->json('DELETE', "/api/v1/label-trees/{$tree->id}/authorized-projects/{$project->id}");
         $response->assertStatus(200);
-        $this->assertEquals(0, $tree->authorizedProjects()->count());
-        $this->assertEquals(1, $tree->projects()->count());
+        $this->assertSame(0, $tree->authorizedProjects()->count());
+        $this->assertSame(1, $tree->projects()->count());
 
         $tree->authorizedProjects()->attach($project->id);
         $tree->visibility_id = Visibility::privateId();
         $tree->save();
 
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
-        $this->assertEquals(1, $tree->projects()->count());
+        $this->assertSame(1, $tree->authorizedProjects()->count());
+        $this->assertSame(1, $tree->projects()->count());
         $response = $this->json('DELETE', "/api/v1/label-trees/{$tree->id}/authorized-projects/{$project->id}");
         // if the tree is private and project authorization is removed, the
         // tree should be removed from the project as well
         $response->assertStatus(200);
-        $this->assertEquals(0, $tree->authorizedProjects()->count());
-        $this->assertEquals(0, $tree->projects()->count());
+        $this->assertSame(0, $tree->authorizedProjects()->count());
+        $this->assertSame(0, $tree->projects()->count());
     }
 
     public function testDestroyFormRequest()

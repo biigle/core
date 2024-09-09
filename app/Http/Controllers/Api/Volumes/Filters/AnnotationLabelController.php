@@ -28,7 +28,7 @@ class AnnotationLabelController extends Controller
      * @param Request $request
      * @param  int  $tid
      * @param  int  $lid
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index(Request $request, $tid, $lid)
     {

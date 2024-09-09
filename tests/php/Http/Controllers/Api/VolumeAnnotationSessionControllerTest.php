@@ -119,7 +119,7 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
             'users' => [$this->admin()->id],
         ]);
         $response->assertSuccessful();
-        $this->assertEquals(2, $this->volume()->annotationSessions()->count());
+        $this->assertSame(2, $this->volume()->annotationSessions()->count());
 
         $session = $this->volume()->annotationSessions()
             ->with('users')

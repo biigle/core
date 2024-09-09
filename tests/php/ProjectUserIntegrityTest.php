@@ -23,9 +23,9 @@ class ProjectUserIntegrityTest extends TestCase
         $user = UserTest::create();
         $project->addUserId($user->id, RoleTest::create()->id);
 
-        $this->assertEquals(1, $user->projects()->count());
+        $this->assertSame(1, $user->projects()->count());
         $project->delete();
-        $this->assertEquals(0, $user->projects()->count());
+        $this->assertSame(0, $user->projects()->count());
     }
 
     public function testUserOnDeleteCascade()
@@ -35,9 +35,9 @@ class ProjectUserIntegrityTest extends TestCase
         $project->addUserId($member->id, Role::guestId());
 
         // count the project creator, too
-        $this->assertEquals(2, $project->users()->count());
+        $this->assertSame(2, $project->users()->count());
         $member->delete();
-        $this->assertEquals(1, $project->users()->count());
+        $this->assertSame(1, $project->users()->count());
     }
 
     public function testUserProjectRoleUnique()

@@ -142,8 +142,8 @@ class VolumeUrlTest extends TestCase
         $this->assertTrue($validator->passes(null, 'http://localhost'));
 
         $request = $container[0]['request'];
-        $this->assertEquals('HEAD', $request->getMethod());
-        $this->assertEquals('http://localhost', (string) $request->getUri());
+        $this->assertSame('HEAD', $request->getMethod());
+        $this->assertSame('http://localhost', (string) $request->getUri());
     }
 
     public function testRemoteOfflineMode()

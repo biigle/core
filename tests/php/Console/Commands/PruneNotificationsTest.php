@@ -45,7 +45,7 @@ class PruneNotificationsTest extends TestCase
         ]);
 
         (new PruneNotifications)->handle();
-        $this->assertEquals(2, DatabaseNotification::count());
+        $this->assertSame(2, DatabaseNotification::count());
         $this->assertNull(DatabaseNotification::find('1'));
     }
 }

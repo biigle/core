@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * The visibility of a model.
+ *
+ * @method static Visibility public()
+ * @method static int publicId()
+ * @method static Visibility private()
+ * @method static int privateId()
  */
 class Visibility extends Model
 {
@@ -16,7 +21,7 @@ class Visibility extends Model
     /**
      * The constant instances of this model.
      *
-     * @var array
+     * @var array<string, string>
      */
     const INSTANCES = [
         'public' => 'public',

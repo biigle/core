@@ -17,7 +17,13 @@ return [
     'editor_storage_disks' => array_filter(explode(',', env('VOLUME_EDITOR_STORAGE_DISKS', ''))),
 
     /*
-    | Storage disk for iFDO metadata files linked with volumes.
+    | Storage disk for metadata files linked with volumes.
     */
-    'ifdo_storage_disk' => env('VOLUME_IFDO_STORAGE_DISK', 'ifdos'),
+    'metadata_storage_disk' => env('VOLUME_METADATA_STORAGE_DISK', 'metadata'),
+
+
+    /*
+    | Storage disk for metadata files of pending volumes.
+    */
+    'pending_metadata_storage_disk' => env('VOLUME_PENDING_METADATA_STORAGE_DISK', 'pending-metadata'),
 ];
