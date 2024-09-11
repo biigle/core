@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5761cc30484ea24090a5d02712d10f9",
+    "content-hash": "c853570e3126bb2213a6fedea1cdd8e2",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -489,16 +489,16 @@
         },
         {
             "name": "biigle/ifdo",
-            "version": "v0.3.0",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ifdo.git",
-                "reference": "d168f144264021e3bfc80c5d15a9b7bd47c72abd"
+                "reference": "328b829e8f97a0b1c8fa3cdbb7b37dff16650191"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ifdo/zipball/d168f144264021e3bfc80c5d15a9b7bd47c72abd",
-                "reference": "d168f144264021e3bfc80c5d15a9b7bd47c72abd",
+                "url": "https://api.github.com/repos/biigle/ifdo/zipball/328b829e8f97a0b1c8fa3cdbb7b37dff16650191",
+                "reference": "328b829e8f97a0b1c8fa3cdbb7b37dff16650191",
                 "shasum": ""
             },
             "require": {
@@ -516,7 +516,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-3.0"
+                "GPL-3.0-only"
             ],
             "authors": [
                 {
@@ -533,9 +533,9 @@
             ],
             "support": {
                 "issues": "https://github.com/biigle/ifdo/issues",
-                "source": "https://github.com/biigle/ifdo/tree/v0.3.0"
+                "source": "https://github.com/biigle/ifdo/tree/v1.0.0"
             },
-            "time": "2024-04-02T14:12:51+00:00"
+            "time": "2024-09-04T11:45:35+00:00"
         },
         {
             "name": "biigle/kpis",
@@ -648,16 +648,16 @@
         },
         {
             "name": "biigle/laravel-queue-alert",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-queue-alert.git",
-                "reference": "0c252e226ed77d84411bb1b7ae6a35e14ffa4d40"
+                "reference": "7950b679976443cb8add2211977635dc4cb53d0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-queue-alert/zipball/0c252e226ed77d84411bb1b7ae6a35e14ffa4d40",
-                "reference": "0c252e226ed77d84411bb1b7ae6a35e14ffa4d40",
+                "url": "https://api.github.com/repos/biigle/laravel-queue-alert/zipball/7950b679976443cb8add2211977635dc4cb53d0f",
+                "reference": "7950b679976443cb8add2211977635dc4cb53d0f",
                 "shasum": ""
             },
             "require": {
@@ -665,7 +665,7 @@
                 "illuminate/console": "^11.0",
                 "illuminate/queue": "^11.0",
                 "illuminate/support": "^11.0",
-                "nesbot/carbon": "^2.67"
+                "nesbot/carbon": "^2.67||^3.8"
             },
             "require-dev": {
                 "laravel/laravel": "^11.0",
@@ -697,9 +697,9 @@
             "description": "A package to send alert emails if a Laravel queue is very busy",
             "support": {
                 "issues": "https://github.com/biigle/laravel-queue-alert/issues",
-                "source": "https://github.com/biigle/laravel-queue-alert/tree/v2.0.0"
+                "source": "https://github.com/biigle/laravel-queue-alert/tree/v2.0.1"
             },
-            "time": "2024-07-17T14:21:20+00:00"
+            "time": "2024-09-02T14:57:33+00:00"
         },
         {
             "name": "biigle/largo",
@@ -707,12 +707,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "c396904bb7e9288af3f09e9a5145a0176275a6c9"
+                "reference": "5a35e134b7425d28d35c6475370b804a0d8a882c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/c396904bb7e9288af3f09e9a5145a0176275a6c9",
-                "reference": "c396904bb7e9288af3f09e9a5145a0176275a6c9",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/5a35e134b7425d28d35c6475370b804a0d8a882c",
+                "reference": "5a35e134b7425d28d35c6475370b804a0d8a882c",
                 "shasum": ""
             },
             "require": {
@@ -747,7 +747,7 @@
                 "issues": "https://github.com/biigle/largo/issues",
                 "source": "https://github.com/biigle/largo"
             },
-            "time": "2024-08-22T15:06:42+00:00"
+            "time": "2024-09-06T09:38:51+00:00"
         },
         {
             "name": "biigle/laserpoints",
@@ -847,12 +847,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "1971d625c46ff4a7f9c6f41eb45dbeb646d0efaf"
+                "reference": "ab9dd4c3a61d81b734b87d42c2311b06839d33d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/1971d625c46ff4a7f9c6f41eb45dbeb646d0efaf",
-                "reference": "1971d625c46ff4a7f9c6f41eb45dbeb646d0efaf",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/ab9dd4c3a61d81b734b87d42c2311b06839d33d1",
+                "reference": "ab9dd4c3a61d81b734b87d42c2311b06839d33d1",
                 "shasum": ""
             },
             "require": {
@@ -885,7 +885,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2024-08-22T15:06:35+00:00"
+            "time": "2024-09-06T10:27:34+00:00"
         },
         {
             "name": "biigle/metadata-ifdo",
@@ -893,16 +893,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/metadata-ifdo.git",
-                "reference": "ce8011fc75b80e392922013090e023b93ba7b9ec"
+                "reference": "da0ab36ddce12c402d9db0c9873c087c9a3b360d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/metadata-ifdo/zipball/ce8011fc75b80e392922013090e023b93ba7b9ec",
-                "reference": "ce8011fc75b80e392922013090e023b93ba7b9ec",
+                "url": "https://api.github.com/repos/biigle/metadata-ifdo/zipball/da0ab36ddce12c402d9db0c9873c087c9a3b360d",
+                "reference": "da0ab36ddce12c402d9db0c9873c087c9a3b360d",
                 "shasum": ""
             },
             "require": {
-                "biigle/ifdo": "^0.3 || ^1.0"
+                "biigle/ifdo": "^0.4 || ^1.0"
             },
             "default-branch": true,
             "type": "library",
@@ -938,7 +938,7 @@
                 "issues": "https://github.com/biigle/metadata-ifdo/issues",
                 "source": "https://github.com/biigle/metadata-ifdo"
             },
-            "time": "2024-04-24T08:27:05+00:00"
+            "time": "2024-09-04T13:31:47+00:00"
         },
         {
             "name": "biigle/module",
@@ -1035,16 +1035,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/reports.git",
-                "reference": "515ab10c31501583cd986c7a072b8d4685aa3574"
+                "reference": "c9d3838bc0786181cbdeff6bee5da8ea8c47430b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/515ab10c31501583cd986c7a072b8d4685aa3574",
-                "reference": "515ab10c31501583cd986c7a072b8d4685aa3574",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/c9d3838bc0786181cbdeff6bee5da8ea8c47430b",
+                "reference": "c9d3838bc0786181cbdeff6bee5da8ea8c47430b",
                 "shasum": ""
             },
             "require": {
-                "ext-yaml": "*",
+                "biigle/ifdo": "^1.0",
                 "ext-zip": "*",
                 "jmikola/geojson": "^1.0"
             },
@@ -1075,7 +1075,7 @@
                 "issues": "https://github.com/biigle/reports/issues",
                 "source": "https://github.com/biigle/reports"
             },
-            "time": "2024-07-26T09:30:39+00:00"
+            "time": "2024-09-04T13:31:43+00:00"
         },
         {
             "name": "biigle/sync",
@@ -12265,8 +12265,7 @@
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
-        "ext-soap": "*",
-        "ext-yaml": "*"
+        "ext-soap": "*"
     },
     "platform-dev": [],
     "platform-overrides": {

@@ -21,7 +21,6 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
-        "ext-yaml": "*",
         "biigle/ananas": "dev-master",
         "biigle/auth-lslogin": "dev-master",
         "biigle/color-sort": "dev-master",
