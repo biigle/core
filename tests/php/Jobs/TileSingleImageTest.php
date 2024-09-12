@@ -73,7 +73,8 @@ class TileSingleImageTest extends TestCase
     {
         config(['image.tiles.queue' => 'myqueue']);
         $image = ImageTest::create();
-        $job = new TileSingleImageStub($image);
+        $targetPath = fragment_uuid_path($image->uuid);
+        $job = new TileSingleImageStub($image, config('image.tiles.disk'), $targetPath);
         $this->assertSame('myqueue', $job->queue);
     }
 }
