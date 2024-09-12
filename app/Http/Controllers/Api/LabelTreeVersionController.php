@@ -36,7 +36,7 @@ class LabelTreeVersionController extends Controller
      * }
      *
      * @param StoreLabelTreeVersion $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function store(StoreLabelTreeVersion $request)
     {
@@ -83,7 +83,6 @@ class LabelTreeVersionController extends Controller
      * @apiParam (Required attributes) {String} doi DOI that should be associated with the new label tree version.
      *
      * @param UpdateLabelTreeVersion $request
-     * @return \Illuminate\Http\Response
      */
     public function update(UpdateLabelTreeVersion $request)
     {
@@ -103,7 +102,7 @@ class LabelTreeVersionController extends Controller
      * @apiParam {Number} id The label tree version ID.
      *
      * @param DestroyLabelTreeVersion $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy(DestroyLabelTreeVersion $request)
     {

@@ -25,15 +25,18 @@ class ApiGuard extends TokenGuard
         $user = null;
 
         $token = $this->getTokenForRequest();
+        $email = $this->request->getUser();
 
-        if (!empty($token)) {
+        // Check the encoding bcause a user can put anything into the string and cause
+        // a server/database error with weird strings.
+        if (!empty($token) && !empty($email) && mb_detect_encoding($email) !== false) {
             $user = $this->provider->retrieveByCredentials(
-                ['email' => strtolower($this->request->getUser())]
+                ['email' => strtolower($email)]
             );
         }
 
         if (!empty($user)) {
-            $candidates = ApiToken::where('owner_id', $user->id)
+            $candidates = ApiToken::where('owner_id', $user->getAuthIdentifier())
                 ->select('id', 'hash')
                 ->get();
             foreach ($candidates as $candidate) {

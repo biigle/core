@@ -16,9 +16,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Jcupitt\Vips\Image as VipsImage;
 use Log;
 use Throwable;
-use VipsImage;
 
 class ProcessNewVideo extends Job implements ShouldQueue
 {
@@ -40,10 +40,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
     /**
      * The FFMpeg video instance.
-     *
-     * @var \FFMpeg\Media\Video
      */
     protected $ffmpegVideo;
+
+    /**
+     * The FFProbe instance.
+     *
+     * @var FFProbe|null
+     */
+    protected $ffprobe;
 
     /**
      * Ignore this job if the video does not exist any more.
@@ -232,8 +237,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
             $this->ffmpegVideo = FFMpeg::create()->open($path);
         }
 
-        $buffer = $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
-            ->save(null, false, true);
+        $buffer = (string) $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
+            ->save('', false, true);
 
         return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height])
             ->writeToBuffer(".{$format}", [

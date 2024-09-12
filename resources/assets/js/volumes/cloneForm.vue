@@ -38,7 +38,10 @@ export default {
             fileLabelIds: [],
             annotationLabelIds: [],
             cloneUrlTemplate: "",
-            noFilesFoundByPattern: false
+            noFilesFoundByPattern: false,
+            showTestQueryBtn: false,
+            cloneBtnTitle: "",
+            disableCloneBtn: false,
         };
     },
     computed: {
@@ -65,7 +68,7 @@ export default {
             return this.selectedAnnotationLabelIds.length;
         },
         cannotSubmit() {
-            return this.name === '' || this.selectedProjectId < 0 || this.loading;
+            return this.name === '' || this.selectedProjectId < 0 || this.loading || this.showTestQueryBtn || this.disableCloneBtn;
         },
         getCloneUrl() {
             return this.cloneUrlTemplate.replace(':pid', this.selectedProjectId);
@@ -107,6 +110,8 @@ export default {
                     if (this.selectedFiles.length === 0) {
                         this.noFilesFoundByPattern = true;
                     }
+                    this.showTestQueryBtn = false;
+                    this.disableCloneBtn = this.noFilesFoundByPattern;
                 });
 
         },
@@ -170,12 +175,38 @@ export default {
             if (!newState) {
                 this.noFilesFoundByPattern = false;
             }
+            if (!this.fileFiles) {
+                this.showTestQueryBtn = false;
+                this.filePattern = "";
+                this.selectedFiles = [];
+            }
+            this.disableCloneBtn = this.filterFiles;
         },
         cloneFileLabels(newState) {
             if (!newState) {
                 this.filterFileLabels = false;
             }
         },
+        filePattern(newPattern, oldPattern) {
+            if (newPattern.length === 0) {
+                this.showTestQueryBtn = false;
+                return;
+            }
+
+            this.showTestQueryBtn = this.filterFiles && (oldPattern !== newPattern);
+        },
+        cannotSubmit() {
+            if (this.cannotSubmit) {
+                this.cloneBtnTitle = "The file filter query has to be tested first before the volume can be cloned.";
+            } else {
+                this.cloneBtnTitle = "";
+            }
+        },
+        noFilesFoundByPattern() {
+            if (this.cannotSubmit && this.noFilesFoundByPattern) {
+                this.cloneBtnTitle = "The cloned volume would be empty based on the current file filter query.";
+            }
+        }
     },
     created() {
         this.volume = biigle.$require('volume');

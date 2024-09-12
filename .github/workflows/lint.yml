@@ -35,7 +35,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'
+        php-version: '8.2'
 
     - uses: actions/checkout@v1
       with:
@@ -50,8 +50,8 @@ jobs:
     - name: Set testing key
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
-    - name: Run Psalm
-      run: composer lint
+    - name: Run Linter
+      run: composer lint -- --error-format=github
 
   cs-php:
 
@@ -61,7 +61,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.1'
+        php-version: '8.2'
         tools: cs2pr
 
     - uses: actions/checkout@v1

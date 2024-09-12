@@ -18,8 +18,6 @@ class VideoController extends Controller
      *
      * @param Request $request
      * @param int $id
-     *
-     * @return mixed
      */
     public function show(Request $request, $id)
     {

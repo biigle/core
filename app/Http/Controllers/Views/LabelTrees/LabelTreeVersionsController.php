@@ -16,7 +16,7 @@ class LabelTreeVersionsController extends Controller
      * @param int $tid Label tree ID
      * @param int $vid Label tree version ID
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function show(Request $request, $tid, $vid)
     {
@@ -32,8 +32,6 @@ class LabelTreeVersionsController extends Controller
      * Show the create label tree version page.
      *
      * @param int $id Label tree ID
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create($id)
     {

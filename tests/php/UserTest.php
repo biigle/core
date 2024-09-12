@@ -32,7 +32,7 @@ class UserTest extends ModelTestCase
     {
         $this->model->email = 'Test@Example.com';
         $this->model->save();
-        $this->assertEquals('test@example.com', $this->model->fresh()->email);
+        $this->assertSame('test@example.com', $this->model->fresh()->email);
     }
 
     public function testCastsLoginAt()
@@ -99,7 +99,7 @@ class UserTest extends ModelTestCase
         $project->addUserId($this->model->id, $role->id);
 
         $p = $this->model->projects()->first();
-        $this->assertEquals($project->id, $p->id);
+        $this->assertSame($project->id, $p->id);
         $this->assertFalse($p->pivot->pinned);
     }
 
@@ -112,7 +112,7 @@ class UserTest extends ModelTestCase
 
     public function testRole()
     {
-        $this->assertEquals(Role::editorId(), $this->model->role->id);
+        $this->assertSame(Role::editorId(), $this->model->role->id);
     }
 
     public function testIsGlobalAdminAttribute()
@@ -164,22 +164,22 @@ class UserTest extends ModelTestCase
     public function testCastSettings()
     {
         $user = self::create(['attrs' => ['settings' => ['abc' => 'def']]]);
-        $this->assertEquals(['abc' => 'def'], $user->fresh()->settings);
+        $this->assertSame(['abc' => 'def'], $user->fresh()->settings);
     }
 
     public function testSetSettings()
     {
         $this->model->setSettings(['a' => true]);
         $this->model->save();
-        $this->assertEquals(['a' => true], $this->model->fresh()->settings);
+        $this->assertSame(['a' => true], $this->model->fresh()->settings);
 
         $this->model->setSettings(['b' => 20]);
         $this->model->save();
-        $this->assertEquals(['a' => true, 'b' => 20], $this->model->fresh()->settings);
+        $this->assertSame(['a' => true, 'b' => 20], $this->model->fresh()->settings);
 
         $this->model->setSettings(['a' => null, 'b' => 10]);
         $this->model->save();
-        $this->assertEquals(['b' => 10], $this->model->fresh()->settings);
+        $this->assertSame(['b' => 10], $this->model->fresh()->settings);
 
         $this->model->setSettings(['a' => null, 'b' => null]);
         $this->model->save();
@@ -189,9 +189,9 @@ class UserTest extends ModelTestCase
     public function testGetSettings()
     {
         $this->assertNull($this->model->getSettings('mysetting'));
-        $this->assertEquals('a', $this->model->getSettings('mysetting', 'a'));
+        $this->assertSame('a', $this->model->getSettings('mysetting', 'a'));
         $this->model->setSettings(['mysetting' => 'b']);
-        $this->assertEquals('b', $this->model->getSettings('mysetting', 'a'));
+        $this->assertSame('b', $this->model->getSettings('mysetting', 'a'));
     }
 
     public function testGetIsInSuperUserModeAttribute()

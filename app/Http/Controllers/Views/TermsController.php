@@ -9,8 +9,6 @@ class TermsController extends Controller
 {
     /**
      * Show the the terms view.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function show()
     {

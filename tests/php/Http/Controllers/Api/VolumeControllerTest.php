@@ -7,7 +7,12 @@ use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Role;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Queue;
@@ -95,9 +100,9 @@ class VolumeControllerTest extends ApiTestCase
             'media_type_id' => MediaType::videoId(),
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('the new volume', $this->volume()->fresh()->name);
+        $this->assertSame('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
-        $this->assertEquals(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
+        $this->assertSame(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
         Queue::assertNothingPushed();
     }
 
@@ -120,7 +125,7 @@ class VolumeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
         $this->volume()->refresh();
-        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->handle);
+        $this->assertSame('10.3389/fmars.2017.00083', $this->volume()->handle);
 
         // Some DOIs can contain multiple slashes.
         $this
@@ -169,7 +174,7 @@ class VolumeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals('editor-test://volumes', $this->volume()->fresh()->url);
+        $this->assertSame('editor-test://volumes', $this->volume()->fresh()->url);
 
         $this->beGlobalAdmin();
         $this
@@ -182,7 +187,7 @@ class VolumeControllerTest extends ApiTestCase
                 'url' => 'admin-test://volumes',
             ])
             ->assertStatus(200);
-        $this->assertEquals('admin-test://volumes', $this->volume()->fresh()->url);
+        $this->assertSame('admin-test://volumes', $this->volume()->fresh()->url);
         Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 
@@ -201,7 +206,7 @@ class VolumeControllerTest extends ApiTestCase
             'url' => 'admin-test://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         ])->assertStatus(422);
         
-        $this->assertEquals('The url must not be greater than 256 characters.', $response->exception->getMessage());
+        $this->assertSame('The url must not be greater than 256 characters.', $response->exception->getMessage());
         Queue::assertNothingPushed();
     }
 
@@ -263,12 +268,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testCloneVolume()
     {
-        $volume = $this
-            ->volume([
-                'created_at' => '2022-11-09 14:37:00',
-                'updated_at' => '2022-11-09 14:37:00',
-            ])
-            ->fresh();
+        $volume = $this->volume(['metadata_file_path' => 'mymeta.csv']);
         $project = ProjectTest::create();
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
@@ -289,21 +289,149 @@ class VolumeControllerTest extends ApiTestCase
 
         Cache::flush();
 
-        Queue::fake();
-
         $this
             ->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}")
             ->assertStatus(201);
         Queue::assertPushed(CloneImagesOrVideos::class);
 
-        // The target project.
-        $project = ProjectTest::create();
+        $this->assertTrue($project->volumes()->exists());
+        $copy = $project->volumes()->first();
+        $this->assertEquals($copy->name, $this->volume()->name);
+        $this->assertEquals($copy->media_type_id, $this->volume()->media_type_id);
+        $this->assertEquals($copy->url, $this->volume()->url);
+        $this->assertTrue($copy->creating_async);
+        $this->assertEquals("{$copy->id}.csv", $copy->metadata_file_path);
+    }
 
-        $this->beAdmin();
+    public function testCloneVolumeNewName()
+    {
+        $volume = $this->volume(['name' => 'myvolume']);
+        $project = ProjectTest::create();
         $project->addUserId($this->admin()->id, Role::adminId());
 
-        $response = $this->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}");
-        $response->assertStatus(201);
-        Queue::assertPushed(CloneImagesOrVideos::class);
+        $this->beAdmin();
+
+        $this
+            ->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}", [
+                'name' => 'volumecopy',
+            ])
+            ->assertStatus(201);
+        $copy = $project->volumes()->first();
+        $this->assertEquals($copy->name, 'volumecopy');
+    }
+
+    public function testGetImageIdsSortedByAnnotationTimestamps()
+    {
+
+        $volume = $this
+            ->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+            ])
+            ->fresh();
+
+        $this->be(UserTest::create());
+        $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
+
+        $this->beGuest();
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(0, $content);
+
+        $img = ImageTest::create([
+            'filename' => 'test123.jpg',
+            'volume_id' => $volume->id,
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2023-11-09 06:37:00',
+            'image_id' => $img->id,
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2020-11-09 06:37:00',
+            'image_id' => $img->id,
+        ]);
+        $img2 = ImageTest::create([
+            'filename' => 'test321.jpg',
+            'volume_id' => $volume->id
+        ]);
+        ImageAnnotationTest::create([
+            'created_at' => '2024-11-09 14:37:00',
+            'image_id' => $img2->id,
+        ]);
+        $img3 = ImageTest::create([
+            'filename' => 'test321321.jpg',
+            'volume_id' => $volume->id
+        ]);
+
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(3, $content);
+        $this->assertSame($content[0], $img2->id);
+        $this->assertSame($content[1], $img->id);
+        $this->assertSame($content[2], $img3->id);
+    }
+
+    public function testGetVideoIdsSortedByAnnotationTimestamps()
+    {
+
+        $volume = $this
+            ->volume([
+                'created_at' => '2022-11-09 14:37:00',
+                'updated_at' => '2022-11-09 14:37:00',
+                'media_type_id' => MediaType::videoId()
+            ])
+            ->fresh();
+
+        $this->be(UserTest::create());
+        $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps")->assertForbidden();
+
+        $this->beGuest();
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(0, $content);
+
+        $video = VideoTest::create([
+            'filename' => 'test123.jpg',
+            'volume_id' => $volume->id,
+        ]);
+        VideoAnnotationTest::create([
+            'created_at' => '2023-11-09 06:37:00',
+            'video_id' => $video->id,
+        ]);
+        VideoAnnotationTest::create([
+            'created_at' => '2020-11-09 06:37:00',
+            'video_id' => $video->id,
+        ]);
+        $video2 = VideoTest::create([
+            'filename' => 'test321.jpg',
+            'volume_id' => $volume->id
+        ]);
+        VideoAnnotationTest::create([
+            'created_at' => '2024-11-09 14:37:00',
+            'video_id' => $video2->id,
+        ]);
+        $video3 = VideoTest::create([
+            'filename' => 'test321123.jpg',
+            'volume_id' => $volume->id
+        ]);
+
+        $response = $this->getJson("/api/v1/volumes/{$volume->id}/files/annotation-timestamps");
+
+        $response->assertSuccessful();
+        $content = json_decode($response->getContent(), true);
+
+        $this->assertCount(3, $content);
+        $this->assertSame($content[0], $video2->id);
+        $this->assertSame($content[1], $video->id);
+        $this->assertSame($content[2], $video3->id);
     }
 }

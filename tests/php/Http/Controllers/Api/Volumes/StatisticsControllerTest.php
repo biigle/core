@@ -91,13 +91,13 @@ class StatisticsControllerTest extends ApiTestCase
                     'count' => 1,
                     'fullname' => $user1->firstname . " " . $user1->lastname,
                     'user_id' => $user1->id,
-                    'year' => $annotation1->created_at->year,
+                    'yearmonth' => $annotation1->created_at->year . "-" . sprintf("%02d", $annotation1->created_at->month),
                 ],
                 [
                     'count' => 1,
                     'fullname' => $user2->firstname . " " . $user2->lastname,
                     'user_id' => $user2->id,
-                    'year' => $annotation2->created_at->year,
+                    'yearmonth' => $annotation2->created_at->year . "-" . sprintf("%02d", $annotation1->created_at->month),
                 ]
             ],
             'volumeAnnotations' => [
@@ -188,13 +188,13 @@ class StatisticsControllerTest extends ApiTestCase
                     'count' => 1,
                     'fullname' => $user1->firstname . " " . $user1->lastname,
                     'user_id' => $user1->id,
-                    'year' => $annotation1->created_at->year,
+                    'yearmonth' => $annotation1->created_at->year . "-" . sprintf("%02d", $annotation1->created_at->month),
                 ],
                 [
                     'count' => 1,
                     'fullname' => $user2->firstname . " " . $user2->lastname,
                     'user_id' => $user2->id,
-                    'year' => $annotation2->created_at->year,
+                    'yearmonth' => $annotation2->created_at->year . "-" . sprintf("%02d", $annotation1->created_at->month),
                 ]
             ],
             'volumeAnnotations' => [

@@ -11,7 +11,6 @@ use Jcupitt\Vips\Exception as VipsException;
 use Queue;
 use Storage;
 use TestCase;
-use VipsImage;
 
 class ProcessNewImageTest extends TestCase
 {
@@ -34,14 +33,14 @@ class ProcessNewImageTest extends TestCase
 
         $image = $image->fresh();
 
-        $this->assertEquals('2011-12-31 17:07:29', (string) $image->taken_at);
+        $this->assertSame('2011-12-31 17:07:29', (string) $image->taken_at);
         $this->assertEqualsWithDelta(12.486211944, $image->lng, 0.000001);
         $this->assertEqualsWithDelta(41.8898575, $image->lat, 0.000001);
-        $this->assertEquals(56.819, $image->metadata['gps_altitude']);
-        $this->assertEquals(500, $image->width);
-        $this->assertEquals(375, $image->height);
-        $this->assertEquals(62411, $image->size);
-        $this->assertEquals('image/jpeg', $image->mimetype);
+        $this->assertSame(56.819, $image->metadata['gps_altitude']);
+        $this->assertSame(500, $image->width);
+        $this->assertSame(375, $image->height);
+        $this->assertSame(62411, $image->size);
+        $this->assertSame('image/jpeg', $image->mimetype);
         $this->assertTrue($volume->hasGeoInfo());
     }
 
@@ -58,14 +57,30 @@ class ProcessNewImageTest extends TestCase
         $job->exif = ['DateTimeOriginal' => '0000-00-00 00:00:00'];
         $job->handle();
         $image = $image->fresh();
-        $this->assertEquals(null, $image->taken_at);
+        $this->assertSame(null, $image->taken_at);
+    }
+
+    public function testHandleCollectMetadataAreaYaw()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        $job = new ProcessNewImageMock($image);
+        $job->exif = [
+            'GPSImgDirection' => "191/4",
+            'SubjectArea' => "13/5",
+        ];
+        $job->handle();
+        $image = $image->fresh();
+
+        $this->assertSame(47.75, $image->metadata['yaw']);
+        $this->assertSame(2.6, $image->metadata['area']);
     }
 
     public function testHandleMakeThumbnail()
     {
-        if (!function_exists('vips_call')) {
-            $this->markTestSkipped('Requires the PHP vips extension.');
-        }
         Storage::fake('test-thumbs');
         config(['thumbnails.storage_disk' => 'test-thumbs']);
 
@@ -105,12 +120,14 @@ class ProcessNewImageTest extends TestCase
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
-        VipsImage::shouldReceive('newFromFile')
-            ->once()
-            ->andReturn(new ImageMock(100, 200));
+        $job = new ProcessNewImageMock($image);
+        $job->vipsImage = new class {
+            public $width = 100;
+            public $height = 200;
+        };
 
         Queue::fake();
-        with(new ProcessNewImageMock($image))->handle();
+        $job->handle();
 
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tiled);
@@ -123,12 +140,14 @@ class ProcessNewImageTest extends TestCase
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
-        VipsImage::shouldReceive('newFromFile')
-            ->once()
-            ->andReturn(new ImageMock(400, 200));
+        $job = new ProcessNewImageMock($image);
+        $job->vipsImage = new class {
+            public $width = 400;
+            public $height = 200;
+        };
 
         Queue::fake();
-        with(new ProcessNewImageMock($image))->handle();
+        $job->handle();
 
         Queue::assertPushed(TileSingleImage::class, fn ($job) => $job->file->id === $image->id);
         $image->refresh();
@@ -190,26 +209,14 @@ class ProcessNewImageTest extends TestCase
             'distance_to_ground' => 5,
             'gps_altitude' => 500,
         ];
-        $this->assertEquals($expect, $image->metadata);
-    }
-}
-
-class ImageMock extends \Jcupitt\Vips\Image
-{
-    public $width;
-    public $height;
-
-    public function __construct($width, $height)
-    {
-        parent::__construct(null);
-        $this->width = $width;
-        $this->height = $height;
+        $this->assertSame($expect, $image->metadata);
     }
 }
 
 class ProcessNewImageMock extends ProcessNewImage
 {
     public $exif = false;
+    public $vipsImage = null;
 
     protected function makeThumbnail(Image $image, $path)
     {
@@ -223,5 +230,10 @@ class ProcessNewImageMock extends ProcessNewImage
         }
 
         return parent::getExif($path);
+    }
+
+    protected function getVipsImage($path)
+    {
+        return $this->vipsImage ?: parent::getVipsImage($path);
     }
 }

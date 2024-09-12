@@ -9,8 +9,6 @@ class ImprintController extends Controller
 {
     /**
      * Show the the imprint view.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function show()
     {

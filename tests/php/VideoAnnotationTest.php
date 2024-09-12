@@ -38,7 +38,7 @@ class VideoAnnotationTest extends ModelTestCase
     {
         $this->model->points = [[1.23456789, 2.23456789, 3.1415]];
         $this->model->save();
-        $this->assertEquals([[1.23, 2.23, 3.14]], $this->model->fresh()->points);
+        $this->assertSame([[1.23, 2.23, 3.14]], $this->model->fresh()->points);
     }
 
     public function testValidatePointsFramesMismatch()
@@ -104,7 +104,7 @@ class VideoAnnotationTest extends ModelTestCase
     public function testValidatePointsLine()
     {
         $this->model->shape_id = Shape::lineId();
-        $this->model->points = [[10, 10]];
+        $this->model->points = [[10, 10, 20, 20]];
         $this->model->frames = [0.0];
         $this->model->validatePoints();
         $this->expectException(Exception::class);
@@ -115,7 +115,7 @@ class VideoAnnotationTest extends ModelTestCase
     public function testValidatePointsPolygon()
     {
         $this->model->shape_id = Shape::polygonId();
-        $this->model->points = [[10, 10]];
+        $this->model->points = [[10, 10, 20, 20, 30, 30, 10, 10]];
         $this->model->frames = [0.0];
         $this->model->validatePoints();
         $this->expectException(Exception::class);
@@ -126,7 +126,7 @@ class VideoAnnotationTest extends ModelTestCase
     public function testValidatePointsPolygonFirstLastEqual()
     {
         $this->model->shape_id = Shape::polygonId();
-        $this->model->points = [[10, 10, 20, 20, 10, 10]];
+        $this->model->points = [[10, 10, 20, 20, 30, 30, 10, 10]];
         $this->model->frames = [0.0];
         $this->model->validatePoints();
         $this->expectException(Exception::class);
@@ -139,7 +139,7 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->shape_id = Shape::pointId();
         $this->model->points = [[0, 0], [10, 10]];
         $this->model->frames = [0.0, 1.0];
-        $this->assertEquals([5, 5], $this->model->interpolatePoints(0.5));
+        $this->assertSame([5.0, 5.0], $this->model->interpolatePoints(0.5));
     }
 
     public function testInterpolatePointsInt()
@@ -147,7 +147,7 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->shape_id = Shape::pointId();
         $this->model->points = [[0, 0], [10, 10]];
         $this->model->frames = [0, 1];
-        $this->assertEquals([10, 10], $this->model->interpolatePoints(1));
+        $this->assertSame([10, 10], $this->model->interpolatePoints(1));
     }
 
     public function testInterpolatePointsRectangle()
@@ -159,8 +159,8 @@ class VideoAnnotationTest extends ModelTestCase
         ];
         $this->model->frames = [0.0, 1.0];
 
-        $expect = [11.25, 5, 16.25, 10, 6.25, 20, 1.25, 15];
-        $this->assertEquals($expect, $this->model->interpolatePoints(0.5));
+        $expect = [11.25, 5.0, 16.25, 10.0, 6.25, 20.0, 1.25, 15.0];
+        $this->assertSame($expect, $this->model->interpolatePoints(0.5));
     }
 
     public function testInterpolatePointsCircle()
@@ -168,7 +168,7 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->shape_id = Shape::circleId();
         $this->model->points = [[0, 0, 5], [10, 10, 10]];
         $this->model->frames = [0.0, 1.0];
-        $this->assertEquals([5, 5, 7.5], $this->model->interpolatePoints(0.5));
+        $this->assertSame([5.0, 5.0, 7.5], $this->model->interpolatePoints(0.5));
     }
 
     public function testInterpolatePointsLineString()
@@ -368,7 +368,7 @@ class VideoAnnotationTest extends ModelTestCase
         ]);
 
         $ids = VideoAnnotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
-        $this->assertEquals([$a3->id], $ids);
+        $this->assertSame([$a3->id], $ids);
     }
 
     public function testScopeVisibleFor()
@@ -395,18 +395,18 @@ class VideoAnnotationTest extends ModelTestCase
         $al1 = VideoAnnotationLabelTest::create();
         $al2 = VideoAnnotationLabelTest::create();
 
-        $this->assertEquals($al1->annotation->id, VideoAnnotation::withLabel($al1->label)->first()->id);
+        $this->assertSame($al1->annotation->id, VideoAnnotation::withLabel($al1->label)->first()->id);
     }
 
     public function testGetPoints()
     {
         $annotation = static::make(['points' => [[1, 2]]]);
-        $this->assertEquals([[1, 2]], $annotation->getPoints());
+        $this->assertSame([[1, 2]], $annotation->getPoints());
     }
 
     public function testGetShape()
     {
-        $this->assertEquals($this->model->shape, $this->model->getShape());
+        $this->assertSame($this->model->shape, $this->model->getShape());
     }
 
     public function testGetFile()
@@ -416,6 +416,6 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testGetFileIdAttribute()
     {
-        $this->assertEquals($this->model->video_id, $this->model->file_id);
+        $this->assertSame($this->model->video_id, $this->model->file_id);
     }
 }

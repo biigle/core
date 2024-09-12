@@ -38,8 +38,8 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $this->assertCount(1, $container);
         $request = $container[0]['request'];
-        $this->assertEquals('https://example.com/api/v1/federated-search-index', strval($request->getUri()));
-        $this->assertEquals('Bearer my_token', $request->getHeaderLine('Authorization'));
+        $this->assertSame('https://example.com/api/v1/federated-search-index', strval($request->getUri()));
+        $this->assertSame('Bearer my_token', $request->getHeaderLine('Authorization'));
         $this->assertNotNull($instance->fresh()->indexed_at);
     }
 
@@ -104,12 +104,12 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $model = FederatedSearchModel::first();
         $this->assertNotNull($model);
-        $this->assertEquals($labelTree['name'], $model->name);
-        $this->assertEquals($labelTree['description'], $model->description);
-        $this->assertEquals($labelTree['created_at'], $model->created_at);
-        $this->assertEquals($labelTree['updated_at'], $model->updated_at);
-        $this->assertEquals($instance->url.$labelTree['url'], $model->url);
-        $this->assertEquals(LabelTree::class, $model->type);
+        $this->assertSame($labelTree['name'], $model->name);
+        $this->assertSame($labelTree['description'], $model->description);
+        $this->assertSame($labelTree['created_at'], $model->created_at->toDateTimeString());
+        $this->assertSame($labelTree['updated_at'], $model->updated_at->toDateTimeString());
+        $this->assertSame($instance->url.$labelTree['url'], $model->url);
+        $this->assertSame(LabelTree::class, $model->type);
 
         $this->assertTrue($user->federatedSearchModels()->exists());
     }
@@ -153,13 +153,13 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $model = FederatedSearchModel::first();
         $this->assertNotNull($model);
-        $this->assertEquals($project['name'], $model->name);
-        $this->assertEquals($project['description'], $model->description);
-        $this->assertEquals($project['created_at'], $model->created_at);
-        $this->assertEquals($project['updated_at'], $model->updated_at);
-        $this->assertEquals($instance->url.$project['url'], $model->url);
-        $this->assertEquals($project['thumbnail_url'], $model->thumbnailUrl);
-        $this->assertEquals(Project::class, $model->type);
+        $this->assertSame($project['name'], $model->name);
+        $this->assertSame($project['description'], $model->description);
+        $this->assertSame($project['created_at'], $model->created_at->toDateTimeString());
+        $this->assertSame($project['updated_at'], $model->updated_at->toDateTimeString());
+        $this->assertSame($instance->url.$project['url'], $model->url);
+        $this->assertSame($project['thumbnail_url'], $model->thumbnailUrl);
+        $this->assertSame(Project::class, $model->type);
 
         $this->assertTrue($user->federatedSearchModels()->projects()->exists());
     }
@@ -309,14 +309,14 @@ class UpdateFederatedSearchIndexTest extends TestCase
 
         $model = FederatedSearchModel::where('name', 'remote volume')->first();
         $this->assertNotNull($model);
-        $this->assertEquals($volume['name'], $model->name);
+        $this->assertSame($volume['name'], $model->name);
         $this->assertNull($model->description);
-        $this->assertEquals($volume['created_at'], $model->created_at);
-        $this->assertEquals($volume['updated_at'], $model->updated_at);
-        $this->assertEquals($instance->url.$volume['url'], $model->url);
-        $this->assertEquals($volume['thumbnail_url'], $model->thumbnailUrl);
-        $this->assertEquals($volume['thumbnail_urls'], $model->thumbnailUrls->toArray());
-        $this->assertEquals(Volume::class, $model->type);
+        $this->assertSame($volume['created_at'], $model->created_at->toDateTimeString());
+        $this->assertSame($volume['updated_at'], $model->updated_at->toDateTimeString());
+        $this->assertSame($instance->url.$volume['url'], $model->url);
+        $this->assertSame($volume['thumbnail_url'], $model->thumbnailUrl);
+        $this->assertSame($volume['thumbnail_urls'], $model->thumbnailUrls->toArray());
+        $this->assertSame(Volume::class, $model->type);
     }
 
     public function testHandleCleanupDanglingModels()

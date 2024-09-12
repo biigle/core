@@ -29,7 +29,7 @@ class WormsAdapter implements LabelSourceAdapterContract
     /**
      * SOAP client for the WoRMS webservice.
      *
-     * @var SoapClient
+     * @var SoapClient|null
      */
     protected $client;
 
@@ -221,7 +221,7 @@ class WormsAdapter implements LabelSourceAdapterContract
      *
      * @param array $attributes All label attributes
      *
-     * @return array Array containing the single label
+     * @return Label Label
      */
     private function createSingleLabel(array $attributes)
     {

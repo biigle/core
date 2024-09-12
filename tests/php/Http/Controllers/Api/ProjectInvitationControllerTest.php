@@ -38,15 +38,15 @@ class ProjectInvitationControllerTest extends ApiTestCase
                 'expires_at' => $timestamp,
             ])
             ->assertSuccessful();
-
+    
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
         $this->assertEquals($timestamp, $invitation->expires_at);
-        $this->assertEquals(0, $invitation->current_uses);
+        $this->assertSame(0, $invitation->current_uses);
         $this->assertNotNull($invitation->uuid);
         $this->assertNull($invitation->max_uses);
         $this->assertFalse($invitation->add_to_sessions);
-        $this->assertEquals(Role::editorId(), $invitation->role_id);
+        $this->assertSame(Role::editorId(), $invitation->role_id);
     }
 
     public function testStoreOptionalAttributes()
@@ -95,8 +95,8 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
-        $this->assertEquals(10, $invitation->max_uses);
-        $this->assertEquals(Role::editorId(), $invitation->role_id);
+        $this->assertSame(10, $invitation->max_uses);
+        $this->assertSame(Role::editorId(), $invitation->role_id);
         $this->assertTrue($invitation->add_to_sessions);
     }
 
@@ -160,11 +160,11 @@ class ProjectInvitationControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        $this->assertEquals(0, $invitation->current_uses);
+        $this->assertSame(0, $invitation->current_uses);
         $projectUser = $this->project()->users()->find($this->user()->id);
         $this->assertNotNull($projectUser);
-        $this->assertEquals(Role::guestId(), $projectUser->project_role_id);
-        $this->assertEquals(1, $invitation->fresh()->current_uses);
+        $this->assertSame(Role::guestId(), $projectUser->project_role_id);
+        $this->assertSame(1, $invitation->fresh()->current_uses);
     }
 
     public function testJoinRedirect()
@@ -232,7 +232,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        $this->assertEquals(0, $invitation->fresh()->current_uses);
+        $this->assertSame(0, $invitation->fresh()->current_uses);
     }
 
     public function testJoinAddToSessions()

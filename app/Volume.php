@@ -3,15 +3,12 @@
 namespace Biigle;
 
 use Biigle\Traits\HasJsonAttributes;
+use Biigle\Traits\HasMetadataFile;
 use Cache;
 use Carbon\Carbon;
 use DB;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Response;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
@@ -19,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class Volume extends Model
 {
-    use HasJsonAttributes, HasFactory;
+    use HasJsonAttributes, HasFactory, HasMetadataFile;
 
     /**
      * Regular expression that matches the supported image file extensions.
@@ -42,9 +39,24 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm)(\?.+)?$/i';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'url',
+        'media_type_id',
+        'handle',
+        'creator_id',
+        'metadata_file_path',
+        'metadata_parser',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'pivot',
@@ -54,12 +66,17 @@ class Volume extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'attrs' => 'array',
         'media_type_id' => 'int',
     ];
+
+    protected static function booted(): void
+    {
+        static::$metadataFileDisk = config('volumes.metadata_storage_disk');
+    }
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -71,7 +88,7 @@ class Volume extends Model
     public static function parseFilesQueryString(string $string)
     {
         // Remove whitespace as well as enclosing '' or "".
-        return preg_split('/[\"\'\s]*,[\"\'\s]*/', trim($string, " \t\n\r\0\x0B'\""), null, PREG_SPLIT_NO_EMPTY);
+        return preg_split('/[\"\'\s]*,[\"\'\s]*/', trim($string, " \t\n\r\0\x0B'\""), 0, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -100,7 +117,7 @@ class Volume extends Model
     /**
      * The user that created the volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Volume>
      */
     public function creator()
     {
@@ -110,7 +127,7 @@ class Volume extends Model
     /**
      * The media type of this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<MediaType, Volume>
      */
     public function mediaType()
     {
@@ -120,7 +137,7 @@ class Volume extends Model
     /**
      * The images belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Image>
      */
     public function images()
     {
@@ -130,7 +147,7 @@ class Volume extends Model
     /**
      * The videos belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Video>
      */
     public function videos()
     {
@@ -140,7 +157,7 @@ class Volume extends Model
     /**
      * The images or videos belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFile>
      */
     public function files()
     {
@@ -155,7 +172,7 @@ class Volume extends Model
      * The images belonging to this volume ordered by filename (ascending).
      *
      * @deprecated Use `orderedFiles` instead.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VolumeFile>
      */
     public function orderedImages()
     {
@@ -165,7 +182,7 @@ class Volume extends Model
     /**
      * The images belonging to this volume ordered by filename (ascending).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VolumeFile>
      */
     public function orderedFiles()
     {
@@ -194,7 +211,7 @@ class Volume extends Model
     /**
      * The project(s), this volume belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
      */
     public function projects()
     {
@@ -204,7 +221,7 @@ class Volume extends Model
     /**
      * The annotation sessions of this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationSession>
      */
     public function annotationSessions()
     {
@@ -214,7 +231,7 @@ class Volume extends Model
     /**
      * The active annotation sessions of this volume (if any).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<AnnotationSession>
      */
     public function activeAnnotationSession()
     {
@@ -234,7 +251,7 @@ class Volume extends Model
      * session.
      *
      * @param User $user
-     * @return AnnotationSession
+     * @return AnnotationSession|null
      */
     public function getActiveAnnotationSession(User $user)
     {
@@ -259,7 +276,7 @@ class Volume extends Model
     public function hasConflictingAnnotationSession(AnnotationSession $session)
     {
         return $this->annotationSessions()
-            ->when(!is_null($session->id), fn ($query) => $query->where('id', '!=', $session->id))
+            ->when($session->id, fn ($query) => $query->where('id', '!=', $session->id))
             ->where(function ($query) use ($session) {
                 $query->where(function ($query) use ($session) {
                     $query->where('starts_at', '<=', $session->starts_at)
@@ -291,7 +308,7 @@ class Volume extends Model
     /**
      * An image that can be used as unique thumbnail for this volume.
      *
-     * @return Image
+     * @return Image|null
      */
     public function getThumbnailAttribute()
     {
@@ -303,7 +320,7 @@ class Volume extends Model
     /**
      * URL to the thumbnail image of this volume.
      *
-     * @return string
+     * @return string|null
      */
     public function getThumbnailUrlAttribute()
     {
@@ -337,7 +354,7 @@ class Volume extends Model
     /**
      * URLs to the thumbnail images of this volume.
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function getThumbnailsUrlAttribute()
     {
@@ -391,7 +408,7 @@ class Volume extends Model
     /**
      * Set the creating_async attribute of this volume.
      *
-     * @param string $value
+     * @param bool $value
      */
     public function setCreatingAsyncAttribute($value)
     {
@@ -403,11 +420,11 @@ class Volume extends Model
     /**
      * Get the creating_async attribute of this volume.
      *
-     * @return string
+     * @return bool
      */
     public function getCreatingAsyncAttribute()
     {
-        return $this->getJsonAttr('creating_async', false);
+        return (bool) $this->getJsonAttr('creating_async', false);
     }
 
     /**
@@ -442,85 +459,6 @@ class Volume extends Model
     }
 
     /**
-     * Save an iFDO metadata file and link it with this volume.
-     *
-     * @param UploadedFile $file iFDO YAML file.
-     *
-     */
-    public function saveIfdo(UploadedFile $file)
-    {
-        $disk = config('volumes.ifdo_storage_disk');
-        $file->storeAs('', $this->getIfdoFilename(), $disk);
-        Cache::forget($this->getIfdoCacheKey());
-    }
-
-    /**
-     * Check if an iFDO metadata file is available for this volume.
-     *
-     * @param bool $ignoreErrors Set to `true` to ignore exceptions and return `false` if iFDO existence could not be determined.
-     * @return boolean
-     */
-    public function hasIfdo($ignoreErrors = false)
-    {
-        try {
-            return Cache::remember($this->getIfdoCacheKey(), 3600, fn () => Storage::disk(config('volumes.ifdo_storage_disk'))->exists($this->getIfdoFilename()));
-        } catch (Exception $e) {
-            if (!$ignoreErrors) {
-                throw $e;
-            }
-
-            return false;
-        }
-    }
-
-    /**
-     * Delete the iFDO metadata file linked with this volume.
-     */
-    public function deleteIfdo()
-    {
-        Storage::disk(config('volumes.ifdo_storage_disk'))->delete($this->getIfdoFilename());
-        Cache::forget($this->getIfdoCacheKey());
-    }
-
-    /**
-     * Download the iFDO that is attached to this volume.
-     *
-     * @return Response
-     */
-    public function downloadIfdo()
-    {
-        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-
-        if (!$disk->exists($this->getIfdoFilename())) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
-        return $disk->download($this->getIfdoFilename(), "biigle-volume-{$this->id}-ifdo.yaml");
-    }
-
-    /**
-     * Get the content of the iFDO file associated with this volume.
-     *
-     * @return array
-     */
-    public function getIfdo()
-    {
-        $content = Storage::disk(config('volumes.ifdo_storage_disk'))->get($this->getIfdoFilename());
-
-        return yaml_parse($content);
-    }
-
-    /**
-     * Get the filename of the volume iFDO in storage.
-     *
-     * @return string
-     */
-    protected function getIfdoFilename()
-    {
-        return $this->id.'.yaml';
-    }
-
-    /**
      * Get the cache key for volume thumbnails.
      *
      * @return string
@@ -538,15 +476,5 @@ class Volume extends Model
     protected function getGeoInfoCacheKey()
     {
         return "volume-{$this->id}-has-geo-info";
-    }
-
-    /**
-     * Get the cache key for volume iFDO info.
-     *
-     * @return string
-     */
-    protected function getIfdoCacheKey()
-    {
-        return "volume-{$this->id}-has-ifdo";
     }
 }

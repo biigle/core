@@ -53,7 +53,7 @@ class VideoLabelControllerTest extends ApiTestCase
         $this
             ->postJson("/api/v1/videos/{$id}/labels")->assertStatus(422);
 
-        $this->assertEquals(0, $this->video->labels()->count());
+        $this->assertSame(0, $this->video->labels()->count());
 
         $this->beUser();
         $this
@@ -75,7 +75,7 @@ class VideoLabelControllerTest extends ApiTestCase
                 'label_id' => $this->labelRoot()->id,
             ])
             ->assertSuccessful();
-        $this->assertEquals(1, $this->video->labels()->count());
+        $this->assertSame(1, $this->video->labels()->count());
 
         $this->beAdmin();
         // the same label cannot be attached twice
@@ -84,7 +84,7 @@ class VideoLabelControllerTest extends ApiTestCase
                 'label_id' => $this->labelRoot()->id,
             ])
             ->assertStatus(400);
-        $this->assertEquals(1, $this->video->labels()->count());
+        $this->assertSame(1, $this->video->labels()->count());
 
         $this
             ->postJson("/api/v1/videos/{$id}/labels", [
@@ -102,7 +102,7 @@ class VideoLabelControllerTest extends ApiTestCase
                 'lastname' => $this->admin()->lastname,
                 'role_id' => $this->admin()->role_id,
             ]);
-        $this->assertEquals(2, $this->video->labels()->count());
+        $this->assertSame(2, $this->video->labels()->count());
     }
 
     public function testDestroy()

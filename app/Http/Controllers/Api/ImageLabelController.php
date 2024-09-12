@@ -72,7 +72,7 @@ class ImageLabelController extends VolumeFileLabelController
      * }
      *
      * @param StoreImageLabel $request
-     * @return \Illuminate\Http\Response
+     * @return \Biigle\VolumeFileLabel
      */
     public function store(StoreImageLabel $request)
     {

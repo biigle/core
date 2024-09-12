@@ -38,7 +38,7 @@ class MigrateTiledImages extends Command
         $query = Image::where('tiled', true);
         $bar = $this->output->createProgressBar($query->count());
 
-        $query->eachById(function ($image) use ($dryRun, $bar, $disk) {
+        $query->eachById(function (Image $image) use ($dryRun, $bar, $disk) {
             if (!$dryRun) {
                 $targetPath = fragment_uuid_path($image->uuid);
                 Queue::push(new MigrateTiledImage($image, $disk, $targetPath));

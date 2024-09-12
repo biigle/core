@@ -4,18 +4,18 @@
             <div class="sidebar-tab__section">
                 <button v-if="crossOrigin" class="btn btn-default" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                 <screenshot-button v-else inline-template>
-                    <button class="btn btn-default" title="Get a screenshot of the visible area" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+                    <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                 </screenshot-button>
             </div>
 
             <div class="sidebar-tab__section">
                 <h5 title="Set the opacity of annotations on the map">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
-                <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
+                <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity" onmouseup="this.blur()">
             </div>
 
             <div class="sidebar-tab__section">
                 <h5 title="Set the number of caches images ">Cached Images (<span v-text="cachedImagesCount"></span>)</h5>
-                <input type="range" min="1" max="50" step="1" v-model="cachedImagesCount">
+                <input type="range" min="1" max="50" step="1" v-model="cachedImagesCount" onmouseup="this.blur()">
             </div>
 
             <div class="sidebar-tab__section">

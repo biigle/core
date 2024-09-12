@@ -129,7 +129,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         ]);
         $response->assertStatus(422);
 
-        $this->assertEquals(0, $this->annotation->labels()->count());
+        $this->assertSame(0, $this->annotation->labels()->count());
 
         $this->beUser();
         $response = $this->post("{$url}/{$id}/labels", [
@@ -151,7 +151,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
             'confidence' => 0.1,
         ]);
         $response->assertStatus(201);
-        $this->assertEquals(1, $this->annotation->labels()->count());
+        $this->assertSame(1, $this->annotation->labels()->count());
 
         Event::assertDispatched(AnnotationLabelAttached::class);
 
@@ -163,7 +163,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         $response->assertStatus(201);
 
         Event::assertDispatched(AnnotationLabelAttached::class);
-        $this->assertEquals(2, $this->annotation->labels()->count());
+        $this->assertSame(2, $this->annotation->labels()->count());
         $response->assertJsonFragment([
             'id' => $this->labelRoot()->id,
             'name' => $this->labelRoot()->name,
@@ -184,7 +184,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         ]);
         // the same user cannot attach the same label twice
         $response->assertStatus(400);
-        $this->assertEquals(2, $this->annotation->labels()->count());
+        $this->assertSame(2, $this->annotation->labels()->count());
     }
 
     public function testUpdate()
@@ -225,14 +225,14 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         $response = $this->put("{$url}/{$id}");
         $response->assertStatus(200);
 
-        $this->assertEquals(0.5, $annotationLabel->fresh()->confidence);
+        $this->assertSame(0.5, $annotationLabel->fresh()->confidence);
         $this->beEditor();
         $response = $this->put("{$url}/{$id}", [
             '_token' => Session::token(),
             'confidence' => 0.1,
         ]);
         $response->assertStatus(200);
-        $this->assertEquals(0.1, $annotationLabel->fresh()->confidence);
+        $this->assertSame(0.1, $annotationLabel->fresh()->confidence);
     }
 
     public function testDestroy()

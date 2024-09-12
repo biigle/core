@@ -68,6 +68,14 @@ class TileSingleImageTest extends TestCase
         // check that temporary storage path got properly deleted in handle() method
         Storage::disk('tiles')->assertMissing($job->tempPath);
     }
+  
+    public function testQueue()
+    {
+        config(['image.tiles.queue' => 'myqueue']);
+        $image = ImageTest::create();
+        $job = new TileSingleImageStub($image);
+        $this->assertSame('myqueue', $job->queue);
+    }
 }
 
 class TileSingleImageStub extends TileSingleImage

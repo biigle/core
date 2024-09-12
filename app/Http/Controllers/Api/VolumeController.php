@@ -19,7 +19,7 @@ class VolumeController extends Controller
      * Shows all volumes the user has access to.
      *
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Database\Eloquent\Collection
      * @api {get} volumes Get accessible volumes
      * @apiGroup Volumes
      * @apiName IndexVolumes
@@ -112,7 +112,7 @@ class VolumeController extends Controller
      * Updates the attributes of the specified volume.
      *
      * @param UpdateVolume $request
-     * @return Response
+     * @return \Illuminate\Http\RedirectResponse|null
      * @api {put} volumes/:id Update a volume
      * @apiGroup Volumes
      * @apiName UpdateVolumes
@@ -153,7 +153,7 @@ class VolumeController extends Controller
      * Clones volume to destination project.
      *
      * @param CloneVolume $request
-     * @return Response
+     * @return Volume|\Illuminate\Http\RedirectResponse
      * @api {post} volumes/:id/clone-to/:project_id Clones a volume
      * @apiGroup Volumes
      * @apiName CloneVolume
@@ -192,6 +192,9 @@ class VolumeController extends Controller
             $copy->name = $request->input('name', $volume->name);
             $copy->creating_async = true;
             $copy->save();
+            if ($volume->hasMetadata()) {
+                $copy->update(['metadata_file_path' => $copy->id.'.'.pathinfo($volume->metadata_file_path, PATHINFO_EXTENSION)]);
+            }
             $project->addVolumeId($copy->id);
 
             $job = new CloneImagesOrVideos($request, $copy);
@@ -208,5 +211,47 @@ class VolumeController extends Controller
             ->with('message', "Volume cloned")
             ->with('messageType', 'success');
 
+    }
+
+    /**
+     * Return file ids which are sorted by annotations.created_at
+     *
+     * @param int $id
+     * @return object
+     * @api {get} volumes{/id}/files/annotation-timestamps Get file ids sorted by recently annotated
+     * @apiGroup Volumes
+     * @apiName VolumeSortByAnnotated
+     * @apiPermission projectMember
+     *
+     * @apiParam {Number} id The volume ID.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     *  1: 1,
+     *  2: 2,
+     *  3: 3,
+     * }
+     *
+     */
+    public function getFileIdsSortedByAnnotationTimestamps($id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
+
+        if ($volume->isImageVolume()) {
+            $ids = $volume->files()
+                ->leftJoin('image_annotations', 'images.id', "=", "image_annotations.image_id")
+                ->groupBy('images.id')
+                ->selectRaw('images.id, max(image_annotations.created_at) as created_at')
+                ->orderByRaw("created_at desc nulls last");
+        } else {
+            $ids = $volume->files()
+                ->leftJoin('video_annotations', 'videos.id', "=", "video_annotations.video_id")
+                ->groupBy('videos.id')
+                ->selectRaw('videos.id, max(video_annotations.created_at) as created_at')
+                ->orderByRaw("created_at desc nulls last");
+        }
+
+        return $ids->pluck('id');
     }
 }

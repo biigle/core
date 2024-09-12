@@ -54,7 +54,7 @@ class LinkVideoAnnotationController extends Controller
      * }
      *
      * @param LinkVideoAnnotation $request
-     * @return \Illuminate\Http\Response
+     * @return VideoAnnotation
      */
     public function store(LinkVideoAnnotation $request)
     {

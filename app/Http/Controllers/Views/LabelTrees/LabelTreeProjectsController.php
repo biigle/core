@@ -16,7 +16,6 @@ class LabelTreeProjectsController extends Controller
      *
      * @param Request $request
      * @param int $id project ID
-     * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
     {
@@ -37,8 +36,6 @@ class LabelTreeProjectsController extends Controller
      *
      * @param LabelTree $tree
      * @param User $user
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function showMasterLabelTree(LabelTree $tree, User $user)
     {
@@ -90,8 +87,6 @@ class LabelTreeProjectsController extends Controller
      *
      * @param LabelTree $tree
      * @param User $user
-     *
-     * @return \Illuminate\Http\Response
      */
     protected function showVersionedLabelTree(LabelTree $tree, User $user)
     {

@@ -60,7 +60,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         // parent id must be integer
         $response->assertStatus(422);
 
-        $this->assertEquals(1, $tree->labels()->count());
+        $this->assertSame(1, $tree->labels()->count());
         $this->assertFalse($parent->children()->exists());
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
@@ -68,7 +68,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             'parent_id' => $parent->id,
         ]);
         $response->assertStatus(200);
-        $this->assertEquals(2, $tree->labels()->count());
+        $this->assertSame(2, $tree->labels()->count());
         $this->assertTrue($parent->children()->exists());
 
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
@@ -76,7 +76,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             'color' => 'bada55',
         ]);
         $response->assertStatus(200);
-        $this->assertEquals(3, $tree->labels()->count());
+        $this->assertSame(3, $tree->labels()->count());
 
         $label = $tree->labels()->where('name', 'new label 2')->first();
 
@@ -102,7 +102,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             'name' => 'new label',
             'color' => 'bada55',
         ]);
-        $this->assertEquals(1, $tree->labels()->count());
+        $this->assertSame(1, $tree->labels()->count());
         $response->assertRedirect('/');
         $response->assertSessionHas('saved', true);
 
@@ -111,7 +111,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             'color' => 'bada55',
             '_redirect' => 'settings',
         ]);
-        $this->assertEquals(2, $tree->labels()->count());
+        $this->assertSame(2, $tree->labels()->count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
     }
