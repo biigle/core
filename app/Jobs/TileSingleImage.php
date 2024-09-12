@@ -2,10 +2,10 @@
 
 namespace Biigle\Jobs;
 
-use File as FileFacade;
 use Biigle\FileCache\Contracts\File;
 use Biigle\Image;
 use Exception;
+use File as FileFacade;
 use FileCache;
 use FilesystemIterator;
 use Illuminate\Contracts\Queue\ShouldQueue;
