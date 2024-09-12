@@ -60,7 +60,7 @@ class TileSingleImage extends Job implements ShouldQueue
      *
      * @param File $file The image to generate tiles for.
      * @param string $storage The path to storage-disk where the tiles should be stored
-     * @param string targetPath The path to the tiles within the permanent storage-disk
+     * @param string $targetPath The path to the tiles within the permanent storage-disk
      *
      * @return void
      */
