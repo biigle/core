@@ -12,3 +12,24 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
+.typeahead-scrollable {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.typeahead-item-box {
+    padding-left: 15%;
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+
+.typeahead-item-box:hover {
+    background-color: #666666;
+}
+
+#scrollable-item {
+    color: #F5F5F5;
+    text-decoration: none;
+    display: block;
+}
