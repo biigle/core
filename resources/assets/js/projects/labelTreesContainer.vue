@@ -3,13 +3,13 @@ import Events from '../core/events';
 import LabelTreeList from './components/labelTreeList';
 import LoaderMixin from '../core/mixins/loader';
 import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
 import {handleErrorResponse} from '../core/messages/store';
+import ScrollableTypeahead from '../core/components/scrollableTypeahead.vue';
 
 export default {
     mixins: [LoaderMixin],
     components: {
-        typeahead: Typeahead,
+        scrollableTypeahead: ScrollableTypeahead,
         labelTreeList: LabelTreeList,
     },
     data() {
@@ -35,11 +35,11 @@ export default {
         },
     },
     methods: {
-        fetchAvailableLabelTrees() {
+        fetchAvailableLabelTrees(treeName) {
             if (!this.fetchedAvailableLabelTrees) {
                 this.fetchedAvailableLabelTrees = true;
                 this.startLoading();
-                ProjectsApi.queryAvailableLabelTrees({id: this.project.id})
+                ProjectsApi.queryAvailableLabelTrees({id: this.project.id}, {'name': treeName})
                     .then(this.availableLabelTreesFetched, handleErrorResponse)
                     .finally(this.finishLoading);
             }
