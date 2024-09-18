@@ -16,8 +16,9 @@
             :target="inputElement"
             :data="items"
             :force-select="true"
-            :limit="items.length"
+            :limit="50"
             item-key="name"
+            v-show="!isTyping"
             >
             <template slot="item" slot-scope="props">
                 <div class="typeahead-scrollable">
@@ -41,7 +42,7 @@
 
 <script>
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TODO: fix active state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!TODO: fix active state + dropdown after valid input doesnt drop out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 import uivTypeahead from 'uiv/dist/Typeahead';
 import ScrollableTypeaheadItem from './scrollableTypeaheadItem.vue';
@@ -62,15 +63,21 @@ export default {
     data() {
         return {
             inputText: '',
-            timerTask: null
+            timerTask: null,
+            isTyping: false,
         }
     },
     watch: {
         inputText(v) {
+            this.isTyping = true;
             clearTimeout(this.timerTask);
-            if (v.length > 4) {
-                this.timerTask = setTimeout(() => this.$emit('fetch', v), 500);
-            }
+
+            this.timerTask = setTimeout(() => {
+                if (v.length > 4) {
+                    this.$emit('fetch', v);
+                }
+                this.isTyping = false;
+            }, 500);
         }
     }
 }
