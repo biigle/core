@@ -14,14 +14,14 @@
 }
 
 .typeahead-scrollable {
-    height: 200px;
-    overflow-y: scroll;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .typeahead-item-box {
     padding-left: 15%;
-    padding-top: 3%;
-    padding-bottom: 3%;
+    padding-top: 2%;
+    padding-bottom: 2%;
 }
 
 .typeahead-item-box:hover {
@@ -29,7 +29,7 @@
 }
 
 #scrollable-item {
-    color: #F5F5F5;
+    color: #cccccc;
     text-decoration: none;
     display: block;
 }
