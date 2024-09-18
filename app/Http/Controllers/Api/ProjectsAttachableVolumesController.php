@@ -2,22 +2,22 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
+use Biigle\Project;
 use Illuminate\Http\Request;
 
 class ProjectsAttachableVolumesController extends Controller
 {
     /**
-     * Shows all volumes that can be attached to the project by the requesting user.
+     * Shows volumes that match the given volume name and can be attached to the project by the requesting user.
      *
      * @api {get} projects/:id/attachable-volumes Get attachable volumes
      * @apiGroup Projects
      * @apiName IndexAttachableVolumes
      * @apiPermission projectAdmin
      * @apiParam {Number} id ID of the project for which the volumes should be fetched.
-     * @apiDescription A list of all volumes where the requesting user has admin rights for (excluding those already belonging to the specified project).
+     * @apiDescription A list of all matching volumes where the requesting user has admin rights for (excluding those already belonging to the specified project).
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -41,6 +41,7 @@ class ProjectsAttachableVolumesController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
+        $volumeName = $request->input('name');
 
         $volumes = Volume::select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
@@ -56,6 +57,7 @@ class ProjectsAttachableVolumesController extends Controller
                             ->where('project_id', '!=', $id);
                     });
             })
+            ->whereRaw("name LIKE ?", ["%{$volumeName}%"])
             // Do not return volumes that are already attached to this project.
             // This is needed although we are already excluding the project in the
             // previous statement because other projects may already share volumes with
@@ -77,4 +79,5 @@ class ProjectsAttachableVolumesController extends Controller
 
         return $volumes;
     }
+
 }
