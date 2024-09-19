@@ -39,7 +39,7 @@
             </template>
         </uivTypeahead>
     </div>
-    </template>
+</template>
 
 <script>
 
@@ -85,7 +85,7 @@ export default {
             }, 500);
         },
         disabled() {
-            // Use disabled and nextTick to show dropdown right after loading items
+            // Use disabled and nextTick to show dropdown right after loading finished
             if (!this.disabled) {
                 this.$nextTick(() => this.$refs.input.focus())
             }
