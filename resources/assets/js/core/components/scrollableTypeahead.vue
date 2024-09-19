@@ -30,8 +30,9 @@
                     :props="props"
                     :item="item"
                     :item-key="moreInfo"
+                    :active="props.activeIndex === index"
                     class="typeahead-item-box"
-                    :class="{active: props.activeIndex === index}"
+                    :class="{activeItem: props.activeIndex === index}"
                     >
                 </component>
                 </div>
@@ -42,7 +43,7 @@
 
 <script>
 
-// !!!!!!!!!!!!!!TODO: fix active state + dropdown after valid input doesnt drop out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!!!!!!!!!!!!!TODO: dropdown after valid input doesnt drop out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 import uivTypeahead from 'uiv/dist/Typeahead';
 import ScrollableTypeaheadItem from './scrollableTypeaheadItem.vue';

@@ -25,11 +25,19 @@
 }
 
 .typeahead-item-box:hover {
-    background-color: #666666;
+    background-color: #353535;
 }
 
-#scrollable-item {
-    color: #cccccc;
-    text-decoration: none;
-    display: block;
+.scrollable-item {
+    color: #cccccc !important;
+    text-decoration: none !important;
+    display: block !important;
+}
+
+.activeItem {
+    background-color: #337ab7;
+}
+
+.activeItemText {
+    color: white !important;
 }

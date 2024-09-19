@@ -1,6 +1,6 @@
 <template>
     <li>
-        <a id="scrollable-item" href="#" @click.prevent="props.select(item)">
+        <a class="scrollable-item" :class="{activeItemText: active}" href="#" @click.prevent="props.select(item)">
             <span v-html="props.highlight(item)"></span>
             <span v-if="info">
                 <br><small class="typeahead-item-info" v-text="info" :title="info"></small>
@@ -14,6 +14,10 @@ import typeaheadItem from './typeaheadItem.vue';
 
 
 export default{
-    mixins: [typeaheadItem]
+    mixins: [typeaheadItem],
+    props: {
+        active: Boolean,
+        required: true,
+    },
 }
 </script>
