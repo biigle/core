@@ -43,8 +43,6 @@
 
 <script>
 
-// !!!!!!!!!!!!!!TODO: dropdown after valid input doesnt drop out !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 import uivTypeahead from 'uiv/dist/Typeahead';
 import ScrollableTypeaheadItem from './scrollableTypeaheadItem.vue';
 import Typeahead from './typeahead.vue';
@@ -85,6 +83,12 @@ export default {
                 }
                 this.isTyping = false;
             }, 500);
+        },
+        disabled() {
+            // Use disabled and nextTick to show dropdown right after loading items
+            if (!this.disabled) {
+                this.$nextTick(() => this.$refs.input.focus())
+            }
         }
     }
 }

@@ -30,7 +30,7 @@
             <span class="pull-right">
                 <loader :active="loading"></loader>
                 <a href="{{ route('create-volume') }}?project={{ $project->id }}" class="btn btn-default" title="Create a new volume for this project">Create Volume</a>
-                <scrollable-typeahead :items="attachableVolumes" placeholder="Attach volumes" v-on:select="attachVolume" :clear-on-select="true" title="Attach existing volumes of other projects" v-on:fetch="fetchAttachableVolumes"></scrollable-typeahead>
+                <scrollable-typeahead :disabled="loading" :items="attachableVolumes" placeholder="Attach volumes" v-on:select="attachVolume" :clear-on-select="true" title="Attach existing volumes of other projects" v-on:fetch="fetchAttachableVolumes"></scrollable-typeahead>
             </span>
         @endcan
     </div>
