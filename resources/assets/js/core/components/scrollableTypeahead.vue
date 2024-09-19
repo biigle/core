@@ -67,6 +67,12 @@ export default {
             isTyping: false,
         }
     },
+    methods:{
+        clear() {
+            this.internalValue = undefined;
+            this.inputText = '';
+        },
+    },
     watch: {
         inputText(v) {
             this.isTyping = true;
