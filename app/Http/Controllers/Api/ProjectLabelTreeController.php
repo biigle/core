@@ -2,10 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\StoreProjectLabelTree;
-use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\LabelTree;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Biigle\Http\Requests\StoreProjectLabelTree;
 
 class ProjectLabelTreeController extends Controller
 {
@@ -86,22 +87,22 @@ class ProjectLabelTreeController extends Controller
      * ]
      *
      * @param int $id Project ID
+     * @param string $name Labeltree name
      * @return array<int, LabelTree>
      */
-    public function available(Request $request, $id)
+    public function available(Request $request, $id, $name)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $treeName = $request->input('name');
 
         $public = LabelTree::publicTrees()
             ->select('id', 'name', 'description', 'version_id')
-            ->whereRaw('name LIKE ?', ["%{$treeName}"])
+            ->whereRaw('name LIKE ?', ["%{$name}%"])
             ->with('version')
             ->get();
         $authorized = $project->authorizedLabelTrees()
             ->select('id', 'name', 'description', 'version_id')
-            ->whereRaw('name LIKE ?', ["%{$treeName}"])
+            ->whereRaw('name LIKE ?', ["%{$name}%"])
             ->with('version')
             ->get();
 

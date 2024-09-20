@@ -34,14 +34,14 @@ class ProjectsAttachableVolumesController extends Controller
      *
      * @param Request $request
      * @param int $id Project ID
+     * @param string $name Volume name
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function index(Request $request, $id)
+    public function index(Request $request, $id, $name)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
-        $volumeName = $request->input('name');
 
         $volumes = Volume::select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
@@ -57,7 +57,7 @@ class ProjectsAttachableVolumesController extends Controller
                             ->where('project_id', '!=', $id);
                     });
             })
-            ->whereRaw("name LIKE ?", ["%{$volumeName}%"])
+            ->whereRaw("name LIKE ?", ["%{$name}%"])
             // Do not return volumes that are already attached to this project.
             // This is needed although we are already excluding the project in the
             // previous statement because other projects may already share volumes with

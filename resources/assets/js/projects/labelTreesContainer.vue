@@ -39,7 +39,7 @@ export default {
             if (!this.fetchedAvailableLabelTrees) {
                 this.fetchedAvailableLabelTrees = true;
                 this.startLoading();
-                ProjectsApi.queryAvailableLabelTrees({id: this.project.id}, {'name': treeName})
+                ProjectsApi.queryAvailableLabelTrees({id: this.project.id, name: treeName})
                     .then(this.availableLabelTreesFetched, handleErrorResponse)
                     .finally(this.finishLoading);
             }
