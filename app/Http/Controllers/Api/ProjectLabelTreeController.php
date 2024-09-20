@@ -89,7 +89,7 @@ class ProjectLabelTreeController extends Controller
      * @param string $name Labeltree name
      * @return array<int, LabelTree>
      */
-    public function available(Request $request, $id, $name)
+    public function available($id, $name)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
