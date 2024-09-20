@@ -2,11 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Project;
-use Biigle\LabelTree;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Biigle\Http\Requests\StoreProjectLabelTree;
+use Biigle\LabelTree;
+use Biigle\Project;
+use Illuminate\Http\Request;
 
 class ProjectLabelTreeController extends Controller
 {

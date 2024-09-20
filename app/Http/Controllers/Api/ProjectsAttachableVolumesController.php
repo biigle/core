@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
-use Biigle\Project;
 use Illuminate\Http\Request;
 
 class ProjectsAttachableVolumesController extends Controller
@@ -79,5 +79,4 @@ class ProjectsAttachableVolumesController extends Controller
 
         return $volumes;
     }
-
 }
