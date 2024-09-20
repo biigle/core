@@ -19,6 +19,7 @@ export default {
             labelTrees: [],
             fetchedAvailableLabelTrees: false,
             availableLabelTrees: [],
+            oldTreeName: "",
         };
     },
     computed: {
@@ -36,12 +37,15 @@ export default {
     },
     methods: {
         fetchAvailableLabelTrees(treeName) {
-            if (!this.fetchedAvailableLabelTrees) {
+            if (this.oldTreeName != treeName) {
                 this.fetchedAvailableLabelTrees = true;
                 this.startLoading();
-                ProjectsApi.queryAvailableLabelTrees({id: this.project.id, name: treeName})
+                ProjectsApi.queryAvailableLabelTrees({ id: this.project.id, name: treeName })
                     .then(this.availableLabelTreesFetched, handleErrorResponse)
-                    .finally(this.finishLoading);
+                    .finally(() => {
+                        this.finishLoading();
+                        this.oldTreeName = treeName;
+                    });
             }
         },
         availableLabelTreesFetched(response) {
