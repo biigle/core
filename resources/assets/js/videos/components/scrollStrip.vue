@@ -17,7 +17,8 @@
                         :scrollstripTop="scrollstripTop"
                         :videoId="videoId"
                         :showThumbnails="showThumbnailPreview"
-                        v-if="canShowThumbPreview"
+                        v-if="finishedInitalizingData"
+                        v-show="canShowThumb"
                         ></thumbnail-preview>
                     <video-progress
                         :duration="duration"
@@ -166,8 +167,8 @@ export default {
         hasOverflowRight() {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
-        canShowThumbPreview() {
-            return this.canShowThumb && !this.hasError && this.hoverTime !== 0  && this.duration !== 0;
+        finishedInitalizingData() {
+            return !this.hasError && this.hoverTime !== 0;
         },
     },
     methods: {
