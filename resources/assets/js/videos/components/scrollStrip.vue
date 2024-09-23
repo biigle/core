@@ -16,7 +16,8 @@
                         :clientMouseX="clientMouseX"
                         :scrollstripTop="scrollstripTop"
                         :videoId="videoId"
-                        v-if="showThumbPreview"
+                        :showThumbnails="showThumbnailPreview"
+                        v-if="canShowThumbPreview"
                         ></thumbnail-preview>
                     <video-progress
                         :duration="duration"
@@ -118,7 +119,7 @@ export default {
             // thumbnail preview
             clientMouseX: 0,
             scrollstripTop: 0,
-            showThumb: false,
+            canShowThumb: false,
         };
     },
     computed: {
@@ -165,8 +166,8 @@ export default {
         hasOverflowRight() {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
-        showThumbPreview() {
-            return this.showThumbnailPreview && this.showThumb && !this.hasError && this.hoverTime !== 0;
+        canShowThumbPreview() {
+            return this.canShowThumb && !this.hasError && this.hoverTime !== 0  && this.duration !== 0;
         },
     },
     methods: {
@@ -242,12 +243,12 @@ export default {
             this.hasOverflowBottom = false;
         },
         handleVideoProgressMousemove(clientX) {
-            this.showThumb = true;
+            this.canShowThumb = true;
             this.clientMouseX = clientX;
             this.scrollstripTop = this.$refs.scroller.getBoundingClientRect().top;
         },
         hideThumbnailPreview() {
-            this.showThumb = false;
+            this.canShowThumb = false;
         },
     },
     watch: {

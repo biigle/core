@@ -1,6 +1,6 @@
 <template>
     <div class="thumbnail-preview" ref="thumbnailPreview" :style="thumbnailStyle">
-        <canvas class="thumbnail-canvas" ref="thumbnailCanvas" v-show="hasAnySprite">
+        <canvas v-if="showThumbnails" class="thumbnail-canvas" ref="thumbnailCanvas" v-show="hasAnySprite">
         </canvas>
         <canvas class="thumbnail-canvas" ref="hovertimeCanvas">
         </canvas>
@@ -34,6 +34,10 @@ export default {
             type: Number,
             required: true,
         },
+        showThumbnails: {
+            type: Boolean,
+            default: true,
+        }
     },
     data() {
         return {
@@ -276,12 +280,14 @@ export default {
     },
     watch: {
         hoverTime() {
-            let spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
-            if (this.spriteIdx != spriteIdx) {
-                this.updateSprite();
-            }
-            if (!this.spriteNotFound) {
-                this.viewThumbnailPreview();
+            if (this.showThumbnails) {
+                let spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
+                if (this.spriteIdx != spriteIdx) {
+                    this.updateSprite();
+                }
+                if (!this.spriteNotFound) {
+                    this.viewThumbnailPreview();
+                }
             }
             this.viewHoverTimeBar();
         },
@@ -309,13 +315,17 @@ export default {
     },
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
-        this.thumbnailCanvas = this.$refs.thumbnailCanvas;
         this.hovertimeCanvas = this.$refs.hovertimeCanvas;
         this.hovertimeCanvas.width = this.hoverTimeBarWidth;
         this.hovertimeCanvas.height = this.hoverTimeBarHeight;
 
         this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
-        this.updateSprite();
+
+        if (this.showThumbnails) {
+            this.thumbnailCanvas = this.$refs.thumbnailCanvas;
+            this.updateSprite();
+        }
+
         this.viewHoverTimeBar();
     }
 };
