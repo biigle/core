@@ -364,7 +364,7 @@ class VolumeReportControllerTest extends ApiTestCase
             'metadata_file_path' => 'mymeta.json',
             'metadata_parser' => IfdoParser::class,
         ]);
-        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk = Storage::fake($volume->getMetadataFileDisk());
         $disk->put('mymeta.json', 'abc');
         Cache::flush();
 
@@ -394,7 +394,7 @@ class VolumeReportControllerTest extends ApiTestCase
             'metadata_file_path' => 'mymeta.json',
             'metadata_parser' => IfdoParser::class,
         ]);
-        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk = Storage::fake($volume->getMetadataFileDisk());
         $disk->put('mymeta.json', 'abc');
         Cache::flush();
 

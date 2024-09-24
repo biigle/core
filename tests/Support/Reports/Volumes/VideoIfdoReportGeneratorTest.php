@@ -46,7 +46,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'metadata_parser' => IfdoParser::class,
         ]);
 
-        $disk = Storage::fake(Volume::$metadataFileDisk);
+        $disk = Storage::fake($volume->getMetadataFileDisk());
         $disk->put('mymeta.json', json_encode($ifdo));
 
         return [$volume, $ifdo];
