@@ -201,7 +201,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
             return null;
         }
 
-        $content = Storage::disk(Volume::$metadataFileDisk)
+        $content = Storage::disk($source->getMetadataFileDisk())
             ->get($source->metadata_file_path);
 
         if (!$content) {
