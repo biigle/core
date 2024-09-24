@@ -173,7 +173,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
     }
 
-    protected function createThumbnails($path, $disk, $fragment, $tmpDir){
+    protected function createThumbnails($path, $disk, $fragment, $tmpDir)
+    {
         // Extract images from video
         $this->extractImagesfromVideo($path, $this->video->duration, $tmpDir);
 
@@ -247,7 +248,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $this->runFFMPEG($path, $frameRate, $destinationPath, $format);
     }
 
-    protected function getThumbnailInfos($duration){
+    protected function getThumbnailInfos($duration)
+    {
         $maxThumbnails = config('videos.sprites_max_thumbnails');
         $minThumbnails = config('videos.thumbnail_count');
         $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
@@ -261,7 +263,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
         return ['estimatedThumbnails' => $estimatedThumbnails, 'frameRate' => $frameRate];
     }
 
-    protected function runFFMPEG($path, $frameRate, $destinationPath, $format){
+    protected function runFFMPEG($path, $frameRate, $destinationPath, $format)
+    {
         // Leading zeros are important to prevent file sorting afterwards
         Process::forever()
             ->run("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/%04d.{$format}")
@@ -306,16 +309,19 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
     }
 
-    protected function getFiles($tmpDir){
+    protected function getFiles($tmpDir)
+    {
         $format = config('thumbnails.format');
         return File::glob($tmpDir . "/*.{$format}");
     }
 
-    protected function createSingleThumbnail($file, $width, $height){
+    protected function createSingleThumbnail($file, $width, $height)
+    {
         return VipsImage::thumbnail($file, $width, ['height' => $height]);
     }
 
-    protected function createSingleSprite($thumbnails, $thumbnailsPerRow){
+    protected function createSingleSprite($thumbnails, $thumbnailsPerRow)
+    {
         return VipsImage::arrayjoin($thumbnails, ['across' => $thumbnailsPerRow]);
     }
 
