@@ -73,11 +73,6 @@ class Volume extends Model
         'media_type_id' => 'int',
     ];
 
-    protected static function booted(): void
-    {
-        static::$metadataFileDisk = config('volumes.metadata_storage_disk');
-    }
-
     /**
      * Parses a comma separated list of filenames to an array.
      *
@@ -456,6 +451,14 @@ class Volume extends Model
     public function isVideoVolume()
     {
         return $this->media_type_id === MediaType::videoId();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetadataFileDisk(): string
+    {
+        return config('volumes.metadata_storage_disk');
     }
 
     /**

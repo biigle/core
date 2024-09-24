@@ -67,8 +67,6 @@ class PendingVolume extends Model
 
     protected static function booted(): void
     {
-        static::$metadataFileDisk = config('volumes.pending_metadata_storage_disk');
-
         static::deleting(function (PendingVolume $pv) {
             $pv->deleteMetadata(true);
         });
@@ -82,5 +80,13 @@ class PendingVolume extends Model
     public function volume(): BelongsTo
     {
         return $this->belongsTo(Volume::class);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetadataFileDisk(): string
+    {
+        return config('volumes.pending_metadata_storage_disk');
     }
 }
