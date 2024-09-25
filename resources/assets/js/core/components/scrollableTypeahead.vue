@@ -78,7 +78,7 @@ export default {
             clearTimeout(this.timerTask);
 
             this.timerTask = setTimeout(() => {
-                if (v.length > 4) {
+                if (v.length > 3) {
                     this.$emit('fetch', v);
                 }
                 this.isTyping = false;
