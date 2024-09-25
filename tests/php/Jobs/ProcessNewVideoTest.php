@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Jobs\ProcessNewVideo;
-use Biigle\Tests\VideoTest;
-use Biigle\Video;
-use Exception;
-use FileCache;
-use Jcupitt\Vips\Extend;
-use Jcupitt\Vips\Image as VipsImage;
 use Storage;
 use TestCase;
+use Exception;
+use FileCache;
+use Biigle\Video;
+use Jcupitt\Vips\Extend;
+use Biigle\Tests\VideoTest;
+use Biigle\Jobs\ProcessNewVideo;
+use Jcupitt\Vips\Image as VipsImage;
 
 class ProcessNewVideoTest extends TestCase
 {
@@ -60,7 +60,7 @@ class ProcessNewVideoTest extends TestCase
         $job = new ProcessNewVideoStub($video);
         $job->handle();
 
-        $this->assertGreaterThan($maxThumbs, $video->duration/$thumbIntv);
+        $this->assertGreaterThan( $maxThumbs, $video->duration/$thumbIntv);
         $this->assertCount($maxThumbs, $job->ffmpegImages);
         $this->assertCount($maxThumbs, haystack: $job->thumbnails);
         $this->assertCount(1, haystack: $job->sprites);
@@ -307,4 +307,6 @@ class ProcessNewVideoStub extends ProcessNewVideo
             ->add("#FFFFFF")
             ->cast("uchar");
     }
+
+
 }
