@@ -302,7 +302,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
             if (count($thumbnails) === $thumbnailsPerSprite || $i === ($nbrFiles - 1)) {
                 $sprite = $this->createSingleSprite($thumbnails, $thumbnailsPerRow);
-                $this->save($disk, $sprite, false, $fragment, $spriteCounter, 75);
+                $this->save($disk, $thumbnail, false, $fragment, $spriteCounter, 75);
                 $thumbnails = [];
                 $spriteCounter += 1;
             }
