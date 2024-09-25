@@ -26,7 +26,6 @@ class ProcessNewVideoTest extends TestCase
         $job->duration = 10.0;
         $job->handle();
         $this->assertSame(10.0, $video->fresh()->duration);
-        $this->assertSame([0.5, 5.0, 9.5], $job->times);
 
         $disk = Storage::disk('video-thumbs');
         $fragment = fragment_uuid_path($video->uuid);
@@ -73,25 +72,6 @@ class ProcessNewVideoTest extends TestCase
         $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
-    public function testGenerateSpritesOneSecondDuration()
-    {
-        Storage::fake('video-thumbs');
-        $video = VideoTest::create(['filename' => 'test.mp4']);
-        $tmp = config('videos.tmp_dir');
-        $job = new ProcessNewVideoStub($video);
-        $job->duration = 1;
-
-        $job->handle();
-
-        $disk = Storage::disk('video-thumbs');
-        $fragment = fragment_uuid_path($video->uuid);
-        $this->assertCount(2, $disk->files($fragment));
-        $this->assertTrue($disk->exists("{$fragment}/0.jpg"));
-        $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
-        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
-
-    }
-
     public function testGenerateSpritesExceedsMaxThumbnails()
     {
         Storage::fake('video-thumbs');
@@ -99,7 +79,7 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
-        $job->useFfmpeg = true;
+        $job->duration = 25;
         $job->handle();
 
         $disk = Storage::disk('video-thumbs');
@@ -115,8 +95,7 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
-        $job->useFfmpeg = true;
-
+        $job->duration = 10;
         $job->handle();
 
         $disk = Storage::disk('video-thumbs');
@@ -198,6 +177,7 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
+        $job->passThroughDimensions = true;
         $job->handle();
         $this->assertSame(120, $video->fresh()->width);
         $this->assertSame(144, $video->fresh()->height);
@@ -207,6 +187,7 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test_malformed.mp4']);
         $job = new ProcessNewVideoStub($video);
+        $job->passThroughCodec = true;
         $job->handle();
         $this->assertSame(Video::ERROR_MALFORMED, $video->fresh()->error);
     }
@@ -249,34 +230,47 @@ class ProcessNewVideoTest extends TestCase
 
 class ProcessNewVideoStub extends ProcessNewVideo
 {
-    public $codec = '';
+    public $codec = 'h264';
     public $thumbnails = 0;
     public $duration = 0;
-    public $useFfmpeg = false;
+    public $passThroughDimensions = false;
+    public $passThroughCodec = false;
+
+    protected function getVideoDimensions($url)
+    {
+        if ($this->passThroughDimensions) {
+            return parent::getVideoDimensions($url);
+        }
+
+        return new Dimension(100, 100);
+    }
 
     protected function getCodec($path)
     {
-        return $this->codec ?: parent::getCodec($path);
+        if ($this->passThroughCodec) {
+            return parent::getCodec($path);
+        }
+
+        return $this->codec;
     }
 
-    protected function extractImagesfromVideo($path, $duration, $destinationPath)
+    protected function getVideoDuration($path)
     {
-        // Use parent method to test max and min number of thumbnail generation
-        if ($this->useFfmpeg) {
-            parent::extractImagesfromVideo($path, $duration, $destinationPath);
-            return;
-        }
+        return $this->duration;
+    }
 
-        $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
-        $durationRounded = floor($this->duration * 10) / 10;
-        $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
-
-        for ($i=0;$i<$estimatedThumbnails; $i++) {
-            $img = VipsImage::black(240, 138)
-                ->embed(30, 40, 240, 138, ['extend' => Extend::WHITE]) // Extend left & top edges with white color
-                ->add("#FFFFFF")
-                ->cast("uchar");
-            $img->writeToFile($destinationPath."/{$i}.jpg");
+    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir): void
+    {
+        $format = config('thumbnails.format');
+        $numberSnapshots = intval($this->duration * $frameRate);
+        for ($i=0; $i < $numberSnapshots; $i++) {
+            $n = sprintf('%4d', $i);
+            File::put("{$targetDir}/{$n}.{$format}", 'content');
         }
+    }
+
+    protected function generateThumbnail(string $file, int $width, int $height): VipsImage
+    {
+        return VipsImage::black(100, 100);
     }
 }

@@ -238,21 +238,21 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     protected function extractImagesfromVideo($path, $duration, $destinationPath)
     {
-        $format = config('thumbnails.format');
         $maxThumbnails = config('videos.sprites_max_thumbnails');
         $minThumbnails = config('videos.thumbnail_count');
         $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
         $durationRounded = floor($duration * 10) / 10;
+        if ($durationRounded <= 0) {
+            return;
+        }
+
         $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
         // Adjust the frame time based on the number of estimated thumbnails
         $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
             : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
         $frameRate = 1 / $thumbnailInterval;
 
-        // Leading zeros are important to prevent file sorting afterwards
-        Process::forever()
-            ->run("ffmpeg -i '{$path}' -vf fps={$frameRate} {$destinationPath}/%04d.{$format}")
-            ->throw();
+        $this->generateSnapshots($path, $frameRate, $destinationPath);
     }
 
     public function generateVideoThumbnails($disk, $fragment, $tmpDir)
@@ -278,7 +278,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
         $spriteCounter = 0;
         foreach ($files as $i => $file) {
             if ($i === intval($steps*$thumbCounter) && $thumbCounter < $thumbCount) {
-                $thumbnail = VipsImage::thumbnail($file, $width, ['height' => $height]);
+                $thumbnail = $this->generateThumbnail($file, $width, $height);
                 $bufferedThumb = $thumbnail->writeToBuffer(".{$format}", [
                     'Q' => 85,
                     'strip' => true,
@@ -288,7 +288,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             }
 
             if (count($thumbnails) < $thumbnailsPerSprite) {
-                $thumbnails[] = VipsImage::thumbnail($file, $width, ['height' => $height]);
+                $thumbnails[] = $this->generateThumbnail($file, $width, $height);
             }
 
             if (count($thumbnails) === $thumbnailsPerSprite || $i === ($nbrFiles - 1)) {
@@ -302,5 +302,27 @@ class ProcessNewVideo extends Job implements ShouldQueue
                 $spriteCounter += 1;
             }
         }
+    }
+
+    /**
+     * Run the actual command to extract snapshots from the video. Separated into its own
+     * method for easier testing.
+     */
+    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir): void
+    {
+        $format = config('thumbnails.format');
+        // Leading zeros are important to prevent file sorting afterwards
+        Process::forever()
+            ->run("ffmpeg -i '{$sourcePath}' -vf fps={$frameRate} {$targetDir}/%04d.{$format}")
+            ->throw();
+    }
+
+    /**
+     * Generate a thumbnail from a video snapshot. Separated into its own method for
+     * easier testing.
+     */
+    protected function generateThumbnail(string $file, int $width, int $height): VipsImage
+    {
+        return VipsImage::thumbnail($file, $width, ['height' => $height]);
     }
 }
