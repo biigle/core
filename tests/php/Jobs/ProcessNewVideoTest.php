@@ -8,7 +8,6 @@ use Biigle\Video;
 use Exception;
 use FileCache;
 use Illuminate\Support\Facades\File;
-use Jcupitt\Vips\Extend;
 use Jcupitt\Vips\Image as VipsImage;
 use Storage;
 use TestCase;
