@@ -37,7 +37,7 @@ export default {
     },
     methods: {
         fetchAvailableLabelTrees(treeName) {
-            if (this.oldTreeName != treeName) {
+            if (this.oldTreeName.trim() != treeName.trim()) {
                 this.fetchedAvailableLabelTrees = true;
                 this.startLoading();
                 ProjectsApi.queryAvailableLabelTrees({ id: this.project.id, name: treeName })

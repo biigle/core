@@ -64,6 +64,7 @@ export default {
             inputText: '',
             timerTask: null,
             isTyping: false,
+            oldInput: '',
         }
     },
     methods:{
@@ -78,10 +79,13 @@ export default {
             clearTimeout(this.timerTask);
 
             this.timerTask = setTimeout(() => {
-                if (v.length > 3) {
+                let added = v.trim().includes(this.oldInput.trim());
+                let useTypeaheadFilter = this.oldInput.length > 3 && added;
+                if (v.length > 3 && !useTypeaheadFilter) {
                     this.$emit('fetch', v);
                 }
                 this.isTyping = false;
+                this.oldInput = v
             }, 500);
         },
         disabled() {

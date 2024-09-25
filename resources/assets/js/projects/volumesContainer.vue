@@ -197,7 +197,7 @@ export default {
             }
         },
         fetchAttachableVolumes(volumeName) {
-            if (this.oldVolumeName != volumeName) {
+            if (this.oldVolumeName.trim() != volumeName.trim()) {
                 this.fetchedAttachableVolumes = true;
                 this.startLoading();
                 AttachableVolumesApi.get({ id: this.project.id, name: volumeName })
