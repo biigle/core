@@ -36,6 +36,25 @@ services:
     init: true
     command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
 
+  # gpu-worker:
+  #   image: biigle/gpu-worker
+  #   build:
+  #     context: ./.docker/
+  #     dockerfile: gpu-worker.dockerfile
+  #   user: ${USER_ID}:${GROUP_ID}
+  #   depends_on:
+  #     - app
+  #     - database_testing
+  #   tmpfs:
+  #     - /tmp
+  #   volumes_from:
+  #     - app
+  #   ipc: host # Required for Torch multiprocessing
+  #   environment:
+  #     - "DB_PORT=5432"
+  #   init: true
+  #   command: "php -d memory_limit=1G artisan queue:work --sleep=5 --tries=1 --timeout=0 --queue=gpu"
+
   websockets:
     image: quay.io/soketi/soketi:1.4-16-alpine
     environment:

@@ -83,6 +83,8 @@ class MetadataControllerTest extends ApiTestCase
         ])
             ->assertStatus(200);
 
+        $this->assertSame(ImageCsvParser::class, $this->volume()->fresh()->metadata_parser);
+
         Queue::assertPushed(UpdateVolumeMetadata::class, function ($job) {
             $this->assertEquals($this->volume()->id, $job->volume->id);
 
@@ -129,6 +131,8 @@ class MetadataControllerTest extends ApiTestCase
             'parser' => VideoCsvParser::class,
         ])
             ->assertSuccessful();
+
+        $this->assertSame(VideoCsvParser::class, $this->volume()->fresh()->metadata_parser);
 
         Queue::assertPushed(UpdateVolumeMetadata::class, function ($job) {
             $this->assertEquals($this->volume()->id, $job->volume->id);
