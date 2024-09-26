@@ -7,7 +7,7 @@ use Biigle\Tests\VideoTest;
 use Biigle\Video;
 use Exception;
 use FileCache;
-use Jcupitt\Vips\Extend;
+use Illuminate\Support\Facades\File;
 use Jcupitt\Vips\Image as VipsImage;
 use Storage;
 use TestCase;
@@ -16,73 +16,98 @@ class ProcessNewVideoTest extends TestCase
 {
     public function testHandleThumbnails()
     {
+        Storage::fake('video-thumbs');
         config(['videos.thumbnail_count' => 3]);
-        $thumbCount = config('videos.thumbnail_count');
-        $video = Video::factory()->create(['duration' => 10.0]);
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
-        $job->handle();
 
-        $this->assertCount(4, $job->ffmpegImages);
-        $this->assertCount($thumbCount, $job->thumbnails);
-        $this->assertCount(1, $job->sprites);
+        $job->duration = 10.0;
+        $job->handle();
+        $this->assertSame(10.0, $video->fresh()->duration);
+
+        $disk = Storage::disk('video-thumbs');
+        $fragment = fragment_uuid_path($video->uuid);
+        $this->assertCount(4, $disk->files($fragment));
+        $this->assertTrue($disk->exists("{$fragment}/0.jpg"));
+        $this->assertTrue($disk->exists("{$fragment}/1.jpg"));
+        $this->assertTrue($disk->exists("{$fragment}/2.jpg"));
+        $this->assertFalse($disk->exists("{$fragment}/3.jpg"));
+        $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testGenerateSprites()
     {
-        $video = Video::factory()->create(['duration' => 180.0]);
-        $thumbCount = config('videos.thumbnail_count');
+        Storage::fake('video-thumbs');
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
+        $job->duration = 180;
         $job->handle();
 
-        $this->assertCount(72, $job->ffmpegImages);
-        $this->assertCount($thumbCount, haystack: $job->thumbnails);
-        $this->assertCount(3, haystack: $job->sprites);
+        $disk = Storage::disk('video-thumbs');
+        $fragment = fragment_uuid_path($video->uuid);
+        $this->assertCount(13, $disk->files($fragment));
+        $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
+        $this->assertTrue($disk->exists("{$fragment}/sprite_1.webp"));
+        $this->assertTrue($disk->exists("{$fragment}/sprite_2.webp"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
-    public function testGenerateSpritesOneSecondDuration()
+    public function testGenerateSpritesZeroDuration()
     {
-        $video = Video::factory()->create(['duration' => 1.0]);
+        Storage::fake('video-thumbs');
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
+        $job->duration = 0;
         $job->handle();
 
-        $this->assertCount(1, $job->ffmpegImages);
-        $this->assertCount(1, haystack: $job->thumbnails);
-        $this->assertCount(1, haystack: $job->sprites);
-
+        $disk = Storage::disk('video-thumbs');
+        $fragment = fragment_uuid_path($video->uuid);
+        $this->assertCount(0, $disk->files($fragment));
+        $this->assertFalse($disk->exists("{$fragment}/sprite_0.webp"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testGenerateSpritesExceedsMaxThumbnails()
     {
-        $maxThumbs = 5;
-        config(['videos.sprites_max_thumbnails' => $maxThumbs]);
-        $thumbIntv = config('videos.sprites_thumbnail_interval');
-        $video = Video::factory()->create(['duration' => 15.0]);
+        Storage::fake('video-thumbs');
+        config(['videos.sprites_max_thumbnails' => 5]);
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
+        $job->duration = 25;
         $job->handle();
 
-        $this->assertGreaterThan($maxThumbs, $video->duration/$thumbIntv);
-        $this->assertCount($maxThumbs, $job->ffmpegImages);
-        $this->assertCount($maxThumbs, haystack: $job->thumbnails);
-        $this->assertCount(1, haystack: $job->sprites);
+        $disk = Storage::disk('video-thumbs');
+        $fragment = fragment_uuid_path($video->uuid);
+        $this->assertCount(6, $disk->files($fragment));
+        $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
-    public function testTmpDirectoryDeletion()
+    public function testGenerateSpritesFallsBelowMinThumbnails()
     {
-        $tmp = config('videos.tmp_dir');
+        Storage::fake('video-thumbs');
         $video = VideoTest::create(['filename' => 'test.mp4']);
-        $fragment = fragment_uuid_path($video->uuid);
+        $tmp = config('videos.tmp_dir');
         $job = new ProcessNewVideoStub($video);
-        $job->testDirRemoval = true;
+        $job->duration = 10;
         $job->handle();
 
-        $this->assertDirectoryDoesNotExist("{$tmp}/{$fragment}");
+        $disk = Storage::disk('video-thumbs');
+        $fragment = fragment_uuid_path($video->uuid);
+        $this->assertCount(11, $disk->files($fragment));
+        $this->assertTrue($disk->exists("{$fragment}/sprite_0.webp"));
+        $this->assertFalse(File::exists("{$tmp}/{$fragment}"));
     }
 
     public function testHandleNotFound()
     {
         $video = VideoTest::create(['filename' => 'abc.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
 
         try {
             $job->handle();
@@ -96,7 +121,6 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
         FileCache::shouldReceive('getOnce')
             ->andThrow(new Exception('The file is too large with more than 0 bytes.'));
 
@@ -112,7 +136,6 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
         $job->handle();
         $this->assertSame('video/mp4', $video->fresh()->mimeType);
     }
@@ -121,7 +144,6 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test-image.jpg']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
         $job->handle();
         $this->assertSame('image/jpeg', $video->fresh()->mimeType);
         $this->assertSame(Video::ERROR_MIME_TYPE, $video->fresh()->error);
@@ -131,7 +153,6 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
         FileCache::shouldReceive('getOnce')
             ->andThrow(new Exception("Error while caching file 'test.mp4': MIME type 'video/x-m4v' not allowed."));
 
@@ -147,7 +168,6 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
         $job->handle();
         $this->assertSame(104500, $video->fresh()->size);
     }
@@ -156,7 +176,7 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
+        $job->passThroughDimensions = true;
         $job->handle();
         $this->assertSame(120, $video->fresh()->width);
         $this->assertSame(144, $video->fresh()->height);
@@ -166,7 +186,7 @@ class ProcessNewVideoTest extends TestCase
     {
         $video = VideoTest::create(['filename' => 'test_malformed.mp4']);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
+        $job->passThroughCodec = true;
         $job->handle();
         $this->assertSame(Video::ERROR_MALFORMED, $video->fresh()->error);
     }
@@ -176,7 +196,6 @@ class ProcessNewVideoTest extends TestCase
         $video = VideoTest::create(['filename' => 'test.mp4']);
         $job = new ProcessNewVideoStub($video);
         $job->codec = 'h265';
-        $job->testHandler = true;
         $job->handle();
         $this->assertSame(Video::ERROR_CODEC, $video->fresh()->error);
     }
@@ -188,7 +207,6 @@ class ProcessNewVideoTest extends TestCase
             'attrs' => ['error' => Video::ERROR_MALFORMED],
         ]);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
         try {
             $job->handle();
             $this->fail('Expected an exception.');
@@ -204,7 +222,6 @@ class ProcessNewVideoTest extends TestCase
             'attrs' => ['error' => Video::ERROR_NOT_FOUND],
         ]);
         $job = new ProcessNewVideoStub($video);
-        $job->testHandler = true;
         $job->handle();
         $this->assertNull($video->fresh()->error);
     }
@@ -212,99 +229,47 @@ class ProcessNewVideoTest extends TestCase
 
 class ProcessNewVideoStub extends ProcessNewVideo
 {
-    public $codec = '';
-    public $ffmpegImages = [];
+    public $codec = 'h264';
+    public $thumbnails = 0;
+    public $duration = 0;
+    public $passThroughDimensions = false;
+    public $passThroughCodec = false;
 
-    public $thumbnails = [];
+    protected function getVideoDimensions($url)
+    {
+        if ($this->passThroughDimensions) {
+            return parent::getVideoDimensions($url);
+        }
 
-    public $sprites = [];
-
-    public $testHandler = false;
-
-    public $testDirRemoval = false;
+        return new Dimension(100, 100);
+    }
 
     protected function getCodec($path)
     {
-        return $this->codec ?: parent::getCodec($path);
-    }
-
-    public function handle()
-    {
-        if ($this->testHandler || $this->testDirRemoval) {
-            parent::handle();
-            return;
+        if ($this->passThroughCodec) {
+            return parent::getCodec($path);
         }
-        $this->handleFile($this->video, "test");
+
+        return $this->codec;
     }
 
-    public function handleFile($file, $path)
+    protected function getVideoDuration($path)
     {
-        if ($this->testHandler || $this->testDirRemoval) {
-            parent::handleFile($file, $path);
-            return;
-        }
-        $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
-        $fragment = fragment_uuid_path($this->video->uuid);
-
-        $tmp = config('videos.tmp_dir');
-        $tmpDir = "{$tmp}/{$fragment}";
-
-        $this->createThumbnails($path, $disk, $fragment, $tmpDir);
-
+        return $this->duration;
     }
 
-    protected function createThumbnails($path, $disk, $fragment, $tmpDir)
-    {
-        if ($this->testDirRemoval) {
-            return;
-        }
-        parent::createThumbnails($path, $disk, $fragment, $tmpDir);
-    }
-
-    protected function getFiles($tmpDir)
-    {
-        return array_fill(0, count($this->ffmpegImages), 'file');
-    }
-
-    protected function runFFMPEG($path, $frameRate, $destinationPath, $format)
+    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir): void
     {
         $format = config('thumbnails.format');
-        $info = $this->getThumbnailInfos($this->video->duration);
-        $estimatedThumbnails = $info['estimatedThumbnails'];
-        // $estimatedThumbnails < 1 would make FFMPEG generate exactly one image
-        if ($estimatedThumbnails < 1) {
-            $estimatedThumbnails = 1;
-        }
-        if ($estimatedThumbnails > config('videos.sprites_max_thumbnails')) {
-            $estimatedThumbnails = $this->video->duration * $info['frameRate'];
-        }
-        $this->ffmpegImages = array_fill(0, $estimatedThumbnails, $this->createBlackImage());
-    }
-
-    protected function save($disk, $img, $isThumb, $fragment, $counter, $q)
-    {
-        if ($isThumb) {
-            $this->thumbnails[] = $img;
-        } else {
-            $this->sprites[] = $img;
+        $numberSnapshots = intval($this->duration * $frameRate);
+        for ($i=0; $i < $numberSnapshots; $i++) {
+            $n = sprintf('%4d', $i);
+            File::put("{$targetDir}/{$n}.{$format}", 'content');
         }
     }
 
-    protected function createSingleSprite($thumbnails, $thumbnailsPerRow)
+    protected function generateThumbnail(string $file, int $width, int $height): VipsImage
     {
-        return $this->createBlackImage();
-    }
-
-    protected function createSingleThumbnail($file, $width, $height)
-    {
-        return $this->createBlackImage();
-    }
-
-    protected function createBlackImage()
-    {
-        return VipsImage::black(240, 138)
-            ->embed(30, 40, 240, 138, ['extend' => Extend::WHITE]) // Extend left & top edges with white color
-            ->add("#FFFFFF")
-            ->cast("uchar");
+        return VipsImage::black(100, 100);
     }
 }
