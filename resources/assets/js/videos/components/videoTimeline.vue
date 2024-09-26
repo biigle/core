@@ -6,7 +6,6 @@
         <div class="static-strip">
             <current-time
                 :current-time="currentTime"
-                :hover-time="hoverTime"
                 :seeking="seeking"
                 ></current-time>
             <track-headers ref="trackheaders"
