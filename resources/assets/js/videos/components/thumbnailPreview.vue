@@ -291,6 +291,14 @@ export default {
             }
             this.viewHoverTimeBar();
         },
+        showThumbnails() {
+            if (this.showThumbnails) {
+                // Ensures to display the canvas correctly after using the thumbnails button
+                this.$nextTick(() => {
+                    this.thumbnailCanvas = this.$refs.thumbnailCanvas
+                });
+            }
+        },
     },
     created() {
         this.setSpritesFolderpath();

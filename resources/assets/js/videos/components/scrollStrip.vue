@@ -168,7 +168,7 @@ export default {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
         },
         finishedInitalizingData() {
-            return !this.hasError && this.hoverTime !== 0;
+            return !this.hasError && this.duration > 0;
         },
     },
     methods: {
