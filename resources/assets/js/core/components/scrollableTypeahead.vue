@@ -81,7 +81,7 @@ export default {
             this.timerTask = setTimeout(() => {
                 let added = v.trim().includes(this.oldInput.trim());
                 let useTypeaheadFilter = this.oldInput.length > 3 && added;
-                if (v.length > 3 && !useTypeaheadFilter) {
+                if (v.length >= 3 && !useTypeaheadFilter) {
                     this.$emit('fetch', v);
                 }
                 this.isTyping = false;
