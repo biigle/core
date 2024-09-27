@@ -57,7 +57,7 @@ class ProjectsAttachableVolumesController extends Controller
                             ->where('project_id', '!=', $id);
                     });
             })
-            ->whereRaw("UPPER(name) LIKE UPPER(?)", ["%{$name}%"])
+            ->where('name', 'ilike', "%{$name}%")
             // Do not return volumes that are already attached to this project.
             // This is needed although we are already excluding the project in the
             // previous statement because other projects may already share volumes with

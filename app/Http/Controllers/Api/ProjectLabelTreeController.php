@@ -96,12 +96,12 @@ class ProjectLabelTreeController extends Controller
 
         $public = LabelTree::publicTrees()
             ->select('id', 'name', 'description', 'version_id')
-            ->whereRaw('UPPER(name) LIKE UPPER(?)', ["%{$name}%"])
+            ->where('name', 'ilike', "%{$name}%")
             ->with('version')
             ->get();
         $authorized = $project->authorizedLabelTrees()
             ->select('id', 'name', 'description', 'version_id')
-            ->whereRaw('UPPER(name) LIKE UPPER(?)', ["%{$name}%"])
+            ->where('name', 'ilike', "%{$name}%")
             ->with('version')
             ->get();
 
