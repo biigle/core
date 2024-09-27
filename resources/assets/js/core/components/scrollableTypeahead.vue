@@ -30,6 +30,7 @@
                     :props="props"
                     :item="item"
                     :item-key="moreInfo"
+                    :scrollable="true"
                     :active="props.activeIndex === index"
                     class="typeahead-item-box"
                     :class="{activeItem: props.activeIndex === index}"
@@ -44,19 +45,18 @@
 <script>
 
 import uivTypeahead from 'uiv/dist/Typeahead';
-import ScrollableTypeaheadItem from './scrollableTypeaheadItem.vue';
 import Typeahead from './typeahead.vue';
+import TypeaheadItem from './typeaheadItem';
 
 export default {
     components: {
         uivTypeahead: uivTypeahead,
-        scrollableTypeaheadItem: ScrollableTypeaheadItem,
     },
     mixins: [Typeahead],
     props: {
         itemComponent: {
             type: Object,
-            default: () => ScrollableTypeaheadItem,
+            default: () => TypeaheadItem,
         }
     },
     data() {

@@ -1,6 +1,6 @@
 <template>
 <li>
-    <a href="#" @click.prevent="props.select(item)">
+    <a href="#" @click.prevent="props.select(item)" :class="{'scrollable-item': scrollable, activeItemText: active}">
         <span v-html="props.highlight(item)"></span>
         <span v-if="info">
             <br><small class="typeahead-item-info" v-text="info" :title="info"></small>
@@ -24,6 +24,14 @@ export default {
             type: String,
             default: '',
         },
+        scrollable: {
+            type: Boolean,
+            default: false,
+        },
+        active: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         info() {
@@ -38,5 +46,11 @@ export default {
             }, this.item);
         }
     },
+    watch: {
+        scrollable(){
+            console.log(this.scrollable);
+            
+        }
+    }
 };
 </script>
