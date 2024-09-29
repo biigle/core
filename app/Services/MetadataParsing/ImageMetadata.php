@@ -11,7 +11,8 @@ class ImageMetadata extends FileMetadata
      */
     public function isEmpty(): bool
     {
-        return is_null($this->lat)
+        return !$this->hasAnnotations()
+            && is_null($this->lat)
             && is_null($this->lng)
             && is_null($this->takenAt)
             && is_null($this->area)
