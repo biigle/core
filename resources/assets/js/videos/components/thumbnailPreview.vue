@@ -280,6 +280,10 @@ export default {
     },
     watch: {
         hoverTime() {
+            if (this.hoverTime === 0) {
+                return;
+            }
+
             if (this.showThumbnails) {
                 let spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
                 if (this.spriteIdx != spriteIdx) {
@@ -293,9 +297,10 @@ export default {
         },
         showThumbnails() {
             if (this.showThumbnails) {
-                // Ensures to display the canvas correctly after using the thumbnails button
+                // Ensures to display the canvas correctly after using recreating it
                 this.$nextTick(() => {
-                    this.thumbnailCanvas = this.$refs.thumbnailCanvas
+                    this.thumbnailCanvas = this.$refs.thumbnailCanvas;
+                    this.initDimensions();
                 });
             }
         },
