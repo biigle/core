@@ -126,7 +126,7 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
 
             // Insert in chunks because a single file can have tens of thousands of
             // annotations (e.g. a video or mosaic).
-            if (($index % static::$insertChunkSize) === 0) {
+            if ($index > 0 && ($index % static::$insertChunkSize) === 0) {
                 $this->insertAnnotationChunk($file, $insertAnnotations, $insertAnnotationLabels);
                 $insertAnnotations = [];
                 $insertAnnotationLabels = [];
