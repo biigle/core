@@ -532,4 +532,60 @@ class ImportVolumeMetadataTest extends TestCase
 
         $this->assertEquals(2, $image->annotations()->count());
     }
+
+    /*
+     * This tests if the annotations and their labels match after the import. The check is
+     * important because annotations and labels are inserted in two different DB
+     * statements and the ordering is important. The ordering was mixed up at some point
+     * so the annotations did not get the correct labels.
+     */
+    public function testHandleMultipleOrdering()
+    {
+        $image = Image::factory()->create();
+        $dbUser = DbUser::factory()->create();
+        $dbLabel = DbLabel::factory()->create();
+        $dbLabel2 = DbLabel::factory()->create();
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata($image->filename);
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        $label2 = new Label(321, 'my other label');
+        $lau2 = new LabelAndUser($label2, $user);
+        $annotation2 = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau2],
+        );
+        $file->addAnnotation($annotation2);
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'media_type_id' => MediaType::imageId(),
+            'metadata_file_path' => 'mymeta.csv',
+            'import_file_labels' => true,
+            'import_annotations' => true,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [123 => $dbLabel->id, 321 => $dbLabel2->id],
+            'volume_id' => $image->volume_id,
+        ]);
+
+        (new ImportVolumeMetadata($pv))->handle();
+
+        $annotations = $image->annotations()->orderBy('id', 'asc')->get();
+
+        $this->assertSame($dbLabel->id, $annotations[0]->labels[0]->label_id);
+        $this->assertSame($dbLabel2->id, $annotations[1]->labels[0]->label_id);
+    }
 }

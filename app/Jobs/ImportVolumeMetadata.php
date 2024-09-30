@@ -150,6 +150,7 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
             ->take(count($annotations))
             ->pluck('id')
             ->reverse()
+            ->values()
             ->toArray();
 
         foreach ($ids as $index => $id) {
