@@ -2,7 +2,8 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-class FileMetadata
+// Abstract becaus it should not be used directly.
+abstract class FileMetadata
 {
     /**
      * @var array<Annotation>
