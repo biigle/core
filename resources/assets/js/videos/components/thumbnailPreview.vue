@@ -64,7 +64,8 @@ export default {
             estimatedThumbnails: 0,
             fontSize: 14.5,
             hovertimeCanvas: null,
-            hoverTimeBarHeight: 20,
+            hoverTimeBarHeightDefault: 20,
+            hoverTimeBarWidthDefault: 120,
             hoverTimeBarWidth: 120,
             preloadedSprites: {},
             lastSpriteIdx: 0,
@@ -73,7 +74,7 @@ export default {
     },
     computed: {
         thumbnailStyle() {
-            let width = this.spriteNotFound ? this.hoverTimeBarWidth : this.canvasWidth;
+            let width = this.spriteNotFound || !this.showThumbnails ? this.hoverTimeBarWidth : this.canvasWidth;
             let left = Math.min(
                 this.clientMouseX - width / 2,
                 window.innerWidth - width - this.sideButtonsWidth
@@ -238,14 +239,18 @@ export default {
             let fileUuid = fileUuids[this.videoId];
             this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(fileUuid) + '/').replace('.jpg', '');
         },
-        viewHoverTimeBar() {
+        viewHoverTimeBar() {            
+            // Update hover time canvas width if thumbnail canvas width is larger
+            this.hoverTimeBarWidth = this.showThumbnails && this.canvasWidth > this.hoverTimeBarWidthDefault ? this.canvasWidth : this.hoverTimeBarWidthDefault;
+            this.hovertimeCanvas.width = this.hoverTimeBarWidth;
+
             // draw the hover time bar
             let ctx = this.hovertimeCanvas.getContext('2d');
-            ctx.clearRect(0, 0, this.hoverTimeBarWidth, this.hoverTimeBarHeight);
+            ctx.clearRect(0, 0, this.hoverTimeBarWidthDefault, this.hoverTimeBarHeightDefault);
             ctx.font = this.hoverTimeStyle['font'];
             ctx.fillStyle = this.hoverTimeStyle['color']
             ctx.textAlign = 'center';
-            let ytext = this.hoverTimeBarHeight - (this.hoverTimeBarHeight - this.fontSizeInPx) / 2
+            let ytext = this.hoverTimeBarHeightDefault - (this.hoverTimeBarHeightDefault - this.fontSizeInPx) / 2
             ctx.fillText(this.hoverTimeText, this.hoverTimeBarWidth / 2, ytext);
         },
         initDimensions() {
@@ -257,19 +262,15 @@ export default {
             this.canvasHeight = Math.ceil(this.thumbnailHeight / 2);
 
             // If thumbnail is too narrow, enlarge it to 120px so that the hover time fits
-            if (this.canvasWidth < this.hoverTimeBarWidth) {
+            if (this.canvasWidth < this.hoverTimeBarWidthDefault) {
                 let ratio = this.canvasHeight / this.canvasWidth;
-                this.canvasWidth = this.hoverTimeBarWidth
+                this.canvasWidth = this.hoverTimeBarWidthDefault
                 this.canvasHeight = this.canvasWidth * ratio;
             }
 
+            this.hovertimeCanvas.height = this.hoverTimeBarHeightDefault;
             this.thumbnailCanvas.width = this.canvasWidth;
             this.thumbnailCanvas.height = this.canvasHeight;
-
-            // Update hover time canvas width if thumbnail canvas width is larger
-            this.hoverTimeBarWidth = this.canvasWidth > this.hoverTimeBarWidth ? this.canvasWidth : this.hoverTimeBarWidth;
-            this.hovertimeCanvas.width = this.hoverTimeBarWidth;
-            this.hovertimeCanvas.height = this.hoverTimeBarHeight;
         },
         finishedLoading(sprite) {
             if (!sprite) {
@@ -329,8 +330,8 @@ export default {
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
         this.hovertimeCanvas = this.$refs.hovertimeCanvas;
-        this.hovertimeCanvas.width = this.hoverTimeBarWidth;
-        this.hovertimeCanvas.height = this.hoverTimeBarHeight;
+        this.hovertimeCanvas.width = this.hoverTimeBarWidthDefault;
+        this.hovertimeCanvas.height = this.hoverTimeBarHeightDefault;
 
         this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
 
