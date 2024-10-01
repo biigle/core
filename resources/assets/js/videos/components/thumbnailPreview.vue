@@ -315,8 +315,10 @@ export default {
         this.sprite.onload = () => {
             this.spriteNotFound = false;
             this.preloadedSprites[this.sprite.src] = this.sprite;
-            this.initDimensions();
-            this.viewThumbnailPreview();
+            if (this.showThumbnails) {
+                this.initDimensions();
+                this.viewThumbnailPreview();
+            }
             this.viewHoverTimeBar();
         }
         this.sprite.onerror = () => {
@@ -329,17 +331,14 @@ export default {
     },
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
+        this.thumbnailCanvas = this.showThumbnails ? this.$refs.thumbnailCanvas : null;
         this.hovertimeCanvas = this.$refs.hovertimeCanvas;
         this.hovertimeCanvas.width = this.hoverTimeBarWidthDefault;
         this.hovertimeCanvas.height = this.hoverTimeBarHeightDefault;
 
         this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
 
-        if (this.showThumbnails) {
-            this.thumbnailCanvas = this.$refs.thumbnailCanvas;
-            this.updateSprite();
-        }
-
+        this.updateSprite();
         this.viewHoverTimeBar();
     }
 };
