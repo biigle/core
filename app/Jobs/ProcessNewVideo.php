@@ -6,14 +6,14 @@ use App;
 use Biigle\Video;
 use Exception;
 use FFMpeg\Coordinate\Dimension;
-use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
-use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Jcupitt\Vips\Image as VipsImage;
@@ -148,24 +148,32 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
         $this->video->save();
 
-        $times = $this->getThumbnailTimes($this->video->duration);
         $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
         $fragment = fragment_uuid_path($this->video->uuid);
-        $format = config('thumbnails.format');
-        $width = config('thumbnails.width');
-        $height = config('thumbnails.height');
-
         try {
-            foreach ($times as $index => $time) {
-                $buffer = $this->generateVideoThumbnail($path, $time, $width, $height, $format);
-                $disk->put("{$fragment}/{$index}.{$format}", $buffer);
+            $tmp = config('videos.tmp_dir');
+            $tmpDir = "{$tmp}/{$fragment}";
+
+            // Directory for extracted images
+            if (!File::exists($tmpDir)) {
+                File::makeDirectory($tmpDir, 0755, true);
             }
+
+            // Extract images from video
+            $this->extractImagesfromVideo($path, $this->video->duration, $tmpDir);
+
+            // Generate thumbnails
+            $this->generateVideoThumbnails($disk, $fragment, $tmpDir);
         } catch (Exception $e) {
             // The video seems to be fine if it passed the previous checks. There may be
             // errors in the actual video data but we can ignore that and skip generating
             // thumbnails. The browser can deal with the video and see if it can be
             // displayed.
             Log::warning("Could not generate thumbnails for new video {$this->video->id}: {$e->getMessage()}");
+        } finally {
+            if (isset($tmpDir) && File::exists($tmpDir)) {
+                File::deleteDirectory($tmpDir);
+            }
         }
     }
 
@@ -220,60 +228,101 @@ class ProcessNewVideo extends Job implements ShouldQueue
     }
 
     /**
-     * Generate a thumbnail from the video at the specified time.
+     * Extract images from video.
      *
      * @param string $path Path to the video file.
-     * @param float $time Time for the thumbnail in seconds.
-     * @param int $width Width of the thumbnail.
-     * @param int $height Height of the thumbnail.
-     * @param string $format File format of the thumbnail (e.g. 'jpg').
+     * @param float $duration Duration of video in seconds.
+     * @param $destinationPath Path to where images will be saved.
+     * @throws Exception if images cannot be extracted from video.
      *
-     * @return string Vips image buffer string.
      */
-    protected function generateVideoThumbnail($path, $time, $width, $height, $format)
+    protected function extractImagesfromVideo($path, $duration, $destinationPath)
     {
-        // Cache the video instance.
-        if (!isset($this->ffmpegVideo)) {
-            $this->ffmpegVideo = FFMpeg::create()->open($path);
+        $maxThumbnails = config('videos.sprites_max_thumbnails');
+        $minThumbnails = config('videos.thumbnail_count');
+        $defaultThumbnailInterval = config('videos.sprites_thumbnail_interval');
+        $durationRounded = floor($duration * 10) / 10;
+        if ($durationRounded <= 0) {
+            return;
         }
 
-        $buffer = (string) $this->ffmpegVideo->frame(TimeCode::fromSeconds($time))
-            ->save('', false, true);
+        $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
+        // Adjust the frame time based on the number of estimated thumbnails
+        $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
+            : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
+        $frameRate = 1 / $thumbnailInterval;
 
-        return VipsImage::thumbnail_buffer($buffer, $width, ['height' => $height])
-            ->writeToBuffer(".{$format}", [
-                'Q' => 85,
-                'strip' => true,
-            ]);
+        $this->generateSnapshots($path, $frameRate, $destinationPath);
+    }
+
+    public function generateVideoThumbnails($disk, $fragment, $tmpDir)
+    {
+
+        // Config for normal thumbs
+        $format = config('thumbnails.format');
+        $thumbCount = config('videos.thumbnail_count');
+        $width = config('thumbnails.width');
+        $height = config('thumbnails.height');
+
+        // Config for sprite thumbs
+        $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
+        $thumbnailsPerRow = sqrt($thumbnailsPerSprite);
+        $spriteFormat = config('videos.sprites_format');
+
+        $files = File::glob($tmpDir . "/*.{$format}");
+        $nbrFiles = count($files);
+        $steps = $nbrFiles >= $thumbCount ? floor($nbrFiles / $thumbCount) : 1;
+
+        $thumbnails = [];
+        $thumbCounter = 0;
+        $spriteCounter = 0;
+        foreach ($files as $i => $file) {
+            if ($i === intval($steps*$thumbCounter) && $thumbCounter < $thumbCount) {
+                $thumbnail = $this->generateThumbnail($file, $width, $height);
+                $bufferedThumb = $thumbnail->writeToBuffer(".{$format}", [
+                    'Q' => 85,
+                    'strip' => true,
+                ]);
+                $disk->put("{$fragment}/{$thumbCounter}.{$format}", $bufferedThumb);
+                $thumbCounter += 1;
+            }
+
+            if (count($thumbnails) < $thumbnailsPerSprite) {
+                $thumbnails[] = $this->generateThumbnail($file, $width, $height);
+            }
+
+            if (count($thumbnails) === $thumbnailsPerSprite || $i === ($nbrFiles - 1)) {
+                $sprite = VipsImage::arrayjoin($thumbnails, ['across' => $thumbnailsPerRow]);
+                $bufferedSprite = $sprite->writeToBuffer(".{$format}", [
+                    'Q' => 75,
+                    'strip' => true,
+                ]);
+                $disk->put("{$fragment}/sprite_{$spriteCounter}.{$spriteFormat}", $bufferedSprite);
+                $thumbnails = [];
+                $spriteCounter += 1;
+            }
+        }
     }
 
     /**
-     * Get the times at which thumbnails should be sampled.
-     *
-     * @param float $duration Video duration.
-     *
-     * @return array
+     * Run the actual command to extract snapshots from the video. Separated into its own
+     * method for easier testing.
      */
-    protected function getThumbnailTimes($duration)
+    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir): void
     {
-        $count = config('videos.thumbnail_count');
+        $format = config('thumbnails.format');
+        // Leading zeros are important to prevent file sorting afterwards
+        Process::forever()
+            ->run("ffmpeg -i '{$sourcePath}' -vf fps={$frameRate} {$targetDir}/%04d.{$format}")
+            ->throw();
+    }
 
-        if ($count <= 1) {
-            return [$duration / 2];
-        }
-
-        // Start from 0.5 and stop at $duration - 0.5 because FFMpeg sometimes does not
-        // extract frames from a time code that is equal to 0 or $duration.
-        $step = ($duration - 1) / floatval($count - 1);
-        $start = 0.5;
-        $end = $duration - 0.5;
-        $range = range($start, $end, $step);
-
-        // Sometimes there is one entry too few due to rounding errors.
-        if (count($range) < $count) {
-            $range[] = $end;
-        }
-
-        return $range;
+    /**
+     * Generate a thumbnail from a video snapshot. Separated into its own method for
+     * easier testing.
+     */
+    protected function generateThumbnail(string $file, int $width, int $height): VipsImage
+    {
+        return VipsImage::thumbnail($file, $width, ['height' => $height]);
     }
 }

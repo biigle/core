@@ -12,8 +12,8 @@ return [
     | you are doing, since the views must work with these images. The images are always
     | scaled proportionally, so this values are kind of a max-width and max-height.
     */
-    'width' => 180,
-    'height' => 135,
+    'width' => 360,
+    'height' => 270,
 
     /*
      | Thumbnail file format. Depending on your thumbnail service, different formats are

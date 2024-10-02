@@ -7,6 +7,7 @@ let defaults = {
     showLabelTooltip: false,
     showMousePosition: false,
     showProgressIndicator: true,
+    showThumbnailPreview: true,
     enableJumpByFrame: false,
     jumpStep: 5.0,
     muteVideo: true,
