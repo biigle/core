@@ -57,15 +57,16 @@ export default {
             }
         },
         convertMeasurement() {
-            if (!this.hasSelectedLabel) {
-                this.requireSelectedLabel(false);
-            } else if (this.cantConvertMeasureFeature) {
-                this.requireClosedLine();
-            } else {
-                this.annotationSource.addFeature(this.measureFeature);
-                this.handleNewFeature({feature: this.measureFeature});
-                this.clearMeasureFeature();
-            }
+            if (this.isMeasuring) {
+                if (!this.hasSelectedLabel) {
+                    this.requireSelectedLabel(false);
+                } else if (this.cantConvertMeasureFeature) {
+                    this.requireClosedLine();
+                } else {
+                    this.annotationSource.addFeature(this.measureFeature);
+                    this.handleNewFeature({feature: this.measureFeature});
+                    this.clearMeasureFeature();
+                }}
         },
         clearMeasureFeature() {
             this.setMeasureFeature(undefined);
