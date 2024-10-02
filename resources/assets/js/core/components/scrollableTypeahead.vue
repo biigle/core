@@ -10,18 +10,20 @@
             @focus="emitFocus"
             @blur="emitBlur"
             @keyup.enter="emitInternalValue"
+            @keydown.up="handleArrowKeyScroll"
+            @keydown.down="handleArrowKeyScroll"
             >
         <uivTypeahead
             v-model="internalValue"
             :target="inputElement"
             :data="items"
             :force-select="true"
-            :limit="50"
+            :limit="maxItemCount"
             item-key="name"
             v-show="!isTyping"
             >
             <template slot="item" slot-scope="props">
-                <div class="typeahead-scrollable">
+                <div ref="typeahead" class="typeahead-scrollable">
                 <component
                     :is="itemComponent"
                     @click.native="emitInternalValue"
@@ -65,6 +67,9 @@ export default {
             timerTask: null,
             isTyping: false,
             oldInput: '',
+            selectedItemIndex: 1,
+            scrolledHeight: 0,
+            maxItemCount: 50
         }
     },
     methods:{
@@ -72,6 +77,45 @@ export default {
             this.internalValue = undefined;
             this.inputText = '';
         },
+        handleArrowKeyScroll(e) {
+            if (this.items.length > 0) {
+                const typeahead = this.$refs.typeahead;
+                const scrollAmount = typeahead.scrollHeight / this.maxItemCount;
+                const boxHeight = scrollAmount * 4;
+
+                if (this.selectedItemIndex === 1) {
+                    typeahead.scrollTop = 0;
+                    this.scrolledHeight = boxHeight
+
+                }
+
+                if (e.key === 'ArrowUp' && this.selectedItemIndex > 1) {
+                    this.selectedItemIndex -= 1;
+                    let upperBoxBorder = (this.scrolledHeight - boxHeight);
+                    if (scrollAmount * this.selectedItemIndex === upperBoxBorder) {
+                        typeahead.scrollTop -= boxHeight;
+                        this.scrolledHeight -= boxHeight;
+                    }
+                    // If selected item is not displayed any more, set scrollbar to height of selected item
+                    if (typeahead.scrollTop != upperBoxBorder) {
+                        typeahead.scrollTop = this.scrolledHeight - boxHeight;
+                    }
+                }
+
+                if (e.key === 'ArrowDown' && this.selectedItemIndex < this.maxItemCount) {
+                    if (scrollAmount * this.selectedItemIndex === this.scrolledHeight) {
+                        typeahead.scrollTop += boxHeight;
+                        this.scrolledHeight += boxHeight;
+                    }
+
+                    // If selected item is not displayed any more, set scrollbar to height of selected item
+                    if (typeahead.scrollTop != this.scrolledHeight) {
+                        typeahead.scrollTop = this.scrolledHeight - boxHeight;
+                    }
+                    this.selectedItemIndex += 1;
+                }
+            }
+        }
     },
     watch: {
         inputText(v) {
@@ -94,7 +138,7 @@ export default {
                 this.$nextTick(() => this.$refs.input.focus())
             }
         }
-    }
+    },
 }
 
 
