@@ -58,6 +58,7 @@
       v-on:delete="deleteAnnotationsOrKeyframes"
       v-on:moveend="updateMapUrlParams"
       v-on:requires-selected-label="handleRequiresSelectedLabel"
+      v-on:requires-closed-line="handleRequiresClosedLine"
       v-on:previous="showPreviousVideo"
       v-on:next="showNextVideo"
       v-on:attaching-active="handleAttachingLabelActive"

@@ -583,6 +583,9 @@ export default {
                 this.resetInteractionMode();
             }
         },
+        requireClosedLine(){
+            this.$emit('requires-closed-line')
+        },
         fireImageSourceChanged() {
             const source = this.imageLayer?.getSource();
             if (source) {

@@ -59,6 +59,8 @@ export default {
         convertMeasurement() {
             if (!this.hasSelectedLabel) {
                 this.requireSelectedLabel(false);
+            } else if (this.cantConvertMeasureFeature) {
+                this.requireClosedLine();
             } else {
                 this.annotationSource.addFeature(this.measureFeature);
                 this.handleNewFeature({feature: this.measureFeature});
@@ -69,12 +71,6 @@ export default {
             this.setMeasureFeature(undefined);
             measureLayer.getSource().clear();
             this.cantConvertMeasureFeature = true;
-        },
-
-        toggleCreateAnnotationFromMeasurement() {
-            if (this.isMeasuring) {
-                this.resetInteractionMode();
-            }
         }
     },
     watch: {
@@ -116,7 +112,7 @@ export default {
         measureInteraction.on('drawstart', this.handleMeasureDrawStart);
         measureInteraction.on('drawend', this.handleMeasureDrawEnd);
         Keyboard.on('Shift+f', this.toggleMeasuring, 0, this.listenerSet);
-        Keyboard.on('Enter', this.toggleCreateAnnotationFromMeasurement, 0, this.listenerSet  )
+        Keyboard.on('Enter', this.convertMeasurement, 0, this.listenerSet)
 
         // Do not make this reactive.
         // See: https://github.com/biigle/annotations/issues/108

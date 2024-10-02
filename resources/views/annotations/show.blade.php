@@ -95,6 +95,7 @@
             v-on:delete="handleDeleteAnnotations"
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
+            v-on:requires-closed-line="handleRequiresClosedLine"
             v-on:is-invalid-shape="handleInvalidShape"
             ref="canvas"
             inline-template>
