@@ -70,15 +70,33 @@ class VideoController extends Controller
             'too-large' => VIDEO::ERROR_TOO_LARGE,
         ]);
 
-        return view('videos.show', compact(
-            'user',
-            'video',
-            'volume',
-            'videos',
-            'shapes',
-            'labelTrees',
-            'annotationSessions',
-            'errors'
-        ));
+        $fileIds = $volume->orderedFiles()->pluck('uuid', 'id');
+
+        $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
+
+        $spritesThumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
+        $spritesThumbnailInterval = config('videos.sprites_thumbnail_interval');
+        $spritesMaxThumbnails = config('videos.sprites_max_thumbnails');
+        $spritesMinThumbnails = config('videos.thumbnail_count');
+
+        return view(
+            'videos.show',
+            compact(
+                'user',
+                'video',
+                'volume',
+                'videos',
+                'shapes',
+                'labelTrees',
+                'annotationSessions',
+                'errors',
+                'fileIds',
+                'thumbUriTemplate',
+                'spritesThumbnailsPerSprite',
+                'spritesThumbnailInterval',
+                'spritesMaxThumbnails',
+                'spritesMinThumbnails',
+            )
+        );
     }
 }
