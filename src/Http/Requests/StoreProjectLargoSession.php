@@ -120,10 +120,22 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedImageVolumes($annotations)
     {
-        return ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->whereIn('image_annotations.id', $annotations)
-            ->distinct()
-            ->pluck('images.volume_id');
+        $leni = count($annotations);
+        if ($leni<65000){
+            return ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
+                ->whereIn('image_annotations.id', $annotations)
+                ->distinct()
+                ->pluck('images.volume_id');
+        }
+        else {
+            $chunkedI = array_chunk($annotations,65000);
+            foreach($chunkedI as $ci){
+                return ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
+                    ->whereIn('image_annotations.id', $ci)
+                    ->distinct()
+                    ->pluck('images.volume_id');
+            }
+        }
     }
 
     /**
@@ -136,9 +148,21 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedVideoVolumes($annotations)
     {
-        return VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
-            ->whereIn('video_annotations.id', $annotations)
-            ->distinct()
-            ->pluck('videos.volume_id');
+        $lenv = count($annotations);
+        if ($lenv<65000){
+            return VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
+                ->whereIn('video_annotations.id', $annotations)
+                ->distinct()
+                ->pluck('videos.volume_id');
+        }
+        else {
+            $chunkedV = array_chunk($annotations,65000);
+            foreach($chunkedV as $cv){
+                return VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
+                    ->whereIn('video_annotations.id', $cv)
+                    ->distinct()
+                    ->pluck('videos.volume_id');
+            }
+        }
     }
 }
