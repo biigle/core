@@ -261,8 +261,9 @@ class ProcessNewVideo extends Job implements ShouldQueue
         // Config for normal thumbs
         $format = config('thumbnails.format');
         $thumbCount = config('videos.thumbnail_count');
-        $width = config('thumbnails.width');
-        $height = config('thumbnails.height');
+        // Double the size for crisp display on high-dpi montors.
+        $width = config('thumbnails.width') * 2;
+        $height = config('thumbnails.height') * 2;
 
         // Config for sprite thumbs
         $thumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
