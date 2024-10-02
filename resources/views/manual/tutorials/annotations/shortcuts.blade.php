@@ -146,6 +146,25 @@
         </table>
 
         <p>
+            When the ruler tool is activated:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Annotate selection with label</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
             When Volare (cycle through annotations) is activated:
         </p>
 
