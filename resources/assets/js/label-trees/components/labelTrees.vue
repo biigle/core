@@ -2,7 +2,7 @@
     <div class="label-trees">
         <div v-if="typeahead || clearable" class="label-trees__head">
             <button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
-            <typeahead v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
+            <typeahead ref="typeaheadInput" v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
         </div>
         <div class="label-trees__body">
             <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :showFavouriteShortcuts="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
@@ -174,6 +174,9 @@ export default {
                 this.handleSelect(this.favourites[index]);
             }
         },
+        focusTypeahead() {
+            this.$refs.typeaheadInput.$el.querySelector('input').focus();
+        },
     },
     watch: {
         trees: {
@@ -222,6 +225,13 @@ export default {
             }
             bindFavouriteKey('0', 9);
         }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                this.focusTypeahead();
+            }
+        });
     },
 };
 </script>
