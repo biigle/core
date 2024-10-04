@@ -85,6 +85,10 @@ def annotation(row):
         circlePolygon = rotate(circlePolygon, angle, use_radians=True)
         desired_array = numpy.array(
             list(zip(*circlePolygon.exterior.coords.xy))).flatten().astype(float).tolist()
+    # convert Rectangle to Polygon
+    elif row.shape_name == "Rectangle":
+        # Rectangle only has 4 points as it does not close the polygon. Add the first point again so that it gets closed
+        desired_array.extend(desired_array[:2])
 
     # x = even  - start at the beginning at take every second item
     x_coord = desired_array[::2]
