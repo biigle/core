@@ -5,7 +5,7 @@ import LoaderMixin from '../core/mixins/loader';
 import PreviewThumbnail from './components/previewThumbnail';
 import statisticsModal from './components/statisticsModal';
 import ProjectsApi from '../core/api/projects';
-import ScrollableTypeahead from '../core/components/scrollableTypeahead.vue';
+import Typeahead from '../core/components/typeahead.vue';
 import {handleErrorResponse} from '../core/messages/store';
 
 
@@ -44,7 +44,7 @@ export default {
     components: {
         previewThumbnail: PreviewThumbnail,
         statisticsModal: statisticsModal,
-        scrollableTypeahead: ScrollableTypeahead
+        typeahead: Typeahead
     },
     computed: {
         sortedVolumes() {

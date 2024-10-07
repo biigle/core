@@ -4,12 +4,12 @@ import LabelTreeList from './components/labelTreeList';
 import LoaderMixin from '../core/mixins/loader';
 import ProjectsApi from '../core/api/projects';
 import {handleErrorResponse} from '../core/messages/store';
-import ScrollableTypeahead from '../core/components/scrollableTypeahead.vue';
+import Typeahead from '../core/components/typeahead.vue';
 
 export default {
     mixins: [LoaderMixin],
     components: {
-        scrollableTypeahead: ScrollableTypeahead,
+        Typeahead: Typeahead,
         labelTreeList: LabelTreeList,
     },
     data() {

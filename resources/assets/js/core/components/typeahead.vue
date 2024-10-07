@@ -4,22 +4,28 @@
         ref="input"
         class="form-control"
         type="text"
+        v-model="inputText"
         :disabled="disabled"
         :placeholder="placeholder"
         @focus="emitFocus"
         @blur="emitBlur"
         @keyup.enter="emitInternalValue"
+        @keydown.up="handleArrowKeyScroll"
+        @keydown.down="handleArrowKeyScroll"
         >
     <typeahead
         v-model="internalValue"
         :target="inputElement"
         :data="items"
         :force-select="true"
-        :limit="limit"
+        :limit="itemLimit"
         item-key="name"
+        v-show="showTypeahead"
         >
         <template slot="item" slot-scope="props">
+            <div ref="typeahead" :class="{'typeahead-scrollable': scrollable}">
             <component
+                ref="dropdown"
                 :is="itemComponent"
                 @click.native="emitInternalValue"
                 v-for="(item, index) in props.items"
@@ -27,9 +33,13 @@
                 :props="props"
                 :item="item"
                 :item-key="moreInfo"
-                :class="{active: props.activeIndex === index}"
+                :scrollable="scrollable"
+                :is-label="isLabelTree"
+                :active="props.activeIndex === index"
+                :class="{activeItem: props.activeIndex === index, 'typeahead-item-box': scrollable}"
                 >
             </component>
+            </div>
         </template>
     </typeahead>
 </div>
@@ -81,17 +91,39 @@ export default {
             type: Object,
             default: () => TypeaheadItem,
         },
+        scrollable: {
+            type: Boolean,
+            default: false,
+        },
+        isLabelTree: {
+            type: Boolean,
+            default: false,
+        }
     },
     data() {
         return {
             inputElement: null,
             internalValue: undefined,
+            inputText: '',
+            timerTask: null,
+            isTyping: false,
+            oldInput: '',
+            selectedItemIndex: 0,
+            maxItemCount: 50
         };
+    },
+    computed: {
+        itemLimit() {
+            return this.scrollable ? this.maxItemCount : this.limit
+        },
+        showTypeahead() {
+            return !this.scollable || this.scrollable && !this.isTyping;
+        }
     },
     methods: {
         clear() {
             this.internalValue = undefined;
-            this.$refs.input.value = '';
+            this.inputText = '';
         },
         emitFocus(e) {
             this.$emit('focus', e);
@@ -108,11 +140,52 @@ export default {
                 }
             }
         },
+        handleArrowKeyScroll(e) {
+            if (this.scrollable && this.items.length > 0) {
+                const typeahead = this.$refs.typeahead;
+                const scrollAmount = this.$refs.dropdown[0].$el.clientHeight;
+
+                // Reset scroll top if selected item is hidden
+                if (typeahead.scrollTop != this.selectedItemIndex * scrollAmount) {
+                    typeahead.scrollTop = this.selectedItemIndex * scrollAmount;
+                }
+
+                if (e.key === 'ArrowUp' && typeahead.scrollTop >= scrollAmount && this.selectedItemIndex > 0) {
+                    typeahead.scrollTop -= scrollAmount;
+                    this.selectedItemIndex -= 1;
+                }
+
+                if (e.key === 'ArrowDown' && typeahead.scrollTop < typeahead.scrollHeight && this.selectedItemIndex < this.maxItemCount - 1) {
+                    typeahead.scrollTop += scrollAmount;
+                    this.selectedItemIndex += 1;
+                }
+            }
+        }
     },
     watch: {
         value(value) {
             this.internalValue = value;
         },
+        inputText(v) {
+            this.isTyping = true;
+            clearTimeout(this.timerTask);
+
+            this.timerTask = setTimeout(() => {
+                let added = v.trim().includes(this.oldInput.trim());
+                let useTypeaheadFilter = this.oldInput.length > 3 && added;
+                if (v.length >= 3 && !useTypeaheadFilter) {
+                    this.$emit('fetch', v);
+                }
+                this.isTyping = false;
+                this.oldInput = v
+            }, 500);
+        },
+        disabled() {
+            // Use disabled and nextTick to show dropdown right after loading finished
+            if (!this.disabled) {
+                this.$nextTick(() => this.$refs.input.focus())
+            }
+        }
     },
     created() {
         this.internalValue = this.value;
