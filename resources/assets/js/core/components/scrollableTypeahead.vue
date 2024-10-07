@@ -73,7 +73,7 @@ export default {
             timerTask: null,
             isTyping: false,
             oldInput: '',
-            selectedItemIndex: 1,
+            selectedItemIndex: 0,
             maxItemCount: 50
         }
     },
@@ -87,21 +87,24 @@ export default {
                 const typeahead = this.$refs.typeahead;
                 const scrollAmount = this.$refs.dropdown[0].$el.clientHeight;
 
-                if (e.key === 'ArrowUp' && typeahead.scrollTop >= scrollAmount) {
-                    typeahead.scrollTop -= scrollAmount;                    
+                // Reset scroll top if selected item is hidden
+                if (typeahead.scrollTop != this.selectedItemIndex * scrollAmount) {
+                    typeahead.scrollTop = this.selectedItemIndex * scrollAmount;
                 }
 
-                if (e.key === 'ArrowDown' && typeahead.scrollTop < typeahead.scrollHeight) {                    
-                    typeahead.scrollTop += scrollAmount;                    
+                if (e.key === 'ArrowUp' && typeahead.scrollTop >= scrollAmount && this.selectedItemIndex > 0) {
+                    typeahead.scrollTop -= scrollAmount;
+                    this.selectedItemIndex -= 1;
+                }
+
+                if (e.key === 'ArrowDown' && typeahead.scrollTop < typeahead.scrollHeight && this.selectedItemIndex < this.maxItemCount - 1) {
+                    typeahead.scrollTop += scrollAmount;
+                    this.selectedItemIndex += 1;
                 }
             }
         }
     },
     watch: {
-        isLabelTree(){
-            console.log(this.isLabelTree);
-            
-        },
         inputText(v) {
             this.isTyping = true;
             clearTimeout(this.timerTask);
