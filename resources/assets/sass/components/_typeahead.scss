@@ -9,9 +9,9 @@
 .typeahead-item-info {
     display: inline-block;
     max-width: 250px;
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .typeahead-scrollable {
@@ -29,12 +29,6 @@
     background-color: #353535;
 }
 
-.scrollable-item {
-    color: #cccccc !important;
-    text-decoration: none !important;
-    display: block !important;
-}
-
 .scrollable-item,
 .scrollable-item-label {
   color: #cccccc !important;
@@ -48,17 +42,11 @@
 
 .activeItem {
     background-color: #337ab7;
-    max-width: 100%;
-
+    width: 100%;
 }
 
 .activeItemText {
     color: white !important;
-    max-width: 250px;
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-
 }
 
 :root {
