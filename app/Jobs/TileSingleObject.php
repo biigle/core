@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image as VipsImage;
+use Jcupitt\Vips;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -74,7 +75,11 @@ abstract class TileSingleObject extends Job implements ShouldQueue
      */
     public function generateTiles($file, $path)
     {
-        $this->getVipsImage($path)->dzsave($this->tempPath, [
+        $vipsImage = $this->getVipsImage($path);
+        $sourceSpace = Vips\FFI::vips()->vips_image_guess_interpretation($vipsImage);
+        // dd($sourceSpace);
+
+        $vipsImage->colourspace(Vips\Interpretation::RGB16)->dzsave($this->tempPath, [
             'layout' => 'zoomify',
             'container' => 'fs',
             'strip' => true,
