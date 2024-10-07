@@ -64,7 +64,8 @@ export default {
                     this.annotationSource.addFeature(this.measureFeature);
                     this.handleNewFeature({feature: this.measureFeature});
                     this.clearMeasureFeature();
-                }}
+                }
+            }
         },
         clearMeasureFeature() {
             this.setMeasureFeature(undefined);

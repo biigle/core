@@ -159,7 +159,7 @@
             <tbody>
                 <tr>
                     <td><kbd>Enter</kbd></td>
-                    <td>Annotate selection with label</td>
+                    <td>Convert measurement to a line string annotation</td>
                 </tr>
             </tbody>
         </table>
