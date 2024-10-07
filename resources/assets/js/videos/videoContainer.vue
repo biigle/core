@@ -491,9 +491,6 @@ export default {
             Messages.info('Please select a label first.');
             this.$refs.sidebar.$emit('open', 'labels');
         },
-        handleRequiresClosedLine() {
-            Messages.info('Please close the line with a double click before assigning a label.');
-        },
         startUpdateTimelineHeight(e) {
             e.preventDefault();
             this.resizingTimeline = true;

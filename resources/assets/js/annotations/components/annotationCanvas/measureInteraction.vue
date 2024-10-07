@@ -57,11 +57,9 @@ export default {
             }
         },
         convertMeasurement() {
-            if (this.isMeasuring) {
+            if (this.isMeasuring && !this.cantConvertMeasureFeature) {
                 if (!this.hasSelectedLabel) {
                     this.requireSelectedLabel(false);
-                } else if (this.cantConvertMeasureFeature) {
-                    this.requireClosedLine();
                 } else {
                     this.annotationSource.addFeature(this.measureFeature);
                     this.handleNewFeature({feature: this.measureFeature});
