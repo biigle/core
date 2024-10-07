@@ -35,6 +35,17 @@
     display: block !important;
 }
 
+.scrollable-item,
+.scrollable-item-label {
+  color: #cccccc !important;
+  text-decoration: none !important;
+  display: block !important;
+}
+
+.scrollable-item-label {
+  height: 44px;
+}
+
 .activeItem {
     background-color: #337ab7;
     max-width: 100%;

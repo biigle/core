@@ -1,6 +1,6 @@
 <template>
 <li>
-    <a href="#" @click.prevent="props.select(item)" :class="{'scrollable-item': scrollable, activeItemText: active}">
+    <a href="#" @click.prevent="props.select(item)" :class="computedClass">
         <span v-html="props.highlight(item)"></span>
         <span v-if="info">
             <br><small class="typeahead-item-info" v-text="info" :title="info"></small>
@@ -31,6 +31,10 @@ export default {
         active: {
             type: Boolean,
             default: false,
+        },
+        isLabel:{
+            type: Boolean,
+            default: false,
         }
     },
     computed: {
@@ -44,12 +48,13 @@ export default {
             return keys.reduce(function (i, key) {
                 return i ? i[key] : i;
             }, this.item);
-        }
-    },
-    watch: {
-        scrollable(){
-            console.log(this.scrollable);
-            
+        },
+        computedClass() {
+            return {
+                'scrollable-item': this.scrollable && !this.isLabel,
+                'scrollable-item-label': this.scrollable && this.isLabel,
+                'activeItemText': this.active
+            };
         }
     }
 };

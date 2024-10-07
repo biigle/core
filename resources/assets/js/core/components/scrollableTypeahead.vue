@@ -25,6 +25,7 @@
             <template slot="item" slot-scope="props">
                 <div ref="typeahead" class="typeahead-scrollable">
                 <component
+                    ref="dropdown"
                     :is="itemComponent"
                     @click.native="emitInternalValue"
                     v-for="(item, index) in props.items"
@@ -33,6 +34,7 @@
                     :item="item"
                     :item-key="moreInfo"
                     :scrollable="true"
+                    :is-label="isLabelTree"
                     :active="props.activeIndex === index"
                     class="typeahead-item-box"
                     :class="{activeItem: props.activeIndex === index}"
@@ -59,6 +61,10 @@ export default {
         itemComponent: {
             type: Object,
             default: () => TypeaheadItem,
+        },
+        isLabelTree: {
+            type: Boolean,
+            default: false,
         }
     },
     data() {
@@ -68,7 +74,6 @@ export default {
             isTyping: false,
             oldInput: '',
             selectedItemIndex: 1,
-            scrolledHeight: 0,
             maxItemCount: 50
         }
     },
@@ -80,44 +85,23 @@ export default {
         handleArrowKeyScroll(e) {
             if (this.items.length > 0) {
                 const typeahead = this.$refs.typeahead;
-                const scrollAmount = typeahead.scrollHeight / this.maxItemCount;
-                const boxHeight = scrollAmount * 4;
+                const scrollAmount = this.$refs.dropdown[0].$el.clientHeight;
 
-                if (this.selectedItemIndex === 1) {
-                    typeahead.scrollTop = 0;
-                    this.scrolledHeight = boxHeight
-
+                if (e.key === 'ArrowUp' && typeahead.scrollTop >= scrollAmount) {
+                    typeahead.scrollTop -= scrollAmount;                    
                 }
 
-                if (e.key === 'ArrowUp' && this.selectedItemIndex > 1) {
-                    this.selectedItemIndex -= 1;
-                    let upperBoxBorder = (this.scrolledHeight - boxHeight);
-                    if (scrollAmount * this.selectedItemIndex === upperBoxBorder) {
-                        typeahead.scrollTop -= boxHeight;
-                        this.scrolledHeight -= boxHeight;
-                    }
-                    // If selected item is not displayed any more, set scrollbar to height of selected item
-                    if (typeahead.scrollTop != upperBoxBorder) {
-                        typeahead.scrollTop = this.scrolledHeight - boxHeight;
-                    }
-                }
-
-                if (e.key === 'ArrowDown' && this.selectedItemIndex < this.maxItemCount) {
-                    if (scrollAmount * this.selectedItemIndex === this.scrolledHeight) {
-                        typeahead.scrollTop += boxHeight;
-                        this.scrolledHeight += boxHeight;
-                    }
-
-                    // If selected item is not displayed any more, set scrollbar to height of selected item
-                    if (typeahead.scrollTop != this.scrolledHeight) {
-                        typeahead.scrollTop = this.scrolledHeight - boxHeight;
-                    }
-                    this.selectedItemIndex += 1;
+                if (e.key === 'ArrowDown' && typeahead.scrollTop < typeahead.scrollHeight) {                    
+                    typeahead.scrollTop += scrollAmount;                    
                 }
             }
         }
     },
     watch: {
+        isLabelTree(){
+            console.log(this.isLabelTree);
+            
+        },
         inputText(v) {
             this.isTyping = true;
             clearTimeout(this.timerTask);
