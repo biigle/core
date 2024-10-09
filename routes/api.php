@@ -165,7 +165,7 @@ $router->resource('projects', 'ProjectController', [
     'parameters' => ['projects' => 'id'],
 ]);
 
-$router->get('projects/{id}/attachable-volumes', 'ProjectsAttachableVolumesController@index');
+$router->get('projects/{id}/attachable-volumes/{name}', 'ProjectsAttachableVolumesController@index');
 
 $router->resource('projects.invitations', 'ProjectInvitationController', [
     'only' => ['store'],
@@ -173,7 +173,7 @@ $router->resource('projects.invitations', 'ProjectInvitationController', [
 ]);
 
 $router->get(
-    'projects/{id}/label-trees/available',
+    'projects/{id}/label-trees/available/{name}',
     'ProjectLabelTreeController@available'
 );
 $router->resource('projects.label-trees', 'ProjectLabelTreeController', [

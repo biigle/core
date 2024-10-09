@@ -86,7 +86,7 @@ export default Vue.resource('api/v1/projects{/id}', {}, {
     },
     queryAvailableLabelTrees: {
         method: 'GET',
-        url: 'api/v1/projects{/id}/label-trees/available',
+        url: 'api/v1/projects{/id}/label-trees/available{/name}',
     },
     attachLabelTree: {
         method: 'POST',
