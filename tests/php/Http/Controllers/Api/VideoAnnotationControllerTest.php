@@ -287,9 +287,9 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $annotation = $this->video->annotations()->first();
         $this->assertNotNull($annotation);
-        $this->assertEquals([[10, 11]], $annotation->points);
-        $this->assertEquals([0.0], $annotation->frames);
-        $this->assertEquals(1, $annotation->labels()->count());
+        $this->assertSame([[10, 11]], $annotation->points);
+        $this->assertSame([0], $annotation->frames);
+        $this->assertSame(1, $annotation->labels()->count());
     }
 
     public function testStoreValidatePoints()
@@ -551,7 +551,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        $this->assertEquals(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertSame(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
     }
 
     public function testStoreAndTrackRestrictRateLimit()
@@ -584,7 +584,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'track' => true,
             ])->assertSuccessful();
 
-        $this->assertEquals(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertSame(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
         $this->assertFalse($res->json()['trackingJobLimitReached']);
 
         Cache::set(TrackObject::getRateLimitCacheKey($this->editor()), 9);
@@ -597,7 +597,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'track' => true,
             ])->assertSuccessful();
         
-        $this->assertEquals(10, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertSame(10, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
         $this->assertTrue($res->json()['trackingJobLimitReached']);
     }
 
@@ -634,9 +634,9 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $annotation = $this->video->annotations()->first();
         $this->assertNotNull($annotation);
-        $this->assertEquals([], $annotation->points);
-        $this->assertEquals([0.0, 1.5], $annotation->frames);
-        $this->assertEquals(1, $annotation->labels()->count());
+        $this->assertEmpty($annotation->points);
+        $this->assertSame([0, 1.5], $annotation->frames);
+        $this->assertSame(1, $annotation->labels()->count());
     }
 
     public function testStoreWholeFrameSingleFrameAnnotation()
@@ -652,9 +652,9 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $annotation = $this->video->annotations()->first();
         $this->assertNotNull($annotation);
-        $this->assertEquals([], $annotation->points);
-        $this->assertEquals([0.0], $annotation->frames);
-        $this->assertEquals(1, $annotation->labels()->count());
+        $this->assertEmpty($annotation->points);
+        $this->assertSame([0], $annotation->frames);
+        $this->assertSame(1, $annotation->labels()->count());
     }
 
     public function testStoreAndTrackWholeFrameAnnotation()
@@ -723,8 +723,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $annotation = $annotation->fresh();
-        $this->assertEquals([[10, 20], [30, 40]], $annotation->points);
-        $this->assertEquals([1.0, 10.0], $annotation->frames);
+        $this->assertSame([[10, 20], [30, 40]], $annotation->points);
+        $this->assertSame([1, 10], $annotation->frames);
     }
 
     public function testUpdateValidatePoints()
@@ -785,7 +785,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $annotation = $annotation->fresh();
-        $this->assertEquals([1.0, 2.0, null, 3.0, 4.0], $annotation->frames);
+        $this->assertSame([1, 2, null, 3, 4], $annotation->frames);
     }
 
     public function testDestroy()

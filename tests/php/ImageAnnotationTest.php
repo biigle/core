@@ -42,7 +42,7 @@ class ImageAnnotationTest extends ModelTestCase
         $annotation = static::make();
         $annotation->points = [1, 2, 3, 4];
         $annotation->save();
-        $this->assertEquals([1, 2, 3, 4], $annotation->fresh()->points);
+        $this->assertSame([1, 2, 3, 4], $annotation->fresh()->points);
     }
 
     public function testRoundPoints()
@@ -50,7 +50,7 @@ class ImageAnnotationTest extends ModelTestCase
         $annotation = static::make();
         $annotation->points = [1.23456789, 2.23456789, 3.1415];
         $annotation->save();
-        $this->assertEquals([1.23, 2.23, 3.14], $annotation->fresh()->points);
+        $this->assertSame([1.23, 2.23, 3.14], $annotation->fresh()->points);
     }
 
     public function testLabels()
@@ -64,10 +64,10 @@ class ImageAnnotationTest extends ModelTestCase
             'confidence' => 0.5,
         ]);
         $this->modelLabel->save();
-        $this->assertEquals(1, $this->model->labels()->count());
+        $this->assertSame(1, $this->model->labels()->count());
         $label = $this->model->labels()->first();
-        $this->assertEquals(0.5, $label->confidence);
-        $this->assertEquals($user->id, $label->user->id);
+        $this->assertSame(0.5, $label->confidence);
+        $this->assertSame($user->id, $label->user->id);
     }
 
     public function testValidatePointsInteger()
@@ -308,7 +308,7 @@ class ImageAnnotationTest extends ModelTestCase
         ]);
 
         $ids = ImageAnnotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
-        $this->assertEquals([$a3->id], $ids);
+        $this->assertSame([$a3->id], $ids);
     }
 
     public function testScopeVisibleFor()
@@ -335,18 +335,18 @@ class ImageAnnotationTest extends ModelTestCase
         $al1 = ImageAnnotationLabelTest::create();
         $al2 = ImageAnnotationLabelTest::create();
 
-        $this->assertEquals($al1->annotation->id, ImageAnnotation::withLabel($al1->label)->first()->id);
+        $this->assertSame($al1->annotation->id, ImageAnnotation::withLabel($al1->label)->first()->id);
     }
 
     public function testGetPoints()
     {
         $annotation = static::make(['points' => [1, 2]]);
-        $this->assertEquals([1, 2], $annotation->getPoints());
+        $this->assertSame([1, 2], $annotation->getPoints());
     }
 
     public function testGetShape()
     {
-        $this->assertEquals($this->model->shape, $this->model->getShape());
+        $this->assertSame($this->model->shape, $this->model->getShape());
     }
 
     public function testGetFile()
@@ -356,6 +356,6 @@ class ImageAnnotationTest extends ModelTestCase
 
     public function testGetFileIdAttribute()
     {
-        $this->assertEquals($this->model->image_id, $this->model->file_id);
+        $this->assertSame($this->model->image_id, $this->model->file_id);
     }
 }

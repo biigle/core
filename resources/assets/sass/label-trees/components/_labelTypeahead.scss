@@ -2,7 +2,7 @@
     position: relative;
     // Negate the default padding of the list item of the typeahead.
     margin-left: -15px;
-    padding: $padding-small-vertical 22px;
+    padding: $padding-small-vertical 0 0 22px;
 
     .label-color {
         position: absolute;

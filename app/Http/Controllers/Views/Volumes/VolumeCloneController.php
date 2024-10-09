@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
-use \Illuminate\Contracts\View\View;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
@@ -16,8 +15,6 @@ class VolumeCloneController extends Controller
      * Shows the volume clone page.
      * @param Request $request
      * @param $id volume ID
-     *
-     * @return View
      **/
     public function clone(Request $request, $id)
     {
@@ -37,7 +34,7 @@ class VolumeCloneController extends Controller
         }
 
         // Collection of projects where cloned volume can be copied to.
-        $destProjects = $destProjectQuery->select('name', 'id')->get();
+        $destProjects = $destProjectQuery->select(['name', 'id'])->get();
 
         $labelTrees = LabelTree::select('id', 'name', 'version_id')
             ->with('labels', 'version')

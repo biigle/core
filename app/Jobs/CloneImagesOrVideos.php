@@ -8,10 +8,7 @@ use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Project;
-use Biigle\Traits\ChecksMetadataStrings;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
@@ -26,7 +23,7 @@ use Ramsey\Uuid\Uuid;
 
 class CloneImagesOrVideos extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels, ChecksMetadataStrings;
+    use InteractsWithQueue, SerializesModels;
 
 
     /**
@@ -137,52 +134,19 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
             }
             if ($copy->files()->exists()) {
-                $this->postProcessCloning($copy);
+                ProcessNewVolumeFiles::dispatch($copy);
             }
 
-            //save ifdo-file if exist
-            if ($volume->hasIfdo()) {
-                $this->copyIfdoFile($volume->id, $copy->id);
+            if ($volume->hasMetadata()) {
+                $this->copyMetadataFile($volume, $copy);
             }
             $copy->creating_async = false;
 
             $copy->save();
 
-            event('volume.cloned', [$copy->id]);
+            event('volume.cloned', $copy);
         });
 
-    }
-
-    /**
-     * Initiate file thumbnail creation
-     * @param Volume $volume for which thumbnail creation should be started
-     * @return void
-     **/
-    public function postProcessCloning($volume)
-    {
-        ProcessNewVolumeFiles::dispatch($volume);
-
-        // Give the ProcessNewVolumeFiles job a head start so the file thumbnails are
-        // generated (mostly) before the annotation thumbnails.
-        $delay = now()->addSeconds(30);
-
-        if (class_exists(ProcessAnnotatedImage::class)) {
-            $volume->images()->whereHas('annotations')
-                ->eachById(function ($image) use ($delay) {
-                    ProcessAnnotatedImage::dispatch($image)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                });
-        }
-
-        if (class_exists(ProcessAnnotatedVideo::class)) {
-            $volume->videos()
-                ->whereHas('annotations')->eachById(function ($video) use ($delay) {
-                    ProcessAnnotatedVideo::dispatch($video)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                });
-        }
     }
 
     /**
@@ -226,39 +190,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $selectedFileIds = empty($selectedFileIds) ?
             $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel =
-            ImageAnnotation::join(
-                'image_annotation_labels',
-                'image_annotation_labels.annotation_id',
-                '=',
-                'image_annotations.id'
-            )
-                ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('image_annotation_labels.label_id', $selectedLabelIds))
-                ->whereIn('image_annotations.image_id', $selectedFileIds);
-
-
-        // use unique ids, because an annotation with multiple labels would be duplicated
-        $usedAnnotationIds = $annotationJoinLabel
-            ->distinct()
-            ->pluck('image_annotations.id')
-            ->toArray();
-
-        if (empty($selectedLabelIds)) {
-            $imageAnnotationLabelIds = $annotationJoinLabel
-                ->distinct()
-                ->pluck('image_annotation_labels.label_id')
-                ->toArray();
-        } else {
-            $imageAnnotationLabelIds = $selectedLabelIds;
-        }
-
         $chunkSize = 100;
         $parameterLimit = 10000;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
             ->with([
-                'annotations' => fn ($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
-                'annotations.labels' => fn ($q) => $q->whereIn('label_id', $imageAnnotationLabelIds)->orderBy('id'),
+                'annotations' => fn ($q) => $q->orderBy('id'),
+                'annotations.labels' => fn ($q) => $q->when(!empty($selectedLabelIds), fn ($q) => $q->whereIn('label_id', $selectedLabelIds))->orderBy('id'),
             ])
             ->when($volume->images->count() !== count($selectedFileIds), fn ($query) => $query->whereIn('id', $selectedFileIds))
             ->orderBy('id')
@@ -267,18 +205,23 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ->chunkById($chunkSize, function ($chunk, $page) use (
                 $newImageIds,
                 $chunkSize,
-                $usedAnnotationIds,
                 $parameterLimit,
             ) {
                 $insertData = [];
                 $chunkNewImageIds = [];
                 // Consider all previous image chunks when calculating the start of the index.
                 $baseImageIndex = ($page - 1) * $chunkSize;
+                /** @var Image $image */
                 foreach ($chunk as $index => $image) {
                     $newImageId = $newImageIds[$baseImageIndex + $index];
                     // Collect relevant image IDs for the annotation query below.
                     $chunkNewImageIds[] = $newImageId;
                     foreach ($image->annotations as $annotation) {
+                        if ($annotation->labels->isEmpty()) {
+                            // Ignore annotation through label filtering.
+                            continue;
+                        }
+
                         $original = $annotation->getRawOriginal();
                         $original['image_id'] = $newImageId;
                         unset($original['id']);
@@ -293,8 +236,14 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     ->orderBy('id')
                     ->pluck('id');
                 $insertData = [];
+                /** @var Image $image */
                 foreach ($chunk as $image) {
                     foreach ($image->annotations as $annotation) {
+                        if ($annotation->labels->isEmpty()) {
+                            // Ignore annotation through label filtering.
+                            continue;
+                        }
+
                         $newAnnotationId = $newAnnotationIds->shift();
                         foreach ($annotation->labels as $annotationLabel) {
                             $original = $annotationLabel->getRawOriginal();
@@ -386,39 +335,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $selectedFileIds = empty($selectedFileIds) ?
             $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
 
-        $annotationJoinLabel =
-            VideoAnnotation::join(
-                'video_annotation_labels',
-                'video_annotation_labels.annotation_id',
-                '=',
-                'video_annotations.id'
-            )
-                ->when(!empty($selectedLabelIds), fn ($query) => $query->whereIn('video_annotation_labels.label_id', $selectedLabelIds))
-                ->whereIn('video_annotations.video_id', $selectedFileIds)
-                ->distinct();
-
-        // use unique ids, because an annotation with multiple labels would be duplicated
-        $usedAnnotationIds = $annotationJoinLabel
-            ->distinct()
-            ->pluck('video_annotations.id')
-            ->toArray();
-
-        if (empty($selectedLabelIds)) {
-            $videoAnnotationLabelIds = $annotationJoinLabel
-                ->distinct()
-                ->pluck('video_annotation_labels.label_id')
-                ->toArray();
-        } else {
-            $videoAnnotationLabelIds = $selectedLabelIds;
-        }
-
         $chunkSize = 100;
         $parameterLimit = 10000;
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
             ->with([
-                'annotations' => fn ($q) => $q->whereIn('id', $usedAnnotationIds)->orderBy('id'),
-                'annotations.labels' => fn ($q) => $q->whereIn('label_id', $videoAnnotationLabelIds)->orderBy('id'),
+                'annotations' => fn ($q) => $q->orderBy('id'),
+                'annotations.labels' => fn ($q) => $q->when(!empty($selectedLabelIds), fn ($q) => $q->whereIn('label_id', $selectedLabelIds))->orderBy('id'),
             ])
             ->when($volume->videos->count() !== count($selectedFileIds), fn ($query) => $query->whereIn('id', $selectedFileIds))
             ->orderBy('id')
@@ -427,18 +350,23 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ->chunkById($chunkSize, function ($chunk, $page) use (
                 $newVideoIds,
                 $chunkSize,
-                $usedAnnotationIds,
                 $parameterLimit,
             ) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
                 // Consider all previous video chunks when calculating the start of the index.
                 $baseVideoIndex = ($page - 1) * $chunkSize;
+                /** @var Video $video */
                 foreach ($chunk as $index => $video) {
                     $newVideoId = $newVideoIds[$baseVideoIndex + $index];
                     // Collect relevant video IDs for the annotation query below.
                     $chunkNewVideoIds[] = $newVideoId;
                     foreach ($video->annotations as $annotation) {
+                        if ($annotation->labels->isEmpty()) {
+                            // Ignore annotation through label filtering.
+                            continue;
+                        }
+
                         $original = $annotation->getRawOriginal();
                         $original['video_id'] = $newVideoId;
                         unset($original['id']);
@@ -448,14 +376,19 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
                 collect($insertData)->chunk($parameterLimit)->each(fn ($chunk) => VideoAnnotation::insert($chunk->toArray()));
 
-                
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = VideoAnnotation::whereIn('video_id', $chunkNewVideoIds)
                     ->orderBy('id')
                     ->pluck('id');
                 $insertData = [];
+                /** @var Video $video */
                 foreach ($chunk as $video) {
                     foreach ($video->annotations as $annotation) {
+                        if ($annotation->labels->isEmpty()) {
+                            // Ignore annotation through label filtering.
+                            continue;
+                        }
+
                         $newAnnotationId = $newAnnotationIds->shift();
                         foreach ($annotation->labels as $annotationLabel) {
                             $original = $annotationLabel->getRawOriginal();
@@ -507,16 +440,10 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             });
     }
 
-    /** Copies ifDo-Files from given volume to volume copy.
-     *
-     * @param int $volumeId
-     * @param int $copyId
-     **/
-    private function copyIfdoFile($volumeId, $copyId)
+    private function copyMetadataFile(Volume $source, Volume $target): void
     {
-        $disk = Storage::disk(config('volumes.ifdo_storage_disk'));
-        $iFdoFilename = $volumeId.".yaml";
-        $copyIFdoFilename = $copyId.".yaml";
-        $disk->copy($iFdoFilename, $copyIFdoFilename);
+        $disk = Storage::disk(config('volumes.metadata_storage_disk'));
+        // The target metadata file path was updated in the controller method.
+        $disk->copy($source->metadata_file_path, $target->metadata_file_path);
     }
 }

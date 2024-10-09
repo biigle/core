@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class NotificationController extends Controller
 {
@@ -20,12 +21,29 @@ class NotificationController extends Controller
      *
      * @param Request $request
      * @param int $id Image ID
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $notification = $request->user()->unreadNotifications()->findOrFail($id);
+        $notification = $request->user()->unreadNotifications()->find($id);
+        if (is_null($notification)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
         $notification->markAsRead();
+    }
+
+    /**
+     * Mark all notification as read.
+     *
+     * @api {put} notifications/all Mark all notifications as read
+     * @apiGroup Notifications
+     * @apiName UpdateReadNotifications
+     * @apiPermission user
+     *
+     * @param Request $request
+     */
+    public function updateAll(Request $request)
+    {
+        $request->user()->unreadNotifications()->eachById(fn ($n) => $n->markAsRead());
     }
 
     /**
@@ -42,11 +60,13 @@ class NotificationController extends Controller
      *
      * @param Request $request
      * @param int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
     {
-        $notification = $request->user()->notifications()->findOrFail($id);
+        $notification = $request->user()->notifications()->find($id);
+        if (is_null($notification)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
         $notification->delete();
     }
 }

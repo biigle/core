@@ -41,10 +41,10 @@ class TrackObjectTest extends TestCase
 
         $job = new TrackObjectStub($annotation, $user);
         $job->handle();
-        $this->assertEquals(2, count($job->files));
+        $this->assertSame(2, count($job->files));
         $input = json_decode($job->files[0], true);
-        $this->assertEquals(0.5, $input['start_time']);
-        $this->assertEquals(123, $input['keyframe_distance']);
+        $this->assertSame(0.5, $input['start_time']);
+        $this->assertSame(123, $input['keyframe_distance']);
         $this->assertArrayHasKey('video_path', $input);
 
         foreach ($job->paths as $path) {
@@ -89,7 +89,7 @@ class TrackObjectTest extends TestCase
         $job = new TrackObjectStub($annotation, $user);
         $job->handle();
 
-        $this->assertEquals(1, Cache::get(TrackObjectStub::getRateLimitCacheKey($user)));
+        $this->assertSame(1, Cache::get(TrackObjectStub::getRateLimitCacheKey($user)));
     }
 
     public function testHandlePoint()
@@ -109,17 +109,17 @@ class TrackObjectTest extends TestCase
         $job->handle();
 
         Event::assertDispatched(function (ObjectTrackingSucceeded $event) use ($annotation, $user) {
-            $this->assertEquals($user->id, $event->user->id);
-            $this->assertEquals($annotation->id, $event->annotation->id);
+            $this->assertSame($user->id, $event->user->id);
+            $this->assertSame($annotation->id, $event->annotation->id);
             return true;
         });
 
-        $this->assertEquals([0.5, 1.0, 2.0, 3.0], $annotation->fresh()->frames);
+        $this->assertSame([0.5, 1, 2, 3], $annotation->fresh()->frames);
         $expect = [[0, 0], [10, 10], [20, 20], [30, 30]];
-        $this->assertEquals($expect, $annotation->fresh()->points);
+        $this->assertSame($expect, $annotation->fresh()->points);
 
         $input = json_decode($job->files[0], true);
-        $this->assertEquals([-15, -15, 30, 30], $input['start_window']);
+        $this->assertSame([-15, -15, 30, 30], $input['start_window']);
     }
 
     public function testHandleCirlce()
@@ -137,17 +137,17 @@ class TrackObjectTest extends TestCase
         $job->handle();
 
         Event::assertDispatched(function (ObjectTrackingSucceeded $event) use ($annotation, $user) {
-            $this->assertEquals($user->id, $event->user->id);
-            $this->assertEquals($annotation->id, $event->annotation->id);
+            $this->assertSame($user->id, $event->user->id);
+            $this->assertSame($annotation->id, $event->annotation->id);
             return true;
         });
 
-        $this->assertEquals([0.5, 1.0, 2.0, 3.0], $annotation->fresh()->frames);
+        $this->assertSame([0.5, 1, 2, 3], $annotation->fresh()->frames);
         $expect = [[10, 10, 5], [10, 10, 5], [20, 20, 6], [30, 30, 7]];
-        $this->assertEquals($expect, $annotation->fresh()->points);
+        $this->assertSame($expect, $annotation->fresh()->points);
 
         $input = json_decode($job->files[0], true);
-        $this->assertEquals([5, 5, 10, 10], $input['start_window']);
+        $this->assertSame([5, 5, 10, 10], $input['start_window']);
     }
 
     public function testHandleFailure()
@@ -164,14 +164,14 @@ class TrackObjectTest extends TestCase
         $job->throw = true;
         $job->handle();
         Event::assertDispatched(function (ObjectTrackingFailed $event) use ($annotation, $user) {
-            $this->assertEquals($user->id, $event->user->id);
-            $this->assertEquals($annotation->id, $event->annotation->id);
+            $this->assertSame($user->id, $event->user->id);
+            $this->assertSame($annotation->id, $event->annotation->id);
             return true;
         });
 
         $annotation->refresh();
-        $this->assertEquals([0.5], $annotation->frames);
-        $this->assertEquals([[10, 10]], $annotation->points);
+        $this->assertSame([0.5], $annotation->frames);
+        $this->assertSame([[10, 10]], $annotation->points);
     }
 
     public function testHandleEmpty()
@@ -189,14 +189,14 @@ class TrackObjectTest extends TestCase
         $job->keyframes = '[]';
         $job->handle();
         Event::assertDispatched(function (ObjectTrackingFailed $event) use ($annotation, $user) {
-            $this->assertEquals($user->id, $event->user->id);
-            $this->assertEquals($annotation->id, $event->annotation->id);
+            $this->assertSame($user->id, $event->user->id);
+            $this->assertSame($annotation->id, $event->annotation->id);
             return true;
         });
 
         $annotation->refresh();
-        $this->assertEquals([0.5], $annotation->frames);
-        $this->assertEquals([[10, 10, 5]], $annotation->points);
+        $this->assertSame([0.5], $annotation->frames);
+        $this->assertSame([[10, 10, 5]], $annotation->points);
     }
 }
 

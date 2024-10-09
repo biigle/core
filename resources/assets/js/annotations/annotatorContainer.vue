@@ -501,10 +501,9 @@ export default {
             }, 10000);
         },
         updateColorAdjustment(params) {
-            let canvas = this.$refs.canvas;
-            debounce(function () {
+            debounce(() => {
                 ImagesStore.updateColorAdjustment(params);
-                canvas.render();
+                this.$refs.canvas.fireImageSourceChanged();
             }, 100, 'annotations.color-adjustment.update');
         },
         handleSettingsChange(key, value) {

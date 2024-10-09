@@ -16,8 +16,15 @@
 <p class="text-danger">
     <strong>Deleting a user account cannot be undone!</strong>
 </p>
+<<<<<<< HEAD
 
 
+=======
+<p>
+    <strong>Email:</strong> {{$affectedUser->email}}<br>
+    <strong>Affiliation:</strong> {{$affectedUser->affiliation}}
+</p>
+>>>>>>> db44e329c08c5f084f707e970ad28b197a94578d
 
 <form role="form" method="POST" action="{{ url('api/v1/users/'.$affectedUser->id) }}">
     <input type="hidden" name="_method" value="DELETE">

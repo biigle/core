@@ -1,7 +1,7 @@
 <script>
 import Keyboard from '../../../core/keyboard';
-import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonBrush';
-import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
+import ModifyPolygonBrushInteraction from '../../../annotations/ol/interaction/ModifyPolygonBrush';
+import PolygonBrushInteraction from '../../../annotations/ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../../annotations/stores/styles';
 import {altKeyOnly as altKeyOnlyCondition} from '@biigle/ol/events/condition';

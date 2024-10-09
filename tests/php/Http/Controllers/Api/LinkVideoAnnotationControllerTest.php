@@ -75,7 +75,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $a1->id]);
 
-        $this->assertEquals(1, $this->video->annotations()->count());
+        $this->assertSame(1, $this->video->annotations()->count());
         $this->assertNull($a2->fresh());
     }
 
@@ -169,8 +169,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $a1->refresh();
-        $this->assertEquals([1.0, 2.0, null, 3.0, 4.0], $a1->frames);
-        $this->assertEquals([[30, 30], [40, 40], [], [10, 10], [20, 20]], $a1->points);
+        $this->assertSame([1, 2, null, 3, 4], $a1->frames);
+        $this->assertSame([[30, 30], [40, 40], [], [10, 10], [20, 20]], $a1->points);
     }
 
     public function testStoreAfter()
@@ -197,8 +197,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $a1->refresh();
-        $this->assertEquals([1.0, 2.0, null, 3.0, 4.0], $a1->frames);
-        $this->assertEquals([[10, 10], [20, 20], [], [30, 30], [40, 40]], $a1->points);
+        $this->assertSame([1, 2, null, 3, 4], $a1->frames);
+        $this->assertSame([[10, 10], [20, 20], [], [30, 30], [40, 40]], $a1->points);
     }
 
     public function testStoreMergeLabels()
@@ -244,10 +244,10 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertEquals(3, $a1->labels()->count());
+        $this->assertSame(3, $a1->labels()->count());
         $this->assertNotNull($l1->fresh());
-        $this->assertEquals($a1->id, $l2->fresh()->annotation_id);
-        $this->assertEquals($a1->id, $l3->fresh()->annotation_id);
+        $this->assertSame($a1->id, $l2->fresh()->annotation_id);
+        $this->assertSame($a1->id, $l3->fresh()->annotation_id);
         $this->assertNull($l4->fresh());
     }
 
@@ -275,8 +275,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $a1->refresh();
-        $this->assertEquals([1.0, 2.0, 3.0], $a1->frames);
-        $this->assertEquals([[10, 10], [20, 20], [40, 40]], $a1->points);
+        $this->assertSame([1, 2, 3], $a1->frames);
+        $this->assertSame([[10, 10], [20, 20], [40, 40]], $a1->points);
     }
 
     public function testStoreSingleFrameTouching()
@@ -328,7 +328,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $a1->refresh();
-        $this->assertEquals([1.0, null, 2.0], $a1->frames);
-        $this->assertEquals([], $a1->points);
+        $this->assertSame([1, null, 2], $a1->frames);
+        $this->assertEmpty($a1->points);
     }
 }

@@ -5,9 +5,7 @@ namespace Biigle;
 class VideoLabel extends VolumeFileLabel
 {
     /**
-     * The file, this volume file label belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * {@inheritdoc}
      */
     public function file()
     {
@@ -17,7 +15,7 @@ class VideoLabel extends VolumeFileLabel
     /**
      * The video, this video label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Video, VideoLabel>
      */
     public function video()
     {

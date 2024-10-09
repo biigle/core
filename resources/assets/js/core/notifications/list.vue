@@ -63,6 +63,7 @@ export default {
     data() {
         return {
             notifications: [],
+            isLoading: false,
         };
     },
     computed: {
@@ -72,6 +73,22 @@ export default {
         hasUnreadNotifications() {
             return Store.countUnread > 0;
         },
+    },
+    methods:{
+        markAllAsRead() {
+            this.isLoading = true;
+            return NotificationsApi.markReadAll({}, {})
+                .then(() => {
+                    this.notifications.map(item => {
+                        item.read_at = new Date();
+                        Store.remove(item.id);
+                    });
+                })
+                .catch(Messages.handleErrorResponse)
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        }
     },
     created() {
         Store.initialize();

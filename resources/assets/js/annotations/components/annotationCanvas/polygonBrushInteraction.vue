@@ -1,7 +1,7 @@
 <script>
 import Keyboard from '../../../core/keyboard';
-import ModifyPolygonBrushInteraction from '@biigle/ol/interaction/ModifyPolygonBrush';
-import PolygonBrushInteraction from '@biigle/ol/interaction/PolygonBrush';
+import ModifyPolygonBrushInteraction from '../../ol/interaction/ModifyPolygonBrush';
+import PolygonBrushInteraction from '../../ol/interaction/PolygonBrush';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '../../stores/styles';
 import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';

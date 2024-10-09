@@ -34,7 +34,7 @@ class LabelTreeController extends Controller
      * ]
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection<int, LabelTree>
      */
     public function index(Request $request)
     {
@@ -94,14 +94,16 @@ class LabelTreeController extends Controller
      * }
      *
      *
-     * @return \Illuminate\Http\Response
+     * @return LabelTree
      */
     public function show($id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('access', $tree);
 
-        return $tree->load('labels', 'members', 'version', 'versions');
+        $tree->load(['labels', 'members', 'version', 'versions']);
+
+        return $tree;
     }
 
     /**
@@ -132,7 +134,7 @@ class LabelTreeController extends Controller
      * }
      *
      * @param StoreLabelTree $request
-     * @return \Illuminate\Http\Response
+     * @return LabelTree|\Illuminate\Http\RedirectResponse
      */
     public function store(StoreLabelTree $request)
     {
@@ -184,7 +186,7 @@ class LabelTreeController extends Controller
      * @apiParam (Attributes that can be updated) {Number} visibility_id ID of the new visibility of the label tree (public or private).
      *
      * @param UpdateLabelTree $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function update(UpdateLabelTree $request)
     {
@@ -236,7 +238,7 @@ class LabelTreeController extends Controller
      * @apiParam {Number} id The label tree ID.
      *
      * @param DestroyLabelTree $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function destroy(DestroyLabelTree $request)
     {

@@ -12,7 +12,6 @@ class ImageController extends Controller
      * Shows the image index page.
      *
      * @param int $id volume ID
-     * @return \Illuminate\Http\Response
      */
     public function index($id)
     {

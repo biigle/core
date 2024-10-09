@@ -11,9 +11,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Jcupitt\Vips\Image as VipsImage;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use VipsImage;
 
 class TileSingleImage extends Job implements ShouldQueue
 {

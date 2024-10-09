@@ -9,6 +9,8 @@
 /storage/*.key
 /storage/largo_patches
 /storage/maia_jobs
+/storage/metadata
+/storage/pending-metadata
 /vendor
 .env
 .env.backup

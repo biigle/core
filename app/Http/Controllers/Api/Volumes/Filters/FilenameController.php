@@ -23,7 +23,7 @@ class FilenameController extends Controller
      *
      * @param  int  $id
      * @param  string  $pattern
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index($id, $pattern)
     {

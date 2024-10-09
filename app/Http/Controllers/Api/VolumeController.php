@@ -19,7 +19,7 @@ class VolumeController extends Controller
      * Shows all volumes the user has access to.
      *
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Database\Eloquent\Collection
      * @api {get} volumes Get accessible volumes
      * @apiGroup Volumes
      * @apiName IndexVolumes
@@ -112,7 +112,7 @@ class VolumeController extends Controller
      * Updates the attributes of the specified volume.
      *
      * @param UpdateVolume $request
-     * @return Response
+     * @return \Illuminate\Http\RedirectResponse|null
      * @api {put} volumes/:id Update a volume
      * @apiGroup Volumes
      * @apiName UpdateVolumes
@@ -153,7 +153,7 @@ class VolumeController extends Controller
      * Clones volume to destination project.
      *
      * @param CloneVolume $request
-     * @return Response
+     * @return Volume|\Illuminate\Http\RedirectResponse
      * @api {post} volumes/:id/clone-to/:project_id Clones a volume
      * @apiGroup Volumes
      * @apiName CloneVolume
@@ -192,6 +192,9 @@ class VolumeController extends Controller
             $copy->name = $request->input('name', $volume->name);
             $copy->creating_async = true;
             $copy->save();
+            if ($volume->hasMetadata()) {
+                $copy->update(['metadata_file_path' => $copy->id.'.'.pathinfo($volume->metadata_file_path, PATHINFO_EXTENSION)]);
+            }
             $project->addVolumeId($copy->id);
 
             $job = new CloneImagesOrVideos($request, $copy);

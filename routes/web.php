@@ -247,6 +247,38 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
     });
 
+    $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {
+        $router->get('{id}', [
+            'as'   => 'pending-volume',
+            'uses' => 'PendingVolumeController@show',
+        ]);
+
+        $router->get('{id}/annotation-labels', [
+            'as'   => 'pending-volume-annotation-labels',
+            'uses' => 'PendingVolumeController@showAnnotationLabels',
+        ]);
+
+        $router->get('{id}/file-labels', [
+            'as'   => 'pending-volume-file-labels',
+            'uses' => 'PendingVolumeController@showFileLabels',
+        ]);
+
+        $router->get('{id}/label-map', [
+            'as'   => 'pending-volume-label-map',
+            'uses' => 'PendingVolumeController@showLabelMap',
+        ]);
+
+        $router->get('{id}/user-map', [
+            'as'   => 'pending-volume-user-map',
+            'uses' => 'PendingVolumeController@showUserMap',
+        ]);
+
+        $router->get('{id}/finish', [
+            'as'   => 'pending-volume-finish',
+            'uses' => 'PendingVolumeController@showFinish',
+        ]);
+    });
+
     $router->group(['namespace' => 'Volumes', 'prefix' => 'volumes'], function ($router) {
         $router->get('create', [
             'as'   => 'create-volume',

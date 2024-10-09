@@ -14,6 +14,8 @@ use Ramsey\Uuid\Uuid;
  * Admins can also manage members and modify the tree (name, visibility etc).
  * Label trees can be public or private. Private trees maintain a list of projects
  * that are authorized to use the tree. This list is maintained by label tree admins.
+ *
+ * @property string $uuid
  */
 class LabelTree extends Model
 {
@@ -22,7 +24,7 @@ class LabelTree extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'pivot',
@@ -33,7 +35,7 @@ class LabelTree extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'visibility_id' => 'int',
@@ -57,8 +59,8 @@ class LabelTree extends Model
     /**
      * Scope a query to public label trees.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param \Illuminate\Database\Eloquent\Builder<LabelTree> $query
+     * @return \Illuminate\Database\Eloquent\Builder<LabelTree>
      */
     public function scopePublicTrees($query)
     {
@@ -68,8 +70,8 @@ class LabelTree extends Model
     /**
      * Scope a query to private label trees.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param \Illuminate\Database\Eloquent\Builder<LabelTree> $query
+     * @return \Illuminate\Database\Eloquent\Builder<LabelTree>
      */
     public function scopePrivateTrees($query)
     {
@@ -79,9 +81,9 @@ class LabelTree extends Model
     /**
      * Scope a query to all trees that are accessible by a user.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<LabelTree> $query
      * @param User $user
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<LabelTree>
      */
     public function scopeAccessibleBy($query, User $user)
     {
@@ -117,9 +119,9 @@ class LabelTree extends Model
     /**
      * Scope a query to all trees that are not a varsion of another tree.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<LabelTree> $query
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<LabelTree>
      */
     public function scopeWithoutVersions($query)
     {
@@ -129,9 +131,9 @@ class LabelTree extends Model
     /**
      * Scope a query to all "global" trees.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Eloquent\Builder<LabelTree> $query
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<LabelTree>
      */
     public function scopeGlobal($query)
     {
@@ -143,7 +145,7 @@ class LabelTree extends Model
     /**
      * The version of this label tree (if it is a version of a master label tree).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTreeVersion, LabelTree>
      */
     public function version()
     {
@@ -153,7 +155,7 @@ class LabelTree extends Model
     /**
      * The versions of this (master) label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<LabelTreeVersion>
      */
     public function versions()
     {
@@ -163,7 +165,7 @@ class LabelTree extends Model
     /**
      * The visibility of the label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Visibility, LabelTree>
      */
     public function visibility()
     {
@@ -173,7 +175,7 @@ class LabelTree extends Model
     /**
      * The members of this label tree. Every member has a tree-specific role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
      */
     public function members()
     {
@@ -185,7 +187,7 @@ class LabelTree extends Model
     /**
      * The labels that belong to this tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label>
      */
     public function labels()
     {
@@ -263,7 +265,7 @@ class LabelTree extends Model
     /**
      * The projects that are using this label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
      */
     public function projects()
     {
@@ -273,7 +275,7 @@ class LabelTree extends Model
     /**
      * The projects that are authorized to use this private label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
      */
     public function authorizedProjects()
     {

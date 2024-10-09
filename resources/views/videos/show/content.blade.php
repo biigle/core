@@ -28,6 +28,7 @@
       :annotations="filteredAnnotations"
       :annotation-opacity="settings.annotationOpacity"
       :autoplay-draw="settings.autoplayDraw"
+      :jump-step="settings.jumpStep"
       :can-add="canEdit"
       :can-modify="canEdit"
       :can-delete="canEdit"
@@ -38,6 +39,7 @@
       :show-label-tooltip="settings.showLabelTooltip"
       :show-minimap="settings.showMinimap"
       :show-mouse-position="settings.showMousePosition"
+      :enable-jump-by-frame="settings.enableJumpByFrame"
       :video="video"
       :height-offset="screenHeightOffset"
       :show-prev-next="hasSiblingVideos"
@@ -61,6 +63,7 @@
       v-on:attaching-active="handleAttachingLabelActive"
       v-on:swapping-active="handleSwappingLabelActive"
       v-on:seek="seek"
+      v-on:start-seeking="startSeeking"
       v-on:is-invalid-shape="handleInvalidShape"
       ></video-screen>
 <video-timeline

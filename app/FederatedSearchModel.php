@@ -13,7 +13,7 @@ class FederatedSearchModel extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'attrs' => 'array',
@@ -58,7 +58,7 @@ class FederatedSearchModel extends Model
     /**
      * The instance, this model belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<FederatedSearchInstance, FederatedSearchModel>
      */
     public function instance()
     {
@@ -68,7 +68,7 @@ class FederatedSearchModel extends Model
     /**
      * The users who can access this model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
      */
     public function users()
     {

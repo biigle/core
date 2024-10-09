@@ -12,7 +12,7 @@ class ApiToken extends Model
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $hidden = [
         'hash',
@@ -21,7 +21,7 @@ class ApiToken extends Model
     /**
      * The user, this token belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, ApiToken>
      */
     public function owner()
     {

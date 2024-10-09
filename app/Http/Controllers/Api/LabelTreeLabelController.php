@@ -41,7 +41,7 @@ class LabelTreeLabelController extends Controller
      * ]
      *
      * @param StoreLabel $request
-     * @return \Illuminate\Http\Response
+     * @return array|\Illuminate\Http\RedirectResponse
      */
     public function store(StoreLabel $request)
     {

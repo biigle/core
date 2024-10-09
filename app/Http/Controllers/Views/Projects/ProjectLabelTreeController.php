@@ -13,7 +13,6 @@ class ProjectLabelTreeController extends Controller
      *
      * @param Request $request
      * @param int $id project ID
-     * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
     {
@@ -27,7 +26,7 @@ class ProjectLabelTreeController extends Controller
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
-        $isPinned = $isMember && $userProject->pivot->pinned;
+        $isPinned = $isMember && $userProject->getRelationValue('pivot')->pinned;
         $canPin = $isMember && 3 > $request->user()
             ->projects()
             ->wherePivot('pinned', true)

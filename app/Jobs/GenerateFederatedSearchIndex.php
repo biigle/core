@@ -36,7 +36,7 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
         $index['users'] = [];
         User::whereIn('id', array_unique($userIds))
             ->select('id', 'uuid')
-            ->eachById(function ($user) use (&$index) {
+            ->eachById(function (User $user) use (&$index) {
                 $index['users'][] = [
                     'id' => $user->id,
                     'uuid' => $user->uuid,
@@ -59,7 +59,7 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
         // Versions and global label trees should not be indexed.
         LabelTree::withoutVersions()
             ->whereHas('members')
-            ->eachById(function ($tree) use (&$trees) {
+            ->eachById(function (LabelTree $tree) use (&$trees) {
                 $trees[] = [
                     'id' => $tree->id,
                     'name' => $tree->name,
@@ -82,7 +82,7 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
     protected function generateProjectIndex()
     {
         $projects = [];
-        Project::eachById(function ($project) use (&$projects) {
+        Project::eachById(function (Project $project) use (&$projects) {
             $projects[] = [
                 'id' => $project->id,
                 'name' => $project->name,
@@ -115,7 +115,7 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
     protected function generateVolumeIndex()
     {
         $volumes = [];
-        Volume::eachById(function ($volume) use (&$volumes) {
+        Volume::eachById(function (Volume $volume) use (&$volumes) {
             $volumes[] = [
                 'id' => $volume->id,
                 'name' => $volume->name,
@@ -123,7 +123,7 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
                 'updated_at' => strval($volume->updated_at),
                 'url' => route('volume', $volume->id, false),
                 'thumbnail_url' => $volume->thumbnailUrl,
-                'thumbnail_urls' => $volume->thumbnailUrls,
+                'thumbnail_urls' => $volume->thumbnailsUrl,
             ];
         });
 

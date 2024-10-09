@@ -52,7 +52,7 @@ class AddVideoVolumes extends Migration
                 'created_at',
                 'updated_at',
             ]);
-            $table->integer('volume_id')->nullable(false)->change();
+            $table->integer('volume_id')->nullable(false)->unsigned()->change();
         });
     }
 
@@ -76,7 +76,7 @@ class AddVideoVolumes extends Migration
                 ->on('users')
                 ->onDelete('set null');
 
-            $table->integer('volume_id')->nullable(true)->change();
+            $table->integer('volume_id')->nullable(true)->unsigned()->change();
 
             $table->string('url')->nullable();
             $table->string('name')->nullable();
@@ -101,7 +101,7 @@ class AddVideoVolumes extends Migration
 
         Schema::table('videos', function (Blueprint $table) {
             $table->dropColumn(['volume_id', 'filename']);
-            $table->integer('project_id')->nullable(false)->change();
+            $table->integer('project_id')->nullable(false)->unsigned()->change();
             $table->string('url')->nullable(false)->change();
             $table->string('name')->nullable(false)->change();
         });

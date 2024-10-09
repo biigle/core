@@ -16,13 +16,11 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
-        "ext-vips": "*",
-        "ext-yaml": "*",
         "biigle/ananas": "dev-master",
         "biigle/auth-lslogin": "dev-master",
         "biigle/color-sort": "dev-master",
@@ -30,43 +28,42 @@
         "biigle/denbi-service": "dev-master",
         "biigle/geo": "dev-master",
         "biigle/kpis": "dev-main",
-        "biigle/laravel-file-cache": "^4.0",
-        "biigle/laravel-queue-alert": "^1.0",
+        "biigle/laravel-file-cache": "^5.0",
+        "biigle/laravel-queue-alert": "^2.0",
         "biigle/largo": "dev-master",
         "biigle/laserpoints": "dev-master",
         "biigle/magic-sam": "^1.0",
         "biigle/maia": "dev-master",
+        "biigle/metadata-ifdo": "dev-main",
         "biigle/module": "dev-main",
         "biigle/newsletter": "dev-master",
         "biigle/reports": "dev-master",
         "biigle/sync": "dev-master",
         "biigle/user-disks": "dev-main",
         "biigle/user-storage": "dev-master",
-        "doctrine/dbal": "^3.0",
         "duncan3dc/bom-string": "^1.1",
-        "endroid/qr-code": "^4.6",
+        "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
-        "jcupitt/vips": "^1.0",
+        "jcupitt/vips": "^2.4",
         "jmikola/geojson": "^1.0",
-        "laravel/framework": "^10.0",
-        "laravel/tinker": "^2.8",
+        "laravel/framework": "^11.0",
+        "laravel/tinker": "^2.9",
         "laravel/ui": "^4.0",
         "league/flysystem-aws-s3-v3": "^3.12",
         "msurguy/honeypot": "^1.0",
         "pgvector/pgvector": "^0.1.4",
         "php-ffmpeg/php-ffmpeg": "^1.0",
         "pusher/pusher-php-server": "^7.2",
-        "ramsey/uuid": "^4.0",
-        "ramsey/uuid-doctrine": "^1.8"
+        "ramsey/uuid": "^4.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.4",
+        "fakerphp/faker": "^1.23",
         "filp/whoops": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.0",
-        "mockery/mockery": "^1.3.1",
-        "nunomaduro/collision": "^7.0",
-        "phpunit/phpunit": "^10.0",
-        "psalm/plugin-laravel": "^2.0"
+        "larastan/larastan": "^2.0",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.1",
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "psr-4": {
@@ -124,10 +121,10 @@
             "php doctum.phar update doctum.php"
         ],
         "lint": [
-            "@php vendor/bin/psalm"
+            "@php vendor/bin/phpstan analyse"
         ],
         "pull-modules": [
-            "PPWD=$PWD; for f in $(find vendor/biigle -mindepth 1 -maxdepth 1 -type d); do cd $f; git pull; cd $PPWD; done"
+            "PPWD=$PWD; for f in $(find vendor/biigle -mindepth 1 -maxdepth 1 -type d); do cd $f; git checkout $(basename $(git symbolic-ref refs/remotes/origin/HEAD)); git pull; cd $PPWD; done"
         ]
     },
     "config": {
@@ -141,7 +138,7 @@
             "composer/package-versions-deprecated": true
         },
         "platform": {
-            "php": "8.1.13"
+            "php": "8.2.21"
         }
     },
     "prefer-stable": true
