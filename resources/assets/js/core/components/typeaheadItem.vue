@@ -51,7 +51,7 @@ export default {
         },
         computedClass() {
             return {
-                'scrollable-item': this.scrollable && !this.isLabel,
+                'scrollable-item': !this.scrollable || this.scrollable && !this.isLabel,
                 'scrollable-item-label': this.scrollable && this.isLabel,
                 'activeItemText': this.active
             };

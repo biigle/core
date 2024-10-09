@@ -23,7 +23,7 @@
         v-show="showTypeahead"
         >
         <template slot="item" slot-scope="props">
-            <div ref="typeahead" :class="{'typeahead-scrollable': scrollable}">
+            <div ref="typeahead" :class="{'typeahead-scrollable':scrollable, 'typeahead': !scrollable}">
             <component
                 ref="dropdown"
                 :is="itemComponent"
@@ -36,7 +36,8 @@
                 :scrollable="scrollable"
                 :is-label="isLabelTree"
                 :active="props.activeIndex === index"
-                :class="{activeItem: props.activeIndex === index, 'typeahead-item-box': scrollable}"
+                class="typeahead-item-box"
+                :class="{activeItem: props.activeIndex === index}"
                 >
             </component>
             </div>
