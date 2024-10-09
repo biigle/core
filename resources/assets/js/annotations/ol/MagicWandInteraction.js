@@ -183,14 +183,14 @@ class MagicWandInteraction extends PointerInteraction {
     handleUpEvent() {
         this.currentThreshold = this.colorThreshold;
 
-        if (this.isShowingCross) {
-            this.sketchSource.removeFeature(this.sketchFeature);
-        } else {
-            this.dispatchEvent({type: 'drawend', feature: this.sketchFeature});
+        if (!this.isShowingCross) {
+            this.sketchFeature.setStyle(null);
+            this.dispatchEvent({ type: 'drawend', feature: this.sketchFeature });
             // Add feature to annotation source to prevent flickering feature
             this.source.addFeature(this.sketchFeature);
-            this.sketchSource.removeFeature(this.sketchFeature);
         }
+        
+        this.sketchSource.removeFeature(this.sketchFeature);
 
         this.sketchFeature = null;
 
