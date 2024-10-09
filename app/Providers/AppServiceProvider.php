@@ -5,6 +5,7 @@ namespace Biigle\Providers;
 use Auth;
 use Biigle\Announcement;
 use Biigle\Support\FilesystemManager;
+use Biigle\User;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
@@ -38,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
             // Make some variables available in any view.
             $user = Auth::user();
             $view->with('user', $user);
-            if ($user) {
+            if ($user instanceof User) {
                 $view->with('hasNotification', $user->unreadNotifications()->exists());
             }
             $view->with('announcement', Announcement::getActive());

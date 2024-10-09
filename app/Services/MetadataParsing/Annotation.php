@@ -6,7 +6,8 @@ use Biigle\Shape;
 use Biigle\Traits\HasPointsAttribute;
 use Exception;
 
-class Annotation
+// Abstract becaus it should not be used directly.
+abstract class Annotation
 {
     use HasPointsAttribute;
 
@@ -26,6 +27,13 @@ class Annotation
         public array $labels,
     ) {
         $this->shape_id = $shape->id;
+        $this->setPointsAttribute($points);
+
+        array_walk($labels, function ($label) {
+            if (!($label instanceof LabelAndUser)) {
+                throw new Exception('Annotation labels must be of class '.LabelAndUser::class);
+            }
+        });
     }
 
     /**
@@ -60,6 +68,11 @@ class Annotation
      */
     public function setPointsAttribute(array $points)
     {
-        $this->points = array_map(fn ($coordinate) => round($coordinate, 2), $points);
+        $this->points = array_map(
+            fn ($a) => is_array($a)
+                ? array_map(fn ($b) => round($b, 2), $a)
+                : round($a, 2),
+            $points
+        );
     }
 }

@@ -81,8 +81,9 @@ class ProcessNewImage extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $this->width = config('thumbnails.width');
-        $this->height = config('thumbnails.height');
+        // Double the size for crisp display on high-dpi montors.
+        $this->width = config('thumbnails.width') * 2;
+        $this->height = config('thumbnails.height') * 2;
         $this->threshold = config('image.tiles.threshold');
 
         try {

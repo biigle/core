@@ -212,4 +212,46 @@ class VolumeController extends Controller
             ->with('messageType', 'success');
 
     }
+
+    /**
+     * Return file ids which are sorted by annotations.created_at
+     *
+     * @param int $id
+     * @return object
+     * @api {get} volumes{/id}/files/annotation-timestamps Get file ids sorted by recently annotated
+     * @apiGroup Volumes
+     * @apiName VolumeSortByAnnotated
+     * @apiPermission projectMember
+     *
+     * @apiParam {Number} id The volume ID.
+     *
+     * @apiSuccessExample {json} Success response:
+     * {
+     *  1: 1,
+     *  2: 2,
+     *  3: 3,
+     * }
+     *
+     */
+    public function getFileIdsSortedByAnnotationTimestamps($id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
+
+        if ($volume->isImageVolume()) {
+            $ids = $volume->files()
+                ->leftJoin('image_annotations', 'images.id', "=", "image_annotations.image_id")
+                ->groupBy('images.id')
+                ->selectRaw('images.id, max(image_annotations.created_at) as created_at')
+                ->orderByRaw("created_at desc nulls last");
+        } else {
+            $ids = $volume->files()
+                ->leftJoin('video_annotations', 'videos.id', "=", "video_annotations.video_id")
+                ->groupBy('videos.id')
+                ->selectRaw('videos.id, max(video_annotations.created_at) as created_at')
+                ->orderByRaw("created_at desc nulls last");
+        }
+
+        return $ids->pluck('id');
+    }
 }

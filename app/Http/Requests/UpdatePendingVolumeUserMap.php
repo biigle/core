@@ -64,8 +64,9 @@ class UpdatePendingVolumeUserMap extends FormRequest
                 }
             }
 
-            $count = User::whereIn('id', array_values($map))->count();
-            if (count($map) !== $count) {
+            $uniqueIds = array_values(array_unique($map));
+            $count = User::whereIn('id', $uniqueIds)->count();
+            if (count($uniqueIds) !== $count) {
                 $validator->errors()->add('user_map', 'Some user IDs do not exist in the database.');
             }
         });

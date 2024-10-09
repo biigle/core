@@ -13,9 +13,9 @@ use SplFileInfo;
 trait HasMetadataFile
 {
     /**
-     * Name of the storage disk where the metadata files are stored.
+     * Get the name of the disk to store metadata files.
      */
-    public static string $metadataFileDisk;
+    abstract public function getMetadataFileDisk(): string;
 
     public function hasMetadata(): bool
     {
@@ -28,7 +28,7 @@ trait HasMetadataFile
         if ($extension = $file->getClientOriginalExtension()) {
             $this->metadata_file_path .= '.'.$extension;
         }
-        $file->storeAs('', $this->metadata_file_path, static::$metadataFileDisk);
+        $file->storeAs('', $this->metadata_file_path, $this->getMetadataFileDisk());
         $this->save();
     }
 
@@ -38,7 +38,7 @@ trait HasMetadataFile
             return null;
         }
 
-        $disk = static::$metadataFileDisk;
+        $disk = $this->getMetadataFileDisk();
         $key = "metadata-{$disk}-{$this->metadata_file_path}";
 
         return Cache::store('array')->remember($key, 60, function () use ($disk) {
@@ -67,7 +67,7 @@ trait HasMetadataFile
     public function deleteMetadata($noUpdate = false): void
     {
         if ($this->hasMetadata()) {
-            Storage::disk(static::$metadataFileDisk)->delete($this->metadata_file_path);
+            Storage::disk($this->getMetadataFileDisk())->delete($this->metadata_file_path);
             if (!$noUpdate) {
                 $this->update(['metadata_file_path' => null]);
             }

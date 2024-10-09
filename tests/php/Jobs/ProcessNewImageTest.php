@@ -95,9 +95,9 @@ class ProcessNewImageTest extends TestCase
         $size = getimagesize(Storage::disk('test-thumbs')->path("{$prefix}.{$format}"));
         $config = [config('thumbnails.width'), config('thumbnails.height')];
 
-        $this->assertTrue($size[0] <= $config[0]);
-        $this->assertTrue($size[1] <= $config[1]);
-        $this->assertTrue($size[0] == $config[0] || $size[1] == $config[1]);
+        $this->assertTrue($size[0] <= ($config[0] * 2));
+        $this->assertTrue($size[1] <= ($config[1] * 2));
+        $this->assertTrue($size[0] == ($config[0] * 2) || $size[1] == ($config[1] * 2));
     }
 
     public function testHandleMakeThumbnailNotReadable()

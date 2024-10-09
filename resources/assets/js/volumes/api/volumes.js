@@ -92,5 +92,9 @@ export default Vue.resource('api/v1/volumes{/id}', {}, {
     clone: {
         method: 'POST',
         url: 'api/v1/volumes{/id}/clone-to{/project_id}'
+    },
+    getFileIdsSortedByAnnotationTimestamps:{
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/files/annotation-timestamps'
     }
 });

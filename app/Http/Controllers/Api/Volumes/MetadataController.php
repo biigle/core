@@ -81,7 +81,7 @@ class MetadataController extends Controller
         // is not guaranteed that the file is overwritten.
         $request->volume->deleteMetadata();
         $request->volume->saveMetadata($request->file('file'));
-        $request->volume->update(['metadata_parser' => $request->input('metadata_parser')]);
+        $request->volume->update(['metadata_parser' => $request->input('parser')]);
         Queue::push(new UpdateVolumeMetadata($request->volume));
     }
 
