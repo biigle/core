@@ -4,9 +4,17 @@
             <button v-if="editable" v-show="editing" type="button" class="btn btn-default btn-sm pull-right" title="Detach this label tree" @click="emitRemove"><i class="fa fa-trash"></i></button>
             <a :href="url" v-text="tree.name"></a>
         </h4>
-        <p v-if="tree.description" class="list-group-item-text" v-text="tree.description"></p>
+        <p v-if="tree.description" class="list-group-item-text limit-description" v-text="tree.description"></p>
     </li>
 </template>
+
+<style>
+.limit-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+</style>
 
 <script>
 export default {
