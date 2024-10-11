@@ -44,7 +44,10 @@ class GenerateFederatedSearchIndex extends Job implements ShouldQueue
             });
 
         $key = config('biigle.federated_search.cache_key');
-        Cache::put($key, $index, 3600);
+        // The index is updated hourly. Make the cached value valid for 3 hours so there
+        // is plenty of time to renew it. Otherwise the index is generated on the fly when
+        // it is requested and this might time out.
+        Cache::put($key, $index, 10800);
     }
 
     /**
