@@ -84,9 +84,10 @@ class ImageController extends Controller
         $request->file->delete();
     }
 
-    public function getLastAnnotationId($id){
+    public function getLastAnnotationId($id)
+    {
         $image = Image::findOrFail($id);
-        $this->authorize('access',$image);
+        $this->authorize('access', $image);
 
         return $image->annotations()->max('id');
     }
