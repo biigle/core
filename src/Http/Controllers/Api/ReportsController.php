@@ -40,7 +40,17 @@ class ReportsController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        return $disk->download($report->getStorageFilename(), $report->filename);
+        $path = $report->getStorageFilename();
+        return $disk->download($path, $report->filename)
+            // Use a custom fallback with fread() because the default fpassthru() could
+            // lead to an out of memory error with large reports.
+            ->setCallback(function () use ($disk, $path) {
+                $stream = $disk->readStream($path);
+                while (!feof($stream)) {
+                    echo fread($stream, 8192);
+                }
+                fclose($stream);
+            });
     }
 
     /**
