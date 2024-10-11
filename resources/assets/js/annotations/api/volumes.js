@@ -8,4 +8,13 @@
  *
  * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/volumes{/id}/images/area');
+export default Vue.resource('api/v1/volumes', {}, {
+    getArea: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/images/area',
+    },
+    getLastAnnotationId: {
+        method: 'GET',
+        url: 'api/v1/volumes/images{/id}'
+    }
+});

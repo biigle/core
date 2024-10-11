@@ -406,6 +406,8 @@ $router->group([
     ]);
 });
 
+$router->get('volumes/images/{id}','ImageController@getLastAnnotationId');
+
 $router->get('users/find/{pattern}', 'UserController@find');
 
 $router->get('users/my', 'UserController@showOwn');
