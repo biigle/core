@@ -115,7 +115,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
     /**
      * Create a CSV file for this report.
      *
-     * @param \Illuminate\Database\QueryBuilder $rows The rows for the CSV
+     * @param \Illuminate\Database\QueryBuilder $query The query for the CSV rows
      * @return CsvFile
      */
     protected function createCsv($query)
