@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import AnnotationTrack from './annotationTrack';
+import AnnotationTrack from './annotationTrack.vue';
 
 export default {
     components: {

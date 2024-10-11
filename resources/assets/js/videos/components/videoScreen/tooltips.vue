@@ -1,5 +1,5 @@
 <script>
-import LabelTooltip from '../../../annotations/components/labelTooltip';
+import LabelTooltip from '@/annotations/components/labelTooltip.vue';
 
 /**
  * Mixin for the videoScreen component that contains logic for the tooltips.

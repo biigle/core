@@ -1,5 +1,5 @@
 <script>
-import chart from '../components/adminChart';
+import chart from '../components/adminChart.vue';
 
 export default {
     components: {

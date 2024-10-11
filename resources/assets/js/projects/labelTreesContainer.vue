@@ -1,10 +1,10 @@
 <script>
-import Events from '../core/events';
-import LabelTreeList from './components/labelTreeList';
-import LoaderMixin from '../core/mixins/loader';
-import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
-import {handleErrorResponse} from '../core/messages/store';
+import Events from '@/core/events.js';
+import LabelTreeList from './components/labelTreeList.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import ProjectsApi from '@/core/api/projects.js';
+import Typeahead from '@/core/components/typeahead.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 export default {
     mixins: [LoaderMixin],

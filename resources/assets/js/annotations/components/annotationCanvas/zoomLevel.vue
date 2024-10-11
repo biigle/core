@@ -1,5 +1,5 @@
 <script>
-import ZoomLevelIndicator from '../zoomLevelIndicator';
+import ZoomLevelIndicator from '../zoomLevelIndicator.vue';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the zoom level indicator.

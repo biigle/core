@@ -1,7 +1,7 @@
 <script>
-import CanvasSource from '../../../annotations/ol/source/Canvas';
+import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '../../../core/keyboard';
+import Keyboard from '@/core/keyboard.vue';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
 

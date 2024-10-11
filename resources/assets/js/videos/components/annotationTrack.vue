@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import AnnotationClip from './annotationClip';
+import AnnotationClip from './annotationClip.vue';
 
 export default {
     components: {

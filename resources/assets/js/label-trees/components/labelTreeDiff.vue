@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Row from './labelTreeDiffRow';
+import Row from './labelTreeDiffRow.vue';
 
 /**
  * A component that displays a single label of a label tree.

@@ -1,12 +1,12 @@
 <script>
-import AttachableVolumesApi from './api/attachableVolumes';
-import Events from '../core/events';
-import LoaderMixin from '../core/mixins/loader';
-import PreviewThumbnail from './components/previewThumbnail';
-import statisticsModal from './components/statisticsModal';
-import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
-import {handleErrorResponse} from '../core/messages/store';
+import AttachableVolumesApi from './api/attachableVolumes.js';
+import Events from '@/core/events.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import PreviewThumbnail from './components/previewThumbnail.vue';
+import statisticsModal from './components/statisticsModal.vue';
+import ProjectsApi from '@/core/api/projects.js';
+import Typeahead from '@/core/components/typeahead.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 
 const SORTING = {

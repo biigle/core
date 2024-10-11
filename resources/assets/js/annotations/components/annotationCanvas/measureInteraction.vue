@@ -1,7 +1,7 @@
 <script>
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '../../../core/keyboard';
-import Styles from '../../stores/styles';
+import Keyboard from '@/core/keyboard.vue';
+import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 

@@ -22,8 +22,7 @@
 </template>
 
 <script>
-import DatePicker from 'uiv/dist/DatePicker';
-import Dropdown from 'uiv/dist/Dropdown';
+import {DatePicker, Dropdown} from 'uiv';
 
 export default {
     props: {

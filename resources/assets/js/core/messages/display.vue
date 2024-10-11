@@ -1,5 +1,5 @@
 <script>
-import Store from './store';
+import Store from './store.vue';
 
 var message = {
     props: {

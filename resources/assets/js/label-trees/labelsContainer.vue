@@ -1,14 +1,13 @@
 <script>
-import Events from '../core/events';
-import LabelsApi from '../core/api/labels';
-import LabelTree from './components/labelTree';
-import LoaderMixin from '../core/mixins/loader';
-import ManualLabelForm from './components/manualLabelForm';
-import WormsLabelForm from './components/wormsLabelForm';
-import {handleErrorResponse} from '../core/messages/store';
-import {randomColor} from './utils';
-import Tabs from 'uiv/dist/Tabs';
-import Tab from 'uiv/dist/Tab';
+import Events from '@/core/events.js';
+import LabelsApi from '@/core/api/labels.js';
+import LabelTree from './components/labelTree.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import ManualLabelForm from './components/manualLabelForm.vue';
+import WormsLabelForm from './components/wormsLabelForm.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
+import {randomColor} from './utils.js';
+import {Tabs, Tab} from 'uiv';
 
 /**
  * The panel for editing the labels of a label tree

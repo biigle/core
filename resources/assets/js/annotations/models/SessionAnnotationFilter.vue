@@ -1,5 +1,5 @@
 <script>
-import AnnotationFilter from '../mixins/annotationFilter';
+import AnnotationFilter from '../mixins/annotationFilter.vue';
 
 export default Vue.extend({
     mixins: [AnnotationFilter],

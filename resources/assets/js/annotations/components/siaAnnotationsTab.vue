@@ -1,5 +1,5 @@
 <script>
-import AnnotationsTab from './annotationsTab';
+import AnnotationsTab from './annotationsTab.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via

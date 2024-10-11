@@ -1,5 +1,5 @@
 <script>
-import LabelFormComponent from '../mixins/labelFormComponent';
+import LabelFormComponent from '../mixins/labelFormComponent.vue';
 
 /**
  * A component for a form to manually create a new label for a label tree

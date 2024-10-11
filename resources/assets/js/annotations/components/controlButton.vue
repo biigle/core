@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import Loader from '../../core/components/loader';
+import Loader from '@/core/components/loader.vue';
 
 /**
  * A generic control button of the annotation canvas

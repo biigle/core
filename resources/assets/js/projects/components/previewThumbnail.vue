@@ -69,9 +69,9 @@
  *
  * @type {Object}
  */
-import LoaderMixin from '../../core/mixins/loader';
-import volumeStatisticsApi from '../api/volumeStatistics';
-import {handleErrorResponse} from '../../core/messages/store';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import volumeStatisticsApi from '../api/volumeStatistics.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 export default {
     mixins: [LoaderMixin],

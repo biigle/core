@@ -1,6 +1,6 @@
 <script>
-import LabelTypeahead from '../components/labelTypeahead';
-import {randomColor} from '../utils';
+import LabelTypeahead from '../components/labelTypeahead.vue';
+import {randomColor} from '../utils.js';
 
 /**
  * A mixin for components that create new labels

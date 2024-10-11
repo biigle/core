@@ -1,10 +1,10 @@
 <script>
-import Dropdown from 'uiv/dist/Dropdown';
-import EditorMixin from '../core/mixins/editor';
-import LabelTreesApi from '../core/api/labelTree';
-import LoaderMixin from '../core/mixins/loader';
-import Messages from '../core/messages/store';
-import {handleErrorResponse} from '../core/messages/store';
+import {Dropdown} from 'uiv';
+import EditorMixin from '@/core/mixins/editor.vue';
+import LabelTreesApi from '@/core/api/labelTree.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 /**
  * The panel for editing the title information of a label tree

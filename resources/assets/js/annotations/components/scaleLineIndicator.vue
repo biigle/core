@@ -1,5 +1,5 @@
 <script>
-import MeasureComponent from '../mixins/measureComponent';
+import MeasureComponent from '../mixins/measureComponent.vue';
 
 /**
  * The scale line indicator of the canvas element

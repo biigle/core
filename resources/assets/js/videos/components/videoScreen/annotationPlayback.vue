@@ -6,7 +6,7 @@ import LineString from '@biigle/ol/geom/LineString';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Rectangle from '@biigle/ol/geom/Rectangle';
-import {getRoundToPrecision} from '../../utils';
+import {getRoundToPrecision} from '@/videos/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the annotation playback.

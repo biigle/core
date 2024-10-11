@@ -1,10 +1,10 @@
 <script>
-import Dropdown from 'uiv/dist/Dropdown';
-import EditorMixin from '../core/mixins/editor';
-import LoaderMixin from '../core/mixins/loader';
-import Messages from '../core/messages/store';
-import ProjectsApi from '../core/api/projects';
-import {handleErrorResponse} from '../core/messages/store';
+import {Dropdown} from 'uiv';
+import EditorMixin from '@/core/mixins/editor.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.vue';
+import ProjectsApi from '@/core/api/projects.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 /**
  * The panel for editing the title information of a project

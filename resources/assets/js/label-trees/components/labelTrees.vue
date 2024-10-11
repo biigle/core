@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import Keyboard from '../../core/keyboard';
-import LabelTree from './labelTree';
-import Typeahead from './labelTypeahead';
+import Keyboard from '@/core/keyboard.vue';
+import LabelTree from './labelTree.vue';
+import Typeahead from './labelTypeahead.vue';
 
 /**
  * A component that displays a list of label trees.

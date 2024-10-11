@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import TypeaheadItem from '../../core/components/typeaheadItem';
+import TypeaheadItem from '@/core/components/typeaheadItem.vue';
 
 export default {
     mixins: [TypeaheadItem],

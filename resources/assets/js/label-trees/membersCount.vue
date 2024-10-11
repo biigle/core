@@ -1,5 +1,5 @@
 <script>
-import Events from '../core/events';
+import Events from '@/core/events.js';
 
 export default {
     methods: {

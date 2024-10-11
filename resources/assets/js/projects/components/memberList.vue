@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import MemberListItem from './memberListItem';
+import MemberListItem from './memberListItem.vue';
 
 export default {
     props: {

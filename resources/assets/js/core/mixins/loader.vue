@@ -1,8 +1,8 @@
 <script>
-import LoaderComponent from '../components/loader';
-import LoaderBlockComponent from '../components/loaderBlock';
-import MessageCurtainComponent from '../components/messageCurtain';
-import Messages from './../messages/store';
+import LoaderComponent from '../components/loader.vue';
+import LoaderBlockComponent from '../components/loaderBlock.vue';
+import MessageCurtainComponent from '../components/messageCurtain.vue';
+import Messages from '../messages/store.vue';
 
 /**
  * A mixin for view models that have a loading state

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import Segment from './annotationSegment';
+import Segment from './annotationSegment.vue';
 
 export default {
     components: {

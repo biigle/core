@@ -1,6 +1,6 @@
 <script>
-import Filters from './annotationsTabFilters';
-import LabelItem from './annotationsTabLabelItem';
+import Filters from './annotationsTabFilters.vue';
+import LabelItem from './annotationsTabLabelItem.vue';
 
 export default {
     components: {

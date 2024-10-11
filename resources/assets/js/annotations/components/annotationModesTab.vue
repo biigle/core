@@ -1,9 +1,9 @@
 <script>
-import Events from '../../core/events';
-import Keyboard from '../../core/keyboard';
-import PowerToggle from '../../core/components/powerToggle';
-import Settings from '../stores/settings';
-import {urlParams as UrlParams} from '../../core/utils';
+import Events from '@/core/events.js';
+import Keyboard from '@/core/keyboard.vue';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import Settings from '../stores/settings.js';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 /**
  * The annotation modes tab of the annotator

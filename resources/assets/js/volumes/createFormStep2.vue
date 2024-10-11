@@ -1,10 +1,10 @@
 <script>
-import BrowserApi from './api/browser';
-import Dropdown from 'uiv/dist/Dropdown';
-import FileBrowser from '../core/components/fileBrowser';
-import LoaderMixin from '../core/mixins/loader';
-import {debounce} from '../core/utils';
-import {MEDIA_TYPE} from './createFormStep1';
+import BrowserApi from './api/browser.js';
+import {Dropdown} from 'uiv';
+import FileBrowser from '@/core/components/fileBrowser.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import {debounce} from '@/core/utils.js';
+import {MEDIA_TYPE} from './createFormStep1.vue';
 
 const FILE_SOURCE = {
     REMOTE: 'remote',

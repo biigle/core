@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import AnnotationTooltip from '../mixins/annotationTooltip';
-import MeasureComponent from '../mixins/measureComponent';
+import AnnotationTooltip from '../mixins/annotationTooltip.vue';
+import MeasureComponent from '../mixins/measureComponent.vue';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Circle from '@biigle/ol/geom/Circle';
 import LineString from '@biigle/ol/geom/LineString';

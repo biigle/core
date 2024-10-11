@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Directory from './fileBrowserDirectory';
+import Directory from './fileBrowserDirectory.vue';
 
 export default {
     components: {

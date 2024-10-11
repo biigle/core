@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import Typeahead from 'uiv/dist/Typeahead';
-import TypeaheadItem from './typeaheadItem';
+import {Typeahead} from 'uiv';
+import TypeaheadItem from './typeaheadItem.vue';
 
 /**
  * A component that displays a typeahead to find items.

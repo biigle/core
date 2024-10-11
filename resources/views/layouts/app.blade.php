@@ -17,7 +17,7 @@
         <meta name="description" content="The Bio-Image Indexing and Graphical Labelling Environment is a web service for the efficient and rapid annotation of still images.">
     @endif
 
-    <link href="{{ cachebust_asset('assets/styles/main.css') }}" rel="stylesheet">
+    @vite(['resources/assets/sass/main.scss'])
     @stack('styles')
 </head>
 <body>
@@ -27,7 +27,7 @@
     @include('partials.messages')
     @yield('content')
 
-    <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
+    @vite(['resources/assets/js/main.js'])
     <script type="text/javascript">
         Vue.http.options.root = '{{url('/')}}';
     </script>

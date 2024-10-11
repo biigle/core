@@ -1,9 +1,9 @@
 <script>
-import Keyboard from '../../../core/keyboard';
-import ModifyPolygonBrushInteraction from '../../ol/interaction/ModifyPolygonBrush';
-import PolygonBrushInteraction from '../../ol/interaction/PolygonBrush';
+import Keyboard from '@/core/keyboard.vue';
+import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPolygonBrush.js';
+import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
-import Styles from '../../stores/styles';
+import Styles from '@/annotations/stores/styles.js';
 import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
 
 /**

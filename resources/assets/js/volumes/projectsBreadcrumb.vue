@@ -1,5 +1,5 @@
 <script>
-import Dropdown from 'uiv/dist/Dropdown';
+import {Dropdown} from 'uiv';
 
 export default new Vue({
     components: {

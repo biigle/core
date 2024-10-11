@@ -1,5 +1,5 @@
 <script>
-import AnnotationsTab from '../../annotations/components/annotationsTab';
+import AnnotationsTab from '@/annotations/components/annotationsTab.vue';
 
 /**
  * The specific implementation of the annotations tab for the video annotation tool.

@@ -1,11 +1,11 @@
 <script>
-import LoaderMixin from '../core/mixins/loader';
-import Typeahead from "../core/components/typeahead";
-import FileItem from "./components/filePanelItem";
-import {handleErrorResponse} from "../core/messages/store";
-import VolumeApi from '../volumes/api/volumes'
-import LabelTrees from "../label-trees/components/labelTrees";
-import {urlParams as UrlParams} from '../core/utils';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Typeahead from '@/core/components/typeahead.vue';
+import FileItem from './components/filePanelItem.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
+import VolumeApi from '@/volumes/api/volumes.js'
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 /**
  * View model for the create volume form.

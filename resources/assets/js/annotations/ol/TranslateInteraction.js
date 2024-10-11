@@ -1,6 +1,6 @@
 import BaseTranslate from '@biigle/ol/interaction/Translate';
-import Keyboard from '../../core/keyboard';
-import {debounce} from '../../core/utils';
+import Keyboard from '@/core/keyboard.vue';
+import {debounce} from '@/core/utils.js';
 
 /**
  * Control for translating OpenLayers features with extra functions

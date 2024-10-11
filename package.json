@@ -1,26 +1,23 @@
 {
   "license": "GPL-3.0-only",
   "scripts": {
-    "dev": "npm run development",
-    "development": "mix",
-    "watch": "mix watch",
-    "watch-poll": "mix watch -- --watch-options-poll=1000",
-    "hot": "mix watch --hot",
-    "prod": "npm run production",
-    "production": "mix --production",
+    "dev": "vite",
+    "prod": "vite build",
     "lint": "eslint --ext .js,.vue resources/assets/js/"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "@vue/compiler-sfc": "^3.5.11",
     "eslint": "^7.3.1",
     "eslint-plugin-vue": "^7.0.0",
     "laravel-echo": "^1.14.2",
-    "laravel-mix": "^6.0.42",
+    "laravel-vite-plugin": "^1.0.5",
     "pusher-js": "^7.5.0",
     "resolve-url-loader": "^5.0.0",
     "sass": "1.32.*",
     "sass-loader": "^8.0.0",
-    "vue-loader": "^15.9.6",
-    "vue-template-compiler": "^2.6.11"
+    "vite": "^5.4.8",
+    "vue-loader": "^15.9.6"
   },
   "dependencies": {
     "@biigle/ol": "^9.2.4",
@@ -29,14 +26,16 @@
     "@turf/difference": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/union": "^6.5.0",
+    "@vue/compat": "^3.5.11",
     "bootstrap-sass": "^3.3.7",
     "echarts": "^5.3.2",
     "jsts": "^2.11.0",
     "magic-wand-tool": "^1.1.4",
     "polymorph-js": "^0.2.4",
-    "uiv": "^1.2.4",
-    "vue": "^2.0.5",
+    "uiv": "^2.0.6",
+    "vue": "^3.5.11",
     "vue-echarts": "^6.0.3",
     "vue-resource": "^1.0.3"
-  }
+  },
+  "type": "module"
 }

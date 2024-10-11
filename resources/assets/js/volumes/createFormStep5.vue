@@ -1,7 +1,7 @@
 <script>
-import LabelApi from '../core/api/labels';
-import LabelMapping from './components/labelMapping';
-import LoaderMixin from '../core/mixins/loader';
+import LabelApi from '@/core/api/labels.js';
+import LabelMapping from './components/labelMapping.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
 
 export default {
     mixins: [LoaderMixin],

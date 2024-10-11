@@ -1,7 +1,7 @@
 <script>
-import Events from '../core/events';
-import Settings from './stores/settings';
-import Breadcrumb from './components/breadcrumb';
+import Events from '@/core/events.js';
+import Settings from './stores/settings.js';
+import Breadcrumb from './components/breadcrumb.vue';
 
 /**
 * View model for the annotator navbar

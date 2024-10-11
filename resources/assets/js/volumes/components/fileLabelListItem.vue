@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import ImageLabelsApi from '../api/imageLabels';
-import VideoLabelsApi from '../api/videoLabels';
-import {handleErrorResponse} from '../../core/messages/store';
+import ImageLabelsApi from '../api/imageLabels.js';
+import VideoLabelsApi from '../api/videoLabels.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 /**
  * One item in the imageLabelList component.

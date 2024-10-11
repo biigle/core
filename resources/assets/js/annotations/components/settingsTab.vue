@@ -1,8 +1,8 @@
 <script>
-import Keyboard from '../../core/keyboard';
-import PowerToggle from '../../core/components/powerToggle';
-import ScreenshotButton from './screenshotButton';
-import Settings from '../stores/settings';
+import Keyboard from '@/core/keyboard.vue';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import ScreenshotButton from './screenshotButton.vue';
+import Settings from '../stores/settings.js';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via

@@ -1,7 +1,7 @@
 <script>
-import LabelTrees from '../../label-trees/components/labelTrees';
-import LoaderMixin from '../../core/mixins/loader';
-import PowerToggle from '../../core/components/powerToggle';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import PowerToggle from '@/core/components/powerToggle.vue';
 
 /**
  * View model for the volume filter tab

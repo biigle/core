@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import Image from './imageGridImage';
-import Keyboard from '../../core/keyboard';
-import Progress from './imageGridProgress';
+import Image from './imageGridImage.vue';
+import Keyboard from '@/core/keyboard.vue';
+import Progress from './imageGridProgress.vue';
 
 /**
  * A component that displays a grid of lots of images for Largo
