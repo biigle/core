@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Image;
 use Biigle\Http\Requests\DestroyImage;
+use Biigle\Image;
 
 class ImageController extends Controller
 {
@@ -82,12 +82,5 @@ class ImageController extends Controller
     public function destroy(DestroyImage $request)
     {
         $request->file->delete();
-    }
-
-    public function getLastAnnotationId($id){
-        $image = Image::findOrFail($id);
-        $this->authorize('access',$image);
-
-        return $image->annotations()->max('id');
     }
 }
