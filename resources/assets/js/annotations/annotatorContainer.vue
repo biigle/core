@@ -19,7 +19,7 @@ import ShapeFilter from './models/ShapeAnnotationFilter';
 import Sidebar from '../core/components/sidebar';
 import SidebarTab from '../core/components/sidebarTab';
 import UserFilter from './models/UserAnnotationFilter';
-import VolumeImageApi from './api/volumes';
+import VolumeImageAreaApi from './api/volumes';
 import {CrossOriginError} from './stores/images';
 import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
@@ -551,7 +551,7 @@ export default {
         fetchImagesArea() {
             if (!this.imagesArea) {
                 this.imagesArea = {};
-                VolumeImageApi.getArea({id: this.volumeId})
+                VolumeImageAreaApi.get({id: this.volumeId})
                     .then(this.setImagesArea, handleErrorResponse);
             }
         },
@@ -592,19 +592,6 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
-        fetchLastAnnotationId() {
-            VolumeImageApi.getLastAnnotationId({ id: this.image.id })
-                .then((res) => {
-                    let id = parseInt(res.body);
-                    this.annotations.map((a) => {
-                        if (a.id === id) {
-                            a.selected = true;
-                        } else {
-                            a.selected = false;
-                        }
-                    })
-                });
-        }
     },
     watch: {
         async imageId(id) {

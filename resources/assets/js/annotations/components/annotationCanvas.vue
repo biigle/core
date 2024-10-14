@@ -679,9 +679,6 @@ export default {
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
         },
-        emitFetchLastAnnotation() {
-            this.$emit('fetch-last-annotation');
-        }
     },
     watch: {
         image(image, oldImage) {
@@ -829,7 +826,6 @@ export default {
         Keyboard.on('ArrowRight', this.handleNext, 0, this.listenerSet);
         Keyboard.on('ArrowLeft', this.handlePrevious, 0, this.listenerSet);
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('Control+l', this.emitFetchLastAnnotation, 0, this.listenerSet);
 
         this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
         this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
