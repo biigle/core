@@ -592,6 +592,12 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
+        selectLastAnnotation() {
+            let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
+            let remainingAnnotations = this.annotations.filter(a => a.id != lastAnnotation.id);
+            lastAnnotation.selected = true;
+            remainingAnnotations.map(a => a.selected = false);
+        }
     },
     watch: {
         async imageId(id) {
