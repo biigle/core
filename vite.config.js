@@ -21,12 +21,12 @@ export default defineConfig({
         alias: {
             '@': '/resources/assets/js',
             vue: '@vue/compat',
+            '@images': '/resources/assets/images',
         },
     },
     server: {
         watch: {
             ignored: [
-                '**/public/**',
                 '**/storage/**',
                 '**/vendor/**',
             ],
