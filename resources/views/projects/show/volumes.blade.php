@@ -1,7 +1,7 @@
 @extends('projects.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('projects.volumes', {!! $volumes !!});
     biigle.$declare('projects.volumeUrlTemplate', '{{url("volumes/clone/:id/?project={$project->id}")}}')
 </script>

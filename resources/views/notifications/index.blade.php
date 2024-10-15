@@ -3,7 +3,7 @@
 @section('title', 'Notifications')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('initialNotifications', {!! $notifications !!})
     </script>
 @endpush

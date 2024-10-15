@@ -3,7 +3,7 @@
 @section('title', 'clone volume')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('destinationProjects', {!!$destinationProjects!!});
         biigle.$declare('volume', {!!$volume!!});
         biigle.$declare('isImageVolume', {{$volume->isImageVolume()}});

@@ -3,7 +3,7 @@
 @section('title', 'Select the metadata import label mapping')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.labelMap', {!! $labelMap !!});
         biigle.$declare('volumes.labels', {!! $labels !!});
         biigle.$declare('volumes.labelTrees', {!! $labelTrees !!});

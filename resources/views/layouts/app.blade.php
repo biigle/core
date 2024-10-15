@@ -28,7 +28,7 @@
     @yield('content')
 
     @vite(['resources/assets/js/main.js'])
-    <script type="text/javascript">
+    <script type="module">
         Vue.http.options.root = '{{url('/')}}';
     </script>
     @stack('scripts')

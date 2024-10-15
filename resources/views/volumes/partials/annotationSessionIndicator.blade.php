@@ -21,7 +21,7 @@
     </span>
 
     @push('scripts')
-        <script type="text/javascript">
+        <script type="module">
             biigle.$mount('annotation-session-indicator', {
                 components: {popover: biigle.$require('uiv.popover')},
                 methods: {

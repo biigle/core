@@ -3,7 +3,7 @@
 @section('title', $volume->name)
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.volumeId', {!! $volume->id !!});
         biigle.$declare('volumes.type', '{!! $type !!}');
         {{-- Add file IDs as array, too, because the ordering is important! --}}
