@@ -1,25 +1,25 @@
 <script>
-import Annotation from './models/Annotation';
-import AnnotationsTab from './components/viaAnnotationsTab';
-import Echo from '../core/echo';
-import Events from '../core/events';
-import LabelAnnotationFilter from '../annotations/models/LabelAnnotationFilter';
-import LabelTrees from '../label-trees/components/labelTrees';
-import LoaderMixin from '../core/mixins/loader';
-import Messages from '../core/messages/store';
-import Settings from './stores/settings';
-import SettingsTab from './components/settingsTab';
-import ShapeAnnotationFilter from '../annotations/models/ShapeAnnotationFilter';
-import Sidebar from '../core/components/sidebar';
-import SidebarTab from '../core/components/sidebarTab';
-import UserAnnotationFilter from '../annotations/models/UserAnnotationFilter';
-import VideoAnnotationApi from './api/videoAnnotations';
-import VideoApi from './api/videos';
-import VideoLabelsTab from './components/videoLabelsTab';
-import VideoScreen from './components/videoScreen';
-import VideoTimeline from './components/videoTimeline';
-import {handleErrorResponse} from '../core/messages/store';
-import {urlParams as UrlParams} from '../core/utils';
+import Annotation from './models/Annotation.vue';
+import AnnotationsTab from './components/viaAnnotationsTab.vue';
+import Echo from '@/core/echo.js';
+import Events from '@/core/events.js';
+import LabelAnnotationFilter from '@/annotations/models/LabelAnnotationFilter.vue';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.vue';
+import Settings from './stores/settings.js';
+import SettingsTab from './components/settingsTab.vue';
+import ShapeAnnotationFilter from '@/annotations/models/ShapeAnnotationFilter.vue';
+import Sidebar from '@/core/components/sidebar.vue';
+import SidebarTab from '@/core/components/sidebarTab.vue';
+import UserAnnotationFilter from '@/annotations/models/UserAnnotationFilter.vue';
+import VideoAnnotationApi from './api/videoAnnotations.js';
+import VideoApi from './api/videos.js';
+import VideoLabelsTab from './components/videoLabelsTab.vue';
+import VideoScreen from './components/videoScreen.vue';
+import VideoTimeline from './components/videoTimeline.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}

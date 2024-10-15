@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Typeahead from '../../core/components/typeahead';
+import Typeahead from '@/core/components/typeahead.vue';
 
 /**
  * Base component for a filter select element

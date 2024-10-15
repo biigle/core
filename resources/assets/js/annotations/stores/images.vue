@@ -1,6 +1,6 @@
 <script>
-import Events from '../../core/events';
-import fx from '../vendor/glfx';
+import Events from '@/core/events.js';
+import fx from '../vendor/glfx.js';
 
 export class CrossOriginError extends Error {}
 

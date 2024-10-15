@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import CurrentTime from './currentTime';
-import ScrollStrip from './scrollStrip';
-import TrackHeaders from './trackHeaders';
+import CurrentTime from './currentTime.vue';
+import ScrollStrip from './scrollStrip.vue';
+import TrackHeaders from './trackHeaders.vue';
 
 export default {
     components: {

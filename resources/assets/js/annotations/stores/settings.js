@@ -1,4 +1,4 @@
-import Settings from '../../core/models/Settings';
+import Settings from '@/core/models/Settings.vue';
 
 /**
  * Store for annotator settings

@@ -1,6 +1,6 @@
 <script>
-import LabelTooltip from '../labelTooltip';
-import MeasureTooltip from '../measureTooltip';
+import LabelTooltip from '../labelTooltip.vue';
+import MeasureTooltip from '../measureTooltip.vue';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the annotation tooltip.

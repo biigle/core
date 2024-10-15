@@ -1,10 +1,10 @@
 <script>
-import FileLabelList from '../../volumes/components/fileLabelList';
-import ImageLabelsApi from '../../volumes/api/imageLabels';
-import Keyboard from '../../core/keyboard';
-import Loader from '../../core/mixins/loader';
-import VideoLabelsApi from '../../volumes/api/videoLabels';
-import {handleErrorResponse} from '../../core/messages/store';
+import FileLabelList from '@/volumes/components/fileLabelList.vue';
+import ImageLabelsApi from '@/volumes/api/imageLabels.js';
+import Keyboard from '@/core/keyboard.vue';
+import Loader from '@/core/mixins/loader.vue';
+import VideoLabelsApi from '@/volumes/api/videoLabels.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 export default {
     mixins: [Loader],

@@ -56,10 +56,10 @@
 </template>
 
 <script>
-import DatepickerDropdown from '../../uiv/datepickerDropdown';
+import DatepickerDropdown from '../../uiv/datepickerDropdown.vue';
 import InvitationApi from '../api/projectInvitations.js';
-import LoaderMixin from '../../core/mixins/loader';
-import {handleErrorResponse} from '../../core/messages/store';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 export default {
     mixins: [LoaderMixin],

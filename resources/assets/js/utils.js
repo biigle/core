@@ -1,3 +1,5 @@
+import { createApp } from 'vue'
+
 /**
  * Mount a Vue viewmodel to an element with a given ID if the element exists.
  *
@@ -8,11 +10,8 @@ let mount = function (id, vm) {
     window.addEventListener('load', function () {
         let element = document.getElementById(id);
         if (element) {
-            if (!(vm instanceof Vue)) {
-                vm = new Vue(vm);
-            }
-
-            vm.$mount(element);
+            const app = createApp(vm);
+            app.mount(element)
         }
     });
 };

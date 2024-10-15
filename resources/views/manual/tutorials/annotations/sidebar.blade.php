@@ -84,7 +84,7 @@
                 Color adjustment is unavailable for remote images without <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a> and images that are too large to be handled by the graphics processing unit of your machine (<span id="texture-size-remark">your machine can handle images up to <span id="texture-size"></span> px</span>).
             </div>
         </div>
-        <script type="text/javascript">
+        <script type="module">
             try {
                 var gl = document.createElement('canvas').getContext('webgl');
                 var size = gl.getParameter(gl.MAX_TEXTURE_SIZE);

@@ -1,13 +1,13 @@
-import AdminImageAnnotations from './core/admin/imageAnnotationsContainer';
-import AdminVideoAnnotations from './core/admin/videoAnnotationsContainer';
-import AnnouncementContainer from './core/announcements/container';
-import AnnouncementsEditForm from './core/announcements/editForm';
-import MessagesDisplay from './core/messages/display';
-import NotificationsList from './core/notifications/list';
-import NotificationsUnreadCount from './core/notifications/unreadCount';
-import RegisterForm from './core/registerForm';
-import TopMenu from './core/topMenu';
-import {mount} from './utils';
+import AdminImageAnnotations from '@/core/admin/imageAnnotationsContainer.vue';
+import AdminVideoAnnotations from '@/core/admin/videoAnnotationsContainer.vue';
+import AnnouncementContainer from '@/core/announcements/container.vue';
+import AnnouncementsEditForm from '@/core/announcements/editForm.vue';
+import MessagesDisplay from '@/core/messages/display.vue';
+import NotificationsList from '@/core/notifications/list.vue';
+import NotificationsUnreadCount from '@/core/notifications/unreadCount.vue';
+import RegisterForm from '@/core/registerForm.vue';
+import TopMenu from '@/core/topMenu.vue';
+import {mount} from './utils.js';
 
 mount('admin-image-annotations', AdminImageAnnotations);
 mount('admin-video-annotations', AdminVideoAnnotations);

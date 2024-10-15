@@ -3,7 +3,7 @@
 @section('title', 'Finish creating a new volume')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.name', '{!! $oldName !!}');
         biigle.$declare('volumes.url', '{!! $oldUrl !!}');
         biigle.$declare('volumes.handle', `{!! $oldHandle !!}`);
