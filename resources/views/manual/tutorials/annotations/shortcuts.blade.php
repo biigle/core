@@ -123,6 +123,10 @@
                     <td><kbd>p</kbd></td>
                     <td>Capture a screenshot</td>
                 </tr>
+                <tr>
+                    <td><kbd>Ctrl</kbd></td>
+                    <td>Select last created annotation</td>
+                </tr>
             </tbody>
         </table>
 
