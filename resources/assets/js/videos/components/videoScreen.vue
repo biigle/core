@@ -640,7 +640,7 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-        Keyboard.on('Control+l', this.emitSelectLastAnnotation, 0, this.listenerSet);
+        Keyboard.on('Control', this.emitSelectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);
