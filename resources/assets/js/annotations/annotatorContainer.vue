@@ -594,9 +594,7 @@ export default {
         },
         selectLastAnnotation() {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
-            let remainingAnnotations = this.annotations.filter(a => a.id != lastAnnotation.id);
-            lastAnnotation.selected = true;
-            remainingAnnotations.map(a => a.selected = false);
+            this.handleSelectAnnotation(lastAnnotation);
         }
     },
     watch: {
