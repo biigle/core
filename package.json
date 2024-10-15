@@ -2,6 +2,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "vite",
+    "build": "vite build",
     "prod": "vite build",
     "lint": "eslint --ext .js,.vue resources/assets/js/"
   },
