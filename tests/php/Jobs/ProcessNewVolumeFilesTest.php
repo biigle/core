@@ -2,17 +2,17 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Queue;
-use Storage;
-use TestCase;
+use Biigle\Jobs\CloneImageThumbnails;
+use Biigle\Jobs\ProcessNewImage;
+use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Jobs\ProcessNewImage;
-use Biigle\Jobs\ProcessNewVideo;
-use Biigle\Jobs\CloneImageThumbnails;
-use Biigle\Jobs\ProcessNewVolumeFiles;
+use Queue;
+use Storage;
+use TestCase;
 
 class ProcessNewVolumeFilesTest extends TestCase
 {
@@ -46,14 +46,14 @@ class ProcessNewVolumeFilesTest extends TestCase
         $i2 = ImageTest::create(['volume_id' => $copy->id, 'filename' => 'a.jpg']);
         $copyPrefix = fragment_uuid_path($i2->uuid);
 
-        $diskThumbs->put($prefix.'/thumb.jpg','');
+        $diskThumbs->put($prefix.'/thumb.jpg', '');
         $diskTiles->put($prefix.'/tile.jpg', '');
 
         $map = [$i2->uuid => $i1->uuid];
 
         Queue::fake();
         
-        with(new ProcessNewVolumeFiles($copy,[],$map))->handle();
+        with(new ProcessNewVolumeFiles($copy, [], $map))->handle();
 
         Queue::assertPushed(CloneImageThumbnails::class, fn ($job) => $job->prefix === $prefix && $job->copyPrefix === $copyPrefix);
     }

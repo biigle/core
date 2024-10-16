@@ -5,10 +5,10 @@ namespace Biigle\Jobs;
 use Biigle\Image;
 use Biigle\Video;
 use Biigle\Volume;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ProcessNewVolumeFiles extends Job implements ShouldQueue
 {
