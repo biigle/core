@@ -30,7 +30,6 @@ class CloneImageThumbnails extends Job implements ShouldQueue
 
     private function copyFiles($disk)
     {
-        $disk->makeDirectory($this->copyPrefix);
         File::copyDirectory($disk->path($this->prefix), $disk->path($this->copyPrefix));
     }
 }
