@@ -77,6 +77,8 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      **/
     public array $onlyFileLabels;
 
+    protected $uuidMap;
+
     /**
      * Ignore this job if the project or volume does not exist any more.
      *
@@ -101,6 +103,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
         $this->onlyAnnotationLabels = $request->input('only_annotation_labels', []);
         $this->cloneFileLabels = $request->input('clone_file_labels', false);
         $this->onlyFileLabels = $request->input('only_file_labels', []);
+        $this->uuidMap = [];
 
     }
 
@@ -134,7 +137,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
             }
             if ($copy->files()->exists()) {
-                ProcessNewVolumeFiles::dispatch($copy);
+                ProcessNewVolumeFiles::dispatch($copy, [], $this->uuidMap);
             }
 
             if ($volume->hasMetadata()) {
@@ -166,6 +169,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $original = $image->getRawOriginal();
                 $original['volume_id'] = $copy->id;
                 $original['uuid'] = (string)Uuid::uuid4();
+                $this->uuidMap[$original['uuid']] = $image->uuid;
                 unset($original['id']);
                 return $original;
             })
