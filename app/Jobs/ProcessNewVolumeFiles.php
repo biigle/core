@@ -31,7 +31,7 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
 
     /**
      * Array maps uuid of copied file to uuid of original files.
-     * 
+     *
      * @var array
      */
     protected $uuidMap;

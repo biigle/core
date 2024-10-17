@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Queue;
-use Storage;
-use TestCase;
+use Biigle\Jobs\CloneImageThumbnails;
+use Biigle\Jobs\CloneVideoThumbnails;
+use Biigle\Jobs\ProcessNewImage;
+use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Jobs\ProcessNewImage;
-use Biigle\Jobs\ProcessNewVideo;
-use Biigle\Jobs\CloneImageThumbnails;
-use Biigle\Jobs\CloneVideoThumbnails;
-use Biigle\Jobs\ProcessNewVolumeFiles;
+use Queue;
+use Storage;
+use TestCase;
 
 class ProcessNewVolumeFilesTest extends TestCase
 {

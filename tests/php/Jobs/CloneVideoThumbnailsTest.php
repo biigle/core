@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
-use TestCase;
-use Biigle\Tests\VideoTest;
 use Biigle\Jobs\CloneVideoThumbnails;
+use Biigle\Tests\VideoTest;
 use Illuminate\Support\Facades\Storage;
+use TestCase;
 
 class CloneVideoThumbnailsTest extends TestCase
 {
