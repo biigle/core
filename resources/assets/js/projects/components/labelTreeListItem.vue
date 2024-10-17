@@ -8,7 +8,7 @@
     </li>
 </template>
 
-<style>
+<style scoped>
 .limit-text {
     word-wrap: break-word;
 }
