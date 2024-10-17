@@ -174,9 +174,30 @@ export default {
                 this.handleSelect(this.favourites[index]);
             }
         },
+        /*
+            // Add the new method to focus the typeahead field
+    focusFindLabel() {
+        // Assuming your Typeahead component has a method or input field that can be focused
+       // if (this.$refs.typeaheadInput) {
+       if(this.showFavourites){
+            console.log("infocusFindLabel");
+            this.$refs.typeaheadInput.$el.querySelector('input').focus();
+            // This is an example, adjust if Typeahead has a different way to focus
+            //this.$refs.typeahead.focus();
+        }
+    },
+        
+*/
+
+
+         //   <typeahead ref="typeaheadInput" v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
+
+
         focusTypeahead() {
             this.$refs.typeaheadInput.$el.querySelector('input').focus();
+            console.log("focusTypeahead");
         },
+
     },
     watch: {
         trees: {
@@ -195,6 +216,13 @@ export default {
                 });
             },
         },
+    },
+    created(){
+        Keyboard.on('control+k', (e) => {
+            e.preventDefault(); // Prevent the default browser action (Print)
+            this.focusTypeahead();
+            console.log("labelTrees");
+        });
     },
     mounted() {
         if (this.showFavourites) {
@@ -225,13 +253,16 @@ export default {
             }
             bindFavouriteKey('0', 9);
         }
-
+/*
         window.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'k') {
                 e.preventDefault();
                 this.focusTypeahead();
+                //this.focusFindLabel();
+                console.log("aktiv");
             }
-        });
+        });    
+  */         
     },
 };
 </script>
