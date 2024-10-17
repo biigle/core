@@ -675,8 +675,7 @@ export default {
         },
         selectLastAnnotation() {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
-            let remainingAnnotations = this.annotations.filter(a => a.id != lastAnnotation.id);
-            this.selectAnnotations([lastAnnotation], remainingAnnotations, lastAnnotation.startFrame);
+            this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
         }
     },
     watch: {
