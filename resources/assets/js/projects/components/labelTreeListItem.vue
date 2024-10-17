@@ -8,12 +8,6 @@
     </li>
 </template>
 
-<style scoped>
-.limit-text {
-    word-wrap: break-word;
-}
-</style>
-
 <script>
 export default {
     props: {
