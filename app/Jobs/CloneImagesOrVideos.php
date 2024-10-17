@@ -77,6 +77,10 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      **/
     public array $onlyFileLabels;
 
+    /**
+     * Array mapping original image uuids to cloned image uuids
+     * @var array
+     */
     protected $uuidMap;
 
     /**

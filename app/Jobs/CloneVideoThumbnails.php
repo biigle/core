@@ -12,8 +12,16 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
+    /**
+     * Path of original video thumbnails and sprites
+     * @var string
+     */
     public $prefix;
 
+    /**
+     * Path of cloned video thumbnails and sprites
+     * @var string
+     */
     public $copyPrefix;
 
     public function __construct(String $prefix, String $copyPrefix)

@@ -106,7 +106,8 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
                     $copyPrefix = fragment_uuid_path($video->uuid);
 
                     $nbrFiles = count(Storage::disk(config('videos.thumbnail_storage_disk'))->files($prefix));
-                    $nbrSprites = count(array_filter(Storage::disk(config('videos.thumbnail_storage_disk'))->files($prefix), fn ($f) => str_contains($f, 'sprite')));
+                    $nbrSprites = count(array_filter(Storage::disk(config('videos.thumbnail_storage_disk'))
+                        ->files($prefix), fn ($f) => str_contains($f, 'sprite')));
                 
                     $hasThumbnails = $nbrFiles - $nbrSprites > 0;
                     $hasSprites =  $nbrSprites > 0;

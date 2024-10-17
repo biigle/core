@@ -12,8 +12,16 @@ class CloneImageThumbnails extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
+    /**
+     * Path of original image thumbnails and tiled data
+     * @var string
+     */
     public $prefix;
 
+    /**
+     * Path of cloned image thumbnails and tiled data
+     * @var string
+     */
     public $copyPrefix;
 
     public function __construct(String $prefix, String $copyPrefix)
