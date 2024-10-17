@@ -2,10 +2,10 @@
 
 namespace Biigle\Jobs;
 
-use File;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\File;
 use Storage;
 
 class CloneImageThumbnails extends Job implements ShouldQueue
@@ -24,12 +24,10 @@ class CloneImageThumbnails extends Job implements ShouldQueue
 
     public function handle()
     {
-        $this->copyFiles(Storage::disk(config('thumbnails.storage_disk')));
-        $this->copyFiles(Storage::disk(config('image.tiles.disk')));
-    }
+        $format = config('thumbnails.format');
+        Storage::disk(config('thumbnails.storage_disk'))->copy($this->prefix.".{$format}", $this->copyPrefix.".{$format}");
 
-    private function copyFiles($disk)
-    {
+        $disk = Storage::disk(config('image.tiles.disk'));
         File::copyDirectory($disk->path($this->prefix), $disk->path($this->copyPrefix));
     }
 }

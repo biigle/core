@@ -34,6 +34,7 @@ class ProcessNewVolumeFilesTest extends TestCase
 
     public function testHandleTiledImageWithThumbnails()
     {
+        $format = config('thumbnails.format');
         $diskThumbs = Storage::fake('test-thumbs');
         $diskTiles = Storage::fake('test-tiles');
         config(['thumbnails.storage_disk' => 'test-thumbs']);
@@ -47,8 +48,8 @@ class ProcessNewVolumeFilesTest extends TestCase
         $i2 = ImageTest::create(['volume_id' => $copy->id, 'filename' => 'a.jpg']);
         $copyPrefix = fragment_uuid_path($i2->uuid);
 
-        $diskThumbs->put($prefix.'/thumb.jpg', '');
-        $diskTiles->put($prefix.'/tile.jpg', '');
+        $diskThumbs->put($prefix.".{$format}", '');
+        $diskTiles->put($prefix.'/tileInfo.xml', '');
 
         $map = [$i2->uuid => $i1->uuid];
 

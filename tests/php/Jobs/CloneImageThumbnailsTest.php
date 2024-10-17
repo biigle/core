@@ -13,7 +13,8 @@ class CloneImageThumbnailsTest extends TestCase
     {
         config(['thumbnails.storage_disk' => 'test-thumbs']);
         config(['image.tiles.disk' => 'test-tiles']);
-        
+        $format = config('thumbnails.format');
+
         $diskThumbs = Storage::fake('test-thumbs');
         $diskTiles = Storage::fake('test-tiles');
 
@@ -22,27 +23,27 @@ class CloneImageThumbnailsTest extends TestCase
         $copyImage = ImageTest::create();
         $copyPrefix = fragment_uuid_path($copyImage->uuid);
 
-        $img1 = '/img1.jpg';
-        $img2 = '/img2.jpg';
+        $i1 = $prefix.".{$format}";
+        $i2 = $prefix.".{$format}";
 
-        $p1 = $prefix.$img1;
-        $p2 = $prefix.$img2;
+        $ti1 = "/TileGroup0/tiled1.jpg";
+        $ti2 = "/tileData.xml";
 
-        $diskThumbs->put($p1, '');
-        $diskThumbs->put($p2, '');
-        $diskTiles->put($p1, '');
-        $diskTiles->put($p2, '');
+        $diskThumbs->put($i1, '');
+        $diskThumbs->put($i2, '');
+        $diskTiles->put($prefix.$ti1, '');
+        $diskTiles->put($prefix.$ti2, '');
 
-        $this->assertFileExists($diskThumbs->path($p1));
-        $this->assertFileExists($diskThumbs->path($p2));
-        $this->assertFileExists($diskTiles->path($p1));
-        $this->assertFileExists($diskTiles->path($p2));
+        $this->assertFileExists($diskThumbs->path($i1));
+        $this->assertFileExists($diskThumbs->path($i2));
+        $this->assertFileExists($diskTiles->path($prefix.$ti1));
+        $this->assertFileExists($diskTiles->path($prefix.$ti2));
 
         with(new CloneImageThumbnails($prefix, copyPrefix: $copyPrefix))->handle();
 
-        $this->assertFileExists($diskThumbs->path($copyPrefix.$img1));
-        $this->assertFileExists($diskThumbs->path($copyPrefix.$img2));
-        $this->assertFileExists($diskTiles->path($copyPrefix.$img1));
-        $this->assertFileExists($diskTiles->path($copyPrefix.$img2));
+        $this->assertFileExists($diskThumbs->path($copyPrefix.".{$format}"));
+        $this->assertFileExists($diskThumbs->path($copyPrefix.".{$format}"));
+        $this->assertFileExists($diskTiles->path($copyPrefix.$ti1));
+        $this->assertFileExists($diskTiles->path($copyPrefix.$ti2));
     }
 }

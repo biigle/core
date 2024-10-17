@@ -82,10 +82,11 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
                 $prefix = fragment_uuid_path($this->uuidMap[$img->uuid]);
                 $copyPrefix = fragment_uuid_path($img->uuid);
 
-                $hasThumbnails = count(Storage::disk(config('thumbnails.storage_disk'))->files($prefix)) > 0;
+                $format = config('thumbnails.format');
+                $hasThumbnail = Storage::disk(config('thumbnails.storage_disk'))->exists($prefix.".{$format}");
                 $hasTiledData = count(Storage::disk(config('image.tiles.disk'))->files($prefix)) > 0;
                 
-                if ($hasThumbnails && $hasTiledData) {
+                if ($hasThumbnail && $hasTiledData) {
                     CloneImageThumbnails::dispatch($prefix, $copyPrefix);
                 } else {
                     ProcessNewImage::dispatch($img);
