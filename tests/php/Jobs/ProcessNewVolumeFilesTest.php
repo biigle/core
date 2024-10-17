@@ -2,17 +2,18 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Jobs\CloneImageThumbnails;
-use Biigle\Jobs\ProcessNewImage;
-use Biigle\Jobs\ProcessNewVideo;
-use Biigle\Jobs\ProcessNewVolumeFiles;
+use Queue;
+use Storage;
+use TestCase;
 use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
-use Queue;
-use Storage;
-use TestCase;
+use Biigle\Jobs\ProcessNewImage;
+use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Jobs\CloneImageThumbnails;
+use Biigle\Jobs\CloneVideoThumbnails;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 
 class ProcessNewVolumeFilesTest extends TestCase
 {
@@ -86,6 +87,31 @@ class ProcessNewVolumeFilesTest extends TestCase
         Queue::assertPushed(ProcessNewVideo::class, fn ($job) => $job->video->id === $v1->id);
 
         Queue::assertPushed(ProcessNewVideo::class, fn ($job) => $job->video->id === $v2->id);
+    }
+
+    public function testHandleVideoWithThumbnails()
+    {
+        $disk = Storage::fake('test-thumbs');
+        config(['videos.thumbnail_storage_disk' => 'test-thumbs']);
+
+        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $prefix = fragment_uuid_path($v1->uuid);
+
+        $copy = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $v2 = VideoTest::create(['volume_id' => $copy->id, 'filename' => 'a.jpg']);
+        $copyPrefix = fragment_uuid_path($v2->uuid);
+
+        $disk->put($prefix.'/thumb.jpg', '');
+        $disk->put($prefix.'/sprite_1.webp', '');
+
+        $map = [$v2->uuid => $v1->uuid];
+
+        Queue::fake();
+        
+        with(new ProcessNewVolumeFiles($copy, [], $map))->handle();
+
+        Queue::assertPushed(CloneVideoThumbnails::class, fn ($job) => $job->prefix === $prefix && $job->copyPrefix === $copyPrefix);
     }
 
     public function testHandleVideosWithOnly()

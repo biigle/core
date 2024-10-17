@@ -316,6 +316,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 $original['volume_id'] = $copy->id;
                 $original['uuid'] = (string)Uuid::uuid4();
                 unset($original['id']);
+                $this->uuidMap[$original['uuid']] = $video->uuid;
                 return $original;
             })
             ->chunk(1000)
