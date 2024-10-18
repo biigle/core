@@ -96,6 +96,7 @@
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
+            v-on:select-last-annotation="selectLastAnnotation"
             ref="canvas"
             inline-template>
             @include('annotations.show.annotationCanvas')
