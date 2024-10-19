@@ -113,22 +113,18 @@ class StoreLargoSession extends FormRequest
     protected function imageAnotationsBelongToVolumes($annotations, $volumes)
     {
         $leni = count($annotations);
-        if ($leni<65000){
-            return !ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-                ->whereIn('image_annotations.id', $annotations)
+        $chunkedI = array_chunk($annotations,65000);
+        foreach($chunkedI as $ci){
+            $queryReturnI = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
+                ->whereIn('image_annotations.id', $ci)
                 ->whereNotIn('images.volume_id', $volumes)
                 ->exists();
-        }
-        else {
-            $chunkedI = array_chunk($annotations,65000);
-            foreach($chunkedI as $ci){
-                return !ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-                    ->whereIn('image_annotations.id', $ci)
-                    ->whereNotIn('images.volume_id', $volumes)
-                    ->exists();
+            if ($queryReturnI){
+                return false;
             }
         }
-
+        return true;
+        
     }
 
     /**
@@ -142,21 +138,17 @@ class StoreLargoSession extends FormRequest
     protected function videoAnotationsBelongToVolumes($annotations, $volumes)
     {
         $lenv = count($annotations);
-        if ($lenv<65000){
-            return !VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
-                ->whereIn('video_annotations.id', $annotations)
-                ->whereNotIn('videos.volume_id', $volumes)
-                ->exists();
-        }
-        else {
-            $chunkedV = array_chunk($annotations,65000);
-            foreach($chunkedV as $cv){
-                return !VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
+        $chunkedV = array_chunk($annotations,65000);
+        foreach($chunkedV as $cv){
+            $queryReturnV = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
                 ->whereIn('video_annotations.id', $cv)
                 ->whereNotIn('videos.volume_id', $volumes)
                 ->exists();
+            if ($queryReturnV){
+                return false;
             }
         }
+        return true;
     }
 
     /**
