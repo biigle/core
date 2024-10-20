@@ -120,22 +120,17 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedImageVolumes($annotations)
     {
-        $leni = count($annotations);
-        if ($leni<65000){
-            return ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-                ->whereIn('image_annotations.id', $annotations)
+        $chunkedI = array_chunk($annotations,65000);
+        $volumeIdsI = [];
+        foreach($chunkedI as $ci){
+            $chunkVolIdI = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
+                ->whereIn('image_annotations.id', $ci)
                 ->distinct()
-                ->pluck('images.volume_id');
+                ->pluck('images.volume_id')
+                ->toArray();
+            $volumeIdsI = array_merge($volumeIdsI, $chunkVolIdI);
         }
-        else {
-            $chunkedI = array_chunk($annotations,65000);
-            foreach($chunkedI as $ci){
-                return ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-                    ->whereIn('image_annotations.id', $ci)
-                    ->distinct()
-                    ->pluck('images.volume_id');
-            }
-        }
+        return array_unique($volumeIdsI);
     }
 
     /**
@@ -148,21 +143,16 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedVideoVolumes($annotations)
     {
-        $lenv = count($annotations);
-        if ($lenv<65000){
-            return VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
-                ->whereIn('video_annotations.id', $annotations)
+        $chunkedV = array_chunk($annotations,65000);
+        $volumeIdsV = [];
+        foreach($chunkedV as $cv){
+            $chunkVolIdV = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
+                ->whereIn('video_annotations.id', $cv)
                 ->distinct()
-                ->pluck('videos.volume_id');
+                ->pluck('videos.volume_id')
+                ->toArray();
+            $volumeIdsV = array_merge($volumeIdsV, $chunkVolIdV);
         }
-        else {
-            $chunkedV = array_chunk($annotations,65000);
-            foreach($chunkedV as $cv){
-                return VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
-                    ->whereIn('video_annotations.id', $cv)
-                    ->distinct()
-                    ->pluck('videos.volume_id');
-            }
-        }
+        return array_unique($volumeIdsV);
     }
 }
