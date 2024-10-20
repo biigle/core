@@ -112,7 +112,6 @@ class StoreLargoSession extends FormRequest
      */
     protected function imageAnotationsBelongToVolumes($annotations, $volumes)
     {
-        $leni = count($annotations);
         $chunkedI = array_chunk($annotations,65000);
         foreach($chunkedI as $ci){
             $queryReturnI = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
@@ -137,7 +136,6 @@ class StoreLargoSession extends FormRequest
      */
     protected function videoAnotationsBelongToVolumes($annotations, $volumes)
     {
-        $lenv = count($annotations);
         $chunkedV = array_chunk($annotations,65000);
         foreach($chunkedV as $cv){
             $queryReturnV = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
