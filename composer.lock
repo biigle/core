@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a2bbc77108e11c7a2456abb2620fa99",
+    "content-hash": "71146041119309aeb47e34df09856ee0",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1078,6 +1078,49 @@
                 "source": "https://github.com/biigle/newsletter"
             },
             "time": "2024-06-19T14:04:50+00:00"
+        },
+        {
+            "name": "biigle/ptp",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/ptp.git",
+                "reference": "b44900d4c29060a9f02b8fdfdff586f642df6712"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/ptp/zipball/b44900d4c29060a9f02b8fdfdff586f642df6712",
+                "reference": "b44900d4c29060a9f02b8fdfdff586f642df6712",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Ptp\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module for point to polygon conversion .",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/ptp/issues",
+                "source": "https://github.com/biigle/ptp"
+            },
+            "time": "2024-10-22T08:52:00+00:00"
         },
         {
             "name": "biigle/reports",
@@ -12304,6 +12347,7 @@
         "biigle/metadata-ifdo": 20,
         "biigle/module": 20,
         "biigle/newsletter": 20,
+        "biigle/ptp": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,
         "biigle/user-disks": 20,

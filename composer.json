@@ -38,6 +38,7 @@
         "biigle/metadata-ifdo": "dev-main",
         "biigle/module": "dev-main",
         "biigle/newsletter": "dev-master",
+        "biigle/ptp": "dev-main",
         "biigle/reports": "dev-master",
         "biigle/sync": "dev-master",
         "biigle/user-disks": "dev-main",
