@@ -120,7 +120,7 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedImageVolumes($annotations)
     {
-        $chunkedI = array_chunk($annotations,65000);
+        $chunkedI = array_chunk($annotations,config('biigle.db_param_limit')-1);
         $volumeIdsI = [];
         foreach($chunkedI as $ci){
             $chunkVolIdI = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
@@ -143,7 +143,7 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedVideoVolumes($annotations)
     {
-        $chunkedV = array_chunk($annotations,65000);
+        $chunkedV = array_chunk($annotations,config('biigle.db_param_limit')-1);
         $volumeIdsV = [];
         foreach($chunkedV as $cv){
             $chunkVolIdV = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
