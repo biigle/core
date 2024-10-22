@@ -78,11 +78,11 @@ export default {
         },
         width: {
             type: Number,
-            default: 135,
+            default: 143,
         },
         height: {
             type: Number,
-            default: 180,
+            default: 188,
         },
         margin: {
             type: Number,
