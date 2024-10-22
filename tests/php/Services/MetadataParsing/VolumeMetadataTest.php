@@ -4,7 +4,6 @@ namespace Biigle\Tests\Services\MetadataParsing;
 
 use Biigle\Label as DbLabel;
 use Biigle\MediaType;
-use Biigle\Services\MetadataParsing\FileMetadata;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
@@ -30,7 +29,7 @@ class VolumeMetadataTest extends TestCase
     public function testAddGetFiles()
     {
         $metadata = new VolumeMetadata;
-        $file = new FileMetadata('filename');
+        $file = new ImageMetadata('filename');
         $metadata->addFile($file);
         $this->assertEquals($file, $metadata->getFiles()[0]);
         $metadata->addFile($file);
@@ -41,7 +40,7 @@ class VolumeMetadataTest extends TestCase
     {
         $metadata = new VolumeMetadata;
         $this->assertNull($metadata->getFile('filename'));
-        $file = new FileMetadata('filename');
+        $file = new ImageMetadata('filename');
         $metadata->addFile($file);
         $this->assertEquals($file, $metadata->getFile('filename'));
     }

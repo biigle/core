@@ -21,9 +21,10 @@ export default {
                 'showLabelTooltip',
                 'showMousePosition',
                 'showProgressIndicator',
+                'showThumbnailPreview',
                 'enableJumpByFrame',
                 'jumpStep',
-                'muteVideo'
+                'muteVideo',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -33,6 +34,7 @@ export default {
             playbackRate: 1.0,
             jumpStep: 5.0,
             showProgressIndicator: true,
+            showThumbnailPreview: true,
             enableJumpByFrame: false,
             muteVideo: true,
         };
@@ -66,6 +68,12 @@ export default {
         },
         handleHideProgressIndicator() {
             this.showProgressIndicator = false;
+        },
+        handleShowThumbnailPreview() {
+            this.showThumbnailPreview = true;
+        },
+        handleHideThumbnailPreview() {
+            this.showThumbnailPreview = false;
         },
         handleEnableJumpByFrame() {
             this.enableJumpByFrame = true;
@@ -119,6 +127,10 @@ export default {
         showProgressIndicator(show) {
             this.$emit('update', 'showProgressIndicator', show);
             Settings.set('showProgressIndicator', show);
+        },
+        showThumbnailPreview(show) {
+            this.$emit('update', 'showThumbnailPreview', show);
+            Settings.set('showThumbnailPreview', show);
         },
         enableJumpByFrame(show) {
             this.$emit('update', 'enableJumpByFrame', show);

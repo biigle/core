@@ -10,10 +10,22 @@
                 :style="scrollerStyle"
                 @mousemove="handleUpdateHoverTime"
                 >
+                    <thumbnail-preview
+                        :duration="duration"
+                        :hoverTime="hoverTime"
+                        :clientMouseX="clientMouseX"
+                        :scrollstripTop="scrollstripTop"
+                        :videoId="videoId"
+                        :showThumbnails="showThumbnailPreview"
+                        v-if="finishedInitalizingData"
+                        v-show="canShowThumb"
+                        ></thumbnail-preview>
                     <video-progress
                         :duration="duration"
                         :element-width="elementWidth"
                         @seek="emitSeek"
+                        @mousemove="handleVideoProgressMousemove"
+                        @mouseout="hideThumbnailPreview"
                         ></video-progress>
                     <div class="annotation-tracks-wrapper">
                         <annotation-tracks
@@ -52,11 +64,13 @@ import AnnotationTracks from './annotationTracks';
 import Events from '../../core/events';
 import Keyboard from '../../core/keyboard';
 import VideoProgress from './videoProgress';
+import ThumbnailPreview from './thumbnailPreview';
 
 export default {
     components: {
         videoProgress: VideoProgress,
         annotationTracks: AnnotationTracks,
+        thumbnailPreview: ThumbnailPreview,
     },
     props: {
         tracks: {
@@ -77,6 +91,18 @@ export default {
             type: Boolean,
             default: false,
         },
+        showThumbnailPreview: {
+            type: Boolean,
+            default: true
+        },
+        videoId: {
+            type: Number,
+            required: true
+        },
+        hasError: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {
@@ -91,6 +117,10 @@ export default {
             hoverTime: 0,
             hasOverflowTop: false,
             hasOverflowBottom: false,
+            // thumbnail preview
+            clientMouseX: 0,
+            scrollstripTop: 0,
+            canShowThumb: false,
         };
     },
     computed: {
@@ -136,6 +166,9 @@ export default {
         },
         hasOverflowRight() {
             return this.elementWidth + this.scrollLeft > this.initialElementWidth;
+        },
+        finishedInitalizingData() {
+            return !this.hasError && this.duration > 0;
         },
     },
     methods: {
@@ -209,6 +242,14 @@ export default {
             this.hoverTime = 0;
             this.hasOverflowTop = false;
             this.hasOverflowBottom = false;
+        },
+        handleVideoProgressMousemove(clientX) {
+            this.canShowThumb = true;
+            this.clientMouseX = clientX;
+            this.scrollstripTop = this.$refs.scroller.getBoundingClientRect().top;
+        },
+        hideThumbnailPreview() {
+            this.canShowThumb = false;
         },
     },
     watch: {

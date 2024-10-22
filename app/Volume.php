@@ -36,7 +36,7 @@ class Volume extends Model
      *
      * @var string
      */
-    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm)(\?.+)?$/i';
+    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
 
     /**
      * The attributes that are mass assignable.
@@ -72,11 +72,6 @@ class Volume extends Model
         'attrs' => 'array',
         'media_type_id' => 'int',
     ];
-
-    protected static function booted(): void
-    {
-        static::$metadataFileDisk = config('volumes.metadata_storage_disk');
-    }
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -456,6 +451,14 @@ class Volume extends Model
     public function isVideoVolume()
     {
         return $this->media_type_id === MediaType::videoId();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMetadataFileDisk(): string
+    {
+        return config('volumes.metadata_storage_disk');
     }
 
     /**

@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel
                     ->eachById([UpdateFederatedSearchIndex::class, 'dispatch']);
             })
             ->name('update-federated-search-index')
-            // The jobs to generate the federated search index are run hourly at 55.
+            // The jobs to generate the federated search index are run hourly at 35.
             // This should not collide with this job to request the index from another
             // instance.
             ->hourlyAt(05)

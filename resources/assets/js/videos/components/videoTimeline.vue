@@ -6,7 +6,6 @@
         <div class="static-strip">
             <current-time
                 :current-time="currentTime"
-                :hover-time="hoverTime"
                 :seeking="seeking"
                 ></current-time>
             <track-headers ref="trackheaders"
@@ -20,6 +19,9 @@
             :duration="duration"
             :current-time="currentTime"
             :seeking="seeking"
+            :showThumbnailPreview="showThumbnailPreview"
+            :videoId="videoId"
+            :has-error="hasError"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -64,6 +66,18 @@ export default {
             default() {
                 return null;
             },
+        },
+        showThumbnailPreview: {
+            type: Boolean,
+            default: true,
+        },
+        videoId: {
+            type: Number,
+            required: true,
+        },
+        hasError: {
+            type: Boolean,
+            default: false
         },
     },
     data() {
