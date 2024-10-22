@@ -3,7 +3,7 @@ import {Dropdown} from 'uiv';
 
 export default {
     components: {
-        dropdown: Dropdown,
+        'vue:dropdown': Dropdown,
     },
 };
 </script>

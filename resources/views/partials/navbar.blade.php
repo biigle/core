@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-static-top">
+<nav id="navbar" class="navbar navbar-default navbar-static-top">
 @hasSection('full-navbar')
     <div class="container-fluid">
 @else
