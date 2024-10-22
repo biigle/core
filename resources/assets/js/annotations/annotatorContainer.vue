@@ -1,29 +1,29 @@
 <script>
-import AnnotationCanvas from './components/annotationCanvas';
-import AnnotationCanvasMixins from './stores/annotationCanvasMixins';
-import AnnotationModesTab from './components/annotationModesTab';
-import AnnotationsStore from './stores/annotations';
-import AnnotationsTab from './components/siaAnnotationsTab';
-import ColorAdjustmentTab from './components/colorAdjustmentTab';
-import Events from '../core/events';
-import ImageLabelTab from './components/imageLabelTab';
-import ImagesStore from './stores/images';
-import LabelFilter from './models/LabelAnnotationFilter';
-import LabelsTab from './components/labelsTab';
-import Loader from '../core/mixins/loader';
-import Messages from '../core/messages/store';
-import SessionFilter from './models/SessionAnnotationFilter';
-import Settings from './stores/settings';
-import SettingsTab from './components/settingsTab';
-import ShapeFilter from './models/ShapeAnnotationFilter';
-import Sidebar from '../core/components/sidebar';
-import SidebarTab from '../core/components/sidebarTab';
-import UserFilter from './models/UserAnnotationFilter';
-import VolumeImageAreaApi from './api/volumes';
-import {CrossOriginError} from './stores/images';
-import {debounce} from './../core/utils';
-import {handleErrorResponse} from '../core/messages/store';
-import {urlParams as UrlParams} from '../core/utils';
+import AnnotationCanvas from './components/annotationCanvas.vue';
+import AnnotationCanvasMixins from './stores/annotationCanvasMixins.js';
+import AnnotationModesTab from './components/annotationModesTab.vue';
+import AnnotationsStore from './stores/annotations.vue';
+import AnnotationsTab from './components/siaAnnotationsTab.vue';
+import ColorAdjustmentTab from './components/colorAdjustmentTab.vue';
+import Events from '@/core/events.js';
+import ImageLabelTab from './components/imageLabelTab.vue';
+import ImagesStore from './stores/images.vue';
+import LabelFilter from './models/LabelAnnotationFilter.vue';
+import LabelsTab from './components/labelsTab.vue';
+import Loader from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.vue';
+import SessionFilter from './models/SessionAnnotationFilter.vue';
+import Settings from './stores/settings.js';
+import SettingsTab from './components/settingsTab.vue';
+import ShapeFilter from './models/ShapeAnnotationFilter.vue';
+import Sidebar from '@/core/components/sidebar.vue';
+import SidebarTab from '@/core/components/sidebarTab.vue';
+import UserFilter from './models/UserAnnotationFilter.vue';
+import VolumeImageAreaApi from './api/volumes.js';
+import {CrossOriginError} from './stores/images.vue';
+import {debounce} from '@/core/utils.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 /**
  * View model for the annotator container

@@ -1,6 +1,6 @@
 <script>
-import PowerToggle from '../../core/components/powerToggle';
-import Settings from '../stores/settings';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import Settings from '../stores/settings.js';
 
 export default {
     components: {

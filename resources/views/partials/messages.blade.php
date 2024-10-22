@@ -23,7 +23,7 @@
 
 @if (session()->has('message'))
     @push('scripts')
-        <script type="text/javascript">
+        <script type="module">
             biigle.$declare('staticMessage', {
                 text: "{!! session('message') !!}",
                 type: "{!! session('messageType', 'info') !!}",

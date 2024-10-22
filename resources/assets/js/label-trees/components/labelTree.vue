@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import LabelTreeLabel from './labelTreeLabel';
+import LabelTreeLabel from './labelTreeLabel.vue';
 
 /**
  * A component that displays a label tree. The labels can be searched and selected.

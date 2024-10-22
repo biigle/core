@@ -1,7 +1,7 @@
 <script>
-import LoaderMixin from './loader';
-import UsersApi from '../api/users';
-import {handleErrorResponse} from '../messages/store';
+import LoaderMixin from './loader.vue';
+import UsersApi from '../api/users.js';
+import {handleErrorResponse} from '../messages/store.vue';
 
 /**
  * A mixin for the notification settings view.

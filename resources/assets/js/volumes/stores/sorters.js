@@ -1,6 +1,6 @@
-import SortComponent from '../components/sortComponent';
-import VolumeApi from '../api/volumes';
-import {handleErrorResponse} from '../../core/messages/store';
+import SortComponent from '../components/sortComponent.vue';
+import VolumeApi from '../api/volumes.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 let filenameSorter = {
     id: 'filename',

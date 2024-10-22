@@ -1,5 +1,5 @@
 <script>
-import Events from '../core/events';
+import Events from '@/core/events.js';
 
 /**
  * The panel for editing the members of a project

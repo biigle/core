@@ -1,7 +1,7 @@
 @extends('projects.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('projects.annotationTimeSeries', {!! $annotationTimeSeries !!});
     biigle.$declare('projects.volumeAnnotations', {!! $volumeAnnotations !!});
     biigle.$declare('projects.volumeNames', {!! $volumeNames !!});

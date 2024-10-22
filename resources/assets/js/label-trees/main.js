@@ -1,14 +1,14 @@
 import './export';
-import AuthorizedProjectsContainer from './authorizedProjectsContainer';
-import LabelsContainer from './labelsContainer';
-import LabelsCount from './labelsCount';
-import MembersContainer from './membersContainer';
-import MembersCount from './membersCount';
-import MergeContainer from './mergeContainer';
-import MergeIndexContainer from './mergeIndexContainer';
-import Title from './title';
-import VersionDoi from './versionDoi';
-import VersionTitle from './versionTitle';
+import AuthorizedProjectsContainer from './authorizedProjectsContainer.vue';
+import LabelsContainer from './labelsContainer.vue';
+import LabelsCount from './labelsCount.vue';
+import MembersContainer from './membersContainer.vue';
+import MembersCount from './membersCount.vue';
+import MergeContainer from './mergeContainer.vue';
+import MergeIndexContainer from './mergeIndexContainer.vue';
+import Title from './title.vue';
+import VersionDoi from './versionDoi.vue';
+import VersionTitle from './versionTitle.vue';
 
 biigle.$mount('label-tree-version-doi', VersionDoi);
 biigle.$mount('label-tree-version-title', VersionTitle);

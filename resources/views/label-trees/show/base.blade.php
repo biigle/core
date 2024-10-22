@@ -7,7 +7,7 @@
 @endpush
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.labelTree', {!! $tree !!});
     biigle.$declare('labelTrees.privateVisibilityId', {!! \Biigle\Visibility::privateId() !!});
     biigle.$declare('labelTrees.userId', {!! $user->id !!});

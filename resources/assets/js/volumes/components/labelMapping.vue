@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import Item from './labelMappingItem';
+import Item from './labelMappingItem.vue';
 
 export default {
     components: {

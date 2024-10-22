@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import Typeahead from '../../core/components/typeahead';
+import Typeahead from '@/core/components/typeahead.vue';
 
 export default {
     components: {

@@ -1,5 +1,5 @@
 <script>
-import {exitFullscreen} from '../utils';
+import {exitFullscreen} from '../utils.js';
 
 /**
  * The popup message store.
