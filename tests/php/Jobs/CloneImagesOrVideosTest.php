@@ -3,26 +3,26 @@
 namespace Biigle\Tests\Jobs;
 
 use ApiTestCase;
-use Biigle\Jobs\CloneImagesOrVideos;
-use Biigle\Jobs\ProcessNewVolumeFiles;
+use Carbon\Carbon;
 use Biigle\MediaType;
-use Biigle\Services\MetadataParsing\ImageCsvParser;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\VideoAnnotationLabelTest;
-use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\VideoLabelTest;
 use Illuminate\Http\UploadedFile;
+use Biigle\Jobs\CloneImagesOrVideos;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\VideoAnnotationTest;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Biigle\Jobs\ProcessCloneVolumeFiles;
 use Illuminate\Support\Facades\Storage;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Services\MetadataParsing\ImageCsvParser;
 
 class CloneImagesOrVideosTest extends ApiTestCase
 {
@@ -56,7 +56,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
@@ -105,7 +105,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $request = new Request(['project' => $project, 'volume' => $volume]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
@@ -142,7 +142,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
@@ -250,7 +250,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         ]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
@@ -353,7 +353,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         ]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
@@ -475,7 +475,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         ]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched('volume.cloned');
 
         $copy = $project->volumes()->first();
@@ -623,6 +623,6 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $request = new Request(['project' => $project, 'volume' => $volume]);
         (new CloneImagesOrVideos($request, $copy))->handle();
 
-        Queue::assertPushed(ProcessNewVolumeFiles::class);
+        Queue::assertPushed(ProcessCloneVolumeFiles::class);
     }
 }
