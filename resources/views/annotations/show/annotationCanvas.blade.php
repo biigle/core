@@ -32,7 +32,7 @@
                 </control-button>
                 <control-button icon="icon-linestring" title="Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingLineString" v-on:click="drawLineString">
                     <control-button icon="fa-ruler" title="Measure a line string  𝗦𝗵𝗶𝗳𝘁+𝗙" :active="isMeasuring" v-on:click="toggleMeasuring"></control-button>
-                    <control-button icon="fa-check" title="Convert measurement to a line string" :disabled="cantConvertMeasureFeature" v-on:click="convertMeasurement"></control-button>
+                    <control-button icon="fa-check" title="Convert measurement to a line string 𝗘𝗻𝘁𝗲𝗿" :disabled="cantConvertMeasureFeature" v-on:click="convertMeasurement"></control-button>
                 </control-button>
                 <control-button icon="icon-polygon" title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingPolygon" v-on:click="drawPolygon">
                     <control-button v-cloak icon="fa-paint-brush" title="Draw a polygon using the brush tool 𝗘" :active="isUsingPolygonBrush" v-on:click="togglePolygonBrush"></control-button>

@@ -57,12 +57,14 @@ export default {
             }
         },
         convertMeasurement() {
-            if (!this.hasSelectedLabel) {
-                this.requireSelectedLabel(false);
-            } else {
-                this.annotationSource.addFeature(this.measureFeature);
-                this.handleNewFeature({feature: this.measureFeature});
-                this.clearMeasureFeature();
+            if (this.isMeasuring && !this.cantConvertMeasureFeature) {
+                if (!this.hasSelectedLabel) {
+                    this.requireSelectedLabel(false);
+                } else {
+                    this.annotationSource.addFeature(this.measureFeature);
+                    this.handleNewFeature({feature: this.measureFeature});
+                    this.clearMeasureFeature();
+                }
             }
         },
         clearMeasureFeature() {
@@ -110,6 +112,7 @@ export default {
         measureInteraction.on('drawstart', this.handleMeasureDrawStart);
         measureInteraction.on('drawend', this.handleMeasureDrawEnd);
         Keyboard.on('Shift+f', this.toggleMeasuring, 0, this.listenerSet);
+        Keyboard.on('Enter', this.convertMeasurement, 0, this.listenerSet)
 
         // Do not make this reactive.
         // See: https://github.com/biigle/annotations/issues/108

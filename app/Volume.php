@@ -36,7 +36,7 @@ class Volume extends Model
      *
      * @var string
      */
-    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm)(\?.+)?$/i';
+    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
 
     /**
      * The attributes that are mass assignable.
