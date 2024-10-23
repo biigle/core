@@ -24,6 +24,10 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
      */
     public $copyPrefix;
 
+    /**
+     * Cloned video of cloned volume
+     * @var Video
+     */
     public $video;
 
     public function __construct(Video $video, String $prefix)
