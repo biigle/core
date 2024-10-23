@@ -6,8 +6,6 @@
     <script type="text/javascript">
         biigle.$declare('volumes.volumeId', {!! $volume->id !!});
         biigle.$declare('volumes.type', '{!! $type !!}');
-        biigle.$declare('volumes.thumbnailWidth', {{config('thumbnails.width')}});
-        biigle.$declare('volumes.thumbnailHeight', {{config('thumbnails.height')}});
         {{-- Add file IDs as array, too, because the ordering is important! --}}
         biigle.$declare('volumes.fileIds', {!! $fileIds->keys() !!});
         biigle.$declare('volumes.fileUuids', {!! $fileIds !!});
@@ -92,8 +90,8 @@
             :selected-label="selectedLabel"
             :show-filenames="showFilenames"
             :show-labels="showLabels"
-            :width="thumbnailWidth"
-            :height="thumbnailHeight"
+            :width="{{config('thumbnails.width')}}"
+            :height="{{config('thumbnails.height')}}"
             :type="type"
             v-on:scroll="handleScroll"
             ></image-grid>

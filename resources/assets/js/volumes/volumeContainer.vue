@@ -56,9 +56,6 @@ export default {
             labelsPromise: null,
             settings: null,
             type: null,
-            thumbnailWidth: 0,
-            thumbnailHeight: 0,
-            margin: 8,
         };
     },
     computed: {
@@ -270,11 +267,6 @@ export default {
         let thumbCount = biigle.$require('volumes.thumbCount');
         let annotateUri = biigle.$require('volumes.annotateUri');
         let infoUri = biigle.$require('volumes.infoUri');
-
-        // Enlarge thumbnail to present image in full size
-        this.thumbnailHeight = biigle.$require('volumes.thumbnailHeight') + this.margin;
-        this.thumbnailWidth = biigle.$require('volumes.thumbnailWidth') + this.margin;
-        
         // Do this here instead of a computed property so the file objects get
         // reactive. Also, this array does never change between page reloads.
         this.files = this.fileIds.map(function (id) {
