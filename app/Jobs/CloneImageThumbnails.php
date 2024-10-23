@@ -5,7 +5,6 @@ namespace Biigle\Jobs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\File;
 use Storage;
 
 class CloneImageThumbnails extends Job implements ShouldQueue
@@ -36,6 +35,10 @@ class CloneImageThumbnails extends Job implements ShouldQueue
         Storage::disk(config('thumbnails.storage_disk'))->copy($this->prefix.".{$format}", $this->copyPrefix.".{$format}");
 
         $disk = Storage::disk(config('image.tiles.disk'));
-        File::copyDirectory($disk->path($this->prefix), $disk->path($this->copyPrefix));
+        $files = $disk->allFiles($this->prefix);
+        foreach ($files as $file) {
+            $fileName = str_replace("{$this->prefix}/", "", $file);
+            $disk->copy($file, "{$this->copyPrefix}/{$fileName}");
+        }
     }
 }
