@@ -118,11 +118,11 @@ export default {
     computed: {
         columns() {
             // This might be 0 if the clientWidth is not yet initialized, so force 1.
-            return Math.max(1, Math.floor(this.clientWidth / (this.width + this.margin)));
+            return Math.max(1, Math.floor(this.clientWidth / (this.actualWidth + this.margin)));
         },
         rows() {
             // This might be 0 if the clientHeight is not yet initialized, so force 1.
-            return Math.max(1, Math.floor(this.clientHeight / (this.height + this.margin)));
+            return Math.max(1, Math.floor(this.clientHeight / (this.actualHeight + this.margin)));
         },
         imagesOffsetEnd() {
             const offset = this.imagesOffset + this.columns * this.rows;
@@ -165,6 +165,12 @@ export default {
             }
 
             return `r-${this.pinnedImage.id}`;
+        },
+        actualWidth() {
+            return this.width + this.margin;
+        },
+        actualHeight() {
+            return this.height + this.margin;
         }
     },
     methods: {
