@@ -2,10 +2,11 @@
 
 namespace Biigle\Jobs;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Storage;
+use Biigle\Image;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CloneImageThumbnails extends Job implements ShouldQueue
 {
@@ -23,14 +24,26 @@ class CloneImageThumbnails extends Job implements ShouldQueue
      */
     public $copyPrefix;
 
-    public function __construct(String $prefix, String $copyPrefix)
+    /**
+     * Cloned image of cloned volume
+     * @var Image
+     */
+    public $image;
+
+    public function __construct(Image $img, String $prefix)
     {
+        $this->image = $img;
         $this->prefix = $prefix;
-        $this->copyPrefix = $copyPrefix;
+        $this->copyPrefix = fragment_uuid_path($img->uuid);
     }
 
     public function handle()
     {
+        if(!$this->hasThumbnail() || !$this->hasTiledImages()){
+            ProcessNewImage::dispatch($this->image);
+            return;
+        }
+
         $format = config('thumbnails.format');
         Storage::disk(config('thumbnails.storage_disk'))->copy($this->prefix.".{$format}", $this->copyPrefix.".{$format}");
 
@@ -40,5 +53,14 @@ class CloneImageThumbnails extends Job implements ShouldQueue
             $fileName = str_replace("{$this->prefix}/", "", $file);
             $disk->copy($file, "{$this->copyPrefix}/{$fileName}");
         }
+    }
+
+    private function hasThumbnail(){
+        $format = config('thumbnails.format');
+        return Storage::disk(config('thumbnails.storage_disk'))->exists("{$this->prefix}.{$format}");
+    }
+
+    private function hasTiledImages(){
+        return Storage::disk(config('image.tiles.disk'))->exists("{$this->prefix}/ImageProperties.xml");
     }
 }
