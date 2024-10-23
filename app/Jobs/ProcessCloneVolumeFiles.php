@@ -73,15 +73,13 @@ class ProcessCloneVolumeFiles extends Job implements ShouldQueue
         if ($this->volume->isImageVolume()) {
             $query->eachById(function (Image $img) {
                 $prefix = fragment_uuid_path($this->uuidMap[$img->uuid]);
-                $copyPrefix = fragment_uuid_path($img->uuid);
-                CloneImageThumbnails::dispatch($img, $prefix, $copyPrefix);
+                CloneImageThumbnails::dispatch($img, $prefix);
             });
         } else {
             $queue = config('videos.process_new_video_queue');
             $query->eachById(function (Video $video) use ($queue) {
                 $prefix = fragment_uuid_path($this->uuidMap[$video->uuid]);
-                $copyPrefix = fragment_uuid_path($video->uuid);
-                CloneVideoThumbnails::dispatch($video, $copyPrefix)->onQueue($queue);
+                CloneVideoThumbnails::dispatch($video, $prefix)->onQueue($queue);
 
                 }
             );
