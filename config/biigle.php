@@ -61,4 +61,10 @@ return [
         'index_queue' => env('BIIGLE_FEDERATED_SEARCH_INDEX_QUEUE', 'default'),
     ],
 
+    /*
+    | Defines the maximum number of parameters allowed in a single SQL query. This is set to
+    | 65535 to prevent exceeding the database's parameter limit, which can lead to errors.
+    | Queries that need more parameters should be chunked to stay within this limit.
+    */
+    'db_param_limit' => 65535,
 ];
