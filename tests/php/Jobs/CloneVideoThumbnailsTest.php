@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Jobs\ProcessNewVideo;
-use TestCase;
-use Biigle\Tests\VideoTest;
 use Biigle\Jobs\CloneVideoThumbnails;
+use Biigle\Jobs\ProcessNewVideo;
+use Biigle\Tests\VideoTest;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+use TestCase;
 
 class CloneVideoThumbnailsTest extends TestCase
 {
@@ -56,7 +56,8 @@ class CloneVideoThumbnailsTest extends TestCase
         Queue::assertPushed(ProcessNewVideo::class);
     }
 
-    public function testHandleMissingThumbnails(){
+    public function testHandleMissingThumbnails()
+    {
         config(['videos.thumbnail_storage_disk' => 'test-thumbs']);
         
         $disk = Storage::fake('test-thumbs');
@@ -76,7 +77,8 @@ class CloneVideoThumbnailsTest extends TestCase
         Queue::assertPushed(ProcessNewVideo::class);
     }
 
-    public function testHandleMissingSprites(){
+    public function testHandleMissingSprites()
+    {
         config(['videos.thumbnail_storage_disk' => 'test-thumbs']);
         
         $disk = Storage::fake('test-thumbs');

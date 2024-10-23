@@ -8,7 +8,6 @@ use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 
 class ProcessCloneVolumeFiles extends Job implements ShouldQueue
 {
@@ -77,9 +76,10 @@ class ProcessCloneVolumeFiles extends Job implements ShouldQueue
             });
         } else {
             $queue = config('videos.process_new_video_queue');
-            $query->eachById(function (Video $video) use ($queue) {
-                $prefix = fragment_uuid_path($this->uuidMap[$video->uuid]);
-                CloneVideoThumbnails::dispatch($video, $prefix)->onQueue($queue);
+            $query->eachById(
+                function (Video $video) use ($queue) {
+                    $prefix = fragment_uuid_path($this->uuidMap[$video->uuid]);
+                    CloneVideoThumbnails::dispatch($video, $prefix)->onQueue($queue);
 
                 }
             );

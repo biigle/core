@@ -2,11 +2,11 @@
 
 namespace Biigle\Jobs;
 
-use Storage;
 use Biigle\Image;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Storage;
 
 class CloneImageThumbnails extends Job implements ShouldQueue
 {
@@ -39,7 +39,7 @@ class CloneImageThumbnails extends Job implements ShouldQueue
 
     public function handle()
     {
-        if(!$this->hasThumbnail() || !$this->hasTiledImages()){
+        if (!$this->hasThumbnail() || !$this->hasTiledImages()) {
             ProcessNewImage::dispatch($this->image);
             return;
         }
@@ -55,12 +55,14 @@ class CloneImageThumbnails extends Job implements ShouldQueue
         }
     }
 
-    private function hasThumbnail(){
+    private function hasThumbnail()
+    {
         $format = config('thumbnails.format');
         return Storage::disk(config('thumbnails.storage_disk'))->exists("{$this->prefix}.{$format}");
     }
 
-    private function hasTiledImages(){
+    private function hasTiledImages()
+    {
         return Storage::disk(config('image.tiles.disk'))->exists("{$this->prefix}/ImageProperties.xml");
     }
 }
