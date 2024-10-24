@@ -40,7 +40,10 @@ class ProcessCloneVolumeFilesTest extends TestCase
         
         with(new ProcessCloneVolumeFiles($copy, [], $map))->handle();
 
-        Queue::assertPushed(CloneImageThumbnails::class, fn ($job) => $job->prefix === $prefix && $job->copyPrefix === $copyPrefix);
+        Queue::assertPushed(
+            CloneImageThumbnails::class,
+            fn ($job) => $job->prefix === $prefix && $job->copyPrefix === $copyPrefix
+        );
     }
 
     public function testHandleImagesWithOnly()
@@ -72,9 +75,15 @@ class ProcessCloneVolumeFilesTest extends TestCase
         
         with(new ProcessCloneVolumeFiles($copy, [$i3->id], $map))->handle();
 
-        Queue::assertPushed(CloneImageThumbnails::class, fn ($job) => $job->image->id === $i3->id);
+        Queue::assertPushed(
+            CloneImageThumbnails::class,
+            fn ($job) => $job->image->id === $i3->id
+        );
 
-        Queue::assertNotPushed(CloneImageThumbnails::class, fn ($job) => $job->image->id === $i4->id);
+        Queue::assertNotPushed(
+            CloneImageThumbnails::class,
+            fn ($job) => $job->image->id === $i4->id
+        );
     }
 
     public function testHandleVideoWithThumbnails()
@@ -98,7 +107,10 @@ class ProcessCloneVolumeFilesTest extends TestCase
 
         with(new ProcessCloneVolumeFiles($copy, [], $map))->handle();
 
-        Queue::assertPushed(CloneVideoThumbnails::class, fn ($job) => $job->video->id === $v2->id);
+        Queue::assertPushed(
+            CloneVideoThumbnails::class,
+            fn ($job) => $job->video->id === $v2->id
+        );
     }
 
     public function testHandleVideosWithOnly()
@@ -124,8 +136,14 @@ class ProcessCloneVolumeFilesTest extends TestCase
 
         with(new ProcessCloneVolumeFiles($copy, [$v3->id], $map))->handle();
 
-        Queue::assertPushed(CloneVideoThumbnails::class, fn ($job) => $job->video->id === $v3->id);
-        Queue::assertNotPushed(CloneVideoThumbnails::class, fn ($job) => $job->video->id === $v4->id);
+        Queue::assertPushed(
+            CloneVideoThumbnails::class,
+            fn ($job) => $job->video->id === $v3->id
+        );
+        Queue::assertNotPushed(
+            CloneVideoThumbnails::class,
+            fn ($job) => $job->video->id === $v4->id
+        );
     }
 
     public function testHandleVideosQueue()
@@ -140,6 +158,10 @@ class ProcessCloneVolumeFilesTest extends TestCase
         Queue::fake();
         with(new ProcessCloneVolumeFiles($copy, [], $map))->handle();
 
-        Queue::assertPushedOn('low', CloneVideoThumbnails::class, fn ($job) => $job->video->id === $v2->id);
+        Queue::assertPushedOn(
+            'low',
+            CloneVideoThumbnails::class,
+            fn ($job) => $job->video->id === $v2->id
+        );
     }
 }

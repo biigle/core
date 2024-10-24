@@ -80,7 +80,6 @@ class ProcessCloneVolumeFiles extends Job implements ShouldQueue
                 function (Video $video) use ($queue) {
                     $prefix = fragment_uuid_path($this->uuidMap[$video->uuid]);
                     CloneVideoThumbnails::dispatch($video, $prefix)->onQueue($queue);
-
                 }
             );
         }
