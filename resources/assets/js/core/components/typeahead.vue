@@ -156,7 +156,7 @@ export default {
                     this.selectedItemIndex -= 1;
                 }
 
-                if (e.key === 'ArrowDown' && typeahead.scrollTop < typeahead.scrollHeight && this.selectedItemIndex < this.maxItemCount - 1) {
+                if (e.key === 'ArrowDown' && typeahead.scrollTop < typeahead.scrollHeight && this.selectedItemIndex < Math.min(this.items.length - 1, this.maxItemCount - 1)) {
                     typeahead.scrollTop += scrollAmount;
                     this.selectedItemIndex += 1;
                 }
@@ -174,6 +174,8 @@ export default {
                 let useTypeaheadFilter = this.oldInput.length > 3 && added;
                 if (v.length >= 3 && !useTypeaheadFilter) {
                     this.$emit('fetch', v);
+                    this.$refs.typeahead.scrollTop = 0;
+                    this.selectedItemIndex = 0;
                 }
                 this.isTyping = false;
                 this.oldInput = v
