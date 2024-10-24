@@ -67,6 +67,9 @@
             v-on:cancel-similarity="handleCancelSimilaritySort"
             ></sorting-tab>
     </sidebar-tab>
+<sidebar-tab :disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter annotations" :highlight="lol">
+        <filtering-tab></filtering-tab>
+</sidebar-tab> 
     <sidebar-tab name="settings" icon="cog" title="Settings">
         <settings-tab
             v-on:change-outlines="updateShowOutlines"
