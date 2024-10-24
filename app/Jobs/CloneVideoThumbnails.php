@@ -39,11 +39,12 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
 
     public function handle()
     {
-        if (!$this->hasThumbnails() || !$this->hasSprites()) {
+        $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
+
+        if (!$this->hasThumbnails($disk) || !$this->hasSprites($disk)) {
             ProcessNewVideo::dispatch($this->video);
         }
 
-        $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
         $files = $disk->allFiles($this->prefix);
         foreach ($files as $file) {
             $fileName = str_replace("{$this->prefix}/", "", $file);
@@ -51,16 +52,16 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
         }
     }
 
-    private function hasThumbnails()
+    private function hasThumbnails($disk)
     {
         $format = config('thumbnails.format');
-        return Storage::disk(config('videos.thumbnail_storage_disk'))->exists("{$this->prefix}/0.{$format}");
+        return $disk->exists("{$this->prefix}/0.{$format}");
     }
 
-    private function hasSprites()
+    private function hasSprites($disk)
     {
         $format = config('videos.sprites_format');
-        return Storage::disk(config('videos.thumbnail_storage_disk'))->exists("{$this->prefix}/sprite_0.{$format}");
+        return $disk->exists("{$this->prefix}/sprite_0.{$format}");
 
     }
 }

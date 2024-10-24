@@ -39,30 +39,32 @@ class CloneImageThumbnails extends Job implements ShouldQueue
 
     public function handle()
     {
-        if (!$this->hasThumbnail() || !$this->hasTiledImages()) {
+        $diskThumb = Storage::disk(config('thumbnails.storage_disk'));
+        $diskTiles = Storage::disk(config('image.tiles.disk'));
+
+        if (!$this->hasThumbnail($diskThumb) || !$this->hasTiledImages($diskTiles)) {
             ProcessNewImage::dispatch($this->image);
             return;
         }
 
         $format = config('thumbnails.format');
-        Storage::disk(config('thumbnails.storage_disk'))->copy($this->prefix.".{$format}", $this->copyPrefix.".{$format}");
+        $diskThumb->copy($this->prefix.".{$format}", $this->copyPrefix.".{$format}");
 
-        $disk = Storage::disk(config('image.tiles.disk'));
-        $files = $disk->allFiles($this->prefix);
+        $files = $diskTiles->allFiles($this->prefix);
         foreach ($files as $file) {
             $fileName = str_replace("{$this->prefix}/", "", $file);
-            $disk->copy($file, "{$this->copyPrefix}/{$fileName}");
+            $diskTiles->copy($file, "{$this->copyPrefix}/{$fileName}");
         }
     }
 
-    private function hasThumbnail()
+    private function hasThumbnail($disk)
     {
         $format = config('thumbnails.format');
-        return Storage::disk(config('thumbnails.storage_disk'))->exists("{$this->prefix}.{$format}");
+        return $disk->exists("{$this->prefix}.{$format}");
     }
 
-    private function hasTiledImages()
+    private function hasTiledImages($disk)
     {
-        return Storage::disk(config('image.tiles.disk'))->exists("{$this->prefix}/ImageProperties.xml");
+        return $disk->exists("{$this->prefix}/ImageProperties.xml");
     }
 }
