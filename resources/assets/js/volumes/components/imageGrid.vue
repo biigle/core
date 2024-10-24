@@ -118,11 +118,13 @@ export default {
     computed: {
         columns() {
             // This might be 0 if the clientWidth is not yet initialized, so force 1.
-            return Math.max(1, Math.floor(this.clientWidth / (this.actualWidth + this.margin)));
+            // The double margin preserves grid functionality by accommodating larger thumbnail sizes.
+            return Math.max(1, Math.floor(this.clientWidth / (this.width + 2 * this.margin)));
         },
         rows() {
             // This might be 0 if the clientHeight is not yet initialized, so force 1.
-            return Math.max(1, Math.floor(this.clientHeight / (this.actualHeight + this.margin)));
+            // The double margin preserves grid functionality by accommodating larger thumbnail sizes.
+            return Math.max(1, Math.floor(this.clientHeight / (this.height + 2 * this.margin)));
         },
         imagesOffsetEnd() {
             const offset = this.imagesOffset + this.columns * this.rows;
@@ -165,12 +167,6 @@ export default {
             }
 
             return `r-${this.pinnedImage.id}`;
-        },
-        actualWidth() {
-            return this.width + this.margin;
-        },
-        actualHeight() {
-            return this.height + this.margin;
         }
     },
     methods: {
