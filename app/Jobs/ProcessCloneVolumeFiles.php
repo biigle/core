@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessNewVolumeFiles extends Job implements ShouldQueue
+class ProcessCloneVolumeFiles extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -29,6 +29,13 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
     protected $only;
 
     /**
+     * Array maps uuid of copied file to uuid of original files.
+     *
+     * @var array
+     */
+    protected $uuidMap;
+
+    /**
      * Ignore this job if the volume does not exist any more.
      *
      * @var bool
@@ -41,13 +48,15 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
      * @param Volume $volume The volume for which the files should be processed.
      * @param array $only (optional) Array of image/video IDs to restrict processing to.
      * If it is empty, all files of the volume will be taken.
+     * @param array $uuidMap Array to map copied file uuid to the original file uuid during cloning process.
      *
      * @return void
      */
-    public function __construct(Volume $volume, array $only = [])
+    public function __construct(Volume $volume, array $uuidMap, array $only = [])
     {
         $this->volume = $volume;
         $this->only = $only;
+        $this->uuidMap = $uuidMap;
     }
 
     /**
@@ -61,11 +70,18 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
             ->when($this->only, fn ($query) => $query->whereIn('id', $this->only));
 
         if ($this->volume->isImageVolume()) {
-            $query->eachById([ProcessNewImage::class, 'dispatch']);
+            $query->eachById(function (Image $img) {
+                $prefix = fragment_uuid_path($this->uuidMap[$img->uuid]);
+                CloneImageThumbnails::dispatch($img, $prefix);
+            });
         } else {
             $queue = config('videos.process_new_video_queue');
-            $query->eachById(fn (Video $v) => ProcessNewVideo::dispatch($v)->onQueue($queue));
-
+            $query->eachById(
+                function (Video $video) use ($queue) {
+                    $prefix = fragment_uuid_path($this->uuidMap[$video->uuid]);
+                    CloneVideoThumbnails::dispatch($video, $prefix)->onQueue($queue);
+                }
+            );
         }
     }
 }
