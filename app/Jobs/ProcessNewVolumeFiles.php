@@ -41,8 +41,6 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
      * @param Volume $volume The volume for which the files should be processed.
      * @param array $only (optional) Array of image/video IDs to restrict processing to.
      * If it is empty, all files of the volume will be taken.
-     * @param array $uuidMap Array to map copied file uuid to the original file uuid during cloning process.
-     * It is empty, if a volume is created, but not cloned.
      *
      * @return void
      */

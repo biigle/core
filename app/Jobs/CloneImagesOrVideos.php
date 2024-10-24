@@ -141,7 +141,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                 }
             }
             if ($copy->files()->exists()) {
-                ProcessCloneVolumeFiles::dispatch($copy, [], $this->uuidMap);
+                ProcessCloneVolumeFiles::dispatch($copy, $this->uuidMap, []);
             }
 
             if ($volume->hasMetadata()) {

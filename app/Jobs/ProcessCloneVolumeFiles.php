@@ -52,7 +52,7 @@ class ProcessCloneVolumeFiles extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Volume $volume, array $only = [], $uuidMap)
+    public function __construct(Volume $volume, array $uuidMap, array $only = [])
     {
         $this->volume = $volume;
         $this->only = $only;

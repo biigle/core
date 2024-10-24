@@ -38,7 +38,7 @@ class ProcessCloneVolumeFilesTest extends TestCase
 
         Queue::fake();
         
-        with(new ProcessCloneVolumeFiles($copy, [], $map))->handle();
+        with(new ProcessCloneVolumeFiles($copy, $map, []))->handle();
 
         Queue::assertPushed(
             CloneImageThumbnails::class,
@@ -73,7 +73,7 @@ class ProcessCloneVolumeFilesTest extends TestCase
 
         Queue::fake();
         
-        with(new ProcessCloneVolumeFiles($copy, [$i3->id], $map))->handle();
+        with(new ProcessCloneVolumeFiles($copy, $map, [$i3->id]))->handle();
 
         Queue::assertPushed(
             CloneImageThumbnails::class,
@@ -105,7 +105,7 @@ class ProcessCloneVolumeFilesTest extends TestCase
 
         Queue::fake();
 
-        with(new ProcessCloneVolumeFiles($copy, [], $map))->handle();
+        with(new ProcessCloneVolumeFiles($copy, $map, []))->handle();
 
         Queue::assertPushed(
             CloneVideoThumbnails::class,
@@ -134,7 +134,7 @@ class ProcessCloneVolumeFilesTest extends TestCase
 
         Queue::fake();
 
-        with(new ProcessCloneVolumeFiles($copy, [$v3->id], $map))->handle();
+        with(new ProcessCloneVolumeFiles($copy, $map, [$v3->id]))->handle();
 
         Queue::assertPushed(
             CloneVideoThumbnails::class,
@@ -156,7 +156,7 @@ class ProcessCloneVolumeFilesTest extends TestCase
         $map = [$v2->uuid => $v1->uuid];
 
         Queue::fake();
-        with(new ProcessCloneVolumeFiles($copy, [], $map))->handle();
+        with(new ProcessCloneVolumeFiles($copy, $map, []))->handle();
 
         Queue::assertPushedOn(
             'low',
