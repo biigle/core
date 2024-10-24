@@ -49,6 +49,7 @@
 <script>
 import Typeahead from 'uiv/dist/Typeahead';
 import TypeaheadItem from './typeaheadItem';
+import {debounce} from './../utils';
 
 /**
  * A component that displays a typeahead to find items.
@@ -106,7 +107,6 @@ export default {
             inputElement: null,
             internalValue: undefined,
             inputText: '',
-            timerTask: null,
             isTyping: false,
             oldInput: '',
             selectedItemIndex: 0,
@@ -169,9 +169,7 @@ export default {
         },
         inputText(v) {
             this.isTyping = true;
-            clearTimeout(this.timerTask);
-
-            this.timerTask = setTimeout(() => {
+            debounce(() => {
                 let added = v.trim().includes(this.oldInput.trim());
                 let useTypeaheadFilter = this.oldInput.length > 3 && added;
                 if (v.length >= 3 && !useTypeaheadFilter) {
@@ -179,7 +177,7 @@ export default {
                 }
                 this.isTyping = false;
                 this.oldInput = v
-            }, 500);
+            }, 500, 'typeahead-fetch');
         },
         disabled() {
             // Use disabled and nextTick to show dropdown right after loading finished
