@@ -61,7 +61,7 @@ class ProjectLabelTreeController extends Controller
     /**
      * Display label trees that match the given name and can be used by the specified project.
      *
-     * @api {get} projects/:id/label-trees/available Get matching label trees
+     * @api {get} projects/:id/label-trees/available/:name Get matching label trees
      * @apiGroup Projects
      * @apiName IndexProjectAvailableLabelTrees
      * @apiPermission projectMember
