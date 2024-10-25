@@ -118,12 +118,12 @@ export default {
     computed: {
         columns() {
             // This might be 0 if the clientWidth is not yet initialized, so force 1.
-            // The double margin preserves grid functionality by accommodating larger thumbnail sizes.
+            // The double "margin" accounts for the CSS margin, padding and border.
             return Math.max(1, Math.floor(this.clientWidth / (this.width + 2 * this.margin)));
         },
         rows() {
             // This might be 0 if the clientHeight is not yet initialized, so force 1.
-            // The double margin preserves grid functionality by accommodating larger thumbnail sizes.
+            // The double "margin" accounts for the CSS margin, padding and border.
             return Math.max(1, Math.floor(this.clientHeight / (this.height + 2 * this.margin)));
         },
         imagesOffsetEnd() {
