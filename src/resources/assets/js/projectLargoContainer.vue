@@ -1,6 +1,7 @@
 <script>
 import LargoContainer from './mixins/largoContainer';
 import ProjectsApi from './api/projects';
+import ShapesApi from './api/shapes';
 import {IMAGE_ANNOTATION} from './constants';
 
 /**
@@ -41,6 +42,12 @@ export default {
 
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
+
+        getShapes() {
+            let annotationShapeTypes = ShapesApi.getAllShapes().then((response) => {annotationShapeTypes = response.data})
+            return annotationShapeTypes
+            
+        }
     },
     created() {
         this.projectId = biigle.$require('largo.projectId');
