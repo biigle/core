@@ -76,9 +76,13 @@ class CloneImageThumbnailsTest extends TestCase
         $diskThumbs = Storage::fake('test-thumbs');
         Storage::fake('test-tiles');
 
+        $threshold = config('image.tiles.threshold');
         $image = ImageTest::create();
         $prefix = fragment_uuid_path($image->uuid);
         $copyImage = ImageTest::create();
+        // Make image large enough to require tiling
+        $copyImage->width = $threshold+1;
+        $copyImage->height = $threshold+1;
 
         $i1 = $prefix.".{$format}";
         $i2 = $prefix.".{$format}";
