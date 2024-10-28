@@ -65,7 +65,6 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
         } else {
             $queue = config('videos.process_new_video_queue');
             $query->eachById(fn (Video $v) => ProcessNewVideo::dispatch($v)->onQueue($queue));
-
         }
     }
 }
