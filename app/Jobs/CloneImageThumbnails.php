@@ -41,19 +41,21 @@ class CloneImageThumbnails extends Job implements ShouldQueue
     {
         $diskThumb = Storage::disk(config('thumbnails.storage_disk'));
         $diskTiles = Storage::disk(config('image.tiles.disk'));
+        $hasTiledImages = $this->hasTiledImages($diskTiles);
 
-        if (!$this->hasThumbnail($diskThumb) || !$this->hasTiledImages($diskTiles)) {
+        if (!$this->hasThumbnail($diskThumb) || $this->shouldBeTiled() && !$hasTiledImages) {
             ProcessNewImage::dispatch($this->image);
             return;
         }
-
         $format = config('thumbnails.format');
         $diskThumb->copy($this->prefix.".{$format}", $this->copyPrefix.".{$format}");
 
-        $files = $diskTiles->allFiles($this->prefix);
-        foreach ($files as $file) {
-            $fileName = str_replace("{$this->prefix}/", "", $file);
-            $diskTiles->copy($file, "{$this->copyPrefix}/{$fileName}");
+        if ($hasTiledImages) {
+            $files = $diskTiles->allFiles($this->prefix);
+            foreach ($files as $file) {
+                $fileName = str_replace("{$this->prefix}/", "", $file);
+                $diskTiles->copy($file, "{$this->copyPrefix}/{$fileName}");
+            }
         }
     }
 
@@ -66,5 +68,20 @@ class CloneImageThumbnails extends Job implements ShouldQueue
     private function hasTiledImages($disk)
     {
         return $disk->exists("{$this->prefix}/ImageProperties.xml");
+    }
+        
+    /**
+     * Determine if an image should be tiled.
+     *
+     * @return bool
+     */
+    protected function shouldBeTiled()
+    {
+        if ($this->image->tiled && $this->image->tilingInProgress) {
+            return false;
+        }
+
+        $threshold = config('image.tiles.threshold');
+        return $this->image->width > $threshold || $this->image->height > $threshold;
     }
 }
