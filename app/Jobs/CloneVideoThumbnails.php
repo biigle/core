@@ -53,12 +53,26 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
         }
     }
 
+    /**
+     * Determine if original video has thumbnails.
+     *
+     * @param $disk containing original video's thumbnails.
+     *
+     * @return bool
+     */
     private function hasThumbnails($disk)
     {
         $format = config('thumbnails.format');
         return $disk->exists("{$this->prefix}/0.{$format}");
     }
 
+    /**
+     * Determine if original video has sprites.
+     *
+     * @param $disk containing original video's sprites.
+     *
+     * @return bool
+     */
     private function hasSprites($disk)
     {
         $format = config('videos.sprites_format');

@@ -59,12 +59,26 @@ class CloneImageThumbnails extends Job implements ShouldQueue
         }
     }
 
+    /**
+     * Determine if original image has thumbnail.
+     *
+     * @param $disk containing original image's thumbnail.
+     *
+     * @return bool
+     */
     private function hasThumbnail($disk)
     {
         $format = config('thumbnails.format');
         return $disk->exists("{$this->prefix}.{$format}");
     }
 
+    /**
+     * Determine if original image has tiled data.
+     *
+     * @param $disk containing original image's tiled images.
+     *
+     * @return bool
+     */
     private function hasTiledImages($disk)
     {
         return $disk->exists("{$this->prefix}/ImageProperties.xml");
