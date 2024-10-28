@@ -43,6 +43,7 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
 
         if (!$this->hasThumbnails($disk) || !$this->hasSprites($disk)) {
             ProcessNewVideo::dispatch($this->video);
+            return;
         }
 
         $files = $disk->allFiles($this->prefix);
