@@ -2,7 +2,6 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\Image;
 use Biigle\Video;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
