@@ -1,14 +1,14 @@
 <template>
-    <div class="filtering-tab">
+    <div class="filtering-tab" @click.delay.once="loadShapes" v-on:filter-tab-clicked="loadShapes">
         <div class="list-group filter-list-group">
-            <label>Annotation type</label>
+            <label>Annotation Shape</label>
             <select
                 class="form-control"
                 @change="filterAnnotation"
-                v-model="annotationType"
+                v-model="annotationShape"
                 >
                 <option
-                    v-for="annotation_type_name, annotation_type_id in annotationShapes"
+                    v-for="annotation_type_name, annotation_type_id in this.shapes"
                     :value="annotation_type_id"
                     v-text="annotation_type_name"
                     ></option>
@@ -20,19 +20,35 @@
 <script>
 
 export default {
-    methods: {
-        filterAnnotation(annotationValue) {
-            console.log(this.annotationType)
+    props: {
+        annotationShapes: {
+            type: Function,
+            required: true,
         }
     },
     data() {
         return {
-            annotationType: {},
-            annotationShapes : {}
+            annotationShape: {},
+            shapes: {}            
+        }
+    },
+    computed: {
+        getAnnotationShapes(){
+            return this.getShapes()
+        }
+    },
+    methods: {
+        filterAnnotation(annotationValue) {
+            console.log(this.annotationShape)
+        },
+        
+        async loadShapes(){
+            if (Object.keys(this.shapes).length < 1) {
+                this.shapes = await this.annotationShapes()
+        }
         }
     },
     created() {
-        this.$emit("load-shapes")
     }
 };
 </script>

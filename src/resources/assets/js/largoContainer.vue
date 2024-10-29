@@ -1,6 +1,7 @@
 <script>
 import LargoContainer from './mixins/largoContainer';
 import VolumesApi from './api/volumes';
+import ShapesApi from './api/shapes';
 
 /**
  * View model for the main Largo container
@@ -49,8 +50,16 @@ export default {
             }
 
             return response;
-        }
+        },
+    getShapes() {
+            let annotationShapeTypes = ShapesApi.getAllShapes().then((response) => response.json())
+            return annotationShapeTypes
+        },
+        emitLoadFilter(){
+        console.log("Emit!")
     },
+    },
+    
     created() {
         this.volumeId = biigle.$require('largo.volumeId');
         this.labelTrees = biigle.$require('largo.labelTrees');
