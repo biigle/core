@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
+use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -53,12 +54,15 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
+        $shapes = Shape::all();
+
         return view('largo::show', [
             'volume' => $volume,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
             'target' => $volume,
             'patchUrlTemplate' => $patchUrlTemplate,
+            'shapes' => $shapes,
         ]);
     }
 }
