@@ -13,7 +13,9 @@ import {Messages} from '../import';
 import {PowerToggle} from '../import';
 import {SidebarTab} from '../import';
 import {Sidebar} from '../import';
+import AnnotationsTab from '../components/annotationsTab.vue';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
+import AnnotationsApi from '../api/labels';
 
 /**
  * Mixin for largo view models
@@ -29,6 +31,7 @@ export default {
         relabelImageGrid: RelabelImageGrid,
         settingsTab: SettingsTab,
         sortingTab: SortingTab,
+        annotationsTab: AnnotationsTab,
     },
     data() {
         return {
@@ -51,6 +54,11 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
+            filteredAnnotations: [],
+            annotationCount: 0,
+            selectedAnnotations: [],
+            volumeId: 0,
+            shapes: [],
         };
     },
     provide() {
@@ -469,6 +477,38 @@ export default {
             return this.updateSortKey(SORT_KEY.ANNOTATION_ID)
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
+        handleOpenTab(tab) {
+            if (tab === "annotations" && this.allAnnotations.length === 0) {
+                this.fetchAllAnnotations();
+            }
+
+        },
+        fetchAllAnnotations() {
+            AnnotationsApi.fetchAllImageAnnotations({ id: this.volumeId })
+                .then((res) => {
+                    let imageAnnotations = res.body.flat();
+                    this.filteredAnnotations = imageAnnotations;
+                    this.annotationCount = imageAnnotations.reduce(function (sum, as) {
+                        sum += as.annotations.length;
+                        return sum;
+                    }, 0);
+
+                })
+        },
+        handleSelectAnnotation(a) {
+            a.selected = true;
+            this.filteredAnnotations.map((other) => {
+                if (other.id != a.id) {
+                    other.selected = false;
+                }
+            });
+            this.handleSelectedLabel(a.labels[0]);
+        },
+        handleDeselectAnnotation(a) {
+            a.selected = false;
+        },
+        focusAnnotation() { },
+        handleDetachAnnotationLabel() { },
     },
     watch: {
         annotations(annotations) {
@@ -488,6 +528,8 @@ export default {
     },
     created() {
         this.user = biigle.$require('largo.user');
+        this.volumeId = biigle.$require('largo.volumeId');
+        this.shapes = biigle.$require('largo.annotations.shapes');
 
         window.addEventListener('beforeunload', (e) => {
             if (this.hasDismissedAnnotations) {
