@@ -2,10 +2,15 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
-use Biigle\Http\Controllers\Api\Controller;
-use Biigle\ImageAnnotation;
 use Biigle\Label;
+use Biigle\Volume;
+use Biigle\ImageAnnotation;
 use Illuminate\Http\Request;
+use Biigle\ImageAnnotationLabel;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Shape;
 
 class ImageAnnotationsController extends Controller
 {
@@ -39,4 +44,32 @@ class ImageAnnotationsController extends Controller
             ->orderBy('image_annotations.id', 'desc')
             ->pluck('images.uuid', 'image_annotations.id');
     }
+
+    public function getAllAnnotations(Request $request, $id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
+
+        return $volume
+        ->images()
+        ->has('annotations')
+        ->with([
+            'annotations:id,image_id,shape_id',
+            'annotations.labels.user',
+            'annotations.labels.label'
+            ])
+        ->select('uuid', 'id')
+        ->get();
+    }
 }
+
+// $volume->images()
+//             ->join('image_annotations', 'image_annotations.image_id', '=', 'images.id')
+//             ->select('images.uuid', 'image_annotations.id as annotation_id')
+//             ->addSelect(['label_id' => function ($query) {
+//                 $query->select('image_annotation_labels.label_id')
+//                     ->from('image_annotation_labels')
+//                     ->whereColumn('image_annotation_labels.annotation_id', 'image_annotations.id')
+//                     ->limit(1);
+//             }])
+//         ->get();

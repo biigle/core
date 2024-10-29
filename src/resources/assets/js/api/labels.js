@@ -20,4 +20,12 @@ export default Vue.resource('api/v1/labels{/id}', {}, {
         method: 'GET',
         url: 'api/v1/labels{/id}/video-annotations',
     },
+    fetchAllImageAnnotations: {
+        method: 'GET',
+        url: 'api/v1/volume{/id}/image-annotations',
+    },
+    fetchAllVideoAnnotations: {
+        method: 'GET',
+        url: 'api/v1/volume{/id}/video-annotations',
+    }
 });

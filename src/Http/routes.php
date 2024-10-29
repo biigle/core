@@ -76,4 +76,12 @@ $router->group([
     $router->get('volumes/{id}/video-annotations/filter/label/{id2}', [
         'uses' => 'Volumes\FilterVideoAnnotationsByLabelController@index',
     ]);
+
+    $router->get('volume/{id}/image-annotations', [
+        'uses' => 'Labels\ImageAnnotationsController@getAllAnnotations'
+    ]);
+
+    $router->get('volume/{id}/video-annotations', [
+        'uses' => 'Labels\ImageAnnotationsController@getAllAnnotations'
+    ]);
 });
