@@ -35,7 +35,8 @@
         </div>
     </div>
 </div>
-<sidebar v-cloak open-tab="labels">
+<sidebar v-cloak open-tab="labels" v-on:open="handleOpenTab">
+    @include('largo::annotationsTab')
     <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div class="largo-tab__button">
             <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the relabelling step" v-on:click="goToRelabel">Continue</button>
