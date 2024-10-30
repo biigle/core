@@ -496,19 +496,21 @@ export default {
                 })
         },
         handleSelectAnnotation(a) {
-            a.selected = true;
-            this.filteredAnnotations.map((other) => {
-                if (other.id != a.id) {
-                    other.selected = false;
-                }
+            Vue.set(a, 'selected', true);
+
+            this.filteredAnnotations.map(img => {
+                img.annotations.map((other) => {
+                    if (other.id != a.id) {
+                        Vue.set(other, 'selected', false);
+                    }
+                })
             });
-            this.handleSelectedLabel(a.labels[0]);
+
+            this.selectedLabel = a.labels[0];
         },
         handleDeselectAnnotation(a) {
-            a.selected = false;
+            Vue.set(a,'selected', false);
         },
-        focusAnnotation() { },
-        handleDetachAnnotationLabel() { },
     },
     watch: {
         annotations(annotations) {

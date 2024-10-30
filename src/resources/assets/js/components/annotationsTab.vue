@@ -30,9 +30,9 @@ export default {
             let uniqueMap = {};
             let shapes = this.shapesMap;
             this.imageData.forEach(function(image) {
-                image.annotations.forEach(function (annotation) {                    
+                image.annotations.forEach(function (annotation) {
+                    Vue.set(annotation,'selected', false)
                     annotation.shape = shapes[annotation.shape_id]
-                    annotation.selected = false;
                     annotation.labels.forEach(function (annotationLabel) {
                     if (!labels.hasOwnProperty(annotationLabel.label.id)) {
                         labels[annotationLabel.label_id] = annotationLabel.label;
