@@ -30,8 +30,9 @@ class FilterImageAnnotationsByLabelController extends Controller
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
-        $this->validate($request, ['take' => 'integer']);
+        $this->validate($request, ['take' => 'integer', 'shape_id' => 'integer']);
         $take = $request->input('take');
+        $shape_id = $request->input('shape_id');
 
         $session = $volume->getActiveAnnotationSession($request->user());
 
@@ -45,6 +46,9 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->where('images.volume_id', $vid)
             ->where('image_annotation_labels.label_id', $lid)
+            ->when(!is_null($shape_id), function ($query) use ($shape_id) {
+                $query->where('shape_id', $shape_id);
+            })
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
                     $query->where('image_annotation_labels.user_id', $request->user()->id);
