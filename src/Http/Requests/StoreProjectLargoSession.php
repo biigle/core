@@ -120,17 +120,17 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedImageVolumes($annotations)
     {
-        $chunkedI = array_chunk($annotations,config('biigle.db_param_limit')-1);
-        $volumeIdsI = [];
-        foreach($chunkedI as $ci){
-            $chunkVolIdI = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
-                ->whereIn('image_annotations.id', $ci)
+        $chunkedAnnotations = array_chunk($annotations,config('biigle.db_param_limit'));
+        $volumeIdsArray = [];
+        foreach($chunkedAnnotations as $chunkedAnnotation){
+            $chunkVolumeId = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
+                ->whereIn('image_annotations.id', $chunkedAnnotation)
                 ->distinct()
                 ->pluck('images.volume_id')
                 ->toArray();
-            $volumeIdsI = array_merge($volumeIdsI, $chunkVolIdI);
+            $volumeIdsArray = array_merge($volumeIdsArray, $chunkVolumeId);
         }
-        return array_unique($volumeIdsI);
+        return array_unique($volumeIdsArray);
     }
 
     /**
@@ -143,16 +143,16 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedVideoVolumes($annotations)
     {
-        $chunkedV = array_chunk($annotations,config('biigle.db_param_limit')-1);
-        $volumeIdsV = [];
-        foreach($chunkedV as $cv){
-            $chunkVolIdV = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
-                ->whereIn('video_annotations.id', $cv)
+        $chunkedAnnotations = array_chunk($annotations,config('biigle.db_param_limit'));
+        $volumeIdsArray = [];
+        foreach($chunkedAnnotations as $chunkedAnnotation){
+            $chunkVolumeId = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
+                ->whereIn('video_annotations.id', $chunkedAnnotation)
                 ->distinct()
                 ->pluck('videos.volume_id')
                 ->toArray();
-            $volumeIdsV = array_merge($volumeIdsV, $chunkVolIdV);
+            $volumeIdsArray = array_merge($volumeIdsArray, $chunkVolumeId);
         }
-        return array_unique($volumeIdsV);
+        return array_unique($volumeIdsArray);
     }
 }

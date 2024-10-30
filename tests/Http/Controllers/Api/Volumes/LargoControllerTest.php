@@ -448,19 +448,18 @@ class LargoControllerTest extends ApiTestCase
     {
         config(['biigle.db_param_limit' => 2]);
         $image = ImageTest::create(['volume_id' => $this->imageVolume->id,
-                                    'filename'=>"testImage"]);
+                                    'filename' => "testImage"]);
 
         $imageAnnotations = ImageAnnotation::factory()->count(5)->create(['image_id' => $image->id]);
         $label = Label::factory()->create(); 
 
 
-        $imageAnnotations->each(function($imageAnnotation) use($label){
+        $imageAnnotations->each(fn($imageAnnotation) =>
             ImageAnnotationLabelTest::create([
                 'annotation_id' => $imageAnnotation->id,
                 'user_id' => $this->editor()->id,
                 'label_id' => $label->id,
-            ]);
-        });
+            ]));
 
 
         $this->beEditor();
@@ -478,7 +477,7 @@ class LargoControllerTest extends ApiTestCase
     {
         config(['biigle.db_param_limit' => 2]);
         $video = VideoTest::create(['volume_id' => $this->videoVolume->id,
-                                    'filename'=>"testVideo"]);
+                                    'filename' => "testVideo"]);
         $videoAnnotations = VideoAnnotation::factory()->count(5)->create(['video_id' => $video->id]);
 
         $label = Label::factory()->create(); 
