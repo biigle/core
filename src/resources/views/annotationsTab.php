@@ -2,10 +2,8 @@
     <annotations-tab
         :files-data="filesData"
         :total-annotation-count="annotationCount"
-        :selected-annotations="selectedAnnotations"
-        :shapes="shapes"
-        v-on:select="handleSelectAnnotation"
-        v-on:deselect="handleDeselectAnnotation"
+        v-on:select="handleSelectedLabel"
+        v-on:deselect="handleDeselectedLabel"
         inline-template
         >
             <div class="annotations-tab">
@@ -23,14 +21,10 @@
                          :key="item.id"
                          :label="item.label"
                          :annotations="item.annotations"
-                         :can-detach-others="canDetachOthers"
-                         :own-user-id="ownUserId"
-                         v-on:select="handleSelect"
+                         :is-selected="selectedLabel && item.id == selectedLabel.id"
+                         v-on:select="handleSelectedLabel"
                          ></label-item>
                 </ul>
-                <!-- <div class="annotations-tab__plugins">
-                    @mixin('annotationsAnnotationsTab')
-                </div> -->
             </div>
     </annotations-tab>
 </sidebar-tab>

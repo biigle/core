@@ -56,10 +56,7 @@ export default {
             pinnedImage: null,
             filesData: [],
             annotationCount: 0,
-            selectedAnnotations: [],
             volumeId: 0,
-            shapes: [],
-            annotationType: null,
         };
     },
     provide() {
@@ -553,7 +550,6 @@ export default {
     created() {
         this.user = biigle.$require('largo.user');
         this.volumeId = biigle.$require('largo.volumeId');
-        this.shapes = biigle.$require('largo.annotations.shapes');
 
         window.addEventListener('beforeunload', (e) => {
             if (this.hasDismissedAnnotations) {

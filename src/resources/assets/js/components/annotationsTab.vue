@@ -1,5 +1,6 @@
 <script>
 import { AnnotationsTab } from '../import';
+import LabelItem from './annotationTabLabelItem';
 
 /**
  * An example annotation patch image.
@@ -8,19 +9,18 @@ import { AnnotationsTab } from '../import';
  */
 export default {
     mixins: [AnnotationsTab],
+    components:{
+        labelItem: LabelItem,
+    },
     props:{
         filesData: {
             type: Array,
             default: []
         },
-        shapes: {
-            type: Array,
-            default: []
-        }
     },
     data() {
         return {
-            shapesMap: {}
+            selectedLabel: null,
         };
     },
     computed: {
@@ -28,11 +28,8 @@ export default {
             let labels = {};
             let annotations = {};
             let uniqueMap = {};
-            let shapes = this.shapesMap;
             this.filesData.forEach(function(image) {
                 image.annotations.forEach(function (annotation) {
-                    Vue.set(annotation,'selected', false)
-                    annotation.shape = shapes[annotation.shape_id]
                     annotation.labels.forEach(function (annotationLabel) {
                     if (!labels.hasOwnProperty(annotationLabel.label.id)) {
                         labels[annotationLabel.label_id] = annotationLabel.label;
@@ -65,12 +62,10 @@ export default {
         },
     },
     methods: {
-    },
-    created() {
-        this.shapesMap = this.shapes.reduce((map, s) => {
-            map[s.id] = s.name;
-            return map;
-        }, {});
-    },
+        handleSelectedLabel(label) {
+            this.selectedLabel = label;
+            this.$emit('select', label);
+        }
+    }
 };
 </script>
