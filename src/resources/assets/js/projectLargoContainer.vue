@@ -16,11 +16,24 @@ export default {
         };
     },
     methods: {
-        queryAnnotations(label) {
-            let imagePromise = ProjectsApi.queryImageAnnotations({id: this.projectId, label_id: label.id});
-            let videoPromise = ProjectsApi.queryVideoAnnotations({id: this.projectId, label_id: label.id});
-
+        queryAnnotations(label, filters) {
+            let imagePromise = ProjectsApi.queryImageAnnotations({
+                id: this.projectId,
+                label_id: label.id,
+                ...filters,
+            });
+            let videoPromise = ProjectsApi.queryVideoAnnotations({
+                id: this.projectId,
+                label_id: label.id,
+                ...filters,
+            });
             return Vue.Promise.all([imagePromise, videoPromise]);
+        },
+        getSelectedAnnotationName(label, filters) {
+            return JSON.stringify({
+                ...filters,
+                label: label.id,
+            });
         },
         performSave(payload) {
             return ProjectsApi.save({id: this.projectId}, payload);
@@ -43,11 +56,10 @@ export default {
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
         getShapes() {
-            let annotationShapeTypes = ShapesApi.getAllShapes().then((response) => response.json())
+            let annotationShapeTypes = ShapesApi.getAllShapes().then(
+                (response) => response.json()
+            )
             return annotationShapeTypes
-        },
-        emitLoadFilters(){
-            clol
         },
     },
     created() {

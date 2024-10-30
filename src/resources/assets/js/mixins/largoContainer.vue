@@ -53,6 +53,7 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
+            selectedFilters: {},
         };
     },
     provide() {
@@ -74,11 +75,20 @@ export default {
             return this.step === 1;
         },
         annotations() {
-            if (this.selectedLabel && this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
-                return this.annotationsCache[this.selectedLabel.id];
+            if (
+                this.selectedLabel &&
+                this.annotationsCache.hasOwnProperty(this.getSelectedAnnotationName)
+            ) {
+                return this.annotationsCache[this.getSelectedAnnotationName];
             }
 
             return [];
+        },
+        getSelectedAnnotationName() {
+            return JSON.stringify({
+              ...this.selectedFilters,
+              label: this.selectedLabel.id,
+            });
         },
         sortedAnnotations() {
             let annotations = this.annotations;
@@ -162,15 +172,22 @@ export default {
         },
     },
     methods: {
-        getAnnotations(label) {
+        getAnnotations(label, filters) {
             let promise1;
             let promise2;
 
-            if (!this.annotationsCache.hasOwnProperty(label.id)) {
-                Vue.set(this.annotationsCache, label.id, []);
+            let label_filter_combination = JSON.stringify({
+                ...filters,
+                label: label.id,
+            });
+
+            if (!this.annotationsCache.hasOwnProperty(label_filter_combination)) {
+                Vue.set(this.annotationsCache, label_filter_combination, []);
                 this.startLoading();
-                promise1 = this.queryAnnotations(label)
-                    .then((response) => this.gotAnnotations(label, response), handleErrorResponse)
+                promise1 = this.queryAnnotations(label, filters).then(
+                    (response) => this.gotAnnotations(label, filters, response),
+                    handleErrorResponse
+                );
             } else {
                 promise1 = Vue.Promise.resolve();
             }
@@ -187,7 +204,7 @@ export default {
 
             Vue.Promise.all([promise1, promise2]).finally(this.finishLoading);
         },
-        gotAnnotations(label, response) {
+        gotAnnotations(label, filters, response) {
             let imageAnnotations = response[0].data;
             let videoAnnotations = response[1].data;
 
@@ -205,7 +222,15 @@ export default {
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
 
-            Vue.set(this.annotationsCache, label.id, annotations);
+            Vue.set(
+                this.annotationsCache,
+                this.getSelectedAnnotationName,
+                annotations,
+            )
+        },
+        handleSelectedFilters(filters) {
+          this.selectedFilters = filters;
+          this.getAnnotations(this.selectedLabel, filters);
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
@@ -224,7 +249,7 @@ export default {
             this.selectedLabel = label;
 
             if (this.isInDismissStep) {
-                this.getAnnotations(label);
+                this.getAnnotations(label, this.selectedFilters);
             }
         },
         handleDeselectedLabel() {
@@ -251,7 +276,7 @@ export default {
             this.step = 0;
             this.lastSelectedImage = null;
             if (this.selectedLabel) {
-                this.getAnnotations(this.selectedLabel);
+                this.getAnnotations(this.selectedLabel, this.selectedFilters);
             }
         },
         handleSelectedImageRelabel(image, event) {
