@@ -1,13 +1,11 @@
 <sidebar-tab name="annotations" icon="list" title="Annotations" class="sidebar__tab--nopad">
     <annotations-tab
-        :image-data="filteredAnnotations"
+        :files-data="filesData"
         :total-annotation-count="annotationCount"
         :selected-annotations="selectedAnnotations"
         :shapes="shapes"
         v-on:select="handleSelectAnnotation"
         v-on:deselect="handleDeselectAnnotation"
-        v-on:focus="focusAnnotation"
-        v-on:detach="handleDetachAnnotationLabel"
         inline-template
         >
             <div class="annotations-tab">
@@ -28,8 +26,6 @@
                          :can-detach-others="canDetachOthers"
                          :own-user-id="ownUserId"
                          v-on:select="handleSelect"
-                         v-on:detach="emitDetach"
-                         v-on:focus="emitFocus"
                          ></label-item>
                 </ul>
                 <!-- <div class="annotations-tab__plugins">

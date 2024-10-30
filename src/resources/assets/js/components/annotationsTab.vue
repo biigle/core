@@ -9,7 +9,7 @@ import { AnnotationsTab } from '../import';
 export default {
     mixins: [AnnotationsTab],
     props:{
-        imageData: {
+        filesData: {
             type: Array,
             default: []
         },
@@ -29,7 +29,7 @@ export default {
             let annotations = {};
             let uniqueMap = {};
             let shapes = this.shapesMap;
-            this.imageData.forEach(function(image) {
+            this.filesData.forEach(function(image) {
                 image.annotations.forEach(function (annotation) {
                     Vue.set(annotation,'selected', false)
                     annotation.shape = shapes[annotation.shape_id]

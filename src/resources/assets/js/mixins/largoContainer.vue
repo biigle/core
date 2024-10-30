@@ -54,11 +54,12 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            filteredAnnotations: [],
+            filesData: [],
             annotationCount: 0,
             selectedAnnotations: [],
             volumeId: 0,
             shapes: [],
+            annotationType: null,
         };
     },
     provide() {
@@ -79,9 +80,7 @@ export default {
         isInRelabelStep() {
             return this.step === 1;
         },
-        annotations() {
-            console.log(this.selectedLabel);
-            
+        annotations() {            
             if (this.selectedLabel && this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
                 return this.annotationsCache[this.selectedLabel.id];
             }
@@ -487,26 +486,34 @@ export default {
 
         },
         fetchAllAnnotations() {
-            AnnotationsApi.fetchAllImageAnnotations({ id: this.volumeId })
+            AnnotationsApi.fetchAllVideoAnnotations({ id: this.volumeId })
                 .then((res) => {
-                    let imageAnnotations = res.body.flat();
-                    this.filteredAnnotations = imageAnnotations;
-                    this.annotationCount = imageAnnotations.reduce(function (sum, as) {
-                        sum += as.annotations.length;
-                        return sum;
-                    }, 0);
-
+                    let hasParsed = this.parseAnnotationResponse(res);
+                    this.annotationType = hasParsed ? VIDEO_ANNOTATION : IMAGE_ANNOTATION;
                 })
+            AnnotationsApi.fetchAllImageAnnotations({ id: this.volumeId })
+                .then(this.parseAnnotationResponse)
+        },
+        parseAnnotationResponse(res) {
+            if (res.body.length === 0) {
+                return false;
+            }
+            this.filesData = res.body.flat();
+            this.annotationCount = this.filesData.reduce(function (sum, as) {
+                sum += as.annotations.length;
+                return sum;
+            }, 0);
+            return true;
         },
         handleSelectAnnotation(a) {
             Vue.set(a, 'selected', true);
             let uuidA;
-            this.filteredAnnotations.map(img => {
-                img.annotations.map((other) => {
+            this.filesData.map(file => {
+                file.annotations.map((other) => {
                     if (other.id != a.id) {
                         Vue.set(other, 'selected', false);
                     } else {
-                        uuidA = img.uuid;
+                        uuidA = file.uuid;
                     }
                 })
             });
@@ -518,7 +525,7 @@ export default {
                 id: a.id,
                 label_id: a.labels[0].label.id,
                 newLabel: null,
-                type: IMAGE_ANNOTATION,
+                type: this.annotationType,
                 uuid: uuidA,
             };
             Vue.set(this.annotationsCache, a.labels[0].label.id, [cachedAnnotation]);
