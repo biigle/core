@@ -2,10 +2,11 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
-use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
+use Biigle\Volume;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
+use Biigle\Http\Controllers\Api\Controller;
 
 class VideoAnnotationsController extends Controller
 {
@@ -38,5 +39,22 @@ class VideoAnnotationsController extends Controller
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
+    }
+
+    public function getAllAnnotations($id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
+
+        return $volume
+        ->videos()
+        ->has('annotations')
+        ->with([
+            'annotations:id,video_id,shape_id',
+            'annotations.labels.user',
+            'annotations.labels.label'
+            ])
+        ->select('uuid', 'id')
+        ->get();
     }
 }
