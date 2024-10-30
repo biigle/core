@@ -80,6 +80,8 @@ export default {
             return this.step === 1;
         },
         annotations() {
+            console.log(this.selectedLabel);
+            
             if (this.selectedLabel && this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
                 return this.annotationsCache[this.selectedLabel.id];
             }
@@ -212,6 +214,7 @@ export default {
             annotations = annotations.sort((a, b) => b.id - a.id);
 
             Vue.set(this.annotationsCache, label.id, annotations);
+            
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
@@ -497,16 +500,28 @@ export default {
         },
         handleSelectAnnotation(a) {
             Vue.set(a, 'selected', true);
-
+            let uuidA;
             this.filteredAnnotations.map(img => {
                 img.annotations.map((other) => {
                     if (other.id != a.id) {
                         Vue.set(other, 'selected', false);
+                    } else {
+                        uuidA = img.uuid;
                     }
                 })
             });
 
-            this.selectedLabel = a.labels[0];
+            this.selectedLabel = a.labels[0].label;
+
+            let cachedAnnotation = {
+                dismissed: false,
+                id: a.id,
+                label_id: a.labels[0].label.id,
+                newLabel: null,
+                type: IMAGE_ANNOTATION,
+                uuid: uuidA,
+            };
+            Vue.set(this.annotationsCache, a.labels[0].label.id, [cachedAnnotation]);
         },
         handleDeselectAnnotation(a) {
             Vue.set(a,'selected', false);
