@@ -80,4 +80,11 @@ $router->group([
     $router->get('shapes', [
         'uses' => 'Shapes\GetShapesTypes@index',
     ]);
+
+    $router->get('volumes/{vid}/users-with-annotations', [
+        'uses' => 'Users\GetUsersWithAnnotations@index',
+    ]);
+    $router->get('projects/{pid}/users-with-annotations', [
+        'uses' => 'Users\GetUsersWithAnnotations@index',
+    ]);
 });
