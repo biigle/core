@@ -3,6 +3,7 @@ import LargoContainer from './mixins/largoContainer';
 import ProjectsApi from './api/projects';
 import {IMAGE_ANNOTATION} from './constants';
 import ShapesApi from './api/shapes';
+import PossibleUsersApi from './api/users'
 
 /**
  * View model for the main Largo container (for projects)
@@ -28,12 +29,6 @@ export default {
                 ...filters,
             });
             return Vue.Promise.all([imagePromise, videoPromise]);
-        },
-        getSelectedAnnotationName(label, filters) {
-            return JSON.stringify({
-                ...filters,
-                label: label.id,
-            });
         },
         performSave(payload) {
             return ProjectsApi.save({id: this.projectId}, payload);
@@ -61,6 +56,12 @@ export default {
             )
             return annotationShapeTypes
         },
+        getPossibleUsers() {
+            let possibleUsers = PossibleUsersApi.getAllShapes().then(
+                (response) => response.json()
+            )
+            return possibleUsers
+        }
     },
     created() {
         this.projectId = biigle.$require('largo.projectId');

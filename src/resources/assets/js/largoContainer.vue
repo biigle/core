@@ -2,6 +2,7 @@
 import LargoContainer from './mixins/largoContainer';
 import VolumesApi from './api/volumes';
 import ShapesApi from './api/shapes';
+import PossibleUsersApi from './api/users';
 
 /**
  * View model for the main Largo container
@@ -58,6 +59,12 @@ export default {
             )
             return annotationShapeTypes
         },
+        getPossibleUsers() {
+            let possibleUsers = PossibleUsersApi.getAllShapes().then(
+                (response) => response.json()
+            )
+            return possibleUsers
+        }
     },
 
     created() {
