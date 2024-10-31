@@ -60,7 +60,9 @@ export default {
             return annotationShapeTypes
         },
         getPossibleUsers() {
-            let possibleUsers = PossibleUsersApi.getAllShapes().then(
+            let possibleUsers = PossibleUsersApi.getUsersAnnotationVolume({
+                vid: this.volumeId,
+            }).then(
                 (response) => response.json()
             )
             return possibleUsers

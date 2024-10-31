@@ -50,8 +50,12 @@ export default {
     return {
       selectedAnnotationShape: null,
       selectedAnnotationUser: null,
-      shapes: {},
-      possibleUsers: {},
+      shapes: {
+        0: null
+      },
+      possibleUsers: {
+        0: null
+      },
     };
   },
   methods: {
@@ -63,20 +67,30 @@ export default {
       };
       //Filter out null filters, this can cause bad requests to be sent
       Object.keys(selectedFilters).forEach(
-        (k) => selectedFilters[k] == null && delete selectedFilters[k]
+        (k) => {
+          if (selectedFilters[k] == null || selectedFilters[k] == 0) {
+            delete selectedFilters[k]
+          }
+        }
       );
       this.$emit("handle-selected-filters", selectedFilters);
     },
 
     async loadShapes() {
-      if (Object.keys(this.shapes).length < 1) {
-        this.shapes = await this.annotationShapesLoader();
+      if (Object.keys(this.shapes).length == 1) {
+        let loadedShapes = await this.annotationShapesLoader();
+        this.shapes = { ...this.shapes, ...loadedShapes }
       }
     },
 
     async loadUsers() {
-      if (Object.keys(this.possibleUsers).length < 1) {
-        this.possibleUsers = await this.possibleUsersLoader();
+      if (Object.keys(this.possibleUsers).length == 1) {
+        let loadedUsers = await this.possibleUsersLoader();
+        let usersObject = {}
+        loadedUsers.forEach(function (user) {
+            usersObject[user.user_id] = user.lastname + ' ' + user.firstname
+        });
+        this.possibleUsers = {...this.possibleUsers, ...usersObject}
       }
     },
   },

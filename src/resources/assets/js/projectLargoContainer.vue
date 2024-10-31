@@ -57,9 +57,11 @@ export default {
             return annotationShapeTypes
         },
         getPossibleUsers() {
-            let possibleUsers = PossibleUsersApi.getAllShapes().then(
-                (response) => response.json()
-            )
+            let possibleUsers = PossibleUsersApi.getUsersAnnotationProject({
+                    pid: this.projectId,
+                }).then(
+                    (response) => response.json()
+                )
             return possibleUsers
         }
     },
