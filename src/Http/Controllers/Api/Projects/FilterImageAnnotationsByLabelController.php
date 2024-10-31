@@ -30,9 +30,10 @@ class FilterImageAnnotationsByLabelController extends Controller
     {
         $project = Project::findOrFail($pid);
         $this->authorize('access', $project);
-        $this->validate($request, ['take' => 'integer', 'shape' => 'integer']);
+        $this->validate($request, ['take' => 'integer', 'shape_id' => 'integer', 'user_id' => 'integer']);
         $take = $request->input('take');
         $shape_id = $request->input('shape_id');
+        $user_id = $request->input('user_id');
 
         return ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
@@ -44,8 +45,15 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->where('image_annotation_labels.label_id', $lid)
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);
-            })->when(!is_null($shape_id), function ($query) use ($shape_id) {
+            })
+            ->when(!is_null($shape_id), function ($query) use ($shape_id) {
                 $query->where('shape_id', $shape_id);
+            })
+            ->when(!is_null($user_id), function ($query) use ($user_id) {
+                $query->where('image_annotation_labels.user_id', $user_id);
+            })
+            ->when(!is_null($user_id), function ($query) use ($user_id) {
+                $query->where('image_annotation_labels.user_id', $user_id);
             })
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()

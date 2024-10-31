@@ -33,6 +33,7 @@ class FilterImageAnnotationsByLabelController extends Controller
         $this->validate($request, ['take' => 'integer', 'shape_id' => 'integer']);
         $take = $request->input('take');
         $shape_id = $request->input('shape_id');
+        $user_id = $request->input('user_id');
 
         $session = $volume->getActiveAnnotationSession($request->user());
 
@@ -48,6 +49,9 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->where('image_annotation_labels.label_id', $lid)
             ->when(!is_null($shape_id), function ($query) use ($shape_id) {
                 $query->where('shape_id', $shape_id);
+            })
+            ->when(!is_null($user_id), function ($query) use ($user_id) {
+                $query->where('image_annotation_labels.user_id', $user_id);
             })
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
