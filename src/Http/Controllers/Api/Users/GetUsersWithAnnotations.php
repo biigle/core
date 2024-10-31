@@ -8,7 +8,6 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
 use Biigle\Project;
 
-
 class GetUsersWithAnnotations extends Controller
 {
     /**
@@ -18,9 +17,10 @@ class GetUsersWithAnnotations extends Controller
      *
      * @param Request $request
      */
-    public function index(Request $request, $vid=null, $pid=null) {
+    public function index(Request $request, $vid = null, $pid = null)
+    {
         //TODO: fix filter by project or volume id
-        if (!is_null($vid)){
+        if (!is_null($vid)) {
             $volume = Volume::findOrFail($vid);
             $this->authorize('access', $volume);
         } else {
@@ -36,9 +36,9 @@ class GetUsersWithAnnotations extends Controller
             ->when(!is_null($pid), function ($query) use ($pid) {
                 $query->where('images.project_id', $pid);
             })
-            ->join('users','image_annotation_labels.user_id','=', 'users.id')
+            ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->distinct('image_annotation_labels.user_id')
-            ->select('image_annotation_labels.user_id','users.lastname','users.firstname')
+            ->select('image_annotation_labels.user_id', 'users.lastname', 'users.firstname')
             ->get();
 
         return $users;

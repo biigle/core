@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Biigle\Shape;
 use Biigle\Http\Controllers\Api\Controller;
 
-
 class GetShapesTypes extends Controller
 {
     /**
@@ -16,7 +15,9 @@ class GetShapesTypes extends Controller
      *
      * @param Request $request
      */
-    public function index(Request $request) {
-        return Shape::pluck('name', 'id');;
+    public function index(Request $request)
+    {
+        return Shape::pluck('name', 'id');
+        ;
     }
 }
