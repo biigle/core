@@ -30,7 +30,7 @@ class FilterImageAnnotationsByLabelController extends Controller
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
-        $this->validate($request, ['take' => 'integer', 'shape_id' => 'integer']);
+        $this->validate($request, ['take' => 'integer', 'shape_id' => 'integer', 'user_id' => 'integer']);
         $take = $request->input('take');
         $shape_id = $request->input('shape_id');
         $user_id = $request->input('user_id');
