@@ -19,7 +19,6 @@ class GetUsersWithAnnotations extends Controller
      */
     public function index(Request $request, $vid = null, $pid = null)
     {
-        //TODO: fix filter by project or volume id
         if (!is_null($vid)) {
             $volume = Volume::findOrFail($vid);
             $this->authorize('access', $volume);
