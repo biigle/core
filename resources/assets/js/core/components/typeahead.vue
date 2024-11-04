@@ -10,8 +10,6 @@
         @focus="emitFocus"
         @blur="emitBlur"
         @keyup.enter="emitInternalValue"
-        @keydown.up="handleArrowKeyScroll"
-        @keydown.down="handleArrowKeyScroll"
         >
     <typeahead
         v-model="internalValue"
@@ -19,11 +17,12 @@
         :data="items"
         :force-select="true"
         :limit="itemLimit"
+        :class="{'typeahead-scrollable': scrollable}"
         item-key="name"
         v-show="showTypeahead"
+        @selected-item-changed="handleArrowKeyScroll"
         >
         <template slot="item" slot-scope="props">
-            <div ref="typeahead" :class="{'typeahead-scrollable':scrollable, 'typeahead': !scrollable}">
             <component
                 ref="dropdown"
                 :is="itemComponent"
@@ -33,14 +32,9 @@
                 :props="props"
                 :item="item"
                 :item-key="moreInfo"
-                :scrollable="scrollable"
-                :is-label="isLabelTree"
-                :active="props.activeIndex === index"
-                class="typeahead-item-box"
-                :class="{activeItem: props.activeIndex === index}"
+                :class="{active: props.activeIndex === index}"
                 >
             </component>
-            </div>
         </template>
     </typeahead>
 </div>
@@ -97,10 +91,6 @@ export default {
             type: Boolean,
             default: false,
         },
-        isLabelTree: {
-            type: Boolean,
-            default: false,
-        }
     },
     data() {
         return {
@@ -109,7 +99,6 @@ export default {
             inputText: '',
             isTyping: false,
             oldInput: '',
-            selectedItemIndex: 0,
             maxItemCount: 50
         };
     },
@@ -141,27 +130,11 @@ export default {
                 }
             }
         },
-        handleArrowKeyScroll(e) {
-            if (this.scrollable && this.items.length > 0) {
-                const typeahead = this.$refs.typeahead;
-                const scrollAmount = this.$refs.dropdown[0].$el.clientHeight;
-
-                // Reset scroll top if selected item is hidden
-                if (typeahead.scrollTop != this.selectedItemIndex * scrollAmount) {
-                    typeahead.scrollTop = this.selectedItemIndex * scrollAmount;
-                }
-
-                if (e.key === 'ArrowUp' && typeahead.scrollTop >= scrollAmount && this.selectedItemIndex > 0) {
-                    typeahead.scrollTop -= scrollAmount;
-                    this.selectedItemIndex -= 1;
-                }
-
-                if (e.key === 'ArrowDown' && typeahead.scrollTop < typeahead.scrollHeight && this.selectedItemIndex < Math.min(this.items.length - 1, this.maxItemCount - 1)) {
-                    typeahead.scrollTop += scrollAmount;
-                    this.selectedItemIndex += 1;
-                }
+        handleArrowKeyScroll(index) {
+            if (this.scrollable && this.$refs.dropdown[index]) {
+                this.$refs.dropdown[index].$el.scrollIntoView(true);
             }
-        }
+        },
     },
     watch: {
         value(value) {
@@ -174,8 +147,6 @@ export default {
                 let useTypeaheadFilter = this.oldInput.length > 3 && added;
                 if (v.length >= 3 && !useTypeaheadFilter) {
                     this.$emit('fetch', v);
-                    this.$refs.typeahead.scrollTop = 0;
-                    this.selectedItemIndex = 0;
                 }
                 this.isTyping = false;
                 this.oldInput = v

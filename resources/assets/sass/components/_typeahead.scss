@@ -11,49 +11,9 @@
     max-width: 250px;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
 }
 
-.typeahead,
-.typeahead-scrollable {
+.typeahead-scrollable .dropdown-menu {
     max-height: 200px;
-}
-.typeahead-scrollable {
     overflow-y: auto;
 }
-
-.typeahead-item-box {
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-}
-
-.typeahead-item-box:hover {
-    background-color: #353535;
-    width: 100%;
-}
-
-.scrollable-item,
-.scrollable-item-label {
-  color: #cccccc !important;
-  text-decoration: none !important;
-  display: block !important;
-}
-
-.scrollable-item-label {
-  height: 44px;
-}
-
-.activeItem {
-    background-color: #337ab7;
-    width: 100%;
-}
-
-.activeItemText {
-    color: white !important;
-}
-
-:root {
-    color-scheme: light dark;
-  }
