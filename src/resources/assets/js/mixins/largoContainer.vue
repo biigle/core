@@ -487,9 +487,9 @@ export default {
                 .then((res) => {
                     let hasParsed = this.parseAnnotationResponse(res);
                     this.annotationType = hasParsed ? VIDEO_ANNOTATION : IMAGE_ANNOTATION;
-                })
+                }, handleErrorResponse)
             AnnotationsApi.fetchAllImageAnnotations({ id: this.volumeId })
-                .then(this.parseAnnotationResponse)
+                .then(this.parseAnnotationResponse, handleErrorResponse)
         },
         parseAnnotationResponse(res) {
             if (res.body.length === 0) {
@@ -528,6 +528,7 @@ export default {
             Vue.set(this.annotationsCache, a.labels[0].label.id, [cachedAnnotation]);
         },
         handleDeselectAnnotation(a) {
+            this.selectedLabel = null;
             Vue.set(a,'selected', false);
         },
     },
