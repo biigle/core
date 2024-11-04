@@ -1,15 +1,15 @@
 <script>
-import FilterTab from './components/filterTab';
-import ImageGrid from './components/volumeImageGrid';
-import FilesStore from './stores/files';
-import LabelsTab from './components/labelsTab';
-import LoaderMixin from '../core/mixins/loader';
-import Settings from '../core/models/Settings';
-import Sidebar from '../core/components/sidebar';
-import SidebarTab from '../core/components/sidebarTab';
-import SortingTab from './components/sortingTab';
-import VolumesApi from './api/volumes';
-import {urlParams as UrlParams} from '../core/utils';
+import FilterTab from './components/filterTab.vue';
+import ImageGrid from './components/volumeImageGrid.vue';
+import FilesStore from './stores/files.vue';
+import LabelsTab from './components/labelsTab.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Settings from '@/core/models/Settings.vue';
+import Sidebar from '@/core/components/sidebar.vue';
+import SidebarTab from '@/core/components/sidebarTab.vue';
+import SortingTab from './components/sortingTab.vue';
+import VolumesApi from './api/volumes.js';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 let transformUuid = function (uuid) {
     return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;

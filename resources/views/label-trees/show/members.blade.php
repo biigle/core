@@ -1,7 +1,7 @@
 @extends('label-trees.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.members', {!! $members !!});
     biigle.$declare('labelTrees.roles', {!! $roles !!});
     biigle.$declare('labelTrees.defaultRole', {!! Biigle\Role::editor() !!});

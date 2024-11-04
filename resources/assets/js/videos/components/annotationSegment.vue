@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import Keyframe from './annotationKeyframe';
+import Keyframe from './annotationKeyframe.vue';
 
 export default {
     components: {

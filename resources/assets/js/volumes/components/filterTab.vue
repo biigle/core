@@ -1,9 +1,9 @@
 <script>
-import FiltersStore from '../stores/filters';
-import LoaderMixin from '../../core/mixins/loader';
-import PowerToggle from '../../core/components/powerToggle';
-import {capitalize} from '../../core/utils';
-import {handleErrorResponse} from '../../core/messages/store';
+import FiltersStore from '../stores/filters.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import {capitalize} from '@/core/utils.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 
 /**

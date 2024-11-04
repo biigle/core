@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import AnnotationItem from './annotationsTabAnnotationItem';
+import AnnotationItem from './annotationsTabAnnotationItem.vue';
 
 export default {
     components: {

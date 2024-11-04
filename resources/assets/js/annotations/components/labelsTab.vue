@@ -1,5 +1,5 @@
 <script>
-import LabelTrees from '../../label-trees/components/labelTrees';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via

@@ -1,6 +1,6 @@
 <script>
-import MousePositionIndicator from '../../../annotations/components/mousePositionIndicator';
-import {throttle} from '../../../core/utils';
+import MousePositionIndicator from '@/annotations/components/mousePositionIndicator.vue';
+import {throttle} from '@/core/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the indicators.

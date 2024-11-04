@@ -1,15 +1,14 @@
 <script>
-import AddMemberForm from './components/addMemberForm';
-import CreateInvitationForm from './components/createInvitationForm';
-import Events from '../core/events';
+import AddMemberForm from './components/addMemberForm.vue';
+import CreateInvitationForm from './components/createInvitationForm.vue';
+import Events from '@/core/events.js';
 import InvitationApi from './api/projectInvitations.js';
-import InvitationListItem from './components/invitationListItem';
-import LoaderMixin from '../core/mixins/loader';
-import MemberList from './components/memberList';
-import Modal from 'uiv/dist/Modal';
-import Popover from 'uiv/dist/Popover';
-import ProjectsApi from '../core/api/projects';
-import {handleErrorResponse} from '../core/messages/store';
+import InvitationListItem from './components/invitationListItem.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import MemberList from './components/memberList.vue';
+import {Modal, Popover} from 'uiv';
+import ProjectsApi from '@/core/api/projects.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 export default {
     mixins: [LoaderMixin],

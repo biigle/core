@@ -1,8 +1,8 @@
-import FilterList from '../components/filterListComponent';
-import FilterSelect from '../components/filterSelectComponent';
-import LabelTypeahead from '../../label-trees/components/labelTypeahead';
-import VolumesApi from '../api/volumes';
-import {handleErrorResponse} from '../../core/messages/store';
+import FilterList from '../components/filterListComponent.vue';
+import FilterSelect from '../components/filterSelectComponent.vue';
+import LabelTypeahead from '@/label-trees/components/labelTypeahead.vue';
+import VolumesApi from '../api/volumes.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 let imageLabelsFilter = {
     id: 'fileLabels',

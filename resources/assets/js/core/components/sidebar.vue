@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import Button from './sidebarButton';
-import Events from '../events';
-import Keyboard from '../keyboard';
+import Button from './sidebarButton.vue';
+import Events from '../events.js';
+import Keyboard from '../keyboard.vue';
 
 /**
  * A collapsible sidebar that can show different content "tabs"

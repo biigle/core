@@ -1,6 +1,6 @@
 <script>
-import AnnotationsApi from '../../core/api/annotations';
-import ImagesApi from '../../core/api/images';
+import AnnotationsApi from '@/core/api/annotations.js';
+import ImagesApi from '@/core/api/images.js';
 
 /**
 * Store for the annotations of the annotation tool

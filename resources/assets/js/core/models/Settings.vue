@@ -1,5 +1,5 @@
 <script>
-import {debounce, urlParams} from './../utils';
+import {debounce, urlParams} from '../utils.js';
 
 /**
  * Model for arbitrary settings that are persisted in localStorage.
