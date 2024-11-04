@@ -24,6 +24,7 @@ import {CrossOriginError} from './stores/images';
 import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
+import Keyboard from '../core/keyboard';
 
 /**
  * View model for the annotator container
@@ -746,6 +747,8 @@ export default {
                 this.openTab = openTab;
             }
         }
+
+        Keyboard.on('Control', this.selectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
