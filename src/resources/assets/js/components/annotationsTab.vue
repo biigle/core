@@ -65,6 +65,10 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
             this.$emit('select', label);
+        },
+        handleDeselectedLabel() {
+            this.selectedLabel = null;
+            this.$emit('deselect');
         }
     }
 };

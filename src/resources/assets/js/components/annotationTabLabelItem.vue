@@ -50,7 +50,11 @@ export default {
     },
     methods: {
         emitSelectLabel() {
-            this.$emit('select', this.label)
+            if(!this.isSelected){
+                this.$emit('select', this.label)
+            } else {
+                this.$emit('deselect');
+            }
         }
     },
 };

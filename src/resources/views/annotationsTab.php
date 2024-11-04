@@ -23,6 +23,7 @@
                          :annotations="item.annotations"
                          :is-selected="selectedLabel && item.id == selectedLabel.id"
                          v-on:select="handleSelectedLabel"
+                         v-on:deselect="handleDeselectedLabel"
                          ></label-item>
                 </ul>
             </div>
