@@ -65,7 +65,6 @@
       v-on:seek="seek"
       v-on:start-seeking="startSeeking"
       v-on:is-invalid-shape="handleInvalidShape"
-      v-on:select-last-annotation="selectLastAnnotation"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

@@ -571,9 +571,6 @@ export default {
                 Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
-        },
-        emitSelectLastAnnotation() {
-            this.$emit('select-last-annotation');
         }
     },
     watch: {
@@ -640,7 +637,6 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-        Keyboard.on('Control', this.emitSelectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);

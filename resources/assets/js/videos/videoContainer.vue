@@ -18,6 +18,7 @@ import VideoApi from './api/videos';
 import VideoLabelsTab from './components/videoLabelsTab';
 import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
+import Keyboard from '../core/keyboard';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
 
@@ -727,6 +728,8 @@ export default {
         this.video.addEventListener('seeked', this.handleVideoSeeked);
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
+
+        Keyboard.on('Control', this.selectLastAnnotation, 0, this.listenerSet);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
