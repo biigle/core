@@ -45,7 +45,7 @@ class ImageAnnotationsController extends Controller
             ->pluck('images.uuid', 'image_annotations.id');
     }
 
-    public function getAllAnnotations(Request $request, $id)
+    public function getAllAnnotations($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
@@ -62,14 +62,3 @@ class ImageAnnotationsController extends Controller
         ->get();
     }
 }
-
-// $volume->images()
-//             ->join('image_annotations', 'image_annotations.image_id', '=', 'images.id')
-//             ->select('images.uuid', 'image_annotations.id as annotation_id')
-//             ->addSelect(['label_id' => function ($query) {
-//                 $query->select('image_annotation_labels.label_id')
-//                     ->from('image_annotation_labels')
-//                     ->whereColumn('image_annotation_labels.annotation_id', 'image_annotations.id')
-//                     ->limit(1);
-//             }])
-//         ->get();
