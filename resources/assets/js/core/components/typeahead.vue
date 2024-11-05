@@ -132,7 +132,7 @@ export default {
         },
         handleArrowKeyScroll(index) {
             if (this.scrollable && this.$refs.dropdown[index]) {
-                this.$refs.dropdown[index].$el.scrollIntoView(true);
+                this.$refs.dropdown[index].$el.scrollIntoView({block: 'nearest'});
             }
         },
     },
