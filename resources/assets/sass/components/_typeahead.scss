@@ -6,7 +6,7 @@
     display: block;
 }
 
-.typeahead-item-info {
+.typeahead-item-info, .typeahead-item-name {
     display: inline-block;
     max-width: 250px;
     text-overflow: ellipsis;
