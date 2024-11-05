@@ -729,7 +729,7 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
-        Keyboard.on('Control', this.selectLastAnnotation, 0, this.listenerSet);
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');

@@ -748,7 +748,7 @@ export default {
             }
         }
 
-        Keyboard.on('Control', this.selectLastAnnotation, 0, this.listenerSet);
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
