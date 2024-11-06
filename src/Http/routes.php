@@ -76,15 +76,4 @@ $router->group([
     $router->get('volumes/{id}/video-annotations/filter/label/{id2}', [
         'uses' => 'Volumes\FilterVideoAnnotationsByLabelController@index',
     ]);
-
-    $router->get('shapes', [
-        'uses' => 'Shapes\GetShapesTypes@index',
-    ]);
-
-    $router->get('volumes/{vid}/users-with-annotations', [
-        'uses' => 'Users\GetUsersWithAnnotations@index',
-    ]);
-    $router->get('projects/{pid}/users-with-annotations', [
-        'uses' => 'Users\GetUsersWithAnnotations@index',
-    ]);
 });

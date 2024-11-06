@@ -2,8 +2,6 @@
 import LargoContainer from './mixins/largoContainer';
 import ProjectsApi from './api/projects';
 import {IMAGE_ANNOTATION} from './constants';
-import ShapesApi from './api/shapes';
-import PossibleUsersApi from './api/users'
 
 /**
  * View model for the main Largo container (for projects)
