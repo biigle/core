@@ -4,6 +4,7 @@
         ref="input"
         class="form-control"
         type="text"
+        v-model="inputText"
         :disabled="disabled"
         :placeholder="placeholder"
         @focus="emitFocus"
@@ -15,11 +16,15 @@
         :target="inputElement"
         :data="items"
         :force-select="true"
-        :limit="limit"
+        :limit="itemLimit"
+        :class="{'typeahead-scrollable': scrollable}"
         item-key="name"
+        v-show="showTypeahead"
+        @selected-item-changed="handleArrowKeyScroll"
         >
         <template slot="item" slot-scope="props">
             <component
+                ref="dropdown"
                 :is="itemComponent"
                 @click.native="emitInternalValue"
                 v-for="(item, index) in props.items"
@@ -38,6 +43,7 @@
 <script>
 import Typeahead from 'uiv/dist/Typeahead';
 import TypeaheadItem from './typeaheadItem';
+import {debounce} from './../utils';
 
 /**
  * A component that displays a typeahead to find items.
@@ -81,17 +87,33 @@ export default {
             type: Object,
             default: () => TypeaheadItem,
         },
+        scrollable: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
             inputElement: null,
             internalValue: undefined,
+            inputText: '',
+            isTyping: false,
+            oldInput: '',
+            maxItemCount: 50
         };
+    },
+    computed: {
+        itemLimit() {
+            return this.scrollable ? this.maxItemCount : this.limit
+        },
+        showTypeahead() {
+            return !this.scollable || this.scrollable && !this.isTyping;
+        }
     },
     methods: {
         clear() {
             this.internalValue = undefined;
-            this.$refs.input.value = '';
+            this.inputText = '';
         },
         emitFocus(e) {
             this.$emit('focus', e);
@@ -108,11 +130,34 @@ export default {
                 }
             }
         },
+        handleArrowKeyScroll(index) {
+            if (this.scrollable && this.$refs.dropdown[index]) {
+                this.$refs.dropdown[index].$el.scrollIntoView({block: 'nearest'});
+            }
+        },
     },
     watch: {
         value(value) {
             this.internalValue = value;
         },
+        inputText(v) {
+            this.isTyping = true;
+            debounce(() => {
+                let added = v.trim().includes(this.oldInput.trim());
+                let useTypeaheadFilter = this.oldInput.length > 3 && added;
+                if (v.length >= 3 && !useTypeaheadFilter) {
+                    this.$emit('fetch', v);
+                }
+                this.isTyping = false;
+                this.oldInput = v
+            }, 500, 'typeahead-fetch');
+        },
+        disabled() {
+            // Use disabled and nextTick to show dropdown right after loading finished
+            if (!this.disabled) {
+                this.$nextTick(() => this.$refs.input.focus())
+            }
+        }
     },
     created() {
         this.internalValue = this.value;

@@ -22,6 +22,7 @@ export default {
             minResolution: 0.01,
             // parameter tracking seeking state specific for frame jump, needed because looking for seeking directly leads to error
             seekingFrame: this.seeking,
+            supportsVideoFrameCallback: false,
         };
     },
     methods: {
@@ -78,15 +79,27 @@ export default {
             }
         },
         startRenderLoop() {
-            let render = () => {
-                this.renderVideo();
-                this.animationFrameId = window.requestAnimationFrame(render);
-            };
+            let render;
+            if (this.supportsVideoFrameCallback) {
+                render = () => {
+                    this.renderVideo();
+                    this.animationFrameId = this.video.requestVideoFrameCallback(render);
+                };
+            } else {
+                render = () => {
+                    this.renderVideo();
+                    this.animationFrameId = window.requestAnimationFrame(render);
+                };
+            }
             render();
             this.map.render();
         },
         stopRenderLoop() {
-            window.cancelAnimationFrame(this.animationFrameId);
+            if (this.supportsVideoFrameCallback) {
+                this.video.cancelVideoFrameCallback(this.animationFrameId);
+            } else {
+                window.cancelAnimationFrame(this.animationFrameId);
+            }
             this.animationFrameId = null;
         },
         setPlaying() {
@@ -251,6 +264,10 @@ export default {
                 this.videoLayer.setVisible(!hasError);
             }
         });
+
+        if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+            this.supportsVideoFrameCallback = true;
+        }
     },
 };
 </script>

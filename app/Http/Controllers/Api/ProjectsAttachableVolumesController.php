@@ -10,14 +10,14 @@ use Illuminate\Http\Request;
 class ProjectsAttachableVolumesController extends Controller
 {
     /**
-     * Shows all volumes that can be attached to the project by the requesting user.
+     * Shows volumes that match the given volume name and can be attached to the project by the requesting user.
      *
-     * @api {get} projects/:id/attachable-volumes Get attachable volumes
+     * @api {get} projects/:id/attachable-volumes/:name Get matching attachable volumes
      * @apiGroup Projects
      * @apiName IndexAttachableVolumes
      * @apiPermission projectAdmin
      * @apiParam {Number} id ID of the project for which the volumes should be fetched.
-     * @apiDescription A list of all volumes where the requesting user has admin rights for (excluding those already belonging to the specified project).
+     * @apiDescription A list of all matching volumes where the requesting user has admin rights for (excluding those already belonging to the specified project).
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -34,10 +34,11 @@ class ProjectsAttachableVolumesController extends Controller
      *
      * @param Request $request
      * @param int $id Project ID
+     * @param string $name Volume name
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function index(Request $request, $id)
+    public function index(Request $request, $id, $name)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
@@ -56,6 +57,7 @@ class ProjectsAttachableVolumesController extends Controller
                             ->where('project_id', '!=', $id);
                     });
             })
+            ->where('name', 'ilike', "%{$name}%")
             // Do not return volumes that are already attached to this project.
             // This is needed although we are already excluding the project in the
             // previous statement because other projects may already share volumes with

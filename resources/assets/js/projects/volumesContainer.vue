@@ -5,7 +5,7 @@ import LoaderMixin from '../core/mixins/loader';
 import PreviewThumbnail from './components/previewThumbnail';
 import statisticsModal from './components/statisticsModal';
 import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
+import Typeahead from '../core/components/typeahead.vue';
 import {handleErrorResponse} from '../core/messages/store';
 
 
@@ -37,13 +37,14 @@ export default {
             currentSorting: SORTING.DATE_DOWN,
             showModal: false,
             statisticsData: {},
-            volumeUrlTemplate: ""
+            volumeUrlTemplate: "",
+            oldVolumeName: "",
         };
     },
     components: {
         previewThumbnail: PreviewThumbnail,
-        typeahead: Typeahead,
-        statisticsModal: statisticsModal
+        statisticsModal: statisticsModal,
+        typeahead: Typeahead
     },
     computed: {
         sortedVolumes() {
@@ -195,12 +196,15 @@ export default {
                 }
             }
         },
-        fetchAttachableVolumes() {
-            if (!this.fetchedAttachableVolumes) {
+        fetchAttachableVolumes(volumeName) {
+            if (this.oldVolumeName.trim() != volumeName.trim()) {
                 this.fetchedAttachableVolumes = true;
                 this.startLoading();
-                AttachableVolumesApi.get({id: this.project.id})
-                    .then(this.attachableVolumesFetched, handleErrorResponse)
+                AttachableVolumesApi.get({ id: this.project.id, name: volumeName })
+                    .then((res) => {
+                        this.attachableVolumesFetched(res);
+                        this.oldVolumeName = volumeName;
+                    }, handleErrorResponse)
                     .finally(this.finishLoading);
             }
         },

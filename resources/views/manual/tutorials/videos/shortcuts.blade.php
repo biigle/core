@@ -115,6 +115,10 @@
                     <td><kbd>Esc</kbd></td>
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
                 </tr>
+                <tr>
+                    <td><kbd>c</kbd></td>
+                    <td>Select last created annotation</td>
+                </tr>
             </tbody>
         </table>
 
