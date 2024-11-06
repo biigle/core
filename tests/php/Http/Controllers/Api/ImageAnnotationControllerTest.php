@@ -2,15 +2,17 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use Cache;
 use ApiTestCase;
 use Biigle\Shape;
-use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ImageAnnotationTest;
+use Carbon\Carbon;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
-use Cache;
-use Carbon\Carbon;
+use Illuminate\Testing\TestResponse;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Symfony\Component\HttpFoundation\Response;
 
 class ImageAnnotationControllerTest extends ApiTestCase
 {
@@ -49,11 +51,22 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/images/{$this->image->id}/annotations")
-            ->assertJsonFragment(['points' => [10, 20, 30, 40]])
+        $response = $this->getJson("/api/v1/images/{$this->image->id}/annotations")->assertStatus(200);
+
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+        $response = new TestResponse(
+            new Response($content,
+                $response->baseResponse->getStatusCode(),
+                $response->baseResponse->headers->all()
+            )
+        );
+
+        $response->assertJsonFragment(['points' => [10, 20, 30, 40]])
             ->assertJsonFragment(['color' => 'bada55'])
             ->assertJsonFragment(['name' => 'My label']);
-        $response->assertStatus(200);
+        
     }
 
     public function testIndexAnnotationSessionHideOwn()
@@ -89,18 +102,40 @@ class ImageAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $response = $this->get("/api/v1/images/{$this->image->id}/annotations")
-            ->assertJsonFragment(['points' => [10, 20]])
+        $response = $this->getJson("/api/v1/images/{$this->image->id}/annotations")->assertStatus(200);
+
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+        $response = new TestResponse(
+            new Response($content,
+                $response->baseResponse->getStatusCode(),
+                $response->baseResponse->headers->all()
+            )
+        );
+
+        $response->assertJsonFragment(['points' => [10, 20]])
             ->assertJsonFragment(['points' => [20, 30]]);
-        $response->assertStatus(200);
+        
 
         $session->users()->attach($this->editor());
         Cache::flush();
 
-        $response = $this->get("/api/v1/images/{$this->image->id}/annotations")
-            ->assertJsonMissing(['points' => [10, 20]])
+        $response = $this->getJson("/api/v1/images/{$this->image->id}/annotations")->assertStatus(200);
+
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+        $response = new TestResponse(
+            new Response($content,
+                $response->baseResponse->getStatusCode(),
+                $response->baseResponse->headers->all()
+            )
+        );
+
+        $response->assertJsonMissing(['points' => [10, 20]])
             ->assertJsonFragment(['points' => [20, 30]]);
-        $response->assertStatus(200);
+        
     }
 
     public function testShow()

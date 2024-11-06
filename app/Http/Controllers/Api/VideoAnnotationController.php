@@ -2,19 +2,20 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\StoreVideoAnnotation;
-use Biigle\Http\Requests\UpdateVideoAnnotation;
-use Biigle\Jobs\TrackObject;
+use DB;
+use Cache;
+use Queue;
+use Exception;
+use Generator;
 use Biigle\Label;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
-use Cache;
-use DB;
-use Exception;
+use Biigle\Jobs\TrackObject;
 use Illuminate\Http\Request;
+use Biigle\VideoAnnotationLabel;
+use Biigle\Http\Requests\StoreVideoAnnotation;
 use Illuminate\Validation\ValidationException;
-use Queue;
+use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class VideoAnnotationController extends Controller
@@ -73,10 +74,16 @@ class VideoAnnotationController extends Controller
         $load = ['labels.label', 'labels.user'];
 
         if ($session) {
-            return $session->getVolumeFileAnnotations($video, $user)->load($load);
+            $yieldAnnotations = $session->getVolumeFileAnnotations($video, $user, $load);
+        } else {
+            $yieldAnnotations = function () use ($video, $load): Generator {
+                foreach ($video->annotations()->with($load)->lazy() as $annotation) {
+                    yield $annotation;
+                }
+            };
         }
 
-        return $video->annotations()->with($load)->get();
+        return response()->streamJson($yieldAnnotations());
     }
 
     /**
