@@ -7,7 +7,7 @@
       <select
         class="form-control"
         @change="filterAnnotation"
-        @click.once="loadShapes"
+
         v-model="selectedAnnotationShape"
       >
         <option
@@ -22,7 +22,6 @@
       <select
         class="form-control"
         @change="filterAnnotation"
-        @click.once="loadUsers"
         v-model="selectedAnnotationUser"
       >
         <option
@@ -36,26 +35,23 @@
 </template>
 <script>
 export default {
-  props: {
-    annotationShapesLoader: {
-      type: Function,
-      required: true,
-    },
-    possibleUsersLoader: {
-      type: Function,
-      required: true,
-    },
-  },
   data() {
+    let possibleShapes = biigle.$require('largo.availableShapes');
+    possibleShapes = { ['0']: null, ...possibleShapes };
+
+    //Load users with annotations
+    let usersWithAnnotations = biigle.$require('largo.usersWithAnnotations')
+
+    let possibleUsers = {};
+    usersWithAnnotations.forEach(function (user) {
+      possibleUsers[user.user_id] = user.lastname + ' ' + user.firstname
+    });
+    possibleUsers = { ['0']: null, ...possibleUsers }
     return {
       selectedAnnotationShape: null,
       selectedAnnotationUser: null,
-      shapes: {
-        0: null
-      },
-      possibleUsers: {
-        0: null
-      },
+      shapes: possibleShapes,
+      possibleUsers: possibleUsers,
     };
   },
   methods: {
@@ -74,24 +70,6 @@ export default {
         }
       );
       this.$emit("handle-selected-filters", selectedFilters);
-    },
-
-    async loadShapes() {
-      if (Object.keys(this.shapes).length == 1) {
-        let loadedShapes = await this.annotationShapesLoader();
-        this.shapes = { ...this.shapes, ...loadedShapes }
-      }
-    },
-
-    async loadUsers() {
-      if (Object.keys(this.possibleUsers).length == 1) {
-        let loadedUsers = await this.possibleUsersLoader();
-        let usersObject = {}
-        loadedUsers.forEach(function (user) {
-            usersObject[user.user_id] = user.lastname + ' ' + user.firstname
-        });
-        this.possibleUsers = {...this.possibleUsers, ...usersObject}
-      }
     },
   },
 };

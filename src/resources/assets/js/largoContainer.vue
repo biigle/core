@@ -53,20 +53,6 @@ export default {
 
             return response;
         },
-        getShapes() {
-            let annotationShapeTypes = ShapesApi.getAllShapes().then(
-                (response) => response.json()
-            )
-            return annotationShapeTypes
-        },
-        getPossibleUsers() {
-            let possibleUsers = PossibleUsersApi.getUsersAnnotationVolume({
-                vid: this.volumeId,
-            }).then(
-                (response) => response.json()
-            )
-            return possibleUsers
-        }
     },
 
     created() {

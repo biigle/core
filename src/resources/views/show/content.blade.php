@@ -69,8 +69,6 @@
     </sidebar-tab>
 <sidebar-tab :highlight="activeFilters" v-on:disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter annotations">
         <filtering-tab
-        :annotation-shapes-loader="getShapes"
-        :possible-users-loader="getPossibleUsers"
         v-on:handle-selected-filters="handleSelectedFilters"
         ></filtering-tab>
 </sidebar-tab>

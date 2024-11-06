@@ -50,20 +50,6 @@ export default {
 
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
-        getShapes() {
-            let annotationShapeTypes = ShapesApi.getAllShapes().then(
-                (response) => response.json()
-            )
-            return annotationShapeTypes
-        },
-        getPossibleUsers() {
-            let possibleUsers = PossibleUsersApi.getUsersAnnotationProject({
-                    pid: this.projectId,
-                }).then(
-                    (response) => response.json()
-                )
-            return possibleUsers
-        }
     },
     created() {
         this.projectId = biigle.$require('largo.projectId');
