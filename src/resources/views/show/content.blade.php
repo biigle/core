@@ -67,7 +67,7 @@
             v-on:cancel-similarity="handleCancelSimilaritySort"
             ></sorting-tab>
     </sidebar-tab>
-<sidebar-tab v-on:disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter annotations">
+<sidebar-tab :highlight="activeFilters" v-on:disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter annotations">
         <filtering-tab
         :annotation-shapes-loader="getShapes"
         :possible-users-loader="getPossibleUsers"

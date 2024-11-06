@@ -54,6 +54,7 @@ export default {
             similarityReference: null,
             pinnedImage: null,
             selectedFilters: {},
+            activeFilters: false,
         };
     },
     provide() {
@@ -228,9 +229,17 @@ export default {
                 annotations,
             )
         },
-        handleSelectedFilters(filters) {
-          this.selectedFilters = filters;
-          this.getAnnotations(this.selectedLabel, filters);
+      handleSelectedFilters(filters) {
+        if (Object.keys(filters).length > 0) {
+          this.activeFilters = true
+        } else {
+          this.activeFilters = false
+        }
+        this.selectedFilters = filters;
+        if (!this.selectedLabel){
+          return []
+        }
+        this.getAnnotations(this.selectedLabel, filters);
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
