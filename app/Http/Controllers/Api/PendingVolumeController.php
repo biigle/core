@@ -96,6 +96,10 @@ class PendingVolumeController extends Controller
     {
         $project = Project::inCommon($request->user(), $request->volume->id, [Role::adminId()])->first();
 
+        // Delete individually to trigger deletion of metadata files.
+        PendingVolume::where('volume_id', $request->volume->id)
+            ->eachById(fn ($pv) => $pv->delete());
+
         $pv = $project->pendingVolumes()->create([
             'volume_id' => $request->volume->id,
             'media_type_id' => $request->volume->media_type_id,

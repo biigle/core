@@ -329,6 +329,53 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->assertTrue($pv->import_file_labels);
     }
 
+    public function testStoreVolumeTwice()
+    {
+        config([
+            'volumes.metadata_storage_disk' => 'metadata',
+            'volumes.pending_metadata_storage_disk' => 'pending-metadata',
+        ]);
+        $metaDisk = Storage::fake('metadata');
+        $metaDisk->put('metadata.csv', 'abc');
+        $pendingDisk = Storage::fake('pending-metadata');
+
+        $id = $this->volume()->id;
+
+        $old = PendingVolume::factory()->create([
+            'volume_id' => $id,
+        ]);
+
+        $this->beAdmin();
+
+        $this->volume()->update([
+            'metadata_file_path' => 'metadata.csv',
+            'metadata_parser' => ImageCsvParser::class,
+        ]);
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-metadata-metadata.csv', $metadata);
+
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_annotations' => true,
+        ])->assertStatus(201);
+
+        $pv = PendingVolume::where('volume_id', $id)->first();
+        $this->assertNotSame($old->id, $pv->id);
+        $this->assertNull($old->fresh());
+    }
+
     public function testUpdateImages()
     {
         config(['volumes.editor_storage_disks' => ['test']]);
