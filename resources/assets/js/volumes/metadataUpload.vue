@@ -21,6 +21,10 @@ export default {
             hasMetadata: false,
             parsers: [],
             selectedParser: null,
+            importForm: {
+                importAnnotations: 0,
+                importFileLabels: 0,
+            },
         };
     },
     methods: {
@@ -67,6 +71,16 @@ export default {
             // Use $nextTick so the input element will have the appropriate MIME type
             // filter from the selected parser.
             this.$nextTick(() => this.$refs.fileInput.click());
+        },
+        importAnnotations() {
+            this.importForm.importAnnotations = 1;
+            this.importForm.importFileLabels = 0;
+            this.$nextTick(() => this.$refs.importForm.submit());
+        },
+        importFileLabels() {
+            this.importForm.importAnnotations = 0;
+            this.importForm.importFileLabels = 1;
+            this.$nextTick(() => this.$refs.importForm.submit());
         },
     },
     created() {
