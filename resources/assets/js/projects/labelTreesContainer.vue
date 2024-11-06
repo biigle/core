@@ -3,8 +3,8 @@ import Events from '../core/events';
 import LabelTreeList from './components/labelTreeList';
 import LoaderMixin from '../core/mixins/loader';
 import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
 import {handleErrorResponse} from '../core/messages/store';
+import Typeahead from '../core/components/typeahead';
 
 export default {
     mixins: [LoaderMixin],
@@ -19,6 +19,7 @@ export default {
             labelTrees: [],
             fetchedAvailableLabelTrees: false,
             availableLabelTrees: [],
+            oldTreeName: "",
         };
     },
     computed: {
@@ -35,13 +36,16 @@ export default {
         },
     },
     methods: {
-        fetchAvailableLabelTrees() {
-            if (!this.fetchedAvailableLabelTrees) {
+        fetchAvailableLabelTrees(treeName) {
+            if (this.oldTreeName.trim() != treeName.trim()) {
                 this.fetchedAvailableLabelTrees = true;
                 this.startLoading();
-                ProjectsApi.queryAvailableLabelTrees({id: this.project.id})
+                ProjectsApi.queryAvailableLabelTrees({ id: this.project.id, name: treeName })
                     .then(this.availableLabelTreesFetched, handleErrorResponse)
-                    .finally(this.finishLoading);
+                    .finally(() => {
+                        this.finishLoading();
+                        this.oldTreeName = treeName;
+                    });
             }
         },
         availableLabelTreesFetched(response) {

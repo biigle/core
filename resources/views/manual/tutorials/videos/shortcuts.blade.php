@@ -116,6 +116,10 @@
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
                 </tr>
                 <tr>
+                    <td><kbd>c</kbd></td>
+                    <td>Select last created annotation</td>
+                </tr>
+                <tr>
                     <td><kbd>Ctrl</kbd>+<kbd>k</kbd></td>
                     <td>Open label trees sidebar and focus the find label input field</td>
                 </tr>

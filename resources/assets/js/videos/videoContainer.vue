@@ -18,9 +18,9 @@ import VideoApi from './api/videos';
 import VideoLabelsTab from './components/videoLabelsTab';
 import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
+import Keyboard from '../core/keyboard';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
-import Keyboard from '../core/keyboard';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
@@ -674,7 +674,10 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
-
+        selectLastAnnotation() {
+            let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
+            this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
+        },
         openSidebarLabels(){ 
             this.$refs.sidebar.$emit('open', 'labels');
             Events.$emit('focusTypeaheadEvent');
@@ -730,6 +733,8 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
         }
@@ -741,7 +746,7 @@ export default {
         if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
             this.supportsJumpByFrame = true;
         }
-
+        
         // Focus findbar in labelTrees
         Events.$on('focusTypeaheadEvent', () => {
             this.$nextTick(() => {
@@ -754,6 +759,7 @@ export default {
         Keyboard.on('control+k', () => {
             this.openSidebarLabels()
         });
+    
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before

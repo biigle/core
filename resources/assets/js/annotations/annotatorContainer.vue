@@ -594,11 +594,17 @@ export default {
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
 
+        selectLastAnnotation() {
+            let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
+            this.handleSelectAnnotation(lastAnnotation);
+        },
+        
         openSidebarLabels(){ 
             // opens sidebar labels
             this.$refs.sidebar.$emit('open', 'labels');
             Events.$emit('focusTypeaheadEvent');
         },
+
 
     },
     watch: {
@@ -761,7 +767,8 @@ export default {
         Keyboard.on('control+k', () => {
             this.openSidebarLabels()
         });
-        
+
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
