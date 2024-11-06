@@ -20,6 +20,7 @@ import VideoScreen from './components/videoScreen';
 import VideoTimeline from './components/videoTimeline';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
+import Keyboard from '../core/keyboard';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
@@ -673,6 +674,11 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
+
+        openSidebarLabels(){ 
+            this.$refs.sidebar.$emit('open', 'labels');
+            Events.$emit('focusTypeaheadEvent');
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -735,6 +741,19 @@ export default {
         if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
             this.supportsJumpByFrame = true;
         }
+
+        // Focus findbar in labelTrees
+        Events.$on('focusTypeaheadEvent', () => {
+            this.$nextTick(() => {
+                // call global for  focustypeahead TODO need other way!
+                this.$root.$emit('callFunctionFocustypeahead')
+            });
+        });
+        
+        // on control + k openSidebar labels and after focus find
+        Keyboard.on('control+k', () => {
+            this.openSidebarLabels()
+        });
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before

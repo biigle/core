@@ -24,6 +24,7 @@ import {CrossOriginError} from './stores/images';
 import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
+import Keyboard from '../core/keyboard';
 
 /**
  * View model for the annotator container
@@ -592,6 +593,13 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
+
+        openSidebarLabels(){ 
+            // opens sidebar labels
+            this.$refs.sidebar.$emit('open', 'labels');
+            Events.$emit('focusTypeaheadEvent');
+        },
+
     },
     watch: {
         async imageId(id) {
@@ -742,6 +750,18 @@ export default {
                 this.openTab = openTab;
             }
         }
+
+        Events.$on('focusTypeaheadEvent', () => {
+            this.$nextTick(() => {
+                // call global for  focustypeahead TODO need other way!
+                this.$root.$emit('callFunctionFocustypeahead')
+            });
+        });
+        
+        Keyboard.on('control+k', () => {
+            this.openSidebarLabels()
+        });
+        
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
