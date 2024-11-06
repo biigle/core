@@ -844,6 +844,26 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertSuccessful();
     }
 
+    public function testUpdatVolumeExists()
+    {
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $disk = Storage::fake('test');
+        $disk->put('images/1.jpg', 'abc');
+
+        $id = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+            'volume_id' => $this->volume()->id,
+        ])->id;
+        $this->beAdmin();
+        $this->putJson("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'files' => ['1.jpg'],
+        ])->assertStatus(422);
+    }
+
     public function testDestroy()
     {
         $pv = PendingVolume::factory()->create([
