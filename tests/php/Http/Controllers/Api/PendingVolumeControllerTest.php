@@ -6,14 +6,22 @@ use ApiTestCase;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
+use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\ImageMetadata;
+use Biigle\Services\MetadataParsing\Label;
+use Biigle\Services\MetadataParsing\LabelAndUser;
+use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
+use Biigle\Services\MetadataParsing\VolumeMetadata;
+use Biigle\Shape;
 use Biigle\Volume;
 use Exception;
 use FileCache;
 use Illuminate\Http\UploadedFile;
-use Queue;
-use Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 class PendingVolumeControllerTest extends ApiTestCase
 {
@@ -207,6 +215,118 @@ class PendingVolumeControllerTest extends ApiTestCase
         $pv = PendingVolume::first();
 
         $response->assertRedirectToRoute('pending-volume', $pv->id);
+    }
+
+    public function testStoreVolumeAnnotations()
+    {
+        config([
+            'volumes.metadata_storage_disk' => 'metadata',
+            'volumes.pending_metadata_storage_disk' => 'pending-metadata',
+        ]);
+        $metaDisk = Storage::fake('metadata');
+        $metaDisk->put('metadata.csv', 'abc');
+        $pendingDisk = Storage::fake('pending-metadata');
+
+        $id = $this->volume()->id;
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/pending-volumes");
+
+        $this->beEditor();
+        $this->post("/api/v1/volumes/{$id}/pending-volumes")->assertStatus(403);
+
+        $this->beAdmin();
+        // Missing arguments.
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes")->assertStatus(422);
+
+        // Needs metadata file.
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_annotations' => true,
+        ])->assertStatus(422);
+
+        $this->volume()->update([
+            'metadata_file_path' => 'metadata.csv',
+            'metadata_parser' => ImageCsvParser::class,
+        ]);
+
+        // Metadata has no annotations.
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_annotations' => true,
+        ])->assertStatus(422);
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::point(),
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+
+        Cache::store('array')->put('metadata-metadata-metadata.csv', $metadata);
+
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_annotations' => true,
+        ])->assertStatus(201);
+
+        $pv = PendingVolume::where('volume_id', $id)->first();
+        $this->assertSame($this->volume()->media_type_id, $pv->media_type_id);
+        $this->assertSame($this->admin()->id, $pv->user_id);
+        $this->assertSame("{$pv->id}.csv", $pv->metadata_file_path);
+        $this->assertSame(ImageCsvParser::class, $pv->metadata_parser);
+        $this->assertSame($this->project()->id, $pv->project_id);
+        $this->assertSame($id, $pv->volume_id);
+        $this->assertTrue($pv->import_annotations);
+        $this->assertFalse($pv->import_file_labels);
+        $pendingDisk->assertExists("{$pv->id}.csv");
+    }
+
+    public function testStoreVolumeFileLabels()
+    {
+        config([
+            'volumes.metadata_storage_disk' => 'metadata',
+            'volumes.pending_metadata_storage_disk' => 'pending-metadata',
+        ]);
+        $metaDisk = Storage::fake('metadata');
+        $metaDisk->put('metadata.csv', 'abc');
+        $pendingDisk = Storage::fake('pending-metadata');
+
+        $id = $this->volume()->id;
+        $this->beAdmin();
+
+        // Needs metadata file.
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_file_labels' => true,
+        ])->assertStatus(422);
+
+        $this->volume()->update([
+            'metadata_file_path' => 'metadata.csv',
+            'metadata_parser' => ImageCsvParser::class,
+        ]);
+
+        // Metadata has no file labels.
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_file_labels' => true,
+        ])->assertStatus(422);
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $file->addFileLabel($lau);
+
+        Cache::store('array')->put('metadata-metadata-metadata.csv', $metadata);
+
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_file_labels' => true,
+        ])->assertStatus(201);
+
+        $pv = PendingVolume::where('volume_id', $id)->first();
+        $this->assertTrue($pv->import_file_labels);
     }
 
     public function testUpdateImages()

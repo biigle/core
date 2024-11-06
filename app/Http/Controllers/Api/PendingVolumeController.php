@@ -3,10 +3,13 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StorePendingVolume;
+use Biigle\Http\Requests\StorePendingVolumeFromVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Http\Requests\UpdatePendingVolumeAnnotationLabels;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
+use Biigle\Project;
+use Biigle\Role;
 use Biigle\Volume;
 use DB;
 use Illuminate\Http\Request;
@@ -73,6 +76,52 @@ class PendingVolumeController extends Controller
         }
 
         return redirect()->route('pending-volume', $pv->id);
+    }
+
+    /**
+     * Creates a new pending volume based on an existing volume.
+     *
+     * @api {post} volumes/:id/pending-volumes Create a new pending volume from an existing volume
+     * @apiDescription This initiates the annotation or file label import for an existing volume that already has a metadata file. This only works if the metadata file contains annotation and/or file label information.
+     * @apiGroup Volumes
+     * @apiName StoreVolumePendingVolumes
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Number} id The volume ID.
+     *
+     * @apiParam (Attributes) {Bool} import_annotations Whether to import annotations from the metadata file.
+     * @apiParam (Attributes) {Bool} import_file_labels Whether to import file labels from the metadata file.
+     */
+    public function storeVolume(StorePendingVolumeFromVolume $request)
+    {
+        $project = Project::inCommon($request->user(), $request->volume->id, [Role::adminId()])->first();
+
+        $pv = $project->pendingVolumes()->create([
+            'volume_id' => $request->volume->id,
+            'media_type_id' => $request->volume->media_type_id,
+            'user_id' => $request->user()->id,
+            'metadata_parser' => $request->volume->metadata_parser,
+            'import_annotations' => $request->input('import_annotations', false),
+            'import_file_labels' => $request->input('import_file_labels', false),
+        ]);
+
+        $pv->update([
+            'metadata_file_path' => $pv->id.'.'.pathinfo($request->volume->metadata_file_path, PATHINFO_EXTENSION),
+        ]);
+        $stream = Storage::disk(config('volumes.metadata_storage_disk'))
+            ->readStream($request->volume->metadata_file_path);
+        Storage::disk(config('volumes.pending_metadata_storage_disk'))
+            ->writeStream($pv->metadata_file_path, $stream);
+
+        if ($this->isAutomatedRequest()) {
+            return $pv;
+        }
+
+        if ($pv->import_annotations) {
+            return redirect()->route('pending-volume-annotation-labels', $pv->id);
+        }
+
+        return redirect()->route('pending-volume-file-labels', $pv->id);
     }
 
     /**

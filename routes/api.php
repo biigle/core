@@ -317,6 +317,10 @@ $router->resource('volumes.files', 'VolumeFileController', [
     'parameters' => ['volumes' => 'id'],
 ]);
 
+$router->post(
+    'volumes/{id}/pending-volumes', 'PendingVolumeController@storeVolume'
+);
+
 $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Volumes',
