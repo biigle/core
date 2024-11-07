@@ -214,15 +214,20 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
 
         //Case 1: filter by shape
-        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id={$s1->id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->id}")
             ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid]);
 
         //Case 2: filter by user
-        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id={$u2->id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u2->id}")
             ->assertExactJson([$a2->id => $image->uuid, $a3->id => $image->uuid]);
 
         //Case 3: filter by shape and user
-        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id={$s2->id}&user_id={$u2->id}")
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s2->id}&user_id[]={$u2->id}")
             ->assertExactJson([$a3->id => $image->uuid]);
+
+        //Case 4: combine user and shape with negatives
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->id}&user_id[]=-{$u2->id}")
+            ->assertExactJson([$a1->id => $image->uuid]);
+
     }
 }
