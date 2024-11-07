@@ -61,7 +61,7 @@ class ImageAnnotationController extends Controller
      *
      * @param Request $request
      * @param int $id image id
-     * @return \Illuminate\Database\Eloquent\Collection<int, ImageAnnotation>
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */
     public function index(Request $request, $id)
     {
@@ -79,6 +79,7 @@ class ImageAnnotationController extends Controller
             'labels.user:id,firstname,lastname',
         ];
 
+        // Prevent exceeding memory limit by using generator and stream
         if ($session) {
             $yieldAnnotations = $session->getVolumeFileAnnotations($image, $user, $load);
         } else {

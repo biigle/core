@@ -62,7 +62,7 @@ class VideoAnnotationController extends Controller
      *
      * @param Request $request
      * @param int $id Video id
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */
     public function index(Request $request, $id)
     {
@@ -73,6 +73,7 @@ class VideoAnnotationController extends Controller
         $session = $video->volume->getActiveAnnotationSession($user);
         $load = ['labels.label', 'labels.user'];
 
+        // Prevent exceeding memory limit by using generator and stream
         if ($session) {
             $yieldAnnotations = $session->getVolumeFileAnnotations($video, $user, $load);
         } else {
