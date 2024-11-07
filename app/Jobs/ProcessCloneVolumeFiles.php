@@ -66,22 +66,23 @@ class ProcessCloneVolumeFiles extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $query = $this->volume->files()
-            ->when($this->only, fn ($query) => $query->whereIn('id', $this->only));
-
         if ($this->volume->isImageVolume()) {
-            $query->eachById(function (Image $img) {
-                $prefix = fragment_uuid_path($this->uuidMap[$img->uuid]);
-                CloneImageThumbnails::dispatch($img, $prefix);
-            });
+            $this->volume->images()
+                ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
+                ->eachById(function (Image $img) {
+                    $prefix = fragment_uuid_path($this->uuidMap[$img->uuid]);
+                    CloneImageThumbnails::dispatch($img, $prefix);
+                });
         } else {
             $queue = config('videos.process_new_video_queue');
-            $query->eachById(
-                function (Video $video) use ($queue) {
-                    $prefix = fragment_uuid_path($this->uuidMap[$video->uuid]);
-                    CloneVideoThumbnails::dispatch($video, $prefix)->onQueue($queue);
-                }
-            );
+            $this->volume->videos()
+                ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
+                ->eachById(
+                    function (Video $video) use ($queue) {
+                        $prefix = fragment_uuid_path($this->uuidMap[$video->uuid]);
+                        CloneVideoThumbnails::dispatch($video, $prefix)->onQueue($queue);
+                    }
+                );
         }
     }
 }

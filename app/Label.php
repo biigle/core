@@ -85,7 +85,7 @@ class Label extends Model
     /**
      * The parent label if the labels are ordered in a tree-like structure.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, Label>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
      */
     public function parent()
     {
@@ -95,7 +95,7 @@ class Label extends Model
     /**
      * The label tree this label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, Label>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, $this>
      */
     public function tree()
     {
@@ -106,7 +106,7 @@ class Label extends Model
      * The child labels of this label if they are ordered in a tree-like
      * structue.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label, $this>
      */
     public function children()
     {

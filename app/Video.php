@@ -108,7 +108,7 @@ class Video extends VolumeFile
     /**
      * The annotations that belong to this video.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoAnnotation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoAnnotation, $this>
      */
     public function annotations()
     {
@@ -191,7 +191,7 @@ class Video extends VolumeFile
     /**
      * The labels, this video got attached by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoLabel, $this>
      */
     public function labels()
     {
