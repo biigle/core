@@ -66,7 +66,7 @@ class Image extends VolumeFile
     /**
      * The annotations on this image.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ImageAnnotation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ImageAnnotation, $this>
      */
     public function annotations()
     {
@@ -76,7 +76,7 @@ class Image extends VolumeFile
     /**
      * The labels, this image got attached by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ImageLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ImageLabel, $this>
      */
     public function labels()
     {

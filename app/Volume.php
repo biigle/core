@@ -112,7 +112,7 @@ class Volume extends Model
     /**
      * The user that created the volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Volume>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function creator()
     {
@@ -122,7 +122,7 @@ class Volume extends Model
     /**
      * The media type of this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<MediaType, Volume>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<MediaType, $this>
      */
     public function mediaType()
     {
@@ -132,7 +132,7 @@ class Volume extends Model
     /**
      * The images belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Image>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Image, $this>
      */
     public function images()
     {
@@ -142,7 +142,7 @@ class Volume extends Model
     /**
      * The videos belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Video>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Video, $this>
      */
     public function videos()
     {
@@ -152,7 +152,7 @@ class Volume extends Model
     /**
      * The images or videos belonging to this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFile>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFile, $this>
      */
     public function files()
     {
@@ -167,7 +167,7 @@ class Volume extends Model
      * The images belonging to this volume ordered by filename (ascending).
      *
      * @deprecated Use `orderedFiles` instead.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VolumeFile>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFile, $this>
      */
     public function orderedImages()
     {
@@ -177,7 +177,7 @@ class Volume extends Model
     /**
      * The images belonging to this volume ordered by filename (ascending).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VolumeFile>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFile, $this>
      */
     public function orderedFiles()
     {
@@ -206,7 +206,7 @@ class Volume extends Model
     /**
      * The project(s), this volume belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project, $this>
      */
     public function projects()
     {
@@ -216,7 +216,7 @@ class Volume extends Model
     /**
      * The annotation sessions of this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationSession>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationSession, $this>
      */
     public function annotationSessions()
     {
@@ -226,7 +226,7 @@ class Volume extends Model
     /**
      * The active annotation sessions of this volume (if any).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne<AnnotationSession>
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<AnnotationSession, $this>
      */
     public function activeAnnotationSession()
     {
