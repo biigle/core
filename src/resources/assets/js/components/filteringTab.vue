@@ -1,75 +1,56 @@
 <template>
-  <div
-    class="filtering-tab"
-  >
-    <div class="list-group filter-list-group">
-      <label>Annotation Shape</label>
-      <select
-        class="form-control"
-        @change="filterAnnotation"
+  <div class="filtering-tab"
+>
+  <label>Annotations where: </label>
+  <ul class="list-group">
+      <li class="list-group-item" v-for="filter, k in activeFilters">
+          <span>{{ filter.name }}</span>
+          <button @click.once="removeFilter(k)" type="button"
+          class="btn btn-default  fa fa-window-close" ></button>
+      </li>
+  </ul>
+  <form class="form clearfix" v-on:submit.prevent>
+    <div class="filter-form__selects">
+        <annotation-filter @add-filter="addNewFilter">
+        </annotation-filter>
+    </div>
+    </form>
 
-        v-model="selectedAnnotationShape"
-      >
-        <option
-          v-for="(annotation_type_name, annotation_type_id) in this.shapes"
-          :value="annotation_type_id"
-          v-text="annotation_type_name"
-        ></option>
-      </select>
-    </div>
-    <div class="list-group filter-list-group">
-      <label>Users with Annotations</label>
-      <select
-        class="form-control"
-        @change="filterAnnotation"
-        v-model="selectedAnnotationUser"
-      >
-        <option
-          v-for="(annotation_type_name, annotation_type_id) in this.possibleUsers"
-          :value="annotation_type_id"
-          v-text="annotation_type_name"
-        ></option>
-      </select>
-    </div>
   </div>
 </template>
 <script>
+import AnnotationFilter from '../components/annotationFilter.vue'
+
 export default {
+  components: {
+    AnnotationFilter
+  },
   data() {
-    let possibleShapes = biigle.$require('largo.availableShapes');
-    possibleShapes = { ['0']: null, ...possibleShapes };
-
-    //Load users with annotations
-    let usersWithAnnotations = biigle.$require('largo.usersWithAnnotations')
-
-    let possibleUsers = {};
-    usersWithAnnotations.forEach(function (user) {
-      possibleUsers[user.user_id] = user.lastname + ' ' + user.firstname
-    });
-    possibleUsers = { ['0']: null, ...possibleUsers }
     return {
-      selectedAnnotationShape: null,
-      selectedAnnotationUser: null,
-      shapes: possibleShapes,
-      possibleUsers: possibleUsers,
+      activeFilters: []
     };
   },
   methods: {
-    filterAnnotation() {
-      //TODO: add more filters here. See https://github.com/biigle/largo/issues/66
-      let selectedFilters = {
-        shape_id: this.selectedAnnotationShape,
-        user_id: this.selectedAnnotationUser,
-      };
-      //Filter out null filters, this can cause bad requests to be sent
-      Object.keys(selectedFilters).forEach(
-        (k) => {
-          if (selectedFilters[k] == null || selectedFilters[k] == 0) {
-            delete selectedFilters[k]
-          }
+    removeFilter(key){
+      this.activeFilters.splice(key)
+      this.filterAnnotations()
+    },
+    addNewFilter(filter) {
+      if (this.activeFilters.length > 0) {
+        let union_string
+        if (!filter.union) {
+          union_string = 'And '
+        } else {
+          union_string = 'Or '
         }
-      );
-      this.$emit("handle-selected-filters", selectedFilters);
+        filter.name = union_string + filter.name
+      }
+      this.activeFilters.push(filter)
+      this.filterAnnotations()
+      },
+
+    filterAnnotations() {
+      this.$emit("handle-selected-filters", this.activeFilters);
     },
   },
 };
