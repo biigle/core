@@ -2,10 +2,11 @@
 
 namespace Biigle;
 
-use Carbon\Carbon;
 use DB;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Generator;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * An annotation session groups multiple annotations of a volume based on their
@@ -67,7 +68,7 @@ class AnnotationSession extends Model
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getVolumeFileAnnotations(VolumeFile $file, User $user)
+    public function getVolumeFileAnnotations(VolumeFile $file, User $user, array $load = [])
     {
         $annotationClass = $file->annotations()->getRelated();
         $query = $annotationClass::allowedBySession($this, $user)
@@ -105,7 +106,13 @@ class AnnotationSession extends Model
             $query->with('labels');
         }
 
-        return $query->get();
+        $yieldAnnotations = function () use ($query, $load): Generator {
+            foreach ($query->with($load)->lazy() as $annotation) {
+                yield $annotation;
+            }
+        };
+
+        return $yieldAnnotations;
     }
 
     /**
