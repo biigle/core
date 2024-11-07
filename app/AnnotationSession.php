@@ -2,11 +2,11 @@
 
 namespace Biigle;
 
+use Carbon\Carbon;
 use DB;
 use Generator;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * An annotation session groups multiple annotations of a volume based on their

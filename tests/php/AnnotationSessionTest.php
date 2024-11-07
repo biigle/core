@@ -2,12 +2,11 @@
 
 namespace Biigle\Tests;
 
-use Carbon\Carbon;
-use ModelTestCase;
-use Biigle\MediaType;
 use Biigle\AnnotationSession;
-use Illuminate\Support\Facades\Log;
+use Biigle\MediaType;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
+use ModelTestCase;
 
 class AnnotationSessionTest extends ModelTestCase
 {
@@ -172,7 +171,7 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-       $annotations = collect($yieldAnnotations());
+        $annotations = collect($yieldAnnotations());
         $labels = $annotations->pluck('labels');
         
         $this->assertFalse($this->isPresent($al11, $labels));
@@ -213,9 +212,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);;
+        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-       $annotations = collect($yieldAnnotations());
+        $annotations = collect($yieldAnnotations());
         $labels = $annotations->pluck('labels');
 
         $this->assertTrue($annotations->contains('points', [20, 30, 40]));
@@ -254,9 +253,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);;
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-       $annotations = collect($yieldAnnotations());
+        $annotations = collect($yieldAnnotations());
         $labels = $annotations->pluck('labels');
 
         $this->assertTrue($annotations->contains('points', [[20, 30, 40]]));
@@ -295,9 +294,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);;
+        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-       $annotations = collect($yieldAnnotations());
+        $annotations = collect($yieldAnnotations());
         $labels = $annotations->pluck('labels');
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
@@ -336,9 +335,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);;
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-       $annotations = collect($yieldAnnotations());
+        $annotations = collect($yieldAnnotations());
         $labels = $annotations->pluck('labels');
 
         $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
@@ -378,7 +377,7 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-       $annotations = collect($yieldAnnotations());
+        $annotations = collect($yieldAnnotations());
         $labels = $annotations->pluck('labels');
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
@@ -416,9 +415,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);;
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-       $annotations = collect($yieldAnnotations());
+        $annotations = collect($yieldAnnotations());
         $labels = $annotations->pluck('labels');
 
         $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
@@ -736,9 +735,10 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertFalse($session->annotations()->where('id', $a4->id)->exists());
     }
 
-    private function isPresent($needle, $haystack){
+    private function isPresent($needle, $haystack)
+    {
         $needle = collect($needle)->sortKeys();
-        $haystack = $haystack->flatten()->map(fn($l) => collect($l)->sortKeys());
+        $haystack = $haystack->flatten()->map(fn ($l) => collect($l)->sortKeys());
         return $haystack->contains($needle);
     }
 }

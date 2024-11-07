@@ -2,19 +2,19 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Cache;
-use Queue;
 use ApiTestCase;
-use Biigle\Shape;
-use Carbon\Carbon;
-use Biigle\MediaType;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VideoTest;
 use Biigle\Jobs\TrackObject;
-use Illuminate\Testing\TestResponse;
-use Biigle\Tests\VideoAnnotationTest;
+use Biigle\MediaType;
+use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
+use Cache;
+use Carbon\Carbon;
+use Illuminate\Testing\TestResponse;
+use Queue;
 use Symfony\Component\HttpFoundation\Response;
 
 class VideoAnnotationControllerTest extends ApiTestCase
@@ -64,7 +64,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $response->sendContent();
         $content = ob_get_clean();
         $response = new TestResponse(
-            new Response($content,
+            new Response(
+                $content,
                 $response->baseResponse->getStatusCode(),
                 $response->baseResponse->headers->all()
             )
@@ -117,7 +118,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $response->sendContent();
         $content = ob_get_clean();
         $response = new TestResponse(
-            new Response($content,
+            new Response(
+                $content,
                 $response->baseResponse->getStatusCode(),
                 $response->baseResponse->headers->all()
             )
@@ -137,7 +139,8 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $response->sendContent();
         $content = ob_get_clean();
         $response = new TestResponse(
-            new Response($content,
+            new Response(
+                $content,
                 $response->baseResponse->getStatusCode(),
                 $response->baseResponse->headers->all()
             )

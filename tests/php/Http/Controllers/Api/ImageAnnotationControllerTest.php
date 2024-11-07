@@ -2,16 +2,16 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Cache;
 use ApiTestCase;
 use Biigle\Shape;
-use Carbon\Carbon;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Illuminate\Testing\TestResponse;
-use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Cache;
+use Carbon\Carbon;
+use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ImageAnnotationControllerTest extends ApiTestCase
@@ -57,7 +57,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->sendContent();
         $content = ob_get_clean();
         $response = new TestResponse(
-            new Response($content,
+            new Response(
+                $content,
                 $response->baseResponse->getStatusCode(),
                 $response->baseResponse->headers->all()
             )
@@ -108,7 +109,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->sendContent();
         $content = ob_get_clean();
         $response = new TestResponse(
-            new Response($content,
+            new Response(
+                $content,
                 $response->baseResponse->getStatusCode(),
                 $response->baseResponse->headers->all()
             )
@@ -127,7 +129,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->sendContent();
         $content = ob_get_clean();
         $response = new TestResponse(
-            new Response($content,
+            new Response(
+                $content,
                 $response->baseResponse->getStatusCode(),
                 $response->baseResponse->headers->all()
             )

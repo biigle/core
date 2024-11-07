@@ -2,16 +2,16 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Http\Requests\StoreImageAnnotation;
+use Biigle\Image;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
+use Biigle\Label;
+use Biigle\Shape;
 use DB;
 use Exception;
 use Generator;
-use Biigle\Image;
-use Biigle\Label;
-use Biigle\Shape;
-use Biigle\ImageAnnotation;
 use Illuminate\Http\Request;
-use Biigle\ImageAnnotationLabel;
-use Biigle\Http\Requests\StoreImageAnnotation;
 use Illuminate\Validation\ValidationException;
 
 class ImageAnnotationController extends Controller

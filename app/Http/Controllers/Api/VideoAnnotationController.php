@@ -2,20 +2,20 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Cache;
-use Queue;
-use Exception;
-use Generator;
+use Biigle\Http\Requests\StoreVideoAnnotation;
+use Biigle\Http\Requests\UpdateVideoAnnotation;
+use Biigle\Jobs\TrackObject;
 use Biigle\Label;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
-use Biigle\Jobs\TrackObject;
-use Illuminate\Http\Request;
 use Biigle\VideoAnnotationLabel;
-use Biigle\Http\Requests\StoreVideoAnnotation;
+use Cache;
+use DB;
+use Exception;
+use Generator;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Biigle\Http\Requests\UpdateVideoAnnotation;
+use Queue;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class VideoAnnotationController extends Controller
