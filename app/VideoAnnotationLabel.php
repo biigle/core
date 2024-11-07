@@ -7,7 +7,7 @@ class VideoAnnotationLabel extends AnnotationLabel
     /**
      * The video annotation, this annotation label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<VideoAnnotation, VideoAnnotationLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<VideoAnnotation, $this>
      */
     public function annotation()
     {

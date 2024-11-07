@@ -15,7 +15,7 @@ class VideoLabel extends VolumeFileLabel
     /**
      * The video, this video label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Video, VideoLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Video, $this>
      */
     public function video()
     {

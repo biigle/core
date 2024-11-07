@@ -45,7 +45,7 @@ class ProjectInvitation extends Model
     /**
      * The project to which this invitation belongs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, ProjectInvitation>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, $this>
      */
     public function project()
     {
