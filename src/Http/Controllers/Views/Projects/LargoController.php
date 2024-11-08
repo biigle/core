@@ -38,7 +38,15 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = collect([
+            1 => 'Point',
+            2 => 'LineString',
+            3 => 'Polygon',
+            4 => 'Circle',
+            5 => 'Rectangle',
+            6 => 'Ellipse',
+            7 => 'WholeFrame',
+        ]);
 
         $usersWithAnnotations = ImageAnnotationLabel::query()
             ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')

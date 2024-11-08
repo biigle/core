@@ -5,9 +5,9 @@ namespace Biigle\Modules\Largo\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\ImageAnnotationLabel;
 use Biigle\LabelTree;
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Role;
-use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -25,6 +25,7 @@ class LargoController extends Controller
     public function index(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
+
         if (!$request->user()->can('sudo')) {
             $this->authorize('edit-in', $volume);
         }
@@ -55,7 +56,20 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = [
+            1 => 'Point',
+            2 => 'LineString',
+            3 => 'Polygon',
+            4 => 'Circle',
+            5 => 'Rectangle',
+            6 => 'Ellipse',
+        ];
+
+        if ($volume->media_type_id == MediaType::videoId()){
+            $shapes[7] = 'WholeFrame';
+        }
+
+        $shapes = collect($shapes);
 
         $usersWithAnnotations = ImageAnnotationLabel::query()
             ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
