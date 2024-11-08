@@ -89,17 +89,17 @@ export default {
         Messages.danger("No filter selected!")
         return
       }
-      let negationString
+      let logicalString
 
       if (this.negate) {
-        negationString = 'is not'
+        logicalString = 'is not'
         this.selectedFilterValue[1] = -this.selectedFilterValue[1]
       } else {
-        negationString = 'is'
+        logicalString = 'is'
       }
 
       let filterToAdd = {
-        name: this.selectedFilter + ' ' +  negationString + ' ' +  this.selectedFilterValue[0],
+        name: this.selectedFilter + ' ' +  logicalString + ' ' +  this.selectedFilterValue[0],
         filter: this.shapeToValue[this.selectedFilter],
         value: this.selectedFilterValue[1],
         union: this.union
