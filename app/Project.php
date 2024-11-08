@@ -69,7 +69,7 @@ class Project extends Model
      * The members of this project. Every member has a project-specific
      * `project_role_id` besides their global user role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function users()
     {
@@ -80,7 +80,7 @@ class Project extends Model
     /**
      * All members of this project with the `admin` role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function admins()
     {
@@ -90,7 +90,7 @@ class Project extends Model
     /**
      * All members of this project with the `editor` role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function editors()
     {
@@ -100,7 +100,7 @@ class Project extends Model
     /**
      * All members of this project with the `guest` role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function guests()
     {
@@ -112,7 +112,7 @@ class Project extends Model
      * automatically added to the project's users with the 'admin' role by
      * the ProjectObserver.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Project>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function creator()
     {
@@ -122,7 +122,7 @@ class Project extends Model
     /**
      * The project invitations of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ProjectInvitation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ProjectInvitation, $this>
      */
     public function invitations()
     {
@@ -182,7 +182,7 @@ class Project extends Model
     /**
      * The volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume, $this>
      */
     public function volumes()
     {
@@ -192,7 +192,7 @@ class Project extends Model
     /**
      * The image volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume, $this>
      */
     public function imageVolumes()
     {
@@ -202,7 +202,7 @@ class Project extends Model
     /**
      * The video volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Volume, $this>
      */
     public function videoVolumes()
     {
@@ -212,7 +212,7 @@ class Project extends Model
     /**
      * The pending volumes of this project.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<PendingVolume>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<PendingVolume, $this>
      */
     public function pendingVolumes()
     {
@@ -287,7 +287,7 @@ class Project extends Model
     /**
      * The label trees, this project is using.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree, $this>
      */
     public function labelTrees()
     {
@@ -297,7 +297,7 @@ class Project extends Model
     /**
      * The private label trees that authorized this project to use them.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree, $this>
      */
     public function authorizedLabelTrees()
     {

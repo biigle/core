@@ -165,7 +165,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The labels, this annotation got assigned by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant AnnotationLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant AnnotationLabel, $this>
      */
     abstract public function labels();
 
@@ -179,7 +179,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The shape of this annotation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, Annotation>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
      */
     public function shape()
     {

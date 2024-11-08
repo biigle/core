@@ -22,7 +22,7 @@ class ImageAnnotation extends Annotation
     /**
      * The image, this annotation belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Image, ImageAnnotation>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Image, $this>
      */
     public function image()
     {
