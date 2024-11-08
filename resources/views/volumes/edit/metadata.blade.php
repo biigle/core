@@ -7,7 +7,7 @@
         @endif
         <span class="pull-right">
             <span class="loader" v-bind:class="{'loader--active':loading}"></span>
-            <dropdown tag="span" v-if="hasMetadata" v-cloak>
+            <dropdown tag="span" v-if="showImportDropdown" v-cloak>
                 <button class="btn btn-default btn-xs dropdown-toggle" type="button" title="Import annotations or file labels from the metadata file attached to this volume"><i class="fa fa-file-import"></i> Import <span class="caret"></span></button>
                 <template slot="dropdown">
                     <li>
@@ -18,6 +18,8 @@
                     </li>
                 </template>
             </dropdown>
+            <button v-cloak v-if="showImportAnnotations" v-on:click.prevent="importAnnotations" class="btn btn-default btn-xs" type="button" title="Import annotations from the metadata file attached to this volume"><i class="fa fa-file-import"></i> Import annotations</button>
+            <button v-cloak v-if="showImportFileLabels" v-on:click.prevent="importFileLabels" class="btn btn-default btn-xs" type="button" title="Import file labels from the metadata file attached to this volume"><i class="fa fa-file-import"></i> Import annotations</button>
             <dropdown tag="span" v-if="hasMetadata" v-cloak>
                 <button class="btn btn-default btn-xs dropdown-toggle" type="button" title="Manage the metadata file attached to this volume" :disabled="loading"><i class="fa fa-file-alt"></i> Manage file <span class="caret"></span></button>
                 <template slot="dropdown">
