@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     removeFilter(key){
-      this.activeFilters.splice(key)
+      this.activeFilters.splice(key, 1)
       this.filterAnnotations()
     },
     addNewFilter(filter) {
