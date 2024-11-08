@@ -56,7 +56,8 @@ class MetadataController extends Controller
      * @apiPermission projectAdmin
      * @apiDescription This endpoint allows adding or updating metadata such as geo
      * coordinates for volume files. The uploaded metadata file replaces any previously
-     * uploaded file.
+     * uploaded file. The JSON response indicates whether the uploaded metadata file
+     * contained annotations or file labels.
      *
      * @apiParam {Number} id The volume ID.
      *
@@ -73,7 +74,7 @@ class MetadataController extends Controller
      *
      * @param StoreVolumeMetadata $request
      *
-     * @return void
+     * @return array<string, bool>|void
      */
     public function store(StoreVolumeMetadata $request)
     {
@@ -83,6 +84,15 @@ class MetadataController extends Controller
         $request->volume->saveMetadata($request->file('file'));
         $request->volume->update(['metadata_parser' => $request->input('parser')]);
         Queue::push(new UpdateVolumeMetadata($request->volume));
+
+        if ($this->isAutomatedRequest()) {
+            $metadata = $request->volume->getMetadata();
+
+            return [
+                'has_annotations' => $metadata->hasAnnotations(),
+                'has_file_labels' => $metadata->hasFileLabels(),
+            ];
+        }
     }
 
     /**
