@@ -74,7 +74,7 @@ class MetadataController extends Controller
      *
      * @param StoreVolumeMetadata $request
      *
-     * @return void
+     * @return array<string, bool>|void
      */
     public function store(StoreVolumeMetadata $request)
     {
