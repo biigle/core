@@ -9,11 +9,11 @@ import LabelItem from './annotationTabLabelItem';
  */
 export default {
     mixins: [AnnotationsTab],
-    components:{
+    components: {
         labelItem: LabelItem,
     },
-    props:{
-        filesData: {
+    props: {
+        annotationLabels: {
             type: Array,
             default: []
         },
@@ -28,24 +28,21 @@ export default {
             let labels = {};
             let annotations = {};
             let uniqueMap = {};
-            this.filesData.forEach(function(image) {
-                image.annotations.forEach(function (annotation) {
-                    annotation.labels.forEach(function (annotationLabel) {
-                    if (!labels.hasOwnProperty(annotationLabel.label.id)) {
-                        labels[annotationLabel.label_id] = annotationLabel.label;
-                        annotations[annotationLabel.label_id] = [];
-                    }
+            this.annotationLabels.forEach(function (annotation) {
+                let annotationLabel = annotation.annotationLabels[0];
+                if (!labels.hasOwnProperty(annotationLabel.label.id)) {
+                    labels[annotationLabel.label_id] = annotationLabel.label;
+                    annotations[annotationLabel.label_id] = [];
+                }
 
-                    // Make sure each annotation is added only once for each label item.
-                    // This is important if the annotation has the same label attached by
-                    // multiple users.
-                    let uniqueKey = annotation.id + '-' + annotationLabel.label_id;
-                    if (!uniqueMap.hasOwnProperty(uniqueKey)) {
-                        uniqueMap[uniqueKey] = null;
-                        annotations[annotationLabel.label_id].push(annotation);
-                    }
-                });
-                })
+                // Make sure each annotation is added only once for each label item.
+                // This is important if the annotation has the same label attached by
+                // multiple users.
+                let uniqueKey = annotationLabel.annotation_id + '-' + annotationLabel.label_id;
+                if (!uniqueMap.hasOwnProperty(uniqueKey)) {
+                    uniqueMap[uniqueKey] = null;
+                    annotations[annotationLabel.label_id].push(annotationLabel.annotation_id);
+                }
             })
 
             return Object.values(labels)
@@ -59,6 +56,9 @@ export default {
                         annotations: annotations[label.id],
                     };
                 });
+        },
+        annotationBadgeCount() {
+            return this.annotationLabels.length;
         },
     },
     methods: {

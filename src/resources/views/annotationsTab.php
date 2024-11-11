@@ -1,7 +1,6 @@
 <sidebar-tab name="annotations" icon="list" title="Annotations" class="sidebar__tab--nopad">
     <annotations-tab
-        :files-data="filesData"
-        :total-annotation-count="annotationCount"
+        :annotation-labels="annotationLabels"
         v-on:select="handleSelectedLabel"
         v-on:deselect="handleDeselectedLabel"
         inline-template

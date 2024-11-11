@@ -54,8 +54,7 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            filesData: [],
-            annotationCount: 0,
+            annotationLabels: [],
             volumeId: 0,
         };
     },
@@ -484,52 +483,16 @@ export default {
         },
         fetchAllAnnotations() {
             AnnotationsApi.fetchAllVideoAnnotations({ id: this.volumeId })
-                .then((res) => {
-                    let hasParsed = this.parseAnnotationResponse(res);
-                    this.annotationType = hasParsed ? VIDEO_ANNOTATION : IMAGE_ANNOTATION;
-                }, handleErrorResponse)
+                .then(this.parseAnnotationDataResponse, handleErrorResponse)
             AnnotationsApi.fetchAllImageAnnotations({ id: this.volumeId })
-                .then(this.parseAnnotationResponse, handleErrorResponse)
+                .then(this.parseAnnotationDataResponse, handleErrorResponse)
         },
-        parseAnnotationResponse(res) {
-            if (res.body.length === 0) {
-                return false;
-            }
-            this.filesData = res.body.flat();
-            this.annotationCount = this.filesData.reduce(function (sum, as) {
-                sum += as.annotations.length;
-                return sum;
-            }, 0);
-            return true;
-        },
-        handleSelectAnnotation(a) {
-            Vue.set(a, 'selected', true);
-            let uuidA;
-            this.filesData.map(file => {
-                file.annotations.map((other) => {
-                    if (other.id != a.id) {
-                        Vue.set(other, 'selected', false);
-                    } else {
-                        uuidA = file.uuid;
-                    }
-                })
-            });
-
-            this.selectedLabel = a.labels[0].label;
-
-            let cachedAnnotation = {
-                dismissed: false,
-                id: a.id,
-                label_id: a.labels[0].label.id,
-                newLabel: null,
-                type: this.annotationType,
-                uuid: uuidA,
-            };
-            Vue.set(this.annotationsCache, a.labels[0].label.id, [cachedAnnotation]);
-        },
-        handleDeselectAnnotation(a) {
-            this.selectedLabel = null;
-            Vue.set(a,'selected', false);
+        parseAnnotationDataResponse(res) {
+            this.annotationLabels = res.body;
+            console.log(this.annotationLabels);
+            
+            //TODO: FIX BUG WITH FIRST USING LABELTREES TAB
+            //TODO: add dismiss function
         },
     },
     watch: {
