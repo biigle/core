@@ -2,7 +2,9 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
+use Generator;
 use Biigle\Label;
+use Biigle\Shape;
 use Biigle\Volume;
 use Biigle\ImageAnnotation;
 use Illuminate\Http\Request;
@@ -10,7 +12,6 @@ use Biigle\ImageAnnotationLabel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Shape;
 
 class ImageAnnotationsController extends Controller
 {
@@ -45,20 +46,36 @@ class ImageAnnotationsController extends Controller
             ->pluck('images.uuid', 'image_annotations.id');
     }
 
-    public function getAllAnnotations($id)
+    /**
+     * Get all annotation labels with their image uuid used in a volume
+     * 
+     * @api {get} 
+     * @apiGroup Labels
+     * @apiName test
+     * @apiParam {Number} id The Volume ID
+     * @apiPermission user
+     * @apiDescription Returns an array containing the annotation count and an array with arr
+     *
+     * @param Request $request
+     * @param int $id Label ID
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
+     */
+    public function getVolumeAnnotationLabels($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        return $volume
-        ->images()
-        ->has('annotations')
-        ->with([
-            'annotations:id,image_id,shape_id',
-            'annotations.labels.user',
-            'annotations.labels.label'
-            ])
-        ->select('uuid', 'id')
-        ->get();
+        $images = $volume->images()->has('annotations');
+        $annotationData = function () use ($images): Generator {
+            foreach ($images->lazy() as $img) {
+                foreach ($img->annotations()->with('labels.label')->lazy() as $annotation) {
+                    yield [
+                        'annotationLabels' => $annotation->labels,
+                    ];
+                }
+            }
+        };
+
+        return response()->streamJson($annotationData());
     }
 }

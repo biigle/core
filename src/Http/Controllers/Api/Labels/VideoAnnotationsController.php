@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
+use Generator;
 use Biigle\Label;
 use Biigle\Volume;
 use Biigle\VideoAnnotation;
@@ -41,20 +42,36 @@ class VideoAnnotationsController extends Controller
             ->pluck('videos.uuid', 'video_annotations.id');
     }
 
-    public function getAllAnnotations($id)
+    /**
+     * Get all annotation labels with their video uuid used in a volume
+     * 
+     * @api {get} 
+     * @apiGroup Labels
+     * @apiName test
+     * @apiParam {Number} id The Volume ID
+     * @apiPermission user
+     * @apiDescription Returns a stream containing annotation labels and the corresponding uuid
+     *
+     * @param Request $request
+     * @param int $id Label ID
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
+     */
+    public function getVolumeAnnotationLabels($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        return $volume
-        ->videos()
-        ->has('annotations')
-        ->with([
-            'annotations:id,video_id,shape_id',
-            'annotations.labels.user',
-            'annotations.labels.label'
-            ])
-        ->select('uuid', 'id')
-        ->get();
+        $videos = $volume->videos()->has('annotations');
+        $annotationData = function () use ($videos): Generator {
+            foreach ($videos->lazy() as $vid) {
+                foreach ($vid->annotations()->with('labels.label')->lazy() as $annotation) {
+                    yield [
+                        'annotationLabels' => $annotation->labels,
+                    ];
+                }
+            }
+        };
+
+        return response()->streamJson($annotationData());
     }
 }
