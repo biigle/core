@@ -5,9 +5,11 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 use Generator;
 use Biigle\Label;
 use Biigle\Volume;
+use Biigle\MediaType;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class VideoAnnotationsController extends Controller
 {
@@ -66,12 +68,13 @@ class VideoAnnotationsController extends Controller
             foreach ($videos->lazy() as $vid) {
                 foreach ($vid->annotations()->with('labels.label')->lazy() as $annotation) {
                     yield [
-                        'annotationLabels' => $annotation->labels,
+                        'uuid' => $vid->uuid,
+                        'labels' => $annotation->labels,
                     ];
                 }
             }
         };
 
-        return response()->streamJson($annotationData());
+        return new StreamedJsonResponse($annotationData());
     }
 }

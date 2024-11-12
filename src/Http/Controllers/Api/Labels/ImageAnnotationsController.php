@@ -6,12 +6,14 @@ use Generator;
 use Biigle\Label;
 use Biigle\Shape;
 use Biigle\Volume;
+use Biigle\MediaType;
 use Biigle\ImageAnnotation;
 use Illuminate\Http\Request;
 use Biigle\ImageAnnotationLabel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Biigle\Http\Controllers\Api\Controller;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class ImageAnnotationsController extends Controller
 {
@@ -70,12 +72,13 @@ class ImageAnnotationsController extends Controller
             foreach ($images->lazy() as $img) {
                 foreach ($img->annotations()->with('labels.label')->lazy() as $annotation) {
                     yield [
-                        'annotationLabels' => $annotation->labels,
+                        'uuid' => $img->uuid,
+                        'labels' => $annotation->labels,
                     ];
                 }
             }
         };
 
-        return response()->streamJson($annotationData());
+        return new StreamedJsonResponse($annotationData());
     }
 }
