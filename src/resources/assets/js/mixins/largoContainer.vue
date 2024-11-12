@@ -56,6 +56,7 @@ export default {
             pinnedImage: null,
             annotationLabels: [],
             volumeId: 0,
+            fetchedAllAnnotations: false,
         };
     },
     provide() {
@@ -476,23 +477,52 @@ export default {
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
         handleOpenTab(tab) {
-            if (tab === "annotations" && this.allAnnotations.length === 0) {
+            if (tab === "annotations" && !this.fetchedAllAnnotations) {
                 this.fetchAllAnnotations();
             }
 
         },
         fetchAllAnnotations() {
-            AnnotationsApi.fetchAllVideoAnnotations({ id: this.volumeId })
-                .then(this.parseAnnotationDataResponse, handleErrorResponse)
-            AnnotationsApi.fetchAllImageAnnotations({ id: this.volumeId })
-                .then(this.parseAnnotationDataResponse, handleErrorResponse)
+            this.startLoading();
+            Promise.all([
+                AnnotationsApi.fetchImageVolumeAnnotations({ id: this.volumeId }),
+                AnnotationsApi.fetchVideoVolumeAnnotations({ id: this.volumeId })
+            ])
+            .then(this.parseAnnotationDataResponse, handleErrorResponse)
+            .finally(this.finishLoading);
         },
-        parseAnnotationDataResponse(res) {
+        parseAnnotationDataResponse(responses) {
+            let res = responses[0].body.length != 0 ? responses[0] : responses[1];
+            let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
+            // Only annotation labels are required for flat label tab
             this.annotationLabels = res.body;
-            console.log(this.annotationLabels);
-            
-            //TODO: FIX BUG WITH FIRST USING LABELTREES TAB
-            //TODO: add dismiss function
+            // Process annotations to use them later in annotationsChache
+            let groupedAnnotation = {};
+            res.body.forEach((al) => {
+                let labels = al.labels[0];
+                let annotation = {
+                    id: labels.annotation_id,
+                    uuid: al.uuid,
+                    label_id: labels.label_id,
+                    dismissed: false,
+                    newLabel: null,
+                    type: type
+                };
+
+                if (groupedAnnotation.hasOwnProperty(labels.label_id)) {
+                    groupedAnnotation[labels.label_id].push(annotation);
+                } else {
+                    groupedAnnotation[labels.label_id] = [annotation];
+                }
+            })
+            Object.keys(groupedAnnotation).map((id) => {
+                // Show the newest annotations (with highest ID) first.
+                let annotations = groupedAnnotation[id];
+                annotations = annotations.sort((a, b) => b.id - a.id);
+                Vue.set(this.annotationsCache, id, annotations);
+            });
+
+            this.fetchedAllAnnotations = true;
         },
     },
     watch: {
