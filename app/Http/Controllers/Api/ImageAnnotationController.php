@@ -13,6 +13,7 @@ use Exception;
 use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class ImageAnnotationController extends Controller
 {
@@ -90,7 +91,7 @@ class ImageAnnotationController extends Controller
             };
         }
     
-        return response()->streamJson(iterator_to_array($yieldAnnotations()));
+        return new StreamedJsonResponse($yieldAnnotations());
     }
 
     /**

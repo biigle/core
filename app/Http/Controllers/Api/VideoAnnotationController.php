@@ -16,6 +16,7 @@ use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Queue;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class VideoAnnotationController extends Controller
@@ -84,7 +85,7 @@ class VideoAnnotationController extends Controller
             };
         }
 
-        return response()->streamJson(iterator_to_array($yieldAnnotations()));
+        return new StreamedJsonResponse($yieldAnnotations());
     }
 
     /**
