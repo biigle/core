@@ -45,16 +45,38 @@ class VideoAnnotationsController extends Controller
     }
 
     /**
-     * Get all annotation labels with their video uuid used in a volume
+     * Get all video annotations with uuids for a given volume
      * 
      * @api {get} 
      * @apiGroup Labels
      * @apiName test
      * @apiParam {Number} id The Volume ID
      * @apiPermission user
-     * @apiDescription Returns a stream containing annotation labels and the corresponding uuid
+     * @apiDescription Returns a stream containing the video uuids and their annotation labels of a volume
+     * 
+     * @apiSuccessExample {json} Success response:
+     * [{
+	 * 	"uuid":"9198ea9c-ef97-4af7-8018-407d16eafb65",
+	 * 	"labels":[{
+	 *			"id":41,
+	 *			"annotation_id":41,
+	 *			"label_id":14,
+	 *			"user_id":1,
+	 *			"created_at":"2024-11-13T07:17:54.000000Z",
+	 *			"updated_at":"2024-11-13T07:17:54.000000Z",
+	 *			"label":{
+	 *				"id":14,
+	 *				"name":"a",
+	 *				"color":"49f2c5",
+	 *				"parent_id":null,
+	 *				"label_tree_id":486,
+	 *				"source_id":null,
+	 *				"label_source_id":null
+	 *				}
+	 *      }]
+	 * }]
+     * 
      *
-     * @param Request $request
      * @param int $id Label ID
      * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */

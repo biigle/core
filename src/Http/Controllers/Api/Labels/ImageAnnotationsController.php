@@ -49,14 +49,34 @@ class ImageAnnotationsController extends Controller
     }
 
     /**
-     * Get all annotation labels with their image uuid used in a volume
+     * Get all image annotations with uuids for a given volume
      * 
      * @api {get} 
      * @apiGroup Labels
      * @apiName test
      * @apiParam {Number} id The Volume ID
      * @apiPermission user
-     * @apiDescription Returns an array containing the annotation count and an array with arr
+     * @apiDescription Returns a stream containing the video uuids and their annotation labels of a volume
+     * 
+     * @apiSuccessExample {json} Success response:
+     * [{
+	 *  "uuid":"8e2517f4-7636-42a1-9b8d-9c58092931e0",
+	 *      "labels":[{
+     *              "id":520,
+     *              "annotation_id":517,
+     *              "label_id":14,"user_id":1,
+     *              "confidence":1,
+     *              "label":{
+     *                  "id":14,
+     *                  "name":"a",
+     *                  "color":"49f2c5",
+     *                  "parent_id":null,
+     *                  "label_tree_id":486,
+     *                  "source_id":null,
+     *                  "label_source_id":null
+     *              }
+     *      }]
+	 * }]
      *
      * @param Request $request
      * @param int $id Label ID

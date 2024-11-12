@@ -2,11 +2,7 @@
 import { AnnotationsTab } from '../import';
 import LabelItem from './annotationTabLabelItem';
 
-/**
- * An example annotation patch image.
- *
- * @type {Object}
- */
+
 export default {
     mixins: [AnnotationsTab],
     components: {
