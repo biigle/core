@@ -29,7 +29,7 @@ export default {
             let annotations = {};
             let uniqueMap = {};
             this.annotationLabels.forEach(function (annotation) {
-                let annotationLabel = annotation.annotationLabels[0];
+                let annotationLabel = annotation.labels[0];
                 if (!labels.hasOwnProperty(annotationLabel.label.id)) {
                     labels[annotationLabel.label_id] = annotationLabel.label;
                     annotations[annotationLabel.label_id] = [];
