@@ -495,7 +495,7 @@ export default {
             let res = responses[0].body.length != 0 ? responses[0] : responses[1];
             let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
             // Only annotation labels are required for flat label tab
-            this.annotationLabels = res.body;
+            this.annotationLabels = res.body.map((al) => al.labels[0]);            
             // Process annotations to use them later in annotationsChache
             let groupedAnnotation = {};
             res.body.forEach((al) => {

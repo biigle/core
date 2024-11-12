@@ -24,8 +24,7 @@ export default {
             let labels = {};
             let annotations = {};
             let uniqueMap = {};
-            this.annotationLabels.forEach(function (annotation) {
-                let annotationLabel = annotation.labels[0];
+            this.annotationLabels.forEach(function (annotationLabel) {
                 if (!labels.hasOwnProperty(annotationLabel.label.id)) {
                     labels[annotationLabel.label_id] = annotationLabel.label;
                     annotations[annotationLabel.label_id] = [];
