@@ -11,7 +11,9 @@ export default {
     props: {
         annotationLabels: {
             type: Array,
-            default: []
+            default() {
+                return [];
+            },
         },
     },
     data() {
