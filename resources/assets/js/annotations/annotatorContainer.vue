@@ -760,7 +760,7 @@ export default {
         Events.$on('focusTypeaheadEvent', () => {
             this.$nextTick(() => {
                 // call global for  focustypeahead TODO need other way!
-                this.$root.$emit('callFunctionFocustypeahead')
+                Events.$emit('callFunctionFocustypeahead')
             });
         });
         

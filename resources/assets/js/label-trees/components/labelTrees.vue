@@ -15,6 +15,7 @@
 import Keyboard from '../../core/keyboard';
 import LabelTree from './labelTree';
 import Typeahead from './labelTypeahead';
+import Events from '../../core/events';
 
 /**
  * A component that displays a list of label trees.
@@ -229,7 +230,7 @@ export default {
             bindFavouriteKey('0', 9);
         }
         // call global for  focustypeahead TODO need other way!
-        this.$root.$on('callFunctionFocustypeahead', () => {
+        Events.$on('callFunctionFocustypeahead', () => {
             this.focusTypeahead();
         });        
     },
