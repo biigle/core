@@ -20,7 +20,7 @@
                          :key="item.id"
                          :label="item.label"
                          :annotations="item.annotations"
-                         :is-selected="selectedLabel && item.id == selectedLabel.id"
+                         :is-selected="isSelected(item)"
                          v-on:select="handleSelectedLabel"
                          v-on:deselect="handleDeselectedLabel"
                          ></label-item>

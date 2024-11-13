@@ -66,6 +66,9 @@ export default {
         handleDeselectedLabel() {
             this.selectedLabel = null;
             this.$emit('deselect');
+        },
+        isSelected(label){
+            return this.selectedLabel && label.id == this.selectedLabel.id;
         }
     }
 };
