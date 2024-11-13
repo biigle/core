@@ -91,7 +91,7 @@ class AnnotationSessionTest extends ModelTestCase
         $al12 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $otherUser->id,
-            'created_at' => '2022-09-05',
+            'created_at' => '2016-09-05',
         ]);
 
         // this should be shown completely
@@ -116,14 +116,14 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
-        $this->assertFalse($this->isPresent($al11, $labels));
-        $this->assertTrue($this->isPresent($al12, $labels));
+        $this->assertTrue($annotations->contains('points', [20, 30, 40]));
+        $this->assertFalse($annotations->contains('labels', [$al11->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al12->toArray()]));
 
         $this->assertTrue($annotations->contains('points', [30, 40, 50]));
-        $this->assertTrue($this->isPresent($al2, $labels));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
     }
 
     public function testGetVolumeFileAnnotationsHideOwnVideo()
@@ -171,14 +171,14 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
-        
-        $this->assertFalse($this->isPresent($al11, $labels));
-        $this->assertTrue($this->isPresent($al12, $labels));
+        $annotations = collect(collect($yieldAnnotations())->toArray());
+
+        $this->assertTrue($annotations->contains('points', [[20, 30, 40]]));
+        $this->assertFalse($annotations->contains('labels', [$al11->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al12->toArray()]));
 
         $this->assertTrue($annotations->contains('points', [[30, 40, 50]]));
-        $this->assertTrue($this->isPresent($al2, $labels));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
     }
 
     public function testGetVolumeFileAnnotationsHideOtherImage()
@@ -214,12 +214,11 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [20, 30, 40]));
-        $this->assertFalse($this->isPresent($al1, $labels));
-        $this->assertTrue($this->isPresent($al2, $labels));
+        $this->assertFalse($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
     }
 
     public function testGetVolumeFileAnnotationsHideOtherVideo()
@@ -255,12 +254,11 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [[20, 30, 40]]));
-        $this->assertFalse($this->isPresent($al1, $labels));
-        $this->assertTrue($this->isPresent($al2, $labels));
+        $this->assertFalse($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
     }
 
     public function testGetVolumeFileAnnotationsHideBothImage()
@@ -296,12 +294,11 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
-        $this->assertTrue($this->isPresent($al1, $labels));
-        $this->assertFalse($this->isPresent($al2, $labels));
+        $this->assertTrue($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertFalse($annotations->contains('labels', [$al2->toArray()]));
     }
 
     public function testGetVolumeFileAnnotationsHideBothVideo()
@@ -337,12 +334,11 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
-        $this->assertTrue($this->isPresent($al1, $labels));
-        $this->assertFalse($this->isPresent($al2, $labels));
+        $this->assertTrue($annotations->contains('labels', [$al1->toArray()]));
+        $this->assertFalse($annotations->contains('labels', [$al2->toArray()]));
     }
 
     public function testGetVolumeFileAnnotationsHideNothingImage()
@@ -377,12 +373,13 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
-        $this->assertTrue($this->isPresent($al1, $labels));
-        $this->assertTrue($this->isPresent($al2, $labels));
+        $this->assertTrue($annotations->contains('labels', [
+            $al1->toArray(),
+            $al2->toArray(),
+        ]));
     }
 
     public function testGetVolumeFileAnnotationsHideNothingVideo()
@@ -417,12 +414,13 @@ class AnnotationSessionTest extends ModelTestCase
 
         $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($yieldAnnotations());
-        $labels = $annotations->pluck('labels');
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
-        $this->assertTrue($this->isPresent($al1, $labels));
-        $this->assertTrue($this->isPresent($al2, $labels));
+        $this->assertTrue($annotations->contains('labels', [
+            $al1->toArray(),
+            $al2->toArray(),
+        ]));
     }
 
     public function testAllowsAccessImageAnnotation()
@@ -733,12 +731,5 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertFalse($session->annotations()->where('id', $a2->id)->exists());
         $this->assertFalse($session->annotations()->where('id', $a3->id)->exists());
         $this->assertFalse($session->annotations()->where('id', $a4->id)->exists());
-    }
-
-    private function isPresent($needle, $haystack)
-    {
-        $needle = collect($needle)->sortKeys();
-        $haystack = $haystack->flatten()->map(fn ($l) => collect($l)->sortKeys());
-        return $haystack->contains($needle);
     }
 }
