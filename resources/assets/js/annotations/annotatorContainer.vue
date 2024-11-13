@@ -87,6 +87,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            focusInputFindlabel: false,
         };
     },
     computed: {
@@ -760,8 +761,12 @@ export default {
         Events.$on('focusTypeaheadEvent', () => {
             this.$nextTick(() => {
                 // call global for  focustypeahead TODO need other way!
-                Events.$emit('callFunctionFocustypeahead')
+                this.focusInputFindlabel = true;
+               // Events.$emit('callFunctionFocustypeahead')
             });
+            
+           this.focusInputFindlabel = false;
+            
         });
         
         Keyboard.on('control+k', () => {

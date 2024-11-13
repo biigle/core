@@ -25,10 +25,21 @@ export default {
             selectedLabel: null,
         };
     },
+    props: {
+        focusInput:{
+            type: Boolean,
+            default: false,
+        }
+    },
     computed: {
         plugins() {
             return plugins;
         },
+    },
+    watch: {
+        focusInput(){
+           //  console.log("n ", this.focusInput);
+        }
     },
     methods: {
         handleSelectedLabel(label) {

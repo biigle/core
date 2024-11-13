@@ -74,6 +74,10 @@ export default {
             type: String,
             default: 'default',
         },
+        focusInput:{
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         localeCompareSupportsLocales() {
@@ -175,11 +179,11 @@ export default {
                 this.handleSelect(this.favourites[index]);
             }
         },
-
+/*
         focusTypeahead() {
             this.$refs.typeaheadInput.$el.querySelector('input').focus();
         },
-
+*/
     },
     watch: {
         trees: {
@@ -198,6 +202,12 @@ export default {
                 });
             },
         },
+        focusInput(){
+            if(this.focusInput){
+                this.$refs.typeaheadInput.$el.querySelector('input').focus();
+            }
+        }
+        
     },
 
     mounted() {
