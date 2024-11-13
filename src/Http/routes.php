@@ -78,10 +78,10 @@ $router->group([
     ]);
 
     $router->get('volume/{id}/image-annotations', [
-        'uses' => 'Labels\ImageAnnotationsController@getVolumeAnnotationLabels'
+        'uses' => 'Volumes\FilterImageAnnotationsByLabelController@getVolumeAnnotationLabels'
     ]);
 
     $router->get('volume/{id}/video-annotations', [
-        'uses' => 'Labels\VideoAnnotationsController@getVolumeAnnotationLabels'
+        'uses' => 'Volumes\FilterVideoAnnotationsByLabelController@getVolumeAnnotationLabels'
     ]);
 });
