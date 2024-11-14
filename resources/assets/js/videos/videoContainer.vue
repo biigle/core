@@ -749,6 +749,7 @@ export default {
         }
         
         Events.$on('focusTypeaheadEvent', () => {
+            this.focusInputFindlabel = false;
             this.$nextTick(() => {
                 this.focusInputFindlabel = true;
             });
