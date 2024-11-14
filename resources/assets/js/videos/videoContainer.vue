@@ -99,6 +99,7 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            focusInputFindlabel: false,
         };
     },
     computed: {
@@ -747,14 +748,13 @@ export default {
             this.supportsJumpByFrame = true;
         }
         
-        // Focus findbar in labelTrees
         Events.$on('focusTypeaheadEvent', () => {
             this.$nextTick(() => {
-                Events.$emit('callFunctionFocustypeahead')
+                this.focusInputFindlabel = true;
             });
+            this.focusInputFindlabel = false;
         });
         
-        // on control + k openSidebar labels and after focus find
         Keyboard.on('control+k', () => {
             this.openSidebarLabels()
         });
