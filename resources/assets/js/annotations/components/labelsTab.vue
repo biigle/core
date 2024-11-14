@@ -38,7 +38,6 @@ export default {
     },
     watch: {
         focusInput(){
-           //  console.log("n ", this.focusInput);
         }
     },
     methods: {

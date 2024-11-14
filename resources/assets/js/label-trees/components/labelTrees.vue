@@ -179,11 +179,6 @@ export default {
                 this.handleSelect(this.favourites[index]);
             }
         },
-/*
-        focusTypeahead() {
-            this.$refs.typeaheadInput.$el.querySelector('input').focus();
-        },
-*/
     },
     watch: {
         trees: {

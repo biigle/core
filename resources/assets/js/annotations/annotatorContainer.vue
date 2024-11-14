@@ -601,11 +601,9 @@ export default {
         },
         
         openSidebarLabels(){ 
-            // opens sidebar labels
             this.$refs.sidebar.$emit('open', 'labels');
             Events.$emit('focusTypeaheadEvent');
         },
-
 
     },
     watch: {
@@ -758,15 +756,11 @@ export default {
             }
         }
 
-        Events.$on('focusTypeaheadEvent', () => {
+        Events.$on('focusTypeaheadEvent', () => { 
             this.$nextTick(() => {
-                // call global for  focustypeahead TODO need other way!
                 this.focusInputFindlabel = true;
-               // Events.$emit('callFunctionFocustypeahead')
             });
-            
            this.focusInputFindlabel = false;
-            
         });
         
         Keyboard.on('control+k', () => {
