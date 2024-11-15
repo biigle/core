@@ -480,7 +480,6 @@ export default {
             if (tab === "annotations" && !this.fetchedAllAnnotations) {
                 this.fetchAllAnnotations();
             }
-
         },
         fetchAllAnnotations() {
             this.startLoading();
@@ -488,14 +487,16 @@ export default {
                 AnnotationsApi.fetchImageVolumeAnnotations({ id: this.volumeId }),
                 AnnotationsApi.fetchVideoVolumeAnnotations({ id: this.volumeId })
             ])
-            .then(this.parseAnnotationDataResponse, handleErrorResponse)
-            .finally(this.finishLoading);
+                .then(this.parseAnnotationDataResponse)
+                .then(this.addAnnotationsToCache)
+                .catch(handleErrorResponse)
+                .finally(this.finishLoading);
         },
         parseAnnotationDataResponse(responses) {
             let res = responses[0].body.length != 0 ? responses[0] : responses[1];
             let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
             // Only annotation labels are required for flat label tab
-            this.annotationLabels = res.body.map((al) => al.labels[0]);            
+            this.annotationLabels = res.body.map((al) => al.labels[0]);
             // Process annotations to use them later in annotationsChache
             let groupedAnnotation = {};
             res.body.forEach((al) => {
@@ -515,6 +516,9 @@ export default {
                     groupedAnnotation[labels.label_id] = [annotation];
                 }
             })
+            return groupedAnnotation;
+        },
+        addAnnotationsToCache(groupedAnnotation) {
             Object.keys(groupedAnnotation).map((id) => {
                 // Show the newest annotations (with highest ID) first.
                 let annotations = groupedAnnotation[id];
