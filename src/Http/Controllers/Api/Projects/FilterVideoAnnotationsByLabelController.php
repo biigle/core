@@ -2,10 +2,12 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Biigle\Http\Controllers\Api\Controller;
+use Generator;
 use Biigle\Project;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
+use Biigle\Http\Controllers\Api\Controller;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
@@ -48,5 +50,47 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
+    }
+
+    public function getProjectsAnnotationLabels($id)
+    {
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
+
+        $annotations = $project->videoVolumes()
+            ->join('videos', 'volumes.id', '=', 'videos.volume_id')
+            ->join('video_annotations', 'videos.id', '=', 'video_annotations.video_id')
+            ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+            ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
+            ->select(
+                'videos.uuid',
+                'video_annotation_labels.id as annotation_label_id',
+                'video_annotation_labels.annotation_id as annotation_label_annotation_id',
+                'video_annotation_labels.created_at as annotation_created_at',
+                'video_annotation_labels.label_id',
+                'labels.name as label_name',
+                'labels.color'
+            );
+
+        $res = function () use ($annotations): Generator {
+            foreach ($annotations->lazy() as $a) {
+                yield [
+                    'uuid' => $a->uuid,
+                    'labels' => [
+                        'id' => $a->annotation_label_id,
+                        'annotation_id' => $a->annotation_label_annotation_id,
+                        'label_id' => $a->label_id,
+                        'created_at' => $a->annotation_created_at,
+                        'label' => [
+                            'id' => $a->label_id,
+                            'name' => $a->label_name,
+                            'color' => $a->color,
+                        ]
+                    ],
+                ];
+            }
+        };
+
+        return new StreamedJsonResponse($res());
     }
 }
