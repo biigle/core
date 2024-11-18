@@ -679,10 +679,16 @@ export default {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
             this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
         },
-        openSidebarLabels(){ 
+        openSidebarLabels() {
             this.$refs.sidebar.$emit('open', 'labels');
-            Events.$emit('focusTypeaheadEvent');
+            this.setFocusInputFindLabel()
         },
+        setFocusInputFindLabel(){
+            this.focusInputFindlabel = false;
+            this.$nextTick(() => {
+                this.focusInputFindlabel = true;
+            });
+        }
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -756,9 +762,7 @@ export default {
             this.focusInputFindlabel = false;
         });
         
-        Keyboard.on('control+k', () => {
-            this.openSidebarLabels()
-        });
+        Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
     
     },
     mounted() {

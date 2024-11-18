@@ -36,10 +36,6 @@ export default {
             return plugins;
         },
     },
-    watch: {
-        focusInput(){
-        }
-    },
     methods: {
         handleSelectedLabel(label) {
             this.selectedLabel = label;

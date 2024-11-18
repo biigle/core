@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            A list of all available shortcut keys in the image annotation tool. BIN RICHTIG
+            A list of all available shortcut keys in the image annotation tool.
         </p>
 
         <table class="table">
@@ -131,7 +131,6 @@
                     <td><kbd>Ctrl</kbd>+<kbd>k</kbd></td>
                     <td>Open label trees sidebar and focus the find label input field</td>
                 </tr>
-
             </tbody>
         </table>
 

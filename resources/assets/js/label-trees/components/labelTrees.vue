@@ -234,7 +234,6 @@ export default {
             }
             bindFavouriteKey('0', 9);
         }
-        // call global for  focustypeahead TODO need other way!
         Events.$on('callFunctionFocustypeahead', () => {
             this.focusTypeahead();
         });        

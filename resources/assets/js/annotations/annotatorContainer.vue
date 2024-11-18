@@ -594,16 +594,20 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
-
         selectLastAnnotation() {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
             this.handleSelectAnnotation(lastAnnotation);
         },
-        
-        openSidebarLabels(){ 
+        openSidebarLabels() { 
             this.$refs.sidebar.$emit('open', 'labels');
-            Events.$emit('focusTypeaheadEvent');
+           this.setFocusInputFindLabel()
         },
+        setFocusInputFindLabel(){
+            this.focusInputFindlabel = false;
+            this.$nextTick(() => {
+                this.focusInputFindlabel = true;
+            });
+        }
 
     },
     watch: {
@@ -755,18 +759,8 @@ export default {
                 this.openTab = openTab;
             }
         }
-
-        Events.$on('focusTypeaheadEvent', () => { 
-            this.focusInputFindlabel = false;
-            this.$nextTick(() => {
-                this.focusInputFindlabel = true;
-            });
-           this.focusInputFindlabel = false;
-        });
         
-        Keyboard.on('control+k', () => {
-            this.openSidebarLabels()
-        });
+        Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
 
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
     },
