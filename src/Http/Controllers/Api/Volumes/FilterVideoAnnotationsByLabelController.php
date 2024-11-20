@@ -74,23 +74,17 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiSuccessExample {json} Success response:
      * [{
 	 * 	"uuid":"9198ea9c-ef97-4af7-8018-407d16eafb65",
-	 * 	"labels":[{
+	 * 	"labels":{
 	 *			"id":41,
 	 *			"annotation_id":41,
 	 *			"label_id":14,
-	 *			"user_id":1,
 	 *			"created_at":"2024-11-13T07:17:54.000000Z",
-	 *			"updated_at":"2024-11-13T07:17:54.000000Z",
 	 *			"label":{
 	 *				"id":14,
 	 *				"name":"a",
 	 *				"color":"49f2c5",
-	 *				"parent_id":null,
-	 *				"label_tree_id":486,
-	 *				"source_id":null,
-	 *				"label_source_id":null
 	 *				}
-	 *      }]
+	 *      }
 	 * }]
      * 
      *
@@ -102,18 +96,39 @@ class FilterVideoAnnotationsByLabelController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        $videos = $volume->videos()->has('annotations');
-        $annotationData = function () use ($videos): Generator {
-            foreach ($videos->lazy() as $vid) {
-                foreach ($vid->annotations()->has('labels')->with('labels.label')->lazy() as $annotation) {
-                    yield [
-                        'uuid' => $vid->uuid,
-                        'labels' => $annotation->labels,
-                    ];
-                }
-            }
-        };
+        $annotations = $volume->videos()
+        ->join('video_annotations', 'videos.id', '=', 'video_annotations.video_id')
+        ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
+        ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
+        ->select(        
+            'videos.uuid',
+            'video_annotation_labels.id as annotation_label_id',
+            'video_annotation_labels.annotation_id as annotation_label_annotation_id',
+            'video_annotation_labels.created_at as annotation_created_at',
+            'video_annotation_labels.label_id',
+            'labels.name as label_name',
+            'labels.color'
+        );
 
-        return new StreamedJsonResponse($annotationData());
+        $res = function() use ($annotations): Generator {
+        foreach ($annotations->lazy() as $a) {
+            yield [
+                'uuid' => $a->uuid,
+                'labels' => [
+                    'id' => $a->annotation_label_id,
+                    'annotation_id' => $a->annotation_label_annotation_id,
+                    'label_id' => $a->label_id,
+                    'created_at' => $a->annotation_created_at,
+                    'label' => [
+                        'id' => $a->label_id,
+                        'name' => $a->label_name,
+                        'color' => $a->color,
+                    ]
+                ],
+            ];
+        }
+    };
+
+        return new StreamedJsonResponse($res());
     }
 }

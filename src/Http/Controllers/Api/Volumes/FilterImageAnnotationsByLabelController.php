@@ -73,22 +73,18 @@ class FilterImageAnnotationsByLabelController extends Controller
      * 
      * @apiSuccessExample {json} Success response:
      * [{
-	 *  "uuid":"8e2517f4-7636-42a1-9b8d-9c58092931e0",
-	 *      "labels":[{
-     *              "id":520,
-     *              "annotation_id":517,
-     *              "label_id":14,"user_id":1,
-     *              "confidence":1,
-     *              "label":{
-     *                  "id":14,
-     *                  "name":"a",
-     *                  "color":"49f2c5",
-     *                  "parent_id":null,
-     *                  "label_tree_id":486,
-     *                  "source_id":null,
-     *                  "label_source_id":null
-     *              }
-     *      }]
+	 * 	"uuid":"9198ea9c-ef97-4af7-8018-407d16eafb65",
+	 * 	"labels":{
+	 *			"id":41,
+	 *			"annotation_id":41,
+	 *			"label_id":14,
+	 *			"created_at":"2024-11-13T07:17:54.000000Z",
+	 *			"label":{
+	 *				"id":14,
+	 *				"name":"a",
+	 *				"color":"49f2c5",
+	 *				}
+	 *      }
 	 * }]
      *
      * @param int $id Volume ID
@@ -99,20 +95,39 @@ class FilterImageAnnotationsByLabelController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        $images = $volume->images()->has('annotations');
-        $annotationData = function () use ($images): Generator {
-            foreach ($images->lazy() as $img) {
-                foreach ($img->annotations()->has('labels')->with('labels.label')->lazy() as $annotation) {
-                    yield [
-                        'uuid' => $img->uuid,
-                        'labels' => $annotation->labels,
-                    ];
-                }
-            }
-        };
+        $annotations = $volume->images()
+        ->join('image_annotations', 'images.id', '=', 'image_annotations.image_id')
+        ->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+        ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
+        ->select(        
+            'images.uuid',
+            'image_annotation_labels.id as annotation_label_id',
+            'image_annotation_labels.annotation_id as annotation_label_annotation_id',
+            'image_annotation_labels.created_at as annotation_created_at',
+            'image_annotation_labels.label_id',
+            'labels.name as label_name',
+            'labels.color'
+        );
 
-        return new StreamedJsonResponse($annotationData());
+        $res = function() use ($annotations): Generator {
+        foreach ($annotations->lazy() as $a) {
+            yield [
+                'uuid' => $a->uuid,
+                'labels' => [
+                    'id' => $a->annotation_label_id,
+                    'annotation_id' => $a->annotation_label_annotation_id,
+                    'label_id' => $a->label_id,
+                    'created_at' => $a->annotation_created_at,
+                    'label' => [
+                        'id' => $a->label_id,
+                        'name' => $a->label_name,
+                        'color' => $a->color,
+                    ]
+                ],
+            ];
+        }
+    };
+
+        return new StreamedJsonResponse($res());
     }
-
-
 }
