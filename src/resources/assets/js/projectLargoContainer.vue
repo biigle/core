@@ -66,7 +66,6 @@ export default {
                 } else {
                     annotations = responses[1][id];
                 }
-                console.log(id, annotations);
                 // Show the newest annotations (with highest ID) first.
                 annotations = annotations.sort((a, b) => b.id - a.id);
                 Vue.set(this.annotationsCache, id, annotations);
