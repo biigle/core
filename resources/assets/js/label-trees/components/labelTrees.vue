@@ -15,7 +15,6 @@
 import Keyboard from '../../core/keyboard';
 import LabelTree from './labelTree';
 import Typeahead from './labelTypeahead';
-import Events from '../../core/events';
 
 /**
  * A component that displays a list of label trees.
