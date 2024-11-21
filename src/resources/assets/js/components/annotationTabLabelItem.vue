@@ -18,10 +18,10 @@ export default {
                 return {};
             },
         },
-        annotations: {
-            type: Array,
+        count: {
+            type: Number,
             default() {
-                return [];
+                return 0;
             },
         },
         isSelected: {
@@ -37,9 +37,6 @@ export default {
             return {
                 selected: this.isSelected,
             };
-        },
-        count() {
-            return this.annotations.length;
         },
         countTitle() {
             return `There are ${this.count} annotations with label ${this.label.name}`;

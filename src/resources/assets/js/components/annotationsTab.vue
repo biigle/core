@@ -29,7 +29,7 @@ export default {
             this.annotationLabels.forEach(function (annotationLabel) {
                 if (!labels.hasOwnProperty(annotationLabel.label.id)) {
                     labels[annotationLabel.label_id] = annotationLabel.label;
-                    annotations[annotationLabel.label_id] = [];
+                    annotations[annotationLabel.label_id] = 0;
                 }
 
                 // Make sure each annotation is added only once for each label item.
@@ -38,7 +38,7 @@ export default {
                 let uniqueKey = annotationLabel.annotation_id + '-' + annotationLabel.label_id;
                 if (!uniqueMap.hasOwnProperty(uniqueKey)) {
                     uniqueMap[uniqueKey] = null;
-                    annotations[annotationLabel.label_id].push(annotationLabel.annotation_id);
+                    annotations[annotationLabel.label_id] += 1;
                 }
             })
 
@@ -50,7 +50,7 @@ export default {
                     return {
                         id: label.id,
                         label: label,
-                        annotations: annotations[label.id],
+                        count: annotations[label.id],
                     };
                 });
         },

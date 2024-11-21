@@ -19,7 +19,7 @@
                          v-for="item in labelItems"
                          :key="item.id"
                          :label="item.label"
-                         :annotations="item.annotations"
+                         :count="item.count"
                          :is-selected="isSelected(item)"
                          v-on:select="handleSelectedLabel"
                          v-on:deselect="handleDeselectedLabel"
