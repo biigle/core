@@ -105,7 +105,6 @@
         ref="sidebar"
         :open-tab="openTab"
         :toggle-on-keyboard="true"
-        :focus-input="focusInputFindlabel"
         v-on:open="handleOpenedTab"
         v-on:close="handleClosedTab"
         v-cloak>

@@ -197,8 +197,8 @@ export default {
                 });
             },
         },
-        focusInput(){
-            if(this.focusInput){
+        focusInput() {
+            if (this.focusInput) {
                 this.$refs.typeaheadInput.$el.querySelector('input').focus();
             }
         }
@@ -234,9 +234,6 @@ export default {
             }
             bindFavouriteKey('0', 9);
         }
-        Events.$on('callFunctionFocustypeahead', () => {
-            this.focusTypeahead();
-        });        
     },
 };
 </script>
