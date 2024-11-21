@@ -87,7 +87,6 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
-            focusInputFindlabel: false,
         };
     },
     computed: {
@@ -598,17 +597,9 @@ export default {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
             this.handleSelectAnnotation(lastAnnotation);
         },
-        openSidebarLabels() { 
+        openSidebarLabels() {
             this.$refs.sidebar.$emit('open', 'labels');
-           this.setFocusInputFindLabel()
         },
-        setFocusInputFindLabel(){
-            this.focusInputFindlabel = false;
-            this.$nextTick(() => {
-                this.focusInputFindlabel = true;
-            });
-        }
-
     },
     watch: {
         async imageId(id) {
@@ -759,8 +750,6 @@ export default {
                 this.openTab = openTab;
             }
         }
-        
-        Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
 
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
     },
