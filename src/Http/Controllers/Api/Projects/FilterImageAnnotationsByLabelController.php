@@ -52,6 +52,36 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->pluck('images.uuid', 'image_annotations.id');
     }
 
+    /**
+     * Get all image annotations with uuids for a given project
+     * 
+     * @api {get} 
+     * @apiGroup Projects
+     * @apiName test
+     * @apiParam {Number} id The Project ID
+     * @apiPermission user
+     * @apiDescription Returns a stream containing the video uuids and their annotation labels of a project
+     * 
+     * @apiSuccessExample {json} Success response:
+     * [{
+	 * 	"uuid":"9198ea9c-ef97-4af7-8018-407d16eafb65",
+	 * 	"labels":{
+	 *			"id":41,
+	 *			"annotation_id":41,
+	 *			"label_id":14,
+	 *			"created_at":"2024-11-13T07:17:54.000000Z",
+	 *			"label":{
+	 *				"id":14,
+	 *				"name":"a",
+	 *				"color":"49f2c5",
+	 *				}
+	 *      }
+	 * }]
+     * 
+     *
+     * @param int $id Project ID
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
+     */
     public function getProjectsAnnotationLabels($id)
     {
         $project = Project::findOrFail($id);
