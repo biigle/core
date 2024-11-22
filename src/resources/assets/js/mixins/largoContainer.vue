@@ -57,6 +57,8 @@ export default {
             annotationLabels: [],
             volumeId: 0,
             fetchedAllAnnotations: false,
+            selectedLabelsToSwap: {},
+            swappedLabelIds: {},
         };
     },
     provide() {
@@ -275,6 +277,19 @@ export default {
                     this.lastSelectedImage = image;
                 }
             }
+
+            if (!(event.shiftKey && this.lastSelectedImage)) {
+                let index = this.allAnnotations.indexOf(image);
+                this.saveSwappedLabel(index, image.label_id, this.selectedLabel.id);
+            }
+        },
+        saveSwappedLabels(index1, index2, fromId, toId) {
+            for (let i = index1; i < index2 + 1; i++) {
+                this.saveSwappedLabel(i, fromId, toId);
+            }
+        },
+        saveSwappedLabel(index1, fromId, toId) {
+            this.selectedLabelsToSwap[index1] = { fromId: fromId, toId: toId };
         },
         save() {
             if (this.loading) {
@@ -291,6 +306,8 @@ export default {
                     return;
                 }
             }
+
+            this.swappedLabelIds = this.selectedLabelsToSwap;
 
             this.startLoading();
             this.performSave({
@@ -358,6 +375,8 @@ export default {
                     this.allAnnotations[i].newLabel = label;
                 }
             }
+
+            this.saveSwappedLabels(index1, index2, image1.label_id, this.selectedLabel.id);
         },
         enableForceChange() {
             this.forceChange = true;

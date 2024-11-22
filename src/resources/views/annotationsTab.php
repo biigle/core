@@ -1,6 +1,7 @@
 <sidebar-tab name="annotations" icon="list" title="Annotations" class="sidebar__tab--nopad">
     <annotations-tab
         :annotation-labels="annotationLabels"
+        :swapped-label-ids="swappedLabelIds"
         v-on:select="handleSelectedLabel"
         v-on:deselect="handleDeselectedLabel"
         inline-template
@@ -16,7 +17,7 @@
                 </div>
                 <ul class="annotations-tab__list list-unstyled" ref="scrollList">
                     <label-item
-                         v-for="item in labelItems"
+                         v-for="item in labels"
                          :key="item.id"
                          :label="item.label"
                          :count="item.count"

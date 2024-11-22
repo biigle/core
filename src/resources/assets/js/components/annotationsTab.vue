@@ -1,10 +1,8 @@
 <script>
-import { AnnotationsTab } from '../import';
 import LabelItem from './annotationTabLabelItem';
 
 
 export default {
-    mixins: [AnnotationsTab],
     components: {
         labelItem: LabelItem,
     },
@@ -15,14 +13,26 @@ export default {
                 return [];
             },
         },
+        swappedLabelIds: {
+            type: Object,
+            default() {
+                return {};
+            }
+        }
     },
     data() {
         return {
             selectedLabel: null,
+            labels: {},
         };
     },
     computed: {
-        labelItems() {
+        annotationBadgeCount() {
+            return this.annotationLabels.length;
+        },
+    },
+    methods: {
+        createLabels() {
             let labels = {};
             let annotations = {};
             let uniqueMap = {};
@@ -46,19 +56,15 @@ export default {
                 .sort(function (a, b) {
                     return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
                 })
-                .map(function (label) {
-                    return {
+                .reduce(function (labelsObj, label) {
+                    labelsObj[label.id] = {
                         id: label.id,
                         label: label,
                         count: annotations[label.id],
                     };
-                });
+                    return labelsObj;
+                }, {});
         },
-        annotationBadgeCount() {
-            return this.annotationLabels.length;
-        },
-    },
-    methods: {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
             this.$emit('select', label);
@@ -67,8 +73,21 @@ export default {
             this.selectedLabel = null;
             this.$emit('deselect');
         },
-        isSelected(label){
+        isSelected(label) {
             return this.selectedLabel && label.id == this.selectedLabel.id;
+        }
+    },
+    watch: {
+        annotationLabels() {
+            this.labels = this.createLabels();
+        },
+        swappedLabelIds() {
+            Object.values(this.swappedLabelIds).forEach((swl) => {
+                let fromLabelId = swl.fromId;
+                let toLabelId = swl.toId;
+                this.labels[fromLabelId].count -= 1;
+                this.labels[toLabelId].count += 1;
+            });
         }
     }
 };
