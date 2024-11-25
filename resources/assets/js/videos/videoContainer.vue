@@ -683,7 +683,7 @@ export default {
             this.$refs.sidebar.$emit('open', 'labels');
             this.setFocusInputFindLabel()
         },
-        setFocusInputFindLabel(){
+        setFocusInputFindLabel() {
             this.focusInputFindlabel = false;
             this.$nextTick(() => {
                 this.focusInputFindlabel = true;
@@ -753,17 +753,9 @@ export default {
         if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
             this.supportsJumpByFrame = true;
         }
-        
-        Events.$on('focusTypeaheadEvent', () => {
-            this.focusInputFindlabel = false;
-            this.$nextTick(() => {
-                this.focusInputFindlabel = true;
-            });
-            this.focusInputFindlabel = false;
-        });
-        
+
         Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
-    
+
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before
