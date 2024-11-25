@@ -57,10 +57,7 @@ export default {
             annotationLabels: [],
             volumeId: 0,
             fetchedAllAnnotations: false,
-            selectedLabelsToSwap: {},
-            swappedLabelIds: {},
-            selectedAnnotationLabelsToDismiss: {},
-            deletedAnnotationLabelIds: {},
+            changedLabelsIds: {},
         };
     },
     provide() {
@@ -251,23 +248,6 @@ export default {
                     this.lastSelectedImage = image;
                 }
             }
-
-            if (!(event.shiftKey && this.lastSelectedImage)) {
-                let index = this.sortedAnnotations.indexOf(image);
-                this.saveDismissedLabel(index, image.label_id);
-            }
-        },
-        saveDismissedLabels(index1, index2, id) {
-            for (let i = index1; i < index2 + 1; i++) {
-                this.saveDismissedLabel(i, id);
-            }
-        },
-        saveDismissedLabel(index, id) {
-            if (!this.selectedAnnotationLabelsToDismiss.hasOwnProperty(index)) {
-                this.selectedAnnotationLabelsToDismiss[index] = id;
-            } else {
-                delete this.selectedAnnotationLabelsToDismiss[index];
-            }
         },
         goToRelabel() {
             this.step = 1;
@@ -296,19 +276,18 @@ export default {
                     this.lastSelectedImage = image;
                 }
             }
+        },
+        getChangedLabelIds() {
+            let selectedLabelsToChange = {};
 
-            if (!(event.shiftKey && this.lastSelectedImage)) {
-                let index = this.allAnnotations.indexOf(image);
-                this.saveSwappedLabel(index, image.label_id, this.selectedLabel.id);
-            }
-        },
-        saveSwappedLabels(index1, index2, fromId, toId) {
-            for (let i = index1; i < index2 + 1; i++) {
-                this.saveSwappedLabel(i, fromId, toId);
-            }
-        },
-        saveSwappedLabel(index1, fromId, toId) {
-            this.selectedLabelsToSwap[index1] = { fromId: fromId, toId: toId };
+            this.dismissedAnnotations.forEach((a) => {
+                selectedLabelsToChange[a.id] = { dismissedLabelId: a.label_id }
+            })
+            this.annotationsWithNewLabel.forEach((a) => {
+                selectedLabelsToChange[a.id] = { oldLabelId: a.label_id, newLabelId: a.newLabel.id };
+            })
+
+            return selectedLabelsToChange;
         },
         save() {
             if (this.loading) {
@@ -326,9 +305,6 @@ export default {
                 }
             }
 
-            this.deletedAnnotationLabelIds = this.selectedAnnotationLabelsToDismiss;
-            this.swappedLabelIds = this.selectedLabelsToSwap;
-
             this.startLoading();
             this.performSave({
                     dismissed_image_annotations: this.dismissedImageAnnotationsToSave,
@@ -338,7 +314,10 @@ export default {
                     force: this.forceChange,
                 })
                 .then(
-                    response => this.waitForSessionId = response.body.id,
+                    (response) => {
+                        this.waitForSessionId = response.body.id;
+                        this.changedLabelsIds = this.getChangedLabelIds();
+                    },
                     (response) => {
                         this.finishLoading();
                         handleErrorResponse(response);
@@ -377,10 +356,9 @@ export default {
             }
 
             for (let i = index1 + 1; i < index2; i++) {
-                this.sortedAnnotations[i].dismissed = true;
+                let image = this.sortedAnnotations[i];
+                image.dismissed = true;
             }
-
-            this.saveDismissedLabels(index1, index2, image1.label_id);
         },
         relabelAllImagesBetween(image1, image2) {
             let label = this.selectedLabel;
@@ -393,12 +371,11 @@ export default {
             }
 
             for (let i = index1 + 1; i < index2; i++) {
-                if (this.allAnnotations[i].dismissed) {
-                    this.allAnnotations[i].newLabel = label;
+                let image = this.allAnnotations[i];
+                if (image.dismissed) {
+                    image.newLabel = label;
                 }
             }
-
-            this.saveSwappedLabels(index1, index2, image1.label_id, this.selectedLabel.id);
         },
         enableForceChange() {
             this.forceChange = true;

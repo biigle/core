@@ -13,18 +13,12 @@ export default {
                 return [];
             },
         },
-        swappedLabelIds: {
+        changedLabelsIds: {
             type: Object,
             default() {
                 return {};
             }
         },
-        deletedAnnotationLabelIds: {
-            type: Object,
-            default() {
-                return {};
-            }
-        }
     },
     data() {
         return {
@@ -87,19 +81,19 @@ export default {
         annotationLabels() {
             this.labels = this.createLabels();
         },
-        swappedLabelIds() {
-            Object.values(this.swappedLabelIds).forEach((swl) => {
-                let fromLabelId = swl.fromId;
-                let toLabelId = swl.toId;
-                this.labels[fromLabelId].count -= 1;
-                this.labels[toLabelId].count += 1;
+        changedLabelsIds() {
+            Object.values(this.changedLabelsIds).forEach((l) => {
+                if (l.hasOwnProperty('dismissedLabelId')) {
+                    let id = l.dismissedLabelId;
+                    this.labels[id].count -= 1;
+                } else {
+                    let oldLabelId = l.oldLabelId;
+                    let newLabelId = l.newLabelId;
+                    this.labels[oldLabelId].count -= 1;
+                    this.labels[newLabelId].count += 1;
+                }
             });
         },
-        deletedAnnotationLabelIds() {
-            Object.values(this.deletedAnnotationLabelIds).forEach(id => {
-                this.labels[id].count -= 1;
-            });
-        }
     }
 };
 </script>
