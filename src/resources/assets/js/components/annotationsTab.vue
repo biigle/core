@@ -18,6 +18,12 @@ export default {
             default() {
                 return {};
             }
+        },
+        deletedAnnotationLabelIds: {
+            type: Object,
+            default() {
+                return {};
+            }
         }
     },
     data() {
@@ -87,6 +93,11 @@ export default {
                 let toLabelId = swl.toId;
                 this.labels[fromLabelId].count -= 1;
                 this.labels[toLabelId].count += 1;
+            });
+        },
+        deletedAnnotationLabelIds() {
+            Object.values(this.deletedAnnotationLabelIds).forEach(id => {
+                this.labels[id].count -= 1;
             });
         }
     }

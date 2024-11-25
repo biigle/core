@@ -59,6 +59,8 @@ export default {
             fetchedAllAnnotations: false,
             selectedLabelsToSwap: {},
             swappedLabelIds: {},
+            selectedAnnotationLabelsToDismiss: {},
+            deletedAnnotationLabelIds: {},
         };
     },
     provide() {
@@ -249,6 +251,23 @@ export default {
                     this.lastSelectedImage = image;
                 }
             }
+
+            if (!(event.shiftKey && this.lastSelectedImage)) {
+                let index = this.sortedAnnotations.indexOf(image);
+                this.saveDismissedLabel(index, image.label_id);
+            }
+        },
+        saveDismissedLabels(index1, index2, id) {
+            for (let i = index1; i < index2 + 1; i++) {
+                this.saveDismissedLabel(i, id);
+            }
+        },
+        saveDismissedLabel(index, id) {
+            if (!this.selectedAnnotationLabelsToDismiss.hasOwnProperty(index)) {
+                this.selectedAnnotationLabelsToDismiss[index] = id;
+            } else {
+                delete this.selectedAnnotationLabelsToDismiss[index];
+            }
         },
         goToRelabel() {
             this.step = 1;
@@ -307,6 +326,7 @@ export default {
                 }
             }
 
+            this.deletedAnnotationLabelIds = this.selectedAnnotationLabelsToDismiss;
             this.swappedLabelIds = this.selectedLabelsToSwap;
 
             this.startLoading();
@@ -359,6 +379,8 @@ export default {
             for (let i = index1 + 1; i < index2; i++) {
                 this.sortedAnnotations[i].dismissed = true;
             }
+
+            this.saveDismissedLabels(index1, index2, image1.label_id);
         },
         relabelAllImagesBetween(image1, image2) {
             let label = this.selectedLabel;

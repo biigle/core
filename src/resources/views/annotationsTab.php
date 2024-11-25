@@ -2,6 +2,7 @@
     <annotations-tab
         :annotation-labels="annotationLabels"
         :swapped-label-ids="swappedLabelIds"
+        :deleted-annotation-label-ids="deletedAnnotationLabelIds"
         v-on:select="handleSelectedLabel"
         v-on:deselect="handleDeselectedLabel"
         inline-template
