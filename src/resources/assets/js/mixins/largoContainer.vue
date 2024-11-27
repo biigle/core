@@ -78,7 +78,7 @@ export default {
         isInRelabelStep() {
             return this.step === 1;
         },
-        annotations() {            
+        annotations() {
             if (this.selectedLabel && this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
                 return this.annotationsCache[this.selectedLabel.id];
             }
@@ -356,8 +356,7 @@ export default {
             }
 
             for (let i = index1 + 1; i < index2; i++) {
-                let image = this.sortedAnnotations[i];
-                image.dismissed = true;
+                this.sortedAnnotations[i].dismissed = true;
             }
         },
         relabelAllImagesBetween(image1, image2) {
@@ -371,9 +370,8 @@ export default {
             }
 
             for (let i = index1 + 1; i < index2; i++) {
-                let image = this.allAnnotations[i];
-                if (image.dismissed) {
-                    image.newLabel = label;
+                if (this.allAnnotations[i].dismissed) {
+                    this.allAnnotations[i].newLabel = label;
                 }
             }
         },

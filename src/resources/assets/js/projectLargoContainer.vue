@@ -74,7 +74,7 @@ export default {
             this.fetchedAllAnnotations = true;
         }
     },
-    created() {        
+    created() {
         this.projectId = biigle.$require('largo.projectId');
         this.labelTrees = biigle.$require('largo.labelTrees');
     },
