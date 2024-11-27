@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Throwable;
 
 class ApplyLargoSession extends Job implements ShouldQueue
 {
@@ -120,23 +121,41 @@ class ApplyLargoSession extends Job implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            DB::transaction(function () {
-                $this->handleImageAnnotations();
-                $this->handleVideoAnnotations();
-            });
-
-            LargoSessionSaved::dispatch($this->id, $this->user);
-        } catch (\Exception $e) {
-            LargoSessionFailed::dispatch($this->id, $this->user);
-        } finally {
-            Volume::where('attrs->largo_job_id', $this->id)->each(function ($volume) {
-                $attrs = $volume->attrs;
-                unset($attrs['largo_job_id']);
-                $volume->attrs = $attrs;
-                $volume->save();
-            });
+        if (!Volume::where('attrs->largo_job_id', $this->id)->exists()) {
+            // The job previously exited or failed. Don't run it twice.
+            // This can happen if the admin reruns failed jobs.
+            return;
         }
+
+        DB::transaction(function () {
+            $this->handleImageAnnotations();
+            $this->handleVideoAnnotations();
+        });
+
+        $this->cleanupJobId();
+        LargoSessionSaved::dispatch($this->id, $this->user);
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?Throwable $exception): void
+    {
+        $this->cleanupJobId();
+        LargoSessionFailed::dispatch($this->id, $this->user);
+    }
+
+    /**
+     * Remove the properties that indicate that a save Largo session is in progress.
+     */
+    protected function cleanupJobId(): void
+    {
+        Volume::where('attrs->largo_job_id', $this->id)->each(function ($volume) {
+            $attrs = $volume->attrs;
+            unset($attrs['largo_job_id']);
+            $volume->attrs = $attrs;
+            $volume->save();
+        });
     }
 
     /**
