@@ -83,13 +83,10 @@ export default {
         },
         changedLabelsIds() {
             Object.values(this.changedLabelsIds).forEach((l) => {
-                if (l.hasOwnProperty('dismissedLabelId')) {
-                    let id = l.dismissedLabelId;
-                    this.labels[id].count -= 1;
-                } else {
-                    let oldLabelId = l.oldLabelId;
-                    let newLabelId = l.newLabelId;
-                    this.labels[oldLabelId].count -= 1;
+                let oldLabelId = l.oldLabelId;
+                let newLabelId = l.newLabelId;
+                this.labels[oldLabelId].count -= 1;
+                if (newLabelId) {
                     this.labels[newLabelId].count += 1;
                 }
             });

@@ -281,7 +281,7 @@ export default {
             let selectedLabelsToChange = {};
 
             this.dismissedAnnotations.forEach((a) => {
-                selectedLabelsToChange[a.id] = { dismissedLabelId: a.label_id }
+                selectedLabelsToChange[a.id] = { oldLabelId: a.label_id, newLabelId: null };
             })
             this.annotationsWithNewLabel.forEach((a) => {
                 selectedLabelsToChange[a.id] = { oldLabelId: a.label_id, newLabelId: a.newLabel.id };
