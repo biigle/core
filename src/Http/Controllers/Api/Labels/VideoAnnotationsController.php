@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Labels;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
 
 class VideoAnnotationsController extends Controller
 {
