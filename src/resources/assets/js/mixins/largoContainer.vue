@@ -57,7 +57,7 @@ export default {
             annotationLabels: [],
             volumeId: 0,
             fetchedAllAnnotations: false,
-            changedLabelsIds: {},
+            changedAnnotations: {},
         };
     },
     provide() {
@@ -277,17 +277,17 @@ export default {
                 }
             }
         },
-        getChangedLabelIds() {
-            let selectedLabelsToChange = {};
+        getChangedAnnotations() {
+            let changedAnnotations = {};
 
             this.dismissedAnnotations.forEach((a) => {
-                selectedLabelsToChange[a.id] = { oldLabelId: a.label_id, newLabelId: null };
+                changedAnnotations[a.id] = { oldLabelId: a.label_id, newLabelId: null };
             })
             this.annotationsWithNewLabel.forEach((a) => {
-                selectedLabelsToChange[a.id] = { oldLabelId: a.label_id, newLabelId: a.newLabel.id };
+                changedAnnotations[a.id] = { oldLabelId: a.label_id, newLabelId: a.newLabel.id };
             })
 
-            return selectedLabelsToChange;
+            return changedAnnotations;
         },
         save() {
             if (this.loading) {
@@ -316,7 +316,7 @@ export default {
                 .then(
                     (response) => {
                         this.waitForSessionId = response.body.id;
-                        this.changedLabelsIds = this.getChangedLabelIds();
+                        this.changedAnnotations = this.getChangedAnnotations();
                     },
                     (response) => {
                         this.finishLoading();

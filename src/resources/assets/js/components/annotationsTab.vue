@@ -13,7 +13,7 @@ export default {
                 return [];
             },
         },
-        changedLabelsIds: {
+        changedAnnotations: {
             type: Object,
             default() {
                 return {};
@@ -78,10 +78,10 @@ export default {
             this.annotationBadgeCount = this.annotationLabels.length;
             this.labels = this.createLabels();
         },
-        changedLabelsIds() {
-            Object.values(this.changedLabelsIds).forEach((l) => {
-                let oldLabelId = l.oldLabelId;
-                let newLabelId = l.newLabelId;
+        changedAnnotations() {
+            Object.values(this.changedAnnotations).forEach((a) => {
+                let oldLabelId = a.oldLabelId;
+                let newLabelId = a.newLabelId;
                 this.labels[oldLabelId].count -= 1;
                 if (newLabelId) {
                     this.labels[newLabelId].count += 1;

@@ -1,7 +1,7 @@
 <sidebar-tab :disabled="isInRelabelStep" name="annotations" icon="list" title="Annotations" class="sidebar__tab--nopad">
     <annotations-tab
         :annotation-labels="annotationLabels"
-        :changed-labels-ids="changedLabelsIds"
+        :changed-annotations="changedAnnotations"
         v-on:select="handleSelectedLabel"
         v-on:deselect="handleDeselectedLabel"
         inline-template
