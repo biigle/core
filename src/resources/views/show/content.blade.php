@@ -27,7 +27,7 @@
         <div v-cloak v-if="loading">
             <loader :active="true" :fancy="true"></loader>
         </div>
-        <div v-if="isInDismissStep && !selectedLabel" class="text-info">
+        <div v-if="isInDismissStep && !selectedLabel && !loading" class="text-info">
             Please choose a label in the sidebar.
         </div>
         <div v-cloak v-if="isInDismissStep && hasNoAnnotations" class="text-info">
