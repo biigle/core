@@ -24,12 +24,8 @@ export default {
         return {
             selectedLabel: null,
             labels: {},
+            annotationBadgeCount: 0
         };
-    },
-    computed: {
-        annotationBadgeCount() {
-            return this.annotationLabels.length;
-        },
     },
     methods: {
         createLabels() {
@@ -79,6 +75,7 @@ export default {
     },
     watch: {
         annotationLabels() {
+            this.annotationBadgeCount = this.annotationLabels.length;
             this.labels = this.createLabels();
         },
         changedLabelsIds() {
@@ -88,6 +85,8 @@ export default {
                 this.labels[oldLabelId].count -= 1;
                 if (newLabelId) {
                     this.labels[newLabelId].count += 1;
+                } else {
+                    this.annotationBadgeCount -= 1;
                 }
             });
         },
