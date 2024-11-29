@@ -54,7 +54,7 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            annotationLabels: [],
+            annotationLabels: {},
             volumeId: 0,
             fetchedAllAnnotations: false,
             changedAnnotations: {},
@@ -511,27 +511,55 @@ export default {
         parseAnnotationDataResponse(responses) {
             let res = responses[0].body.length != 0 ? responses[0] : responses[1];
             let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
-            // If project largo view is used then concat is required to collect image and video annotations
-            this.annotationLabels = this.annotationLabels.concat(res.body.map((al) => al.labels));
-            // Process annotations to use them later in annotationsChache
-            let groupedAnnotation = {};
+            // Process annotations to use them later in annotationsCache
+            let groupedAnnotations = {};
+            let uniqueKeys = new Set();
+            let labels = {};
             res.body.forEach((al) => {
-                let labels = al.labels;
-                let annotation = {
-                    id: labels.annotation_id,
-                    uuid: al.uuid,
-                    label_id: labels.label_id,
-                    dismissed: false,
-                    newLabel: null,
-                    type: type
-                };
-
-                if (groupedAnnotation.hasOwnProperty(labels.label_id)) {
-                    groupedAnnotation[labels.label_id].push(annotation);
-                } else {
-                    groupedAnnotation[labels.label_id] = [annotation];
-                }
+                groupedAnnotations = this.groupAnnotations(al, type, groupedAnnotations);
+                labels, uniqueKeys = this.createLabelItems(al, labels, uniqueKeys);
             })
+            // save all video and image annotation labels for project largo view
+            this.annotationLabels = { ...this.annotationLabels, ...labels }
+            return groupedAnnotations;
+        },
+        createLabelItems(al, labels, uniqueKeys) {
+            let label = al.labels;
+            let labelId = label.label_id;
+            // Make sure each annotation is added only once for each label item.
+            // This is important if the annotation has the same label attached by
+            // multiple users.
+            let uniqueKey = label.annotation_id + '-' + labelId;
+            if (!uniqueKeys.has(uniqueKey)) {
+                if (labels.hasOwnProperty(labelId)) {
+                    labels[labelId].count += 1;
+                } else {
+                    uniqueKeys.add(uniqueKey);
+                    labels[labelId] = {
+                        id: labelId,
+                        label: label.label,
+                        count: 1
+                    };
+                }
+            }
+            return labels, uniqueKeys;
+        },
+        groupAnnotations(al, type, groupedAnnotation) {
+            let labels = al.labels;
+            let labelId = labels.label_id
+            let annotation = {
+                id: labels.annotation_id,
+                uuid: al.uuid,
+                label_id: labelId,
+                dismissed: false,
+                newLabel: null,
+                type: type
+            };
+            if (groupedAnnotation.hasOwnProperty(labelId)) {
+                groupedAnnotation[labelId].push(annotation);
+            } else {
+                groupedAnnotation[labelId] = [annotation];
+            }
             return groupedAnnotation;
         },
         addAnnotationsToCache(groupedAnnotation) {

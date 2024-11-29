@@ -7,10 +7,10 @@ export default {
         labelItem: LabelItem,
     },
     props: {
-        annotationLabels: {
-            type: Array,
+        labels: {
+            type: Object,
             default() {
-                return [];
+                return {};
             },
         },
         changedAnnotations: {
@@ -23,44 +23,10 @@ export default {
     data() {
         return {
             selectedLabel: null,
-            labels: {},
             annotationBadgeCount: 0
         };
     },
     methods: {
-        createLabels() {
-            let labels = {};
-            let annotations = {};
-            let uniqueMap = {};
-            this.annotationLabels.forEach(function (annotationLabel) {
-                if (!labels.hasOwnProperty(annotationLabel.label.id)) {
-                    labels[annotationLabel.label_id] = annotationLabel.label;
-                    annotations[annotationLabel.label_id] = 0;
-                }
-
-                // Make sure each annotation is added only once for each label item.
-                // This is important if the annotation has the same label attached by
-                // multiple users.
-                let uniqueKey = annotationLabel.annotation_id + '-' + annotationLabel.label_id;
-                if (!uniqueMap.hasOwnProperty(uniqueKey)) {
-                    uniqueMap[uniqueKey] = null;
-                    annotations[annotationLabel.label_id] += 1;
-                }
-            })
-
-            return Object.values(labels)
-                .sort(function (a, b) {
-                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
-                })
-                .reduce(function (labelsObj, label) {
-                    labelsObj[label.id] = {
-                        id: label.id,
-                        label: label,
-                        count: annotations[label.id],
-                    };
-                    return labelsObj;
-                }, {});
-        },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
             this.$emit('select', label);
@@ -74,9 +40,10 @@ export default {
         }
     },
     watch: {
-        annotationLabels() {
-            this.annotationBadgeCount = this.annotationLabels.length;
-            this.labels = this.createLabels();
+        labels() {
+            this.annotationBadgeCount = Object.values(this.labels).reduce((acc, l) => {
+                return acc + l.count;
+            }, 0);
         },
         changedAnnotations() {
             Object.values(this.changedAnnotations).forEach((a) => {
