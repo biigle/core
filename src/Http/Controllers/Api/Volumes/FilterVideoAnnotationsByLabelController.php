@@ -107,7 +107,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'video_annotation_labels.created_at as annotation_created_at',
             'video_annotation_labels.label_id',
             'labels.name as label_name',
-            'labels.color'
+            'labels.color',
+            'labels.label_tree_id',
         );
 
         $res = function() use ($annotations): Generator {
@@ -119,6 +120,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
                     'annotation_id' => $a->annotation_label_annotation_id,
                     'label_id' => $a->label_id,
                     'created_at' => $a->annotation_created_at,
+                    'label_tree_id' => $a->label_tree_id,
                     'label' => [
                         'id' => $a->label_id,
                         'name' => $a->label_name,
