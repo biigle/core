@@ -580,14 +580,16 @@ export default {
             if (!label || !this.fetchedAllAnnotations) {
                 return;
             }
-
+            // Selected label is not the same label object as in labels or annotations tab
             let treeId = -1;
             if (this.annotationLabels.hasOwnProperty(label.id)) {
+                // set label selection status in annotations tab
                 this.annotationLabels[label.id].label.selected = select;
                 treeId = this.annotationLabels[label.id].treeId;
             } else {
                 treeId = label.tree.id;
             }
+            // set label selection status in labels tab
             let tIdx = this.labelTreesIndex[treeId].index;
             let lIdx = this.labelTreesIndex[treeId].labelIndex[label.id];
             this.labelTrees[tIdx].labels[lIdx].selected = select;
@@ -611,6 +613,7 @@ export default {
             this.synchronizeLabelInTabs(newLabel, true);
         },
         labelTrees() {
+            // Needed to synchronize label selection in tabs
             this.labelTrees.forEach((t, idx) => {
                 let labelIndex = {};
                 t.labels.forEach((l, idx) => {
