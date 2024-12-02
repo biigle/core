@@ -235,6 +235,7 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
                     'annotation_id' => $a1->id,
                     'label_id' => $l1->id,
                     'created_at' => Carbon::parse($al1->created_at)->setTimezone('Europe/Berlin')->format('Y-m-d H:i:s'),
+                    'label_tree_id' => $l1->label_tree_id,
                     'label' => [
                         'id' => $l1->id,
                         'name' => $l1->name,
@@ -248,6 +249,7 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
                     'id' => $al2->id,
                     'annotation_id' => $a2->id,
                     'label_id' => $l2->id,
+                    'label_tree_id' => $l2->label_tree_id,
                     'created_at' => Carbon::parse($al2->created_at)->setTimezone('Europe/Berlin')->format('Y-m-d H:i:s'),
                     'label' => [
                         'id' => $l2->id,
