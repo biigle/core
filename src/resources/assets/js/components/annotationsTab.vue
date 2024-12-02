@@ -22,22 +22,16 @@ export default {
     },
     data() {
         return {
-            selectedLabel: null,
             annotationBadgeCount: 0
         };
     },
     methods: {
         handleSelectedLabel(label) {
-            this.selectedLabel = label;
             this.$emit('select', label);
         },
         handleDeselectedLabel() {
-            this.selectedLabel = null;
             this.$emit('deselect');
         },
-        isSelected(label) {
-            return this.selectedLabel && label.id == this.selectedLabel.id;
-        }
     },
     watch: {
         labels() {

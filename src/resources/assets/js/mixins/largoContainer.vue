@@ -58,6 +58,7 @@ export default {
             volumeId: 0,
             fetchedAllAnnotations: false,
             changedAnnotations: {},
+            labelTreesIndex: {},
         };
     },
     provide() {
@@ -524,21 +525,24 @@ export default {
             return groupedAnnotations;
         },
         createLabelItems(al, labels, uniqueKeys) {
-            let label = al.labels;
-            let labelId = label.label_id;
+            let annotationLabel = al.labels;
+            let labelId = annotationLabel.label_id;
             // Make sure each annotation is added only once for each label item.
             // This is important if the annotation has the same label attached by
             // multiple users.
-            let uniqueKey = label.annotation_id + '-' + labelId;
+            let uniqueKey = annotationLabel.annotation_id + '-' + labelId;
             if (!uniqueKeys.has(uniqueKey)) {
                 if (labels.hasOwnProperty(labelId)) {
                     labels[labelId].count += 1;
                 } else {
                     uniqueKeys.add(uniqueKey);
+                    let label = annotationLabel.label;
+                    label.selected = label.id === this.selectedLabel?.id;
                     labels[labelId] = {
                         id: labelId,
-                        label: label.label,
-                        count: 1
+                        label: label,
+                        count: 1,
+                        treeId: annotationLabel.label_tree_id,
                     };
                 }
             }
@@ -572,6 +576,22 @@ export default {
 
             this.fetchedAllAnnotations = true;
         },
+        synchronizeLabelInTabs(label, select) {
+            if (!label || !this.fetchedAllAnnotations) {
+                return;
+            }
+
+            let treeId = -1;
+            if (this.annotationLabels.hasOwnProperty(label.id)) {
+                this.annotationLabels[label.id].label.selected = select;
+                treeId = this.annotationLabels[label.id].treeId;
+            } else {
+                treeId = label.tree.id;
+            }
+            let tIdx = this.labelTreesIndex[treeId].index;
+            let lIdx = this.labelTreesIndex[treeId].labelIndex[label.id];
+            this.labelTrees[tIdx].labels[lIdx].selected = select;
+        },
     },
     watch: {
         annotations(annotations) {
@@ -583,11 +603,22 @@ export default {
         step(step) {
             Events.$emit('step', step);
         },
-        selectedLabel() {
+        selectedLabel(newLabel, oldLabel) {
             if (this.isInDismissStep) {
                 this.$refs.dismissGrid.setOffset(0);
             }
+            this.synchronizeLabelInTabs(oldLabel, false);
+            this.synchronizeLabelInTabs(newLabel, true);
         },
+        labelTrees() {
+            this.labelTrees.forEach((t, idx) => {
+                let labelIndex = {};
+                t.labels.forEach((l, idx) => {
+                    labelIndex[l.id] = idx;
+                });
+                this.labelTreesIndex[t.id] = { index: idx, labelIndex: labelIndex };
+            })
+        }
     },
     created() {
         this.user = biigle.$require('largo.user');

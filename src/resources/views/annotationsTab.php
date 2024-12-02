@@ -21,7 +21,6 @@
                          :key="item.id"
                          :label="item.label"
                          :count="item.count"
-                         :is-selected="isSelected(item)"
                          v-on:select="handleSelectedLabel"
                          v-on:deselect="handleDeselectedLabel"
                          ></label-item>

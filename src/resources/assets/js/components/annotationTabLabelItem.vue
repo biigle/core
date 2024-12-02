@@ -24,10 +24,6 @@ export default {
                 return 0;
             },
         },
-        isSelected: {
-            type: Boolean,
-            default: false,
-        }
     },
     computed: {
         title() {
@@ -35,7 +31,7 @@ export default {
         },
         classObject() {
             return {
-                selected: this.isSelected,
+                selected: this.label.selected,
             };
         },
         countTitle() {
@@ -47,7 +43,8 @@ export default {
     },
     methods: {
         emitSelectLabel() {
-            if(!this.isSelected){
+            this.label.selected = !this.label.selected
+            if (this.label.selected) {
                 this.$emit('select', this.label)
             } else {
                 this.$emit('deselect');
