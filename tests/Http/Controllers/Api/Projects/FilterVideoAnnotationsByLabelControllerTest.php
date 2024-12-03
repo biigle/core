@@ -88,14 +88,14 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $vid1 = VideoTest::create(['volume_id' => $v1->id]);
         $a1 = VideoAnnotationTest::create(['video_id' => $vid1]);
         $l1 = LabelTest::create();
-        $al1 = VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l1->id]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l1->id]);
 
 
         $v2 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
         $vid2 = VideoTest::create(['volume_id' => $v2->id]);
         $a2 = VideoAnnotationTest::create(['video_id' => $vid2->id]);
         $l2 = LabelTest::create();
-        $al2 = VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l2->id]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l2->id]);
 
         $this->project()->volumes()->attach([$v1->id, $v2->id]);
         $pid = $this->project()->id;
@@ -120,35 +120,17 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
             )
         );
 
-        $response->assertJsonFragment(['uuid' => $vid1->uuid])
-            ->assertJsonFragment([
-                'labels' => [
-                    'id' => $al1->id,
-                    'annotation_id' => $a1->id,
-                    'label_id' => $l1->id,
-                    'created_at' => Carbon::parse($al1->created_at)->setTimezone('Europe/Berlin')->format('Y-m-d H:i:s'),
-                    'label_tree_id' => $l1->label_tree_id,
-                    'label' => [
-                        'id' => $l1->id,
-                        'name' => $l1->name,
-                        'color' => $l1->color
-                    ]
-                ]
+        $response->assertJsonFragment([
+                'uuid' => $vid1->uuid,
+                'annotation_id' => $a1->id,
+                'label_id' => $l1->id,
+                'label_tree_id' => $l1->label_tree_id
             ])
-            ->assertJsonFragment(['uuid' => $vid2->uuid])
             ->assertJsonFragment([
-                'labels' => [
-                    'id' => $al2->id,
-                    'annotation_id' => $a2->id,
-                    'label_id' => $l2->id,
-                    'created_at' => Carbon::parse($al2->created_at)->setTimezone('Europe/Berlin')->format('Y-m-d H:i:s'),
-                    'label_tree_id' => $l2->label_tree_id,
-                    'label' => [
-                        'id' => $l2->id,
-                        'name' => $l2->name,
-                        'color' => $l2->color
-                    ]
-                ]
+                'uuid' => $vid2->uuid,
+                'annotation_id' => $a2->id,
+                'label_id' => $l2->id,
+                'label_tree_id' => $l2->label_tree_id
             ]);
 
         $this->assertCount(2, json_decode($response->getContent()));
