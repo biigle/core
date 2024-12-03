@@ -49,7 +49,12 @@ export default {
                 ProjectsApi.getAllProjectsImageAnnotationLabels({ id: this.projectId })
                     .then((res) => { return this.parseResponse([res, emptyResponse]) }),
                 ProjectsApi.getAllProjectsVideoAnnotationLabels({ id: this.projectId })
-                    .then((res) => { return this.parseResponse([emptyResponse, res]) }),
+                    .then((res) => { 
+                        let imgAnnotationData = this.annotationLabels;
+                        let annotations = this.parseResponse([emptyResponse, res]);
+                        this.annotationLabels = {...imgAnnotationData, ...this.annotationLabels};                        
+                        return annotations;
+                     }),
             ])
                 .then(this.addAnnotationsToCache)
                 .catch(handleErrorResponse)

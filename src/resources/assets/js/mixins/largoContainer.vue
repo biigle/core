@@ -514,38 +514,36 @@ export default {
             let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
             let groupedAnnotations = {};
             let uniqueKeys = new Set();
-            let labels = {};
             res.body.forEach((al) => {
                 // Save annotations to use them in labels tab
                 groupedAnnotations = this.groupAnnotations(al, type, groupedAnnotations);
-                labels, uniqueKeys = this.createAnnotationTabItems(al, labels, uniqueKeys);
+                uniqueKeys = this.createAnnotationTabItems(al, uniqueKeys);
             })
             // Save all video and image annotation labels for project largo view
-            this.annotationLabels = { ...this.annotationLabels, ...labels }
             return groupedAnnotations;
         },
-        createAnnotationTabItems(al, labels, uniqueKeys) {
+        createAnnotationTabItems(al, uniqueKeys) {
             let labelId = al.label_id;
             // Make sure each annotation is added only once for each label item.
             // This is important if the annotation has the same label attached by
             // multiple users.
             let uniqueKey = al.annotation_id + '-' + labelId;
             if (!uniqueKeys.has(uniqueKey)) {
-                if (labels.hasOwnProperty(labelId)) {
-                    labels[labelId].count += 1;
+                if (this.annotationLabels.hasOwnProperty(labelId)) {
+                    this.annotationLabels[labelId].count += 1;
                 } else {
                     uniqueKeys.add(uniqueKey);
                     let tIdx = this.labelTreesIndex[al.label_tree_id].index;
                     let lIdx = this.labelTreesIndex[al.label_tree_id].labelIndex[labelId];
                     let label = this.labelTrees[tIdx].labels[lIdx];
-                    labels[labelId] = {
+                    this.annotationLabels[labelId] = {
                         id: labelId,
                         label: label,
                         count: 1,
                     };
                 }
             }
-            return labels, uniqueKeys;
+            return uniqueKeys;
         },
         groupAnnotations(al, type, groupedAnnotation) {
             let labelId = al.label_id;
