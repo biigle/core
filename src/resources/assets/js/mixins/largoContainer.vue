@@ -505,7 +505,10 @@ export default {
                 AnnotationsApi.fetchVideoVolumeAnnotations({ id: this.volumeId })
             ])
                 .then(this.parseResponse)
-                .then(this.addAnnotationsToCache)
+                .then((res) => {
+                    this.addLabelsToAnnotationsTab(res[0]);
+                    this.addAnnotationsToCache(res[1]);
+                })
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
         },
@@ -514,36 +517,37 @@ export default {
             let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
             let groupedAnnotations = {};
             let uniqueKeys = new Set();
+            let labels = {};
             res.body.forEach((al) => {
                 // Save annotations to use them in labels tab
                 groupedAnnotations = this.groupAnnotations(al, type, groupedAnnotations);
-                uniqueKeys = this.createAnnotationTabItems(al, uniqueKeys);
+                labels, uniqueKeys = this.createAnnotationTabItems(al, labels, uniqueKeys);
             })
-            // Save all video and image annotation labels for project largo view
-            return groupedAnnotations;
+            // Save all video and image annotation labels for project largo view            
+            return [labels, groupedAnnotations];
         },
-        createAnnotationTabItems(al, uniqueKeys) {
+        createAnnotationTabItems(al, labels, uniqueKeys) {
             let labelId = al.label_id;
             // Make sure each annotation is added only once for each label item.
             // This is important if the annotation has the same label attached by
             // multiple users.
             let uniqueKey = al.annotation_id + '-' + labelId;
             if (!uniqueKeys.has(uniqueKey)) {
-                if (this.annotationLabels.hasOwnProperty(labelId)) {
-                    this.annotationLabels[labelId].count += 1;
+                if (labels.hasOwnProperty(labelId)) {
+                    labels[labelId].count += 1;
                 } else {
                     uniqueKeys.add(uniqueKey);
                     let tIdx = this.labelTreesIndex[al.label_tree_id].index;
                     let lIdx = this.labelTreesIndex[al.label_tree_id].labelIndex[labelId];
                     let label = this.labelTrees[tIdx].labels[lIdx];
-                    this.annotationLabels[labelId] = {
+                    labels[labelId] = {
                         id: labelId,
                         label: label,
                         count: 1,
                     };
                 }
             }
-            return uniqueKeys;
+            return labels, uniqueKeys;
         },
         groupAnnotations(al, type, groupedAnnotation) {
             let labelId = al.label_id;
@@ -572,6 +576,9 @@ export default {
 
             this.fetchedAllAnnotations = true;
         },
+        addLabelsToAnnotationsTab(labels){
+            this.annotationLabels = labels;
+        }
     },
     watch: {
         annotations(annotations) {

@@ -13,6 +13,7 @@ export default {
         return {
             projectId: null,
             labelTrees: [],
+            annotationLabels: {}
         };
     },
     methods: {
@@ -49,14 +50,12 @@ export default {
                 ProjectsApi.getAllProjectsImageAnnotationLabels({ id: this.projectId })
                     .then((res) => { return this.parseResponse([res, emptyResponse]) }),
                 ProjectsApi.getAllProjectsVideoAnnotationLabels({ id: this.projectId })
-                    .then((res) => { 
-                        let imgAnnotationData = this.annotationLabels;
-                        let annotations = this.parseResponse([emptyResponse, res]);
-                        this.annotationLabels = {...imgAnnotationData, ...this.annotationLabels};                        
-                        return annotations;
-                     }),
+                    .then((res) => { return this.parseResponse([emptyResponse, res]) }),
             ])
-                .then(this.addAnnotationsToCache)
+                .then((responses) => {
+                    this.addLabelsToAnnotationsTab([responses[0][0], responses[1][0]])
+                    this.addAnnotationsToCache([responses[0][1], responses[1][1]])
+                })
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
         },
@@ -77,6 +76,22 @@ export default {
             })
 
             this.fetchedAllAnnotations = true;
+        },
+        addLabelsToAnnotationsTab(responses){            
+            let lids = new Set(responses.map((res) => Object.keys(res)).flat());
+            let labels = {};
+            lids.forEach(id => {
+                if (responses[0].hasOwnProperty(id) && responses[1].hasOwnProperty(id)) {
+                    labels[id] = responses[1][id];
+                    labels[id].count = responses[0][id].count + responses[1][id].count;
+                    
+                } else if (responses[0].hasOwnProperty(id)) {
+                    labels[id] = responses[0][id];
+                } else {
+                    labels[id] = responses[1][id];
+                }
+            });
+            this.annotationLabels = labels;
         }
     },
     created() {
