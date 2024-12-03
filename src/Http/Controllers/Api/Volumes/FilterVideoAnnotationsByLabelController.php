@@ -100,36 +100,23 @@ class FilterVideoAnnotationsByLabelController extends Controller
         ->join('video_annotations', 'videos.id', '=', 'video_annotations.video_id')
         ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
         ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
-        ->select(        
+        ->select(
             'videos.uuid',
-            'video_annotation_labels.id as annotation_label_id',
-            'video_annotation_labels.annotation_id as annotation_label_annotation_id',
-            'video_annotation_labels.created_at as annotation_created_at',
+            'video_annotations.id as annotation_id',
             'video_annotation_labels.label_id',
-            'labels.name as label_name',
-            'labels.color',
-            'labels.label_tree_id',
+            'labels.label_tree_id'
         );
 
-        $res = function() use ($annotations): Generator {
-        foreach ($annotations->lazy() as $a) {
-            yield [
-                'uuid' => $a->uuid,
-                'labels' => [
-                    'id' => $a->annotation_label_id,
-                    'annotation_id' => $a->annotation_label_annotation_id,
+        $res = function () use ($annotations): Generator {
+            foreach ($annotations->lazy() as $a) {
+                yield [
+                    'uuid' => $a->uuid,
+                    'annotation_id' => $a->annotation_id,
                     'label_id' => $a->label_id,
-                    'created_at' => $a->annotation_created_at,
-                    'label_tree_id' => $a->label_tree_id,
-                    'label' => [
-                        'id' => $a->label_id,
-                        'name' => $a->label_name,
-                        'color' => $a->color,
-                    ]
-                ],
-            ];
-        }
-    };
+                    'label_tree_id' => $a->label_tree_id
+                ];
+            }
+        };
 
         return new StreamedJsonResponse($res());
     }

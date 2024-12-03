@@ -99,36 +99,23 @@ class FilterImageAnnotationsByLabelController extends Controller
         ->join('image_annotations', 'images.id', '=', 'image_annotations.image_id')
         ->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
         ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
-        ->select(        
+        ->select(
             'images.uuid',
-            'image_annotation_labels.id as annotation_label_id',
-            'image_annotation_labels.annotation_id as annotation_label_annotation_id',
-            'image_annotation_labels.created_at as annotation_created_at',
+            'image_annotations.id as annotation_id',
             'image_annotation_labels.label_id',
-            'labels.name as label_name',
-            'labels.color',
-            'labels.label_tree_id',
+            'labels.label_tree_id'
         );
 
-        $res = function() use ($annotations): Generator {
-        foreach ($annotations->lazy() as $a) {
-            yield [
-                'uuid' => $a->uuid,
-                'labels' => [
-                    'id' => $a->annotation_label_id,
-                    'annotation_id' => $a->annotation_label_annotation_id,
+        $res = function () use ($annotations): Generator {
+            foreach ($annotations->lazy() as $a) {
+                yield [
+                    'uuid' => $a->uuid,
+                    'annotation_id' => $a->annotation_id,
                     'label_id' => $a->label_id,
-                    'created_at' => $a->annotation_created_at,
-                    'label_tree_id' => $a->label_tree_id,
-                    'label' => [
-                        'id' => $a->label_id,
-                        'name' => $a->label_name,
-                        'color' => $a->color,
-                    ]
-                ],
-            ];
-        }
-    };
+                    'label_tree_id' => $a->label_tree_id
+                ];
+            }
+        };
 
         return new StreamedJsonResponse($res());
     }

@@ -94,12 +94,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
             ->select(
                 'videos.uuid',
-                'video_annotation_labels.id as annotation_label_id',
-                'video_annotation_labels.annotation_id as annotation_label_annotation_id',
-                'video_annotation_labels.created_at as annotation_created_at',
+                'video_annotations.id as annotation_id',
                 'video_annotation_labels.label_id',
-                'labels.name as label_name',
-                'labels.color',
                 'labels.label_tree_id'
             );
 
@@ -107,18 +103,9 @@ class FilterVideoAnnotationsByLabelController extends Controller
             foreach ($annotations->lazy() as $a) {
                 yield [
                     'uuid' => $a->uuid,
-                    'labels' => [
-                        'id' => $a->annotation_label_id,
-                        'annotation_id' => $a->annotation_label_annotation_id,
-                        'label_id' => $a->label_id,
-                        'created_at' => $a->annotation_created_at,
-                        'label_tree_id' => $a->label_tree_id,
-                        'label' => [
-                            'id' => $a->label_id,
-                            'name' => $a->label_name,
-                            'color' => $a->color,
-                        ]
-                    ],
+                    'annotation_id' => $a->annotation_id,
+                    'label_id' => $a->label_id,
+                    'label_tree_id' => $a->label_tree_id
                 ];
             }
         };
