@@ -504,27 +504,27 @@ export default {
                 AnnotationsApi.fetchImageVolumeAnnotations({ id: this.volumeId }),
                 AnnotationsApi.fetchVideoVolumeAnnotations({ id: this.volumeId })
             ])
-                .then(this.parseAnnotationDataResponse)
+                .then(this.parseResponse)
                 .then(this.addAnnotationsToCache)
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        parseAnnotationDataResponse(responses) {
+        parseResponse(responses) {
             let res = responses[0].body.length != 0 ? responses[0] : responses[1];
             let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
-            // Group annotations to save them in annotationsCache
             let groupedAnnotations = {};
             let uniqueKeys = new Set();
             let labels = {};
             res.body.forEach((al) => {
+                // Save annotations to use them in labels tab
                 groupedAnnotations = this.groupAnnotations(al, type, groupedAnnotations);
-                labels, uniqueKeys = this.createLabelItems(al, labels, uniqueKeys);
+                labels, uniqueKeys = this.createAnnotationTabItems(al, labels, uniqueKeys);
             })
-            // save all video and image annotation labels for project largo view
+            // Save all video and image annotation labels for project largo view
             this.annotationLabels = { ...this.annotationLabels, ...labels }
             return groupedAnnotations;
         },
-        createLabelItems(al, labels, uniqueKeys) {
+        createAnnotationTabItems(al, labels, uniqueKeys) {
             let labelId = al.label_id;
             // Make sure each annotation is added only once for each label item.
             // This is important if the annotation has the same label attached by

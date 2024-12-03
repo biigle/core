@@ -47,12 +47,12 @@ export default {
             this.startLoading();
             Promise.all([
                 ProjectsApi.getAllProjectsImageAnnotationLabels({ id: this.projectId })
-                    .then((res) => { return this.parseAnnotationDataResponse([res, emptyResponse]) }),
+                    .then((res) => { return this.parseResponse([res, emptyResponse]) }),
                 ProjectsApi.getAllProjectsVideoAnnotationLabels({ id: this.projectId })
-                    .then((res) => { return this.parseAnnotationDataResponse([emptyResponse, res]) }),
+                    .then((res) => { return this.parseResponse([emptyResponse, res]) }),
             ])
                 .then(this.addAnnotationsToCache)
-                // .catch(handleErrorResponse)
+                .catch(handleErrorResponse)
                 .finally(this.finishLoading);
         },
         addAnnotationsToCache(responses) {
