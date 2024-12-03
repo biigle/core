@@ -43,7 +43,12 @@ export default {
             Object.values(this.changedAnnotations).forEach((a) => {
                 let oldLabelId = a.oldLabelId;
                 let newLabelId = a.newLabelId;
+
                 this.labels[oldLabelId].count -= 1;
+                if(this.labels[oldLabelId].count === 0){
+                    delete this.labels[oldLabelId];
+                }
+
                 if (newLabelId) {
                     this.labels[newLabelId].count += 1;
                 } else {
