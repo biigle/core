@@ -512,7 +512,7 @@ export default {
         parseAnnotationDataResponse(responses) {
             let res = responses[0].body.length != 0 ? responses[0] : responses[1];
             let type = responses[0].body.length != 0 ? IMAGE_ANNOTATION : VIDEO_ANNOTATION;
-            // Process annotations to use them later in annotationsCache
+            // Group annotations to save them in annotationsCache
             let groupedAnnotations = {};
             let uniqueKeys = new Set();
             let labels = {};
@@ -525,36 +525,34 @@ export default {
             return groupedAnnotations;
         },
         createLabelItems(al, labels, uniqueKeys) {
-            let annotationLabel = al.labels;
-            let labelId = annotationLabel.label_id;
+            let labelId = al.label_id;
             // Make sure each annotation is added only once for each label item.
             // This is important if the annotation has the same label attached by
             // multiple users.
-            let uniqueKey = annotationLabel.annotation_id + '-' + labelId;
+            let uniqueKey = al.annotation_id + '-' + labelId;
             if (!uniqueKeys.has(uniqueKey)) {
                 if (labels.hasOwnProperty(labelId)) {
                     labels[labelId].count += 1;
                 } else {
                     uniqueKeys.add(uniqueKey);
-                    let label = annotationLabel.label;
-                    label.selected = label.id === this.selectedLabel?.id;
+                    let tIdx = this.labelTreesIndex[al.label_tree_id].index;
+                    let lIdx = this.labelTreesIndex[al.label_tree_id].labelIndex[labelId];
+                    let label = this.labelTrees[tIdx].labels[lIdx];
                     labels[labelId] = {
                         id: labelId,
                         label: label,
                         count: 1,
-                        treeId: annotationLabel.label_tree_id,
                     };
                 }
             }
             return labels, uniqueKeys;
         },
         groupAnnotations(al, type, groupedAnnotation) {
-            let labels = al.labels;
-            let labelId = labels.label_id
+            let labelId = al.label_id;
             let annotation = {
-                id: labels.annotation_id,
+                id: al.annotation_id,
                 uuid: al.uuid,
-                label_id: labelId,
+                label_id: al.label_id,
                 dismissed: false,
                 newLabel: null,
                 type: type
@@ -576,24 +574,6 @@ export default {
 
             this.fetchedAllAnnotations = true;
         },
-        synchronizeLabelInTabs(label, select) {
-            if (!label || !this.fetchedAllAnnotations) {
-                return;
-            }
-            // Selected label is not the same label object as in labels or annotations tab
-            let treeId = -1;
-            if (this.annotationLabels.hasOwnProperty(label.id)) {
-                // set label selection status in annotations tab
-                this.annotationLabels[label.id].label.selected = select;
-                treeId = this.annotationLabels[label.id].treeId;
-            } else {
-                treeId = label.tree.id;
-            }
-            // set label selection status in labels tab
-            let tIdx = this.labelTreesIndex[treeId].index;
-            let lIdx = this.labelTreesIndex[treeId].labelIndex[label.id];
-            this.labelTrees[tIdx].labels[lIdx].selected = select;
-        },
     },
     watch: {
         annotations(annotations) {
@@ -605,15 +585,15 @@ export default {
         step(step) {
             Events.$emit('step', step);
         },
-        selectedLabel(newLabel, oldLabel) {
+        selectedLabel(_, oldLabel) {
             if (this.isInDismissStep) {
                 this.$refs.dismissGrid.setOffset(0);
             }
-            this.synchronizeLabelInTabs(oldLabel, false);
-            this.synchronizeLabelInTabs(newLabel, true);
+            if (oldLabel?.selected) {
+                oldLabel.selected = false;
+            }
         },
-        labelTrees() {
-            // Needed to synchronize label selection in tabs
+        labelTrees() {            
             this.labelTrees.forEach((t, idx) => {
                 let labelIndex = {};
                 t.labels.forEach((l, idx) => {

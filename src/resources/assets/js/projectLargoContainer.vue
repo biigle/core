@@ -52,7 +52,7 @@ export default {
                     .then((res) => { return this.parseAnnotationDataResponse([emptyResponse, res]) }),
             ])
                 .then(this.addAnnotationsToCache)
-                .catch(handleErrorResponse)
+                // .catch(handleErrorResponse)
                 .finally(this.finishLoading);
         },
         addAnnotationsToCache(responses) {
