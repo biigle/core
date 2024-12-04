@@ -529,7 +529,7 @@ export default {
             let labels = {};
             res.body.forEach((al) => {
                 // Save annotations to use them in labels tab
-                groupedAnnotations = this.groupAnnotations(al, type, groupedAnnotations);
+                groupedAnnotations = this.groupAnnotationsByLabel(al, type, groupedAnnotations);
                 labels, uniqueKeys = this.createAnnotationTabItems(al, labels, uniqueKeys);
             })
             // Save all video and image annotation labels for project largo view            
@@ -558,7 +558,7 @@ export default {
             }
             return labels, uniqueKeys;
         },
-        groupAnnotations(al, type, groupedAnnotation) {
+        groupAnnotationsByLabel(al, type, groupedAnnotation) {
             let labelId = al.label_id;
             let annotation = {
                 id: al.annotation_id,
@@ -585,7 +585,7 @@ export default {
 
             this.fetchedAllAnnotations = true;
         },
-        addLabelsToAnnotationsTab(labels){
+        addLabelsToAnnotationsTab(labels) {
             this.annotationLabels = labels;
         }
     },
@@ -607,7 +607,7 @@ export default {
                 oldLabel.selected = false;
             }
         },
-        labelTrees() {            
+        labelTrees() {
             this.labelTrees.forEach((t, idx) => {
                 let labelIndex = {};
                 t.labels.forEach((l, idx) => {
