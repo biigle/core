@@ -12,4 +12,3 @@ export let Settings = biigle.$require('core.models.Settings');
 export let SettingsTabPlugins = biigle.$require('annotations.components.settingsTabPlugins');
 export let Sidebar = biigle.$require('core.components.sidebar');
 export let SidebarTab = biigle.$require('core.components.sidebarTab');
-export let AnnotationsTab = biigle.$require('annotations.components.annotationsTab');
