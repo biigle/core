@@ -26,6 +26,8 @@ RUN apk add --no-cache \
         soap \
     && apk del --purge .build-deps
 
+RUN apk add --no-cache exiftool
+
 ARG PHPREDIS_VERSION=6.0.2
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \

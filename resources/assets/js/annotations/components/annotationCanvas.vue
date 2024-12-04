@@ -252,13 +252,15 @@ export default {
                 }),
             });
 
-            map.addInteraction(new MouseWheelZoom({
+            let zoomInteraction = new MouseWheelZoom({
                 condition: function (mapBrowserEvent) {
                     // If Shift is pressed, the event should be handled by the parent
                     // component to scroll through the images of a volume.
                     return !shiftKeyOnlyCondition(mapBrowserEvent);
                 },
-            }));
+            });
+            zoomInteraction.set('name', 'mousewheelzoom');
+            map.addInteraction(zoomInteraction);
 
             control = new ZoomToNativeControl({
                 // fontawesome expand icon
