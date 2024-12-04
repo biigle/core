@@ -118,20 +118,20 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
             'id' => $authorized->id,
         ]);
         $response->assertStatus(200);
-        $this->assertEquals($count + 1, $p->labelTrees()->count());
+        $this->assertSame($count + 1, $p->labelTrees()->count());
 
         $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
         ]);
         $response->assertStatus(200);
-        $this->assertEquals($count + 2, $p->labelTrees()->count());
+        $this->assertSame($count + 2, $p->labelTrees()->count());
 
         // if the tree is already attached, ignore and respond with success
         $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
         ]);
         $response->assertStatus(200);
-        $this->assertEquals($count + 2, $p->labelTrees()->count());
+        $this->assertSame($count + 2, $p->labelTrees()->count());
     }
 
     public function testStoreFormRequest()

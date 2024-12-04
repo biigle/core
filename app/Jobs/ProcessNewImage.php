@@ -13,8 +13,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Jcupitt\Vips\Image as VipsImage;
 use Log;
-use VipsImage;
 
 class ProcessNewImage extends Job implements ShouldQueue
 {
@@ -153,7 +153,7 @@ class ProcessNewImage extends Job implements ShouldQueue
         $image->mimetype = File::mimeType($path);
 
         try {
-            $i = VipsImage::newFromFile($path);
+            $i = $this->getVipsImage($path);
             $image->width = $i->width;
             $image->height = $i->height;
         } catch (Exception $e) {
@@ -206,6 +206,18 @@ class ProcessNewImage extends Job implements ShouldQueue
                     'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
                 ]);
             }
+
+            if ($this->hasGpsImgDirInfo($exif)) {
+                $image->metadata = array_merge($image->metadata, [
+                    'yaw' => $this->fracToFloat($exif['GPSImgDirection']),
+                ]);
+            }
+
+            if ($this->hasSubjectAreaInfo($exif)) {
+                $image->metadata = array_merge($image->metadata, [
+                    'area' => $this->fracToFloat($exif['SubjectArea']),
+                ]);
+            }
         }
 
         $image->save();
@@ -246,6 +258,28 @@ class ProcessNewImage extends Job implements ShouldQueue
     {
         return array_key_exists('GPSAltitude', $exif) &&
             array_key_exists('GPSAltitudeRef', $exif);
+    }
+
+    /**
+     * Check if an exif array contains GPSImgDirection information.
+     *
+     * @param  array   $exif
+     * @return bool
+     */
+    protected function hasGpsImgDirInfo(array $exif)
+    {
+        return array_key_exists('GPSImgDirection', $exif);
+    }
+
+    /**
+     * Check if an exif array contains SubjectArea information.
+     *
+     * @param  array   $exif
+     * @return bool
+     */
+    protected function hasSubjectAreaInfo(array $exif)
+    {
+        return array_key_exists('SubjectArea', $exif);
     }
 
     /**
@@ -296,18 +330,14 @@ class ProcessNewImage extends Job implements ShouldQueue
         $parts = explode('/', $frac);
         $count = count($parts);
 
-        if ($count === 0) {
-            return 0;
-        } elseif ($count === 1) {
-            return $parts[0];
+        // Don't use !== 0 to catch all incorrect values.
+        if ($count === 2 && $parts[1] != 0) {
+            return floatval($parts[0]) / floatval($parts[1]);
+        } elseif (is_numeric($parts[0])) {
+            return floatval($parts[0]);
         }
 
-        // Don't use === to catch all incorrect values.
-        if ($parts[1] == 0) {
-            return 0;
-        }
-
-        return floatval($parts[0]) / floatval($parts[1]);
+        return 0;
     }
 
     /**
@@ -345,5 +375,17 @@ class ProcessNewImage extends Job implements ShouldQueue
         $image->tilingInProgress = true;
         $image->save();
         TileSingleImage::dispatch($image);
+    }
+
+    /**
+     * Get a Vips image instance for the file.
+     *
+     * @param string $path
+     *
+     * @return VipsImage
+     */
+    protected function getVipsImage(string $path)
+    {
+        return VipsImage::newFromFile($path);
     }
 }

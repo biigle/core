@@ -5,6 +5,12 @@ namespace Biigle;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $annotation_id
+ * @property int $user_id
+ * @property int $label_id
+ */
 abstract class AnnotationLabel extends Model
 {
     use HasFactory;
@@ -12,7 +18,7 @@ abstract class AnnotationLabel extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'label_id',
@@ -23,7 +29,7 @@ abstract class AnnotationLabel extends Model
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'user_id' => 'int',
@@ -33,14 +39,14 @@ abstract class AnnotationLabel extends Model
     /**
      * The annotation, this annotation label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<covariant Annotation, covariant AnnotationLabel>
      */
     abstract public function annotation();
 
     /**
      * The label, this annotation label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, covariant AnnotationLabel>
      */
     public function label()
     {
@@ -50,7 +56,7 @@ abstract class AnnotationLabel extends Model
     /**
      * The user who created this annotation label.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, covariant AnnotationLabel>
      */
     public function user()
     {

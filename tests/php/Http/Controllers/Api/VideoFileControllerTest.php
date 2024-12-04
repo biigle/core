@@ -69,9 +69,9 @@ class VideoFileControllerTest extends ApiTestCase
                 ->getJson("api/v1/videos/{$video->id}/file")
                 ->assertStatus(206);
 
-            $this->assertEquals(6, $response->headers->get('Content-Length'));
+            $this->assertSame(6, intval($response->headers->get('Content-Length')));
             $this->assertTrue($response->headers->has('Content-Range'));
-            $this->assertEquals('bytes 3-8/9', $response->headers->get('Content-Range'));
+            $this->assertSame('bytes 3-8/9', $response->headers->get('Content-Range'));
         } finally {
             $disk->deleteDirectory('files');
         }

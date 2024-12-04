@@ -63,10 +63,10 @@ class RegisterControllerTest extends TestCase
 
         $user = User::where('email', 'e@ma.il')->first();
         $this->assertNotNull($user);
-        $this->assertEquals('a', $user->firstname);
-        $this->assertEquals('b', $user->lastname);
-        $this->assertEquals('something', $user->affiliation);
-        $this->assertEquals(Role::editorId(), $user->role_id);
+        $this->assertSame('a', $user->firstname);
+        $this->assertSame('b', $user->lastname);
+        $this->assertSame('something', $user->affiliation);
+        $this->assertSame(Role::editorId(), $user->role_id);
     }
 
     public function testRegisterHoneypot()
@@ -103,7 +103,7 @@ class RegisterControllerTest extends TestCase
     public function testRegisterEmailTaken()
     {
         UserTest::create(['email' => 'test@test.com']);
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
 
         $response = $this->get('register');
         $response = $this->post('register', [
@@ -114,13 +114,13 @@ class RegisterControllerTest extends TestCase
             'lastname'  => 'b',
         ])->assertRedirect('register');
 
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
     }
 
     public function testRegisterEmailTakenCaseInsensitive()
     {
         UserTest::create(['email' => 'test@test.com']);
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
 
         $response = $this->get('register');
         $response = $this->post('register', [
@@ -131,13 +131,13 @@ class RegisterControllerTest extends TestCase
             'lastname'  => 'b',
         ])->assertRedirect('register');
 
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
     }
 
     public function testRegisterWhenLoggedIn()
     {
         $this->be(UserTest::create());
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
 
         $this->get('register')->assertRedirect('/');
 
@@ -149,7 +149,7 @@ class RegisterControllerTest extends TestCase
             'lastname'  => 'b',
         ])->assertRedirect('/');
 
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
     }
 
     public function testRegisterPrivacy()
@@ -170,7 +170,7 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ])->assertRedirect('register');
 
-        $this->assertEquals(0, User::count());
+        $this->assertSame(0, User::count());
 
         $response = $this->post('register', [
             '_token'    => Session::token(),
@@ -183,7 +183,7 @@ class RegisterControllerTest extends TestCase
             'privacy' => '1',
         ])->assertRedirect('/');
 
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
     }
 
     public function testRegisterTerms()
@@ -204,7 +204,7 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ])->assertRedirect('register');
 
-        $this->assertEquals(0, User::count());
+        $this->assertSame(0, User::count());
 
         $response = $this->post('register', [
             '_token'    => Session::token(),
@@ -217,7 +217,7 @@ class RegisterControllerTest extends TestCase
             'terms' => '1',
         ])->assertRedirect('/');
 
-        $this->assertEquals(1, User::count());
+        $this->assertSame(1, User::count());
     }
 
     public function testRegisterAdminConfirmationDisabled()
@@ -252,13 +252,13 @@ class RegisterControllerTest extends TestCase
         $user = User::where('email', 'e@ma.il')->first();
 
         Notification::assertSentTo(new AnonymousNotifiable, RegistrationConfirmation::class, function ($notification) use ($user) {
-            $this->assertEquals($user->id, $notification->user->id);
-            $this->assertEquals($user->email, $notification->toMail(null)->replyTo[0][0]);
+            $this->assertSame($user->id, $notification->user->id);
+            $this->assertSame($user->email, $notification->toMail(null)->replyTo[0][0]);
 
             return true;
         });
         $this->assertNotNull($user);
-        $this->assertEquals(Role::guestId(), $user->role_id);
+        $this->assertSame(Role::guestId(), $user->role_id);
     }
 
     public function testRegisterAdminConfirmationPossibleDuplicates()

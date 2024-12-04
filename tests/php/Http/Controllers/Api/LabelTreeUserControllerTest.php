@@ -36,18 +36,18 @@ class LabelTreeUserControllerTest extends ApiTestCase
         // cannot update the own user
         $response->assertStatus(403);
 
-        $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
+        $this->assertSame(1, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
         $response = $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
             'role_id' => Role::adminId(),
         ]);
         $response->assertStatus(200);
-        $this->assertEquals(2, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
+        $this->assertSame(2, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
             'role_id' => Role::editorId(),
         ]);
         $response->assertStatus(200);
-        $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
+        $this->assertSame(1, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
     }
 
     public function testUpdateGlobalGuest()
@@ -74,7 +74,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $response = $this->put("/api/v1/label-trees/{$t->id}/users/{$u->id}", [
             'role_id' => Role::adminId(),
         ]);
-        $this->assertEquals(2, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
+        $this->assertSame(2, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
         $response->assertRedirect('/');
         $response->assertSessionHas('saved', true);
 
@@ -82,7 +82,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
             'role_id' => Role::editorId(),
             '_redirect' => 'settings',
         ]);
-        $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
+        $this->assertSame(1, $t->members()->where('label_tree_user.role_id', Role::adminId())->count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
     }
@@ -139,7 +139,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $user = $tree->members()->find($this->user()->id);
         $this->assertNotNull($user);
-        $this->assertEquals(Role::editorId(), $user->role_id);
+        $this->assertSame(Role::editorId(), $user->role_id);
     }
 
     public function testStoreGlobalGuest()
@@ -168,7 +168,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
             'id' => $this->user()->id,
             'role_id' => Role::editorId(),
         ]);
-        $this->assertEquals(2, $tree->members()->count());
+        $this->assertSame(2, $tree->members()->count());
         $response->assertRedirect('/');
         $response->assertSessionHas('saved', true);
 
@@ -177,7 +177,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
             'role_id' => Role::editorId(),
             '_redirect' => 'settings',
         ]);
-        $this->assertEquals(3, $tree->members()->count());
+        $this->assertSame(3, $tree->members()->count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
     }

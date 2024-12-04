@@ -9,7 +9,7 @@ use Biigle\ProjectInvitation;
 use Biigle\Role;
 use DB;
 use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\SvgWriter;
 use Ramsey\Uuid\Uuid;
@@ -33,7 +33,7 @@ class ProjectInvitationController extends Controller
      * @apiParam (Optional attributes) {Boolean} add_to_sessions If set to `true`, all users joining the project will automatically be added to all annotation sessions of all volumes that belong to the project.
      *
      * @param StoreProjectInvitation $request
-     * @return \Illuminate\Http\Response
+     * @return ProjectInvitation
      */
     public function store(StoreProjectInvitation $request)
     {
@@ -62,7 +62,7 @@ class ProjectInvitationController extends Controller
      * @param JoinProjectInvitation $request
      * @param int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|null
      */
     public function join(JoinProjectInvitation $request, $id)
     {
@@ -83,7 +83,7 @@ class ProjectInvitationController extends Controller
                 if ($invitation->add_to_sessions) {
                     AnnotationSession::join('project_volume', 'annotation_sessions.volume_id', '=', 'project_volume.volume_id')
                         ->where('project_volume.project_id', $project->id)
-                        ->eachById(fn ($session) => $session->users()->syncWithoutDetaching([$userId]));
+                        ->eachById(fn (AnnotationSession $session) => $session->users()->syncWithoutDetaching([$userId]));
                 }
             }
 
@@ -108,7 +108,6 @@ class ProjectInvitationController extends Controller
      * @apiParam {Number} id The invitation ID.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
@@ -137,7 +136,7 @@ class ProjectInvitationController extends Controller
 
         $qrCode = QrCode::create(route('project-invitation', $invitation->uuid))
             ->setEncoding(new Encoding('UTF-8'))
-            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->setErrorCorrectionLevel(ErrorCorrectionLevel::Low)
             ->setSize(300)
             ->setMargin(10);
 

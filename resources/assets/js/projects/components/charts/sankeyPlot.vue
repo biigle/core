@@ -1,5 +1,5 @@
 <template>
-     <v-chart class="chart grid-col-span-3" :option="option" ></v-chart>
+    <v-chart class="chart grid-col-span-3" :option="option"></v-chart>
 </template>
 
 <script>
@@ -8,6 +8,7 @@ import { SankeyChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 import { TitleComponent, TooltipComponent } from 'echarts/components';
 import VChart, { THEME_KEY } from "vue-echarts";
+import { IDToColor } from "./IDToColor";
 
 export default {
     components: {
@@ -34,7 +35,7 @@ export default {
         data() {
             // returns an array of User-names and volume-names
             let volNames = this.volumeAnnotations.map(entry => {
-                return this.names.find(x => x.id ===  entry.volume_id).name;
+                return this.names.find(x => x.id === entry.volume_id).name;
             });
             volNames = [...new Set(volNames)];
 
@@ -46,22 +47,34 @@ export default {
             })
             userNames = [...new Set(userNames)];
 
-            let combined = userNames.concat(...volNames);
-            combined = combined.map(entry => {
-                return {name: entry}
+            let userIds = this.volumeAnnotations.map(entry => {
+                return entry.user_id;
             })
+            userIds = [...new Set(userIds)];
 
+            let volIds = this.volumeAnnotations.map(entry => {
+                return entry.volume_id;
+            });
+            volIds = [...new Set(volIds)];
+
+
+            let combined = userNames.concat(...volNames);
+            let combinedIds = userIds.concat(...volIds);
+
+            combined = combined.map((entry, index) => {
+                return { name: entry, itemStyle: { color: IDToColor(combinedIds[index]) } };
+            });
             return combined;
         },
 
         links() {
             let result_array = [];
 
-            for(let obj of this.volumeAnnotations) {
+            for (let obj of this.volumeAnnotations) {
                 // create a single link-entry
                 let entry = {
                     source: obj.fullname === " " ? "Deleted Account" : obj.fullname,
-                    target: this.names.find(x => x.id ===  obj.volume_id).name,
+                    target: this.names.find(x => x.id === obj.volume_id).name,
                     value: obj.count
                 };
                 // append to result array

@@ -35,7 +35,7 @@ class ProjectsAttachableVolumesController extends Controller
      * @param Request $request
      * @param int $id Project ID
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index(Request $request, $id)
     {

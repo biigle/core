@@ -13,8 +13,6 @@ class LabelTreeMergeController extends Controller
      *
      * @param Request $request
      * @param int $id ID of the base label tree
-     *
-     * @return mixed
      */
     public function index(Request $request, $id)
     {
@@ -37,8 +35,6 @@ class LabelTreeMergeController extends Controller
      *
      * @param int $id1 ID of the base label tree
      * @param int $id2 ID of the label tree to merge into the base
-     *
-     * @return mixed
      */
     public function show($id1, $id2)
     {

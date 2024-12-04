@@ -92,6 +92,25 @@ class ApiGuardTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testEmailEncoding()
+    {
+        $token = ApiTokenTest::create([
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
+        ]);
+
+        $token->owner->email = 'test@test.com';
+        $token->owner->save();
+
+        // The request would produce a 500 error if the string was not escaped properly.
+        // The string is from a real request that we observed.
+        $response = $this->json('GET', '/api/v1/users', [], [
+            'PHP_AUTH_USER' => "\x81\x5C\x91\xE7=e\x17\xDD\x9Do\x19lgF",
+            'PHP_AUTH_PW' => 'test_token',
+        ]);
+        $response->assertStatus(401);
+    }
+
     public function testTouchToken()
     {
         $token = ApiTokenTest::create([

@@ -25,7 +25,7 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(200);
-        $this->assertEquals(Role::editorId(), $user->fresh()->role_id);
+        $this->assertSame(Role::editorId(), $user->fresh()->role_id);
 
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(404);

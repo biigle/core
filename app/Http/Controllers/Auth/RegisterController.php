@@ -117,7 +117,7 @@ class RegisterController extends Controller
     /**
      * Show the application registration form.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function showRegistrationForm()
     {
@@ -132,7 +132,7 @@ class RegisterController extends Controller
      * Handle a registration request for the application.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
     {

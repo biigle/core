@@ -55,13 +55,13 @@ class ApiTokenControllerTest extends ApiTestCase
         // missing purpose
         $response->assertStatus(422);
 
-        $this->assertEquals(1, $token->owner->apiTokens()->count());
+        $this->assertSame(1, $token->owner->apiTokens()->count());
 
         $response = $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
             ->assertJsonFragment(['purpose' => 'abc']);
 
         $response->assertSuccessful();
-        $this->assertEquals(2, $token->owner->apiTokens()->count());
+        $this->assertSame(2, $token->owner->apiTokens()->count());
         $this->assertStringContainsString('"token":"', $response->getContent());
 
         $response = $this->post('/api/v1/api-tokens', ['purpose' => 'def'])

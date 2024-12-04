@@ -21,7 +21,7 @@ class CachedPolicy
     /**
      * The cache instance to use for caching policies.
      *
-     * @var Cache
+     * @var \Illuminate\Contracts\Cache\Repository
      */
     protected $cache;
 

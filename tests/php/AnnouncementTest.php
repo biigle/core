@@ -40,15 +40,15 @@ class AnnouncementTest extends ModelTestCase
     {
         $this->model->show_until = '2022-10-20 16:17:00';
         $this->model->save();
-        $this->assertEquals(0, Announcement::active()->count());
+        $this->assertSame(0, Announcement::active()->count());
 
         $this->model->show_until = now()->addDay();
         $this->model->save();
-        $this->assertEquals(1, Announcement::active()->count());
+        $this->assertSame(1, Announcement::active()->count());
 
         $this->model->show_until = null;
         $this->model->save();
-        $this->assertEquals(1, Announcement::active()->count());
+        $this->assertSame(1, Announcement::active()->count());
     }
 
     public function testGetActive()
@@ -56,7 +56,7 @@ class AnnouncementTest extends ModelTestCase
         $this->model->show_until = now()->addDay();
         $this->model->save();
 
-        $this->assertEquals($this->model->id, Announcement::getActive()->id);
+        $this->assertSame($this->model->id, Announcement::getActive()->id);
 
         $this->model->delete();
         $this->assertNull(Announcement::getActive());
