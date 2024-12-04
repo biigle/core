@@ -17,7 +17,7 @@
                 </div>
                 <ul class="annotations-tab__list list-unstyled" ref="scrollList">
                     <label-item
-                         v-for="item in labels"
+                         v-for="item in labelItems"
                          :key="item.id"
                          :label="item.label"
                          :count="item.count"

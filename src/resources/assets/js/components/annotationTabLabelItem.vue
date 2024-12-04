@@ -3,7 +3,7 @@
         <div class="annotations-tab-item__title" @click="emitSelectLabel">
             <span class="pull-right badge" v-text="count" :title="countTitle"></span>
             <span class="annotations-tab-item__color" :style="colorStyle"></span>
-            <span v-text="label.name"></span>
+            <span v-text="labelItem.name"></span>
         </div>
     </li>
 </template>
@@ -25,31 +25,39 @@ export default {
             },
         },
     },
+    data() {
+        return {
+            labelItem: {}
+        }
+    },
     computed: {
         title() {
-            return `Annotations with label ${this.label.name}`;
+            return `Annotations with label ${this.labelItem.name}`;
         },
         classObject() {
             return {
-                selected: this.label.selected,
+                selected: this.labelItem.selected,
             };
         },
         countTitle() {
-            return `There are ${this.count} annotations with label ${this.label.name}`;
+            return `There are ${this.count} annotations with label ${this.labelItem.name}`;
         },
         colorStyle() {
-            return 'background-color: #' + this.label.color;
+            return 'background-color: #' + this.labelItem.color;
         },
     },
     methods: {
         emitSelectLabel() {
-            this.label.selected = !this.label.selected
-            if (this.label.selected) {
-                this.$emit('select', this.label)
+            this.labelItem.selected = !this.labelItem.selected
+            if (this.labelItem.selected) {
+                this.$emit('select', this.labelItem)
             } else {
                 this.$emit('deselect');
             }
         }
     },
+    created() {
+        this.labelItem = this.label;
+    }
 };
 </script>

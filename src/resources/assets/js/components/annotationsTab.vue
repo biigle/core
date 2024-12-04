@@ -22,7 +22,8 @@ export default {
     },
     data() {
         return {
-            annotationBadgeCount: 0
+            annotationBadgeCount: 0,
+            labelItems: {}
         };
     },
     methods: {
@@ -35,7 +36,8 @@ export default {
     },
     watch: {
         labels() {
-            this.annotationBadgeCount = Object.values(this.labels).reduce((acc, l) => {
+            this.labelItems = this.labels;
+            this.annotationBadgeCount = Object.values(this.labelItems).reduce((acc, l) => {
                 return acc + l.count;
             }, 0);
         },
@@ -44,13 +46,13 @@ export default {
                 let oldLabelId = a.oldLabelId;
                 let newLabelId = a.newLabelId;
 
-                this.labels[oldLabelId].count -= 1;
-                if(this.labels[oldLabelId].count === 0){
-                    delete this.labels[oldLabelId];
+                this.labelItems[oldLabelId].count -= 1;
+                if (this.labelItems[oldLabelId].count === 0) {
+                    delete this.labelItems[oldLabelId];
                 }
 
                 if (newLabelId) {
-                    this.labels[newLabelId].count += 1;
+                    this.labelItems[newLabelId].count += 1;
                 } else {
                     this.annotationBadgeCount -= 1;
                 }
