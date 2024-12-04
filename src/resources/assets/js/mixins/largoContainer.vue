@@ -286,6 +286,15 @@ export default {
             })
             this.annotationsWithNewLabel.forEach((a) => {
                 changedAnnotations[a.id] = { oldLabelId: a.label_id, newLabelId: a.newLabel.id };
+                // Add new label to annotation tab
+                if (!this.annotationLabels.hasOwnProperty(a.newLabel.id)) {
+                    this.annotationLabels[a.newLabel.id] = {
+                        id: a.newLabel.id,
+                        label: a.newLabel,
+                        count: 0
+                    }
+                }
+
             })
 
             return changedAnnotations;
