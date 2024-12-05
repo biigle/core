@@ -2,20 +2,21 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use ApiTestCase;
-use Biigle\Jobs\CloneImagesOrVideos;
-use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
-use Biigle\Role;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\VideoTest;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use Queue;
+use ApiTestCase;
+use Biigle\Role;
+use Biigle\User;
+use Biigle\MediaType;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\VideoTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Jobs\CloneImagesOrVideos;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Illuminate\Support\Facades\Cache;
+use Biigle\Jobs\ProcessNewVolumeFiles;
+use Illuminate\Support\Facades\Storage;
 
 class VolumeControllerTest extends ApiTestCase
 {
@@ -318,6 +319,25 @@ class VolumeControllerTest extends ApiTestCase
             ->assertStatus(201);
         $copy = $project->volumes()->first();
         $this->assertEquals($copy->name, 'volumecopy');
+    }
+
+    public function testCloneVolumeOtherUser()
+    {
+        $volume = $this->volume(['name' => 'myvolume', 'creator_id' => $this->user()->id]);
+        $project = ProjectTest::create();
+        $project->addUserId($this->admin()->id, Role::adminId());
+
+        $this->beAdmin();
+
+        $this
+            ->postJson("/api/v1/volumes/{$volume->id}/clone-to/{$project->id}", [
+                'name' => 'volumecopy',
+            ])
+            ->assertStatus(201);
+        $copy = $project->volumes()->first();
+
+        $this->assertEquals($volume->creator_id, $this->user()->id);
+        $this->assertEquals($copy->creator_id, $this->admin()->id);
     }
 
     public function testGetImageIdsSortedByAnnotationTimestamps()
