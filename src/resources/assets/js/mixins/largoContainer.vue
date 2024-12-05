@@ -14,6 +14,7 @@ import {PowerToggle} from '../import';
 import {SidebarTab} from '../import';
 import {Sidebar} from '../import';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
+import { Keyboard } from '../import';
 
 /**
  * Mixin for largo view models
@@ -499,6 +500,8 @@ export default {
         });
 
         this.initializeEcho();
+
+        Keyboard.on('o', () => { this.updateShowOutlines(!this.showAnnotationOutlines) });
     },
 };
 </script>
