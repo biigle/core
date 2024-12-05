@@ -140,7 +140,7 @@
 
         <dl>
             <dt>Show annotation outlines</dt>
-            <dd>Disable this option to hide the outlines of the annotation on each patch (enabled by default).</dd>
+            <dd>Disable this option to hide the outlines of the annotation on each patch (enabled by default). Use key <kbd>o</kbd> as shortcut.</dd>
         </dl>
 
         <h3><a name="example-use-cases"></a>Example use cases</h3>
