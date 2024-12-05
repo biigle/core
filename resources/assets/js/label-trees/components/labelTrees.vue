@@ -15,6 +15,7 @@
 import Keyboard from '../../core/keyboard';
 import LabelTree from './labelTree';
 import Typeahead from './labelTypeahead';
+import { MAX_FAVOURITES } from '../constants';
 
 /**
  * A component that displays a list of label trees.
@@ -110,7 +111,7 @@ export default {
             return this.favourites.map((label) => label.id);
         },
         canHaveMoreFavourites() {
-            return this.favourites.length < 10;
+            return this.favourites.length < MAX_FAVOURITES;
         },
         hasFavourites() {
             return this.favourites.length > 0;
