@@ -2,16 +2,16 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\CloneVolume;
-use Biigle\Http\Requests\UpdateVolume;
-use Biigle\Jobs\CloneImagesOrVideos;
-use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\Project;
+use Queue;
 use Biigle\Volume;
+use Biigle\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Queue;
+use Biigle\Jobs\CloneImagesOrVideos;
+use Biigle\Http\Requests\CloneVolume;
+use Biigle\Http\Requests\UpdateVolume;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 
 class VolumeController extends Controller
 {
@@ -190,6 +190,7 @@ class VolumeController extends Controller
 
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
+            $copy->creator_id = $request->user()->id;
             $copy->creating_async = true;
             $copy->save();
             if ($volume->hasMetadata()) {
