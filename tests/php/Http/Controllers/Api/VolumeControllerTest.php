@@ -2,21 +2,21 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use Queue;
 use ApiTestCase;
-use Biigle\Role;
-use Biigle\User;
-use Biigle\MediaType;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\VideoTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Jobs\CloneImagesOrVideos;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\VideoAnnotationTest;
-use Illuminate\Support\Facades\Cache;
 use Biigle\Jobs\ProcessNewVolumeFiles;
+use Biigle\MediaType;
+use Biigle\Role;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
+use Biigle\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Queue;
 
 class VolumeControllerTest extends ApiTestCase
 {

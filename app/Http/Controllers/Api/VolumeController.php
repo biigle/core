@@ -2,16 +2,16 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Queue;
-use Biigle\Volume;
+use Biigle\Http\Requests\CloneVolume;
+use Biigle\Http\Requests\UpdateVolume;
+use Biigle\Jobs\CloneImagesOrVideos;
+use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Project;
+use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Biigle\Jobs\CloneImagesOrVideos;
-use Biigle\Http\Requests\CloneVolume;
-use Biigle\Http\Requests\UpdateVolume;
-use Biigle\Jobs\ProcessNewVolumeFiles;
+use Queue;
 
 class VolumeController extends Controller
 {
