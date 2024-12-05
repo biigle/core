@@ -4,6 +4,12 @@
         :supports-jump-by-frame="supportsJumpByFrame"
         >
             <div class="annotator-tab settings-tab">
+                <div class="sidebar-tab__section">
+                    <button v-if="crossOrigin" class="btn btn-default" title="Screenshots are not available for remote videos without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+                    <screenshot-button v-else inline-template :is-image="false">
+                        <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+                    </screenshot-button>
+                </div>
 
                 <div class="sidebar-tab__section">
                     <h5 title="Set the opacity of annotations">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
