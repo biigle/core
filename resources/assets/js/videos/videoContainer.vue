@@ -155,6 +155,9 @@ export default {
         hasTooLargeError() {
             return this.error instanceof VideoTooLargeError;
         },
+        hasCrossOriginError() {
+            return this.error instanceof TypeError;
+        },
         errorClass() {
             if (this.hasVideoError) {
                 if (this.error instanceof VideoNotProcessedError) {

@@ -13,9 +13,9 @@ export default {
             type: Boolean,
             default: false,
         },
-        video: {
-            type: Object,
-            default: null
+        crossOriginError: {
+            type: Boolean,
+            default: false,
         }
     },
     data() {
@@ -48,9 +48,6 @@ export default {
     computed: {
         jumpByFrameNotSupported() {
             return !this.supportsJumpByFrame;
-        },
-        crossOrigin() {
-            return this.video && this.video.crossOrigin;
         },
     },
     methods: {
