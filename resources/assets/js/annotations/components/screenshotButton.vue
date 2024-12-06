@@ -9,6 +9,12 @@ import Keyboard from '../../core/keyboard';
  * @type {Object}
  */
 export default {
+    props:{
+        isImage:{
+            type: Boolean,
+            default: true
+        }
+    },
     data() {
         return {
             filenames: {},
@@ -150,15 +156,27 @@ export default {
         },
     },
     created() {
-        let ids = biigle.$require('annotations.imagesIds');
-        let filenames = {};
-        biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
-            filenames[ids[index]] = filename;
-        });
-        this.filenames = filenames;
-        this.currentId = biigle.$require('annotations.imageId');
-        Events.$on('images.change', this.updateCurrentId);
-        Events.$on('annotations.map.init', this.setMap);
+        if (this.isImage) {
+            let ids = biigle.$require('annotations.imagesIds');
+            let filenames = {};
+            biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
+                filenames[ids[index]] = filename;
+            });
+            this.filenames = filenames;
+            this.currentId = biigle.$require('annotations.imageId');
+            Events.$on('images.change', this.updateCurrentId);
+            Events.$on('annotations.map.init', this.setMap);
+        } else {
+            let ids = biigle.$require('videos.videoIds');
+            let filenames = {};
+            biigle.$require('videos.videoFilenames').forEach((filename, index) => {
+                filenames[ids[index]] = filename;
+            });
+            this.filenames = filenames;
+            this.currentId = biigle.$require('videos.id');
+            Events.$on('video.change', this.updateCurrentId);
+            Events.$on('videos.map.init', this.setMap);
+        }
         Keyboard.on('p', this.capture);
     },
 };
