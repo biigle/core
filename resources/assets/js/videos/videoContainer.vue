@@ -101,6 +101,25 @@ export default {
             supportsJumpByFrame: false,
         };
     },
+    provide() {
+        const appData = {}
+
+        let videoInfo = {};
+        videoInfo['currentId'] = biigle.$require('videos.id');
+        videoInfo['ids'] = biigle.$require('videos.videoIds');
+        videoInfo['filenames'] = biigle.$require('videos.videoFilenames');
+        videoInfo['type'] = 'video';
+        videoInfo['fileChangedEvent'] = 'video.change';
+        videoInfo['mapChangedEvent'] = 'videos.map.init';
+
+        // Need defineProperty to maintain reactivity.
+        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
+        Object.defineProperty(appData, "info", {
+            get: () => videoInfo,
+        })
+
+        return { 'files': appData };
+    },
     computed: {
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.isSelected);
