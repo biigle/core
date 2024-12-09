@@ -15,6 +15,7 @@ export default {
             currentId: null,
         };
     },
+    inject: ['files'],
     computed: {
         filename() {
             if (this.currentId) {
@@ -150,15 +151,16 @@ export default {
         },
     },
     created() {
-        let ids = biigle.$require('annotations.imagesIds');
         let filenames = {};
-        biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
+        let ids = this.files.info.ids;
+        this.files.info.filenames.forEach((filename, index) => {
             filenames[ids[index]] = filename;
         });
         this.filenames = filenames;
-        this.currentId = biigle.$require('annotations.imageId');
-        Events.$on('images.change', this.updateCurrentId);
-        Events.$on('annotations.map.init', this.setMap);
+        this.currentId = this.files.info.currentId
+        Events.$on(this.files.info.fileChangedEvent, this.updateCurrentId);
+        Events.$on(this.files.info.mapChangedEvent, this.setMap);
+
         Keyboard.on('p', this.capture);
     },
 };
