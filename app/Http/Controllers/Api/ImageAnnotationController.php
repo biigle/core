@@ -14,6 +14,11 @@ use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
+use Biigle\Role;
+use Biigle\Project;
+use Biigle\LabelTree;
+use Pgvector\Laravel\Vector;
+use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 
 class ImageAnnotationController extends Controller
 {
@@ -212,8 +217,8 @@ class ImageAnnotationController extends Controller
 
         $annotation = new ImageAnnotation;
         $annotation->shape_id = $request->input('shape_id');
-        $annotation->image()->associate($request->image);
-
+        $image = $request->image;
+        $annotation->image()->associate($image);
         try {
             $annotation->validatePoints($points);
         } catch (Exception $e) {
@@ -221,7 +226,63 @@ class ImageAnnotationController extends Controller
         }
 
         $annotation->points = $points;
-        $label = Label::findOrFail($request->input('label_id'));
+        $labelId = $request->input('label_id');
+        $topThreeLabels = [];
+        if (is_null($labelId) && $request->has('feature_vector')) {
+            // 1. Create feature vector instance.
+            $featureVector = new Vector($request->input('feature_vector'));
+            
+            // 2. Get label_tree_id(s).
+            // TODO: Maybe as separated function.
+            $user = $request->user();
+            if ($user->can('sudo')) {
+                // Global admins have no restrictions.
+                $projectIds = DB::table('project_volume')
+                    ->where('volume_id', $image->volume_id)
+                    ->pluck('project_id');
+            } else {
+                // Array of all project IDs that the user and the image have in common
+                // and where the user is editor, expert or admin.
+                $projectIds = Project::inCommon($user, $image->volume_id, [
+                    Role::editorId(),
+                    Role::expertId(),
+                    Role::adminId(),
+                ])->pluck('id');
+            }
+            // All label trees that are used by all projects which are visible to the user.
+            $trees = LabelTree::select('id', 'name', 'version_id')
+                ->with('labels', 'version')
+                ->whereIn('id', function ($query) use ($projectIds) {
+                    $query->select('label_tree_id')
+                        ->from('label_tree_project')
+                        ->whereIn('project_id', $projectIds);
+                })
+            ->pluck('id');
+
+            // 3. Perform vector search and get top 3 labels.
+            $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
+            ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
+            ->orderBy('distance')
+            // K = 100
+            // TODO: K as constant.
+            ->limit(100);
+
+            $topThreeLabels = DB::table(DB::raw("({$subquery->toSql()}) as subquery"))
+            ->mergeBindings($subquery->getQuery()->addBinding($featureVector))
+            ->whereIn('label_tree_id', $trees)
+            ->select('label_id')
+            ->groupBy('label_id')
+            ->orderByRaw('MIN(distance)')
+            ->limit(3)
+            ->pluck('label_id')
+            ->toArray();
+            
+            // 4. Set labelId to top 1 label.
+            // TODO: Fallback query if no result is returned.
+            $labelId = $topThreeLabels[0];
+        }
+
+        $label = Label::findOrFail($labelId);
 
         $this->authorize('attach-label', [$annotation, $label]);
 
@@ -235,6 +296,13 @@ class ImageAnnotationController extends Controller
         });
 
         $annotation->load('labels.label', 'labels.user');
+
+        // 5. Attach the other two labels if they exist.
+        // TODO: Adjust or create an Eloquent.
+        for ($i = 1; $i < count($topThreeLabels); $i++) {
+            $label_property = 'label_id_' . ($i + 1);
+            $annotation->$label_property = $topThreeLabels[$i];
+        }
 
         return $annotation;
     }
