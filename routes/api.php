@@ -428,3 +428,6 @@ $router->get('reject-user-registration/{id}', [
     'as' => 'reject-registration',
     'uses' => 'UserRegistrationController@reject',
 ]);
+
+Route::put('/training-proposals/batch', [TrainingProposalController::class, 'updateBatch']);
+Route::put('/annotation-candidates/batch', [AnnotationCandidateController::class, 'updateBatch']);
