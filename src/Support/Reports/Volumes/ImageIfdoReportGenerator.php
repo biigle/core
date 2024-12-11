@@ -47,7 +47,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
             },
             'annotations.labels' => function ($query) {
                 if ($this->isRestrictedToNewestLabel()) {
-                    $query = $this->restrictToNewestLabelQuery($query, 'image_annotation_labels');
+                    $query = $this->restrictToNewestLabelQuery($query, $this->source);
                 }
 
                 if ($this->isRestrictedToLabels()) {

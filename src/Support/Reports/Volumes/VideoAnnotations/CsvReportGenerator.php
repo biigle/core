@@ -152,7 +152,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             ->where('videos.volume_id', $this->source->id)
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->when($this->isRestrictedToNewestLabel(), function ($query) {
-                return $this->restrictToNewestLabelQuery($query, 'video_annotation_labels');
+                return $this->restrictToNewestLabelQuery($query, $this->source);
             })
             ->when($this->isRestrictedToLabels(), function ($query) {
                 return $this->restrictToLabelsQuery($query, 'video_annotation_labels');
