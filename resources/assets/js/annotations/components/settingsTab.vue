@@ -110,12 +110,19 @@ export default {
             this.progressIndicator = false;
         },
         toggleAnnotationOpacity() {
-            if (this.annotationOpacity > 0) {
-                this.annotationOpacity = 0;
-            } else {
-                this.annotationOpacity = 1;
-            }
-        },
+    if (this.annotationOpacity > 0) {
+        this.annotationOpacity = 0;
+    } else {
+        this.annotationOpacity = 1;
+    }
+
+    const settingsTabButton = document.querySelector('.settings-tab-button');
+    if (settingsTabButton) {
+        settingsTabButton.classList.add('highlight');
+        setTimeout(() => settingsTabButton.classList.remove('highlight'), 1000); 
+    }
+}
+
     },
     watch: {
         annotationOpacity(opacity) {

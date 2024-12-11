@@ -24,8 +24,10 @@
                     <td><kbd>Arrow right</kbd>, <kbd>Space</kbd></td>
                     <td>Next image</td>
                 </tr>
+                <tr>
                     <td><kbd>Shift</kbd>+<kbd>Scroll</kbd></td>
                     <td>Previous or Next image</td>
+                </tr>
                 <tr>
                     <td><kbd>+</kbd></td>
                     <td>Zoom the image to the original resolution</td>
@@ -44,7 +46,11 @@
                 </tr>
                 <tr>
                     <td><kbd>o</kbd></td>
-                    <td>Toggle the annotation opactiy between 0.0 and 1.0</td>
+                    <td>Toggle the annotation opacity between 0.0 and 1.0</td>
+                </tr>
+                <tr>
+                    <td><kbd>v</kbd></td>
+                    <td>Toggle the annotation opacity in the video tool</td>
                 </tr>
                 <tr>
                     <td><kbd>a</kbd></td>
@@ -105,7 +111,7 @@
                 </tr>
                 <tr>
                     <td><kbd>Shift</kbd>+<kbd>Mouse left</kbd></td>
-                    <td>Select multiple annotation at the same time</td>
+                    <td>Select multiple annotations at the same time</td>
                 </tr>
                 <tr>
                     <td><kbd>Del</kbd></td>
@@ -117,7 +123,7 @@
                 </tr>
                 <tr>
                     <td><kbd>Esc</kbd></td>
-                    <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
+                    <td>Cancel current action<br><small>e.g., drawing or moving an annotation</small></td>
                 </tr>
                 <tr>
                     <td><kbd>p</kbd></td>
@@ -125,7 +131,7 @@
                 </tr>
                 <tr>
                     <td><kbd>c</kbd></td>
-                    <td>Select last created annotation</td>
+                    <td>Select the last created annotation</td>
                 </tr>
             </tbody>
         </table>
