@@ -163,7 +163,11 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
+        },
+        highlightSettingsTab() {
+            return this.annotationOpacity === 0;
         }
+    
     },
     methods: {
         getImageAndAnnotationsPromises(id) {
