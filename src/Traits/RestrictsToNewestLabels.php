@@ -17,17 +17,22 @@ trait RestrictsToNewestLabels
      */
     public function restrictToNewestLabelQuery($query, $table)
     {
-        // This is a quite inefficient query. Here is why:
-        // We could use "select distinct on" directly on the query but this would be
-        // overridden by the subsequent select() in self::initQuery(). If we would add
-        // the "select distinct on" **after** the select(), we would get invalid syntax:
-        // "select *, distinct on".
-        return $query->whereIn("{$table}.id", function ($query) use ($table) {
-            return $query->selectRaw('distinct on (annotation_id) id')
-                ->from($table)
-                ->orderBy('annotation_id', 'desc')
-                ->orderBy('id', 'desc')
-                ->orderBy('created_at', 'desc');
-        });
+        // The subquery join is the fastest approach I could come up with that can be used
+        // as an addition to the existing query (instead of rewiriting the entire query,
+        // e.g. with a window function).
+        //
+        // Previously this was a where/in statement with was much slower.
+        //
+        // It could still be sped up with joins on image_annotations and images in the
+        // subquery, filtering it by volume_id, but this will be incompatible with video
+        // annotations. Maybe add a $mediaType argument to switch between tables?
+
+        $subquery = DB::table($table)
+            ->selectRaw("distinct on (annotation_id) id")
+            ->orderBy('annotation_id', 'desc')
+            ->orderBy('id', 'desc')
+            ->orderBy('created_at', 'desc');
+
+        return $query->joinSub($subquery, 'latest_labels', fn ($join) => $join->on("{$table}.id", '=', 'latest_labels.id'));
     }
 }
