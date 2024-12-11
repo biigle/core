@@ -101,6 +101,25 @@ export default {
             supportsJumpByFrame: false,
         };
     },
+    provide() {
+        const appData = {}
+
+        let videoInfo = {};
+        videoInfo['currentId'] = biigle.$require('videos.id');
+        videoInfo['ids'] = biigle.$require('videos.videoIds');
+        videoInfo['filenames'] = biigle.$require('videos.videoFilenames');
+        videoInfo['type'] = 'video';
+        videoInfo['fileChangedEvent'] = 'video.change';
+        videoInfo['mapChangedEvent'] = 'videos.map.init';
+
+        // Need defineProperty to maintain reactivity.
+        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
+        Object.defineProperty(appData, "info", {
+            get: () => videoInfo,
+        })
+
+        return { 'files': appData };
+    },
     computed: {
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.isSelected);
@@ -154,6 +173,9 @@ export default {
         },
         hasTooLargeError() {
             return this.error instanceof VideoTooLargeError;
+        },
+        hasCrossOriginError() {
+            return this.error instanceof TypeError;
         },
         errorClass() {
             if (this.hasVideoError) {
@@ -692,6 +714,9 @@ export default {
                 UrlParams.set(params);
             },
         },
+        videoId() {
+            Events.$emit('video.change', this.videoId, this.video);
+        }
     },
     created() {
         let shapes = biigle.$require('videos.shapes');
@@ -752,6 +777,8 @@ export default {
         if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
+        Events.$emit('videos.map.init', this.$refs.videoScreen.map);
+
     },
 };
 </script>
