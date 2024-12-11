@@ -1,5 +1,5 @@
-<sidebar-tab name="settings" icon="cog" title="Settings">
-    <settings-tab v-cloak :image="image" v-on:change="handleSettingsChange" inline-template>
+<sidebar-tab name="settings" icon="cog" title="Settings" :highlight="isAnnotationOpacityZero">
+        <settings-tab v-cloak :image="image" v-on:change="handleSettingsChange" inline-template>
         <div class="annotator-tab">
             <div class="sidebar-tab__section">
                 <button v-if="crossOrigin" class="btn btn-default" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
