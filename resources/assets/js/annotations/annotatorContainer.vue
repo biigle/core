@@ -89,6 +89,25 @@ export default {
             crossOriginError: false,
         };
     },
+    provide() {
+        const appData = {}
+
+        let imageInfo = {};
+        imageInfo['currentId'] = biigle.$require('annotations.imageId');
+        imageInfo['ids'] = biigle.$require('annotations.imagesIds');
+        imageInfo['filenames'] = biigle.$require('annotations.imagesFilenames');
+        imageInfo['type'] = 'image';
+        imageInfo['fileChangedEvent'] = 'images.change';
+        imageInfo['mapChangedEvent'] = 'annotations.map.init';
+
+        // Need defineProperty to maintain reactivity.
+        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
+        Object.defineProperty(appData, "info", {
+            get: () => imageInfo,
+        })
+
+        return { 'files': appData };
+    },
     computed: {
         canAdd() {
             return this.isEditor && (this.image !== null);

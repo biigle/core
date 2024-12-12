@@ -1,16 +1,22 @@
 <script>
 import PowerToggle from '../../core/components/powerToggle';
 import Settings from '../stores/settings';
+import ScreenshotButton from '../../annotations/components/screenshotButton.vue';
 
 export default {
     components: {
         powerToggle: PowerToggle,
+        screenshotButton: ScreenshotButton
     },
     props: {
         supportsJumpByFrame: {
             type: Boolean,
             default: false,
         },
+        crossOriginError: {
+            type: Boolean,
+            default: false,
+        }
     },
     data() {
         return {

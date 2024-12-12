@@ -99,7 +99,27 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            hasCrossOriginError: false,
         };
+    },
+    provide() {
+        const appData = {}
+
+        let videoInfo = {};
+        videoInfo['currentId'] = biigle.$require('videos.id');
+        videoInfo['ids'] = biigle.$require('videos.videoIds');
+        videoInfo['filenames'] = biigle.$require('videos.videoFilenames');
+        videoInfo['type'] = 'video';
+        videoInfo['fileChangedEvent'] = 'video.change';
+        videoInfo['mapChangedEvent'] = 'videos.map.init';
+
+        // Need defineProperty to maintain reactivity.
+        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
+        Object.defineProperty(appData, "info", {
+            get: () => videoInfo,
+        })
+
+        return { 'files': appData };
     },
     computed: {
         selectedAnnotations() {
@@ -560,7 +580,19 @@ export default {
                 .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
 
-            this.video.src = this.videoFileUri.replace(':id', video.id);
+            let self = this;
+            fetch(this.videoFileUri.replace(':id', video.id))
+                .then((res) => {
+                    res.blob().then(function (blob) {
+                        let urlCreator = window.URL || window.webkitURL;
+                        self.video.src = urlCreator.createObjectURL(blob);
+                    });
+                })
+                .catch((e) => {
+                    // Access on non-CORS enabled file causes TypeError
+                    this.hasCrossOriginError = e instanceof TypeError;
+                    self.video.src = self.videoFileUri.replace(':id', video.id);
+                });
 
             return promise;
         },
@@ -692,6 +724,9 @@ export default {
                 UrlParams.set(params);
             },
         },
+        videoId() {
+            Events.$emit('video.change', this.videoId, this.video);
+        }
     },
     created() {
         let shapes = biigle.$require('videos.shapes');
@@ -752,6 +787,8 @@ export default {
         if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
+        Events.$emit('videos.map.init', this.$refs.videoScreen.map);
+
     },
 };
 </script>
