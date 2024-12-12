@@ -1,4 +1,4 @@
-<sidebar-tab :disabled="isInRelabelStep" name="annotations" icon="list" title="Annotations" class="sidebar__tab--nopad">
+<sidebar-tab :disabled="isInRelabelStep" name="annotations" icon="list" title="Label list" class="sidebar__tab--nopad">
     <annotations-tab
         :labels="annotationLabels"
         :changed-annotations="changedAnnotations"
