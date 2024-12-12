@@ -36,7 +36,6 @@
     </div>
 </div>
 <sidebar v-cloak open-tab="labels" v-on:open="handleOpenTab">
-    @include('largo::annotationsTab')
     <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div class="largo-tab__button">
             <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the relabelling step" v-on:click="goToRelabel">Continue</button>
@@ -57,6 +56,7 @@
         @endcan
         <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
     </sidebar-tab>
+    @include('largo::labelList')
     <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">
         <sorting-tab
             :needs-similarity-reference="needsSimilarityReference"

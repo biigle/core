@@ -13,7 +13,7 @@ import {Messages} from '../import';
 import {PowerToggle} from '../import';
 import {SidebarTab} from '../import';
 import {Sidebar} from '../import';
-import AnnotationsTab from '../components/annotationsTab.vue';
+import LabelList from '../components/labelList.vue';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
 import AnnotationsApi from '../api/labels';
 
@@ -31,7 +31,7 @@ export default {
         relabelImageGrid: RelabelImageGrid,
         settingsTab: SettingsTab,
         sortingTab: SortingTab,
-        annotationsTab: AnnotationsTab,
+        labelList: LabelList,
     },
     data() {
         return {

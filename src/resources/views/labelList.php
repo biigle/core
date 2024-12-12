@@ -1,5 +1,5 @@
 <sidebar-tab :disabled="isInRelabelStep" name="annotations" icon="list" title="Label list" class="sidebar__tab--nopad">
-    <annotations-tab
+    <label-list
         :labels="annotationLabels"
         :changed-annotations="changedAnnotations"
         v-on:select="handleSelectedLabel"
@@ -26,5 +26,5 @@
                          ></label-item>
                 </ul>
             </div>
-    </annotations-tab>
+    </label-list>
 </sidebar-tab>

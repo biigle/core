@@ -1,5 +1,5 @@
 <script>
-import LabelItem from './annotationTabLabelItem';
+import LabelItem from './labelListLabelItem';
 
 
 export default {
