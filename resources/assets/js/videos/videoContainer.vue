@@ -99,6 +99,7 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            hasCrossOriginError: false,
         };
     },
     provide() {
@@ -173,9 +174,6 @@ export default {
         },
         hasTooLargeError() {
             return this.error instanceof VideoTooLargeError;
-        },
-        hasCrossOriginError() {
-            return this.error instanceof TypeError;
         },
         errorClass() {
             if (this.hasVideoError) {
@@ -582,7 +580,19 @@ export default {
                 .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
 
-            this.video.src = this.videoFileUri.replace(':id', video.id);
+            let self = this;
+            fetch(this.videoFileUri.replace(':id', video.id))
+                .then((res) => {
+                    res.blob().then(function (blob) {
+                        let urlCreator = window.URL || window.webkitURL;
+                        self.video.src = urlCreator.createObjectURL(blob);
+                    });
+                })
+                .catch((e) => {
+                    // Access on non-CORS enabled file causes TypeError
+                    this.hasCrossOriginError = e instanceof TypeError;
+                    self.video.src = self.videoFileUri.replace(':id', video.id);
+                });
 
             return promise;
         },
