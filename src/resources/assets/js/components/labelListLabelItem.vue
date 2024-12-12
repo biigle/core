@@ -1,5 +1,5 @@
 <template>
-    <li class="annotations-tab-item" :class="classObject" :title="title">
+    <li class="annotations-tab-item" :style="style" :title="title">
         <div class="annotations-tab-item__title" @click="emitSelectLabel">
             <span class="pull-right badge" v-text="count" :title="countTitle"></span>
             <span class="annotations-tab-item__color" :style="colorStyle"></span>
@@ -34,9 +34,9 @@ export default {
         title() {
             return `Annotations with label ${this.labelItem.name}`;
         },
-        classObject() {
+        style() {
             return {
-                selected: this.labelItem.selected,
+                'font-weight': this.labelItem.selected ? 'bold' : '',
             };
         },
         countTitle() {
