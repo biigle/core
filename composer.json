@@ -29,6 +29,7 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.0",
+        "lychee-org/php-exif": "^1.0",
         "msurguy/honeypot": "^1.0",
         "pgvector/pgvector": "^0.1.4",
         "php-ffmpeg/php-ffmpeg": "^1.0",

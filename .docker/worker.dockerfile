@@ -6,6 +6,7 @@ LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
+        exiftool \
         ffmpeg \
         python3 \
         python3-numpy \
