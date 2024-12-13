@@ -99,6 +99,7 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            hasCrossOriginError: false,
         };
     },
     provide() {
@@ -173,9 +174,6 @@ export default {
         },
         hasTooLargeError() {
             return this.error instanceof VideoTooLargeError;
-        },
-        hasCrossOriginError() {
-            return this.error instanceof TypeError;
         },
         errorClass() {
             if (this.hasVideoError) {
@@ -573,7 +571,10 @@ export default {
         },
         fetchVideoContent(video) {
             let videoPromise = new Vue.Promise((resolve) => {
-                this.video.addEventListener('canplay', resolve);
+                this.video.addEventListener('canplay', () => {
+                    this.checkCORSProperty();
+                    resolve();
+                });
             });
             let annotationPromise = VideoAnnotationApi.query({id: video.id});
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
@@ -603,6 +604,16 @@ export default {
                 });
 
             return promise;
+        },
+        checkCORSProperty() {
+            let testCanvas = document.createElement('canvas');
+            let ctx = testCanvas.getContext('2d');
+            ctx.drawImage(this.video, 0, 0);
+            try {
+                ctx.getImageData(0, 0, 1, 1);
+            } catch (e) {                
+                this.hasCrossOriginError = true;
+            }
         },
         showPreviousVideo() {
             this.reset();
