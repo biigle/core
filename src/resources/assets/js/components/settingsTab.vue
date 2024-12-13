@@ -26,38 +26,25 @@ export default {
                 'showOutlines',
             ],
             showOutlines: true,
-            buttonWasClicked: true,
         };
     },
-    inject: ['outlines'],
     computed: {
         settings() {
             return Settings;
         },
-        showAnnotationOutlines() {
-            return this.outlines.showAnnotationOutlines;
-        },
     },
     methods: {
         enableOutlines() {
-            this.buttonWasClicked = true;
             this.showOutlines = true;
         },
         disableOutlines() {
-            this.buttonWasClicked = true;
             this.showOutlines = false;
         },
     },
     watch: {
         showOutlines(show) {
-            if (this.buttonWasClicked) {
-                this.$emit('change-outlines', show);
-                this.settings.set('showOutlines', show);
-            }
-        },
-        showAnnotationOutlines() {
-            this.buttonWasClicked = false;
-            this.showOutlines = this.showAnnotationOutlines;
+            this.$emit('change-outlines', show);
+            this.settings.set('showOutlines', show);
         },
     },
     created() {
