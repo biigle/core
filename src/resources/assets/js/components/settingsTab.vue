@@ -15,6 +15,7 @@
 <script>
 import Settings from '../stores/settings';
 import {PowerToggle} from '../import';
+import { Keyboard } from '../import';
 
 export default {
     components: {
@@ -50,6 +51,14 @@ export default {
     created() {
         this.restoreKeys.forEach((key) => {
             this[key] = this.settings.get(key);
+        });
+
+        Keyboard.on('o', () => {
+            if (this.showOutlines) {
+                this.disableOutlines();
+            } else {
+                this.enableOutlines();
+            }
         });
     },
 };
