@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
-use Biigle\Tests\VideoTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VideoTest;
 use TestCase;
 
 class VideoInfoControllerTest extends TestCase
