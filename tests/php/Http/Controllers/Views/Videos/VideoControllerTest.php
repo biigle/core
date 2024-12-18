@@ -24,6 +24,6 @@ class VideoControllerTest extends ApiTestCase
     public function testShowRedirect()
     {
         $this->beUser();
-        $this->get('videos/999')->assertRedirect('/videos/999/annotations');
+        $this->get('video-annotate/999')->assertRedirect('/videos/999/annotations');
     }
 }
