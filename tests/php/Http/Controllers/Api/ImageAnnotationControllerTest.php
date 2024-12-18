@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
@@ -13,7 +14,6 @@ use Cache;
 use Carbon\Carbon;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
 
 class ImageAnnotationControllerTest extends ApiTestCase
 {
@@ -328,7 +328,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertSame(1, $annotation->labels()->count());
     }
 
-    public function testStoreWithFeatureVectorWithoutHNSW() {
+    public function testStoreWithFeatureVectorWithoutHNSW()
+    {
         $this->beEditor();
 
         // Test label
@@ -353,7 +354,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => Shape::pointId(),
-            'feature_vector' => range(1,10),
+            'feature_vector' => range(1, 10),
             'confidence' => 0.5,
             'points' => [10, 11],
         ]);
@@ -362,7 +363,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => Shape::pointId(),
-            'feature_vector' => range(1,384),
+            'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
         ]);
@@ -393,7 +394,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => Shape::pointId(),
-            'feature_vector' => range(1,384),
+            'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
         ]);
