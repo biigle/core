@@ -79,14 +79,14 @@
                         <control-button
                             icon="fa-check"
                             title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || singleAnnotationActive"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :disabled="cantFinishTrackAnnotation || disableJobTracking || singleAnnotationActive"
                             :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
@@ -102,7 +102,7 @@
                         <control-button
                             icon="fa-check"
                             title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || singleAnnotationActive"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -118,14 +118,14 @@
                         <control-button
                             icon="fa-check"
                             title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || singleAnnotationActive"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :disabled="cantFinishTrackAnnotation || disableJobTracking || singleAnnotationActive"
                             :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
@@ -141,7 +141,7 @@
                         <control-button
                             icon="fa-check"
                             title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || singleAnnotationActive"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -157,7 +157,7 @@
                             v-if="isDrawingPolygon || isUsingPolygonBrush"
                             icon="fa-check"
                             title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || singleAnnotationActive"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
@@ -191,7 +191,7 @@
                         <control-button
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || singleAnnotationActive"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>

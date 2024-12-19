@@ -7,12 +7,24 @@ import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
+import settings from "../../stores/settings";
+import { Point } from '@biigle/ol/geom';
+
+function computeDistance(point1, point2) {
+    let p1 = point1.getCoordinates();
+    let p2 = point2.getCoordinates();
+    return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
+}
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
  * @type {Object}
  */
+
+const POINT_CLICK_COOLDOWN = 400;
+const POINT_CLICK_DISTANCE = 5;
+
 export default {
     mixins: [snapInteraction],
     data() {
@@ -20,6 +32,8 @@ export default {
             pendingAnnotation: {},
             autoplayDrawTimeout: null,
             drawEnded: true,
+            lastDrawnPoint: new Point(0, 0),
+            lastDrawnPointTime: 0,
         };
     },
     computed: {
@@ -62,6 +76,10 @@ export default {
         },
         cantFinishTrackAnnotation() {
             return !this.pendingAnnotation.frames || this.pendingAnnotation.frames.length !== 1;
+        },
+
+        singleAnnotationActive() {
+            return settings.get('singleAnnotation');
         },
     },
     methods: {
@@ -199,14 +217,22 @@ export default {
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
 
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
-                this.pendingAnnotation.frames.push(this.video.currentTime);
-                this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
-
-                if (!this.video.ended && this.autoplayDraw > 0) {
-                    this.play();
-                    window.clearTimeout(this.autoplayDrawTimeout);
-                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                if (this.singleAnnotationActive && this.singleAnnotationActive && this.isPointDoubleClick(e)) {
+                    this.pendingAnnotationSource.once('addfeature', function (e) {
+                        this.removeFeature(e.feature);
+                    });
                 }
+                else {
+                    this.pendingAnnotation.frames.push(this.video.currentTime);
+                    this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
+
+                    if (!this.video.ended && this.autoplayDraw > 0) {
+                        this.play();
+                        window.clearTimeout(this.autoplayDrawTimeout);
+                        this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                    }
+                }
+
             } else {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
@@ -217,6 +243,19 @@ export default {
             }
 
             this.$emit('pending-annotation', this.pendingAnnotation);
+
+            if (this.singleAnnotationActive) {
+                this.finishDrawAnnotation();
+                if (this.isDrawingPoint && !this.isPointDoubleClick(e)) {
+                    this.lastDrawnPointTime = new Date().getTime();
+                    this.lastDrawnPoint = e.feature.getGeometry();
+                }
+            }
+        },
+
+        isPointDoubleClick(e) {
+            return new Date().getTime() - this.lastDrawnPointTime < POINT_CLICK_COOLDOWN
+                && computeDistance(this.lastDrawnPoint, e.feature.getGeometry()) < POINT_CLICK_DISTANCE;
         },
     },
     created() {
