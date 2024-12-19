@@ -87,5 +87,9 @@
         <p>
             The mute video switch enables or disables the audio track of the video.
         </p>
+
+        <p>
+            The single frame annotation automatically complete new annotations after the first frame. When enabled, additional controls for finishing or tracking will be disabled.
+        </p>
     </div>
 @endsection
