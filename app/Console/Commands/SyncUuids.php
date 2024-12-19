@@ -115,8 +115,7 @@ class SyncUuids extends Command
                     'lastname' => Hash::make($user->lastname),
                     'email' => Hash::make($user->email),
                 ];
-            })
-            ->toJson(JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            })->toJson(JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $bar->finish();
 
         echo $users;
