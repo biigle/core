@@ -54,6 +54,10 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->onOneServer();
 
+        $schedule->command('sync:prune')
+            ->daily()
+            ->onOneServer();
+
         // Insert scheduled tasks here.
     }
 
