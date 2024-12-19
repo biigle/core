@@ -52,7 +52,7 @@ class VideoLabelExport extends Export
                     $row->created_at,
                     $row->updated_at,
                 ]);
-            }, 1E+5, 'video_labels.id', 'video_label_id');
+            }, 100000, 'video_labels.id', 'video_label_id');
 
         return $this->tmpPath;
     }

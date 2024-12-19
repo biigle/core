@@ -19,14 +19,14 @@ class LabelTreeImport extends Import
     /**
      * Caches the decoded label tree import file.
      *
-     * @var Collection
+     * @var Collection|null
      */
     protected $importLabelTrees;
 
     /**
      * The user import instance that belongs to this import.
      *
-     * @var UserImport
+     * @var UserImport|null
      */
     protected $userImport;
 
@@ -151,7 +151,7 @@ class LabelTreeImport extends Import
         // Add the conflicting attributes to the labels if there are any. Discard any
         // import labels that already exist and have no conflicts. Use values() to
         // discard the original keys.
-        return $labels->map(function ($label) use ($trees, $existingLabels) {
+        return $labels->map(function ($label) use ($existingLabels) {
                 $existingLabel = $existingLabels->get($label['uuid']);
                 if ($existingLabel) {
                     $label['discard'] = true;

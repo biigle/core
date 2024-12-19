@@ -5,7 +5,7 @@ namespace Biigle\Http\Controllers\Api\Export;
 use Biigle\Http\Controllers\Api\Controller as BaseController;
 use Illuminate\Http\Request;
 
-class Controller extends BaseController
+abstract class Controller extends BaseController
 {
     /**
      * Creates a new instance.
@@ -19,7 +19,7 @@ class Controller extends BaseController
      * Handle a generic export request.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function show(Request $request)
     {
@@ -48,33 +48,24 @@ class Controller extends BaseController
     /**
      * Get the query for the model to export.
      *
-     * @return Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Query\Builder
      */
-    protected function getQuery()
-    {
-        return;
-    }
+    abstract protected function getQuery();
 
     /**
      * Get the new export instance.
      *
      * @param array $ids
-     * @return Biigle\Modules\Sync\Support\Export
+     * @return \Biigle\Services\Export\Export
      */
-    protected function getExport(array $ids)
-    {
-        return;
-    }
+    abstract protected function getExport(array $ids);
 
     /**
      * Get the filename of the export archive.
      *
      * @return string
      */
-    protected function getExportFilename()
-    {
-        return 'export.zip';
-    }
+    abstract protected function getExportFilename();
 
     /**
      * Determine if this kind of export is allowed by the config.

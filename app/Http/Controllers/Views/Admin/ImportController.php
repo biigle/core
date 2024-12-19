@@ -16,7 +16,7 @@ class ImportController extends Controller
     /**
      * Shows the import admin page.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -34,7 +34,7 @@ class ImportController extends Controller
      * @param ArchiveManager $manager
      * @param string $token Import token
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(ArchiveManager $manager, $token)
     {
@@ -59,7 +59,7 @@ class ImportController extends Controller
      * @param UserImport $import
      * @param string $token
      *
-     * @return Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     protected function showUserImport(UserImport $import, $token)
     {
@@ -84,7 +84,7 @@ class ImportController extends Controller
      * @param LabelTreeImport $import
      * @param string $token
      *
-     * @return Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     protected function showLabelTreeImport(LabelTreeImport $import, $token)
     {
@@ -136,12 +136,9 @@ class ImportController extends Controller
     /**
      * Show the view for an unfinished volume tree import.
      *
-     * @param LabelTreeImport $import
-     * @param string $token
-     *
-     * @return Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
-    protected function showVolumeImport(VolumeImport $import, $token)
+    protected function showVolumeImport(VolumeImport $import, string $token)
     {
         $volumeCandidates = $import->getVolumeImportCandidates();
 

@@ -30,21 +30,21 @@ class VolumeImport extends Import
     /**
      * Caches the decoded volume import file.
      *
-     * @var Collection
+     * @var Collection|null
      */
     protected $importVolumes;
 
     /**
      * The user import instance that belongs to this import.
      *
-     * @var UserImport
+     * @var UserImport|null
      */
     protected $userImport;
 
     /**
      * The label tree import instance that belongs to this import.
      *
-     * @var LabelTreeImport
+     * @var LabelTreeImport|null
      */
     protected $labelTreeImport;
 
@@ -460,7 +460,7 @@ class VolumeImport extends Import
                 }
 
                 $validator = new VolumeUrl;
-                if (!$validator->passes(null, $volume->url)) {
+                if (!$validator->passes('', $volume->url)) {
                     $message = "Volume '{$volume->name}' has an invalid URL: ".$validator->message();
                     throw new UnprocessableEntityHttpException($message);
                 }

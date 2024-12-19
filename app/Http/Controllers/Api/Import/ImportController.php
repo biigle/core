@@ -37,7 +37,7 @@ class ImportController extends Controller
      *
      * @param Request $request
      * @param ArchiveManager $manager
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request, ArchiveManager $manager)
     {
@@ -76,7 +76,6 @@ class ImportController extends Controller
      * @param ArchiveManager $manager
      * @param  Request $request
      * @param string $token Import token
-     * @return \Illuminate\Http\Response
      */
     public function update(ArchiveManager $manager, Request $request, $token)
     {
@@ -112,7 +111,7 @@ class ImportController extends Controller
      *
      * @param ArchiveManager $manager
      * @param string $token Import token
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(ArchiveManager $manager, $token)
     {

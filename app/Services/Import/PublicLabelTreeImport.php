@@ -15,7 +15,7 @@ class PublicLabelTreeImport extends Import
     /**
      * Caches the decoded label tree import file.
      *
-     * @var Collection
+     * @var Collection|null
      */
     protected $importLabelTree;
 

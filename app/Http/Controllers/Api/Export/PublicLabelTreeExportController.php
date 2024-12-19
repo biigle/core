@@ -21,7 +21,7 @@ class PublicLabelTreeExportController extends BaseController
      * @apiPermission labelTreeMemberIfPrivate
      *
      * @param ShowPublicLabelTreeExport $request
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function show(ShowPublicLabelTreeExport $request)
     {

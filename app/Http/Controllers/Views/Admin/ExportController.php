@@ -10,7 +10,7 @@ class ExportController extends Controller
     /**
      * Shows the export admin page.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {

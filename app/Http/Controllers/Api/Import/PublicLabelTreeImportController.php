@@ -25,7 +25,7 @@ class PublicLabelTreeImportController extends Controller
      *
      * @param Request $request
      * @param ArchiveManager $manager
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request, ArchiveManager $manager)
     {
@@ -36,6 +36,7 @@ class PublicLabelTreeImportController extends Controller
             $token = $manager->store($request->file('archive'));
 
             try {
+                /** @var \Biigle\Services\Import\PublicLabelTreeImport */
                 $import = $manager->get($token);
                 if ($import->treeExists()) {
                     throw new Exception('The label tree already exists.');

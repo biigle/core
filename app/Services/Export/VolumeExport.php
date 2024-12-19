@@ -108,10 +108,8 @@ class VolumeExport extends Export
                     ->join('videos', 'videos.id', '=', 'video_labels.video_id')
                     ->whereIn('videos.volume_id', $this->ids);
             })
-            ->select('labels.label_tree_id')
             ->distinct()
-            ->get()
-            ->pluck('label_tree_id')
+            ->pluck('labels.label_tree_id')
             ->toArray();
     }
 

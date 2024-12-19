@@ -15,7 +15,7 @@ class ArchiveManager
     /**
      * Storage disk for uploaded import archives.
      *
-     * @var string
+     * @var \Illuminate\Contracts\Filesystem\Filesystem
      */
     protected $disk;
 
@@ -71,7 +71,7 @@ class ArchiveManager
     }
 
     /**
-     * Determine if the files of an import with tthe given token exist.
+     * Determine if the files of an import with the given token exist.
      *
      * @param string $token Import token.
      *
@@ -79,7 +79,7 @@ class ArchiveManager
      */
     public function has($token)
     {
-        return $this->disk->has($token);
+        return $this->disk->exists($token);
     }
 
     /**
@@ -99,7 +99,7 @@ class ArchiveManager
         }
 
         if ($this->has($token)) {
-            File::put($tmpDestinationZip, $this->disk->readStream($token));
+            File::put($tmpDestinationZip, $this->disk->get($token));
             $zip = new ZipArchive;
 
             try {
@@ -150,11 +150,11 @@ class ArchiveManager
      */
     public function prune()
     {
-        $files = $this->disk->listContents('/');
+        $files = $this->disk->files('/');
         $limit = Carbon::now()->subWeek()->getTimestamp();
-        foreach ($files as $file) {
-            if ($file->lastModified() < $limit) {
-                $this->disk->delete($file->path());
+        foreach ($files as $path) {
+            if ($this->disk->lastModified($path) < $limit) {
+                $this->disk->delete($path);
             }
         }
     }

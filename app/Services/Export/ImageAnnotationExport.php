@@ -57,7 +57,7 @@ class ImageAnnotationExport extends Export
                     $row->updated_at,
                     $row->points,
                 ]);
-            }, 5E+4, 'image_annotations.id', 'annotation_id');
+            }, 2000, 'image_annotations.id', 'annotation_id');
 
         return $this->tmpPath;
     }

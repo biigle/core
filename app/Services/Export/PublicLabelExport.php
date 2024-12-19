@@ -46,7 +46,7 @@ class PublicLabelExport extends Export
                     $row->label_tree_id,
                     $row->source_id,
                 ]);
-            }, 1E+5);
+            }, 100000);
 
         return $this->tmpPath;
     }

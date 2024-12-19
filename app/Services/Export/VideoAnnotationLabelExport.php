@@ -53,7 +53,7 @@ class VideoAnnotationLabelExport extends Export
                     $row->created_at,
                     $row->updated_at,
                 ]);
-            }, 1E+5, 'video_annotation_labels.id', 'annotation_label_id');
+            }, 100000, 'video_annotation_labels.id', 'annotation_label_id');
 
         return $this->tmpPath;
     }

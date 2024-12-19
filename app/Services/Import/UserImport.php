@@ -12,7 +12,7 @@ class UserImport extends Import
     /**
      * Caches the decoded user import file.
      *
-     * @var Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection|null
      */
     protected $importUsers;
 

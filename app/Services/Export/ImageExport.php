@@ -40,7 +40,7 @@ class ImageExport extends Export
                     $row->filename,
                     $row->volume_id,
                 ]);
-            }, 1E+5);
+            }, 100000);
 
         return $this->tmpPath;
     }

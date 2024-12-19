@@ -52,7 +52,7 @@ class ImageLabelExport extends Export
                     $row->created_at,
                     $row->updated_at,
                 ]);
-            }, 1E+5, 'image_labels.id', 'image_label_id');
+            }, 100000, 'image_labels.id', 'image_label_id');
 
         return $this->tmpPath;
     }

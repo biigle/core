@@ -10,7 +10,7 @@ class PublicImportController extends Controller
     /**
      * Shows the import admin page.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
