@@ -1,0 +1,16 @@
+@import 'components/entityChooser';
+
+.import-upload-form {
+    padding: 5em 30%;
+}
+
+.choosable-information {
+    &:hover, &.chosen {
+        cursor: pointer;
+        color: $brand-success;
+    }
+}
+
+.typeahead--block {
+    margin-bottom: 20px;
+}

@@ -57,6 +57,12 @@
             <p>
                 View and resolve differences between label trees.
             </p>
+            <h4>
+                <a href="{{route('manual-tutorials', ['label-trees', 'download-import'])}}">Download and import</a>
+            </h4>
+            <p>
+                Learn more on how you can download a label tree and use it elsewhere.
+            </p>
             @mixin('labelTreesManual')
 
             <h3>Volumes</h3>
