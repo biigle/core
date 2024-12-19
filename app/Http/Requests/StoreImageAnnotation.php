@@ -5,7 +5,7 @@ namespace Biigle\Http\Requests;
 use Biigle\Image;
 use Biigle\Shape;
 
-class StoreImageAnnotation extends StoreImageAnnotationLabel
+class StoreImageAnnotation extends StoreImageAnnotationLabelFeatureVector
 {
     /**
      * The image on which the annotation should be created.
