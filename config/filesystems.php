@@ -71,6 +71,11 @@ return [
             'driver' => 'local',
             'root' => storage_path('pending-metadata'),
         ],
+
+        'imports' => [
+            'driver' => 'local',
+            'root' => storage_path('imports'),
+        ],
     ],
 
     /*
