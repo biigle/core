@@ -2,7 +2,7 @@
 import ImportApi from './api/import';
 import ImportContainer from './mixins/importContainer';
 import LabelTreeImportContainer from './mixins/labelTreeImportContainer';
-import {handleErrorResponse} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * View model for the label tree import container

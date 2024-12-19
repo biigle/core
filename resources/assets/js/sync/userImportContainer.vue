@@ -1,7 +1,7 @@
 <script>
 import ImportApi from './api/import';
 import ImportContainer from './mixins/importContainer';
-import {handleErrorResponse} from './import';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * View model for the user import container

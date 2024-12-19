@@ -1,6 +1,6 @@
 <script>
 import EntityChooser from '../components/entityChooser';
-import {LoaderMixin} from '../import';
+import LoaderMixin from '../../core/mixins/loader';
 
 /**
  * A mixin for the import view models

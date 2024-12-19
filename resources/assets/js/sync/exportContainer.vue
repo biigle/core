@@ -1,12 +1,12 @@
 <script>
 import EntityChooser from './components/entityChooser';
-import {handleErrorResponse} from './import';
-import {LabelTreesApi} from './import';
-import {LoaderMixin} from './import';
-import {UsersApi} from './import';
-import {VolumesApi} from './import';
-import {Tabs} from './import';
-import {Tab} from './import';
+import LabelTreesApi from '../core/api/labelTree';
+import LoaderMixin from '../core/mixins/loader';
+import Tab from 'uiv/dist/Tab';
+import Tabs from 'uiv/dist/Tabs';
+import UsersApi from '../core/api/users';
+import VolumesApi from '../core/api/volumes';
+import {handleErrorResponse} from '../core/messages/store';
 
 /**
  * View model for the export container
