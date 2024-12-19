@@ -4,9 +4,9 @@ namespace Biigle\Tests\Services\Import;
 
 use Biigle\Label;
 use Biigle\LabelTree;
+use Biigle\Role;
 use Biigle\Services\Export\LabelTreeExport;
 use Biigle\Services\Import\LabelTreeImport;
-use Biigle\Role;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
@@ -501,6 +501,7 @@ class LabelTreeImportTest extends TestCase
 class LabelTreeImportStub extends LabelTreeImport
 {
     public $throw;
+
     protected function mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap)
     {
         if ($this->throw) {

@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Services\Export;
 
-use Biigle\Services\Export\PublicLabelTreeExport;
 use Biigle\Role;
+use Biigle\Services\Export\PublicLabelTreeExport;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;

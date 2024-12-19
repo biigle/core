@@ -64,18 +64,14 @@ class VolumeExportTest extends TestCase
 
         $this->assertCount(10, $exports);
         $userContent = $exports[0]->getContent();
-        $userIds = array_map(function ($user) {
-            return $user['id'];
-        }, $userContent);
+        $userIds = array_map(fn ($user) => $user['id'], $userContent);
         $this->assertContains($imageAnnotationLabel->user->id, $userIds);
         $this->assertContains($imageLabel->user->id, $userIds);
         $this->assertContains($videoAnnotationLabel->user->id, $userIds);
         $this->assertContains($videoLabel->user->id, $userIds);
 
         $labelTreeContent = $exports[1]->getContent();
-        $ids = array_map(function ($labelTree) {
-            return $labelTree['id'];
-        }, $labelTreeContent);
+        $ids = array_map(fn ($labelTree) => $labelTree['id'], $labelTreeContent);
         $this->assertContains($imageAnnotationLabel->label->label_tree_id, $ids);
         $this->assertContains($imageLabel->label->label_tree_id, $ids);
         $this->assertContains($videoAnnotationLabel->label->label_tree_id, $ids);

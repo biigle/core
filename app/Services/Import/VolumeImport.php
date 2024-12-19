@@ -8,7 +8,6 @@ use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Jobs\PostprocessVolumeImport;
 use Biigle\Label;
-use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Rules\VolumeUrl;
@@ -19,7 +18,6 @@ use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
 use DB;
-use Exception;
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 use SplFileObject;
@@ -63,9 +61,7 @@ class VolumeImport extends Import
     {
         return DB::transaction(function () use ($project, $creator, $only, $newUrls, $nameConflictResolution, $parentConflictResolution) {
             $volumeCandidates = $this->getVolumeImportCandidates()
-                ->when(is_array($only), function ($collection) use ($only) {
-                    return $collection->whereIn('id', $only);
-                })
+                ->when(is_array($only), fn ($collection) => $collection->whereIn('id', $only))
                 ->keyBy('id');
 
             $volumes = $this->insertVolumes($volumeCandidates, $creator, $newUrls);
@@ -168,9 +164,7 @@ class VolumeImport extends Import
                 $volume['labels'] = [];
             }
 
-            $volume['label_trees'] = array_values(array_unique(array_map(function ($id) use ($labelToTreeMap) {
-                return $labelToTreeMap[$id];
-            }, $volume['labels'])));
+            $volume['label_trees'] = array_values(array_unique(array_map(fn ($id) => $labelToTreeMap[$id], $volume['labels'])));
 
             return $volume;
         });
@@ -425,13 +419,8 @@ class VolumeImport extends Import
             }
         }
 
-        $labels = array_map(function ($ids) {
-            return array_values(array_unique($ids));
-        }, $labels);
-
-        $users = array_map(function ($ids) {
-            return array_values(array_unique($ids));
-        }, $users);
+        $labels = array_map(fn ($ids) => array_values(array_unique($ids)), $labels);
+        $users = array_map(fn ($ids) => array_values(array_unique($ids)), $users);
 
         return compact('labels', 'users');
     }
@@ -449,7 +438,8 @@ class VolumeImport extends Import
     {
         $mediaTypes = MediaType::pluck('id', 'name');
 
-        return $candidates->map(function ($candidate) use ($creator, $newUrls, $mediaTypes) {
+        return $candidates
+            ->map(function ($candidate) use ($creator, $newUrls, $mediaTypes) {
                 $volume = new Volume;
                 $volume->old_id = $candidate['id'];
                 $volume->name = $candidate['name'];

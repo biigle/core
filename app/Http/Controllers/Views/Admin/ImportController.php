@@ -4,11 +4,11 @@ namespace Biigle\Http\Controllers\Views\Admin;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Label;
+use Biigle\Role;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\LabelTreeImport;
 use Biigle\Services\Import\UserImport;
 use Biigle\Services\Import\VolumeImport;
-use Biigle\Role;
 use Biigle\User;
 
 class ImportController extends Controller
@@ -102,9 +102,7 @@ class ImportController extends Controller
         $labelCandidates = $import->getLabelImportCandidates();
         $labelCandidatesCount = $labelCandidates->count();
         $conflictingParentIds = $labelCandidates->pluck('conflicting_parent_id')
-            ->reject(function ($id) {
-                return is_null($id);
-            });
+            ->reject(fn ($id) => is_null($id));
         if ($conflictingParentIds->isNotEmpty()) {
             $conflictingParents = Label::whereIn('id', $conflictingParentIds)->get();
         } else {
@@ -153,9 +151,7 @@ class ImportController extends Controller
 
         $labelCandidates = $import->getLabelImportCandidates();
         $conflictingParentIds = $labelCandidates->pluck('conflicting_parent_id')
-            ->reject(function ($id) {
-                return is_null($id);
-            });
+            ->reject(fn ($id) => is_null($id));
         if ($conflictingParentIds->isNotEmpty()) {
             $conflictingParents = Label::whereIn('id', $conflictingParentIds)->get();
         } else {

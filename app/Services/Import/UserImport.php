@@ -28,15 +28,11 @@ class UserImport extends Import
         $users = $this->getImportUsers();
         $now = Carbon::now();
         $candidates = $this->getUserImportCandidates()
-            ->when(is_array($only), function ($collection) use ($only) {
-                return $collection->whereIn('id', $only);
-            });
+            ->when(is_array($only), fn ($collection) => $collection->whereIn('id', $only));
 
         $conflicts = $candidates->whereIn('id', $this->getConflicts()->pluck('id'));
         if ($conflicts->isNotEmpty()) {
-            $users = $conflicts->map(function ($user) {
-                return "{$user['firstname']} {$user['lastname']} ({$user['email']})";
-            })->implode(', ');
+            $users = $conflicts->map(fn ($user) => "{$user['firstname']} {$user['lastname']} ({$user['email']})")->implode(', ');
 
             throw new UnprocessableEntityHttpException("Import cannot be performed. The following users exist according to their email address but the UUIDs do not match: {$users}.");
         }
@@ -132,8 +128,6 @@ class UserImport extends Import
         $users = $this->getImportUsers();
         $existing = User::whereIn('email', $users->pluck('email'))->pluck('uuid', 'email');
 
-        return $users->filter(function ($user) use ($existing) {
-            return $existing->has($user['email']) && $user['uuid'] !== $existing->get($user['email']);
-        });
+        return $users->filter(fn ($user) => $existing->has($user['email']) && $user['uuid'] !== $existing->get($user['email']));
     }
 }

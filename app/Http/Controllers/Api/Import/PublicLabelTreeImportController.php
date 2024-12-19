@@ -4,8 +4,8 @@ namespace Biigle\Http\Controllers\Api\Import;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\LabelTree;
-use Biigle\Services\Import\ArchiveManager;
 use Biigle\Role;
+use Biigle\Services\Import\ArchiveManager;
 use DB;
 use Exception;
 use Illuminate\Http\Request;

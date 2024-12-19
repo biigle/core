@@ -3,11 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Views;
 
 use ApiTestCase;
-use Biigle\Services\Export\LabelTreeExport;
-use Biigle\Services\Export\UserExport;
-use Biigle\Services\Export\VolumeExport;
-use Biigle\Services\Import\ArchiveManager;
-use Illuminate\Http\UploadedFile;
 
 class PublicImportControllerTest extends ApiTestCase
 {

@@ -3,8 +3,6 @@
 namespace Biigle\Jobs;
 
 use Biigle\Image;
-use Biigle\Jobs\Job;
-use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
 use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Video;

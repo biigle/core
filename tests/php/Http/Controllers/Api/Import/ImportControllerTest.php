@@ -3,12 +3,12 @@
 namespace Biigle\Tests\Http\Controllers\Api\Import;
 
 use ApiTestCase;
+use Biigle\Project;
 use Biigle\Services\Export\UserExport;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\LabelTreeImport;
 use Biigle\Services\Import\UserImport;
 use Biigle\Services\Import\VolumeImport;
-use Biigle\Project;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\User;
@@ -23,9 +23,7 @@ class ImportControllerTest extends ApiTestCase
     {
         $mock = Mockery::mock(ArchiveManager::class);
         $mock->shouldReceive('store')->once()->andReturn('123abc');
-        $this->app->bind(ArchiveManager::class, function () use ($mock) {
-            return $mock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $mock);
 
         $user = UserTest::create();
         $path = (new UserExport([$user->id]))->getArchive();
@@ -54,9 +52,7 @@ class ImportControllerTest extends ApiTestCase
         $mock = Mockery::mock(ArchiveManager::class);
         $e = new Exception('my error message');
         $mock->shouldReceive('store')->once()->andThrow($e);
-        $this->app->bind(ArchiveManager::class, function () use ($mock) {
-            return $mock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $mock);
 
         $export = new UserExport([$this->user()->id]);
         $path = $export->getArchive();
@@ -77,9 +73,7 @@ class ImportControllerTest extends ApiTestCase
             ->with('abc123')
             ->andReturn(null, $importMock);
         $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $managerMock);
 
         $this->doTestApiRoute('PUT', '/api/v1/import/abc123');
 
@@ -174,7 +168,8 @@ class ImportControllerTest extends ApiTestCase
             ->assertStatus(422);
         $this->putJson('/api/v1/import/abc123', ['name_conflicts' => [1 => 'a']])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'name_conflicts' => [1 => 'import', 2 => 'existing'],
             ])
             ->assertStatus(200);
@@ -192,7 +187,8 @@ class ImportControllerTest extends ApiTestCase
             ->assertStatus(422);
         $this->putJson('/api/v1/import/abc123', ['parent_conflicts' => [1 => 'a']])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'parent_conflicts' => [1 => 'import', 2 => 'existing'],
             ])
             ->assertStatus(200);
@@ -219,17 +215,20 @@ class ImportControllerTest extends ApiTestCase
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'only' => 'abc',
             ])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'only' => ['a'],
             ])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'only' => [1, 2, 3],
             ])
@@ -245,17 +244,20 @@ class ImportControllerTest extends ApiTestCase
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'name_conflicts' => 'abc',
             ])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'name_conflicts' => ['a'],
             ])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'name_conflicts' => [1 => 'existing'],
             ])
@@ -271,17 +273,20 @@ class ImportControllerTest extends ApiTestCase
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'parent_conflicts' => 'abc',
             ])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'parent_conflicts' => ['a'],
             ])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'parent_conflicts' => [1 => 'existing'],
             ])
@@ -297,12 +302,14 @@ class ImportControllerTest extends ApiTestCase
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'new_urls' => 'abc',
             ])
             ->assertStatus(422);
-        $this->putJson('/api/v1/import/abc123', [
+        $this
+            ->putJson('/api/v1/import/abc123', [
                 'project_id' => $p->id,
                 'new_urls' => ['a'],
             ])
@@ -314,9 +321,7 @@ class ImportControllerTest extends ApiTestCase
         $mock = Mockery::mock(ArchiveManager::class);
         $mock->shouldReceive('has')->twice()->with('abc123')->andReturn(false, true);
         $mock->shouldReceive('delete')->once()->with('abc123');
-        $this->app->bind(ArchiveManager::class, function () use ($mock) {
-            return $mock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $mock);
 
         $this->doTestApiRoute('DELETE', '/api/v1/import/abc123');
 
@@ -339,9 +344,7 @@ class ImportControllerTest extends ApiTestCase
         if ($delete) {
             $managerMock->shouldReceive('delete')->once();
         }
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $managerMock);
 
         return $importMock;
     }

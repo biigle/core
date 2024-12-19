@@ -3,11 +3,11 @@
 namespace Biigle\Http\Controllers\Api\Import;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Project;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\LabelTreeImport;
 use Biigle\Services\Import\UserImport;
 use Biigle\Services\Import\VolumeImport;
-use Biigle\Project;
 use Biigle\Volume;
 use Exception;
 use Illuminate\Http\Request;

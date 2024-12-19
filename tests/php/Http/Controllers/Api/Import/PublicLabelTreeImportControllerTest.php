@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api\Import;
 
 use ApiTestCase;
+use Biigle\Role;
 use Biigle\Services\Export\PublicLabelTreeExport;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\PublicLabelTreeImport;
-use Biigle\Role;
 use Biigle\Tests\LabelTreeTest;
 use Exception;
 use Illuminate\Http\UploadedFile;
@@ -19,9 +19,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
         $mock = Mockery::mock(ArchiveManager::class);
         $mock->shouldReceive('store')->once()->andReturn('123abc');
         $mock->shouldReceive('delete')->once()->with('123abc');
-        $this->app->bind(ArchiveManager::class, function () use ($mock) {
-            return $mock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $mock);
 
         $labelTree = LabelTreeTest::create();
         $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
@@ -53,9 +51,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
             ->with('123abc')
             ->andReturn($importMock);
         $managerMock->shouldReceive('delete')->once()->with('123abc');
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $managerMock);
 
         $labelTree = LabelTreeTest::create();
         $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
@@ -77,9 +73,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
     {
         $mock = Mockery::mock(ArchiveManager::class);
         $mock->shouldReceive('store')->once()->andThrow(Exception::class);
-        $this->app->bind(ArchiveManager::class, function () use ($mock) {
-            return $mock;
-        });
+        $this->app->bind(ArchiveManager::class, fn () => $mock);
 
         $labelTree = LabelTreeTest::create();
         $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();

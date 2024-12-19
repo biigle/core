@@ -69,9 +69,7 @@ class Import
      */
     protected function files()
     {
-        return array_map(function ($file) {
-            return File::basename($file);
-        }, File::files($this->path));
+        return array_map(fn ($file) => File::basename($file), File::files($this->path));
     }
 
     /**

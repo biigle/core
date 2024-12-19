@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Services\Import;
 
+use Biigle\Jobs\PostprocessVolumeImport;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\MediaType;
-use Biigle\Jobs\PostprocessVolumeImport;
+use Biigle\Role;
 use Biigle\Services\Export\VolumeExport;
 use Biigle\Services\Import\VolumeImport;
-use Biigle\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;

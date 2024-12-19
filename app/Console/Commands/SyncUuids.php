@@ -105,7 +105,8 @@ class SyncUuids extends Command
     {
         $users = User::select('uuid', 'firstname', 'lastname', 'email')->get();
         $bar = $this->output->createProgressBar($users->count());
-        $users = $users->map(function ($user) use ($bar) {
+        $users =
+            $users->map(function ($user) use ($bar) {
                 $bar->advance();
 
                 return [
