@@ -6,7 +6,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreImageAnnotationLabel extends FormRequest
+class StoreImageAnnotationLabelFeatureVector extends FormRequest
 {
     /**
      * The annotation to which the label should be attached.
@@ -43,7 +43,8 @@ class StoreImageAnnotationLabel extends FormRequest
     public function rules()
     {
         return [
-            'label_id' => 'required|integer|exists:labels,id',
+            'label_id'    => 'required_without:feature_vector|integer|exists:labels,id',
+            'feature_vector' => 'required_without:label_id|array|size:384',
             'confidence'  => 'required|numeric|between:0,1',
         ];
     }
