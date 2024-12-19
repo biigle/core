@@ -258,9 +258,8 @@ class ImageAnnotationController extends Controller
         $annotation->load('labels.label', 'labels.user');
 
         // Attach the other two labels if they exist.
-        // TODO: Adjust or create an Eloquent. Save FV?
         for ($i = 1; $i < count($topNLabels); $i++) {
-            $annotation->{'label_id_' . ($i + 1)} = $topNLabels[$i];
+            $annotation->labelBOTLabels[] = $topNLabels[$i];
         }
 
         return $annotation;
