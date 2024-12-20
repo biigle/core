@@ -402,7 +402,12 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertSuccessful();
         // The feature vector of differentLabel is more similar to the input feature vector
         // than feature vector of anotherDifferentLabel, so it is ranked higher.
-        $response->assertJsonFragment(['labelBOTLabels' => [$differentLabel->id, $anotherDifferentLabel->id]]);
+        $response->assertJsonFragment([
+            'labelBOTLabels' => [
+                ['id' => $differentLabel->id],
+                ['id' => $anotherDifferentLabel->id],
+            ]
+        ]);
     }
 
     public function testStoreValidatePoints()

@@ -259,7 +259,7 @@ class ImageAnnotationController extends Controller
 
         // Attach the other two labels if they exist.
         for ($i = 1; $i < count($topNLabels); $i++) {
-            $annotation->labelBOTLabels[] = $topNLabels[$i];
+            $annotation->labelBOTLabels[] = Label::findOrFail($topNLabels[$i]);
         }
 
         return $annotation;
