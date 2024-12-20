@@ -4,8 +4,9 @@ namespace Biigle\Http\Requests;
 
 use Biigle\Image;
 use Biigle\Shape;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StoreImageAnnotation extends StoreImageAnnotationLabelFeatureVector
+class StoreImageAnnotation extends FormRequest
 {
     /**
      * The image on which the annotation should be created.
@@ -33,10 +34,13 @@ class StoreImageAnnotation extends StoreImageAnnotationLabelFeatureVector
      */
     public function rules()
     {
-        return array_merge(parent::rules(), [
+        return [
+            'label_id'    => 'required_without:feature_vector|integer|exists:labels,id',
+            'feature_vector' => 'required_without:label_id|array|size:384',
+            'confidence'  => 'required|numeric|between:0,1',
             'shape_id' => 'required|integer|exists:shapes,id',
             'points'   => 'required|array',
-        ]);
+        ];
     }
 
     /**
