@@ -49,6 +49,7 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
         // generated (mostly) before the annotation thumbnails.
         $delay = now()->addSeconds(30);
 
+        /** @phpstan-ignore-next-line */
         if (class_exists(ProcessAnnotatedImage::class)) {
             Image::whereIn('images.volume_id', $this->ids)
                 ->whereHas('annotations')
@@ -59,6 +60,7 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
                 }, 1000);
         }
 
+        /** @phpstan-ignore-next-line */
         if (class_exists(ProcessAnnotatedVideo::class)) {
             Video::whereIn('videos.volume_id', $this->ids)
                 ->whereHas('annotations')
