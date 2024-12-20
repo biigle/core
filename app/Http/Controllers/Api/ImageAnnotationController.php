@@ -232,11 +232,13 @@ class ImageAnnotationController extends Controller
         if (is_null($labelId) && $request->has('feature_vector')) {
             // Get label tree id(s).
             $trees = $this->getLabelTreeIds($request->user(), $image->volume_id);
+            // Convert the feature vector into a Vector object for compatibility with the query.
+            $featureVector = new Vector($request->input('feature_vector'));
             // Perform ANN search.
-            $topNLabels = $this->performAnnSearch($request->input('feature_vector'), $trees);
+            $topNLabels = $this->performAnnSearch($featureVector, $trees);
             // Perform KNN search as a fallback if ANN search returns no results.
             if (empty($topNLabels)) {
-                $topNLabels = $this->performKnnSearch($request->input('feature_vector'), $trees);
+                $topNLabels = $this->performKnnSearch($featureVector, $trees);
             }
             // Set labelId to top 1 label.
             $labelId = $topNLabels[0];
@@ -405,18 +407,13 @@ class ImageAnnotationController extends Controller
      */
     protected function performAnnSearch($featureVector, $trees)
     {
-        $featureVector = new Vector($featureVector);
-
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
-            // K = 100
-            ->limit(config('labelbot.K'));
+            ->limit(config('labelbot.K')); // K = 100
 
-        return DB::table(DB::raw("({$subquery->toSql()}) as subquery"))
-            ->setBindings([$featureVector])
+        return DB::query()->fromSub($subquery, 'subquery')
             ->whereIn('label_tree_id', $trees)
-            ->select('label_id')
             ->groupBy('label_id')
             ->orderByRaw('MIN(distance)')
             ->limit(config('labelbot.N')) // N = 3
@@ -434,8 +431,6 @@ class ImageAnnotationController extends Controller
      */
     protected function performKnnSearch($featureVector, $trees)
     {
-        $featureVector = new Vector($featureVector);
-
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             // filter by label tree id in subquery
@@ -447,9 +442,7 @@ class ImageAnnotationController extends Controller
         // TODO: Drop HNSW index temporary
         // DB::beginTransaction();
 
-        $topNLabels = DB::table(DB::raw("({$subquery->toSql()}) as subquery"))
-            ->setBindings(array_merge([$featureVector], $trees))
-            ->select('label_id')
+        $topNLabels = DB::query()->fromSub($subquery, 'subquery')
             ->groupBy('label_id')
             ->orderByRaw('MIN(distance)')
             ->limit(config('labelbot.N')) // N = 3
