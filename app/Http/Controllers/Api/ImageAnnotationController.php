@@ -232,14 +232,13 @@ class ImageAnnotationController extends Controller
         if (is_null($labelId) && $request->has('feature_vector')) {
             // Get label tree id(s).
             $trees = $this->getLabelTreeIds($request->user(), $image->volume_id);
+
             // Convert the feature vector into a Vector object for compatibility with the query.
             $featureVector = new Vector($request->input('feature_vector'));
-            // Perform ANN search.
-            $topNLabels = $this->performAnnSearch($featureVector, $trees);
-            // Perform KNN search as a fallback if ANN search returns no results.
-            if (empty($topNLabels)) {
-                $topNLabels = $this->performKnnSearch($featureVector, $trees);
-            }
+
+            // Perform vector search.
+            $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
+            
             // Set labelId to top 1 label.
             $labelId = $topNLabels[0];
         }
@@ -398,13 +397,43 @@ class ImageAnnotationController extends Controller
     }
 
     /**
-     * Perform ANN search (HNSW + Post-Subquery-Filtering).
+     * Perform vector search using the Dynamic Index Switching (DIS) technique.
      *
-     * @param vector $featureVector
-     * @param int[] $trees
+     * The search process first attempts to retrieve results using an Approximate Nearest Neighbor (ANN) search
+     * via the HNSW index. If the ANN search returns no results, it falls back to an exact KNN search using the
+     * B-Tree index for filtering, ensuring that results are always returned.
      *
-     * @return array
+     * @param vector $featureVector The input feature vector to search for nearest neighbors.
+     * @param int[] $trees The label tree IDs to filter the data by.
+     * @param int[] $topNLabels The array to store the top N labels based on the search results.
+     *
+     * @return array The array of top N labels that are the closest to the input feature vector.
      */
+    protected function performVectorSearch($featureVector, $trees, $topNLabels)
+    {
+        // Perform ANN search.
+        $topNLabels = $this->performAnnSearch($featureVector, $trees);
+
+        // Perform KNN search as a fallback if ANN search returns no results.
+        if (empty($topNLabels)) {
+            $topNLabels = $this->performKnnSearch($featureVector, $trees);
+        }
+
+        return $topNLabels;
+    }
+
+    /**
+     * Perform Approximate Nearest Neighbor (ANN) search using the HNSW index with Post-Subquery Filtering (PSF).
+     *
+     * The search uses the HNSW index to find the top K nearest neighbors of the input feature vector,
+     * and then applies filtering based on the label_tree_id values. If no results are found or if the filtering
+     * removes all results, an empty array is returned.
+     *
+     * @param Vector $featureVector The input feature vector to search for nearest neighbors.
+     * @param int[] $trees The label tree IDs to filter the data by.
+     *
+     * @return array The array of label IDs representing the top nearest neighbors.
+    */
     protected function performAnnSearch($featureVector, $trees)
     {
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
@@ -422,20 +451,22 @@ class ImageAnnotationController extends Controller
     }
 
     /**
-     * Perform KNN search (B-Tree + Post-Filtering).
+     * Perform exact KNN search using the B-Tree index for filtering.
      *
-     * @param Vector $featureVector
-     * @param int[] $trees
+     * This search filters the data based on label_tree_id using the B-Tree index,
+     * and then performs the vector search to find the nearest neighbors of the input feature vector.
+     * This method is used as a fallback when the ANN search does not return results.
      *
-     * @return array
-     */
+     * @param Vector $featureVector The input feature vector to search for nearest neighbors.
+     * @param int[] $trees The label tree IDs to filter the data by.
+     *
+     * @return array The array of label IDs representing the top nearest neighbors.
+    */
     protected function performKnnSearch($featureVector, $trees)
     {
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
-            // filter by label tree id in subquery
-            // to use B-Tree index for filtering and speeding up the vector search
-            ->whereIn('label_tree_id', $trees)
+            ->whereIn('label_tree_id', $trees) // Apply label tree ID filter in the subquery to use the B-Tree index for faster filtering
             ->orderBy('distance')
             ->limit(config('labelbot.K')); // K = 100
 
