@@ -51,7 +51,7 @@ class LabelTreeImport extends Import
             $this->attachLabelTreeMembers($insertTrees, $labelTreeIdMap, $userIdMap);
 
             $labelCandidates = $this->getInsertLabels($onlyLabels, $labelTreeIdMap);
-            $labelHasConflict = fn ($label) => array_key_exists('conflicting_name', $label) || array_key_exists('conflicting_parent_id', $label);
+            $labelHasConflict = fn (array $label) => array_key_exists('conflicting_name', $label) || array_key_exists('conflicting_parent_id', $label);
 
             $insertLabels = $labelCandidates->reject($labelHasConflict);
             // Insert all labels with parent_id null first.
@@ -142,6 +142,7 @@ class LabelTreeImport extends Import
         // Add the parent_uuid property of existing labels.
         $existingLabels = $existingLabels->each(function ($label) use ($existingLabels) {
             $parent = $existingLabels->get($label->parent_id);
+            /** @phpstan-ignore-next-line */
             $label->parent_uuid = $parent ? $parent->uuid : null;
         })->keyBy('uuid');
 
@@ -159,6 +160,7 @@ class LabelTreeImport extends Import
                         unset($label['discard']);
                     }
 
+                    /** @phpstan-ignore-next-line */
                     if ($existingLabel->parent_uuid !== $label['parent_uuid']) {
                         $label['conflicting_parent_id'] = $existingLabel->parent_id;
                         unset($label['discard']);

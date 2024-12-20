@@ -441,6 +441,7 @@ class VolumeImport extends Import
         return $candidates
             ->map(function ($candidate) use ($creator, $newUrls, $mediaTypes) {
                 $volume = new Volume;
+                /** @phpstan-ignore-next-line */
                 $volume->old_id = $candidate['id'];
                 $volume->name = $candidate['name'];
                 if (array_key_exists($volume->old_id, $newUrls)) {
@@ -463,9 +464,11 @@ class VolumeImport extends Import
             })
             ->map(function ($volume) {
                 // Save volumes only after all of them have validated their URLs.
+                /** @phpstan-ignore-next-line */
                 $oldId = $volume->old_id;
                 unset($volume->old_id);
                 $volume->save();
+                /** @phpstan-ignore-next-line */
                 $volume->old_id = $oldId;
 
                 return $volume;

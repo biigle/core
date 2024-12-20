@@ -22,6 +22,7 @@ class VolumeExport extends Export
             ])
             ->get()
             ->each(function ($volume) {
+                /** @phpstan-ignore-next-line */
                 $volume->media_type_name = $volume->mediaType->name;
                 $volume->setHidden(['media_type_id', 'mediaType']);
                 $volume->setAppends([]);
