@@ -7,12 +7,17 @@ use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Label;
+use Biigle\LabelTree;
+use Biigle\Modules\Largo\ImageAnnotationLabelFeatureVector;
+use Biigle\Project;
+use Biigle\Role;
 use Biigle\Shape;
 use DB;
 use Exception;
 use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Pgvector\Laravel\Vector;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class ImageAnnotationController extends Controller
@@ -156,7 +161,8 @@ class ImageAnnotationController extends Controller
      * @apiParam {Number} id The image ID.
      *
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
-     * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation.
+     * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation. Required if 'feature_vector' is not provided.
+     * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction. Required if 'label_id' is not provided.
      * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
      * @apiParam (Required arguments) {Number[]} points Array of the initial points of the annotation. Must contain at least one point. The points array is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
@@ -212,8 +218,8 @@ class ImageAnnotationController extends Controller
 
         $annotation = new ImageAnnotation;
         $annotation->shape_id = $request->input('shape_id');
-        $annotation->image()->associate($request->image);
-
+        $image = $request->image;
+        $annotation->image()->associate($image);
         try {
             $annotation->validatePoints($points);
         } catch (Exception $e) {
@@ -221,7 +227,23 @@ class ImageAnnotationController extends Controller
         }
 
         $annotation->points = $points;
-        $label = Label::findOrFail($request->input('label_id'));
+        $labelId = $request->input('label_id');
+        $topNLabels = [];
+        if (is_null($labelId) && $request->has('feature_vector')) {
+            // Get label tree id(s).
+            $trees = $this->getLabelTreeIds($request->user(), $image->volume_id);
+
+            // Convert the feature vector into a Vector object for compatibility with the query.
+            $featureVector = new Vector($request->input('feature_vector'));
+
+            // Perform vector search.
+            $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
+            
+            // Set labelId to top 1 label.
+            $labelId = $topNLabels[0];
+        }
+
+        $label = Label::findOrFail($labelId);
 
         $this->authorize('attach-label', [$annotation, $label]);
 
@@ -235,6 +257,11 @@ class ImageAnnotationController extends Controller
         });
 
         $annotation->load('labels.label', 'labels.user');
+
+        // Attach the other two labels if they exist.
+        for ($i = 1; $i < count($topNLabels); $i++) {
+            $annotation->labelBOTLabels[] = Label::findOrFail($topNLabels[$i]);
+        }
 
         return $annotation;
     }
@@ -330,5 +357,132 @@ class ImageAnnotationController extends Controller
         $annotation->delete();
 
         return response('Deleted.', 200);
+    }
+
+    /**
+     * Get all label trees that are used by all projects which are visible to the user.
+     *
+     * @param mixed $user
+     * @param int $volumeId
+     *
+     * @return array
+     */
+    protected function getLabelTreeIds($user, $volumeId)
+    {
+        if ($user->can('sudo')) {
+            // Global admins have no restrictions.
+            $projectIds = DB::table('project_volume')
+                ->where('volume_id', $volumeId)
+                ->pluck('project_id');
+        } else {
+            // Array of all project IDs that the user and the image have in common
+            // and where the user is editor, expert or admin.
+            $projectIds = Project::inCommon($user, $volumeId, [
+                Role::editorId(),
+                Role::expertId(),
+                Role::adminId(),
+            ])->pluck('id');
+        }
+        $trees = LabelTree::select('id', 'name', 'version_id')
+            ->with('labels', 'version')
+            ->whereIn('id', function ($query) use ($projectIds) {
+                $query->select('label_tree_id')
+                    ->from('label_tree_project')
+                    ->whereIn('project_id', $projectIds);
+            })
+            ->pluck('id')
+            ->toArray();
+
+        return $trees;
+    }
+
+    /**
+     * Perform vector search using the Dynamic Index Switching (DIS) technique.
+     *
+     * The search process first attempts to retrieve results using an Approximate Nearest Neighbor (ANN) search
+     * via the HNSW index. If the ANN search returns no results, it falls back to an exact KNN search using the
+     * B-Tree index for filtering, ensuring that results are always returned.
+     *
+     * @param vector $featureVector The input feature vector to search for nearest neighbors.
+     * @param int[] $trees The label tree IDs to filter the data by.
+     * @param int[] $topNLabels The array to store the top N labels based on the search results.
+     *
+     * @return array The array of top N labels that are the closest to the input feature vector.
+     */
+    protected function performVectorSearch($featureVector, $trees, $topNLabels)
+    {
+        // Perform ANN search.
+        $topNLabels = $this->performAnnSearch($featureVector, $trees);
+
+        // Perform KNN search as a fallback if ANN search returns no results.
+        if (empty($topNLabels)) {
+            $topNLabels = $this->performKnnSearch($featureVector, $trees);
+        }
+
+        return $topNLabels;
+    }
+
+    /**
+     * Perform Approximate Nearest Neighbor (ANN) search using the HNSW index with Post-Subquery Filtering (PSF).
+     *
+     * The search uses the HNSW index to find the top K nearest neighbors of the input feature vector,
+     * and then applies filtering based on the label_tree_id values. If no results are found or if the filtering
+     * removes all results, an empty array is returned.
+     *
+     * @param Vector $featureVector The input feature vector to search for nearest neighbors.
+     * @param int[] $trees The label tree IDs to filter the data by.
+     *
+     * @return array The array of label IDs representing the top nearest neighbors.
+    */
+    protected function performAnnSearch($featureVector, $trees)
+    {
+        $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
+            ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
+            ->orderBy('distance')
+            ->limit(config('labelbot.K')); // K = 100
+
+        return DB::query()->fromSub($subquery, 'subquery')
+            ->whereIn('label_tree_id', $trees)
+            ->groupBy('label_id')
+            ->orderByRaw('MIN(distance)')
+            ->limit(config('labelbot.N')) // N = 3
+            ->pluck('label_id')
+            ->toArray();
+    }
+
+    /**
+     * Perform exact KNN search using the B-Tree index for filtering.
+     *
+     * This search filters the data based on label_tree_id using the B-Tree index,
+     * and then performs the vector search to find the nearest neighbors of the input feature vector.
+     * This method is used as a fallback when the ANN search does not return results.
+     *
+     * @param Vector $featureVector The input feature vector to search for nearest neighbors.
+     * @param int[] $trees The label tree IDs to filter the data by.
+     *
+     * @return array The array of label IDs representing the top nearest neighbors.
+    */
+    protected function performKnnSearch($featureVector, $trees)
+    {
+        $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
+            ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
+            ->whereIn('label_tree_id', $trees) // Apply label tree ID filter in the subquery to use the B-Tree index for faster filtering
+            ->orderBy('distance')
+            ->limit(config('labelbot.K')); // K = 100
+
+        // TODO: Drop HNSW index temporary
+        // DB::beginTransaction();
+
+        $topNLabels = DB::query()->fromSub($subquery, 'subquery')
+            ->groupBy('label_id')
+            ->orderByRaw('MIN(distance)')
+            ->limit(config('labelbot.N')) // N = 3
+            ->pluck('label_id')
+            ->toArray();
+
+        // TODO: Rollback the HNSW index drop
+        // DB::rollback();
+
+        return $topNLabels;
     }
 }

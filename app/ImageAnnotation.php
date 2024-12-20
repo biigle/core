@@ -20,6 +20,13 @@ class ImageAnnotation extends Annotation
     ];
 
     /**
+     * The attributes that should be included in the JSON response.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['labelBOTLabels'];
+
+    /**
      * The image, this annotation belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Image, $this>
