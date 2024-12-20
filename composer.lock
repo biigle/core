@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a2bbc77108e11c7a2456abb2620fa99",
+    "content-hash": "132bdef9a33fae907bae0342ec7604b2",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1130,52 +1130,6 @@
                 "source": "https://github.com/biigle/reports"
             },
             "time": "2024-10-11T12:36:11+00:00"
-        },
-        {
-            "name": "biigle/sync",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/sync.git",
-                "reference": "b9b3d0afa7b26c1c2b2d15270ecb5754a764c6cd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/sync/zipball/b9b3d0afa7b26c1c2b2d15270ecb5754a764c6cd",
-                "reference": "b9b3d0afa7b26c1c2b2d15270ecb5754a764c6cd",
-                "shasum": ""
-            },
-            "require": {
-                "ramsey/uuid": "^3.5 || ^4.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Sync\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to transfer data between application instances.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "support": {
-                "issues": "https://github.com/biigle/sync/issues",
-                "source": "https://github.com/biigle/sync"
-            },
-            "time": "2024-06-20T07:02:25+00:00"
         },
         {
             "name": "biigle/user-disks",
@@ -12316,7 +12270,6 @@
         "biigle/module": 20,
         "biigle/newsletter": 20,
         "biigle/reports": 20,
-        "biigle/sync": 20,
         "biigle/user-disks": 20,
         "biigle/user-storage": 20
     },
