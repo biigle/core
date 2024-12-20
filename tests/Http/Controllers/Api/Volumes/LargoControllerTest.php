@@ -4,6 +4,9 @@ namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Biigle\MediaType;
+use Biigle\ImageAnnotation;
+use Biigle\VideoAnnotation;
+use Biigle\Label;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
 use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\RemoveVideoAnnotationPatches;
@@ -438,5 +441,64 @@ class LargoControllerTest extends ApiTestCase
                 ],
                 'changed_video_annotations' => [],
             ])->assertStatus(422);
+    }
+
+
+    public function testChunkingImgVol()
+    {
+        config(['biigle.db_param_limit' => 2]);
+        $image = ImageTest::create(['volume_id' => $this->imageVolume->id,
+                                    'filename' => "testImage"]);
+
+        $imageAnnotations = ImageAnnotation::factory()->count(5)->create(['image_id' => $image->id]);
+        $label = Label::factory()->create(); 
+
+
+        $imageAnnotations->each(fn($imageAnnotation) =>
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $imageAnnotation->id,
+                'user_id' => $this->editor()->id,
+                'label_id' => $label->id,
+            ]));
+
+
+        $this->beEditor();
+        $this->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => $imageAnnotations->pluck('id'), 
+                ],
+                'changed_image_annotations' => [],
+            ])
+            ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
+    }
+
+    public function testChunkingVidVol()
+    {
+        config(['biigle.db_param_limit' => 2]);
+        $video = VideoTest::create(['volume_id' => $this->videoVolume->id,
+                                    'filename' => "testVideo"]);
+        $videoAnnotations = VideoAnnotation::factory()->count(5)->create(['video_id' => $video->id]);
+
+        $label = Label::factory()->create(); 
+
+        $videoAnnotations->each(function($videoAnnotation) use($label){
+            VideoAnnotationLabelTest::create([
+                'annotation_id' => $videoAnnotation->id,
+                'user_id' => $this->editor()->id,
+                'label_id' => $label->id,
+            ]);
+        });
+
+
+        $this->beEditor();
+        $this->postJson("/api/v1/volumes/{$this->videoVolume->id}/largo", [
+                'dismissed_video_annotations' => [
+                    $this->videoAnnotationLabel->label_id => $videoAnnotations->pluck('id'), 
+                ],
+                'changed_video_annotations' => [],
+            ])
+            ->assertStatus(200);
+        Queue::assertPushed(ApplyLargoSession::class);
     }
 }
