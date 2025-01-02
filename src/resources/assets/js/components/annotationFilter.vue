@@ -90,7 +90,7 @@ export default {
             let projectId = biigle.$require('largo.projectId');
             usersWithAnnotationsPromise = ProjectsApi.getUsersWithAnnotations({id: projectId});
         }
-        let usersWithAnnotations = usersWithAnnotationsPromise.then((response) =>
+        usersWithAnnotationsPromise.then((response) =>
             response.data.forEach((user) => this.filterValues['user_id'][user.user_id] =  user.lastname + ' ' + user.firstname)
             );
     },
