@@ -34,7 +34,7 @@ export default {
     removeFilter(key){
       this.activeFilters.splice(key, 1)
       //If its the first filter to be removed, remove the 'And' or 'Or'
-      if (key == 0){
+        if (this.activeFilters.length > 0 & key == 0){
         this.activeFilters[0].name = this.activeFilters[0].name.substring(
           this.activeFilters[0].name.indexOf(' ', 0)
         )
