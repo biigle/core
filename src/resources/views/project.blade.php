@@ -12,7 +12,6 @@
         biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
         biigle.$declare('largo.availableShapes', {!! $shapes !!});
-        biigle.$declare('largo.usersWithAnnotations', {!! $usersWithAnnotations !!});
     </script>
 @endpush
 

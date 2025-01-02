@@ -40,22 +40,12 @@ class LargoController extends Controller
 
         $shapes = Shape::pluck('name', 'id');
 
-        $usersWithAnnotations = ImageAnnotationLabel::query()
-            ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-            ->join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->where('images.volume_id', $id)
-            ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
-            ->distinct('image_annotation_labels.user_id')
-            ->select('image_annotation_labels.user_id', 'users.lastname', 'users.firstname')
-            ->get();
-
         return view('largo::project', [
             'project' => $project,
             'labelTrees' => $labelTrees,
             'target' => $project,
             'patchUrlTemplate' => $patchUrlTemplate,
             'shapes' => $shapes,
-            'usersWithAnnotations' => $usersWithAnnotations,
         ]);
     }
 }

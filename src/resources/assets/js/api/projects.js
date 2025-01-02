@@ -31,4 +31,8 @@ export default Vue.resource('api/v1/projects{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/projects{/id}/annotations/sort/similarity',
     },
+    getUsersWithAnnotations: {
+        method: 'GET',
+        url: 'api/v1/projects/users-with-annotations{/id}',
+    }
 });

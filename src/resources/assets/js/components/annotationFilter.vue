@@ -12,6 +12,7 @@
             selected="Shapes"
             v-model="selectedFilter"
             @change="changeSelectedFilter"
+            @click="loadApiFilters"
             >
             <option
                 v-for="value in this.allowedFilters"
@@ -31,6 +32,7 @@
            class="form-control"
            v-model="selectedFilterValue"
            >
+
            <option
                v-for="(filter_name, filter_id) in this.activeFilter"
                :value="[filter_name, filter_id]"
@@ -46,27 +48,21 @@
 </template>
 <script>
 import {Messages} from '../import';
+import ProjectsApi from '../api/projects';
+import VolumesApi from '../api/volumes';
 
 export default {
   data() {
     //TODO: add more filters here. See https://github.com/biigle/largo/issues/66
     let possibleShapes = biigle.$require('largo.availableShapes');
 
-    //Load users with annotations
-    let usersWithAnnotations = biigle.$require('largo.usersWithAnnotations')
-
-    let possibleUsers = {};
-    usersWithAnnotations.forEach(function (user) {
-      possibleUsers[user.user_id] = user.lastname + ' ' + user.firstname
-    });
-
     return {
       selectedAnnotationShape: null,
       selectedAnnotationUser: null,
       allowedFilters: ['Shape', 'User'],
       filterValues: {
-        user_id: possibleUsers,
         shape_id: possibleShapes,
+        user_id: {},
       },
       shapeToValue : {
         Shape: 'shape_id',
@@ -84,6 +80,20 @@ export default {
     changeSelectedFilter() {
       this.activeFilter = this.filterValues[this.shapeToValue[this.selectedFilter]]
       },
+    loadApiFilters() {
+        //Load here filters that should be loaded AFTER the page is rendered
+        let volumeId = biigle.$require('largo.volumeId');
+        let usersWithAnnotationsPromise;
+        if (typeof volumeId === 'number'){
+            usersWithAnnotationsPromise = VolumesApi.getUsersWithAnnotations({id: volumeId});
+        } else {
+            let projectId = biigle.$require('largo.projectId');
+            usersWithAnnotationsPromise = ProjectsApi.getUsersWithAnnotations({id: projectId});
+        }
+        let usersWithAnnotations = usersWithAnnotationsPromise.then((response) =>
+            response.data.forEach((user) => this.filterValues['user_id'][user.user_id] =  user.lastname + ' ' + user.firstname)
+            );
+    },
     addFilter() {
       if (!this.selectedFilterValue){
         Messages.danger("No filter selected!")
