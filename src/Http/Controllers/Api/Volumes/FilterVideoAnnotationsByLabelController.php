@@ -30,8 +30,10 @@ class FilterVideoAnnotationsByLabelController extends Controller
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
-        $this->validate($request, ['take' => 'integer']);
+        $this->validate($request, ['take' => 'integer', 'shape_id' => 'array', 'user_id' => 'array']);
         $take = $request->input('take');
+        $shape_ids = $request->input('shape_id');
+        $user_ids = $request->input('user_id');
 
         $session = $volume->getActiveAnnotationSession($request->user());
 
@@ -45,6 +47,24 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->where('videos.volume_id', $vid)
             ->where('video_annotation_labels.label_id', $lid)
+            ->when(!is_null($shape_ids), function ($query) use ($shape_ids) {
+                foreach ($shape_ids as &$shape_id){
+                    if ($shape_id < 0) {
+                        $query->whereNot('shape_id', intval(abs($shape_id)));
+                    } else {
+                        $query->where('shape_id', intval($shape_id));
+                    }}
+            })
+            ->when(!is_null($user_ids), function ($query) use ($user_ids) {
+                foreach ($user_ids as &$user_id){
+                    if ($user_id < 0) {
+                        $query->whereNot('video_annotation_labels.user_id', intval(abs($user_id)));
+                    } else {
+                        $query->where('video_annotation_labels.user_id', intval($user_id));
+                    }
+                }
+            })
+
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
                     $query->where('video_annotation_labels.user_id', $request->user()->id);
