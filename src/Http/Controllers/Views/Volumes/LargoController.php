@@ -8,6 +8,7 @@ use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Role;
+use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -56,20 +57,12 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $shapes = [
-            1 => 'Point',
-            2 => 'LineString',
-            3 => 'Polygon',
-            4 => 'Circle',
-            5 => 'Rectangle',
-            6 => 'Ellipse',
-        ];
+        $shapes = Shape::pluck('name', 'id');
 
-        if ($volume->media_type_id == MediaType::videoId()){
-            $shapes[7] = 'WholeFrame';
+        if ($volume->media_type_id != MediaType::videoId()){
+            $wholeframeId =Shape::wholeFrameId() ;
+            unset($shapes[$wholeframeId]);
         }
-
-        $shapes = collect($shapes);
 
         $usersWithAnnotations = ImageAnnotationLabel::query()
             ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
