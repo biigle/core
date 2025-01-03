@@ -76,20 +76,21 @@ export default {
             return this.step === 1;
         },
         annotations() {
-            if (
-                this.selectedLabel &&
-                this.annotationsCache.hasOwnProperty(this.getSelectedAnnotationName)
-            ) {
-                return this.annotationsCache[this.getSelectedAnnotationName];
+            if (!this.selectedLabel){
+                return [];
             }
 
-            return [];
-        },
-        getSelectedAnnotationName() {
-            return JSON.stringify({
+            let filterLabelCombination = JSON.stringify({
               ...this.selectedFilters,
               label: this.selectedLabel.id,
             });
+
+            if (
+                this.annotationsCache.hasOwnProperty(filterLabelCombination)
+            ) {
+                return this.annotationsCache[filterLabelCombination];
+            }
+            return [];
         },
         sortedAnnotations() {
             let annotations = this.annotations;
@@ -196,18 +197,21 @@ export default {
             requestsToDo.push(filtersForRequest)
             return requestsToDo
         },
+        async sleep(){
+           return new Promise((resolve) => setTimeout(resolve, 500));
+        },
         getAnnotations(label, filters) {
             let promise1;
             let promise2;
 
-
-            let label_filter_combination = JSON.stringify({
+            let labelFilterCombination = JSON.stringify({
                 ...filters,
                 label: label.id,
             });
 
-            if (!this.annotationsCache.hasOwnProperty(label_filter_combination)) {
-                Vue.set(this.annotationsCache, label_filter_combination, []);
+            if (!this.annotationsCache.hasOwnProperty(labelFilterCombination)) {
+                Vue.set(this.annotationsCache, labelFilterCombination, []);
+
                 this.startLoading();
                 if (filters.length > 0) {
                     this.startLoading();
@@ -237,13 +241,13 @@ export default {
                                     }
                                 }
                             );
-                            this.gotAnnotations(label, null, annotations)
+                            this.gotAnnotations(label, labelFilterCombination, null, annotations)
                         },
                         handleErrorResponse
                     ).finally(this.finishLoading);
                 } else {
                     promise1 = this.queryAnnotations(label).then(
-                        (response) => this.gotAnnotations(label, response),
+                        (response) => this.gotAnnotations(label, labelFilterCombination, response),
                             handleErrorResponse
                     )}
             } else {
@@ -260,10 +264,12 @@ export default {
                 promise2 = Vue.Promise.resolve();
             }
 
-
             Vue.Promise.all([promise1, promise2]).finally(this.finishLoading);
+
         },
-        gotAnnotations(label, response = null, annotations = null) {
+
+        gotAnnotations(label, selectedAnnotationName = '', response = null, annotations = null) {
+
             let imageAnnotations
             let videoAnnotations
 
@@ -293,9 +299,10 @@ export default {
 
             Vue.set(
                 this.annotationsCache,
-                this.getSelectedAnnotationName,
+                selectedAnnotationName,
                 annotations,
             )
+
         },
         handleSelectedFilters(filters) {
             if (Object.keys(filters).length > 0) {
