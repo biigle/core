@@ -4,6 +4,7 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotationLabel;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Biigle\MediaType;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ class GetUsersWithAnnotations extends Controller
             $usersWithAnnotations = VideoAnnotationLabel::query()
                 ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
                 ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
-                ->whereIn('videos.volume_id', $vid)
+                ->where('videos.volume_id', $vid)
                 ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
                 ->distinct('video_annotation_labels.user_id')
                 ->select('video_annotation_labels.user_id', 'users.lastname', 'users.firstname')
