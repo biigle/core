@@ -53,7 +53,7 @@ $router->group([
         'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
     ]);
 
-    $router->get('projects/users-with-annotations/{pid}', [
+    $router->get('projects/{pid}/users-with-annotations', [
         'uses' => 'Projects\GetUsersWithAnnotations@index',
     ]);
 
@@ -73,7 +73,7 @@ $router->group([
         'uses' => 'Volumes\FilterImageAnnotationsByLabelController@index',
     ]);
 
-    $router->get('volumes/users-with-annotations/{vid}', [
+    $router->get('volumes/{vid}/users-with-annotations', [
         'uses' => 'Volumes\GetUsersWithAnnotations@index',
     ]);
 

@@ -33,6 +33,6 @@ export default Vue.resource('api/v1/projects{/id}/largo', {}, {
     },
     getUsersWithAnnotations: {
         method: 'GET',
-        url: 'api/v1/projects/users-with-annotations{/id}',
+        url: 'api/v1/projects{/id}/users-with-annotations',
     }
 });
