@@ -423,6 +423,42 @@ class Volume extends Model
     }
 
     /**
+     * Return the dynamic attribute for the export area.
+     *
+     * @return array
+     */
+    public function getExportAreaAttribute()
+    {
+        return $this->getJsonAttr('export_area');
+    }
+
+    /**
+     * Set or update the dynamic attribute for the export area.
+     *
+     * @param array $value The value to set
+     */
+    public function setExportAreaAttribute($value)
+    {
+        if (!is_array($value) && !is_null($value)) {
+            throw new Exception('Export area coordinates must be an array!');
+        }
+
+        if ($value !== null) {
+            if (sizeof($value) !== 4) {
+                throw new Exception('Malformed export area coordinates!');
+            }
+
+            foreach ($value as $coordinate) {
+                if (!is_int($coordinate)) {
+                    throw new Exception('Malformed export area coordinates!');
+                }
+            }
+        }
+
+        $this->setJsonAttr('export_area', $value);
+    }
+
+    /**
      * Check if the there are tiled images in this volume.
      *
      * @return bool
