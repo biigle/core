@@ -87,26 +87,9 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            map: null,
+            imagesObj: {}
         };
-    },
-    provide() {
-        const appData = {}
-
-        let imageInfo = {};
-        imageInfo['currentId'] = biigle.$require('annotations.imageId');
-        imageInfo['ids'] = biigle.$require('annotations.imagesIds');
-        imageInfo['filenames'] = biigle.$require('annotations.imagesFilenames');
-        imageInfo['type'] = 'image';
-        imageInfo['fileChangedEvent'] = 'images.change';
-        imageInfo['mapChangedEvent'] = 'annotations.map.init';
-
-        // Need defineProperty to maintain reactivity.
-        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
-        Object.defineProperty(appData, "info", {
-            get: () => imageInfo,
-        })
-
-        return { 'files': appData };
     },
     computed: {
         canAdd() {
@@ -692,9 +675,11 @@ export default {
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
+        this.filenames = biigle.$require('annotations.imagesFilenames');
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
+        this.imagesObj = biigle.$require('annotations.imagesObj');
         this.annotationFilters = [
             new LabelFilter(),
             new UserFilter(),
@@ -771,6 +756,7 @@ export default {
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
+        this.map = this.$refs.canvas.map;
     },
 };
 </script>

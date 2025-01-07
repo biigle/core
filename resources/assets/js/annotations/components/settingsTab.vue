@@ -28,6 +28,18 @@ export default {
             type: Object,
             default: null,
         },
+        imagesObj: {
+            type: Object,
+            default: () => {},
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        map: {
+            type: Object,
+            default: null,
+        }
     },
     data() {
         return {

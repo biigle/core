@@ -13,6 +13,7 @@
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});
+    biigle.$declare('annotations.imagesObj', {!! $images !!});
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/:id/file') !!}');
     biigle.$declare('annotations.tilesUri', '{{ $tilesUriTemplate }}');
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
