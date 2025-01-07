@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a0a24d8e427c9d817bbe496f1c24b7b",
+    "content-hash": "6767e83ddf28c72e76164dc500116a18",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -168,6 +168,58 @@
                 "source": "https://github.com/biigle/laravel-file-cache/tree/v5.0.0"
             },
             "time": "2024-07-12T14:42:44+00:00"
+        },
+        {
+            "name": "biigle/metadata-ifdo",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/metadata-ifdo.git",
+                "reference": "1feda4bc651045a1797c42ad1f25d3e70057601c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/metadata-ifdo/zipball/1feda4bc651045a1797c42ad1f25d3e70057601c",
+                "reference": "1feda4bc651045a1797c42ad1f25d3e70057601c",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/ifdo": "^0.4 || ^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\MetadataIfdo\\MetadataIfdoServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\MetadataIfdo\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module for iFDO metadata.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/metadata-ifdo/issues",
+                "source": "https://github.com/biigle/metadata-ifdo"
+            },
+            "time": "2024-12-03T08:33:30+00:00"
         },
         {
             "name": "brick/math",
