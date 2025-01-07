@@ -1,0 +1,29 @@
+{
+    "name": "biigle/reports",
+    "description": "BIIGLE module to generate reports for projects, volumes and videos.",
+    "keywords": ["biigle", "biigle-module"],
+    "license": "GPL-3.0-only",
+    "support": {
+        "source": "https://github.com/biigle/reports",
+        "issues": "https://github.com/biigle/reports/issues"
+    },
+    "homepage": "https://biigle.de",
+    "authors": [
+        {
+            "name": "Martin Zurowietz",
+            "email": "martin@cebitec.uni-bielefeld.de"
+        }
+    ],
+    "require": {
+        "ext-zip": "*",
+        "jmikola/geojson":"^1.0",
+        "biigle/ifdo":"^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Biigle\\Modules\\Reports\\": "src"
+        }
+    }
+}
+
+

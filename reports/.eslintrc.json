@@ -1,0 +1,26 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:vue/essential"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "vue"
+    ],
+    "rules": {
+        "no-prototype-builtins": "off",
+        "no-console": ["error", {"allow": ["warn", "error"]}],
+        "vue/require-v-for-key": "off"
+    },
+    "globals": {
+        "biigle": "readonly",
+        "Vue": "readonly"
+    }
+}
