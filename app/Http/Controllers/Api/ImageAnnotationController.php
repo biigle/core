@@ -230,6 +230,9 @@ class ImageAnnotationController extends Controller
         $labelId = $request->input('label_id');
         $topNLabels = [];
         if (is_null($labelId) && $request->has('feature_vector')) {
+            // Add labelBOTlabels attribute to the response.
+            $annotation->append('labelBOTLabels');
+            
             // Get label tree id(s).
             $trees = $this->getLabelTreeIds($request->user(), $image->volume_id);
 
