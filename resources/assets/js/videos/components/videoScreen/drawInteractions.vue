@@ -217,7 +217,7 @@ export default {
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
 
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
-                if (this.singleAnnotationActive && this.singleAnnotationActive && this.isPointDoubleClick(e)) {
+                if (this.singleAnnotationActive && this.isPointDoubleClick(e)) { 
                     this.pendingAnnotationSource.once('addfeature', function (e) {
                         this.removeFeature(e.feature);
                     });
