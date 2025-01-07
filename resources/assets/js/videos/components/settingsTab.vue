@@ -16,6 +16,18 @@ export default {
         crossOriginError: {
             type: Boolean,
             default: false,
+        },
+        videosObj: {
+            type: Object,
+            default: () => {}
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        map: {
+            type: Object,
+            default: null,
         }
     },
     data() {

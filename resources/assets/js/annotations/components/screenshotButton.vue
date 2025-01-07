@@ -9,17 +9,24 @@ import Keyboard from '../../core/keyboard';
  * @type {Object}
  */
 export default {
-    data() {
-        return {
-            filenames: {},
-            currentId: null,
-        };
+    props: {
+        filesObj:{
+            type: Object,
+            default: () => {}
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        map: {
+            type: Object,
+            default: null,
+        }
     },
-    inject: ['files'],
     computed: {
         filename() {
             if (this.currentId) {
-                let name = this.filenames[this.currentId].split('.');
+                let name = this.filesObj[this.currentId].split('.');
                 if (name.length > 1) {
                     name[name.length - 1] = 'png';
                 }
@@ -143,24 +150,8 @@ export default {
         handleError(message) {
             Messages.danger(message);
         },
-        setMap(map) {
-            this.map = map;
-        },
-        updateCurrentId(id) {
-            this.currentId = id;
-        },
     },
     created() {
-        let filenames = {};
-        let ids = this.files.info.ids;
-        this.files.info.filenames.forEach((filename, index) => {
-            filenames[ids[index]] = filename;
-        });
-        this.filenames = filenames;
-        this.currentId = this.files.info.currentId
-        Events.$on(this.files.info.fileChangedEvent, this.updateCurrentId);
-        Events.$on(this.files.info.mapChangedEvent, this.setMap);
-
         Keyboard.on('p', this.capture);
     },
 };

@@ -100,26 +100,9 @@ export default {
             disableJobTracking: false,
             supportsJumpByFrame: false,
             hasCrossOriginError: false,
+            map: null,
+            videosObj: null,
         };
-    },
-    provide() {
-        const appData = {}
-
-        let videoInfo = {};
-        videoInfo['currentId'] = biigle.$require('videos.id');
-        videoInfo['ids'] = biigle.$require('videos.videoIds');
-        videoInfo['filenames'] = biigle.$require('videos.videoFilenames');
-        videoInfo['type'] = 'video';
-        videoInfo['fileChangedEvent'] = 'video.change';
-        videoInfo['mapChangedEvent'] = 'videos.map.init';
-
-        // Need defineProperty to maintain reactivity.
-        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
-        Object.defineProperty(appData, "info", {
-            get: () => videoInfo,
-        })
-
-        return { 'files': appData };
     },
     computed: {
         selectedAnnotations() {
@@ -745,6 +728,7 @@ export default {
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
+        this.videosObj = biigle.$require('videos.videosObj');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();
@@ -789,7 +773,7 @@ export default {
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
         Events.$emit('videos.map.init', this.$refs.videoScreen.map);
-
+        this.map = this.$refs.videoScreen.map;
     },
 };
 </script>
