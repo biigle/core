@@ -259,9 +259,7 @@ class ImageAnnotationController extends Controller
         $annotation->load('labels.label', 'labels.user');
 
         // Attach the other two labels if they exist.
-        for ($i = 1; $i < count($topNLabels); $i++) {
-            $annotation->labelBOTLabels[] = Label::findOrFail($topNLabels[$i]);
-        }
+        $annotation->labelBOTLabels = Label::whereIn('id', array_slice($topNLabels, 1))->get()->toArray();
 
         return $annotation;
     }
