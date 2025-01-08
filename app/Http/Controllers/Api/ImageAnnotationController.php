@@ -232,7 +232,7 @@ class ImageAnnotationController extends Controller
         if (is_null($labelId) && $request->has('feature_vector')) {
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
-            
+
             // Get label tree id(s).
             $trees = $this->getLabelTreeIds($request->user(), $image->volume_id);
 
@@ -437,6 +437,10 @@ class ImageAnnotationController extends Controller
     */
     protected function performAnnSearch($featureVector, $trees)
     {
+        // check if the HNSW index exists
+        if (!$this->indexExists(config('labelbot.HNSW_ImgAnno_index_name'))) {
+            return [];
+        }
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
@@ -465,15 +469,17 @@ class ImageAnnotationController extends Controller
     */
     protected function performKnnSearch($featureVector, $trees)
     {
+        // Drop HNSW index temporarily
+        DB::beginTransaction();
+        $this->dropHNSWIndex();
+
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->whereIn('label_tree_id', $trees) // Apply label tree ID filter in the subquery to use the B-Tree index for faster filtering
             ->orderBy('distance')
             ->limit(config('labelbot.K')); // K = 100
 
-        // TODO: Drop HNSW index temporary
-        // DB::beginTransaction();
-
+        // Save results.
         $topNLabels = DB::query()->fromSub($subquery, 'subquery')
             ->groupBy('label_id')
             ->orderByRaw('MIN(distance)')
@@ -481,9 +487,36 @@ class ImageAnnotationController extends Controller
             ->pluck('label_id')
             ->toArray();
 
-        // TODO: Rollback the HNSW index drop
-        // DB::rollback();
+        // Rollback the HNSW index drop
+        DB::rollback();
 
         return $topNLabels;
+    }
+
+    /**
+     * Check if the index exists.
+     * 
+     * @param string $indexName The index name.
+     * 
+     * @return boolean
+     */
+    protected function indexExists($indexName)
+    {
+        return !empty(DB::select("SELECT indexname FROM pg_indexes WHERE indexname = '$indexName'"));
+    }
+
+    /**
+     * Drop the HNSW index if exists. This step is necessary to perform exact KNN search
+     * because the planner almost always prioritize the HNSW index to perform vector search.
+     */
+
+    protected function dropHNSWIndex()
+    {
+        // Check if the index exists
+        $indexName = config('labelbot.HNSW_ImgAnno_index_name');
+        if ($this->indexExists($indexName)) {
+            // Drop the index
+            DB::statement("DROP INDEX $indexName");
+        }
     }
 }
