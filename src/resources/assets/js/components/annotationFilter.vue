@@ -32,7 +32,8 @@
         </button>
       </div>
     </div>
-    <div class="list-group">
+    <div class="filter-form__selects">
+      <div class="form-group largo-filter-select">
         <select
           class="form-control"
           selected="Shapes"
@@ -46,15 +47,16 @@
             v-text="value"
           ></option>
         </select>
-    </div>
-    <div class="filter-form__selects">
-      <div class="form-group">
+      </div>
+      <div class="form-group largo-filter-select filter-select">
         <select class="form-control" v-model="negate" selected="true" required>
           <option :value="false">is</option>
           <option :value="true">is not</option>
         </select>
       </div>
-      <div class="list-group filter-select">
+    </div>
+    <div class="filter-form__selects">
+      <div class="form-group largo-filter-select">
         <select class="form-control" v-model="selectedFilterValue">
           <option
             v-for="(filter_name, filter_id) in this.activeFilter"
@@ -63,11 +65,12 @@
           ></option>
         </select>
       </div>
-    </div>
-    <div class="list-group">
-      <button type="button" class="btn btn-default" @click="addFilter">
+      <div class="form-group filter-select largo-filter-select">
+        <button type="button" class="btn btn-default" @click="addFilter">
         Add filter
       </button>
+
+      </div>
     </div>
   </div>
 </template>

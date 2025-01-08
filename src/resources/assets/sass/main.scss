@@ -16,12 +16,12 @@
     justify-content: center;
     align-items: center;
     pointer-events: none;
-    transition: 0.25s background-color ease;
+    transition: .25s background-color ease;
     z-index: 2;
 
     &.block {
         pointer-events: auto;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, .5);
     }
 }
 
@@ -61,7 +61,7 @@
     > a {
         width: 100%;
     }
-    @extend .image-grid__image--largo;
+    @extend .image-grid__image--largo
 }
 
 .image-grid__image--relabel {
@@ -70,7 +70,7 @@
         width: 100%;
         left: 0;
         bottom: 0;
-        padding: 0.5em;
+        padding: .5em;
         overflow-x: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -117,3 +117,8 @@
 .annotation-filter {
     min-width: 90%;
 }
+
+.largo-filter-select {
+    width: 50%;
+}
+
