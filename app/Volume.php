@@ -7,6 +7,7 @@ use Biigle\Traits\HasMetadataFile;
 use Cache;
 use Carbon\Carbon;
 use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

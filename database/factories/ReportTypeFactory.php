@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Database\Factories;
+namespace Database\Factories;
 
 use Biigle\ReportType;
 use Illuminate\Database\Eloquent\Factories\Factory;

@@ -2,7 +2,6 @@
 
 namespace  Biigle\Traits;
 
-use Biigle\Volume;
 use DB;
 
 trait RestrictsToExportArea
@@ -39,7 +38,7 @@ trait RestrictsToExportArea
     protected function getSkipIds()
     {
         $skip = [];
-        $exportArea = Volume::convert($this->source)->exportArea;
+        $exportArea = $this->source->exportArea;
 
         if (!$exportArea) {
             // take all annotations if no export area is specified

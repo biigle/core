@@ -11,10 +11,10 @@ return [
     | Paths to the python scripts.
     */
     'scripts' => [
-        'basic_report' => __DIR__.'/../resources/scripts/basic_report.py',
-        'csvs_to_xlsx' => __DIR__.'/../resources/scripts/csvs_to_xlsx.py',
-        'full_report' => __DIR__.'/../resources/scripts/full_report.py',
-        'to_coco' => __DIR__.'/../resources/scripts/to_coco.py',
+        'basic_report' => __DIR__.'/../resources/scripts/reports/basic_report.py',
+        'csvs_to_xlsx' => __DIR__.'/../resources/scripts/reports/csvs_to_xlsx.py',
+        'full_report' => __DIR__.'/../resources/scripts/reports/full_report.py',
+        'to_coco' => __DIR__.'/../resources/scripts/reports/to_coco.py',
     ],
 
     /**

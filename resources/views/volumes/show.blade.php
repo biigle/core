@@ -57,6 +57,7 @@
         <sidebar-tab name="sorting" icon="exchange-alt fa-rotate-90" title="Sort files" :highlight="sortingActive">
             @include('volumes.show.sorting')
         </sidebar-tab>
+        <sidebar-tab name="reports" icon="file" title="Request reports for this volume" href="{{route('volume-reports', $volume->id)}}"></sidebar-tab>
         @mixin('volumesSidebar')
     </sidebar>
     <div class="sidebar-container__content">

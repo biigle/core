@@ -61,7 +61,7 @@ class VolumeReportsController extends Controller
             $reportPrefix = 'Video';
         }
 
-        return view('reports::volumeReports', [
+        return view('volumes.reports', [
             'projects' => $volume->projects,
             'volume' => $volume,
             'annotationSessions' => $sessions,

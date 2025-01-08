@@ -11,6 +11,7 @@ use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\Video;
 use Biigle\Volume;
+use DB;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 

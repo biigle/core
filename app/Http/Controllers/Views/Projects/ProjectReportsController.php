@@ -63,7 +63,7 @@ class ProjectReportsController extends Controller
             }
         }
 
-        return view('reports::projectReports', [
+        return view('projects.reports', [
             'project' => $project,
             'isMember' => $isMember,
             'isPinned' => $isPinned,
