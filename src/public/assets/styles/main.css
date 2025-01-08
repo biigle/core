@@ -1,5 +1,4 @@
-.navbar-text.navbar-largo-breadcrumbs,
-.navbar-text.navbar-largo-breadcrumbs a {
+.navbar-text.navbar-largo-breadcrumbs, .navbar-text.navbar-largo-breadcrumbs a {
   color: #cccccc;
 }
 
@@ -95,4 +94,8 @@
 
 .annotation-filter {
   min-width: 90%;
+}
+
+.largo-filter-select {
+  width: 50%;
 }
