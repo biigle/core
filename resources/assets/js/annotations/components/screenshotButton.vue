@@ -10,7 +10,7 @@ import Keyboard from '../../core/keyboard';
  */
 export default {
     props: {
-        filesObj:{
+        filesObj: {
             type: Object,
             default: () => {}
         },
@@ -105,12 +105,12 @@ export default {
                 let binStr = atob(canvas.toDataURL(type).split(',')[1]);
                 let len = binStr.length;
                 let arr = new Uint8Array(len);
-                for (let i = 0; i < len; i++ ) {
+                for (let i = 0; i < len; i++) {
                     arr[i] = binStr.charCodeAt(i);
                 }
 
                 return new Vue.Promise(function (resolve) {
-                    resolve(new Blob([arr], {type: type}));
+                    resolve(new Blob([arr], { type: type }));
                 });
             } else {
                 return new Vue.Promise(function (resolve) {
