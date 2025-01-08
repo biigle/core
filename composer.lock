@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d930ed39a43085df3e6367f5754876e",
+    "content-hash": "ca97d33c23f33ce70c7ea103a44ded6b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -118,6 +118,53 @@
                 "source": "https://github.com/biigle/laravel-file-cache/tree/v5.0.0"
             },
             "time": "2024-07-12T14:42:44+00:00"
+        },
+        {
+            "name": "biigle/largo",
+            "version": "v2.36.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/largo.git",
+                "reference": "afabee0acccad04363c37632c68b778e745db2a3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/afabee0acccad04363c37632c68b778e745db2a3",
+                "reference": "afabee0acccad04363c37632c68b778e745db2a3",
+                "shasum": ""
+            },
+            "require": {
+                "jcupitt/vips": "^1.0 || ^2.0",
+                "meyfa/php-svg": "^0.14.6",
+                "php-ffmpeg/php-ffmpeg": "^0.14 || ^0.19 || ^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Largo\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module to review image annotations in a regular grid.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/largo/issues",
+                "source": "https://github.com/biigle/largo"
+            },
+            "time": "2024-12-18T08:21:29+00:00"
         },
         {
             "name": "brick/math",
@@ -2293,6 +2340,65 @@
                 }
             ],
             "time": "2024-09-21T08:32:55+00:00"
+        },
+        {
+            "name": "meyfa/php-svg",
+            "version": "v0.14.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/meyfa/php-svg.git",
+                "reference": "f50d39e0c97042881e303f7d5d1d09aa88296def"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/meyfa/php-svg/zipball/f50d39e0c97042881e303f7d5d1d09aa88296def",
+                "reference": "f50d39e0c97042881e303f7d5d1d09aa88296def",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.3.0"
+            },
+            "require-dev": {
+                "meyfa/phpunit-assert-gd": "^v3.0.0",
+                "phpmd/phpmd": "^2.13.0",
+                "phpunit/phpunit": "^9.5.26"
+            },
+            "suggest": {
+                "ext-gd": "Needed to rasterize images",
+                "ext-simplexml": "Needed to read SVG strings and files"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SVG\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabian Meyer",
+                    "homepage": "https://meyfa.net"
+                }
+            ],
+            "description": "Read, edit, write, and render SVG files with PHP",
+            "homepage": "https://github.com/meyfa/php-svg",
+            "keywords": [
+                "svg"
+            ],
+            "support": {
+                "issues": "https://github.com/meyfa/php-svg/issues",
+                "source": "https://github.com/meyfa/php-svg/tree/v0.14.7"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/meyfa",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-12-09T23:20:59+00:00"
         },
         {
             "name": "monolog/monolog",

@@ -25,10 +25,6 @@ class PostprocessVolumeImportTest extends TestCase
 
     public function testHandleImageAnnotationPatches()
     {
-        if (!class_exists(ProcessAnnotatedImage::class)) {
-            $this->markTestSkipped('Requires '.ProcessAnnotatedImage::class);
-        }
-
         $annotation = ImageAnnotationTest::create();
         $job = new PostprocessVolumeImport(collect([$annotation->image->volume]));
         $job->handle();
@@ -39,10 +35,6 @@ class PostprocessVolumeImportTest extends TestCase
 
     public function testHandleVideoAnnotationPatches()
     {
-        if (!class_exists(ProcessAnnotatedVideo::class)) {
-            $this->markTestSkipped('Requires '.ProcessAnnotatedVideo::class);
-        }
-
         $annotation = VideoAnnotationTest::create();
         $job = new PostprocessVolumeImport(collect([$annotation->video->volume]));
         $job->handle();
