@@ -46,13 +46,13 @@ class FullReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al->annotation->image->filename,
@@ -104,17 +104,17 @@ class FullReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label1->tree->name]);
+            ->with($label1->tree->name);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label2->tree->name]);
+            ->with($label2->tree->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $image->filename,
@@ -125,7 +125,7 @@ class FullReportGeneratorTest extends TestCase
                 null,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $image->filename,
@@ -174,17 +174,17 @@ class FullReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al1->user->firstname} {$al1->user->lastname}"]);
+            ->with("{$al1->user->firstname} {$al1->user->lastname}");
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al2->user->firstname} {$al2->user->lastname}"]);
+            ->with("{$al2->user->firstname} {$al2->user->lastname}");
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $image->filename,
@@ -195,7 +195,7 @@ class FullReportGeneratorTest extends TestCase
                 null,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $image->filename,

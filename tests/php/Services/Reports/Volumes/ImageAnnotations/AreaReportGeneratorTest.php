@@ -65,9 +65,9 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
@@ -112,13 +112,13 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $a->id,
@@ -168,13 +168,13 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $a->id,
@@ -224,13 +224,13 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $a->id,
@@ -280,13 +280,13 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $a->id,
@@ -340,13 +340,13 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $a->id,
@@ -397,17 +397,17 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label1->tree->name]);
+            ->with($label1->tree->name);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label2->tree->name]);
+            ->with($label2->tree->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $annotation->id,
@@ -418,7 +418,7 @@ class AreaReportGeneratorTest extends TestCase
                 200, 100, 20000,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $annotation->id,
@@ -466,17 +466,17 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al1->user->firstname} {$al1->user->lastname}"]);
+            ->with("{$al1->user->firstname} {$al1->user->lastname}");
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al2->user->firstname} {$al2->user->lastname}"]);
+            ->with("{$al2->user->firstname} {$al2->user->lastname}");
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $annotation->id,
@@ -487,7 +487,7 @@ class AreaReportGeneratorTest extends TestCase
                 200, 100, 20000,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $annotation->id,
@@ -539,13 +539,13 @@ class AreaReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $a->id,

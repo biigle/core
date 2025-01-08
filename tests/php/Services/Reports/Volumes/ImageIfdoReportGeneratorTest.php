@@ -273,7 +273,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                     'image-annotations' => [
                         [
                             'shape' => 'whole-image',
-                            'coordinates' => [],
+                            'coordinates' => [[]],
                             'labels' => [
                                 [
                                     'label' => "$il->label_id",
@@ -751,7 +751,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
                         ],
                         [
                             'shape' => 'whole-image',
-                            'coordinates' => [],
+                            'coordinates' => [[]],
                             'labels' => [
                                 [
                                     'label' => "$label->id",

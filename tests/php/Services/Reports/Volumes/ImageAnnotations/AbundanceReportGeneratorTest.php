@@ -52,9 +52,9 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 'image_filename',
@@ -62,11 +62,11 @@ class AbundanceReportGeneratorTest extends TestCase
                 $child->name,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['a.jpg', 1, 0]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['b.jpg', 0, 1]);
 
@@ -109,25 +109,25 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label1->tree->name]);
+            ->with($label1->tree->name);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label2->tree->name]);
+            ->with($label2->tree->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['image_filename', $label1->name]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['image_filename', $label2->name]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 1]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 1]);
 
@@ -168,25 +168,25 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al1->user->firstname} {$al1->user->lastname}"]);
+            ->with("{$al1->user->firstname} {$al1->user->lastname}");
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al2->user->firstname} {$al2->user->lastname}"]);
+            ->with("{$al2->user->firstname} {$al2->user->lastname}");
 
-        $mock->shouldReceive('put')
-            ->once()
-            ->with(['image_filename', $al1->label->name, $al2->label->name]);
-
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['image_filename', $al1->label->name, $al2->label->name]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $al1->label->name, $al2->label->name]);
+
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 1, 0]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 0, 1]);
 
@@ -245,20 +245,20 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 'image_filename',
                 $root->name,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['a.jpg', 1]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with(['b.jpg', 2]);
 
@@ -372,9 +372,9 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 'image_filename',
@@ -384,7 +384,7 @@ class AbundanceReportGeneratorTest extends TestCase
                 $root4->name,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 2, 1, 1, 1]);
 

@@ -111,7 +111,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $labels = $labels->sortBy('id');
 
         $csv = CsvFile::makeTmp();
-        $csv->putCsv([$title]);
+        $csv->put($title);
 
         $columns = ['image_filename'];
         foreach ($labels as $label) {

@@ -53,17 +53,17 @@ class ExtendedReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$volume->name]);
+            ->with($volume->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$al->annotation->image->filename, "{$root->name} > {$child->name}", 2]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$al->annotation->image->filename, $al2->label->name, 1]);
 
@@ -106,21 +106,21 @@ class ExtendedReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label1->tree->name]);
+            ->with($label1->tree->name);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label2->tree->name]);
+            ->with($label2->tree->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, $label1->name, 1]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, $label2->name, 1]);
 
@@ -160,21 +160,21 @@ class ExtendedReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al1->user->firstname} {$al1->user->lastname}"]);
+            ->with("{$al1->user->firstname} {$al1->user->lastname}");
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al2->user->firstname} {$al2->user->lastname}"]);
+            ->with("{$al2->user->firstname} {$al2->user->lastname}");
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, $al1->label->name, 1]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, $al2->label->name, 1]);
 

@@ -72,11 +72,11 @@ class CsvReportGeneratorTest extends TestCase
             ->once()
             ->andReturn('abc');
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al->id,
@@ -154,11 +154,11 @@ class CsvReportGeneratorTest extends TestCase
             ->twice()
             ->andReturn('abc', 'def');
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al1->id,
@@ -180,7 +180,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al1->created_at,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al2->id,
@@ -268,11 +268,11 @@ class CsvReportGeneratorTest extends TestCase
             ->twice()
             ->andReturn('abc', 'def');
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->twice()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al1->id,
@@ -294,7 +294,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al1->created_at,
             ]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al2->id,
@@ -378,11 +378,11 @@ class CsvReportGeneratorTest extends TestCase
             ->once()
             ->andReturn('abc');
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with($this->columns);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al1->id,
@@ -404,7 +404,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al1->created_at,
             ]);
 
-            $mock->shouldReceive('put')
+            $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al2->id,

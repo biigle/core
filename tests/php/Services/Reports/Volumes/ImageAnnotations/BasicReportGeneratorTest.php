@@ -42,13 +42,13 @@ class BasicReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(['']);
+            ->with('');
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$al->label->name, $al->label->color, 2]);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$al2->label->name, $al2->label->color, 1]);
 
@@ -92,17 +92,17 @@ class BasicReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label1->tree->name]);
+            ->with($label1->tree->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$label1->name, $label1->color, 1]);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$label2->tree->name]);
+            ->with($label2->tree->name);
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$label2->name, $label2->color, 1]);
 
@@ -148,17 +148,17 @@ class BasicReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al1->user->firstname} {$al1->user->lastname}"]);
+            ->with("{$al1->user->firstname} {$al1->user->lastname}");
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$al1->label->name, $al1->label->color, 1]);
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(["{$al2->user->firstname} {$al2->user->lastname}"]);
+            ->with("{$al2->user->firstname} {$al2->user->lastname}");
 
-        $mock->shouldReceive('put')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([$al2->label->name, $al2->label->color, 1]);
 

@@ -279,7 +279,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                     'image-annotations' => [
                         [
                             'shape' => 'whole-image',
-                            'coordinates' => [],
+                            'coordinates' => [[]],
+                            'frames' => [],
                             'labels' => [
                                 [
                                     'label' => "$vl->label_id",
@@ -690,7 +691,8 @@ class VideoIfdoReportGeneratorTest extends TestCase
                         ],
                         [
                             'shape' => 'whole-image',
-                            'coordinates' => [],
+                            'coordinates' => [[]],
+                            'frames' => [],
                             'labels' => [
                                 [
                                     'label' => "$label->id",
