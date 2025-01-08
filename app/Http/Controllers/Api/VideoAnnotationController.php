@@ -211,12 +211,7 @@ class VideoAnnotationController extends Controller
             }
         }
 
-        // from a JSON request, the array may already be decoded
         $points = $request->input('points', []);
-
-        if (is_string($points)) {
-            $points = json_decode($points);
-        }
 
         $annotation = new VideoAnnotation([
             'video_id' => $request->video->id,

@@ -109,6 +109,21 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'IndexController@get',
         ]);
 
+        $router->get('export', [
+            'as' => 'admin-export',
+            'uses' => 'ExportController@index',
+        ]);
+
+        $router->get('import', [
+            'as' => 'admin-import',
+            'uses' => 'ImportController@index',
+        ]);
+
+        $router->get('import/{token}', [
+            'as' => 'admin-import-show',
+            'uses' => 'ImportController@show',
+        ]);
+
         $router->get('users', [
             'as' => 'admin-users',
             'uses' => 'UsersController@get',
@@ -177,6 +192,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         $router->get('create', [
             'as'   => 'label-trees-create',
             'uses' => 'LabelTreesController@create',
+        ]);
+
+        $router->get('import', [
+            'as' => 'label-tree-import-index',
+            'uses' => 'PublicImportController@index',
         ]);
 
         $router->get('{id}', [
