@@ -495,9 +495,9 @@ class ImageAnnotationController extends Controller
 
     /**
      * Check if the index exists.
-     * 
+     *
      * @param string $indexName The index name.
-     * 
+     *
      * @return boolean
      */
     protected function indexExists($indexName)
@@ -509,7 +509,6 @@ class ImageAnnotationController extends Controller
      * Drop the HNSW index if exists. This step is necessary to perform exact KNN search
      * because the planner almost always prioritize the HNSW index to perform vector search.
      */
-
     protected function dropHNSWIndex()
     {
         // Check if the index exists

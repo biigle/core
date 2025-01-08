@@ -37,7 +37,7 @@ return [
     */
     'HNSW_ImgAnno_index_name' => 'image_annotation_label_feature_vectors_vector_idx',
 
-        /*
+    /*
     |--------------------------------------------------------------------------
     | B-Tree Index name (Image Annotation)
     |--------------------------------------------------------------------------
