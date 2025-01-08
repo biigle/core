@@ -24,6 +24,7 @@
         "ext-zip": "*",
         "biigle/laravel-file-cache": "^5.0",
         "biigle/metadata-ifdo": "^1.0",
+        "biigle/largo": "^2.36",
         "duncan3dc/bom-string": "^1.1",
         "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
