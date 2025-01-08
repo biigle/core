@@ -625,7 +625,7 @@ class VolumeTest extends ModelTestCase
 
     public function testExportInvalidType()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\TypeError::class);
         $this->model->exportArea = 'abc';
     }
 
