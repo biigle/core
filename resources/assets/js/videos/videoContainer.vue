@@ -708,9 +708,6 @@ export default {
                 UrlParams.set(params);
             },
         },
-        videoId() {
-            Events.$emit('video.change', this.videoId, this.video);
-        }
     },
     created() {
         let shapes = biigle.$require('videos.shapes');
