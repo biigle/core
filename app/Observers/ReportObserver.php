@@ -15,7 +15,7 @@ class ReportObserver
     {
         if ($report->source->name) {
             $report->source_name = $report->source->name;
-        } elseif (is_null($report->source_name)) {
+        } elseif (empty($report->source_name)) {
             $report->source_name = '';
         }
     }

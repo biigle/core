@@ -62,7 +62,7 @@ class StoreProjectReport extends StoreReport
     /**
      * Validate the report types.
      *
-     * @param \Illuminate\Validator\Validator $validator
+     * @param \Illuminate\Validation\Validator $validator
      */
     protected function validateReportType($validator)
     {
@@ -98,7 +98,7 @@ class StoreProjectReport extends StoreReport
     /**
      * Validate the geo info for certain types.
      *
-     * @param \Illuminate\Validator\Validator $validator
+     * @param \Illuminate\Validation\Validator $validator
      */
     protected function validateGeoInfo($validator)
     {
@@ -125,7 +125,7 @@ class StoreProjectReport extends StoreReport
     /**
      * Validate image metadata for certain types.
      *
-     * @param \Illuminate\Validator\Validator $validator
+     * @param \Illuminate\Validation\Validator $validator
      */
     protected function validateImageMetadata($validator)
     {
@@ -156,7 +156,7 @@ class StoreProjectReport extends StoreReport
     /**
      * Check if some volumes have iFDO files (if an iFDO report is requested).
      *
-     * @param \Illuminate\Validator\Validator $validator
+     * @param \Illuminate\Validation\Validator $validator
      */
     protected function validateIfdos($validator)
     {

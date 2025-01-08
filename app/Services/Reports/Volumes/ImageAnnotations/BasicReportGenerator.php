@@ -93,10 +93,10 @@ class BasicReportGenerator extends AnnotationReportGenerator
     protected function createCsv($labels, $title = '')
     {
         $csv = CsvFile::makeTmp();
-        $csv->put([$title]);
+        $csv->put($title);
 
         foreach ($labels as $label) {
-            $csv->put([$label->name, $label->color, $label->count]);
+            $csv->putCsv([$label->name, $label->color, $label->count]);
         }
 
         $csv->close();

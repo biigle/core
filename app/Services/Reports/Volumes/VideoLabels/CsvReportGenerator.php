@@ -120,7 +120,7 @@ class CsvReportGenerator extends VolumeReportGenerator
     {
         $csv = CsvFile::makeTmp();
         // column headers
-        $csv->put([
+        $csv->putCsv([
             'video_label_id',
             'video_id',
             'filename',
@@ -134,7 +134,7 @@ class CsvReportGenerator extends VolumeReportGenerator
         ]);
 
         foreach ($rows as $row) {
-            $csv->put([
+            $csv->putCsv([
                 $row->video_label_id,
                 $row->video_id,
                 $row->filename,

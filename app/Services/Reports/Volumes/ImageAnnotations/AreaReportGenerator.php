@@ -37,7 +37,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
     /**
      * All images that contain annotations which are included in this report.
      *
-     * @var Illuminate\Database\Eloquent\Collection
+     * @var \Illuminate\Database\Eloquent\Collection<int, Image>
      */
     protected $images;
 
@@ -119,8 +119,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
     {
         $rows = $this->parseRows($rows);
         $csv = CsvFile::makeTmp();
-        $csv->put([$title]);
-        $csv->put([
+        $csv->put($title);
+        $csv->putCsv([
             'annotation_id',
             'shape_id',
             'shape_name',
@@ -137,7 +137,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
         ]);
 
         foreach ($rows as $row) {
-            $csv->put([
+            $csv->putCsv([
                 $row->id,
                 $row->shape_id,
                 $row->shape_name,
@@ -162,7 +162,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
     /**
      * Creates the array of annotations that is inserted into the CSV file.
      *
-     * @param  Illuminate\Support\Collection $rows
+     * @param  \Illuminate\Support\Collection $rows
      * @return array
      */
     protected function parseRows($rows)
@@ -315,12 +315,15 @@ class AreaReportGenerator extends AnnotationReportGenerator
             // annotation.
             if (!property_exists($image, 'area') || !property_exists($image, 'px')) {
                 $laserpointsImage = LImage::convert($image);
+                /** @phpstan-ignore property.notFound */
                 $image->area = $laserpointsImage->area;
                 if ($image->width && $image->height) {
+                    /** @phpstan-ignore property.notFound */
                     $image->px = $image->width * $image->height;
                 }
             }
 
+            /** @phpstan-ignore property.notFound, property.notFound */
             if (!is_null($image->area) && !is_null($image->px)) {
                 // If we assume a pixel is a little square then this is the area of a
                 // single pixel.

@@ -6,6 +6,40 @@ use Biigle\Traits\HasConstantInstances;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static ReportType imageAnnotationsAbundance()
+ * @method static int imageAnnotationsAbundanceId()
+ * @method static ReportType imageAnnotationsAnnotationLocation()
+ * @method static int imageAnnotationsAnnotationLocationId()
+ * @method static ReportType imageAnnotationsArea()
+ * @method static int imageAnnotationsAreaId()
+ * @method static ReportType imageAnnotationsBasic()
+ * @method static int imageAnnotationsBasicId()
+ * @method static ReportType imageAnnotationsCsv()
+ * @method static int imageAnnotationsCsvId()
+ * @method static ReportType imageAnnotationsExtended()
+ * @method static int imageAnnotationsExtendedId()
+ * @method static ReportType imageAnnotationsCoco()
+ * @method static int imageAnnotationsCocoId()
+ * @method static ReportType imageAnnotationsFull()
+ * @method static int imageAnnotationsFullId()
+ * @method static ReportType imageAnnotationsImageLocation()
+ * @method static int imageAnnotationsImageLocationId()
+ * @method static ReportType imageIfdo()
+ * @method static int imageIfdoId()
+ * @method static ReportType imageLabelsBasic()
+ * @method static int imageLabelsBasicId()
+ * @method static ReportType imageLabelsCsv()
+ * @method static int imageLabelsCsvId()
+ * @method static ReportType imageLabelsImageLocation()
+ * @method static int imageLabelsImageLocationId()
+ * @method static ReportType videoAnnotationsCsv()
+ * @method static int videoAnnotationsCsvId()
+ * @method static ReportType videoIfdo()
+ * @method static int videoIfdoId()
+ * @method static ReportType videoLabelsCsv()
+ * @method static int videoLabelsCsvId()
+ */
 class ReportType extends Model
 {
     use HasConstantInstances, HasFactory;

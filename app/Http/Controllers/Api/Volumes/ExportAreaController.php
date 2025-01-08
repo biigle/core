@@ -25,7 +25,7 @@ class ExportAreaController extends Controller
      * [100, 100, 1200, 600]
      *
      * @param int $id Volume ID
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function show($id)
     {
@@ -52,7 +52,6 @@ class ExportAreaController extends Controller
      *
      * @param Request $request
      * @param int $id Volume ID
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request, $id)
     {
@@ -81,7 +80,6 @@ class ExportAreaController extends Controller
      * @apiDescription Only available for image volumes.
      *
      * @param int $id Volume ID
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {

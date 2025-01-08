@@ -109,7 +109,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
     {
         $csv = CsvFile::makeTmp();
         // column headers
-        $csv->put([
+        $csv->putCsv([
             'annotation_label_id',
             'label_id',
             'label_name',
@@ -123,7 +123,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
         ]);
 
         foreach ($rows as $row) {
-            $csv->put([
+            $csv->putCsv([
                 $row->annotation_label_id,
                 $row->label_id,
                 $row->label_name,

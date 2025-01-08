@@ -99,11 +99,11 @@ class BasicReportGenerator extends VolumeReportGenerator
     protected function createCsv($rows, $title = '')
     {
         $csv = CsvFile::makeTmp();
-        $csv->put([$title]);
-        $csv->put(['image_id', 'image_filename', 'label_hierarchies']);
+        $csv->put($title);
+        $csv->putCsv(['image_id', 'image_filename', 'label_hierarchies']);
 
         foreach ($rows->groupBy('id') as $row) {
-            $csv->put([
+            $csv->putCsv([
                 $row[0]->id,
                 $row[0]->filename,
                 $row->map(function ($row) {

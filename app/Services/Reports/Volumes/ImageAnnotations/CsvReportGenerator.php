@@ -115,14 +115,14 @@ class CsvReportGenerator extends AnnotationReportGenerator
     /**
      * Create a CSV file for this report.
      *
-     * @param \Illuminate\Database\QueryBuilder $query The query for the CSV rows
+     * @param \Illuminate\Database\Query\Builder $query The query for the CSV rows
      * @return CsvFile
      */
     protected function createCsv($query)
     {
         $csv = CsvFile::makeTmp();
         // column headers
-        $csv->put([
+        $csv->putCsv([
             'annotation_label_id',
             'label_id',
             'label_name',
@@ -143,7 +143,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
         ]);
 
         $query->eachById(function ($row) use ($csv) {
-            $csv->put([
+            $csv->putCsv([
                 $row->annotation_label_id,
                 $row->label_id,
                 $row->label_name,

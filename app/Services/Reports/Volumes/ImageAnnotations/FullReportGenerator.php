@@ -94,11 +94,11 @@ class FullReportGenerator extends AnnotationReportGenerator
     protected function createCsv($rows, $title = '')
     {
         $csv = CsvFile::makeTmp();
-        $csv->put([$title]);
-        $csv->put(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
+        $csv->put($title);
+        $csv->putCsv(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
         foreach ($rows as $row) {
-            $csv->put([
+            $csv->putCsv([
                 $row->filename,
                 $row->annotation_id,
                 $this->expandLabelName($row->label_id),

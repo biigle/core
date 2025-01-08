@@ -95,11 +95,11 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
     protected function createCsv($rows, $title = '')
     {
         $csv = CsvFile::makeTmp();
-        $csv->put([$title]);
-        $csv->put(['image_filename', 'label_hierarchy', 'annotation_count']);
+        $csv->put($title);
+        $csv->putCsv(['image_filename', 'label_hierarchy', 'annotation_count']);
 
         foreach ($rows as $row) {
-            $csv->put([
+            $csv->putCsv([
                 $row->filename,
                 $this->expandLabelName($row->label_id),
                 $row->count,

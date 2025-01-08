@@ -117,7 +117,7 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
      *
      * @param \Illuminate\Database\Query\Builder $query
      * @param \Illuminate\Support\Collection $usedLabels
-     * @param \Illuminate\Support\Collection $labels
+     * @param \Illuminate\Support\Enumerable $labels
      *
      * @return File
      */

@@ -29,6 +29,14 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
     public $filename = 'video_ifdo_report';
 
     /**
+     * Create the image-set-item entries for the images or videos.
+     */
+    public function processFiles()
+    {
+        $this->query()->eachById([$this, 'processFile']);
+    }
+
+    /**
      * Assemble a new DB query for the volume of this report.
      *
      * @return \Illuminate\Database\Query\Builder
@@ -66,7 +74,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
     /**
      * Get all users who annotated in the volume.
      *
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     protected function getUsers()
     {
@@ -89,7 +97,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
     /**
      * Get all labels that were used in the volume.
      *
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     protected function getLabels()
     {
@@ -111,11 +119,8 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
 
     /**
      * Create the image-set-item entry for a video.
-     *
-     * @param Image|Video $video
-     *
      */
-    public function processFile(Image|Video $video)
+    public function processFile(Video $video)
     {
         // Remove annotations that should not be included because of an "onlyLabels"
         // filter.
@@ -175,7 +180,8 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
 
             return [
                 'shape' => 'whole-image',
-                'coordinates' => [],
+                'coordinates' => [[]],
+                'frames' => [],
                 'labels' => [
                     [
                         'label' => "$labelId",

@@ -17,14 +17,14 @@ class Report extends Model
     /**
      * The report generator for this report.
      *
-     * @var ReportGenerator
+     * @var ?ReportGenerator
      */
     protected $reportGenerator;
 
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'user_id' => 'int',
@@ -55,13 +55,15 @@ class Report extends Model
     }
 
     /**
-     * Source of the report (\Biigle\Volume, \Biigle\Project or
-     * \Biigle\Video).
+     * Source of the report (\Biigle\Volume or \Biigle\Project).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Project|Volume, $this>
      */
     public function source()
     {
+        /**
+         * @var \Illuminate\Database\Eloquent\Relations\MorphTo<Project|Volume, $this>
+         */
         return $this->morphTo();
     }
 
@@ -72,7 +74,7 @@ class Report extends Model
      */
     public function getSourceNameAttribute()
     {
-        if (is_null($this->source) || is_null($this->source->name)) {
+        if (is_null($this->source) || empty($this->source->name)) {
             return $this->attributes['source_name'];
         }
 

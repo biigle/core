@@ -28,14 +28,14 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     /**
      * Labels that have been used in this volume.
      *
-     * @var Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection
      */
     protected $labels;
 
     /**
      * Users that have been used in this volume.
      *
-     * @var Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection
      */
     protected $users;
 
@@ -63,7 +63,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     /**
      * Label source model for the WoRMS database.
      *
-     * @var LabelSource
+     * @var ?LabelSource
      */
     protected $wormsLabelSource;
 
@@ -78,7 +78,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
         $this->users = $this->getUsers()->keyBy('id');
         $this->labels = $this->getLabels()->keyBy('id');
 
-        $this->query()->eachById([$this, 'processFile']);
+        $this->processFiles();
 
         if (!$this->hasIfdo($this->source)) {
             throw new Exception("No iFDO file found for the volume.");
@@ -156,23 +156,16 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     }
 
     /**
-     * Assemble a new DB query for the volume of this report.
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    abstract protected function query();
-
-    /**
      * Get all users who annotated in the volume.
      *
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     abstract protected function getUsers();
 
     /**
      * Get all labels that were used in the volume.
      *
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     abstract protected function getLabels();
 
@@ -185,12 +178,9 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
     }
 
     /**
-     * Create the image-set-item entry for an image or video.
-     *
-     * @param Image|Video $file
-     *
+     * Create the image-set-item entries for the images or videos.
      */
-    abstract public function processFile(Image|Video $file);
+    abstract public function processFiles();
 
     /**
      * Get the iFDO object of the volume if it has any.

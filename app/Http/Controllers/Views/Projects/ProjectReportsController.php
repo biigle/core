@@ -17,7 +17,7 @@ class ProjectReportsController extends Controller
      * @param Request $request
      * @param int $id
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     protected function show(Request $request, $id)
     {
@@ -32,7 +32,7 @@ class ProjectReportsController extends Controller
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
-        $isPinned = $isMember && $userProject->pivot->pinned;
+        $isPinned = $isMember && $userProject->getRelationValue('pivot')->pinned;
         $canPin = $isMember && 3 > $request->user()
             ->projects()
             ->wherePivot('pinned', true)

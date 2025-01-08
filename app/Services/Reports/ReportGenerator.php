@@ -59,7 +59,7 @@ class ReportGenerator
     /**
      * Cache for labels of all label trees that are used for this report.
      *
-     * @var \Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection|null
      */
     protected $labels;
 

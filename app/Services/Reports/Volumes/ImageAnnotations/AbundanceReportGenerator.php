@@ -96,7 +96,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      *
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
-     * @param  array $labels
+     * @param \Illuminate\Support\Collection $labels
      *
      * @return CsvFile
      */
@@ -111,13 +111,13 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $labels = $labels->sortBy('id');
 
         $csv = CsvFile::makeTmp();
-        $csv->put([$title]);
+        $csv->putCsv([$title]);
 
         $columns = ['image_filename'];
         foreach ($labels as $label) {
             $columns[] = $label->name;
         }
-        $csv->put($columns);
+        $csv->putCsv($columns);
 
         foreach ($rows as $filename => $annotations) {
             $row = [$filename];
@@ -130,7 +130,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
             }
 
-            $csv->put($row);
+            $csv->putCsv($row);
         }
 
         $csv->close();

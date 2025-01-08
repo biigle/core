@@ -11,7 +11,7 @@ trait RestrictsToNewestLabels
      * Callback to be used in a `when` query statement that restricts the results to the
      * newest annotation labels of each annotation.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Contracts\Database\Query\Builder
      */
     public function restrictToNewestLabelQuery($query, Volume $volume)
     {

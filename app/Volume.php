@@ -426,7 +426,7 @@ class Volume extends Model
     /**
      * Return the dynamic attribute for the export area.
      *
-     * @return array
+     * @return ?array
      */
     public function getExportAreaAttribute()
     {
@@ -435,15 +435,9 @@ class Volume extends Model
 
     /**
      * Set or update the dynamic attribute for the export area.
-     *
-     * @param array $value The value to set
      */
-    public function setExportAreaAttribute($value)
+    public function setExportAreaAttribute(?array $value)
     {
-        if (!is_array($value) && !is_null($value)) {
-            throw new Exception('Export area coordinates must be an array!');
-        }
-
         if ($value !== null) {
             if (sizeof($value) !== 4) {
                 throw new Exception('Malformed export area coordinates!');

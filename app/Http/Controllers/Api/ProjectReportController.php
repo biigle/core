@@ -41,7 +41,7 @@ class ProjectReportController extends Controller
         $report->source()->associate($request->project);
         $report->type_id = $request->input('type_id');
         $report->user()->associate($request->user());
-        $report->options = $request->getOptions($request);
+        $report->options = $request->getOptions();
         $report->save();
 
         $queue = config('reports.generate_report_queue');

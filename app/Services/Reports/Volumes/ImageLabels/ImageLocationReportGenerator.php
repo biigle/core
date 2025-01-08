@@ -102,7 +102,7 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
     /**
      * Assemble a new DB query for the volume of this report.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Contracts\Database\Query\Builder
      */
     public function query()
     {
@@ -132,7 +132,7 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
      *
      * @param \Illuminate\Database\Query\Builder $query
      * @param \Illuminate\Support\Collection $usedImageLabels
-     * @param \Illuminate\Support\Collection $imageLabels
+     * @param \Illuminate\Support\Enumerable $imageLabels
      *
      * @return File
      */
