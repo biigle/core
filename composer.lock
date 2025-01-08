@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca97d33c23f33ce70c7ea103a44ded6b",
+    "content-hash": "b55d0bbec70a0595987d588a9c040c62",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -59,6 +59,56 @@
                 "source": "https://github.com/Bacon/BaconQrCode/tree/v3.0.1"
             },
             "time": "2024-10-01T13:55:55+00:00"
+        },
+        {
+            "name": "biigle/ifdo",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/ifdo.git",
+                "reference": "d744b9491a5890391a40a0a1af655ed71ece1dbf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/ifdo/zipball/d744b9491a5890391a40a0a1af655ed71ece1dbf",
+                "reference": "d744b9491a5890391a40a0a1af655ed71ece1dbf",
+                "shasum": ""
+            },
+            "require": {
+                "justinrainbow/json-schema": "^5.2",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.0 || ^11.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Ifdo\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Christoph Bach",
+                    "email": "bach@intab.pro",
+                    "role": "Developer"
+                }
+            ],
+            "description": "iFDO Parser Package to parse and validate the iFDO JSON Schema",
+            "homepage": "https://github.com/biigle/ifdo-parser",
+            "keywords": [
+                "biigle",
+                "ifdo-parser"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/ifdo/issues",
+                "source": "https://github.com/biigle/ifdo/tree/v1.0.1"
+            },
+            "time": "2024-11-07T13:46:10+00:00"
         },
         {
             "name": "biigle/laravel-file-cache",
@@ -165,6 +215,58 @@
                 "source": "https://github.com/biigle/largo"
             },
             "time": "2024-12-18T08:21:29+00:00"
+        },
+        {
+            "name": "biigle/metadata-ifdo",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/metadata-ifdo.git",
+                "reference": "1feda4bc651045a1797c42ad1f25d3e70057601c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/metadata-ifdo/zipball/1feda4bc651045a1797c42ad1f25d3e70057601c",
+                "reference": "1feda4bc651045a1797c42ad1f25d3e70057601c",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/ifdo": "^0.4 || ^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\MetadataIfdo\\MetadataIfdoServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\MetadataIfdo\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module for iFDO metadata.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/metadata-ifdo/issues",
+                "source": "https://github.com/biigle/metadata-ifdo"
+            },
+            "time": "2024-12-03T08:33:30+00:00"
         },
         {
             "name": "brick/math",
@@ -1501,6 +1603,130 @@
                 "source": "https://github.com/libvips/php-vips/tree/v2.4.0"
             },
             "time": "2024-04-09T09:27:18+00:00"
+        },
+        {
+            "name": "jmikola/geojson",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jmikola/geojson.git",
+                "reference": "e28f3855bb61a91aab32b74c176d76dd0b5658d7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jmikola/geojson/zipball/e28f3855bb61a91aab32b74c176d76dd0b5658d7",
+                "reference": "e28f3855bb61a91aab32b74c176d76dd0b5658d7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.4 || ^8.0",
+                "symfony/polyfill-php80": "^1.25"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "scrutinizer/ocular": "^1.8.1",
+                "slevomat/coding-standard": "^8.0",
+                "squizlabs/php_codesniffer": "^3.6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GeoJson\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
+                }
+            ],
+            "description": "GeoJSON implementation for PHP",
+            "homepage": "https://github.com/jmikola/geojson",
+            "keywords": [
+                "geo",
+                "geojson",
+                "geospatial"
+            ],
+            "support": {
+                "issues": "https://github.com/jmikola/geojson/issues",
+                "source": "https://github.com/jmikola/geojson/tree/1.2.0"
+            },
+            "time": "2023-12-04T17:19:43+00:00"
+        },
+        {
+            "name": "justinrainbow/json-schema",
+            "version": "5.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jsonrainbow/json-schema.git",
+                "reference": "feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jsonrainbow/json-schema/zipball/feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8",
+                "reference": "feb2ca6dd1cebdaf1ed60a4c8de2e53ce11c4fd8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~2.2.20||~2.15.1",
+                "json-schema/json-schema-test-suite": "1.2.0",
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "bin": [
+                "bin/validate-json"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JsonSchema\\": "src/JsonSchema/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno Prieto Reis",
+                    "email": "bruno.p.reis@gmail.com"
+                },
+                {
+                    "name": "Justin Rainbow",
+                    "email": "justin.rainbow@gmail.com"
+                },
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                },
+                {
+                    "name": "Robert Schönthal",
+                    "email": "seroscho@googlemail.com"
+                }
+            ],
+            "description": "A library to validate a json schema.",
+            "homepage": "https://github.com/justinrainbow/json-schema",
+            "keywords": [
+                "json",
+                "schema"
+            ],
+            "support": {
+                "issues": "https://github.com/jsonrainbow/json-schema/issues",
+                "source": "https://github.com/jsonrainbow/json-schema/tree/5.3.0"
+            },
+            "time": "2024-07-06T21:00:26+00:00"
         },
         {
             "name": "laravel/framework",
@@ -10340,7 +10566,8 @@
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "ext-zip": "*"
     },
     "platform-dev": [],
     "platform-overrides": {

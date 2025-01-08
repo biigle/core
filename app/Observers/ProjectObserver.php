@@ -3,6 +3,8 @@
 namespace Biigle\Observers;
 
 use Biigle\LabelTree;
+use Biigle\Project;
+use Biigle\Report;
 use Biigle\Role;
 use Exception;
 
@@ -39,5 +41,19 @@ class ProjectObserver
             ->pluck('id')
             ->all();
         $project->labelTrees()->attach($ids);
+    }
+
+    /**
+     * Update the source name of reports when the source is deleted.
+     *
+     * @param \Biigle\Project $project
+     */
+    public function deleted($project)
+    {
+        Report::where('source_id', '=', $project->id)
+            ->where('source_type', '=', Project::class)
+            ->update([
+                'source_name' => $project->name,
+            ]);
     }
 }

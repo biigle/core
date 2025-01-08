@@ -265,6 +265,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'project-charts',
             'uses' => 'ProjectStatisticsController@show',
         ]);
+
+        $router->get('{id}/reports', [
+            'uses' => 'ProjectReportsController@show',
+            'as' => 'project-reports',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {
@@ -318,6 +323,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         $router->get('clone/{id}',[
             'as' => 'clone-volume',
             'uses' => 'VolumeCloneController@clone'
+        ]);
+
+        $router->get('{id}/reports', [
+            'uses' => 'VolumeReportsController@show',
+            'as' => 'volume-reports',
         ]);
     });
 

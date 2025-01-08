@@ -83,6 +83,11 @@ return [
             'driver' => 'local',
             'root' => storage_path('imports'),
         ],
+
+        'reports' => [
+            'driver' => 'local',
+            'root' => storage_path('reports'),
+        ],
     ],
 
     /*

@@ -41,10 +41,16 @@ class UpdateUserSettings extends FormRequest
      */
     public function rules()
     {
-        return array_merge(static::$additionalRules, [
+        $rules = [
             'super_user_mode' => 'filled|bool',
             'include_federated_search' => 'filled|bool',
-        ]);
+        ];
+
+        if (config('reports.notifications.allow_user_settings')) {
+            $rules['report_notifications'] = 'filled|in:email,web';
+        }
+
+        return array_merge(static::$additionalRules, $rules);
     }
 
     /**
