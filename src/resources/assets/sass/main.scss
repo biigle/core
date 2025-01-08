@@ -1,120 +1,119 @@
-@import "variables";
+@import 'variables';
 
 .navbar-text.navbar-largo-breadcrumbs {
-  &,
-  a {
-    color: $text-color;
-  }
+    &, a {
+        color: $text-color;
+    }
 }
 
 .largo-images__alerts {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: none;
-  transition: 0.25s background-color ease;
-  z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    transition: 0.25s background-color ease;
+    z-index: 2;
 
-  &.block {
-    pointer-events: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
+    &.block {
+        pointer-events: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
 }
 
 .sidebar__tab--open.largo-tab {
-  display: flex !important;
-  flex-direction: column;
+    display: flex !important;
+    flex-direction: column;
 
-  .largo-tab__button {
-    padding-bottom: $padding-large-vertical;
-  }
+    .largo-tab__button {
+        padding-bottom: $padding-large-vertical;
+    }
 
-  .largo-tab__label-trees {
-    flex: 1;
-    overflow: auto;
-  }
+    .largo-tab__label-trees {
+        flex: 1;
+        overflow: auto;
+    }
 }
 
 .image-grid__image--largo {
-  .outlines {
-    position: absolute;
-    /*  2px is the figure padding  */
-    top: 2px;
-    left: 2px;
-    pointer-events: none;
-    width: calc(100% - 4px);
-    height: calc(100% - 4px);
-  }
+    .outlines {
+        position: absolute;
+        /*  2px is the figure padding  */
+        top: 2px;
+        left: 2px;
+        pointer-events: none;
+        width: calc(100% - 4px);
+        height: calc(100% - 4px);
+    }
 
-  .image-buttons-bottom {
-    position: absolute;
-    right: 6px;
-    bottom: 6px;
-  }
+    .image-buttons-bottom {
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+    }
 }
 
 .image-grid__image--catalog {
-  > a {
-    width: 100%;
-  }
-  @extend .image-grid__image--largo;
+    > a {
+        width: 100%;
+    }
+    @extend .image-grid__image--largo;
 }
 
 .image-grid__image--relabel {
-  .new-label {
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: 0;
-    padding: 0.5em;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-    pointer-events: none;
-  }
+    .new-label {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: 0.5em;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
+        pointer-events: none;
+    }
 
-  .new-label__name {
-    padding-right: 16px;
-  }
+    .new-label__name {
+        padding-right: 16px;
+    }
 
-  .new-label__color {
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    border-radius: 50%;
-    border: 2px solid #eee;
-    vertical-align: middle;
-  }
+    .new-label__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
 }
 
 .largo-example-annotations {
-  .largo-example-annotations__images {
-    overflow-x: auto;
-    white-space: nowrap;
-    margin-right: -1em;
-  }
-
-  .largo-example-annotation {
-    height: 125px;
-    width: auto;
-    image-orientation: none;
-
-    &:not(:last-child) {
-      margin-right: 0.5em;
+    .largo-example-annotations__images {
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-right: -1em;
     }
-  }
 
-  .alert {
-    margin-bottom: 0;
-  }
+    .largo-example-annotation {
+        height: 125px;
+        width: auto;
+        image-orientation: none;
+
+        &:not(:last-child) {
+            margin-right: 0.5em;
+        }
+    }
+
+    .alert {
+        margin-bottom: 0;
+    }
 }
 
 .annotation-filter {
-  min-width: 90%;
+    min-width: 90%;
 }
