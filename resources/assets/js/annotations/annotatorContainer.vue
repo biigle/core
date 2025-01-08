@@ -675,7 +675,6 @@ export default {
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
-        this.filenames = biigle.$require('annotations.imagesFilenames');
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
