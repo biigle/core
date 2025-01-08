@@ -94,9 +94,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -110,9 +108,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new AnnotationLocationReportGenerator;
         $generator->setSource($volume);
@@ -184,9 +180,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -199,9 +193,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new AnnotationLocationReportGenerator;
         $generator->setSource($volume);
@@ -276,9 +268,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -291,9 +281,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new AnnotationLocationReportGenerator;
         $generator->setSource($volume);
@@ -370,9 +358,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -385,9 +371,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new AnnotationLocationReportGenerator;
         $generator->setSource($volume);
@@ -411,9 +395,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -424,9 +406,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('addFile')->once();
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new AnnotationLocationReportGenerator;
         $generator->setSource($volume);
@@ -506,9 +486,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -526,9 +504,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new AnnotationLocationReportGenerator([
             'separateLabelTrees' => true,
@@ -614,9 +590,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -634,9 +608,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new AnnotationLocationReportGenerator([
             'separateUsers' => true,

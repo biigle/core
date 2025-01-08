@@ -44,9 +44,7 @@ class PythonScriptRunner
         $python = config('reports.python');
         $script = config("reports.scripts.{$scriptName}");
 
-        $csvs = implode(' ', array_map(function ($csv) {
-            return $csv->getPath();
-        }, $csvs));
+        $csvs = implode(' ', array_map(fn ($csv) => $csv->getPath(), $csvs));
 
         $command = "{$python} {$script} \"{$volumeName}\" {$path} {$csvs} 2>&1";
 

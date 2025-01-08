@@ -12,7 +12,6 @@ use TestCase;
 
 class GenerateReportJobTest extends TestCase
 {
-
     public function testHandleWithoutNotifications()
     {
         $opts = [];
@@ -90,5 +89,4 @@ class GenerateReportJobTest extends TestCase
         $report->options = $opts;
         with(new GenerateReportJob($report))->handle();
     }
-
 }

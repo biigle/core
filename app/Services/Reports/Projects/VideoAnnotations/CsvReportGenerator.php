@@ -2,7 +2,6 @@
 
 namespace Biigle\Services\Reports\Projects\VideoAnnotations;
 
-use Biigle\Services\Reports\File;
 use Biigle\Services\Reports\Projects\ProjectVideoReportGenerator;
 use Biigle\Services\Reports\Volumes\VideoAnnotations\CsvReportGenerator as ReportGenerator;
 

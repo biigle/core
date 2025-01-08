@@ -170,9 +170,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     return in_array($value, $onlyLabels) ? $value : null;
                 });
             })
-            ->reject(function ($value) {
-                return is_null($value);
-            });
+            ->reject(fn ($value) => is_null($value));
 
         // Determine the highest parent label for all child labels.
         do {
@@ -213,16 +211,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
             // Remove rows of child labels so they are not counted twice.
             $rows[$filename] = $annotations->values()
-                ->reject(function ($annotation) use ($parentIdMap) {
-                    return $parentIdMap->has($annotation->label_id);
-                });
+                ->reject(fn ($annotation) => $parentIdMap->has($annotation->label_id));
         }
 
         // Remove all labels that did not occur (as parent) in the rows.
         $presentLabels = $presentLabels->unique()->flip();
-        $labels = $labels->filter(function ($label) use ($presentLabels) {
-            return $presentLabels->has($label->id);
-        });
+        $labels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
 
         return [$rows, $labels];
     }

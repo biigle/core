@@ -70,7 +70,8 @@ class FullReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        $query = $this->initQuery([
+        $query = $this
+            ->initQuery([
                 'images.filename',
                 'image_annotations.id as annotation_id',
                 'image_annotation_labels.label_id',

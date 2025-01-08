@@ -9,7 +9,6 @@ use Biigle\Services\Reports\MakesZipArchives;
 use Biigle\User;
 use DB;
 use GeoJson\Feature\Feature;
-use GeoJson\Feature\FeatureCollection;
 use GeoJson\Geometry\Point;
 
 class ImageLocationReportGenerator extends AnnotationReportGenerator
@@ -49,9 +48,7 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), function ($query) {
-                return $this->restrictToLabelsQuery($query, 'image_annotation_labels');
-            })
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
             ->orderBy('labels.id')
             ->distinct();
 

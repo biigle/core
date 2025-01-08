@@ -101,9 +101,7 @@ class CsvReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -117,9 +115,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CsvReportGenerator;
         $generator->setSource($volume);
@@ -205,9 +201,7 @@ class CsvReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -225,9 +219,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CsvReportGenerator([
             'separateLabelTrees' => true,
@@ -319,9 +311,7 @@ class CsvReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -339,9 +329,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CsvReportGenerator([
             'separateUsers' => true,
@@ -364,11 +352,11 @@ class CsvReportGeneratorTest extends TestCase
         $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
         
         $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $annotation->id, 
+            'annotation_id' => $annotation->id,
             'user_id' => null // deleted user
         ]);
         $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $annotation->id, 
+            'annotation_id' => $annotation->id,
             'user_id' => $user->id
         ]);
 
@@ -404,7 +392,7 @@ class CsvReportGeneratorTest extends TestCase
                 $al1->created_at,
             ]);
 
-            $mock->shouldReceive('putCsv')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al2->id,
@@ -428,9 +416,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -444,9 +430,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CsvReportGenerator();
         $generator->setSource($image->volume);

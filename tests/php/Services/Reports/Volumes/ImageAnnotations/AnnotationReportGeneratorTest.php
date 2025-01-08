@@ -2,8 +2,6 @@
 
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
-use Biigle\ImageAnnotation;
-use Biigle\ImageAnnotationLabel;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\AnnotationReportGenerator;
 use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;

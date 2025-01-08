@@ -36,15 +36,15 @@ class CreateReportsTable extends Migration
 
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
 
             $table->unsignedInteger('type_id');
             $table->foreign('type_id')
-                  ->references('id')
-                  ->on('report_types')
-                  ->onDelete('restrict');
+                ->references('id')
+                ->on('report_types')
+                ->onDelete('restrict');
 
             // Columns for the polymorphic relationship to either volumes or projects.
             $table->morphs('source');

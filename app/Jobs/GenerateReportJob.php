@@ -2,10 +2,8 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\Jobs\Job;
 use Biigle\Notifications\ReportReady;
 use Biigle\Report;
-use Biigle\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;

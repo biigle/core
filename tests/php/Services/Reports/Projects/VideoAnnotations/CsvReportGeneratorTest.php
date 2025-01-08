@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Services\Reports\Projects\VideoAnnotations;
 
 use Biigle\Services\Reports\Projects\VideoAnnotations\CsvReportGenerator;
-use Biigle\VideosServiceProvider;
 use TestCase;
 
 class CsvReportGeneratorTest extends TestCase

@@ -4,7 +4,6 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Biigle\MediaType;
-use Biigle\Volume;
 
 class ExportAreaControllerTest extends ApiTestCase
 {
@@ -70,9 +69,8 @@ class ExportAreaControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$volume->id}/export-area", [
-                'coordinates' => [10, 20, 30, 40],
-            ])
-            ->assertStatus(422);
+            'coordinates' => [10, 20, 30, 40],
+        ])->assertStatus(422);
     }
 
     public function testDestroy()

@@ -74,9 +74,7 @@ class BasicReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new BasicReportGenerator;
         $generator->setSource($volume);
@@ -126,9 +124,7 @@ class BasicReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new BasicReportGenerator([
             'separateLabelTrees' => true,
@@ -175,9 +171,7 @@ class BasicReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new BasicReportGenerator([
             'separateUsers' => true,

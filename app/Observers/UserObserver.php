@@ -17,8 +17,6 @@ class UserObserver
     public function deleting($user)
     {
         Report::where('user_id', $user->id)
-            ->eachById(function ($report) {
-                return $report->deleteFile();
-            });
+            ->eachById(fn ($report) => $report->deleteFile());
     }
 }

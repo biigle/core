@@ -5,7 +5,6 @@ namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 use App;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
-use Biigle\Volume;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -73,9 +72,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator;
         $generator->setSource($volume);
@@ -134,9 +131,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateLabelTrees' => true,
@@ -193,9 +188,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateUsers' => true,
@@ -265,9 +258,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'aggregateChildLabels' => true,
@@ -391,9 +382,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'aggregateChildLabels' => true,

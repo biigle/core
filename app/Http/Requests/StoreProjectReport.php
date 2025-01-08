@@ -6,7 +6,6 @@ use Biigle\Image;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
 use Biigle\ReportType;
-use Illuminate\Validation\Rule;
 
 class StoreProjectReport extends StoreReport
 {
@@ -112,9 +111,7 @@ class StoreProjectReport extends StoreReport
             $hasGeoInfo = $this->project->imageVolumes()
                 ->select('id')
                 ->get()
-                ->reduce(function ($carry, $volume) {
-                    return $carry && $volume->hasGeoInfo();
-                }, true);
+                ->reduce(fn ($carry, $volume) => $carry && $volume->hasGeoInfo(), true);
 
             if (!$hasGeoInfo) {
                 $validator->errors()->add('id', 'No volume has images with geo coordinates.');

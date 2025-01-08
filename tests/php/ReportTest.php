@@ -4,10 +4,7 @@ namespace Biigle\Tests;
 
 use Biigle\Report;
 use Biigle\Services\Reports\ReportGenerator;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
-use File;
 use Mockery;
 use ModelTestCase;
 use Storage;

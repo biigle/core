@@ -87,7 +87,8 @@ class CsvReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        $query = $this->initQuery([
+        $query = $this
+            ->initQuery([
                 'image_annotation_labels.id as annotation_label_id',
                 'image_annotation_labels.label_id',
                 'labels.name as label_name',

@@ -26,9 +26,7 @@ class ReportFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'type_id' => function () {
-                return ReportType::imageAnnotationsCsvId();
-            },
+            'type_id' => fn () => ReportType::imageAnnotationsCsvId(),
             'source_id' => Volume::factory(),
             'source_type' => Volume::class,
         ];

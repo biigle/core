@@ -10,7 +10,6 @@ use Biigle\Services\Reports\Volumes\VolumeReportGenerator;
 use Biigle\User;
 use DB;
 use GeoJson\Feature\Feature;
-use GeoJson\Feature\FeatureCollection;
 use GeoJson\Geometry\Point;
 
 class ImageLocationReportGenerator extends VolumeReportGenerator
@@ -49,9 +48,7 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
         $usedImageLabelsQuery = ImageLabel::join('images', 'image_labels.image_id', '=', 'images.id')
             ->join('labels', 'image_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), function ($query) {
-                return $this->restrictToLabelsQuery($query, 'image_labels');
-            })
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_labels'))
             ->orderBy('labels.id')
             ->distinct();
 
@@ -113,9 +110,7 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
                 'image_labels.label_id',
             ])
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), function ($query) {
-                return $this->restrictToLabelsQuery($query, 'image_labels');
-            });
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_labels'));
 
         if ($this->shouldSeparateLabelTrees()) {
             $query->join('labels', 'labels.id', '=', 'image_labels.label_id')

@@ -112,12 +112,8 @@ class AnnotationReportGenerator extends VolumeReportGenerator
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
-            ->when($this->isRestrictedToNewestLabel(), function ($query) {
-                return $this->restrictToNewestLabelQuery($query, $this->source);
-            })
-            ->when($this->isRestrictedToLabels(), function ($query) {
-                return $this->restrictToLabelsQuery($query, 'image_annotation_labels');
-            })
+            ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source))
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace  Biigle\Traits;
+namespace Biigle\Traits;
 
 use Biigle\Volume;
 use DB;

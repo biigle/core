@@ -96,9 +96,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 'video_labels.created_at',
             ])
             ->where('videos.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), function ($query) {
-                return $this->restrictToLabelsQuery($query, 'video_labels');
-            })
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'video_labels'))
             ->orderBy('videos.filename');
 
         if ($this->shouldSeparateLabelTrees()) {

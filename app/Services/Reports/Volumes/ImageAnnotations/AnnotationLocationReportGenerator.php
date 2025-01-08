@@ -2,7 +2,6 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
-use Biigle\ImageAnnotationLabel;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\File;
 use Biigle\Services\Reports\MakesZipArchives;
@@ -10,7 +9,6 @@ use Biigle\Shape;
 use Biigle\User;
 use DB;
 use GeoJson\Feature\Feature;
-use GeoJson\Feature\FeatureCollection;
 use GeoJson\Geometry\LineString;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
@@ -95,28 +93,29 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
      */
     public function query()
     {
-        return $this->initQuery([
-            'image_annotation_labels.id as annotation_label_id',
-            'image_annotation_labels.label_id',
-            'image_annotations.image_id',
-            'image_annotations.shape_id',
-            'images.filename',
-            'images.attrs->metadata->yaw as yaw',
-            'images.attrs->metadata->distance_to_ground as distance_to_ground',
-            'images.attrs->width as width',
-            'images.attrs->height as height',
-            'images.lat',
-            'images.lng',
-            'image_annotations.points',
-            'image_annotation_labels.id as annotation_label_id',
-            'labels.name as label_name',
-        ])
-        ->whereNotNull('images.lat')
-        ->whereNotNull('images.lng')
-        ->whereNotNull('images.attrs->width')
-        ->whereNotNull('images.attrs->height')
-        ->whereNotNull('images.attrs->metadata->distance_to_ground')
-        ->whereNotNull('images.attrs->metadata->yaw');
+        return $this
+            ->initQuery([
+                'image_annotation_labels.id as annotation_label_id',
+                'image_annotation_labels.label_id',
+                'image_annotations.image_id',
+                'image_annotations.shape_id',
+                'images.filename',
+                'images.attrs->metadata->yaw as yaw',
+                'images.attrs->metadata->distance_to_ground as distance_to_ground',
+                'images.attrs->width as width',
+                'images.attrs->height as height',
+                'images.lat',
+                'images.lng',
+                'image_annotations.points',
+                'image_annotation_labels.id as annotation_label_id',
+                'labels.name as label_name',
+            ])
+            ->whereNotNull('images.lat')
+            ->whereNotNull('images.lng')
+            ->whereNotNull('images.attrs->width')
+            ->whereNotNull('images.attrs->height')
+            ->whereNotNull('images.attrs->metadata->distance_to_ground')
+            ->whereNotNull('images.attrs->metadata->yaw');
     }
 
     /**

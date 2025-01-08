@@ -85,7 +85,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        $query = $this->initQuery([
+        $query = $this
+            ->initQuery([
                 'image_annotations.id as annotation_id',
                 'shapes.id as shape_id',
                 'shapes.name as shape_name',

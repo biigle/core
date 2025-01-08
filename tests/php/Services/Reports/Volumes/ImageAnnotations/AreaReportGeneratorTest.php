@@ -74,9 +74,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator;
         $generator->setSource($volume);
@@ -133,9 +131,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator;
         $generator->setSource($volume);
@@ -188,9 +184,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator;
         $generator->setSource($volume);
@@ -244,9 +238,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator;
         $generator->setSource($volume);
@@ -300,9 +292,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator;
         $generator->setSource($volume);
@@ -360,9 +350,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator;
         $generator->setSource($volume);
@@ -432,9 +420,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator([
             'separateLabelTrees' => true,
@@ -501,9 +487,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator([
             'separateUsers' => true,
@@ -559,9 +543,7 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AreaReportGenerator;
         $generator->setSource($volume);

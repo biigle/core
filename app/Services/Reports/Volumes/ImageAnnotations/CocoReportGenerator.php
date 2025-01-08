@@ -4,9 +4,8 @@ namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\User;
-
 use Biigle\Services\Reports\MakesZipArchives;
+use Biigle\User;
 use DB;
 
 class CocoReportGenerator extends AnnotationReportGenerator
@@ -68,18 +67,19 @@ class CocoReportGenerator extends AnnotationReportGenerator
             $this->tmpFiles[] = $csv;
             $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');
         }
-        $this->executeScript('to_coco',''); // the temporary csv files are overwritten with the respective json files therefore the argument is not needed
+        $this->executeScript('to_coco', ''); // the temporary csv files are overwritten with the respective json files therefore the argument is not needed
         $this->makeZip($toZip, $path);
     }
 
-/**
+    /**
      * Assemble a new DB query for the volume of this report.
      *
      * @return \Illuminate\Database\Query\Builder
      */
     protected function query()
     {
-        $query = $this->initQuery([
+        $query = $this
+            ->initQuery([
                 'image_annotation_labels.id as annotation_label_id',
                 'image_annotation_labels.label_id',
                 'labels.name as label_name',

@@ -4,8 +4,7 @@ use Biigle\Report;
 use Illuminate\Database\Migrations\Migration;
 use League\Flysystem\FilesystemOperationFailed;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *

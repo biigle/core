@@ -2,11 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\MediaType;
-use Biigle\Project;
 use Biigle\ReportType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreReport extends FormRequest
 {

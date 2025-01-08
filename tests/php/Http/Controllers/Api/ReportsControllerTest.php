@@ -5,7 +5,6 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\ReportType;
 use Biigle\Tests\ReportTest;
-use Response;
 use Storage;
 
 class ReportsControllerTest extends ApiTestCase

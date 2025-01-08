@@ -78,9 +78,7 @@ class ImageLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -94,9 +92,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new ImageLocationReportGenerator;
         $generator->setSource($volume);
@@ -120,9 +116,7 @@ class ImageLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -133,9 +127,7 @@ class ImageLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('addFile')->once();
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new ImageLocationReportGenerator;
         $generator->setSource($volume);
@@ -210,9 +202,7 @@ class ImageLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -230,9 +220,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new ImageLocationReportGenerator([
             'separateLabelTrees' => true,
@@ -315,9 +303,7 @@ class ImageLocationReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(File::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(File::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -335,9 +321,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new ImageLocationReportGenerator([
             'separateUsers' => true,

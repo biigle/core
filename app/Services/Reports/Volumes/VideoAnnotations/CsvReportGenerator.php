@@ -2,7 +2,6 @@
 
 namespace Biigle\Services\Reports\Volumes\VideoAnnotations;
 
-use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
@@ -151,12 +150,8 @@ class CsvReportGenerator extends VolumeReportGenerator
             ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
             ->where('videos.volume_id', $this->source->id)
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
-            ->when($this->isRestrictedToNewestLabel(), function ($query) {
-                return $this->restrictToNewestLabelQuery($query, $this->source);
-            })
-            ->when($this->isRestrictedToLabels(), function ($query) {
-                return $this->restrictToLabelsQuery($query, 'video_annotation_labels');
-            })
+            ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source))
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'video_annotation_labels'))
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {
@@ -198,7 +193,8 @@ class CsvReportGenerator extends VolumeReportGenerator
      */
     protected function query()
     {
-        $query = $this->initQuery([
+        $query = $this
+            ->initQuery([
                 'video_annotation_labels.id as video_annotation_label_id',
                 'video_annotation_labels.label_id',
                 'labels.name as label_name',

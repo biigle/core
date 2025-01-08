@@ -367,26 +367,27 @@ class SearchController extends Controller
         if ($query) {
             $queryBuilder = $queryBuilder
                 ->where(function ($q) use ($query) {
-                    $q->where(function ($q) use ($query) {
-                        $q->where('reports.source_type', Volume::class)
-                            ->whereExists(function ($q) use ($query) {
-                                $q->select(DB::raw(1))
-                                    ->from('volumes')
-                                    ->whereRaw('reports.source_id = volumes.id')
-                                    ->where('volumes.name', 'ilike', "%{$query}%");
-                            });
-                    })
-                    ->orWhere(function ($q) use ($query) {
-                        $q->where('reports.source_type', Project::class)
-                            ->whereExists(function ($q) use ($query) {
-                                $q->select(DB::raw(1))
-                                    ->from('projects')
-                                    ->whereRaw('reports.source_id = projects.id')
-                                    ->where('projects.name', 'ilike', "%{$query}%");
-                            });
-                    })
-                    // Kept for backwards compatibility of single video reports.
-                    ->orWhere('reports.source_name', 'ilike', "%{$query}%");
+                    $q
+                        ->where(function ($q) use ($query) {
+                            $q->where('reports.source_type', Volume::class)
+                                ->whereExists(function ($q) use ($query) {
+                                    $q->select(DB::raw(1))
+                                        ->from('volumes')
+                                        ->whereRaw('reports.source_id = volumes.id')
+                                        ->where('volumes.name', 'ilike', "%{$query}%");
+                                });
+                        })
+                        ->orWhere(function ($q) use ($query) {
+                            $q->where('reports.source_type', Project::class)
+                                ->whereExists(function ($q) use ($query) {
+                                    $q->select(DB::raw(1))
+                                        ->from('projects')
+                                        ->whereRaw('reports.source_id = projects.id')
+                                        ->where('projects.name', 'ilike', "%{$query}%");
+                                });
+                        })
+                        // Kept for backwards compatibility of single video reports.
+                        ->orWhere('reports.source_name', 'ilike', "%{$query}%");
                 });
         }
 

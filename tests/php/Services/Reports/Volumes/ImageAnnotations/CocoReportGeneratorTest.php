@@ -87,9 +87,7 @@ class CocoReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -103,9 +101,7 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CocoReportGenerator;
         $generator->setSource($volume);
@@ -180,9 +176,7 @@ class CocoReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -200,9 +194,7 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CocoReportGenerator([
             'separateLabelTrees' => true,
@@ -283,9 +275,7 @@ class CocoReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -303,9 +293,7 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CocoReportGenerator([
             'separateUsers' => true,
@@ -331,11 +319,11 @@ class CocoReportGeneratorTest extends TestCase
         $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
         
         $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $annotation->id, 
+            'annotation_id' => $annotation->id,
             'user_id' => null // deleted user
         ]);
         $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $annotation->id, 
+            'annotation_id' => $annotation->id,
             'user_id' => $user->id
         ]);
 
@@ -364,7 +352,7 @@ class CocoReportGeneratorTest extends TestCase
                 null
             ]);
 
-            $mock->shouldReceive('putCsv')
+        $mock->shouldReceive('putCsv')
             ->once()
             ->with([
                 $al2->id,
@@ -381,9 +369,7 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $mock = Mockery::mock();
 
@@ -397,9 +383,7 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('close')->once();
 
-        App::singleton(ZipArchive::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(ZipArchive::class, fn () => $mock);
 
         $generator = new CocoReportGenerator();
         $generator->setSource($image->volume);

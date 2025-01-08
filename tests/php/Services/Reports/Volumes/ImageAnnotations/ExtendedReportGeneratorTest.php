@@ -5,7 +5,6 @@ namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 use App;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\ExtendedReportGenerator;
-use Biigle\Volume;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -70,9 +69,7 @@ class ExtendedReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new ExtendedReportGenerator;
         $generator->setSource($volume);
@@ -127,9 +124,7 @@ class ExtendedReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new ExtendedReportGenerator([
             'separateLabelTrees' => true,
@@ -181,9 +176,7 @@ class ExtendedReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new ExtendedReportGenerator([
             'separateUsers' => true,

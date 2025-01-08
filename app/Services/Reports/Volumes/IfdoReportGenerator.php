@@ -9,9 +9,7 @@ use Biigle\Label;
 use Biigle\LabelSource;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Shape;
-use Biigle\Video;
 use Biigle\Volume;
-use DB;
 use Exception;
 use File;
 use Storage;
@@ -95,8 +93,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
         }, $this->imageAnnotationCreators);
 
         if ($this->options->get('stripIfdo', false)) {
-            unset($ifdo['image-set-header']['image-annotation-creators']);
-            unset($ifdo['image-set-header']['image-annotation-labels']);
+            unset($ifdo['image-set-header']['image-annotation-creators'], $ifdo['image-set-header']['image-annotation-labels']);
             if (array_key_exists('image-set-items', $ifdo)) {
                 foreach ($ifdo['image-set-items'] as &$item) {
                     if ($this->isArrayItem($item)) {
@@ -246,9 +243,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
      */
     protected function isArrayItem($item)
     {
-        return !empty($item) && array_reduce(array_keys($item), function ($carry, $key) {
-            return $carry && is_numeric($key);
-        }, true);
+        return !empty($item) && array_reduce(array_keys($item), fn ($carry, $key) => $carry && is_numeric($key), true);
     }
 
     /**

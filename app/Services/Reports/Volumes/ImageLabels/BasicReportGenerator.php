@@ -74,9 +74,7 @@ class BasicReportGenerator extends VolumeReportGenerator
             ->join('images', 'image_labels.image_id', '=', 'images.id')
             ->select('images.id', 'images.filename', 'image_labels.label_id')
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToLabels(), function ($query) {
-                return $this->restrictToLabelsQuery($query, 'image_labels');
-            })
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_labels'))
             ->orderBy('images.filename');
 
         if ($this->shouldSeparateLabelTrees()) {
@@ -106,9 +104,7 @@ class BasicReportGenerator extends VolumeReportGenerator
             $csv->putCsv([
                 $row[0]->id,
                 $row[0]->filename,
-                $row->map(function ($row) {
-                    return $this->expandLabelName($row->label_id);
-                })->implode(', '),
+                $row->map(fn ($row) => $this->expandLabelName($row->label_id))->implode(', '),
             ]);
         }
 

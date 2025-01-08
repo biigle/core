@@ -6,9 +6,7 @@ use Biigle\Image;
 use Biigle\Label;
 use Biigle\Traits\RestrictsToExportArea;
 use Biigle\Traits\RestrictsToNewestLabels;
-use Biigle\Shape;
 use Biigle\User;
-use Biigle\Video;
 use Biigle\Volume;
 
 class ImageIfdoReportGenerator extends IfdoReportGenerator
@@ -81,7 +79,8 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
      */
     protected function getUsers()
     {
-        return User::whereIn('id', function ($query) {
+        return User::query()
+            ->whereIn('id', function ($query) {
                 $query->select('user_id')
                     ->from('image_annotation_labels')
                     ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
@@ -104,7 +103,8 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
      */
     protected function getLabels()
     {
-        return Label::whereIn('id', function ($query) {
+        return Label::query()
+            ->whereIn('id', function ($query) {
                 $query->select('label_id')
                     ->from('image_annotation_labels')
                     ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
@@ -127,9 +127,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
     {
         // Remove annotations that should not be included because of an "onlyLabels"
         // filter.
-        $annotations = $image->annotations->filter(function ($a) {
-            return $a->labels->isNotEmpty();
-        });
+        $annotations = $image->annotations->filter(fn ($a) => $a->labels->isNotEmpty());
 
         $annotations = $annotations->map(function ($annotation) {
             $labels = $annotation->labels->map(function ($aLabel) {
