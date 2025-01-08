@@ -27,6 +27,7 @@
                 @include("search.volumes-tab")
                 @include("search.annotations-tab")
                 @include("search.videos-tab")
+                @include("search.reports-tab")
                 @foreach (Modules::getViewMixins('searchTab') as $module => $nested)
                     @include("{$module}::searchTab")
                 @endforeach
@@ -37,6 +38,7 @@
                 @include("search.volumes-content")
                 @include("search.annotations-content")
                 @include("search.videos-content")
+                @include("search.reports-content")
                 @foreach (Modules::getViewMixins('searchTabContent') as $module => $nested)
                     @include("{$module}::searchTabContent")
                 @endforeach

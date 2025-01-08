@@ -143,6 +143,11 @@ return [
             'url' => env('APP_URL').'/storage/magic-sam',
             'visibility' => 'public',
         ],
+
+        'reports' => [
+            'driver' => 'local',
+            'root' => storage_path('reports'),
+        ],
     ],
 
     /*

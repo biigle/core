@@ -3,6 +3,7 @@ import Keyboard from '../../core/keyboard';
 import PowerToggle from '../../core/components/powerToggle';
 import ScreenshotButton from './screenshotButton';
 import Settings from '../stores/settings';
+import ExportArea from './exportArea';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -22,6 +23,7 @@ export default {
     components: {
         screenshotButton: ScreenshotButton,
         powerToggle: PowerToggle,
+        exportArea: ExportArea,
     },
     props: {
         image: {
