@@ -1,5 +1,4 @@
 <script>
-import Events from '../../core/events';
 import Messages from '../../core/messages/store';
 import Keyboard from '../../core/keyboard';
 
