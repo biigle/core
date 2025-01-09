@@ -167,7 +167,6 @@ export default {
         highlightSettingsTab() {
             return this.annotationOpacity === 0;
         }
-    
     },
     methods: {
         getImageAndAnnotationsPromises(id) {
