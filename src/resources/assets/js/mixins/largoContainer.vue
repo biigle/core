@@ -51,6 +51,7 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
+            singleImageSort: false,
         };
     },
     provide() {
@@ -407,7 +408,7 @@ export default {
             } else if (key === SORT_KEY.OUTLIER) {
                 promise = this.querySortByOutlier(labelId)
                     .then(response => response.body);
-            } else if (key === SORT_KEY.SIMILARITY) {
+            } else if (key === SORT_KEY.SIMILARITY && this.annotations.length > 1) {
                 // Skip cacheing for this sorting method.
                 return this.querySortBySimilarity(labelId, this.similarityReference)
                     .then(response => response.body);
@@ -433,6 +434,7 @@ export default {
             }
 
             const labelId = this.selectedLabel?.id;
+            this.singleImageSort = key === SORT_KEY.SIMILARITY && this.annotations.length === 1;
             this.startLoading();
             return this.fetchSortingSequence(key, labelId)
                 .then((sequence) => {
@@ -480,9 +482,12 @@ export default {
         step(step) {
             Events.$emit('step', step);
         },
-        selectedLabel() {
+        selectedLabel(newLabel, oldLabel) {
             if (this.isInDismissStep) {
                 this.$refs.dismissGrid.setOffset(0);
+            }
+            if (oldLabel != newLabel) {
+                this.singleImageSort = false;
             }
         },
     },
