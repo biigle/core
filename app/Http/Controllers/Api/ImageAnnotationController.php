@@ -516,11 +516,7 @@ class ImageAnnotationController extends Controller
      */
     protected function dropHNSWIndex()
     {
-        // Check if the index exists
         $indexName = config('labelbot.HNSW_ImgAnno_index_name');
-        if ($this->indexExists($indexName)) {
-            // Drop the index
-            DB::statement("DROP INDEX $indexName");
-        }
+        DB::statement("DROP INDEX IF EXISTS $indexName");
     }
 }
