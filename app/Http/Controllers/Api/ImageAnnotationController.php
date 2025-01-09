@@ -441,11 +441,16 @@ class ImageAnnotationController extends Controller
         if (!$this->indexExists(config('labelbot.HNSW_ImgAnno_index_name'))) {
             return [];
         }
+        // Size of the dynamic candidate list during the search process.
+        // K is always bounded by this value so we set it to K.
+        $k = config('labelbot.K');
+        DB::statement("SET hnsw.ef_search = $k");
+
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
-            ->limit(config('labelbot.K')); // K = 100
-
+            ->limit($k); // K = 100
+        
         return DB::query()->fromSub($subquery, 'subquery')
             ->whereIn('label_tree_id', $trees)
             ->groupBy('label_id')
