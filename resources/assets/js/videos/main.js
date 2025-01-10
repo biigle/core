@@ -1,4 +1,3 @@
-import './filters/videoTime';
 import Navbar from './navbar.vue';
 import SearchResults from './searchResults.vue';
 import VideoContainer from './videoContainer.vue';

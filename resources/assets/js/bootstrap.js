@@ -1,5 +1,10 @@
 import Vue from 'vue';
 import VueResource from 'vue-resource';
+import { configureCompat } from 'vue'
+
+configureCompat({
+    FILTERS: false,
+});
 
 window.Vue = Vue;
 window.Vue.use(VueResource);
