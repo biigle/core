@@ -12,17 +12,5 @@ export default {
     components: {
         imageGridImage: Image,
     },
-    props: {
-        singleImageSort: {
-            type: Boolean,
-            default: false
-        }
-    },
-    computed: {
-        displayedImages() {
-            // Prevent showing single image twice when sorting
-            return this.singleImageSort ? [] : this.images.slice(this.imagesOffset, this.imagesOffsetEnd);
-        },
-    }
 };
 </script>

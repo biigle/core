@@ -10,7 +10,6 @@
         :selectable="true"
         :pinnable="imagesPinnable"
         :pinned-image="pinnedImage"
-        :single-image-sort="singleImageSort"
         v-on:select="handleSelectedImageDismiss"
         v-on:pin="handlePinImage"
         ></dismiss-image-grid>
