@@ -24,9 +24,11 @@ let defaults = {
 };
 
 export default new Settings({
-    data: {
-        urlParams: Object.keys(defaults),
-        storageKey: 'biigle.annotations.settings',
-        defaults: defaults,
+    data() {
+        return {
+            urlParams: Object.keys(defaults),
+            storageKey: 'biigle.annotations.settings',
+            defaults: defaults,
+        };
     },
 });

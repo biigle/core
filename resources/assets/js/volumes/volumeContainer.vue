@@ -253,12 +253,14 @@ export default {
         this.sortingSequence = this.fileIds;
         this.volumeId = biigle.$require('volumes.volumeId');
         this.settings = new Settings({
-            data: {
-                storageKey: 'biigle.volumes.settings',
-                defaults: {
-                    showFilenames: false,
-                    showLabels: false,
-                },
+            data() {
+                return {
+                    storageKey: 'biigle.volumes.settings',
+                    defaults: {
+                        showFilenames: false,
+                        showLabels: false,
+                    },
+                };
             },
         });
 

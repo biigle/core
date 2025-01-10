@@ -8,27 +8,29 @@ export class CrossOriginError extends Error {}
 * Store for the images of the annotation tool
 */
 export default new Vue({
-    data: {
-        initialized: false,
-        cache: {},
-        cachedIds: [],
-        maxCacheSize: 2,
-        supportsColorAdjustment: false,
-        currentlyDrawnImage: null,
-        colorAdjustmentDefaults: {
-            brightnessContrast: [0, 0],
-            brightnessRGB: [0, 0, 0],
-            hueSaturation: [0, 0],
-            vibrance: [0],
-            gamma: [1],
-        },
-        colorAdjustment: {
-            brightnessContrast: [0, 0],
-            brightnessRGB: [0, 0, 0],
-            hueSaturation: [0, 0],
-            vibrance: [0],
-            gamma: [1],
-        },
+    data() {
+        return {
+            initialized: false,
+            cache: {},
+            cachedIds: [],
+            maxCacheSize: 2,
+            supportsColorAdjustment: false,
+            currentlyDrawnImage: null,
+            colorAdjustmentDefaults: {
+                brightnessContrast: [0, 0],
+                brightnessRGB: [0, 0, 0],
+                hueSaturation: [0, 0],
+                vibrance: [0],
+                gamma: [1],
+            },
+            colorAdjustment: {
+                brightnessContrast: [0, 0],
+                brightnessRGB: [0, 0, 0],
+                hueSaturation: [0, 0],
+                vibrance: [0],
+                gamma: [1],
+            },
+        };
     },
     computed: {
         imageFileUri() {

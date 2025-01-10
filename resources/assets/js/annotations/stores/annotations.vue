@@ -7,8 +7,10 @@ import ImagesApi from '@/core/api/images.js';
 */
 
 export default new Vue({
-    data: {
-        cache: {},
+    data() {
+        return {
+            cache: {},
+        };
     },
     computed: {
         shapeMap() {
