@@ -175,7 +175,6 @@ return [
         Biigle\Modules\Geo\GeoServiceProvider::class,
         Biigle\Modules\Largo\LargoServiceProvider::class,
         Biigle\Modules\Laserpoints\LaserpointsServiceProvider::class,
-        Biigle\Modules\Reports\ReportsServiceProvider::class,
         Biigle\Modules\Ananas\AnanasServiceProvider::class,
         Biigle\Modules\Demo\DemoServiceProvider::class,
         Biigle\Modules\Maia\MaiaServiceProvider::class,

@@ -38,7 +38,6 @@
         "biigle/metadata-ifdo": "dev-main",
         "biigle/module": "dev-main",
         "biigle/newsletter": "dev-master",
-        "biigle/reports": "dev-master",
         "biigle/user-disks": "dev-main",
         "biigle/user-storage": "dev-master",
         "biigle/laravel-file-cache": "^5.0",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3329bf79ea2cdbd52727601b82bfdd56",
+    "content-hash": "a4d87e3e7307ae2d1aa0296d2726b033",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1082,54 +1082,6 @@
                 "source": "https://github.com/biigle/newsletter"
             },
             "time": "2024-06-19T14:04:50+00:00"
-        },
-        {
-            "name": "biigle/reports",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/reports.git",
-                "reference": "fdd30b02cf6696967e3715bf0c9084ffc27a36ef"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/reports/zipball/fdd30b02cf6696967e3715bf0c9084ffc27a36ef",
-                "reference": "fdd30b02cf6696967e3715bf0c9084ffc27a36ef",
-                "shasum": ""
-            },
-            "require": {
-                "biigle/ifdo": "^1.0",
-                "ext-zip": "*",
-                "jmikola/geojson": "^1.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Reports\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to generate reports for projects, volumes and videos.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "support": {
-                "issues": "https://github.com/biigle/reports/issues",
-                "source": "https://github.com/biigle/reports"
-            },
-            "time": "2024-10-11T12:36:11+00:00"
         },
         {
             "name": "biigle/user-disks",
@@ -12270,7 +12222,6 @@
         "biigle/metadata-ifdo": 20,
         "biigle/module": 20,
         "biigle/newsletter": 20,
-        "biigle/reports": 20,
         "biigle/user-disks": 20,
         "biigle/user-storage": 20
     },
