@@ -437,10 +437,6 @@ class ImageAnnotationController extends Controller
     */
     protected function performAnnSearch($featureVector, $trees)
     {
-        // check if the HNSW index exists
-        if (!$this->indexExists(config('labelbot.HNSW_ImgAnno_index_name'))) {
-            return [];
-        }
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
         $k = config('labelbot.K');
@@ -499,24 +495,11 @@ class ImageAnnotationController extends Controller
     }
 
     /**
-     * Check if the index exists.
-     *
-     * @param string $indexName The index name.
-     *
-     * @return boolean
-     */
-    protected function indexExists($indexName)
-    {
-        return !empty(DB::select("SELECT indexname FROM pg_indexes WHERE indexname = '$indexName'"));
-    }
-
-    /**
      * Drop the HNSW index if exists. This step is necessary to perform exact KNN search
      * because the planner almost always prioritize the HNSW index to perform vector search.
      */
     protected function dropHNSWIndex()
     {
-        $indexName = config('labelbot.HNSW_ImgAnno_index_name');
-        DB::statement("DROP INDEX IF EXISTS $indexName");
+        DB::statement("DROP INDEX IF EXISTS image_annotation_label_feature_vectors_vector_idx");
     }
 }
