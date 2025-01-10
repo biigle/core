@@ -16,8 +16,8 @@
             biigle.$declare('volumes.infoUri', '{{ route('image', ':id') }}');
         @else
             biigle.$declare('volumes.thumbCount', {{ config('videos.thumbnail_count') }});
-            biigle.$declare('volumes.annotateUri', '{{ route('video', ':id') }}');
-            biigle.$declare('volumes.infoUri', undefined);
+            biigle.$declare('volumes.annotateUri', '{{ route('video-annotate', ':id') }}');
+            biigle.$declare('volumes.infoUri', '{{ route('video', ':id') }}');
         @endif
 
         biigle.$declare('volumes.userId', {!! $user->id !!});
