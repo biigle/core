@@ -1,6 +1,5 @@
 <template>
   <div class="filtering-tab">
-    <label>Annotations where: </label>
     <form class="form clearfix" v-on:submit.prevent>
       <annotation-filter
         @reset-filters="resetFilters"
@@ -13,7 +12,7 @@
         <span>No filter rules</span>
       </li>
       <li class="list-group-item" v-for="(filter, k) in activeFilters">
-        <span>{{ filter.name }}</span>
+          <span v-if="k > 0"> {{ logicString }} </span> <span>{{ filter.name }}</span>
         <button @click="removeFilter(k)" type="button" class="close">
           <span aria-hidden="true">x</span>
         </button>
@@ -23,6 +22,8 @@
 </template>
 <script>
 import AnnotationFilter from "../components/annotationFilter.vue";
+import {Messages} from '../import'
+import _ from 'lodash';
 
 export default {
   components: {
@@ -31,32 +32,35 @@ export default {
   data() {
     return {
       activeFilters: [],
+      logicString: 'And ',
     };
   },
   methods: {
     resetFilters() {
       this.activeFilters = [];
+      this.logicStrings = [];
       this.filterAnnotations();
     },
     removeFilter(key) {
       this.activeFilters.splice(key, 1);
-      //If its the first filter to be removed, remove the 'And' or 'Or'
-      if ((this.activeFilters.length > 0) & (key == 0)) {
-        this.activeFilters[0].name = this.activeFilters[0].name.substring(
-          this.activeFilters[0].name.indexOf(" ", 0),
-        );
-      }
       this.filterAnnotations();
     },
     addNewFilter(filter) {
+      let logic_string = '';
       if (this.activeFilters.length > 0) {
-        let union_string;
-        if (!filter.union) {
-          union_string = "And ";
-        } else {
-          union_string = "Or ";
+        if (_.some(this.activeFilters, filter)){
+          Messages.danger('Filter already present!')
+          return
         }
-        filter.name = union_string + filter.name;
+        if (filter.union !== this.activeFilters[0].union){
+            Messages.danger('Combination of "and" and "or" filtering is not yet supported')
+            return
+        }
+        if (filter.union) {
+            this.logicString = 'Or ';
+        } else {
+            this.logicString = 'And ';
+        }
       }
       this.activeFilters.push(filter);
       this.filterAnnotations();
