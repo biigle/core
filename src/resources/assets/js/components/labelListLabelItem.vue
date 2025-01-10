@@ -18,12 +18,6 @@ export default {
                 return {};
             },
         },
-        count: {
-            type: Number,
-            default() {
-                return 0;
-            },
-        },
     },
     data() {
         return {
@@ -40,11 +34,14 @@ export default {
             };
         },
         countTitle() {
-            return `There are ${this.count} annotations with label ${this.labelItem.name}`;
+            return `There are ${this.labelItem.count} annotations with label ${this.labelItem.name}`;
         },
         colorStyle() {
             return 'background-color: #' + this.labelItem.color;
         },
+        count() {
+            return this.labelItem.count;
+        }
     },
     methods: {
         emitSelectLabel() {

@@ -8,9 +8,9 @@ export default {
     },
     props: {
         labels: {
-            type: Object,
+            type: Array,
             default() {
-                return {};
+                return [];
             },
         },
         changedAnnotations: {
@@ -36,8 +36,11 @@ export default {
     },
     watch: {
         labels() {
-            this.labelItems = this.labels;
-            this.annotationBadgeCount = Object.values(this.labelItems).reduce((acc, l) => {
+            this.labelItems = this.labels.reduce((obj, l) => {
+                obj[l.id] = l;
+                return obj;
+            }, {});
+            this.annotationBadgeCount = this.labels.reduce((acc, l) => {
                 return acc + l.count;
             }, 0);
         },

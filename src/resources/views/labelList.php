@@ -19,8 +19,7 @@
                     <label-item
                          v-for="item in labelItems"
                          :key="item.id"
-                         :label="item.label"
-                         :count="item.count"
+                         :label="item"
                          v-on:select="handleSelectedLabel"
                          v-on:deselect="handleDeselectedLabel"
                          ></label-item>
