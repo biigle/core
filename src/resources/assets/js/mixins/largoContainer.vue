@@ -107,8 +107,12 @@ export default {
                     // 'v' to avoid duplicate IDs whe sorting both types of annotations.
                     map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] = a;
                 });
-
-                annotations = this.sortingSequence.map(id => map[id]);
+                let sortingSequence = this.sortingSequence;
+                annotations.sort(
+                    function(a, b, sequence = sortingSequence){
+                        return sequence.indexOf(a.id) <= sequence.indexOf(b.id)
+                    }
+                )
             }
 
             if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
