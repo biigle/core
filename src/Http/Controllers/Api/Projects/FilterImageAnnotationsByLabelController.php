@@ -2,12 +2,11 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Generator;
 use Biigle\Project;
 use Biigle\ImageAnnotation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Biigle\Http\Controllers\Api\Controller;
-use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
@@ -72,36 +71,21 @@ class FilterImageAnnotationsByLabelController extends Controller
      * 
      *
      * @param int $id Project ID
-     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getProjectsAnnotationLabels($id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
-        $annotations = $project->imageVolumes()
-            ->join('images', 'volumes.id', '=', 'images.volume_id')
-            ->join('image_annotations', 'images.id', '=', 'image_annotations.image_id')
-            ->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-            ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
-            ->select(
-                'images.uuid',
-                'image_annotations.id as annotation_id',
-                'image_annotation_labels.label_id',
-                'labels.label_tree_id'
-            );
-
-        $res = function () use ($annotations): Generator {
-            foreach ($annotations->lazy() as $a) {
-                yield [
-                    'uuid' => $a->uuid,
-                    'annotation_id' => $a->annotation_id,
-                    'label_id' => $a->label_id,
-                    'label_tree_id' => $a->label_tree_id
-                ];
-            }
-        };
-
-        return new StreamedJsonResponse($res());
+        return DB::table('labels')
+        ->join('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
+        ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+        ->join('images', 'image_annotations.image_id', '=', 'images.id')
+        ->join('project_volume', 'images.volume_id', '=', 'project_volume.volume_id')
+        ->where('project_volume.project_id','=',$id)
+        ->select('labels.*', DB::raw('COUNT(labels.id) as count'))
+        ->groupBy('labels.id')
+        ->get();
     }
 }
