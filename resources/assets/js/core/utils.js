@@ -22,8 +22,10 @@ export let debounce = function (callback, wait, id) {
 };
 
 export let urlParams = new Vue({
-    data: {
-        params: {}
+    data() {
+        return {
+            params: {}
+        };
     },
     methods: {
         setSlug(s, index) {

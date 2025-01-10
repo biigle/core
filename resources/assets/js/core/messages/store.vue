@@ -1,15 +1,17 @@
 <script>
-import {exitFullscreen} from '../utils';
+import {exitFullscreen} from '../utils.js';
 
 /**
  * The popup message store.
  */
 let store = new Vue({
-    data: {
-        // Maximum number of messages to display until the oldest is automatically
-        // removed.
-        max: 1,
-        all: [],
+    data() {
+        return {
+            // Maximum number of messages to display until the oldest is automatically
+            // removed.
+            max: 1,
+            all: [],
+        };
     },
     methods: {
         post(type, text) {

@@ -3,7 +3,7 @@
 @section('title', "Merge '{$mergeTree->versionedName}' into '{$baseTree->versionedName}'")
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.baseTree', {!! $baseTree !!});
     biigle.$declare('labelTrees.mergeTree', {!! $mergeTree !!});
     biigle.$declare('labelTrees.usedLabels', {!! $usedLabels !!});

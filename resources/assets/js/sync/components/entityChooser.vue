@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import List from './entityChooserList';
+import List from './entityChooserList.vue';
 
 /**
  * A component to choose entities like volumes or users for a list
@@ -86,7 +86,7 @@ export default {
     },
     methods: {
         handleSelect(entity) {
-            Vue.set(this.chosenIds, entity.id, true);
+            this.chosenIds[entity.id] = true;
         },
         handleDeselect(entity) {
             this.chosenIds[entity.id] = false;

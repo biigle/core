@@ -1,7 +1,7 @@
 <script>
-import UserApi from '../core/api/users';
-import UserMapping from './components/userMapping';
-import LoaderMixin from '../core/mixins/loader';
+import UserApi from '@/core/api/users.js';
+import UserMapping from './components/userMapping.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
 
 export default {
     mixins: [LoaderMixin],

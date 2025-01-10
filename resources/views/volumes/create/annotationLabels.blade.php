@@ -3,7 +3,7 @@
 @section('title', 'Select metadata anntation labels to import')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.labels', {!! $labels !!});
     </script>
 @endpush

@@ -1,6 +1,6 @@
 <script>
-import Form from './mixins/reportForm';
-import ProjectsApi from './api/projectReports';
+import Form from './mixins/reportForm.vue';
+import ProjectsApi from './api/projectReports.js';
 
 /**
  * The form for requesting a project report

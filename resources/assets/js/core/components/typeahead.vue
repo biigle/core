@@ -41,9 +41,9 @@
 </template>
 
 <script>
-import Typeahead from 'uiv/dist/Typeahead';
-import TypeaheadItem from './typeaheadItem';
-import {debounce} from './../utils';
+import TypeaheadItem from './typeaheadItem.vue';
+import {debounce} from '../utils.js';
+import {Typeahead} from 'uiv';
 
 /**
  * A component that displays a typeahead to find items.

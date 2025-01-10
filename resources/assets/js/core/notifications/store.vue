@@ -5,9 +5,11 @@
  * Stores information on InAppNotifications to be shared between multiple JS components.
  */
 export default new Vue({
-    data: {
-        all: [],
-        initialized: false
+    data() {
+        return {
+            all: [],
+            initialized: false
+        };
     },
     computed: {
         unread() {

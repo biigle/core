@@ -1,7 +1,7 @@
 @extends('label-trees.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.labels', {!! $labels !!});
     biigle.$declare('labelTrees.wormsLabelSource', {!! $wormsLabelSource !!});
     @can('create-label', $tree)

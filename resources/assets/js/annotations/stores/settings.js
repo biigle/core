@@ -1,4 +1,4 @@
-import Settings from '../../core/models/Settings';
+import Settings from '@/core/models/Settings.vue';
 
 /**
  * Store for annotator settings
@@ -24,9 +24,11 @@ let defaults = {
 };
 
 export default new Settings({
-    data: {
-        urlParams: Object.keys(defaults),
-        storageKey: 'biigle.annotations.settings',
-        defaults: defaults,
+    data() {
+        return {
+            urlParams: Object.keys(defaults),
+            storageKey: 'biigle.annotations.settings',
+            defaults: defaults,
+        };
     },
 });

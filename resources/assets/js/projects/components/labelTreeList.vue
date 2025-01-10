@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import LabelTreeListItem from './labelTreeListItem';
+import LabelTreeListItem from './labelTreeListItem.vue';
 
 export default {
     props: {

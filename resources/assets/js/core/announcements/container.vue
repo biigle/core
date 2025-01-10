@@ -1,5 +1,5 @@
 <script>
-import Popover from 'uiv/dist/Popover';
+import {Popover} from 'uiv';
 
 export default {
     components: {

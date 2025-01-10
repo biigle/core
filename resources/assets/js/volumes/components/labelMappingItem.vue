@@ -101,8 +101,8 @@
 </template>
 
 <script>
-import Typeahead from '../../label-trees/components/labelTypeahead';
-import {randomColor} from '../../label-trees/utils';
+import Typeahead from '@/label-trees/components/labelTypeahead.vue';
+import {randomColor} from '@/label-trees/utils.js';
 
 export default {
     components: {

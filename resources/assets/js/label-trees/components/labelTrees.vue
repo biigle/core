@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import Keyboard from '../../core/keyboard';
-import LabelTree from './labelTree';
-import Typeahead from './labelTypeahead';
-import { MAX_FAVOURITES } from '../constants';
+import Keyboard from '@/core/keyboard.vue';
+import LabelTree from './labelTree.vue';
+import Typeahead from './labelTypeahead.vue';
+import {MAX_FAVOURITES} from '../constants.js';
 
 /**
  * A component that displays a list of label trees.
@@ -202,7 +202,7 @@ export default {
                 this.$refs.typeaheadInput.$el.querySelector('input').focus();
             }
         }
-        
+
     },
 
     mounted() {

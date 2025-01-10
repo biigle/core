@@ -4,7 +4,7 @@
 @section('title', "Annotate {$image->filename}")
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     @can('add-annotation', $image)
         biigle.$declare('annotations.labelTrees', {!! $labelTrees !!});
     @endcan

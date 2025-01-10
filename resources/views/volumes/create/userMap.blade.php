@@ -3,7 +3,7 @@
 @section('title', 'Select the metadata import user mapping')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.userMap', {!! $userMap !!});
         biigle.$declare('volumes.users', {!! $users !!});
         biigle.$declare('volumes.ownUserId', {!! $user->id !!});

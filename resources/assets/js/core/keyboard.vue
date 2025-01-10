@@ -23,45 +23,47 @@
  * kb.setActiveSet('other-set');
  */
 export default new Vue({
-    data: {
-        activeListenerSetName: 'default',
-        listenerSets: {
-            'default': {},
-        },
-        // Some browsers fire non-standard keys. This map maps standard keys to
-        // non-standard keys so their event listeners are also added. Every key is
-        // converted to lowercase.
-        // see: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
-        compatibilityMaps: [
-            // Firefox
-            {
-                'hyper': 'os',
-                'meta': 'os',
-                'super': 'os',
+    data() {
+        return {
+            activeListenerSetName: 'default',
+            listenerSets: {
+                'default': {},
             },
-            // InternetExplorer
-            {
-                'meta': 'os',
-                'scrolllock': 'Scroll',
-                ' ': 'spacebar',
-                'arrowdown': 'down',
-                'arrowleft': 'left',
-                'arrowright': 'right',
-                'arrowup': 'up',
-                'crsel': 'crsel',
-                'delete': 'del',
-                'exsel': 'exsel',
-                'contextmenu': 'apps',
-                'escape': 'esc',
-            },
-        ],
-        // Events that have these tags as target will be ignored.
-        ignoredTags: [
-            'input',
-            'textarea',
-            'select'
-        ],
-        pressedKeysArray: [],
+            // Some browsers fire non-standard keys. This map maps standard keys to
+            // non-standard keys so their event listeners are also added. Every key is
+            // converted to lowercase.
+            // see: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+            compatibilityMaps: [
+                // Firefox
+                {
+                    'hyper': 'os',
+                    'meta': 'os',
+                    'super': 'os',
+                },
+                // InternetExplorer
+                {
+                    'meta': 'os',
+                    'scrolllock': 'Scroll',
+                    ' ': 'spacebar',
+                    'arrowdown': 'down',
+                    'arrowleft': 'left',
+                    'arrowright': 'right',
+                    'arrowup': 'up',
+                    'crsel': 'crsel',
+                    'delete': 'del',
+                    'exsel': 'exsel',
+                    'contextmenu': 'apps',
+                    'escape': 'esc',
+                },
+            ],
+            // Events that have these tags as target will be ignored.
+            ignoredTags: [
+                'input',
+                'textarea',
+                'select'
+            ],
+            pressedKeysArray: [],
+        };
     },
     computed: {
         activeListenerSet() {

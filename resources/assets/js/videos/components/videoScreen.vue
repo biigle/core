@@ -261,25 +261,25 @@
 </template>
 
 <script>
-import AnnotationPlayback from './videoScreen/annotationPlayback';
+import AnnotationPlayback from './videoScreen/annotationPlayback.vue';
 import Collection from '@biigle/ol/Collection';
-import ControlButton from '../../annotations/components/controlButton';
-import DrawInteractions from './videoScreen/drawInteractions';
-import Indicators from './videoScreen/indicators';
-import Keyboard from '../../core/keyboard';
+import ControlButton from '@/annotations/components/controlButton.vue';
+import DrawInteractions from './videoScreen/drawInteractions.vue';
+import Indicators from './videoScreen/indicators.vue';
+import Keyboard from '@/core/keyboard.vue';
 import Map from '@biigle/ol/Map';
-import Minimap from '../../annotations/components/minimap';
-import ModifyInteractions from './videoScreen/modifyInteractions';
-import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
+import Minimap from '@/annotations/components/minimap.vue';
+import ModifyInteractions from './videoScreen/modifyInteractions.vue';
+import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
 import SelectInteraction from '@biigle/ol/interaction/Select';
-import Styles from '../../annotations/stores/styles';
-import Tooltips from './videoScreen/tooltips';
+import Styles from '@/annotations/stores/styles.js';
+import Tooltips from './videoScreen/tooltips.vue';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import VideoPlayback from './videoScreen/videoPlayback';
+import VideoPlayback from './videoScreen/videoPlayback.vue';
 import ZoomControl from '@biigle/ol/control/Zoom';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
-import ZoomToNativeControl from '../../annotations/ol/ZoomToNativeControl';
+import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';

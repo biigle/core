@@ -3,7 +3,7 @@
 @section('title', 'Start creating a new volume')
 
 @push('scripts')
-   <script type="text/javascript">
+   <script type="module">
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.parsers', {!! $parsers !!});
    </script>

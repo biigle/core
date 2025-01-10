@@ -1,5 +1,5 @@
 <script>
-import Typeahead from '../core/components/typeahead';
+import Typeahead from '@/core/components/typeahead.vue';
 
 /**
  * The merge label trees index view.

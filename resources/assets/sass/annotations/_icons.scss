@@ -8,90 +8,90 @@
     margin-bottom: -3px;
 
     &.icon-point {
-        background-image: url(/assets/images/annotations/point.svg);
+        background-image: url("@images/annotations/point.svg");
     }
 
     &.icon-rectangle {
-        background-image: url(/assets/images/annotations/rectangle.svg);
+        background-image: url("@images/annotations/rectangle.svg");
     }
 
     &.icon-polygon {
-        background-image: url(/assets/images/annotations/polygon.svg);
+        background-image: url("@images/annotations/polygon.svg");
     }
 
     &.icon-linestring {
-        background-image: url(/assets/images/annotations/linestring.svg);
+        background-image: url("@images/annotations/linestring.svg");
     }
 
     &.icon-circle {
-        background-image: url(/assets/images/annotations/circle.svg);
+        background-image: url("@images/annotations/circle.svg");
     }
 
     &.icon-ellipse {
-        background-image: url(/assets/images/annotations/ellipse.svg);
+        background-image: url("@images/annotations/ellipse.svg");
     }
 
     &.icon-wholeframe {
-        background-image: url(/assets/images/annotations/wholeframe.svg);
+        background-image: url("@images/annotations/wholeframe.svg");
     }
 }
 
 .icon.icon-white, .icon.active {
     &.icon-point {
-        background-image: url(/assets/images/annotations/point_white.svg);
+        background-image: url("@images/annotations/point_white.svg");
     }
 
     &.icon-rectangle {
-        background-image: url(/assets/images/annotations/rectangle_white.svg);
+        background-image: url("@images/annotations/rectangle_white.svg");
     }
 
     &.icon-polygon {
-        background-image: url(/assets/images/annotations/polygon_white.svg);
+        background-image: url("@images/annotations/polygon_white.svg");
     }
 
     &.icon-linestring {
-        background-image: url(/assets/images/annotations/linestring_white.svg);
+        background-image: url("@images/annotations/linestring_white.svg");
     }
 
     &.icon-circle {
-        background-image: url(/assets/images/annotations/circle_white.svg);
+        background-image: url("@images/annotations/circle_white.svg");
     }
 
     &.icon-ellipse {
-        background-image: url(/assets/images/annotations/ellipse_white.svg);
+        background-image: url("@images/annotations/ellipse_white.svg");
     }
 
     &.icon-wholeframe {
-        background-image: url(/assets/images/annotations/wholeframe_white.svg);
+        background-image: url("@images/annotations/wholeframe_white.svg");
     }
 }
 
 .icon.icon-highlight {
     &.icon-point {
-        background-image: url(/assets/images/annotations/point_highlight.svg);
+        background-image: url("@images/annotations/point_highlight.svg");
     }
 
     &.icon-rectangle {
-        background-image: url(/assets/images/annotations/rectangle_highlight.svg);
+        background-image: url("@images/annotations/rectangle_highlight.svg");
     }
 
     &.icon-polygon {
-        background-image: url(/assets/images/annotations/polygon_highlight.svg);
+        background-image: url("@images/annotations/polygon_highlight.svg");
     }
 
     &.icon-linestring {
-        background-image: url(/assets/images/annotations/linestring_highlight.svg);
+        background-image: url("@images/annotations/linestring_highlight.svg");
     }
 
     &.icon-circle {
-        background-image: url(/assets/images/annotations/circle_highlight.svg);
+        background-image: url("@images/annotations/circle_highlight.svg");
     }
 
     &.icon-ellipse {
-        background-image: url(/assets/images/annotations/ellipse_highlight.svg);
+        background-image: url("@images/annotations/ellipse_highlight.svg");
     }
 
     &.icon-wholeframe {
-        background-image: url(/assets/images/annotations/wholeframe_highlight.svg);
+        background-image: url("@images/annotations/wholeframe_highlight.svg");
     }
 }

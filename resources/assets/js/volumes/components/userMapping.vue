@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import Item from './userMappingItem';
+import Item from './userMappingItem.vue';
 
 export default {
     components: {
