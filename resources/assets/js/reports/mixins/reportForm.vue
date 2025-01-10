@@ -1,6 +1,6 @@
 <script>
-import LabelTrees from '../../label-trees/components/labelTrees';
-import LoaderMixin from '../../core/mixins/loader';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
 
 /**
  * A mixin for a report form

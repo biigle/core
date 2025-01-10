@@ -1,12 +1,12 @@
 <script>
-import EntityChooser from './components/entityChooser';
-import LabelTreesApi from '../core/api/labelTree';
-import LoaderMixin from '../core/mixins/loader';
-import Tab from 'uiv/dist/Tab';
-import Tabs from 'uiv/dist/Tabs';
-import UsersApi from '../core/api/users';
-import VolumesApi from '../core/api/volumes';
-import {handleErrorResponse} from '../core/messages/store';
+import EntityChooser from './components/entityChooser.vue';
+import LabelTreesApi from '@/core/api/labelTree.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import UsersApi from '@/core/api/users.js';
+import VolumesApi from '@/core/api/volumes.js';
+import {handleErrorResponse} from '@/core/messages/store.vue';
+import {Tabs} from 'uiv';
+import {Tab} from 'uiv';
 
 /**
  * View model for the export container

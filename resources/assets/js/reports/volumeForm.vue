@@ -1,6 +1,6 @@
 <script>
-import Form from './mixins/reportForm';
-import VolumesApi from './api/volumeReports';
+import Form from './mixins/reportForm.vue';
+import VolumesApi from './api/volumeReports.js';
 
 /**
  * The form for requesting a volume report

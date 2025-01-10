@@ -2,8 +2,8 @@
 import Circle from '@biigle/ol/style/Circle';
 import Collection from '@biigle/ol/Collection';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Events from '../../core/events';
-import ExportAreaApi from '../api/exportArea';
+import Events from '@/core/events.js';
+import ExportAreaApi from '../api/exportArea.js';
 import Feature from '@biigle/ol/Feature';
 import Fill from '@biigle/ol/style/Fill';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
@@ -12,7 +12,7 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import {handleErrorResponse} from '../../core/messages/store';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 
 /**

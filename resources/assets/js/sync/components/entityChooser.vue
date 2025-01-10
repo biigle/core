@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import List from './entityChooserList';
+import List from './entityChooserList.vue';
 
 /**
  * A component to choose entities like volumes or users for a list

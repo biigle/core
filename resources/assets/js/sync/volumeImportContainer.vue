@@ -1,10 +1,10 @@
 <script>
-import ImportApi from './api/import';
-import ImportContainer from './mixins/importContainer';
-import LabelTreeImportContainer from './mixins/labelTreeImportContainer';
-import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
-import {handleErrorResponse} from '../core/messages/store';
+import ImportApi from './api/import.js';
+import ImportContainer from './mixins/importContainer.vue';
+import LabelTreeImportContainer from './mixins/labelTreeImportContainer.vue';
+import ProjectsApi from '@/core/api/projects.js';
+import Typeahead from '@/core/components/typeahead.vue';
+import {handleErrorResponse} from '@/core/messages/store.vue';
 
 /**
  * View model for the volume import container

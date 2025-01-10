@@ -1,7 +1,7 @@
-import ExportContainer from './exportContainer';
-import LabelTreeImportContainer from './labelTreeImportContainer';
-import UserImportContainer from './userImportContainer';
-import VolumeImportContainer from './volumeImportContainer';
+import ExportContainer from './exportContainer.vue';
+import LabelTreeImportContainer from './labelTreeImportContainer.vue';
+import UserImportContainer from './userImportContainer.vue';
+import VolumeImportContainer from './volumeImportContainer.vue';
 
 biigle.$mount('export-container', ExportContainer);
 biigle.$mount('label-tree-import-container', LabelTreeImportContainer);
