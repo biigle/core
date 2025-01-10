@@ -1,4 +1,5 @@
 <script>
+import ExportArea from './exportArea.vue';
 import Keyboard from '@/core/keyboard.vue';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import ScreenshotButton from './screenshotButton.vue';
@@ -22,6 +23,7 @@ export default {
     components: {
         screenshotButton: ScreenshotButton,
         powerToggle: PowerToggle,
+        exportArea: ExportArea,
     },
     props: {
         image: {

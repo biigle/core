@@ -1,4 +1,5 @@
 <script>
+import Keyboard from '@/core/keyboard.vue';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import Settings from '../stores/settings.js';
 
@@ -87,6 +88,13 @@ export default {
         handleUnmuteVideo() {
             this.muteVideo = false;
         },
+        toggleAnnotationOpacity() {
+            if (this.annotationOpacity > 0) {
+                this.annotationOpacity = 0;
+            } else {
+                this.annotationOpacity = 1;
+            }
+        },
     },
     watch: {
         annotationOpacity(value) {
@@ -145,6 +153,8 @@ export default {
         this.restoreKeys.forEach((key) => {
             this[key] = Settings.get(key);
         });
+
+        Keyboard.on('o', this.toggleAnnotationOpacity);
     },
 };
 </script>

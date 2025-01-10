@@ -2,7 +2,7 @@
     <div class="label-trees">
         <div v-if="typeahead || clearable" class="label-trees__head">
             <button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
-            <typeahead v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
+            <typeahead ref="typeaheadInput" v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
         </div>
         <div class="label-trees__body">
             <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :showFavouriteShortcuts="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
@@ -15,6 +15,7 @@
 import Keyboard from '@/core/keyboard.vue';
 import LabelTree from './labelTree.vue';
 import Typeahead from './labelTypeahead.vue';
+import {MAX_FAVOURITES} from '../constants.js';
 
 /**
  * A component that displays a list of label trees.
@@ -73,6 +74,10 @@ export default {
             type: String,
             default: 'default',
         },
+        focusInput:{
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         localeCompareSupportsLocales() {
@@ -110,7 +115,7 @@ export default {
             return this.favourites.map((label) => label.id);
         },
         canHaveMoreFavourites() {
-            return this.favourites.length < 10;
+            return this.favourites.length < MAX_FAVOURITES;
         },
         hasFavourites() {
             return this.favourites.length > 0;
@@ -192,7 +197,14 @@ export default {
                 });
             },
         },
+        focusInput() {
+            if (this.focusInput) {
+                this.$refs.typeaheadInput.$el.querySelector('input').focus();
+            }
+        }
+
     },
+
     mounted() {
         if (this.showFavourites) {
             let favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));

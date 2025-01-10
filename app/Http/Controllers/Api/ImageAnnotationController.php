@@ -10,8 +10,10 @@ use Biigle\Label;
 use Biigle\Shape;
 use DB;
 use Exception;
+use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class ImageAnnotationController extends Controller
 {
@@ -60,7 +62,7 @@ class ImageAnnotationController extends Controller
      *
      * @param Request $request
      * @param int $id image id
-     * @return \Illuminate\Database\Eloquent\Collection<int, ImageAnnotation>
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */
     public function index(Request $request, $id)
     {
@@ -78,11 +80,18 @@ class ImageAnnotationController extends Controller
             'labels.user:id,firstname,lastname',
         ];
 
+        // Prevent exceeding memory limit by using generator and stream
         if ($session) {
-            return $session->getVolumeFileAnnotations($image, $user)->load($load);
+            $yieldAnnotations = $session->getVolumeFileAnnotations($image, $user, $load);
+        } else {
+            $yieldAnnotations = function () use ($image, $load): Generator {
+                foreach ($image->annotations()->with($load)->lazy() as $annotation) {
+                    yield $annotation;
+                }
+            };
         }
-
-        return $image->annotations()->with($load)->get();
+    
+        return new StreamedJsonResponse($yieldAnnotations());
     }
 
     /**

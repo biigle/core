@@ -6,7 +6,9 @@
         biigle.$declare('volumes.id', {!! $volume->id !!});
         biigle.$declare('volumes.annotationSessions', {!! $annotationSessions !!});
         biigle.$declare('volumes.type', '{!! $type !!}');
-        biigle.$declare('volumes.hasMetadata', '{!! $volume->hasMetadata() !!}');
+        biigle.$declare('volumes.hasMetadata', {!! $volume->hasMetadata() ? 'true' : 'false' !!});
+        biigle.$declare('volumes.hasMetadataAnnotations', {!! ($volume->hasMetadata() && $volume->getMetadata()->hasAnnotations()) ? 'true' : 'false' !!});
+        biigle.$declare('volumes.hasMetadataFileLabels', {!! ($volume->hasMetadata() && $volume->getMetadata()->hasFileLabels()) ? 'true' : 'false' !!});
         biigle.$declare('volumes.parsers', {!! $parsers !!});
     </script>
     @mixin('volumesEditScripts')

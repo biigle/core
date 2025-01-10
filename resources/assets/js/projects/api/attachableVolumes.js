@@ -8,4 +8,4 @@
  * var resource = biigle.$require('api.attachableVolumes');
  * resource.get({id: projectId}).then(...);
  */
-export default Vue.resource('api/v1/projects{/id}/attachable-volumes');
+export default Vue.resource('api/v1/projects{/id}/attachable-volumes{/name}');

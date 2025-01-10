@@ -8,7 +8,6 @@ import ProjectsApi from '@/core/api/projects.js';
 import Typeahead from '@/core/components/typeahead.vue';
 import {handleErrorResponse} from '@/core/messages/store.vue';
 
-
 const SORTING = {
     DATE_DOWN: 'date-down',
     DATE_UP: 'date-up',
@@ -37,13 +36,14 @@ export default {
             currentSorting: SORTING.DATE_DOWN,
             showModal: false,
             statisticsData: {},
-            volumeUrlTemplate: ""
+            volumeUrlTemplate: "",
+            oldVolumeName: "",
         };
     },
     components: {
         previewThumbnail: PreviewThumbnail,
-        typeahead: Typeahead,
-        statisticsModal: statisticsModal
+        statisticsModal: statisticsModal,
+        typeahead: Typeahead
     },
     computed: {
         sortedVolumes() {
@@ -195,12 +195,15 @@ export default {
                 }
             }
         },
-        fetchAttachableVolumes() {
-            if (!this.fetchedAttachableVolumes) {
+        fetchAttachableVolumes(volumeName) {
+            if (this.oldVolumeName.trim() != volumeName.trim()) {
                 this.fetchedAttachableVolumes = true;
                 this.startLoading();
-                AttachableVolumesApi.get({id: this.project.id})
-                    .then(this.attachableVolumesFetched, handleErrorResponse)
+                AttachableVolumesApi.get({ id: this.project.id, name: volumeName })
+                    .then((res) => {
+                        this.attachableVolumesFetched(res);
+                        this.oldVolumeName = volumeName;
+                    }, handleErrorResponse)
                     .finally(this.finishLoading);
             }
         },

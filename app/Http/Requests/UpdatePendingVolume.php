@@ -60,6 +60,10 @@ class UpdatePendingVolume extends FormRequest
             if (!$rule->passes('files', $files)) {
                 $validator->errors()->add('files', $rule->message());
             }
+
+            if (!is_null($this->pendingVolume->volume_id)) {
+                $validator->errors()->add('id', 'A volume was already created for this pending volume.');
+            }
         });
     }
 

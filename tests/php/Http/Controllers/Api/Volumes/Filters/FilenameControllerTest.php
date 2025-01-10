@@ -67,7 +67,7 @@ class FilenameControllerTest extends ApiTestCase
             'filename' => 'abcde.jpg',
         ]);
         $this->beGuest();
-        $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*cde*\\")
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*cde*%5C")
             ->assertExactJson([]);
         $response->assertStatus(200);
     }

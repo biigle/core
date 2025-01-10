@@ -12,9 +12,11 @@ use Biigle\VideoAnnotationLabel;
 use Cache;
 use DB;
 use Exception;
+use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Queue;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class VideoAnnotationController extends Controller
@@ -61,7 +63,7 @@ class VideoAnnotationController extends Controller
      *
      * @param Request $request
      * @param int $id Video id
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */
     public function index(Request $request, $id)
     {
@@ -72,11 +74,18 @@ class VideoAnnotationController extends Controller
         $session = $video->volume->getActiveAnnotationSession($user);
         $load = ['labels.label', 'labels.user'];
 
+        // Prevent exceeding memory limit by using generator and stream
         if ($session) {
-            return $session->getVolumeFileAnnotations($video, $user)->load($load);
+            $yieldAnnotations = $session->getVolumeFileAnnotations($video, $user, $load);
+        } else {
+            $yieldAnnotations = function () use ($video, $load): Generator {
+                foreach ($video->annotations()->with($load)->lazy() as $annotation) {
+                    yield $annotation;
+                }
+            };
         }
 
-        return $video->annotations()->with($load)->get();
+        return new StreamedJsonResponse($yieldAnnotations());
     }
 
     /**
@@ -202,12 +211,7 @@ class VideoAnnotationController extends Controller
             }
         }
 
-        // from a JSON request, the array may already be decoded
         $points = $request->input('points', []);
-
-        if (is_string($points)) {
-            $points = json_decode($points);
-        }
 
         $annotation = new VideoAnnotation([
             'video_id' => $request->video->id,

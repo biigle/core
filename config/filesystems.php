@@ -55,6 +55,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'largo' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/largo-patches'),
+            'url' => env('APP_URL').'/storage/largo-patches',
+            'visibility' => 'public',
+        ],
+
         'video-thumbs' => [
             'driver' => 'local',
             'root' => storage_path('app/public/video-thumbs'),
@@ -70,6 +77,16 @@ return [
         'pending-metadata' => [
             'driver' => 'local',
             'root' => storage_path('pending-metadata'),
+        ],
+
+        'imports' => [
+            'driver' => 'local',
+            'root' => storage_path('imports'),
+        ],
+
+        'reports' => [
+            'driver' => 'local',
+            'root' => storage_path('reports'),
         ],
     ],
 

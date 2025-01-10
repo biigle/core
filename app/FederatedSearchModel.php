@@ -58,7 +58,7 @@ class FederatedSearchModel extends Model
     /**
      * The instance, this model belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<FederatedSearchInstance, FederatedSearchModel>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<FederatedSearchInstance, $this>
      */
     public function instance()
     {
@@ -68,7 +68,7 @@ class FederatedSearchModel extends Model
     /**
      * The users who can access this model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function users()
     {

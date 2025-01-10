@@ -72,7 +72,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     /**
      * The models that belong to this instance.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<FederatedSearchModel>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<FederatedSearchModel, $this>
      */
     public function models()
     {

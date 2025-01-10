@@ -3,6 +3,7 @@ import Annotation from './models/Annotation.vue';
 import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
+import Keyboard from '@/core/keyboard.vue';
 import LabelAnnotationFilter from '@/annotations/models/LabelAnnotationFilter.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
@@ -98,6 +99,7 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            focusInputFindlabel: false,
         };
     },
     computed: {
@@ -173,6 +175,9 @@ export default {
         },
         reachedTrackedAnnotationLimit() {
             return this.disableJobTracking;
+        },
+        annotationsAreHidden() {
+            return this.settings.annotationOpacity === 0;
         }
     },
     methods: {
@@ -673,6 +678,20 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
+        selectLastAnnotation() {
+            let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
+            this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
+        },
+        openSidebarLabels() {
+            this.$refs.sidebar.$emit('open', 'labels');
+            this.setFocusInputFindLabel()
+        },
+        setFocusInputFindLabel() {
+            this.focusInputFindlabel = false;
+            this.$nextTick(() => {
+                this.focusInputFindlabel = true;
+            });
+        }
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -724,6 +743,8 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
         }
@@ -735,6 +756,9 @@ export default {
         if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
             this.supportsJumpByFrame = true;
         }
+
+        Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
+
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before

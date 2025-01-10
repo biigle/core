@@ -8,6 +8,7 @@ import ColorAdjustmentTab from './components/colorAdjustmentTab.vue';
 import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.vue';
+import Keyboard from '@/core/keyboard.vue';
 import LabelFilter from './models/LabelAnnotationFilter.vue';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
@@ -162,6 +163,9 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
+        },
+        highlightSettingsTab() {
+            return this.annotationOpacity === 0;
         }
     },
     methods: {
@@ -592,6 +596,13 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
+        selectLastAnnotation() {
+            let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
+            this.handleSelectAnnotation(lastAnnotation);
+        },
+        openSidebarLabels() {
+            this.$refs.sidebar.$emit('open', 'labels');
+        },
     },
     watch: {
         async imageId(id) {
@@ -742,6 +753,8 @@ export default {
                 this.openTab = openTab;
             }
         }
+
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);

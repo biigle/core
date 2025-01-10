@@ -28,7 +28,7 @@ class LabelTreeVersion extends Model
     /**
      * The "master" label tree of this version.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, LabelTreeVersion>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, $this>
      */
     public function labelTree()
     {
