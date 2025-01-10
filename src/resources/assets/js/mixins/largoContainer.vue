@@ -85,8 +85,7 @@ export default {
                 return annotations;
             }
 
-            // This will be empty for the default sorting.
-            if (this.sortingSequence.length > 0) {
+            if (this.sortingKey !== SORT_KEY.ANNOTATION_ID) {
                 const map = {};
                 annotations.forEach((a) => {
                     // Image annotation IDs are prefixed with 'i', video annotations with
