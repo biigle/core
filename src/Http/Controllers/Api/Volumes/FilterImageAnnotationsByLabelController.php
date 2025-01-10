@@ -2,14 +2,11 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
-use Generator;
 use Biigle\Volume;
 use Biigle\ImageAnnotation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Biigle\Http\Controllers\Api\Controller;
-use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
