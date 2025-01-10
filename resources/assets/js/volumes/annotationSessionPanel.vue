@@ -193,7 +193,7 @@ export default {
             response.data.forEach(function (user) {
                 user.name = user.firstname + ' ' + user.lastname;
             });
-            Vue.set(this, 'users', response.data);
+            this.users = response.data;
         },
         selectUser(user) {
             this.editedSession.users.push(user);

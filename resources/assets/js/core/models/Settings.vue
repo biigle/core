@@ -20,7 +20,7 @@ export default Vue.extend({
             } else if (this.has(key)) {
                 this.data[key] = value;
             } else {
-                Vue.set(this.data, key, value);
+                this.data[key] = value;
             }
 
             debounce(this.persist, 100, this.storageKey);
@@ -45,7 +45,7 @@ export default Vue.extend({
         restoreFromLocalStorage() {
             let data = JSON.parse(window.localStorage.getItem(this.storageKey));
             if (data) {
-                Vue.set(this, 'data', data);
+                this.data = data;
             }
         },
         restoreFromUrlParams(keys) {
@@ -53,7 +53,7 @@ export default Vue.extend({
             keys = keys || Object.keys(params);
             keys.forEach((key) => {
                 if (params.hasOwnProperty(key)) {
-                    Vue.set(this.data, key, params[key]);
+                    this.data[key] = params[key];
                 }
             });
         },

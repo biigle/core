@@ -93,8 +93,8 @@ export default {
             this.selectedName = name;
         },
         insertLabel(label) {
-            Vue.set(label, 'open', false);
-            Vue.set(label, 'selected', false);
+            label.open = false;
+            label.selected = false;
             let name = label.name.toLowerCase();
             // add the label to the array so the labels remain sorted by their name
             for (let i = 0, length = this.labels.length; i < length; i++) {

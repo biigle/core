@@ -86,7 +86,7 @@ export default {
     },
     methods: {
         handleSelect(entity) {
-            Vue.set(this.chosenIds, entity.id, true);
+            this.chosenIds[entity.id] = true;
         },
         handleDeselect(entity) {
             this.chosenIds[entity.id] = false;

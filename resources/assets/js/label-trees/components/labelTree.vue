@@ -120,9 +120,9 @@ export default {
                 // update the label children with the compiled datastructure
                 this.labels.forEach(function (label) {
                     if (compiled.hasOwnProperty(label.id)) {
-                        Vue.set(label, 'children', compiled[label.id]);
+                        label.children = compiled[label.id];
                     } else {
-                        Vue.set(label, 'children', undefined);
+                        label.children = undefined;
                         // If the last child was deleted, close the label.
                         label.open = false;
                     }
@@ -305,15 +305,15 @@ export default {
         // Set the reactive label properties
         this.labels.forEach(function (label) {
             if (!label.hasOwnProperty('open')) {
-                Vue.set(label, 'open', false);
+                label.open = false;
             }
 
             if (!label.hasOwnProperty('selected')) {
-                Vue.set(label, 'selected', false);
+                label.selected = false;
             }
 
             if (!label.hasOwnProperty('favourite')) {
-                Vue.set(label, 'favourite', false);
+                label.favourite = false;
             }
         });
 

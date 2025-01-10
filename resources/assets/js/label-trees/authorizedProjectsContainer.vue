@@ -46,7 +46,7 @@ export default {
     methods: {
         fetchOwnProjects() {
             ProjectsApi.query().then((response) => {
-                Vue.set(this, 'ownProjects', response.body);
+                this.ownProjects = response.body;
             }, handleErrorResponse);
         },
         addAuthorizedProject(project) {

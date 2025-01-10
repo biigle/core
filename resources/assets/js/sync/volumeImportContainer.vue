@@ -34,7 +34,7 @@ export default {
     computed: {
         volumes() {
             return this.volumeCandidates.map(function (volume) {
-                Vue.set(volume, 'new_url', volume.url);
+                volume.new_url = volume.url;
 
                 if (volume.media_type_name === 'image') {
                     volume.icon = 'image';
