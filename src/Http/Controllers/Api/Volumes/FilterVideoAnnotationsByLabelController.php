@@ -6,6 +6,7 @@ use Generator;
 use Biigle\Volume;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Biigle\Http\Controllers\Api\Controller;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
@@ -81,35 +82,20 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * 
      *
      * @param int $id Volume ID
-     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getVolumeAnnotationLabels($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        $annotations = $volume->videos()
-        ->join('video_annotations', 'videos.id', '=', 'video_annotations.video_id')
-        ->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
-        ->join('labels', 'video_annotation_labels.label_id', '=', 'labels.id')
-        ->select(
-            'videos.uuid',
-            'video_annotations.id as annotation_id',
-            'video_annotation_labels.label_id',
-            'labels.label_tree_id'
-        );
-
-        $res = function () use ($annotations): Generator {
-            foreach ($annotations->lazy() as $a) {
-                yield [
-                    'uuid' => $a->uuid,
-                    'annotation_id' => $a->annotation_id,
-                    'label_id' => $a->label_id,
-                    'label_tree_id' => $a->label_tree_id
-                ];
-            }
-        };
-
-        return new StreamedJsonResponse($res());
+        return DB::table('labels')
+        ->join('video_annotation_labels', 'labels.id', '=', 'video_annotation_labels.label_id')
+        ->join('video_annotations', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
+        ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
+        ->where('videos.volume_id','=',$id)
+        ->select('labels.*', DB::raw('COUNT(labels.id) as count'))
+        ->groupBy('labels.id')
+        ->get();
     }
 }
