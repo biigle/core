@@ -175,6 +175,9 @@ export default {
         },
         reachedTrackedAnnotationLimit() {
             return this.disableJobTracking;
+        },
+        annotationsAreHidden() {
+            return this.settings.annotationOpacity === 0;
         }
     },
     methods: {
