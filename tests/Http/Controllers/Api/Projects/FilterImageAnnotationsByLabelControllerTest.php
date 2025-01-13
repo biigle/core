@@ -115,5 +115,9 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->id}&user_id[]=-{$u2->id}")
             ->assertExactJson([$a1->id => $image->uuid]);
 
+        //Case 5: combine users with union
+        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=true")
+            ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid, $a3->id => $image->uuid]);
+
     }
 }

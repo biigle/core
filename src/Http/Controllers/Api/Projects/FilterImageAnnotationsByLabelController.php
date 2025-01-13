@@ -30,10 +30,11 @@ class FilterImageAnnotationsByLabelController extends Controller
     {
         $project = Project::findOrFail($pid);
         $this->authorize('access', $project);
-        $this->validate($request, ['take' => 'integer', 'shape_id' => 'array', 'user_id' => 'array']);
+        $this->validate($request, ['take' => 'integer', 'shape_id' => 'array', 'user_id' => 'array', 'union' => 'integer']);
         $take = $request->input('take');
         $shape_ids = $request->input('shape_id');
         $user_ids = $request->input('user_id');
+        $union = $request->input('union', 0);
 
         return ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
@@ -46,25 +47,40 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);
             })
-            ->when(!is_null($shape_ids), function ($query) use ($shape_ids) {
-                foreach ($shape_ids as &$shape_id){
-                    if ($shape_id < 0) {
-                        $query->whereNot('shape_id', intval(abs($shape_id)));
-                    } else {
-                        $query->where('shape_id', intval($shape_id));
-                    }}
-            })
-            ->when(!is_null($user_ids), function ($query) use ($user_ids) {
-                foreach ($user_ids as &$user_id){
-                    if ($user_id < 0) {
-                        $query->whereNot('image_annotation_labels.user_id', intval(abs($user_id)));
-                    } else {
-                        $query->where('image_annotation_labels.user_id', intval($user_id));
-                    }}
+            ->when(!is_null($shape_ids), function ($query) use ($shape_ids, $union) {
+                $this->compileFilterConditions($query, $union, $shape_ids, 'shape_id');
+            }
+            )
+            ->when(!is_null($user_ids), function ($query) use ($user_ids, $union) {
+                $this->compileFilterConditions($query, $union, $user_ids, 'user_id');
             })
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')
             ->pluck('images.uuid', 'image_annotations.id');
+    }
+
+    private function compileFilterConditions(&$query, $union, $filters, $filterName)
+    {
+        if ($union){
+            $included = [];
+            $excluded = [];
+            foreach ($filters as &$filterValue){
+                if ($filterValue < 0) {
+                    array_push($excluded, intval(abs($filterValue)));
+                } else {
+                    array_push($included, intval($filterValue));
+                }}
+            $query->whereIn($filterName, $included);
+            $query->whereNotIn($filterName, $excluded);
+        } else {
+            foreach ($filters as &$filterValue){
+                if ($filterValue < 0) {
+                    $query->whereNot($filterName, intval(abs($filterValue)));
+                } else {
+                    $query->where($filterName, intval($filterValue));
+                }
+            }
+        }
     }
 }

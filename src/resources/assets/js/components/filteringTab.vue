@@ -4,6 +4,7 @@
       <annotation-filter
         @reset-filters="resetFilters"
         @add-filter="addNewFilter"
+        @set-union-logic="setUnionLogic"
       >
       </annotation-filter>
     </form>
@@ -38,28 +39,22 @@ export default {
   methods: {
     resetFilters() {
       this.activeFilters = [];
-      this.logicStrings = [];
       this.filterAnnotations();
     },
     removeFilter(key) {
       this.activeFilters.splice(key, 1);
       this.filterAnnotations();
     },
+    setUnionLogic(union){
+      this.union  = union
+      this.logicString = union ? 'Or ' : 'And '
+      this.filterAnnotations()
+    },
     addNewFilter(filter) {
-      let logic_string = '';
       if (this.activeFilters.length > 0) {
         if (_.some(this.activeFilters, filter)){
           Messages.danger('Filter already present!')
           return
-        }
-        if (filter.union !== this.activeFilters[0].union){
-            Messages.danger('Combination of "and" and "or" filtering is not yet supported')
-            return
-        }
-        if (filter.union) {
-            this.logicString = 'Or ';
-        } else {
-            this.logicString = 'And ';
         }
       }
       this.activeFilters.push(filter);
@@ -67,7 +62,7 @@ export default {
     },
 
     filterAnnotations() {
-      this.$emit("handle-selected-filters", this.activeFilters);
+      this.$emit("handle-selected-filters", this.activeFilters, this.union);
     },
   },
 };

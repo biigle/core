@@ -55,6 +55,7 @@ export default {
             pinnedImage: null,
             selectedFilters: {},
             hasActiveFilters: false,
+            union: false,
         };
     },
     provide() {
@@ -80,16 +81,24 @@ export default {
                 return [];
             }
 
-            let filterLabelCombination = JSON.stringify({
-              ...this.selectedFilters,
-              label: this.selectedLabel.id,
-            });
+            let filterLabel = { label: this.selectedLabel.id };
+
+            if (this.selectedFilters.length > 0){
+                filterLabel["filters"] = this.selectedFilters;
+                filterLabel["union"] = this.union;
+            }
+
+            let filterLabelCombination = JSON.stringify(filterLabel);
 
             if (
                 this.annotationsCache.hasOwnProperty(filterLabelCombination)
             ) {
                 return this.annotationsCache[filterLabelCombination];
+            } else {
+                console.log(this.annotationsCache)
+                console.log(filterLabelCombination)
             }
+
             return [];
         },
         sortedAnnotations() {
@@ -178,40 +187,32 @@ export default {
         },
     },
     methods: {
-        compileFilters(filters){
-          //compile filters so that they are executed correctly and with correct combination
-            let requestsToDo = [];
-            let filtersForRequest = {};
+        compileFilters(filters, union){
+            let parameters = [];
             filters.forEach(
-                (filter, idx) => {
+                (filter) => {
                     //If we have an union in the current filter, we need to execute the last request
-                    if (idx == 0 || filter.union == false) {
-                        if (!filtersForRequest[filter.filter]){
-                            filtersForRequest[filter.filter]= []
-                        }
-                        filtersForRequest[filter.filter].push(filter.value);
-                    } else {
-                        requestsToDo.push(filtersForRequest);
-                        filtersForRequest = {
-                            [filter.filter]: [filter.value]
-                        }
+                    if (!parameters[filter.filter]){
+                        parameters[filter.filter] = [];
                     }
+                    parameters[filter.filter].push(filter.value);
                 }
             )
-            requestsToDo.push(filtersForRequest)
-            return requestsToDo
+            parameters['union'] = union;
+            return parameters
         },
-        async sleep(){
-           return new Promise((resolve) => setTimeout(resolve, 500));
-        },
-        getAnnotations(label, filters) {
+        getAnnotations(label, filters, union) {
             let promise1;
             let promise2;
 
-            let labelFilterCombination = JSON.stringify({
-                ...filters,
-                label: label.id,
-            });
+            let labelFilters = {label: label.id};
+            if (filters.length > 0){
+                labelFilters['filters'] = filters;
+                labelFilters['union'] = union;
+            }
+
+            let labelFilterCombination = JSON.stringify(labelFilters);
+
 
             if (!this.annotationsCache.hasOwnProperty(labelFilterCombination)) {
                 Vue.set(this.annotationsCache, labelFilterCombination, []);
@@ -219,33 +220,22 @@ export default {
                 this.startLoading();
                 if (filters.length > 0) {
                     this.startLoading();
-                    //compile filters
-                    let filterPromises = [];
-                    this.compileFilters(filters).forEach(
-                        (requestParams) => {
-                            filterPromises.push(
-                                this.queryAnnotations(label, requestParams)
-                            )
-                        })
-                    Vue.Promise.all(filterPromises).then(
-                        (responses) => {
+                    let requestParams = this.compileFilters(filters, union);
+                    promise1 = this.queryAnnotations(label, requestParams).then(
+                        (response) => {
+                            let imageAnnotations = response[0].data;
+                            let videoAnnotations = response[1].data;
                             let annotations = [];
-                            responses.forEach(
-                                (response) =>
-                                {
-                                    let imageAnnotations = response[0].data
-                                    let videoAnnotations = response[1].data
 
-                                    if (imageAnnotations) {
-                                        annotations = annotations.concat(this.initAnnotations(label, imageAnnotations, IMAGE_ANNOTATION))
-                                    }
+                            if (imageAnnotations) {
+                                annotations = annotations.concat(this.initAnnotations(label, imageAnnotations, IMAGE_ANNOTATION));
+                            }
 
-                                    if (videoAnnotations) {
-                                        annotations = annotations.concat(this.initAnnotations(label, videoAnnotations, VIDEO_ANNOTATION))
-                                    }
-                                }
-                            );
-                            this.gotAnnotations(label, labelFilterCombination, null, annotations)
+                            if (videoAnnotations) {
+                                annotations = annotations.concat(this.initAnnotations(label, videoAnnotations, VIDEO_ANNOTATION));
+                            }
+
+                            this.gotAnnotations(label, labelFilterCombination, null, annotations);
                         },
                         handleErrorResponse
                     ).finally(this.finishLoading);
@@ -306,9 +296,8 @@ export default {
                 selectedAnnotationName,
                 annotations,
             )
-
         },
-        handleSelectedFilters(filters) {
+        handleSelectedFilters(filters, union) {
             if (Object.keys(filters).length > 0) {
                 this.hasActiveFilters = true
             } else {
@@ -318,7 +307,8 @@ export default {
             if (!this.selectedLabel){
                 return []
             }
-            this.getAnnotations(this.selectedLabel, filters);
+            this.union = union
+            this.getAnnotations(this.selectedLabel, filters, union);
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
@@ -337,7 +327,7 @@ export default {
             this.selectedLabel = label;
 
             if (this.isInDismissStep) {
-                this.getAnnotations(label, this.selectedFilters);
+                this.getAnnotations(label, this.selectedFilters, this.union);
             }
         },
         handleDeselectedLabel() {
@@ -364,7 +354,7 @@ export default {
             this.step = 0;
             this.lastSelectedImage = null;
             if (this.selectedLabel) {
-                this.getAnnotations(this.selectedLabel, this.selectedFilters);
+                this.getAnnotations(this.selectedLabel, this.selectedFilters, this.union);
             }
         },
         handleSelectedImageRelabel(image, event) {

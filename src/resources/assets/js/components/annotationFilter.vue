@@ -39,6 +39,7 @@
           selected="Shapes"
           v-model="selectedFilter"
           @change="changeSelectedFilter"
+          title="Which filter rules to apply"
           @click.once="loadApiFilters"
         >
           <option
@@ -49,7 +50,7 @@
         </select>
       </div>
       <div class="form-group largo-filter-select filter-select">
-        <select class="form-control" v-model="negate" selected="true" required>
+        <select title="Filter annotations that have or do not have the selected value" class="form-control" v-model="negate" selected="true" required>
           <option :value="false">is</option>
           <option :value="true">is not</option>
         </select>
@@ -106,9 +107,11 @@ export default {
   methods: {
     activateAndOperator() {
       this.union = false;
+      this.$emit('set-union-logic', 0);
     },
     activateOrOperator() {
       this.union = true;
+      this.$emit('set-union-logic', 1);
     },
     reset() {
       this.$emit("reset-filters");
@@ -163,7 +166,6 @@ export default {
           this.selectedFilterValue[0],
         filter: this.shapeToValue[this.selectedFilter],
         value: this.selectedFilterValue[1],
-        union: this.union,
       };
       this.$emit("add-filter", filterToAdd);
     },
