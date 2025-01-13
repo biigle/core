@@ -71,13 +71,15 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiDescription Returns a stream containing the video uuids and ids of annotations, labels and label trees
      * 
      * @apiSuccessExample {json} Success response:
-     * [{
-	 * 	"uuid":"9198ea9c-ef97-4af7-8018-407d16eafb65",
-	 * 	"annotation_id":41,
-	 *	"label_id":14,
-	 *	"label_tree_id":123
-	 * }]
-     * 
+     * [{"id":1,
+     * "name":"a",
+     * "color":"f2617c",
+     * "parent_id":null,
+     * "label_tree_id":1,
+     * "source_id":null,
+     * "label_source_id":null,
+     * "uuid":"6d2e6061-9ed1-41df-92f0-4862d0d4b12e",
+     * "count":10}]
      *
      * @param int $id Volume ID
      * @return \Illuminate\Database\Eloquent\Collection
