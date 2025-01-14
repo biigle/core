@@ -54,14 +54,10 @@ class Announcement extends Model
      */
     public static function getActive()
     {
-        return Cache::get(self::CACHE_KEY, function () {
-            $announcement = self::active()->first();
-            if ($announcement) {
-                Cache::put(self::CACHE_KEY, $announcement, $announcement->show_until);
-            }
-
-            return $announcement;
-        });
+        // Store false if no announcement exists because null can't be stored.
+        return Cache::rememberForever(self::CACHE_KEY, function () {
+            return self::active()->first() ?: false;
+        }) ?: null;
     }
 
     /**
