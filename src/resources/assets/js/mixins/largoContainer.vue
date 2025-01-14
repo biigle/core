@@ -94,9 +94,6 @@ export default {
                 this.annotationsCache.hasOwnProperty(filterLabelCombination)
             ) {
                 return this.annotationsCache[filterLabelCombination];
-            } else {
-                console.log(this.annotationsCache)
-                console.log(filterLabelCombination)
             }
 
             return [];
