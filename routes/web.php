@@ -109,6 +109,21 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'IndexController@get',
         ]);
 
+        $router->get('export', [
+            'as' => 'admin-export',
+            'uses' => 'ExportController@index',
+        ]);
+
+        $router->get('import', [
+            'as' => 'admin-import',
+            'uses' => 'ImportController@index',
+        ]);
+
+        $router->get('import/{token}', [
+            'as' => 'admin-import-show',
+            'uses' => 'ImportController@show',
+        ]);
+
         $router->get('users', [
             'as' => 'admin-users',
             'uses' => 'UsersController@get',
@@ -179,6 +194,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'LabelTreesController@create',
         ]);
 
+        $router->get('import', [
+            'as' => 'label-tree-import-index',
+            'uses' => 'PublicImportController@index',
+        ]);
+
         $router->get('{id}', [
             'as'   => 'label-trees',
             'uses' => 'LabelTreesController@show',
@@ -245,6 +265,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'project-charts',
             'uses' => 'ProjectStatisticsController@show',
         ]);
+
+        $router->get('{id}/reports', [
+            'uses' => 'ProjectReportsController@show',
+            'as' => 'project-reports',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {
@@ -298,6 +323,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         $router->get('clone/{id}',[
             'as' => 'clone-volume',
             'uses' => 'VolumeCloneController@clone'
+        ]);
+
+        $router->get('{id}/reports', [
+            'uses' => 'VolumeReportsController@show',
+            'as' => 'volume-reports',
         ]);
     });
 

@@ -1,4 +1,4 @@
-<sidebar-tab name="settings" icon="cog" title="Settings">
+<sidebar-tab name="settings" icon="cog" title="Settings" :highlight="annotationsAreHidden">
     <settings-tab inline-template
         v-on:update="handleUpdatedSettings"
         :supports-jump-by-frame="supportsJumpByFrame"

@@ -1,6 +1,7 @@
 <script>
 import PowerToggle from '../../core/components/powerToggle';
 import Settings from '../stores/settings';
+import Keyboard from '../../core/keyboard';
 
 export default {
     components: {
@@ -95,6 +96,13 @@ export default {
         handleDisableSingleAnnotation() {
             this.singleAnnotation = false;
         },
+        toggleAnnotationOpacity() {
+            if (this.annotationOpacity > 0) {
+                this.annotationOpacity = 0;
+            } else {
+                this.annotationOpacity = 1;
+            }
+        },
     },
     watch: {
         annotationOpacity(value) {
@@ -157,6 +165,8 @@ export default {
         this.restoreKeys.forEach((key) => {
             this[key] = Settings.get(key);
         });
+
+        Keyboard.on('o', this.toggleAnnotationOpacity);
     },
 };
 </script>
