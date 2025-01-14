@@ -3,6 +3,8 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\Tests\ShapeTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
