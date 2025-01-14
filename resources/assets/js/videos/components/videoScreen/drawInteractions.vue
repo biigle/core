@@ -245,10 +245,17 @@ export default {
             this.$emit('pending-annotation', this.pendingAnnotation);
 
             if (this.singleAnnotationActive) {
-                this.finishDrawAnnotation();
-                if (this.isDrawingPoint && !this.isPointDoubleClick(e)) {
+                if (!this.isDrawingPoint) {
+                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
+                }
+                else {
+                    if (this.isPointDoubleClick(e)) {
+                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                        return;
+                    }
                     this.lastDrawnPointTime = new Date().getTime();
                     this.lastDrawnPoint = e.feature.getGeometry();
+                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
                 }
             }
         },
