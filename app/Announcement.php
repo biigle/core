@@ -55,9 +55,7 @@ class Announcement extends Model
     public static function getActive()
     {
         // Store false if no announcement exists because null can't be stored.
-        return Cache::rememberForever(self::CACHE_KEY, function () {
-            return self::active()->first() ?: false;
-        }) ?: null;
+        return Cache::rememberForever(self::CACHE_KEY, fn () => self::active()->first() ?: false) ?: null;
     }
 
     /**
