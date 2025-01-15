@@ -1,5 +1,5 @@
 import BaseTranslate from '@biigle/ol/interaction/Translate';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import {debounce} from '@/core/utils.js';
 
 /**

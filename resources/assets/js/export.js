@@ -27,7 +27,7 @@ import {mount, declare, require} from './utils.js';
 import {debounce, urlParams, throttle} from '@/core/utils.js';
 
 import Events from '@/core/events.js';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 
 import {Popover, Tab, Tabs} from 'uiv';
 

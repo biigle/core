@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import LabelTree from './labelTree.vue';
 import Typeahead from './labelTypeahead.vue';
 import {MAX_FAVOURITES} from '../constants.js';

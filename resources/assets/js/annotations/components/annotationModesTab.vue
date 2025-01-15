@@ -1,6 +1,6 @@
 <script>
 import Events from '@/core/events.js';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import Settings from '../stores/settings.js';
 import {urlParams as UrlParams} from '@/core/utils.js';

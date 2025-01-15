@@ -1,5 +1,5 @@
 <script>
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import Settings from '../stores/settings.js';
 

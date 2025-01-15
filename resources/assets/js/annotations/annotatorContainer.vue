@@ -8,7 +8,7 @@ import ColorAdjustmentTab from './components/colorAdjustmentTab.vue';
 import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.vue';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import LabelFilter from './models/LabelAnnotationFilter.vue';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';

@@ -1,6 +1,6 @@
 <script>
 import ExportArea from './exportArea.vue';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import ScreenshotButton from './screenshotButton.vue';
 import Settings from '../stores/settings.js';

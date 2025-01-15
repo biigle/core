@@ -11,7 +11,7 @@ import Ellipse from '@biigle/ol/geom/Ellipse';
 import Events from '@/core/events.js';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import LabelIndicator from './labelIndicator.vue';
 import Lawnmower from './annotationCanvas/lawnmower.vue';
 import LineString from '@biigle/ol/geom/LineString';

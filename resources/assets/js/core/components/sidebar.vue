@@ -15,7 +15,7 @@
 <script>
 import Button from './sidebarButton.vue';
 import Events from '../events.js';
-import Keyboard from '../keyboard.vue';
+import Keyboard from '../keyboard.js';
 
 /**
  * A collapsible sidebar that can show different content "tabs"

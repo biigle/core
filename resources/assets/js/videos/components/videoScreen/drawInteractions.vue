@@ -1,7 +1,7 @@
 <script>
 import {simplifyPolygon} from "@/annotations/ol/PolygonValidator";
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';

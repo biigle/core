@@ -1,5 +1,5 @@
 <script>
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 

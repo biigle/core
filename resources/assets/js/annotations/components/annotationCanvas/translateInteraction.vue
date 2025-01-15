@@ -1,5 +1,5 @@
 <script>
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import TranslateInteraction from '@/annotations/ol/TranslateInteraction.js';
 
 /**

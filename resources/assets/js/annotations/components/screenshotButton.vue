@@ -1,7 +1,7 @@
 <script>
 import Events from '@/core/events.js';
 import Messages from '@/core/messages/store.vue';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 
 /**
  * A button that produces a screenshot of the map

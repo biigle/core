@@ -1,6 +1,6 @@
 <script>
 import AttachLabelInteraction from '@/annotations/ol/AttachLabelInteraction.js';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the attach label interaction.

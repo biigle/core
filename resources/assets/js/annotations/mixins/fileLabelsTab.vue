@@ -1,7 +1,7 @@
 <script>
 import FileLabelList from '@/volumes/components/fileLabelList.vue';
 import ImageLabelsApi from '@/volumes/api/imageLabels.js';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import Loader from '@/core/mixins/loader.vue';
 import VideoLabelsApi from '@/volumes/api/videoLabels.js';
 import {handleErrorResponse} from '@/core/messages/store.vue';

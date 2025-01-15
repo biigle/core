@@ -43,7 +43,7 @@
 
 <script>
 import Image from './imageGridImage.vue';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import Progress from './imageGridProgress.vue';
 
 /**

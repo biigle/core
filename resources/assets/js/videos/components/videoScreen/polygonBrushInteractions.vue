@@ -1,5 +1,5 @@
 <script>
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPolygonBrush.js';
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';

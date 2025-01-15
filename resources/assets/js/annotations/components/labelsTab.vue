@@ -1,6 +1,6 @@
 <script>
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via

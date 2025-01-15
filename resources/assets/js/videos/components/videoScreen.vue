@@ -266,7 +266,7 @@ import Collection from '@biigle/ol/Collection';
 import ControlButton from '@/annotations/components/controlButton.vue';
 import DrawInteractions from './videoScreen/drawInteractions.vue';
 import Indicators from './videoScreen/indicators.vue';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import Map from '@biigle/ol/Map';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';

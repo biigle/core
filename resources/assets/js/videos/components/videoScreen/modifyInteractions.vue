@@ -1,6 +1,6 @@
 <script>
 import AttachLabelInteraction from '@/annotations/ol/AttachLabelInteraction.js';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import TranslateInteraction from '@/annotations/ol/TranslateInteraction.js';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';

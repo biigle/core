@@ -62,7 +62,7 @@
 <script>
 import AnnotationTracks from './annotationTracks.vue';
 import Events from '@/core/events.js';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import VideoProgress from './videoProgress.vue';
 import ThumbnailPreview from './thumbnailPreview.vue';
 

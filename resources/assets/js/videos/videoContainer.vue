@@ -3,7 +3,7 @@ import Annotation from './models/Annotation.vue';
 import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import LabelAnnotationFilter from '@/annotations/models/LabelAnnotationFilter.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';

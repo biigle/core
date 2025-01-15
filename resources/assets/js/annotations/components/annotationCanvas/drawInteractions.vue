@@ -1,6 +1,6 @@
 <script>
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '@/core/keyboard.vue';
+import Keyboard from '@/core/keyboard.js';
 import Styles from '@/annotations/stores/styles.js';
 import { shiftKeyOnly } from '@biigle/ol/events/condition';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
