@@ -16,7 +16,7 @@ import NotificationsApi from '@/core/api/notifications.js';
 import NotificationSettingsMixin from '@/core/mixins/notificationSettings.vue';
 import PowerToggleComponent from '@/core/components/powerToggle.vue';
 import ProjectsApi from '@/core/api/projects.js';
-import SettingsModel from '@/core/models/Settings.vue';
+import SettingsModel from '@/core/models/Settings.js';
 import SidebarComponent from '@/core/components/sidebar.vue';
 import SidebarTabComponent from '@/core/components/sidebarTab.vue';
 import TypeaheadComponent from '@/core/components/typeahead.vue';

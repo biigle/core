@@ -4,7 +4,7 @@ import ImageGrid from './components/volumeImageGrid.vue';
 import FilesStore from './stores/files.js';
 import LabelsTab from './components/labelsTab.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import Settings from '@/core/models/Settings.vue';
+import Settings from '@/core/models/Settings.js';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import SortingTab from './components/sortingTab.vue';
@@ -253,14 +253,10 @@ export default {
         this.sortingSequence = this.fileIds;
         this.volumeId = biigle.$require('volumes.volumeId');
         this.settings = new Settings({
-            data() {
-                return {
-                    storageKey: 'biigle.volumes.settings',
-                    defaults: {
-                        showFilenames: false,
-                        showLabels: false,
-                    },
-                };
+            storageKey: 'biigle.volumes.settings',
+            defaults: {
+                showFilenames: false,
+                showLabels: false,
             },
         });
 

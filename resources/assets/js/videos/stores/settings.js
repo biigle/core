@@ -1,4 +1,4 @@
-import Settings from '@/core/models/Settings.vue';
+import Settings from '@/core/models/Settings.js';
 
 let defaults = {
     annotationOpacity: 1,
@@ -14,11 +14,7 @@ let defaults = {
 };
 
 export default new Settings({
-    data() {
-        return {
-            urlParams: Object.keys(defaults),
-            storageKey: 'biigle.videos.settings',
-            defaults: defaults,
-        };
-    },
+    urlParams: Object.keys(defaults),
+    storageKey: 'biigle.videos.settings',
+    defaults: defaults,
 });
