@@ -13,7 +13,7 @@ export default {
         return {
             projectId: null,
             labelTrees: [],
-            annotationLabels: []
+            annotationLabels: {},
         };
     },
     methods: {
@@ -57,20 +57,23 @@ export default {
                 .finally(this.finishLoading);
         },
         parseResponse(responses) {
-            return responses[0].body.length > 0 ? responses[0] : responses[1];
+            let res = responses[0].body.length > 0 ? responses[0] : responses[1];
+            this.fetchedAllAnnotations = true;
+            return res.body.reduce((labelsObj, l) => {
+                let tIdx = this.labelTreesIndex[l.label_tree_id].index;
+                let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
+                let label = this.labelTrees[tIdx].labels[lIdx];
+                if (label.hasOwnProperty('count')) {
+                    label.count += l.count;
+                } else {
+                    label.count = l.count;
+                    labelsObj[label.id] = label;
+                }
+                return labelsObj;
+            }, {});
         },
         mergeLabels(responses) {
-            let labels = {};
-            responses.forEach(res => {
-                Object.values(res.body).forEach(label => {
-                    if (labels.hasOwnProperty(label.id)) {
-                        labels[label.id].count += label.count;
-                    } else {
-                        labels[label.id] = label;
-                    }
-                })
-            });
-            this.annotationLabels = Object.values(labels);
+            this.annotationLabels = { ...responses[0], ...responses[1] };
         }
     },
     created() {

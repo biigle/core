@@ -54,7 +54,7 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            annotationLabels: [],
+            annotationLabels: {},
             volumeId: 0,
             fetchedAllAnnotations: false,
             changedAnnotations: {},
@@ -165,6 +165,16 @@ export default {
         imagesPinnable() {
             return this.needsSimilarityReference || this.sortingKey === SORT_KEY.SIMILARITY;
         },
+        labelTreesIndex() {
+            let index = {};
+            this.labelTrees.forEach((t, i) => {
+                index[t.id] = { index: i, labels: {} };
+                t.labels.forEach((l, j) => {
+                    index[t.id].labels[l.id] = j;
+                })
+            });
+            return index;
+        }
     },
     methods: {
         getAnnotations(label) {
@@ -297,11 +307,11 @@ export default {
                 }
                 // Add new label to annotation tab
                 if (!this.annotationLabels.hasOwnProperty(a.newLabel.id)) {
-                    this.annotationLabels[a.newLabel.id] = {
-                        id: a.newLabel.id,
-                        label: a.newLabel,
-                        count: 0
-                    }
+                    let tIdx = this.labelTreesIndex[a.newLabel.label_tree_id].index;
+                    let lIdx = this.labelTreesIndex[a.newLabel.label_tree_id].labels[a.newLabel.id];
+                    let label = this.labelTrees[tIdx].labels[lIdx];
+                    label.count = 0;
+                    Vue.set(this.annotationLabels, a.newLabel.id, label);
                 }
 
             });
@@ -528,7 +538,16 @@ export default {
         },
         parseResponse(responses) {
             let res = responses[0].body.length > 0 ? responses[0] : responses[1];
-            this.annotationLabels = res.body;
+            // Map API-labels to LabelTree-labels to enable synchronous label selection
+            this.annotationLabels = res.body.reduce((labelsObj, l) => {
+                let tIdx = this.labelTreesIndex[l.label_tree_id].index;
+                let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
+                let label = this.labelTrees[tIdx].labels[lIdx];
+                label.count = l.count;
+                labelsObj[label.id] = label;
+                return labelsObj;
+            }, {});
+            this.fetchedAllAnnotations = true;
         },
     },
     watch: {
