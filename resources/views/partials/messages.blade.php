@@ -6,17 +6,8 @@
             v-bind:id="message.id"
             v-bind:text="message.text"
             v-bind:type="message.type"
-            inline-template
             v-cloak
             >
-            <div
-                class="messages__message alert"
-                v-bind:class="typeClass"
-                v-on:mouseenter="cancelTimeout"
-                >
-                <a v-on:click="close" href="#" class="close">&times;</a>
-                <span v-text="text"></span>
-            </div>
         </message>
     </transition-group>
 </div>

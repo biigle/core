@@ -1,3 +1,5 @@
+import {reactive, computed} from 'vue';
+
 /**
  * The InAppNotification store.
  *
@@ -5,13 +7,15 @@
  */
 class Notifications {
     constructor() {
-        this.all = [];
+        this.all = reactive([]);
         this.initialized = false;
     }
 
     get unread() {
-        return this.all.filter(function (item) {
-            return item.read_at === null;
+        return computed(() => {
+            return this.all.filter(function (item) {
+                return item.read_at === null;
+            });
         });
     }
 
@@ -20,7 +24,7 @@ class Notifications {
     }
 
     get countUnread() {
-        return this.unread.length;
+        return this.unread.value.length;
     }
 
     remove(id) {
@@ -33,7 +37,7 @@ class Notifications {
 
     initialize(initialNotifications) {
         if (!this.initialized) {
-            this.all = initialNotifications || [];
+            this.all = reactive(initialNotifications || []);
             this.initialized = true;
         }
     }

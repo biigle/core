@@ -1,3 +1,7 @@
+<template>
+    <span v-text="count"></span>
+</template>
+
 <script>
 import Store from './store.js';
 

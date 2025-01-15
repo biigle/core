@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 col-md-offset-1">
             <ul class="nav nav-pills nav-stacked">
-                <li role="presentation" class="@if (!$all) active @endif cf"><a href="{{route('notifications')}}" title="Show unread notifications">Unread <span id="notifications-unread-count" class="badge pull-right" v-cloak v-text="count"></span></a></li>
+                <li role="presentation" class="@if (!$all) active @endif cf"><a href="{{route('notifications')}}" title="Show unread notifications">Unread <span id="notifications-unread-count" class="badge pull-right" v-cloak></span></a></li>
                 <li role="presentation" @if ($all) class="active" @endif><a href="{{route('notifications', ['all' => 1])}}" title="Show all notifications">All notifications</a></li>
             </ul>
         </div>

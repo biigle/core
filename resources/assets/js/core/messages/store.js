@@ -1,4 +1,5 @@
 import {exitFullscreen} from '../utils.js';
+import {reactive} from 'vue';
 
 /**
  * The popup message store.
@@ -8,8 +9,7 @@ class Store {
         // Maximum number of messages to display until the oldest is automatically
         // removed.
         this.max = 1;
-        this.all = [];
-
+        this.all = reactive([]);
     }
 
     post(type, text) {
