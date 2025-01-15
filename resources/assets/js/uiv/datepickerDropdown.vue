@@ -30,7 +30,7 @@ export default {
             type: String,
             default: '',
         },
-        value: {
+        modelValue: {
             type: String,
             default: '',
         },
@@ -58,9 +58,9 @@ export default {
     },
     watch: {
         internalValue(value) {
-            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
         },
-        value(value) {
+        modelValue(value) {
             this.internalValue = value;
         },
     },
