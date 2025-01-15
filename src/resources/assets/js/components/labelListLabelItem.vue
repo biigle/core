@@ -1,9 +1,9 @@
 <template>
-    <li class="annotations-tab-item" :style="style" :title="title">
+    <li v-if="showLabel" class="annotations-tab-item" :style="style" :title="title">
         <div class="annotations-tab-item__title" @click="emitSelectLabel">
             <span class="pull-right badge" v-text="count" :title="countTitle"></span>
             <span class="annotations-tab-item__color" :style="colorStyle"></span>
-            <span v-text="labelItem.name"></span>
+            <span v-text="label.name"></span>
         </div>
     </li>
 </template>
@@ -19,28 +19,26 @@ export default {
             },
         },
     },
-    data() {
-        return {
-            labelItem: {}
-        }
-    },
     computed: {
         title() {
-            return `Annotations with label ${this.labelItem.name}`;
+            return `Annotations with label ${this.label.name}`;
         },
         style() {
             return {
-                'font-weight': this.labelItem.selected ? 'bold' : '',
+                'font-weight': this.label.selected ? 'bold' : '',
             };
         },
         countTitle() {
-            return `There are ${this.labelItem.count} annotations with label ${this.labelItem.name}`;
+            return `There are ${this.count} annotations with label ${this.label.name}`;
         },
         colorStyle() {
-            return 'background-color: #' + this.labelItem.color;
+            return 'background-color: #' + this.label.color;
         },
         count() {
-            return this.labelItem.count;
+            return this.label.count;
+        },
+        showLabel() {
+            return this.count > 0;
         }
     },
     methods: {

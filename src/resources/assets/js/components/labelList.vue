@@ -8,9 +8,9 @@ export default {
     },
     props: {
         labels: {
-            type: Array,
+            type: Object,
             default() {
-                return [];
+                return {};
             },
         },
         changedAnnotations: {
@@ -36,11 +36,8 @@ export default {
     },
     watch: {
         labels() {
-            this.labelItems = this.labels.reduce((obj, l) => {
-                obj[l.id] = l;
-                return obj;
-            }, {});
-            this.annotationBadgeCount = this.labels.reduce((acc, l) => {
+            this.labelItems =  {...this.labels}
+            this.annotationBadgeCount = Object.values(this.labels).reduce((acc, l) => {
                 return acc + l.count;
             }, 0);
         },
@@ -49,13 +46,9 @@ export default {
                 let oldLabelId = a.oldLabelId;
                 let newLabelId = a.newLabelId;
 
-                this.labelItems[oldLabelId].count -= 1;
-                if (this.labelItems[oldLabelId].count === 0) {
-                    delete this.labelItems[oldLabelId];
-                }
-
+                Vue.set(this.labelItems, oldLabelId, {...this.labelItems[oldLabelId], count: this.labelItems[oldLabelId].count - 1});
                 if (newLabelId) {
-                    this.labelItems[newLabelId].count += 1;
+                    Vue.set(this.labelItems, newLabelId, {...this.labelItems[newLabelId], count: this.labelItems[newLabelId].count + 1});
                 } else {
                     this.annotationBadgeCount -= 1;
                 }
