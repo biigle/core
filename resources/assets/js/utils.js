@@ -11,6 +11,8 @@ let mount = function (id, vm) {
         let element = document.getElementById(id);
         if (element) {
             const app = createApp(vm);
+            // Vue 2 compatibility.
+            app.config.compilerOptions.whitespace = 'preserve';
             app.mount(element)
         }
     });
