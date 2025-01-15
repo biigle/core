@@ -6,7 +6,7 @@
                 {{$announcement->title}}
             </span>
         </button>
-        <template slot="popover">
+        <template #popover>
             <div class="text-warning">
                 {!! $announcement->body !!}
             </div>

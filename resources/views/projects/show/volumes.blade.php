@@ -39,7 +39,9 @@
             <a v-bind:href="'{{route('volume', '')}}/'+volume.id" v-bind:title="'Show volume '+volume.name">
                 <preview-thumbnail class="preview-thumbnail--projects" v-bind:id="volume.id" :thumb-uris="volume.thumbnailsUrl" @can('update', $project) v-bind:removable="true" v-bind:remove-title="'Detach volume '+volume.name" v-on:remove="removeVolume" v-bind:statistics-title="'Show charts for '+volume.name" v-bind:volume-url-template="volumeUrlTemplate" v-bind:show-clone-button="true" v-bind:clone-volume-title="'Clone volume '+volume.name" @endcan v-bind:show-stats-button="true" v-on:statistics="showStatistics" :icon="volume.icon">
                     <img v-bind:src="volume.thumbnailUrl" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
-                    <figcaption slot="caption" v-text="volume.name"></figcaption>
+                    <template #caption>
+                        <figcaption v-text="volume.name"></figcaption>
+                    </template>
                 </preview-thumbnail>
             </a>
         </div>

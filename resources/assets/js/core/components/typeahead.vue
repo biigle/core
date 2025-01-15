@@ -12,6 +12,7 @@
         @keyup.enter="emitInternalValue"
         >
     <typeahead
+        v-show="showTypeahead"
         v-model="internalValue"
         :target="inputElement"
         :data="items"
@@ -19,10 +20,9 @@
         :limit="itemLimit"
         :class="{'typeahead-scrollable': scrollable}"
         item-key="name"
-        v-show="showTypeahead"
         @selected-item-changed="handleArrowKeyScroll"
         >
-        <template slot="item" slot-scope="props">
+        <template #item="props">
             <component
                 ref="dropdown"
                 :is="itemComponent"
@@ -108,7 +108,7 @@ export default {
         },
         showTypeahead() {
             return !this.scollable || this.scrollable && !this.isTyping;
-        }
+        },
     },
     methods: {
         clear() {
