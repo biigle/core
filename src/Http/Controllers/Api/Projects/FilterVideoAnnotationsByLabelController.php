@@ -52,14 +52,14 @@ class FilterVideoAnnotationsByLabelController extends Controller
     }
 
     /**
-     * Get all video annotations with uuids for a given project
+     * Get all video labels with uuids and annotation count for a given project
      * 
      * @api {get} 
      * @apiGroup Projects
      * @apiName test
      * @apiParam {Number} id The Project ID
      * @apiPermission user
-     * @apiDescription Returns a stream containing the video uuids and ids of annotations, labels and label trees
+     * @apiDescription Returns a collection of project video labels, video UUIDs, and annotation label counts
      * 
      * @apiSuccessExample {json} Success response:
      * [{"id":1,
