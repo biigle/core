@@ -7,7 +7,7 @@ import AnnotationsTab from './components/siaAnnotationsTab.vue';
 import ColorAdjustmentTab from './components/colorAdjustmentTab.vue';
 import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
-import ImagesStore from './stores/images.vue';
+import ImagesStore from './stores/images.js';
 import Keyboard from '@/core/keyboard.js';
 import LabelFilter from './models/LabelAnnotationFilter.vue';
 import LabelsTab from './components/labelsTab.vue';
@@ -21,7 +21,7 @@ import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import UserFilter from './models/UserAnnotationFilter.vue';
 import VolumeImageAreaApi from './api/volumes.js';
-import {CrossOriginError} from './stores/images.vue';
+import {CrossOriginError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
@@ -117,9 +117,6 @@ export default {
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.selected);
         },
-        supportsColorAdjustment() {
-            return ImagesStore.supportsColorAdjustment;
-        },
         focussedAnnotation() {
             return this.filteredAnnotations[this.focussedAnnotationIndex];
         },
@@ -169,6 +166,9 @@ export default {
         }
     },
     methods: {
+        supportsColorAdjustment() {
+            return ImagesStore.supportsColorAdjustment;
+        },
         getImageAndAnnotationsPromises(id) {
             return [
                 ImagesStore.fetchAndDrawImage(id),
@@ -745,7 +745,7 @@ export default {
             let openTab = Settings.get('openTab');
             if (openTab === 'color-adjustment') {
                 Events.once('images.change', () => {
-                    if (this.supportsColorAdjustment) {
+                    if (this.supportsColorAdjustment()) {
                         this.openTab = openTab;
                     }
                 });

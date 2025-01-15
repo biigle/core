@@ -2,7 +2,7 @@ import AnnotationCanvas from './components/annotationCanvas.vue';
 import AnnotationCanvasMixins from './stores/annotationCanvasMixins.js';
 import AnnotationsStore from './stores/annotations.js';
 import AttachLabelInteraction from './ol/AttachLabelInteraction.js';
-import ImagesStore from './stores/images.vue';
+import ImagesStore from './stores/images.js';
 import StylesStore from './stores/styles.js';
 import {plugins as annotationsTabPlugins} from './components/siaAnnotationsTab.vue';
 import {plugins as labelsTabPlugins} from './components/labelsTab.vue';
