@@ -1,5 +1,5 @@
 <script>
-import FilesStore from './stores/files.vue';
+import FilesStore from './stores/files.js';
 
 /**
  * View model for the file count of the volume overview

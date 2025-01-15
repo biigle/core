@@ -1,7 +1,7 @@
 <script>
 import FilterTab from './components/filterTab.vue';
 import ImageGrid from './components/volumeImageGrid.vue';
-import FilesStore from './stores/files.vue';
+import FilesStore from './stores/files.js';
 import LabelsTab from './components/labelsTab.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Settings from '@/core/models/Settings.vue';
