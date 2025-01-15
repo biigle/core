@@ -1,5 +1,5 @@
 <script>
-import Store from './store.vue';
+import Store from './store.js';
 
 /**
  * The notification unread count.

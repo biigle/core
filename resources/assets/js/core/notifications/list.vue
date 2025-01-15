@@ -1,6 +1,6 @@
 <script>
 import NotificationsApi from '../api/notifications.js';
-import Store from './store.vue';
+import Store from './store.js';
 import Messages from '../messages/store.js';
 
 /**
@@ -91,7 +91,7 @@ export default {
         }
     },
     created() {
-        Store.initialize();
+        Store.initialize(biigle.$require('initialNotifications'));
         this.notifications = Store.all;
     },
 };
