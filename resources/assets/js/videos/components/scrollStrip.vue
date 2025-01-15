@@ -264,7 +264,7 @@ export default {
     },
     created() {
         window.addEventListener('resize', this.updateInitialElementWidth);
-        Events.$on('sidebar.toggle', () => {
+        Events.on('sidebar.toggle', () => {
             this.$nextTick(this.updateInitialElementWidth);
         });
 

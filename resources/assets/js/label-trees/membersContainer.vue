@@ -73,7 +73,7 @@ export default {
     },
     watch: {
         members(members) {
-            Events.$emit('label-trees.members.count', members.length)
+            Events.emit('label-trees.members.count', members.length)
         },
     },
     created() {

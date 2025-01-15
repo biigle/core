@@ -92,7 +92,7 @@ export default {
     },
     watch: {
         labelTrees(labelTrees) {
-            Events.$emit('project.label-trees.count', labelTrees.length)
+            Events.emit('project.label-trees.count', labelTrees.length)
         },
     },
     created() {

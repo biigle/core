@@ -8,7 +8,7 @@ export default {
         },
     },
     created() {
-        Events.$on('label-trees.labels.count', this.updateCount);
+        Events.on('label-trees.labels.count', this.updateCount);
     },
 };
 </script>

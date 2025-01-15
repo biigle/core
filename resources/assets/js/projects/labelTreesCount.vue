@@ -11,7 +11,7 @@ export default {
         },
     },
     created() {
-        Events.$on('project.label-trees.count', this.updateCount);
+        Events.on('project.label-trees.count', this.updateCount);
     },
 };
 </script>

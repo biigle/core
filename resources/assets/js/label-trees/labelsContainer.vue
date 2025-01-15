@@ -74,17 +74,17 @@ export default {
             // by components in view mixins on this page.
             if (!label) {
                 this.$emit('clear');
-                Events.$emit('selectLabel', null);
+                Events.emit('selectLabel', null);
             } else {
                 this.selectedColor = '#' + label.color;
                 this.$emit('select', label);
-                Events.$emit('selectLabel', label);
+                Events.emit('selectLabel', label);
             }
         },
         deselectLabel(label) {
             this.selectedLabel = null;
             this.$emit('deselect', label);
-            Events.$emit('selectLabel', null);
+            Events.emit('selectLabel', null);
         },
         selectColor(color) {
             this.selectedColor = color;
@@ -125,7 +125,7 @@ export default {
     },
     watch: {
         labels(labels) {
-            Events.$emit('label-trees.labels.count', labels.length)
+            Events.emit('label-trees.labels.count', labels.length)
         },
     },
     created() {

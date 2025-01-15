@@ -11,7 +11,7 @@ export default {
         },
     },
     created() {
-        Events.$on('project.volumes.count', this.updateCount);
+        Events.on('project.volumes.count', this.updateCount);
     },
 };
 </script>

@@ -233,8 +233,8 @@ export default {
         this.drawInteraction.on('drawend', this.handleDrawend);
         this.modifyInteraction.on('modifyend', this.handleModifyend);
 
-        Events.$on('images.change', this.updateCurrentImage);
-        Events.$on('annotations.map.init', this.extendMap);
+        Events.on('images.change', this.updateCurrentImage);
+        Events.on('annotations.map.init', this.extendMap);
     },
 };
 </script>

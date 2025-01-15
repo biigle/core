@@ -303,7 +303,7 @@ export default new Vue({
         },
         fetchImage(id, next) {
             if (!this.cache.hasOwnProperty(id)) {
-                Events.$emit('images.fetching', id);
+                Events.emit('images.fetching', id);
                 this.cache[id] = this.createImage(id);
                 // Also do the "else" case if next is undefined.
                 if (next !== true) {

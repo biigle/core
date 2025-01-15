@@ -67,7 +67,7 @@ export default {
         this.filenames = filenames;
         this.currentId = biigle.$require('annotations.imageId');
 
-        Events.$on('images.change', this.updateCurrentId);
+        Events.on('images.change', this.updateCurrentId);
 
         this.updateShowIndicator(Settings.get('progressIndicator'));
         Settings.watch('progressIndicator', this.updateShowIndicator);

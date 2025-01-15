@@ -464,7 +464,7 @@ export default {
             this.selectedAnnotations.forEach(this.handleAttachLabel);
         },
         emitImageChanged() {
-            Events.$emit('images.change', this.imageId, this.image);
+            Events.emit('images.change', this.imageId, this.image);
         },
         cachePreviousAndNext() {
             let toCache = [];
@@ -718,15 +718,15 @@ export default {
 
         // These Events are used by the SHERPA client of Michael Kloster and
         // retained for backwards compatibility.
-        Events.$on('annotations.select', this.handleSelectAnnotation);
-        Events.$on('annotations.deselect', this.handleDeselectAnnotation);
-        Events.$on('annotations.detachLabel', this.handleDetachAnnotationLabel);
-        Events.$on('annotations.delete', this.handleDeleteAnnotation);
-        Events.$on('annotations.focus', this.focusAnnotation);
+        Events.on('annotations.select', this.handleSelectAnnotation);
+        Events.on('annotations.deselect', this.handleDeselectAnnotation);
+        Events.on('annotations.detachLabel', this.handleDetachAnnotationLabel);
+        Events.on('annotations.delete', this.handleDeleteAnnotation);
+        Events.on('annotations.focus', this.focusAnnotation);
 
         if (UrlParams.get('annotation')) {
             let id = parseInt(UrlParams.get('annotation'));
-            Events.$once('images.change', () => {
+            Events.once('images.change', () => {
                 let annotations = this.annotations;
                 for (let i = annotations.length - 1; i >= 0; i--) {
                     if (annotations[i].id === id) {
@@ -744,7 +744,7 @@ export default {
         if (Settings.has('openTab')) {
             let openTab = Settings.get('openTab');
             if (openTab === 'color-adjustment') {
-                Events.$once('images.change', () => {
+                Events.once('images.change', () => {
                     if (this.supportsColorAdjustment) {
                         this.openTab = openTab;
                     }
@@ -757,7 +757,7 @@ export default {
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
-        Events.$emit('annotations.map.init', this.$refs.canvas.map);
+        Events.emit('annotations.map.init', this.$refs.canvas.map);
     },
 };
 </script>

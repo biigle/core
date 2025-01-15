@@ -76,14 +76,14 @@ export default {
             this.open = true;
             this.lastOpenedTab = name;
             this.$emit('toggle', name);
-            Events.$emit('sidebar.toggle', name);
-            Events.$emit(`sidebar.open.${name}`);
+            Events.emit('sidebar.toggle', name);
+            Events.emit(`sidebar.open.${name}`);
         },
         handleCloseTab(name) {
             this.open = false;
             this.$emit('toggle', name);
-            Events.$emit('sidebar.toggle', name);
-            Events.$emit(`sidebar.close.${name}`);
+            Events.emit('sidebar.toggle', name);
+            Events.emit(`sidebar.close.${name}`);
         },
         toggleLastOpenedTab(e) {
             if (this.open) {

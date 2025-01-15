@@ -808,7 +808,7 @@ export default {
         this.imageLayer.set('name', 'imageRegular');
         this.tiledImageLayer.set('name', 'imageTile');
 
-        Events.$on('sidebar.toggle', () => {
+        Events.on('sidebar.toggle', () => {
             // This needs to be wrapped in a function so it is called without arguments.
             this.$nextTick(() => {
                 this.map.updateSize();

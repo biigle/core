@@ -66,7 +66,7 @@ export default {
 
         this.updateShowIndicator(Settings.get('showProgressIndicator'));
         Settings.watch('showProgressIndicator', this.updateShowIndicator);
-        Events.$on('video.id', this.updateCurrentId);
+        Events.on('video.id', this.updateCurrentId);
     },
 };
 </script>

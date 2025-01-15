@@ -157,8 +157,8 @@ export default {
         });
         this.filenames = filenames;
         this.currentId = biigle.$require('annotations.imageId');
-        Events.$on('images.change', this.updateCurrentId);
-        Events.$on('annotations.map.init', this.setMap);
+        Events.on('images.change', this.updateCurrentId);
+        Events.on('annotations.map.init', this.setMap);
         Keyboard.on('p', this.capture);
     },
 };

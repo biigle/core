@@ -570,7 +570,7 @@ export default {
         },
         loadVideo(id) {
             this.videoId = id;
-            Events.$emit('video.id', id);
+            Events.emit('video.id', id);
             UrlParams.setSlug(id, -2);
             this.startLoading();
 

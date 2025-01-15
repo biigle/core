@@ -249,7 +249,7 @@ export default {
     },
     watch: {
         volumes(volumes) {
-            Events.$emit('project.volumes.count', volumes.length)
+            Events.emit('project.volumes.count', volumes.length)
         },
         currentSorting(sorting) {
             if (sorting === SORTING.DATE_DOWN) {

@@ -11,7 +11,7 @@ export default {
         },
     },
     created() {
-        Events.$on('project.members.count', this.updateCount);
+        Events.on('project.members.count', this.updateCount);
     },
 };
 </script>

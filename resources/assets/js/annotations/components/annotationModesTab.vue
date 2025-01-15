@@ -125,7 +125,7 @@ export default {
 
         let mode = UrlParams.get('annotationMode');
         if (mode) {
-            Events.$once('images.change', () => this.setMode(mode));
+            Events.once('images.change', () => this.setMode(mode));
         }
     },
 };

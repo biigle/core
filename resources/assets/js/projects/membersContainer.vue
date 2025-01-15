@@ -113,7 +113,7 @@ export default {
     },
     watch: {
         members(members) {
-            Events.$emit('project.members.count', members.length)
+            Events.emit('project.members.count', members.length)
         },
     },
     created() {
