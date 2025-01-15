@@ -1,6 +1,6 @@
 import AnnotationCanvas from './components/annotationCanvas.vue';
 import AnnotationCanvasMixins from './stores/annotationCanvasMixins.js';
-import AnnotationsStore from './stores/annotations.vue';
+import AnnotationsStore from './stores/annotations.js';
 import AttachLabelInteraction from './ol/AttachLabelInteraction.js';
 import ImagesStore from './stores/images.vue';
 import StylesStore from './stores/styles.js';
