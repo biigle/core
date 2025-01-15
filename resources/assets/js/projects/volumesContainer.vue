@@ -43,9 +43,12 @@ export default {
     components: {
         previewThumbnail: PreviewThumbnail,
         statisticsModal: statisticsModal,
-        typeahead: Typeahead
+        typeahead: Typeahead,
     },
     computed: {
+        volumesCount() {
+            return this.volumes.count;
+        },
         sortedVolumes() {
             let volumes = this.volumes.slice();
 
@@ -248,8 +251,8 @@ export default {
         },
     },
     watch: {
-        volumes(volumes) {
-            Events.emit('project.volumes.count', volumes.length)
+        volumesCount(count) {
+            Events.emit('project.volumes.count', count)
         },
         currentSorting(sorting) {
             if (sorting === SORTING.DATE_DOWN) {
