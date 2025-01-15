@@ -6,7 +6,7 @@
             <button type="button" class="btn btn-default dropdown-toggle"><i class="fa fa-calendar"></i></button>
         </div>
     </div>
-    <template slot="dropdown">
+    <template #dropdown>
         <li>
             <date-picker
                 v-model="internalValue"

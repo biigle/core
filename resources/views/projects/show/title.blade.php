@@ -8,7 +8,7 @@
         @endcan
         <dropdown menu-right>
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
-            <template slot="dropdown">
+            <template #dropdown>
                 @if ($isMember)
                     <li @unless($isPinned || $canPin) class="disabled" @endunless>
                         @if ($isPinned)

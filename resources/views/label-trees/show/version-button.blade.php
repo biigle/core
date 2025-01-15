@@ -4,7 +4,7 @@
             Version: <strong>latest</strong>
             <span class="caret"></span>
         </button>
-        <template slot="dropdown">
+        <template #dropdown>
             <li><a href="{{route('create-label-tree-versions', $tree->id)}}" title="Create a new version of this label tree"><i class="fa fa-plus"></i> new version</a></li>
             @if ($tree->versions->isNotEmpty())
                 <li class="divider"></li>
@@ -21,7 +21,7 @@
                 Version: <strong>latest</strong>
                 <span class="caret"></span>
             </button>
-            <template slot="dropdown">
+            <template #dropdown>
                 @foreach($tree->versions->sortByDesc('id') as $version)
                     <li><a href="{{route('label-tree-versions', [$tree->id, $version->id])}}" title="Show version {{$version->name}}">{{$version->name}}</a></li>
                 @endforeach

@@ -46,7 +46,7 @@
                 <p class="text-center">
                     <dropdown tag="span">
                         <button class="btn btn-default btn-lg dropdown-toggle" :class="fileButtonClass" type="button"><i class="fa fa-file-alt"></i> Select a file <span class="caret"></span></button>
-                        <template slot="dropdown">
+                        <template #dropdown>
                             <li v-for="parser in availableParsers">
                                 <a href="#" v-on:click.prevent="selectFile(parser)" v-text="parser.name"></a>
                             </li>

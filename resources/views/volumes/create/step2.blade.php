@@ -67,7 +67,7 @@
                                     <button class="btn btn-default dropdown-toggle" v-bind:class="diskButtonClass" type="button" title="Select a storage disk" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
                                         <i class="fa fa-database"></i> Storage disk <span class="caret"></span>
                                     </button>
-                                    <template slot="dropdown">
+                                    <template #dropdown>
                                         @foreach ($disks as $id => $name)
                                             <li>
                                                  <a title="Choose files from the '{{$name}}' storage disk" href="#" v-on:click.prevent="selectStorageDisk('{{$id}}')">{{$name}}</a>
