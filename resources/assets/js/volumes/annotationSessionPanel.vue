@@ -6,7 +6,7 @@ import SessionsApi from './api/annotationSessions.js';
 import Typeahead from '@/core/components/typeahead.vue';
 import UserTag from './components/annotationSessionUserTag.vue';
 import VolumesApi from './api/volumes.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import DatepickerDropdown from '@/uiv/datepickerDropdown.vue';
 
 /**

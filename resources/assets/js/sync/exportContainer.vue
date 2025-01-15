@@ -4,7 +4,7 @@ import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import {Tabs} from 'uiv';
 import {Tab} from 'uiv';
 

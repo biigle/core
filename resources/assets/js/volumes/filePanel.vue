@@ -5,7 +5,7 @@ import ImagesApi from '@/core/api/images.js';
 import VideosApi from '../videos/api/videos.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import VolumesApi from './api/volumes.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The panel for editing volume images

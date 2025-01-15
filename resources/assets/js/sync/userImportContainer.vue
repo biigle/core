@@ -1,7 +1,7 @@
 <script>
 import ImportApi from './api/import.js';
 import ImportContainer from './mixins/importContainer.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * View model for the user import container

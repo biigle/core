@@ -1,4 +1,3 @@
-<script>
 import {exitFullscreen} from '../utils.js';
 
 /**
@@ -93,4 +92,3 @@ let store = new Store();
 export let handleErrorResponse = store.handleErrorResponse;
 
 export default store;
-</script>

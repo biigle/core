@@ -5,7 +5,7 @@ import LabelTree from './components/labelTree.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import ManualLabelForm from './components/manualLabelForm.vue';
 import WormsLabelForm from './components/wormsLabelForm.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import {randomColor} from './utils.js';
 import {Tabs, Tab} from 'uiv';
 

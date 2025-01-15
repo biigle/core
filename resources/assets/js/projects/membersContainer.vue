@@ -8,7 +8,7 @@ import LoaderMixin from '@/core/mixins/loader.vue';
 import MemberList from './components/memberList.vue';
 import {Modal, Popover} from 'uiv';
 import ProjectsApi from '@/core/api/projects.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],

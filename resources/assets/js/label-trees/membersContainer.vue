@@ -5,7 +5,7 @@ import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import MemberList from '@/projects/components/memberList.vue';
 import {Popover} from 'uiv';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The panel for editing the members of a label tree

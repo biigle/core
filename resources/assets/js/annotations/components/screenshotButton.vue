@@ -1,6 +1,6 @@
 <script>
 import Events from '@/core/events.js';
-import Messages from '@/core/messages/store.vue';
+import Messages from '@/core/messages/store.js';
 import Keyboard from '@/core/keyboard.js';
 
 /**

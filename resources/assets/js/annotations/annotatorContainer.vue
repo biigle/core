@@ -12,7 +12,7 @@ import Keyboard from '@/core/keyboard.js';
 import LabelFilter from './models/LabelAnnotationFilter.vue';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
-import Messages from '@/core/messages/store.vue';
+import Messages from '@/core/messages/store.js';
 import SessionFilter from './models/SessionAnnotationFilter.vue';
 import Settings from './stores/settings.js';
 import SettingsTab from './components/settingsTab.vue';
@@ -23,7 +23,7 @@ import UserFilter from './models/UserAnnotationFilter.vue';
 import VolumeImageAreaApi from './api/volumes.js';
 import {CrossOriginError} from './stores/images.vue';
 import {debounce} from '@/core/utils.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 
 /**

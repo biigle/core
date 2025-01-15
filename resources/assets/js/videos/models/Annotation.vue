@@ -1,5 +1,5 @@
 <script>
-import Messages from '@/core/messages/store.vue';
+import Messages from '@/core/messages/store.js';
 import VideoAnnotationApi from '../api/videoAnnotations.js';
 import {getRoundToPrecision} from '../utils.js';
 import {interpolate} from 'polymorph-js';

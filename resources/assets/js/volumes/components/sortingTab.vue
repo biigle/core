@@ -1,7 +1,7 @@
 <script>
 import LoaderMixin from '@/core/mixins/loader.vue';
 import SorterStore from '../stores/sorters.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * View model for the volume sorting tab

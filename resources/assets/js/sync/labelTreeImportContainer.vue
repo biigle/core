@@ -2,7 +2,7 @@
 import ImportApi from './api/import.js';
 import ImportContainer from './mixins/importContainer.vue';
 import LabelTreeImportContainer from './mixins/labelTreeImportContainer.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * View model for the label tree import container

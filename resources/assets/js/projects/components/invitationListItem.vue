@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import Messages from '@/core/messages/store.vue';
+import Messages from '@/core/messages/store.js';
 
 export default {
     props: {

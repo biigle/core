@@ -2,7 +2,7 @@
 import LabelTreeDiff from './components/labelTreeDiff.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import MergeLabelTreesApi from './api/mergeLabelTrees.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The merge label trees tool.

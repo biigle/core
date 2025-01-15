@@ -11,7 +11,7 @@ import LabelTreeVersionApi from '@/core/api/labelTreeVersion.js';
 import LoaderBlockComponent from '@/core/components/loaderBlock.vue';
 import LoaderComponent from '@/core/components/loader.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import Messages from '@/core/messages/store.vue';
+import Messages from '@/core/messages/store.js';
 import NotificationsApi from '@/core/api/notifications.js';
 import NotificationSettingsMixin from '@/core/mixins/notificationSettings.vue';
 import PowerToggleComponent from '@/core/components/powerToggle.vue';

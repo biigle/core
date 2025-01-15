@@ -3,7 +3,7 @@ import FiltersStore from '../stores/filters.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import {capitalize} from '@/core/utils.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 
 /**

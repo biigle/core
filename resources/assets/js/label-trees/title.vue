@@ -3,8 +3,8 @@ import {Dropdown} from 'uiv';
 import EditorMixin from '@/core/mixins/editor.vue';
 import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import Messages from '@/core/messages/store.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import Messages from '@/core/messages/store.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The panel for editing the title information of a label tree

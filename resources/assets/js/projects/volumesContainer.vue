@@ -6,7 +6,7 @@ import PreviewThumbnail from './components/previewThumbnail.vue';
 import statisticsModal from './components/statisticsModal.vue';
 import ProjectsApi from '@/core/api/projects.js';
 import Typeahead from '@/core/components/typeahead.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 const SORTING = {
     DATE_DOWN: 'date-down',

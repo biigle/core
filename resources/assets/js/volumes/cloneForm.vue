@@ -2,7 +2,7 @@
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Typeahead from '@/core/components/typeahead.vue';
 import FileItem from './components/filePanelItem.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import VolumeApi from '@/volumes/api/volumes.js'
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import {urlParams as UrlParams} from '@/core/utils.js';

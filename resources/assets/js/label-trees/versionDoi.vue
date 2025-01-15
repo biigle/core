@@ -1,7 +1,7 @@
 <script>
 import LabelTreeVersionApi from '@/core/api/labelTreeVersion.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The panel for editing the information of a label tree version

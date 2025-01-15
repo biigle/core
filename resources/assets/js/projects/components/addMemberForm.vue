@@ -42,7 +42,7 @@
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Typeahead from '@/core/components/typeahead.vue';
 import UsersApi from '@/core/api/users.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],

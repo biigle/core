@@ -59,7 +59,7 @@
 import DatepickerDropdown from '../../uiv/datepickerDropdown.vue';
 import InvitationApi from '../api/projectInvitations.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],

@@ -2,7 +2,7 @@ import FilterList from '../components/filterListComponent.vue';
 import FilterSelect from '../components/filterSelectComponent.vue';
 import LabelTypeahead from '@/label-trees/components/labelTypeahead.vue';
 import VolumesApi from '../api/volumes.js';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 let imageLabelsFilter = {
     id: 'fileLabels',

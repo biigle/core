@@ -7,7 +7,7 @@ import Keyboard from '@/core/keyboard.js';
 import LabelAnnotationFilter from '@/annotations/models/LabelAnnotationFilter.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import Messages from '@/core/messages/store.vue';
+import Messages from '@/core/messages/store.js';
 import Settings from './stores/settings.js';
 import SettingsTab from './components/settingsTab.vue';
 import ShapeAnnotationFilter from '@/annotations/models/ShapeAnnotationFilter.vue';
@@ -19,7 +19,7 @@ import VideoApi from './api/videos.js';
 import VideoLabelsTab from './components/videoLabelsTab.vue';
 import VideoScreen from './components/videoScreen.vue';
 import VideoTimeline from './components/videoTimeline.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 
 class VideoError extends Error {}

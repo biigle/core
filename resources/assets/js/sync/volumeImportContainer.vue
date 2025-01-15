@@ -4,7 +4,7 @@ import ImportContainer from './mixins/importContainer.vue';
 import LabelTreeImportContainer from './mixins/labelTreeImportContainer.vue';
 import ProjectsApi from '@/core/api/projects.js';
 import Typeahead from '@/core/components/typeahead.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * View model for the volume import container

@@ -1,7 +1,7 @@
 <script>
 import NotificationsApi from '../api/notifications.js';
 import Store from './store.vue';
-import Messages from '../messages/store.vue';
+import Messages from '../messages/store.js';
 
 /**
  * The notification list.

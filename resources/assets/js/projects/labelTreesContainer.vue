@@ -4,7 +4,7 @@ import LabelTreeList from './components/labelTreeList.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import ProjectsApi from '@/core/api/projects.js';
 import Typeahead from '@/core/components/typeahead.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],

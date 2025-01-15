@@ -27,7 +27,7 @@ import VideoLabelsApi from '../api/videoLabels.js';
 import LabelList from './fileLabelList.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import PreviewThumbnail from '../../projects/components/previewThumbnail.vue';
-import {handleErrorResponse} from '@/core/messages/store.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * A variant of the image grid image used to display volume images
