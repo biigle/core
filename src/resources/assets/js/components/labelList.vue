@@ -36,7 +36,7 @@ export default {
     },
     watch: {
         labels() {
-            this.labelItems =  {...this.labels}
+            this.labelItems =  this.labels;
             this.annotationBadgeCount = Object.values(this.labels).reduce((acc, l) => {
                 return acc + l.count;
             }, 0);

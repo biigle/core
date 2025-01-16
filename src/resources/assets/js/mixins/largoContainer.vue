@@ -538,7 +538,7 @@ export default {
         },
         parseResponse(responses) {
             let res = responses[0].body.length > 0 ? responses[0] : responses[1];
-            // Map API-labels to LabelTree-labels to enable synchronous label selection
+            // Map API-labels to LabelTree-labels to enable label selection between tabs
             this.annotationLabels = res.body.reduce((labelsObj, l) => {
                 let tIdx = this.labelTreesIndex[l.label_tree_id].index;
                 let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
