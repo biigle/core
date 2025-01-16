@@ -57,6 +57,7 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
 import LabelTree from './labelTree.vue';
+import mitt from 'mitt';
 import Typeahead from './labelTypeahead.vue';
 import {MAX_FAVOURITES} from '../constants.js';
 
@@ -190,23 +191,28 @@ export default {
         handleSelect(label, e) {
             if (label) {
                 this.$emit('select', label, e);
+                this.events.emit('select', {label, e});
             }
         },
         handleDeselect(label, e) {
             this.$emit('deselect', label, e);
+            this.events.emit('deselect', {label, e});
         },
         clear() {
             this.$emit('clear');
+            this.events.emit('clear');
         },
         handleAddFavourite(label) {
             if (this.canHaveMoreFavourites) {
                 this.$emit('add-favourite', label);
+                this.events.emit('add-favourite', label);
                 this.favourites.push(label);
                 this.updateFavouriteStorage();
             }
         },
         handleRemoveFavourite(label) {
             this.$emit('remove-favourite', label);
+            this.events.emit('remove-favourite', label);
             let index = this.favourites.indexOf(label);
             if (index !== -1) {
                 this.favourites.splice(index, 1);
@@ -224,6 +230,9 @@ export default {
             if (this.favourites[index]) {
                 this.handleSelect(this.favourites[index]);
             }
+        },
+        on(key, fn) {
+            this.events.on(key, fn);
         },
     },
     watch: {
@@ -251,7 +260,9 @@ export default {
         }
 
     },
-
+    created() {
+        this.events = mitt();
+    },
     mounted() {
         if (this.showFavourites) {
             let favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));

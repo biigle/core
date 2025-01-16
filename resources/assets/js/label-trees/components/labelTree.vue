@@ -225,9 +225,15 @@ export default {
         },
         emitSelect(label, e) {
             this.$emit('select', label, e);
+            if (this.standalone) {
+                this.selectLabel({label, e});
+            }
         },
         emitDeselect(label, e) {
             this.$emit('deselect', label, e);
+            if (this.standalone) {
+                this.deselectLabel({label, e});
+            }
         },
         emitSave(label, reject) {
             this.$emit('save', label, reject);
@@ -247,12 +253,13 @@ export default {
             }
             return this.allowSelectChildren && e.ctrlKey;
         },
-        selectLabel(label, e) {
+        selectLabel(args) {
+            const {label, e} = args;
             if (!this.multiselect) {
                 this.clearSelectedLabels();
             }
 
-            // The selected label does not nessecarily belong to this label tree since
+            // The selected label does not neccesarily belong to this label tree since
             // the tree may be displayed in a label-trees component with other trees.
             if (label && this.hasLabel(label.id)) {
                 label.selected = true;
@@ -278,7 +285,8 @@ export default {
                 }
             }
         },
-        deselectLabel(label, e) {
+        deselectLabel(args) {
+            const {label, e} = args;
             if (this.hasLabel(label.id)) {
                 label.selected = false;
 
@@ -352,16 +360,13 @@ export default {
         // tree. In a label-trees component only one label can be selected in all label
         // trees so the parent handles the event. A single label tree handles the event
         // by itself.
-        if (this.standalone) {
-            this.$on('select', this.selectLabel);
-            this.$on('deselect', this.deselectLabel);
-        } else {
-            this.$parent.$on('select', this.selectLabel);
-            this.$parent.$on('deselect', this.deselectLabel);
-            this.$parent.$on('clear', this.clearSelectedLabels);
+        if (!this.standalone) {
+            this.$parent.on('select', this.selectLabel);
+            this.$parent.on('deselect', this.deselectLabel);
+            this.$parent.on('clear', this.clearSelectedLabels);
             // Label favourites only work with the label-trees component.
-            this.$parent.$on('add-favourite', this.addFavouriteLabel);
-            this.$parent.$on('remove-favourite', this.removeFavouriteLabel);
+            this.$parent.on('add-favourite', this.addFavouriteLabel);
+            this.$parent.on('remove-favourite', this.removeFavouriteLabel);
         }
     },
 };
