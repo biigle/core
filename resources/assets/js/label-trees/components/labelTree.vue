@@ -1,14 +1,45 @@
 <template>
     <div class="label-tree">
-        <h4 class="label-tree__title" v-if="showTitle">
-            <button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle" type="button">
-                <span v-if="collapsed" class="fa fa-chevron-down" aria-hidden="true"></span>
+        <h4
+            v-if="showTitle"
+            class="label-tree__title"
+            >
+            <button
+                v-if="collapsible"
+                @click.stop="collapse"
+                class="btn btn-default btn-xs pull-right"
+                :title="collapseTitle"
+                type="button"
+                >
+                <span
+                    v-if="collapsed"
+                    class="fa fa-chevron-down"
+                    aria-hidden="true"
+                    ></span>
                 <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
             </button>
             {{name}}
         </h4>
-        <ul v-if="!collapsed" class="label-tree__list">
-            <label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" :showFavouriteShortcuts="showFavouriteShortcuts" v-for="(label, index) in rootLabels" :position="index" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+        <ul
+            v-if="!collapsed"
+            class="label-tree__list"
+            >
+            <label-tree-label
+                v-for="(label, index) in rootLabels"
+                :key="label.id"
+                :label="label"
+                :editable="editable"
+                :show-favourites="showFavourites"
+                :flat="flat"
+                :showFavouriteShortcuts="showFavouriteShortcuts"
+                :position="index"
+                @select="emitSelect"
+                @deselect="emitDeselect"
+                @save="emitSave"
+                @delete="emitDelete"
+                @add-favourite="emitAddFavourite"
+                @remove-favourite="emitRemoveFavourite"
+                ></label-tree-label>
             <li v-if="hasNoLabels" class="text-muted">No labels</li>
         </ul>
     </div>

@@ -1,12 +1,55 @@
 <template>
     <div class="label-trees">
-        <div v-if="typeahead || clearable" class="label-trees__head">
-            <button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
-            <typeahead ref="typeaheadInput" v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
+        <div
+            v-if="typeahead || clearable"
+            class="label-trees__head"
+            >
+            <button
+                v-if="clearable"
+                @click="clear"
+                class="btn btn-default"
+                title="Clear selected labels"
+                type="button"
+                >
+                <span class="fa fa-times fa-fw" aria-hidden="true"></span>
+            </button>
+            <typeahead
+                ref="typeaheadInput"
+                v-if="typeahead"
+                more-info="tree.versionedName"
+                placeholder="Find label"
+                :items="labels"
+                @select="handleSelect"
+                ></typeahead>
         </div>
         <div class="label-trees__body">
-            <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :showFavouriteShortcuts="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
-            <label-tree v-for="tree in trees" :key="tree.id" :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>
+            <label-tree
+                v-if="hasFavourites"
+                name="Favourites"
+                :labels="favourites"
+                :show-favourites="showFavourites"
+                :flat="true"
+                :showFavouriteShortcuts="true"
+                :collapsible="collapsible"
+                @select="handleSelect"
+                @deselect="handleDeselect"
+                @remove-favourite="handleRemoveFavourite"
+                ></label-tree>
+            <label-tree
+                v-for="tree in trees"
+                :key="tree.id"
+                :name="tree.versionedName"
+                :labels="tree.labels"
+                :multiselect="multiselect"
+                :allow-select-siblings="allowSelectSiblings"
+                :allow-select-children="allowSelectChildren"
+                :show-favourites="showFavourites"
+                :collapsible="collapsible"
+                @select="handleSelect"
+                @deselect="handleDeselect"
+                @add-favourite="handleAddFavourite"
+                @remove-favourite="handleRemoveFavourite"
+                ></label-tree>
         </div>
     </div>
 </template>
@@ -23,6 +66,9 @@ import {MAX_FAVOURITES} from '../constants.js';
  * @type {Object}
  */
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
     components: {
         typeahead: Typeahead,
         labelTree: LabelTree,
@@ -183,6 +229,7 @@ export default {
     watch: {
         trees: {
             immediate: true,
+            deep: true,
             handler(trees) {
                 trees.forEach(function (tree) {
                     if (tree.version) {
