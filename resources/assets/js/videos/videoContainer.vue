@@ -553,11 +553,9 @@ export default {
         },
         fetchVideoContent(video) {
             let videoPromise = new Vue.Promise((resolve) => {
-                this.video.addEventListener('canplay', () => {
-                    this.checkCORSProperty();
-                    resolve();
-                });
+                this.video.addEventListener('canplay', resolve);
             });
+            videoPromise.then(this.checkCORSProperty);
             let annotationPromise = VideoAnnotationApi.query({id: video.id});
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
