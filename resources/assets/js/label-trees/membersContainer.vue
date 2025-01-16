@@ -29,7 +29,10 @@ export default {
     },
     computed: {
         hasMembers() {
-            return this.members.length !== 0;
+            return this.membersCount !== 0;
+        },
+        membersCount() {
+            return this.members.length;
         },
     },
     methods: {
@@ -72,8 +75,8 @@ export default {
         },
     },
     watch: {
-        members(members) {
-            Events.emit('label-trees.members.count', members.length)
+        membersCount(count) {
+            Events.emit('label-trees.members.count', count);
         },
     },
     created() {

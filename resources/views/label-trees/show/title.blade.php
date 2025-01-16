@@ -52,10 +52,16 @@
             </div>
         </form>
         <h2 v-else class="limit-text">
-            <span v-text="name">{{$tree->name}}</span>
+            <span v-if="false">{{$tree->name}}</span>
+            <span v-text="name" v-cloak></span>
             <small class="label label-default label-hollow" @if(!$private) v-cloak @endif title="This label tree is private" v-if="isPrivate">Private</small>
-            <span v-if="hasDescription" @if(!$tree->description) v-cloak @endif>
-                <br><small v-text="description">{{$tree->description}}</small>
+            @if ($tree->description)
+                <span v-if="false">
+                    <br><small>{{$tree->description}}</small>
+                </span>
+            @endif
+            <span v-if="hasDescription" v-cloak>
+                <br><small v-text="description"></small>
             </span>
         </h2>
     @else

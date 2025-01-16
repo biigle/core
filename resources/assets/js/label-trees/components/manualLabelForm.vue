@@ -7,7 +7,8 @@ import LabelFormComponent from '../mixins/labelFormComponent.vue';
  * @type {Object}
  */
 export default {
-    mixins: [LabelFormComponent],
+    template: '#manual-label-form-template',
+    extends: LabelFormComponent,
     methods: {
         submit() {
             let label = {

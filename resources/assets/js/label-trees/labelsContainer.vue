@@ -37,6 +37,9 @@ export default {
         editable() {
             return !this.loading && this.canEdit;
         },
+        labelCount() {
+            return this.labels.length;
+        },
     },
     methods: {
         saveLabel(label, reject) {
@@ -124,8 +127,8 @@ export default {
         },
     },
     watch: {
-        labels(labels) {
-            Events.emit('label-trees.labels.count', labels.length)
+        labelCount(count) {
+            Events.emit('label-trees.labels.count', count);
         },
     },
     created() {

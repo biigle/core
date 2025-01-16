@@ -10,7 +10,8 @@ import {handleErrorResponse} from '@/core/messages/store.js';
  * @type {Object}
  */
 export default {
-    mixins: [LabelFormComponent],
+    template: '#worms-label-form-template',
+    extends: LabelFormComponent,
     components: {
         wormsResultItem: WormsResultItem,
     },
