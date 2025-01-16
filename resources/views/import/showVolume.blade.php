@@ -3,7 +3,7 @@
 @section('title', 'Volume Import')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('sync.importToken', '{{$token}}');
     biigle.$declare('sync.volumeCandidates', {!!$volumeCandidates->toJson()!!});
     biigle.$declare('sync.labelTreeCandidates', {!!$labelTreeCandidates->toJson()!!});

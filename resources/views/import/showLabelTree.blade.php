@@ -3,7 +3,7 @@
 @section('title', 'Label Tree Import')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('sync.importToken', '{{$token}}');
     biigle.$declare('sync.labelTreeCandidates', {!!$labelTreeCandidates->toJson()!!});
     biigle.$declare('sync.importLabels', {!!$importLabels->toJson()!!});

@@ -3,7 +3,7 @@
 @section('title', 'User Import')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('sync.importToken', '{{$token}}');
     biigle.$declare('sync.importCandidates', {!!$importCandidates->toJson()!!});
 </script>

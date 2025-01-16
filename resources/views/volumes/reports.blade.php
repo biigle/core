@@ -3,7 +3,7 @@
 @section('title', "Reports for {$volume->name}")
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('reports.volumeId', {!! $volume->id !!});
     biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
     biigle.$declare('reports.labelTrees', {!! $labelTrees !!});

@@ -3,7 +3,7 @@
 @section('title', 'Export')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('sync.mediaTypes', {!! $mediaTypes !!});
     biigle.$declare('sync.exportApiUrl', '{{url('api/v1/export')}}');
     biigle.$declare('sync.allowedExports', {!!json_encode($allowedExports)!!});
