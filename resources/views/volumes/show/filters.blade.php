@@ -1,4 +1,18 @@
-<filter-tab v-cloak :volume-id="volumeId" :file-ids="fileIds" :show-filenames="showFilenames" :loading-filenames="loadingFilenames" :type="type" v-on:loading="toggleLoading" v-on:update="updateFilterSequence" v-on:enable-filenames="enableFilenames" v-on:disable-filenames="disableFilenames" inline-template>
+<filter-tab
+    v-cloak
+    :volume-id="volumeId"
+    :file-ids="fileIds"
+    :show-filenames="showFilenames"
+    :loading-filenames="loadingFilenames"
+    :type="type"
+    v-on:loading="toggleLoading"
+    v-on:update="updateFilterSequence"
+    v-on:enable-filenames="enableFilenames"
+    v-on:disable-filenames="disableFilenames"
+    ></filter-tab>
+
+@push('scripts')
+<script type="text/html" id="filter-tab-template">
     <div class="filter-tab">
         <div class="filter-tab__buttons">
             <div class="btn-group" role="group">
@@ -43,4 +57,5 @@
 
         <power-toggle :active="showFilenames" title="Show the filename of each file" v-on:on="enableFilenames" v-on:off="disableFilenames">Show filenames</power-toggle> <loader :active="loadingFilenames"></loader>
     </div>
-</filter-tab>
+</script>
+@endpush

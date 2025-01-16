@@ -79,7 +79,7 @@ export default {
             positioning: this.positioning,
         });
     },
-    beforeDestroy() {
+    beforeUnmount() {
         this.$parent.map.removeOverlay(this.overlay);
     },
 };

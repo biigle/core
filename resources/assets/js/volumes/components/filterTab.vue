@@ -10,6 +10,10 @@ import {handleErrorResponse} from '@/core/messages/store.js';
  * View model for the volume filter tab
  */
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
+    template: "#filter-tab-template",
     mixins: [LoaderMixin],
     components: {
         powerToggle: PowerToggle,
@@ -249,8 +253,11 @@ export default {
         },
     },
     watch: {
-        sequence() {
-            this.emitUpdate();
+        sequence: {
+            deep: true,
+            handler() {
+                this.emitUpdate();
+            },
         },
         mode() {
             this.emitUpdate();
@@ -269,6 +276,7 @@ export default {
             }
         },
         rules: {
+            deep: true,
             handler() {
                 if (this.rules.length > 0) {
                     localStorage.setItem(
@@ -279,7 +287,6 @@ export default {
                     localStorage.removeItem(this.rulesStorageKey);
                 }
             },
-            deep: true,
         },
     },
     created() {

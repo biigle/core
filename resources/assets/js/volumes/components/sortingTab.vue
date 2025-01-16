@@ -7,6 +7,10 @@ import {handleErrorResponse} from '@/core/messages/store.js';
  * View model for the volume sorting tab
  */
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
+    template: '#sorting-tab-template',
     mixins: [LoaderMixin],
     props: {
         volumeId: {
@@ -109,18 +113,20 @@ export default {
         },
     },
     watch: {
-        sequence() {
-            this.$emit('update', this.sequence, this.isActive);
-        },
-        privateSequence() {
-            if (this.activeSorter === this.defaultSorter.id) {
-                localStorage.removeItem(this.sorterStorageKey);
-            } else {
-                localStorage.setItem(this.sorterStorageKey, JSON.stringify({
-                    id: this.activeSorter,
-                    sequence: this.privateSequence,
-                }));
-            }
+        privateSequence: {
+            deep: true,
+            handler() {
+                if (this.activeSorter === this.defaultSorter.id) {
+                    localStorage.removeItem(this.sorterStorageKey);
+                } else {
+                    localStorage.setItem(this.sorterStorageKey, JSON.stringify({
+                        id: this.activeSorter,
+                        sequence: this.privateSequence,
+                    }));
+                }
+
+                this.$emit('update', this.sequence, this.isActive);
+            },
         },
         direction() {
             if (this.direction) {
@@ -128,6 +134,8 @@ export default {
             } else {
                 localStorage.setItem(this.directionStorageKey, this.direction);
             }
+
+            this.$emit('update', this.sequence, this.isActive);
         },
     },
     created() {

@@ -27,6 +27,9 @@ let transformUuid = function (uuid) {
  * forEach method or set local variables wherever we can.
  */
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
     mixins: [LoaderMixin],
     components: {
         sidebar: Sidebar,
@@ -213,31 +216,34 @@ export default {
         },
     },
     watch: {
-        fileIdsToShow(fileIdsToShow) {
-            // If the shown files differ from the default sequence, store them for
-            // the annotation tool.
-            let fileIds = this.fileIds;
-            let equal = fileIdsToShow.length === fileIds.length;
+        fileIdsToShow: {
+            deep: true,
+            handler(fileIdsToShow) {
+                // If the shown files differ from the default sequence, store them for
+                // the annotation tool.
+                let fileIds = this.fileIds;
+                let equal = fileIdsToShow.length === fileIds.length;
 
-            if (equal) {
-                for (let i = fileIdsToShow.length - 1; i >= 0; i--) {
-                    if (fileIdsToShow[i] !== fileIds[i]) {
-                        equal = false;
-                        break;
+                if (equal) {
+                    for (let i = fileIdsToShow.length - 1; i >= 0; i--) {
+                        if (fileIdsToShow[i] !== fileIds[i]) {
+                            equal = false;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (equal) {
-                localStorage.removeItem(this.filesStorageKey);
-            } else {
-                localStorage.setItem(
-                    this.filesStorageKey,
-                    JSON.stringify(fileIdsToShow)
-                );
-            }
+                if (equal) {
+                    localStorage.removeItem(this.filesStorageKey);
+                } else {
+                    localStorage.setItem(
+                        this.filesStorageKey,
+                        JSON.stringify(fileIdsToShow)
+                    );
+                }
 
-            FilesStore.count = fileIdsToShow.length;
+                FilesStore.count = fileIdsToShow.length;
+            },
         },
         showFilenames(show) {
             this.settings.set('showFilenames', show);

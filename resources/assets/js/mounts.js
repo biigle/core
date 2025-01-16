@@ -17,4 +17,4 @@ mount('messages-display', MessagesDisplay);
 mount('notifications-list', NotificationsList);
 mount('notifications-unread-count', NotificationsUnreadCount);
 mount('register-form', RegisterForm);
-mount('navbar', Navbar);
+mount('navbar-right', Navbar);

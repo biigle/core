@@ -121,7 +121,7 @@ export default {
             this.timeout = setTimeout(() => this.getBlob().then(this.gotBlob), 50);
         }
     },
-    beforeDestroy() {
+    beforeUnmount() {
         clearTimeout(this.timeout);
     },
 };

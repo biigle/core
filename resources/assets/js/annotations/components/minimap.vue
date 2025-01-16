@@ -193,7 +193,7 @@ export default {
         // the annotation map is already there.
         this.updateViewport();
     },
-    beforeDestroy() {
+    beforeUnmount() {
         let map = this.$parent.map;
         this.mapView.un('change:center', this.updateViewport);
         this.mapView.un('change:resolution', this.updateViewport);

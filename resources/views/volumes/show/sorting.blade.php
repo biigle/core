@@ -1,4 +1,14 @@
-<sorting-tab v-cloak :volume-id="volumeId" :file-ids="fileIds" :type="type" v-on:loading="toggleLoading" v-on:update="updateSortingSequence" inline-template>
+<sorting-tab
+    v-cloak
+    :volume-id="volumeId"
+    :file-ids="fileIds"
+    :type="type"
+    v-on:loading="toggleLoading"
+    v-on:update="updateSortingSequence"
+    ></sorting-tab>
+
+@push('scripts')
+<script type="text/html" id="sorting-tab-template">
     <div class="sorting-tab">
         <div class="sorting-tab__buttons">
             <div class="btn-group" role="group">
@@ -14,4 +24,5 @@
             <component :is="sorter.component" :active-sorter="activeSorter" v-on:select="handleSelect" v-for="sorter in sorters" :key="sorter.id"></component>
         </div>
     </div>
-</sorting-tab>
+</script>
+@endpush
