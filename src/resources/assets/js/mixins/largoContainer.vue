@@ -221,7 +221,6 @@ export default {
             annotations = annotations.sort((a, b) => b.id - a.id);
 
             Vue.set(this.annotationsCache, label.id, annotations);
-            
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
