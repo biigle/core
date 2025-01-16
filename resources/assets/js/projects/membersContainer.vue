@@ -56,6 +56,9 @@ export default {
 
             return this.invitationQrUrl.replace('{id}', id);
         },
+        membersCount() {
+            return this.members.length;
+        },
     },
     methods: {
         attachMember(user) {
@@ -112,8 +115,8 @@ export default {
         },
     },
     watch: {
-        members(members) {
-            Events.emit('project.members.count', members.length)
+        membersCount(count) {
+            Events.emit('project.members.count', count);
         },
     },
     created() {
