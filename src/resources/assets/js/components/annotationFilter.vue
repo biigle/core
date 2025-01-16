@@ -154,7 +154,7 @@ export default {
       this.selectedFilterValue[1] = +this.selectedFilterValue[1];
       if (this.negate) {
         logicalString = "is not";
-        if (this.selectedFilterValue > 0){
+        if (this.selectedFilterValue[1] > 0){
           this.selectedFilterValue[1] = -this.selectedFilterValue[1];
         }
       } else {
