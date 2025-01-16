@@ -150,9 +150,13 @@ export default {
       }
       let logicalString;
 
+      //convert to integer
+      this.selectedFilterValue[1] = +this.selectedFilterValue[1];
       if (this.negate) {
         logicalString = "is not";
-        this.selectedFilterValue[1] = -this.selectedFilterValue[1];
+        if (this.selectedFilterValue > 0){
+          this.selectedFilterValue[1] = -this.selectedFilterValue[1];
+        }
       } else {
         logicalString = "is";
       }
