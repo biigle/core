@@ -194,7 +194,7 @@ export default {
                     parameters[filter.filter].push(filter.value);
                 }
             )
-            parameters['union'] = union;
+            parameters['union'] = union ? 1 : 0;
             return parameters
         },
         getAnnotations(label, filters, union) {
@@ -236,7 +236,7 @@ export default {
                         handleErrorResponse
                     ).finally(this.finishLoading);
                 } else {
-                    promise1 = this.queryAnnotations(label).then(
+                    promise1 = this.queryAnnotations(label, {}).then(
                         (response) => this.gotAnnotations(label, labelFilterCombination, response),
                             handleErrorResponse
                     )}
