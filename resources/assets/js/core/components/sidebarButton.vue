@@ -1,5 +1,12 @@
 <template>
-    <a :href="href" :disabled="disabled" class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">
+    <a
+        class="sidebar__button btn btn-default btn-lg"
+        :href="href"
+        :disabled="disabled"
+        :class="classObject"
+        :title="tab.title"
+        @click.prevent="handleClick"
+        >
         <span v-if="open" :class="chevronClass" aria-hidden="true"></span>
         <span v-else :class="iconClass" aria-hidden="true"></span>
     </a>
@@ -51,7 +58,7 @@ export default {
             return obj;
         },
         disabled() {
-            return this.tab.disabled;
+            return this.tab.disabled ? true : null;
         },
         href() {
             return this.disabled ? null : this.tab.href;
@@ -61,15 +68,9 @@ export default {
         },
     },
     methods: {
-        toggle(e) {
+        handleClick() {
             if (this.disabled || this.href) return;
-
-            e.preventDefault();
-            if (this.open) {
-                this.$parent.$emit('close', this.tab.name);
-            } else {
-                this.$parent.$emit('open', this.tab.name);
-            }
+            this.$emit('click', this.tab.name);
         },
     },
 };
