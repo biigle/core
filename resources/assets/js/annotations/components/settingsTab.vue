@@ -36,10 +36,6 @@ export default {
             type: Number,
             default: -1,
         },
-        map: {
-            type: Object,
-            default: null,
-        }
     },
     data() {
         return {

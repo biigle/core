@@ -100,7 +100,6 @@ export default {
             disableJobTracking: false,
             supportsJumpByFrame: false,
             hasCrossOriginError: false,
-            map: null,
             videosObj: null,
         };
     },
@@ -770,7 +769,7 @@ export default {
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
 
-        this.map = this.$refs.videoScreen.map;
+        Events.$emit('videos.map.init', this.$refs.videoScreen.map);
     },
 };
 </script>

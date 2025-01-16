@@ -4,7 +4,6 @@
     :image="image"
     :current-id="imageId"
     :images-obj="imagesObj"
-    :map="map"
     v-on:change="handleSettingsChange"
     inline-template>
         <div class="annotator-tab">
@@ -15,7 +14,7 @@
                     inline-template
                     :current-id="currentId"
                     :files-obj="imagesObj"
-                    :map="map">
+                    >
                     <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                 </screenshot-button>
             </div>

@@ -1,6 +1,7 @@
 <script>
 import Messages from '../../core/messages/store';
 import Keyboard from '../../core/keyboard';
+import Events from '../../core/events';
 
 /**
  * A button that produces a screenshot of the map
@@ -17,10 +18,6 @@ export default {
             type: Number,
             default: -1,
         },
-        map: {
-            type: Object,
-            default: null,
-        }
     },
     computed: {
         filename() {
@@ -149,9 +146,15 @@ export default {
         handleError(message) {
             Messages.danger(message);
         },
+        setMap(map) {
+            this.map = map;
+        },
     },
     created() {
         Keyboard.on('p', this.capture);
+        Events.$on('annotations.map.init', this.setMap);
+        Events.$on('videos.map.init', this.setMap);
     },
+
 };
 </script>

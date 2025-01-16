@@ -87,7 +87,6 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
-            map: null,
             imagesObj: {}
         };
     },
@@ -754,9 +753,7 @@ export default {
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
     },
     mounted() {
-        // Event is used in laserpointer module
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
-        this.map = this.$refs.canvas.map;
     },
 };
 </script>
