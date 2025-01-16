@@ -107,7 +107,7 @@ export default {
             return this.scrollable ? this.maxItemCount : this.limit
         },
         showTypeahead() {
-            return !this.scollable || this.scrollable && !this.isTyping;
+            return !this.scrollable || this.scrollable && !this.isTyping;
         },
     },
     methods: {
