@@ -150,8 +150,11 @@ export default {
         },
     },
     watch: {
-        selectedLabels(labels) {
-            this.options.only_labels = labels.map((label) => label.id);
+        selectedLabels: {
+            deep: true,
+            handler(labels) {
+                this.options.only_labels = labels.map((label) => label.id);
+            },
         },
         hasOnlyLabels(has) {
             if (!has) {
