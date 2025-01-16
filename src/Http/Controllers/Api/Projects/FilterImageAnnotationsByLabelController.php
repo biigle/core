@@ -71,9 +71,15 @@ class FilterImageAnnotationsByLabelController extends Controller
                 } else {
                     array_push($included, intval($filterValue));
                 }}
-            $query->whereIn($filterName, $included);
-            $query->whereNotIn($filterName, $excluded);
-        } else {
+                $query->where(function($query) use ($included, $excluded, $filterName) {
+                    if (count($included)){
+                        $query->whereIn($filterName, $included, 'or');
+                    }
+                    if (count($excluded)){
+                        $query->whereNotIn($filterName, $excluded, 'or');
+                    }
+                });
+            } else {
             foreach ($filters as &$filterValue){
                 if ($filterValue < 0) {
                     $query->whereNot($filterName, intval(abs($filterValue)));
