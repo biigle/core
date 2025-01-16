@@ -9,7 +9,6 @@
         :placeholder="placeholder"
         @focus="emitFocus"
         @blur="emitBlur"
-        @keyup.enter="emitInternalValue"
         >
     <typeahead
         v-show="showTypeahead"
@@ -22,17 +21,17 @@
         item-key="name"
         @selected-item-changed="handleArrowKeyScroll"
         >
-        <template #item="props">
+          <template #item="{ items, activeIndex, select, highlight }">
             <component
-                ref="dropdown"
                 :is="itemComponent"
-                @click.native="emitInternalValue"
-                v-for="(item, index) in props.items"
+                ref="dropdown"
+                v-for="(item, index) in items"
                 :key="index"
-                :props="props"
+                :class="{active: activeIndex === index}"
                 :item="item"
                 :item-key="moreInfo"
-                :class="{active: props.activeIndex === index}"
+                :select="select"
+                :highlightHtml="highlight(item)"
                 >
             </component>
         </template>
@@ -121,15 +120,6 @@ export default {
         emitBlur(e) {
             this.$emit('blur', e);
         },
-        emitInternalValue() {
-            if (typeof this.internalValue === 'object') {
-                this.$emit('input', this.internalValue);
-                this.$emit('select', this.internalValue);
-                if (this.clearOnSelect) {
-                    this.clear();
-                }
-            }
-        },
         handleArrowKeyScroll(index) {
             if (this.scrollable && this.$refs.dropdown[index]) {
                 this.$refs.dropdown[index].$el.scrollIntoView({block: 'nearest'});
@@ -157,7 +147,16 @@ export default {
             if (!this.disabled) {
                 this.$nextTick(() => this.$refs.input.focus())
             }
-        }
+        },
+        internalValue(value) {
+            if (typeof value === 'object') {
+                this.$emit('input', value);
+                this.$emit('select', value);
+                if (this.clearOnSelect) {
+                    this.clear();
+                }
+            }
+        },
     },
     created() {
         this.internalValue = this.value;
