@@ -1,4 +1,4 @@
-<div class="panel panel-default table-responsive">
+<div id="volume-metadata-modal" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Video information</h3>
     </div>
@@ -22,28 +22,38 @@
             </tr>
         @endif
         @if ($video->taken_at)
-            <tr>
-                <th>Created</th>
-                @if (is_array($video->taken_at))
-                    @foreach ($video->taken_at as $value)
-                        <td>{{ $value }}</td>
-                    @endforeach
-                @else
+            @if (is_array($video->taken_at))
+                <metadata-modal v-bind:show-modal="showModal" v-bind:times="times" v-bind:items="items" v-bind:name="name" v-on:load-modal="getTimes({{ collect($video->taken_at) }})" v-on:close-modal="hideMetadataModal"></metadata-modal>
+                <tr>
+                    <th>Created</th>
+                    <td>
+                        <button class="btn btn-default" type="button" title="Show full timestamps" v-on:click.prevent="showTimes()">Show values</button>
+                    </td>
+                </tr>
+                @foreach ($metadata as $field => $value)
+                    <tr>
+                        <th>{{ $metadataMap[$field] }}</th>
+                        @if (is_array($value))
+                            <td>
+                                <button class="btn btn-default" type="button" title="Show full metadata array" v-on:click.prevent="getMetadata({{ json_encode($metadataMap[$field]) }}, {{ collect($value) }})">Show values</button>
+                            </td>
+                        @else
+                            <td>{{ $value }}</td>
+                        @endif
+                    </tr>
+                @endforeach
+            @else
+                <tr>
+                    <th>Created</th>
                     <td>{{ $video->taken_at }}</td>
-                @endif
-            </tr>
-        @endif
-        @foreach ($metadata as $key => $field)
-            <tr>
-                <th>{{ $metadataMap[$key] }}</th>
-                @if (is_array($field))
-                    @foreach ($field as $value)
+                </tr>
+                @foreach ($metadata as $field => $value)
+                    <tr>
+                        <th>{{ $metadataMap[$field] }}</th>
                         <td>{{ $value }}</td>
-                    @endforeach
-                @else
-                    <td>{{ $value }}</td>
-                @endif
-            </tr>
-        @endforeach
+                    </tr>
+                @endforeach
+            @endif
+        @endif
     </table>
 </div>
