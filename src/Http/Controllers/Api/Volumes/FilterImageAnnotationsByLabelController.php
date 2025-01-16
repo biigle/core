@@ -61,14 +61,14 @@ class FilterImageAnnotationsByLabelController extends Controller
     }
 
         /**
-     * Get all image labels with uuids and annotation count for a given volume
+     * Get all image labels and annotation count for a given volume
      * 
      * @api {get} 
      * @apiGroup Volumes
      * @apiName test
      * @apiParam {Number} id The Volume ID
      * @apiPermission user
-     * @apiDescription Returns a collection of project image labels, image UUIDs, and annotation label counts
+     * @apiDescription Returns a collection of project image labels, and annotation label counts
      * 
      * @apiSuccessExample {json} Success response:
      * [{"id":1,
