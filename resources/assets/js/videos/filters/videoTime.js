@@ -11,4 +11,4 @@ export default function videoTime(time) {
     end = Math.round(parseInt(end, 10) / 10).toString(10).padStart(2, '0');
 
     return `${start}.${end}`;
-};
+}

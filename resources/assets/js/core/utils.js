@@ -84,7 +84,7 @@ class UrlParams {
     replaceState(url) {
         history.replaceState(null, null, url);
     }
-};
+}
 
 export let urlParams = new UrlParams();
 

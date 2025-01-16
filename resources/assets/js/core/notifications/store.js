@@ -41,6 +41,6 @@ class Notifications {
             this.initialized = true;
         }
     }
-};
+}
 
 export default new Notifications();

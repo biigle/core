@@ -9,6 +9,8 @@
 </div>
 </template>
 <script>
+import Store from './store.js';
+
 export default {
     props: {
         id: {

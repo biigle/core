@@ -142,6 +142,6 @@ class Annotations {
         return promise;
     }
 
-};
+}
 
 export default new Annotations();

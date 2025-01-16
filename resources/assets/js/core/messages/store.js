@@ -85,7 +85,7 @@ class Store {
     handleResponseError(response) {
         return this.handleErrorResponse(response);
     }
-};
+}
 
 let store = new Store();
 

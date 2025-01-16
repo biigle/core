@@ -377,6 +377,6 @@ class Images {
     setMaxCacheSize(size) {
         this.maxCacheSize = size;
     }
-};
+}
 
 export default new Images();

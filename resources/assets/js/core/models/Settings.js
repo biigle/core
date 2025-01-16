@@ -75,4 +75,4 @@ export default class {
     watch(key, callback) {
         watch(() => this.data[key], callback);
     }
-};
+}
