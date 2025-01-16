@@ -7,11 +7,9 @@ use Carbon\Carbon;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\ProjectTest;
-use Illuminate\Testing\TestResponse;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
-use Symfony\Component\HttpFoundation\Response;
 
 class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 {
@@ -197,14 +195,12 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
     {
         $id = $this->volume()->id;
         $project = ProjectTest::create();
-        $v1 = VideoTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
-        $v2 = VideoTest::create(['volume_id' => $id, 'filename' => 'def.jpg']);
-        $a1 = VideoAnnotationTest::create(['video_id' => $v1]);
-        $a2 = VideoAnnotationTest::create(['video_id' => $v2->id]);
-        $l1 = LabelTest::create();
-        $l2 = LabelTest::create();
-        VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l1->id]);
-        VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l2->id]);
+        $vid = VideoTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
+        $a = VideoAnnotationTest::create(['video_id' => $vid]);
+        $l = LabelTest::create();
+        $expectedLabel = [...$l->get()->toArray()[0], "uuid" => $l->uuid, "count" => 2];
+        VideoAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
 
         $project->volumes()->attach($id);
 
@@ -216,32 +212,10 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->beEditor();
         $response = $this->getJson("/api/v1/volume/{$id}/video-annotations")->assertStatus(200);
+        $content = json_decode($response->getContent())[0];
 
-        ob_start();
-        $response->sendContent();
-        $content = ob_get_clean();
-        $response = new TestResponse(
-            new Response(
-                $content,
-                $response->baseResponse->getStatusCode(),
-                $response->baseResponse->headers->all()
-            )
-        );
-
-        $response->assertJsonFragment([
-            'uuid' => $v1->uuid,
-            'annotation_id' => $a1->id,
-            'label_id' => $l1->id,
-            'label_tree_id' => $l1->label_tree_id
-        ])
-        ->assertJsonFragment([
-            'uuid' => $v2->uuid,
-            'annotation_id' => $a2->id,
-            'label_id' => $l2->id,
-            'label_tree_id' => $l2->label_tree_id
-        ]);
-
-        $this->assertCount(2, json_decode($response->getContent()));
+        $this->assertNotEmpty($content);
+        $this->assertEquals($expectedLabel, (array) $content);
     }
 
     public function testGetVolumeWithoutAnnotationsAnnotationLabels()
@@ -259,18 +233,9 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->beEditor();
         $response = $this->getJson("/api/v1/volume/{$id}/video-annotations")->assertStatus(200);
+        $response = $this->getJson("/api/v1/volume/{$id}/video-annotations")->assertStatus(200);
+        $content = json_decode($response->getContent());
 
-        ob_start();
-        $response->sendContent();
-        $content = ob_get_clean();
-        $response = new TestResponse(
-            new Response(
-                $content,
-                $response->baseResponse->getStatusCode(),
-                $response->baseResponse->headers->all()
-            )
-        );
-
-        $this->assertEmpty(json_decode($response->getContent()));
+        $this->assertEmpty($content);
     }
 }

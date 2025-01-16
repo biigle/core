@@ -84,20 +84,15 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
     public function testGetProjectsAnnotationLabels()
     {
-        $v1 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $vid1 = VideoTest::create(['volume_id' => $v1->id]);
-        $a1 = VideoAnnotationTest::create(['video_id' => $vid1]);
-        $l1 = LabelTest::create();
-        VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l1->id]);
+        $vol = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $vid = VideoTest::create(['volume_id' => $vol->id]);
+        $a = VideoAnnotationTest::create(['video_id' => $vid]);
+        $l = LabelTest::create();
+        $expectedLabel = [...$l->get()->toArray()[0], "uuid" => $l->uuid, "count" => 2];
+        VideoAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
 
-
-        $v2 = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $vid2 = VideoTest::create(['volume_id' => $v2->id]);
-        $a2 = VideoAnnotationTest::create(['video_id' => $vid2->id]);
-        $l2 = LabelTest::create();
-        VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l2->id]);
-
-        $this->project()->volumes()->attach([$v1->id, $v2->id]);
+        $this->project()->volumes()->attach($vol->id);
         $pid = $this->project()->id;
 
         $this->doTestApiRoute('GET', "/api/v1/projects/{$pid}/video-annotations/");
@@ -108,59 +103,10 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->beEditor();
         $response = $this->getJson("/api/v1/projects/{$pid}/video-annotations/")->assertStatus(200);
+        $content = json_decode($response->getContent())[0];
 
-        ob_start();
-        $response->sendContent();
-        $content = ob_get_clean();
-        $response = new TestResponse(
-            new Response(
-                $content,
-                $response->baseResponse->getStatusCode(),
-                $response->baseResponse->headers->all()
-            )
-        );
-
-        $response->assertJsonFragment([
-                'uuid' => $vid1->uuid,
-                'annotation_id' => $a1->id,
-                'label_id' => $l1->id,
-                'label_tree_id' => $l1->label_tree_id
-            ])
-            ->assertJsonFragment([
-                'uuid' => $vid2->uuid,
-                'annotation_id' => $a2->id,
-                'label_id' => $l2->id,
-                'label_tree_id' => $l2->label_tree_id
-            ]);
-
-        $this->assertCount(2, json_decode($response->getContent()));
-    }
-
-    public function testGetEmptyProjectsAnnotationLabels()
-    {
-        $pid = $this->project()->id;
-
-        $this->doTestApiRoute('GET', "/api/v1/projects/{$pid}/image-annotations/");
-
-        $this->beUser();
-        $this->getJson("/api/v1/projects/{$pid}/image-annotations/")
-            ->assertStatus(403);
-
-        $this->beEditor();
-        $response = $this->getJson("/api/v1/projects/{$pid}/image-annotations/")->assertStatus(200);
-
-        ob_start();
-        $response->sendContent();
-        $content = ob_get_clean();
-        $response = new TestResponse(
-            new Response(
-                $content,
-                $response->baseResponse->getStatusCode(),
-                $response->baseResponse->headers->all()
-            )
-        );
-
-        $this->assertEmpty(json_decode($response->getContent()));
+        $this->assertNotEmpty($content);
+        $this->assertEquals($expectedLabel, (array) $content);
     }
 
     public function testGetProjectWithoutAnnotationsAnnotationLabels()
@@ -180,18 +126,8 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 
         $this->beEditor();
         $response = $this->getJson("/api/v1/projects/{$pid}/image-annotations/")->assertStatus(200);
+        $content = json_decode($response->getContent());
 
-        ob_start();
-        $response->sendContent();
-        $content = ob_get_clean();
-        $response = new TestResponse(
-            new Response(
-                $content,
-                $response->baseResponse->getStatusCode(),
-                $response->baseResponse->headers->all()
-            )
-        );
-
-        $this->assertEmpty(json_decode($response->getContent()));
+        $this->assertEmpty($content);
     }
 }
