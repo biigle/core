@@ -65,7 +65,7 @@ export default {
         },
     },
     created() {
-        this.internalValue = this.value;
+        this.internalValue = this.modelValue;
     },
 };
 </script>
