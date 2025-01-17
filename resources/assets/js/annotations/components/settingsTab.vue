@@ -28,7 +28,7 @@ export default {
             type: Object,
             default: null,
         },
-        imagesObj: {
+        imageFileNames: {
             type: Object,
             default: () => {},
         },

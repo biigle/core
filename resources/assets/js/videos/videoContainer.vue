@@ -100,7 +100,7 @@ export default {
             disableJobTracking: false,
             supportsJumpByFrame: false,
             hasCrossOriginError: false,
-            videosObj: null,
+            videoFileNames: null,
         };
     },
     computed: {
@@ -722,7 +722,7 @@ export default {
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
-        this.videosObj = biigle.$require('videos.videosObj');
+        this.videoFileNames = biigle.$require('videos.videosObj');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();

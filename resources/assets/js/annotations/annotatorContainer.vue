@@ -87,7 +87,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
-            imagesObj: {}
+            imageFileNames: {}
         };
     },
     computed: {
@@ -677,7 +677,7 @@ export default {
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
-        this.imagesObj = biigle.$require('annotations.imagesObj');
+        this.imageFileNames = biigle.$require('annotations.imagesObj');
         this.annotationFilters = [
             new LabelFilter(),
             new UserFilter(),

@@ -4,7 +4,7 @@
         :supports-jump-by-frame="supportsJumpByFrame"
         :cross-origin-error="hasCrossOriginError"
         :current-id="videoId"
-        :videos-obj="videosObj"
+        :video-file-names="videoFileNames"
         >
             <div class="annotator-tab settings-tab">
                 <div class="sidebar-tab__section">
@@ -13,7 +13,7 @@
                     v-else
                     inline-template
                     :current-id="currentId"
-                    :files-obj="videosObj"
+                    :file-names="videoFileNames"
                     >
                         <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                     </screenshot-button>

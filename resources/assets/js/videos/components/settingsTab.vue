@@ -17,7 +17,7 @@ export default {
             type: Boolean,
             default: false,
         },
-        videosObj: {
+        videoFileNames: {
             type: Object,
             default: () => {}
         },

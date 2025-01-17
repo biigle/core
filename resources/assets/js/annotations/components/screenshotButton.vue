@@ -10,7 +10,7 @@ import Events from '../../core/events';
  */
 export default {
     props: {
-        filesObj: {
+        fileNames: {
             type: Object,
             default: () => {}
         },
@@ -22,7 +22,7 @@ export default {
     computed: {
         filename() {
             if (this.currentId) {
-                let name = this.filesObj[this.currentId].split('.');
+                let name = this.fileNames[this.currentId].split('.');
                 if (name.length > 1) {
                     name[name.length - 1] = 'png';
                 }
