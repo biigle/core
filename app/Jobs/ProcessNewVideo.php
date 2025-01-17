@@ -111,6 +111,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     public function handleFile($file, $path)
     {
+        if ($this->hasInvalidMoovAtomPosition($path)) {
+            $this->video->error = Video::INVALID_MOOV_POS;
+            $this->video->save();
+            return;
+        }
+
         $this->video->mimeType = File::mimeType($path);
         if (!in_array($this->video->mimeType, Video::MIMES)) {
             $this->video->error = Video::ERROR_MIME_TYPE;
@@ -225,6 +231,20 @@ class ProcessNewVideo extends Job implements ShouldQueue
         }
 
         return $this->ffprobe->streams($url)->videos()->first()->getDimensions();
+    }
+
+    protected function hasInvalidMoovAtomPosition($sourcePath)
+    {
+        // Webm videos don't have a moov atom
+        if (str_ends_with($sourcePath, ".webm")) {
+            return false;
+        }
+
+        $process = Process::forever()
+            ->run("ffprobe -v trace -i '{$sourcePath}'  2>&1 | grep -o -e type:\'mdat\' -e type:\'moov\'")
+            ->throw();
+        $output = explode("\n", $process->output());
+        return !str_contains($output[0], 'moov');
     }
 
     /**
