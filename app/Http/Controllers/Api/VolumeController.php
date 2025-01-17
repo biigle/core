@@ -190,6 +190,7 @@ class VolumeController extends Controller
 
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
+            $copy->creator_id = $request->user()->id;
             $copy->creating_async = true;
             $copy->save();
             if ($volume->hasMetadata()) {

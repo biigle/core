@@ -50,6 +50,10 @@ $router->resource('api-tokens', 'ApiTokenController', [
     'parameters' => ['api-tokens' => 'id'],
 ]);
 
+$router->get('export/users', 'Export\UserExportController@show');
+$router->get('export/label-trees', 'Export\LabelTreeExportController@show');
+$router->get('export/volumes', 'Export\VolumeExportController@show');
+
 $router->resource('federated-search-instances', 'FederatedSearchInstanceController', [
     'only' => ['store', 'update', 'destroy'],
     'parameters' => ['federated-search-instances' => 'id'],
@@ -96,6 +100,10 @@ $router->resource('image-labels', 'ImageLabelController', [
     'parameters' => ['image-labels' => 'id'],
 ]);
 
+$router->resource('import', 'Import\ImportController', [
+    'only' => ['store', 'update', 'destroy'],
+]);
+
 $router->resource('labels', 'LabelController', [
     'only' => ['update', 'destroy'],
     'parameters' => ['labels' => 'id'],
@@ -136,6 +144,10 @@ $router->resource('label-trees.versions', 'LabelTreeVersionController', [
 $router->resource('label-tree-versions', 'LabelTreeVersionController', [
     'only' => ['update', 'destroy'],
     'parameters' => ['label-tree-versions' => 'id'],
+]);
+
+$router->post('label-trees/import', [
+    'uses' => 'Import\PublicLabelTreeImportController@store',
 ]);
 
 $router->resource('media-types', 'MediaTypeController', [
@@ -219,6 +231,10 @@ $router->resource('projects.users', 'ProjectUserController', [
     'parameters' => ['projects' => 'id', 'users' => 'id2'],
 ]);
 
+$router->post('projects/{id}/reports', [
+    'uses' => 'ProjectReportController@store',
+]);
+
 $router->resource('project-invitations', 'ProjectInvitationController', [
     'only' => ['destroy'],
     'parameters' => ['project-invitations' => 'id'],
@@ -231,6 +247,21 @@ $router->get(
     'project-invitations/{id}/qr',
     'ProjectInvitationController@showQrCode'
 );
+
+$router->get('public-export/label-trees/{id}', [
+    'as' => 'get-public-label-tree-export',
+    'uses' => 'Export\PublicLabelTreeExportController@show',
+]);
+
+
+$router->resource('reports', 'ReportsController', [
+    'only' => ['show', 'destroy'],
+    'parameters' => ['reports' => 'id'],
+    'names' => [
+        'show' => 'show-reports',
+        'destroy' => 'destroy-reports',
+    ],
+]);
 
 $router->resource('roles', 'RoleController', [
     'only' => ['index', 'show'],
@@ -321,6 +352,10 @@ $router->post(
     'volumes/{id}/pending-volumes', 'PendingVolumeController@storeVolume'
 );
 
+$router->post('volumes/{id}/reports', [
+    'uses' => 'VolumeReportController@store',
+]);
+
 $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Volumes',
@@ -330,6 +365,18 @@ $router->group([
         $router->get('images/{disk}', 'BrowserController@indexImages');
         $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
+
+    $router->get('{id}/export-area', [
+        'uses' => 'ExportAreaController@show',
+    ]);
+
+    $router->post('{id}/export-area', [
+        'uses' => 'ExportAreaController@store',
+    ]);
+
+    $router->delete('{id}/export-area', [
+        'uses' => 'ExportAreaController@destroy',
+    ]);
 
     $router->get('{id}/files/filter/labels', [
         'uses' => 'Filters\AnyFileLabelController@index',

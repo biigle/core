@@ -164,6 +164,9 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
+        },
+        highlightSettingsTab() {
+            return this.annotationOpacity === 0;
         }
     },
     methods: {
@@ -597,7 +600,10 @@ export default {
         selectLastAnnotation() {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
             this.handleSelectAnnotation(lastAnnotation);
-        }
+        },
+        openSidebarLabels() {
+            this.$refs.sidebar.$emit('open', 'labels');
+        },
     },
     watch: {
         async imageId(id) {

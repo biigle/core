@@ -101,6 +101,7 @@ export default {
             supportsJumpByFrame: false,
             hasCrossOriginError: false,
             videoFileNames: null,
+            focusInputFindlabel: false,
         };
     },
     computed: {
@@ -176,6 +177,9 @@ export default {
         },
         reachedTrackedAnnotationLimit() {
             return this.disableJobTracking;
+        },
+        annotationsAreHidden() {
+            return this.settings.annotationOpacity === 0;
         }
     },
     methods: {
@@ -690,6 +694,16 @@ export default {
         selectLastAnnotation() {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
             this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
+        },
+        openSidebarLabels() {
+            this.$refs.sidebar.$emit('open', 'labels');
+            this.setFocusInputFindLabel()
+        },
+        setFocusInputFindLabel() {
+            this.focusInputFindlabel = false;
+            this.$nextTick(() => {
+                this.focusInputFindlabel = true;
+            });
         }
     },
     watch: {
@@ -756,6 +770,9 @@ export default {
         if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
             this.supportsJumpByFrame = true;
         }
+
+        Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
+
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before
