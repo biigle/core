@@ -233,6 +233,14 @@
                 Advanced configuration of the video annotation tool.
             </p>
 
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'invalid-moov-atom'])}}">Invalid Moov Atom Position</a>
+            </h4>
+
+            <p>
+                Learn how to fix a video's invalid moov atom position.
+            </p>
+
             <h3>Reports</h3>
             <h4>
                 <a href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}">Reports schema</a>

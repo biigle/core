@@ -20,6 +20,10 @@
             <span v-if="hasTooLargeError">
                 The video file is too large.
             </span>
+            <span v-if="hasMoovAtomError">
+                The video's Moov Atom position is invalid.<br>
+                See biigle.de/manual/tutorials/videos/invalid-moov-atom
+            </span>
         </div>
     </div>
 </div>
