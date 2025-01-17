@@ -20,6 +20,10 @@
 import MemberListItem from './memberListItem.vue';
 
 export default {
+    emits: [
+        'remove',
+        'update',
+    ],
     props: {
         members: {
             type: Array,

@@ -8,6 +8,7 @@ import MeasureTooltip from '../measureTooltip.vue';
  * @type {Object}
  */
 export default {
+    emits: ['hoverFeatures'],
     components: {
         labelTooltip: LabelTooltip,
         measureTooltip: MeasureTooltip,

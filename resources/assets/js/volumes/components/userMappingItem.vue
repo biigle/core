@@ -44,6 +44,10 @@
 import Typeahead from '@/core/components/typeahead.vue';
 
 export default {
+    emits: [
+        'select',
+        'select-self',
+    ],
     components: {
         Typeahead,
     },

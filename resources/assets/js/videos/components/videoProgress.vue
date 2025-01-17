@@ -17,6 +17,11 @@
 import Tick from './videoProgressTick.vue';
 
 export default {
+    emits: [
+        'mousemove',
+        'mouseout',
+        'seek',
+    ],
     props: {
         duration: {
             type: Number,

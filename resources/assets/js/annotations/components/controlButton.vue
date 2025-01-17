@@ -28,6 +28,10 @@ import Loader from '@/core/components/loader.vue';
  * @type {Object}
  */
 export default {
+    emits: [
+        'click',
+        'control-button-active',
+    ],
     props: {
         title: {
             type: String,

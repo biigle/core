@@ -37,6 +37,12 @@ import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'seek',
+        'select',
+        'start-resize',
+    ],
     components: {
         currentTime: CurrentTime,
         trackHeaders: TrackHeaders,

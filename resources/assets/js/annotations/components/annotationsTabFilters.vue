@@ -40,6 +40,10 @@
 
 <script>
 export default {
+    emits: [
+        'select',
+        'unselect',
+    ],
     props: {
         annotationFilters: {
             type: Array,

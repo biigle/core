@@ -20,6 +20,7 @@
 import Keyframe from './annotationKeyframe.vue';
 
 export default {
+    emits: ['select'],
     components: {
         keyframe: Keyframe,
     },

@@ -1,5 +1,6 @@
 <script>
 export default {
+    emits: ['remove'],
     props: ['user'],
     computed: {
         name() {

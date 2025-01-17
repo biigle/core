@@ -17,6 +17,17 @@ const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
  * @type {Object}
  */
 export default {
+    emits: [
+        'attach-label',
+        'attaching-active',
+        'delete',
+        'is-invalid-shape',
+        'link-annotations',
+        'modify',
+        'split-annotation',
+        'swap-label',
+        'swapping-active',
+    ],
     data() {
         return {
             // This is no interaction mode because we want the select interaction

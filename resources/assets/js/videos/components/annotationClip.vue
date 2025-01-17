@@ -23,6 +23,10 @@
 import Segment from './annotationSegment.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'select',
+    ],
     components: {
         segment: Segment,
     },

@@ -29,6 +29,12 @@ import PowerToggle from '@/core/components/powerToggle.vue';
  * View model for the volume filter tab
  */
 export default {
+    emits: [
+        'deselect',
+        'disable-labels',
+        'enable-labels',
+        'select',
+    ],
     mixins: [LoaderMixin],
     components: {
         labelTrees: LabelTrees,

@@ -26,6 +26,11 @@ import Keyboard from '../keyboard.js';
  * @type {Object}
  */
 export default {
+    emits: [
+        'close',
+        'open',
+        'toggle',
+    ],
     components: {
         sidebarButton: Button,
     },

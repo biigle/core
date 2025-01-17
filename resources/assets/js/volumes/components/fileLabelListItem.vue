@@ -17,6 +17,7 @@ import {handleErrorResponse} from '@/core/messages/store.js';
  * @type {Object}
  */
 export default {
+    emits: ['deleted'],
     props: {
         item: {
             type: Object,

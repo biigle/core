@@ -3,6 +3,14 @@ import Filters from './annotationsTabFilters.vue';
 import LabelItem from './annotationsTabLabelItem.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'detach',
+        'focus',
+        'select',
+        'select-filter',
+        'unselect-filter',
+    ],
     components: {
         filters: Filters,
         labelItem: LabelItem,

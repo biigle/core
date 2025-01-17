@@ -20,6 +20,7 @@ export let plugins = {};
  * @type {Object}
  */
 export default {
+    emits: ['change'],
     components: {
         screenshotButton: ScreenshotButton,
         powerToggle: PowerToggle,

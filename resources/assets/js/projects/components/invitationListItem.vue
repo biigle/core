@@ -49,6 +49,10 @@
 import Messages from '@/core/messages/store.js';
 
 export default {
+    emits: [
+        'delete',
+        'show',
+    ],
     props: {
         invitation: {
             type: Object,

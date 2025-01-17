@@ -37,6 +37,15 @@
  * @type {Object}
  */
 export default {
+    emits: [
+        'bottom',
+        'jump',
+        'next-page',
+        'next-row',
+        'prev-page',
+        'prev-row',
+        'top',
+    ],
     data() {
         return {
             scrolling: false,

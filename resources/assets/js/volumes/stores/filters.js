@@ -10,7 +10,7 @@ let imageLabelsFilter = {
     label: 'image labels',
     help: "All images that (don't) have image labels attached.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {
                 name: 'image labels',
@@ -28,7 +28,7 @@ let videoLabelsFilter = {
     label: 'video labels',
     help: "All videos that (don't) have video labels attached.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {
                 name: 'video labels',
@@ -46,7 +46,7 @@ let imageLabelFilter = {
     label: 'image label',
     help: "All images that (don't) have the given image label attached.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {
                 name: 'image label',
@@ -54,7 +54,7 @@ let imageLabelFilter = {
         },
     },
     selectComponent: {
-        mixins: [FilterSelect],
+        extends: FilterSelect,
         components: {
             typeahead: LabelTypeahead,
         },
@@ -79,7 +79,7 @@ let videoLabelFilter = {
     label: 'video label',
     help: "All videos that (don't) have the given video label attached.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {
                 name: 'video label',
@@ -87,7 +87,7 @@ let videoLabelFilter = {
         },
     },
     selectComponent: {
-        mixins: [FilterSelect],
+        extends: FilterSelect,
         components: {
             typeahead: LabelTypeahead,
         },
@@ -112,7 +112,7 @@ let imageLabelUserFilter = {
     label: 'image label from user',
     help: "All images that (don't) have one or more image labels attached by the given user.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {
                 name: 'image label from user',
@@ -120,7 +120,7 @@ let imageLabelUserFilter = {
         },
     },
     selectComponent: {
-        mixins: [FilterSelect],
+        extends: FilterSelect,
         data() {
             return {
                 placeholder: 'User name',
@@ -144,7 +144,7 @@ let videoLabelUserFilter = {
     label: 'video label from user',
     help: "All videos that (don't) have one or more video labels attached by the given user.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {
                 name: 'video label from user',
@@ -152,7 +152,7 @@ let videoLabelUserFilter = {
         },
     },
     selectComponent: {
-        mixins: [FilterSelect],
+        extends: FilterSelect,
         data() {
             return {
                 placeholder: 'User name',
@@ -176,7 +176,7 @@ let filenameFilter = {
     label: 'filename',
     help: "All :types that (don't) have a filename matching the given pattern. A pattern may contain the wildcard character * that matches any string of zero or more characters.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         computed: {
             dataName() {
                 return this.rule.data;
@@ -190,6 +190,7 @@ let filenameFilter = {
             </div>
             <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
         </div>`,
+        emits: ['select'],
         data() {
             return {
                 selectedItem: null,
@@ -226,13 +227,13 @@ let annotationLabelFilter = {
     label: 'annotation with label',
     help: "All :types that (don't) contain one or more annotations with the given label.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {name: 'annotation with label'};
         },
     },
     selectComponent: {
-        mixins: [FilterSelect],
+        extends: FilterSelect,
         components: {
             typeahead: LabelTypeahead,
         },
@@ -260,13 +261,13 @@ let annotationUserFilter = {
     label: 'annotations from user',
     help: "All :types that (don't) contain one or more annotations from the given user.",
     listComponent: {
-        mixins: [FilterList],
+        extends: FilterList,
         data() {
             return {name: 'annotations from user'};
         },
     },
     selectComponent: {
-        mixins: [FilterSelect],
+        extends: FilterSelect,
         data() {
             return {
                 placeholder: 'User name',

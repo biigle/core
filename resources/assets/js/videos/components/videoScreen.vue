@@ -285,6 +285,14 @@ import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 
 export default {
+    emits: [
+        'map-created',
+        'moveend',
+        'next',
+        'previous',
+        'select',
+        'track',
+    ],
     mixins: [
         VideoPlayback,
         AnnotationPlayback,

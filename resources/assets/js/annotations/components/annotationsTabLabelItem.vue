@@ -38,6 +38,11 @@
 import AnnotationItem from './annotationsTabAnnotationItem.vue';
 
 export default {
+    emits: [
+        'detach',
+        'focus',
+        'select',
+    ],
     components: {
         annotationItem: AnnotationItem,
     },

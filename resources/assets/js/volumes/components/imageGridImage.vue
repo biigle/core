@@ -21,6 +21,10 @@
 <script>
 
 export default {
+    emits: [
+        'pin',
+        'select',
+    ],
     data() {
         return {
             thumbnailUrl: null,

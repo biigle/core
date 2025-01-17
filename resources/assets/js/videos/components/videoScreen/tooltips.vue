@@ -7,6 +7,7 @@ import LabelTooltip from '@/annotations/components/labelTooltip.vue';
  * @type {Object}
  */
 export default {
+    emits: ['hoverFeatures'],
     components: {
         labelTooltip: LabelTooltip,
     },

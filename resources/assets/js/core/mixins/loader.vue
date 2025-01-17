@@ -10,6 +10,7 @@ import Messages from '../messages/store.js';
  * @type {Object}
  */
 export default {
+    emits: ['loading'],
     components: {
         loader: LoaderComponent,
         loaderBlock: LoaderBlockComponent,

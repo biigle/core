@@ -14,6 +14,10 @@ let measureLayer;
 let measureInteraction;
 
 export default {
+    emits: [
+        'changeMeasureFeature',
+        'measuring',
+    ],
     data() {
         return {
             hasMeasureFeature: false,

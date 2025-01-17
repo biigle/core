@@ -14,6 +14,7 @@ import Typeahead from '@/core/components/typeahead.vue';
  * @type {Object}
  */
 export default {
+    emits: ['select'],
     components: {
         typeahead: Typeahead,
     },

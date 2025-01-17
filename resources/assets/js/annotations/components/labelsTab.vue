@@ -17,6 +17,10 @@ export let plugins = {};
  * @type {Object}
  */
 export default {
+    emits: [
+        'open',
+        'select',
+    ],
     components: {
         labelTrees: LabelTrees,
     },

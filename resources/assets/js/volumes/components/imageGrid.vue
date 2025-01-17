@@ -52,6 +52,11 @@ import Progress from './imageGridProgress.vue';
  * @type {Object}
  */
 export default {
+    emits: [
+        'pin',
+        'scroll',
+        'select',
+    ],
     data() {
         return {
             clientWidth: 0,

@@ -54,6 +54,14 @@ import LabelTreeLabel from './labelTreeLabel.vue';
  * @type {Object}
  */
 export default {
+    emits: [
+        'add-favourite',
+        'delete',
+        'deselect',
+        'remove-favourite',
+        'save',
+        'select',
+    ],
     data() {
         return {
             collapsed: false

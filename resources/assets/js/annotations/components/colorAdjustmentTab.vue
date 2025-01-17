@@ -5,6 +5,7 @@
  * @type {Object}
  */
 export default {
+    emits: ['change'],
     data() {
         return {
             isBrightnessRgbActive: false,

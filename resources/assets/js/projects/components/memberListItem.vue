@@ -23,6 +23,11 @@
  * @type {Object}
  */
 export default {
+    emits: [
+        'enter',
+        'remove',
+        'update',
+    ],
     props: {
         member: {
             type: Object,

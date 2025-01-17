@@ -18,6 +18,10 @@
 import AnnotationClip from './annotationClip.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'select',
+    ],
     components: {
         annotationClip: AnnotationClip,
     },

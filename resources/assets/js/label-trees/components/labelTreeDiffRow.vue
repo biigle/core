@@ -54,6 +54,7 @@
  * @type {Object}
  */
 export default {
+    emits: ['accepted'],
     props: {
         item: {
             type: Object,

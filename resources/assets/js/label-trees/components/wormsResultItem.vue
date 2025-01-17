@@ -20,6 +20,7 @@
  * @type {Object}
  */
 export default {
+    emits: ['select'],
     props: {
         item: {
             type: Object,

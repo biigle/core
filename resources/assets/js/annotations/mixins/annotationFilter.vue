@@ -11,6 +11,10 @@
 import Typeahead from '@/core/components/typeahead.vue';
 
 export default {
+    emits: [
+        'select',
+        'unselect',
+    ],
     components: {
         typeahead: Typeahead,
     },

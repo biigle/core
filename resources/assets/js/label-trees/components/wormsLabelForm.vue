@@ -12,6 +12,11 @@ import {handleErrorResponse} from '@/core/messages/store.js';
 export default {
     template: '#worms-label-form-template',
     extends: LabelFormComponent,
+    emits: [
+        'load-finish',
+        'load-start',
+        'submit',
+    ],
     components: {
         wormsResultItem: WormsResultItem,
     },

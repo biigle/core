@@ -18,6 +18,7 @@
 import LabelTreeListItem from './labelTreeListItem.vue';
 
 export default {
+    emits: ['remove'],
     props: {
         labelTrees: {
             type: Array,

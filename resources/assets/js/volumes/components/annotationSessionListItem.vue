@@ -1,5 +1,6 @@
 <script>
 export default {
+    emits: ['edit'],
     props: ['session', 'editing', 'editId'],
     computed: {
         title() {

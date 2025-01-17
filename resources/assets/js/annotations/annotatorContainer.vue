@@ -564,7 +564,7 @@ export default {
         },
         handleRequiresSelectedLabel() {
             Messages.info('Please select a label first.');
-            this.$refs.sidebar.$emit('open', 'labels');
+            this.$refs.sidebar.handleOpenTab('open');
         },
         maybeShowTilingInProgressMessage: function() {
             if (this.image.tilingInProgress) {
@@ -601,7 +601,7 @@ export default {
             this.handleSelectAnnotation(lastAnnotation);
         },
         openSidebarLabels() {
-            this.$refs.sidebar.$emit('open', 'labels');
+            this.$refs.sidebar.handleOpenTab('labels');
         },
     },
     watch: {

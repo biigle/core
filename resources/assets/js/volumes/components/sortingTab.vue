@@ -11,6 +11,7 @@ export default {
         WATCH_ARRAY: false,
     },
     template: '#sorting-tab-template',
+    emits: ['update'],
     mixins: [LoaderMixin],
     props: {
         volumeId: {

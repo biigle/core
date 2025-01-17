@@ -67,6 +67,13 @@ import VideoProgress from './videoProgress.vue';
 import ThumbnailPreview from './thumbnailPreview.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'hover-time',
+        'scroll-y',
+        'seek',
+        'select',
+    ],
     components: {
         videoProgress: VideoProgress,
         annotationTracks: AnnotationTracks,

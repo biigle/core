@@ -18,6 +18,10 @@
  * @type {Object}
  */
 export default {
+    emits: [
+        'select',
+        'filter',
+    ],
     props: {
         entities: {
             type: Array,

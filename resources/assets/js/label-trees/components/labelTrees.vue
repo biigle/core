@@ -70,6 +70,13 @@ export default {
     compatConfig: {
         WATCH_ARRAY: false,
     },
+    emits: [
+        'add-favourite',
+        'clear',
+        'deselect',
+        'remove-favourite',
+        'select',
+    ],
     components: {
         typeahead: Typeahead,
         labelTree: LabelTree,

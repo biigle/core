@@ -8,6 +8,11 @@ import {randomColor} from '../utils.js';
  * @type {Object}
  */
 export default {
+    emits: [
+        'color',
+        'name',
+        'parent',
+    ],
     props: {
         labels: {
             type: Array,

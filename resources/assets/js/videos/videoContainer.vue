@@ -495,7 +495,7 @@ export default {
         },
         handleRequiresSelectedLabel() {
             Messages.info('Please select a label first.');
-            this.$refs.sidebar.$emit('open', 'labels');
+            this.$refs.sidebar.handleOpenTab('labels');
         },
         startUpdateTimelineHeight(e) {
             e.preventDefault();
@@ -683,7 +683,7 @@ export default {
             this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
         },
         openSidebarLabels() {
-            this.$refs.sidebar.$emit('open', 'labels');
+            this.$refs.sidebar.handleOpenTab('labels');
             this.setFocusInputFindLabel()
         },
         setFocusInputFindLabel() {

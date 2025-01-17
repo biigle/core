@@ -21,6 +21,7 @@ import Item from './fileLabelListItem.vue';
  * @type {Object}
  */
 export default {
+    emits: ['deleted'],
     components: {
         listItem: Item,
     },

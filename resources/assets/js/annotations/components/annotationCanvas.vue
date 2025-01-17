@@ -54,6 +54,17 @@ import { isInvalidShape } from '../utils.js';
  * @type {Object}
  */
 export default {
+    emits: [
+        'moveend',
+        'update',
+        'select',
+        'previous',
+        'next',
+        'is-invalid-shape',
+        'new',
+        'delete',
+        'requires-selected-label',
+    ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
         AnnotationTooltip,

@@ -11,6 +11,11 @@ import {urlParams as UrlParams} from '@/core/utils.js';
  * @type {Object}
  */
 export default {
+    emits: [
+        'attach-label',
+        'change',
+        'create-sample',
+    ],
     components: {
         powerToggle: PowerToggle,
     },

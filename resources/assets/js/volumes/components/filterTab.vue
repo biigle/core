@@ -14,6 +14,11 @@ export default {
         WATCH_ARRAY: false,
     },
     template: "#filter-tab-template",
+    emits: [
+        'disable-filenames',
+        'enable-filenames',
+        'update',
+    ],
     mixins: [LoaderMixin],
     components: {
         powerToggle: PowerToggle,

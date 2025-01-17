@@ -19,6 +19,7 @@
  * @type {Object}
  */
 export default {
+    emits: ['click'],
     props: {
         tab: {
             type: Object,

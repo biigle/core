@@ -25,6 +25,7 @@
 import {DatePicker, Dropdown} from 'uiv';
 
 export default {
+    emits: ['update:modelValue'],
     props: {
         placeholder: {
             type: String,

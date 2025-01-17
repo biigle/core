@@ -50,6 +50,13 @@ import {Typeahead} from 'uiv';
  * @type {Object}
  */
 export default {
+    emits: [
+        'blur',
+        'fetch',
+        'focus',
+        'input',
+        'select',
+    ],
     components: {
         typeahead: Typeahead,
     },

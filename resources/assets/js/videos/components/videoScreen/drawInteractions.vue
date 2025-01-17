@@ -14,6 +14,13 @@ import { isInvalidShape } from '@/annotations/utils.js';
  * @type {Object}
  */
 export default {
+    emits: [
+        'create-annotation',
+        'is-invalid-shape',
+        'pending-annotation',
+        'requires-selected-label',
+        'track-annotation',
+    ],
     mixins: [snapInteraction],
     data() {
         return {

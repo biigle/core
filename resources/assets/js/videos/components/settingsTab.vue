@@ -4,6 +4,7 @@ import PowerToggle from '@/core/components/powerToggle.vue';
 import Settings from '../stores/settings.js';
 
 export default {
+    emits: ['update'],
     components: {
         powerToggle: PowerToggle,
     },

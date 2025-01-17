@@ -10,6 +10,10 @@ import Keyboard from '@/core/keyboard.js';
 let attachLabelInteraction, swapLabelInteraction;
 
 export default {
+    emits: [
+        'attach',
+        'swap',
+    ],
     computed: {
         isAttaching() {
             return this.interactionMode === 'attach';

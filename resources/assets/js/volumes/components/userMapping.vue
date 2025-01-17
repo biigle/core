@@ -16,6 +16,10 @@
 import Item from './userMappingItem.vue';
 
 export default {
+    emits: [
+        'select',
+        'select-self',
+    ],
     components: {
         Item,
     },

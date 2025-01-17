@@ -105,6 +105,10 @@ import Typeahead from '@/label-trees/components/labelTypeahead.vue';
 import {randomColor} from '@/label-trees/utils.js';
 
 export default {
+    emits: [
+        'create',
+        'select',
+    ],
     components: {
         Typeahead,
     },

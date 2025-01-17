@@ -52,6 +52,12 @@ import Row from './labelTreeDiffRow.vue';
  * @type {Object}
  */
 export default {
+    emits: [
+        'add',
+        'cancel-add',
+        'cancel-remove',
+        'remove',
+    ],
     components: {
         labelTreeDiffRow: Row,
     },

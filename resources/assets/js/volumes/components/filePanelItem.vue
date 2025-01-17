@@ -1,5 +1,6 @@
 <script>
 export default {
+    emits: ['remove'],
     props: ['file', 'type'],
     computed: {
         classObject() {

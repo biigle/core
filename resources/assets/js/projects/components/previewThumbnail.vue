@@ -74,6 +74,11 @@ import volumeStatisticsApi from '../api/volumeStatistics.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
+    emits: [
+        'click',
+        'statistics',
+        'remove',
+    ],
     mixins: [LoaderMixin],
     props: {
         id: {

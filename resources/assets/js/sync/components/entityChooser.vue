@@ -30,6 +30,7 @@ import List from './entityChooserList.vue';
  * @type {Object}
  */
 export default {
+    emits: ['select'],
     components: {
         entityChooserList: List,
     },

@@ -23,6 +23,10 @@
  * @type {Object}
  */
 export default {
+    emits: [
+        'off',
+        'on',
+    ],
     props: {
         active: {
             type: Boolean,

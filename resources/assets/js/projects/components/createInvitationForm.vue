@@ -62,6 +62,7 @@ import LoaderMixin from '@/core/mixins/loader.vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
+    emits: ['created'],
     mixins: [LoaderMixin],
     props: {
         project: {

@@ -13,6 +13,11 @@ import {Tabs, Tab} from 'uiv';
  * The panel for editing the labels of a label tree
  */
 export default {
+    emits: [
+        'clear',
+        'deselect',
+        'select',
+    ],
     mixins: [
         LoaderMixin,
     ],

@@ -11,6 +11,11 @@ import View from '@biigle/ol/View';
  * @type {Object}
  */
 export default {
+    emits: [
+        'map-ready',
+        'seek',
+        'start-seeking',
+    ],
     data() {
         return {
             playing: false,

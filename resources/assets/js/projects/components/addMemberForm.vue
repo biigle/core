@@ -45,6 +45,7 @@ import UsersApi from '@/core/api/users.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
+    emits: ['attach'],
     mixins: [LoaderMixin],
     props: {
         members: {
