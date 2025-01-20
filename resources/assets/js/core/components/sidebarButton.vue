@@ -5,7 +5,7 @@
         :disabled="disabled"
         :class="classObject"
         :title="tab.title"
-        @click.prevent="handleClick"
+        @click="handleClick"
         >
         <span v-if="open" :class="chevronClass" aria-hidden="true"></span>
         <span v-else :class="iconClass" aria-hidden="true"></span>
@@ -69,8 +69,10 @@ export default {
         },
     },
     methods: {
-        handleClick() {
+        handleClick(e) {
             if (this.disabled || this.href) return;
+
+            e.preventDefault();
             this.$emit('click', this.tab.name);
         },
     },
