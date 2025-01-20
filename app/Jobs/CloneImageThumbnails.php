@@ -26,9 +26,18 @@ class CloneImageThumbnails extends Job implements ShouldQueue
 
     /**
      * Cloned image of cloned volume
+     *
      * @var Image
      */
     public $image;
+
+    /**
+     * Ignore this job if the image does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
+
 
     public function __construct(Image $img, String $prefix)
     {
