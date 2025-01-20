@@ -38,7 +38,10 @@ width = 1.
 for path in data_csvs:
     f = open(path, 'r')
     data_csv = csv.reader(f)
-    plot_title = next(data_csv)
+    try:
+        plot_title = next(data_csv)
+    except StopIteration:
+        continue
     rows = np.array(list(data_csv), dtype=str)
     f.close()
     if rows.shape[0] == 0:
