@@ -14,7 +14,7 @@ import MetadataUpload from './metadataUpload';
 import ProjectsBreadcrumb from './projectsBreadcrumb';
 import SearchResults from './searchResults';
 import VolumeContainer from './volumeContainer';
-import VolumeMetadata from './volumeMetadata.vue';
+import VideoMetadata from './videoMetadata.vue';
 
 biigle.$mount('annotation-session-panel', AnnotationSessionPanel);
 biigle.$mount('create-volume-form-step-1', CreateFormStep1);
@@ -31,4 +31,4 @@ biigle.$mount('search-results', SearchResults);
 biigle.$mount('volume-container', VolumeContainer);
 biigle.$mount('volume-file-count', FileCount);
 biigle.$mount('volume-metadata-upload', MetadataUpload);
-biigle.$mount('volume-metadata-modal', VolumeMetadata);
+biigle.$mount('video-metadata-modal', VideoMetadata);

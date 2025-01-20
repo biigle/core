@@ -1,6 +1,5 @@
 <template>
     <modal
-        id="modal-show-metadata"
         ref="modal"
         v-model="show"
         size="sm"
@@ -77,7 +76,6 @@ export default {
     },
     created() {
         this.show = false;
-        this.$emit('load-modal');
     }
 }
 </script>

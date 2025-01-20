@@ -1,4 +1,12 @@
-<div id="volume-metadata-modal" class="panel panel-default">
+@push('scripts')
+   <script type="text/javascript">
+        biigle.$declare('videos.times', {!! collect($video->taken_at) !!});
+        biigle.$declare('videos.metadata', {!! collect($video->metadata) !!});
+        biigle.$declare('videos.metadataMap', {!! collect($metadataMap) !!});
+   </script>
+@endpush
+
+<div id="video-metadata-modal" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Video information</h3>
     </div>
@@ -23,7 +31,7 @@
         @endif
         @if ($video->taken_at)
             @if (is_array($video->taken_at))
-                <metadata-modal v-bind:show-modal="showModal" v-bind:times="times" v-bind:items="items" v-bind:name="name" v-on:load-modal="getTimes({{ collect($video->taken_at) }})" v-on:close-modal="hideMetadataModal"></metadata-modal>
+                <metadata-modal v-bind:show-modal="showModal" v-bind:times="times" v-bind:items="items" v-bind:name="name" v-on:close-modal="hideMetadataModal"></metadata-modal>
                 <tr>
                     <th>Created</th>
                     <td>
@@ -35,7 +43,7 @@
                         <th>{{ $metadataMap[$field] }}</th>
                         @if (is_array($value))
                             <td>
-                                <button class="btn btn-default" type="button" title="Show full metadata array" v-on:click.prevent="getMetadata({{ json_encode($metadataMap[$field]) }}, {{ collect($value) }})">Show values</button>
+                                <button class="btn btn-default" type="button" title="Show full metadata array" v-on:click.prevent="showMetadata({{ json_encode($field) }})">Show values</button>
                             </td>
                         @else
                             <td>{{ $value }}</td>
