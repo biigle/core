@@ -38,7 +38,6 @@ class CloneImageThumbnails extends Job implements ShouldQueue
      */
     protected $deleteWhenMissingModels = true;
 
-
     public function __construct(Image $img, String $prefix)
     {
         $this->image = $img;
