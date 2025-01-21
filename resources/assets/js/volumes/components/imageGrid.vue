@@ -258,7 +258,6 @@ export default {
     mounted() {
         // Only call updateDimensions when the element actually exists.
         window.addEventListener('resize', this.updateDimensions);
-        this.$on('resize', this.updateDimensions);
         this.$nextTick(this.updateDimensions);
         this.$watch('canScroll', this.updateDimensions);
     },
