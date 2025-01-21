@@ -1,3 +1,12 @@
+<template>
+<li class="list-group-item" :class="classObject">
+    <button type="button" class="close" :title="title" @click="remove" v-once>
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span class="text-muted">#<span v-text="file.id"></span></span>
+    <span v-text="file.filename"></span>
+</li>
+</template>
 <script>
 export default {
     emits: ['remove'],
