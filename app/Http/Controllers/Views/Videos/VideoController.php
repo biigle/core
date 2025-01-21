@@ -68,7 +68,7 @@ class VideoController extends Controller
             'codec' => Video::ERROR_CODEC,
             'malformed' => VIDEO::ERROR_MALFORMED,
             'too-large' => VIDEO::ERROR_TOO_LARGE,
-            'moov-atom' => VIDEO::INVALID_MOOV_POS,
+            'moov-atom' => VIDEO::ERROR_INVALID_MOOV_POS,
         ]);
 
         $fileIds = $volume->orderedFiles()->pluck('uuid', 'id');

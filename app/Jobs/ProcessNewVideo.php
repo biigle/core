@@ -112,7 +112,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
     public function handleFile($file, $path)
     {
         if ($this->hasInvalidMoovAtomPosition($path)) {
-            $this->video->error = Video::INVALID_MOOV_POS;
+            $this->video->error = Video::ERROR_INVALID_MOOV_POS;
             $this->video->save();
             return;
         }

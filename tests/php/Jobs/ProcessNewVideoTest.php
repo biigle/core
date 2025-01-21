@@ -231,7 +231,7 @@ class ProcessNewVideoTest extends TestCase
         $job = new ProcessNewVideoStub($video);
         $job->passThroughMimeType = true;
         $job->handle();
-        $this->assertSame(Video::INVALID_MOOV_POS, $video->fresh()->error);
+        $this->assertSame(Video::ERROR_INVALID_MOOV_POS, $video->fresh()->error);
     }
 
     public function testHasInvalidMoovAtomPositionNoAtom()

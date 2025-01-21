@@ -73,7 +73,7 @@ class Video extends VolumeFile
      *
      * @var int
      */
-    const INVALID_MOOV_POS = 6;
+    const ERROR_INVALID_MOOV_POS = 6;
 
     /**
      * The attributes that are mass assignable.
