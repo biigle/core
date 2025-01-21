@@ -235,8 +235,8 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
     protected function hasInvalidMoovAtomPosition($sourcePath)
     {
-        // Webm videos don't have a moov atom
-        if (str_ends_with($sourcePath, ".webm")) {
+        // Webm and mpeg videos don't have a moov atom
+        if (in_array($this->video->mimeType, ['video/mpeg', 'video/webm'])) {
             return false;
         }
 
