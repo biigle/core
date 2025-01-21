@@ -3,7 +3,7 @@
     <small class="text-muted" v-text="classification"></small>
     <div class="clearfix">
         <span class="pull-right">
-            <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle" :disabled="selected"><span class="fa fa-plus" aria-hidden="true"></span></button>
+            <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle" :disabled="selected || null"><span class="fa fa-plus" aria-hidden="true"></span></button>
         </span>
         <span v-text="item.rank"></span>:
         <a :href="item.url" target="_blank" title="Show WoRMS page">

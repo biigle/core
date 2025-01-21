@@ -4,7 +4,7 @@
             <button
                 class="btn btn-default"
                 title="Accept all merge items"
-                :disabled="cannotResolveAll"
+                :disabled="cannotResolveAll || null"
                 @click="acceptAll"
                 >
                     Accept all
@@ -13,7 +13,7 @@
             <button
                 class="btn btn-default"
                 title="Set all merge items as not accepted"
-                :disabled="cannotResolveNone"
+                :disabled="cannotResolveNone || null"
                 @click="acceptNone"
                 >
                     Accept none
@@ -32,7 +32,7 @@
                     v-for="item in diff"
                     :key="item.id"
                     :item="item"
-                    :disabled="disabled"
+                    :disabled="disabled || null"
                     @accepted="handleResolved"
                     ></label-tree-diff-row>
             </tbody>

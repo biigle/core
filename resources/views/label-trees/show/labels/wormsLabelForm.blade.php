@@ -15,7 +15,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Label name" title="WoRMS label name" v-model="selectedName" />
                 <span class="input-group-btn">
-                    <button class="btn btn-success" type="submit" title="Find a label from WoRMS" :disabled="hasNoName"><span class="fa fa-search fa-fw" aria-hidden="true"></span></button>
+                    <button class="btn btn-success" type="submit" title="Find a label from WoRMS" :disabled="hasNoName || null"><span class="fa fa-search fa-fw" aria-hidden="true"></span></button>
                 </span>
             </div>
         </div>
@@ -37,7 +37,7 @@
             <div class="input-group">
                 <typeahead class="typeahead--block" placeholder="Label parent" :disabled="hasNoLabels" title="Parent label" :items="labels" :value="selectedParent" v-on:select="selectLabel" ></typeahead>
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" title="Reset parent" v-on:click="resetParent" v-bind:disabled="hasNoParent"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
+                    <button class="btn btn-default" type="button" title="Reset parent" v-on:click="resetParent" v-bind:disabled="hasNoParent || null"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
                 </span>
             </div>
         </div>

@@ -59,7 +59,7 @@ export default {
             return obj;
         },
         disabled() {
-            return this.tab.disabled ? true : null;
+            return this.tab.disabled || null;
         },
         href() {
             return this.disabled ? null : this.tab.href;

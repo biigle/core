@@ -16,7 +16,7 @@
                     @else
                         <input type="text" class="form-control" name="filename" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" v-model="filenames" required>
                     @endif
-                    <button type="submit" class="btn btn-success" :disabled="loading">Add {{$type}}(s)</button>
+                    <button type="submit" class="btn btn-success" :disabled="loading || null">Add {{$type}}(s)</button>
                     <p class="help-block" v-text="getError('files')" v-if="hasError('files')"></p>
                     <span v-else class="help-block">Mutliple files may be added by submitting the filenames as comma separated values.</span>
                 </div>

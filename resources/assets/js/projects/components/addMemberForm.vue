@@ -6,7 +6,7 @@
             <typeahead
                 more-info="affiliation"
                 placeholder=""
-                :disabled="disabled"
+                :disabled="disabled || null"
                 :items="availableUsers"
                 :value="selectedMemberName"
                 @select="selectMember"
@@ -19,7 +19,7 @@
             <select
                 class="form-control"
                 v-model="selectedRole"
-                :disabled="disabled"
+                :disabled="disabled || null"
                 >
                 <option
                     v-for="role in roles"
@@ -31,7 +31,7 @@
         <button
             class="btn btn-success btn-block"
             type="submit"
-            :disabled="!canAttachMember"
+            :disabled="!canAttachMember || null"
             >
             Add
         </button>

@@ -3,7 +3,7 @@
         class="control-button btn"
         :title="title"
         :class="classObject"
-        :disabled="disabled"
+        :disabled="disabled || null"
         @click="handleClick"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"

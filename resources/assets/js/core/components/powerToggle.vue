@@ -5,7 +5,7 @@
             class="btn btn-default"
             :class="objectClass"
             :title="currentTitle"
-            :disabled="disabled"
+            :disabled="disabled || null"
             @click="handleClick"
             >
             <i class="fa fa-fw" :class="iconClass"></i>

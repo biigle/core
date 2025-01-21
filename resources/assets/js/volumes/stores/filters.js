@@ -188,7 +188,7 @@ let filenameFilter = {
             <div class="typeahead">
                 <input class="form-control" type="text" v-model="selectedItem" placeholder="Filename pattern">
             </div>
-            <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
+            <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem || null">Add rule</button>
         </div>`,
         emits: ['select'],
         data() {

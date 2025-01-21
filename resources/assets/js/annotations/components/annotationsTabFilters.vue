@@ -30,7 +30,7 @@
                 class="btn btn-default"
                 title="Clear annotation filter"
                 :class="clearButtonClass"
-                :disabled="!hasActiveFilter"
+                :disabled="!hasActiveFilter || null"
                 @click.prevent="emitUnselectFilter"
                 >
                     <i class="fa fa-times"></i>

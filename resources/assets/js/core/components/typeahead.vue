@@ -5,7 +5,7 @@
         class="form-control"
         type="text"
         v-model="inputText"
-        :disabled="disabled"
+        :disabled="disabled || null"
         :placeholder="placeholder"
         @focus="emitFocus"
         @blur="emitBlur"

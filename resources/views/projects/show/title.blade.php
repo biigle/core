@@ -2,8 +2,8 @@
     <span class="pull-right project-buttons">
         @can('update', $project)
             <span v-if="editing" v-cloak>
-                <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="loading || !isChanged"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
-                <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
+                <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="(loading || !isChanged) || null"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
+                <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading || null">Cancel</button>
             </span>
         @endcan
         <dropdown menu-right>

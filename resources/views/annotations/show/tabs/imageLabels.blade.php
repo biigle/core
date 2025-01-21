@@ -4,7 +4,7 @@
             <span class="file-label__buttons">
                 <loader v-if="loading || saving" :active="true"></loader>
                 @can('add-annotation', $image)
-                    <button v-else class="btn btn-default btn-xs" :disabled="!canAttachSelectedLabel" :title="proposedLabelTitle" v-on:click="attachSelectedLabel"><i class="fa fa-plus"></i></button>
+                    <button v-else class="btn btn-default btn-xs" :disabled="!canAttachSelectedLabel || null" :title="proposedLabelTitle" v-on:click="attachSelectedLabel"><i class="fa fa-plus"></i></button>
                 @endcan
             </span>
             <h4>Image Labels</h4>

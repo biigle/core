@@ -57,8 +57,8 @@
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <div class="form-group">
                         <loader v-bind:active="loading" v-cloak></loader>
-                        <button type="submit" class="btn btn-default" title="Delete the uploaded import files" v-bind:disabled="loading">Discard import</button>
-                        <button type="button" class="btn btn-success" v-on:click.prevent="performImport" v-bind:disabled="loading || hasNoChosenUsers">Perform import</button>
+                        <button type="submit" class="btn btn-default" title="Delete the uploaded import files" v-bind:disabled="loading || null">Discard import</button>
+                        <button type="button" class="btn btn-success" v-on:click.prevent="performImport" v-bind:disabled="(loading || hasNoChosenUsers) || null">Perform import</button>
                     </div>
                 </form>
             </div>

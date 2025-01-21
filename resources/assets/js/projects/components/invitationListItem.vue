@@ -22,7 +22,7 @@
                     class="btn btn-sm btn-default"
                     title="Copy link to clipboard"
                     @click="handleCopyLink"
-                    :disabled="clipboardWriteSuccess"
+                    :disabled="clipboardWriteSuccess || null"
                     >
                     <span v-if="clipboardWriteSuccess">Link copied!</span>
                     <i v-else class="fa fa-link"></i>

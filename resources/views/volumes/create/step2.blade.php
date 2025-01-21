@@ -243,10 +243,10 @@
             <div class="form-group">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="_method" value="PUT">
-                <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard data and return to the previous step">Cancel</button>
+                <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading || null" title="Discard data and return to the previous step">Cancel</button>
                 <button v-if="!initialized" type="button" class="btn btn-success pull-right" disabled>Create</button>
-                <input v-cloak v-if="importAnnotations || importFileLabels" type="submit" class="btn btn-success pull-right" value="Create and continue" :disabled="cannotSubmit" title="Create the volume and continue to import more metadata">
-                <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit" title="Create the volume">
+                <input v-cloak v-if="importAnnotations || importFileLabels" type="submit" class="btn btn-success pull-right" value="Create and continue" :disabled="cannotSubmi || nullt" title="Create the volume and continue to import more metadata">
+                <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit || null" title="Create the volume">
             </div>
         </form>
         <form id="cancel-pending-volume" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">

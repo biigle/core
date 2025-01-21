@@ -4,18 +4,28 @@
             class="entity-chooser-list--left"
             :entities="unchosenFilteredEntities"
             :filtering="true"
-            :disabled="disabled"
+            :disabled="disabled || null"
             @select="handleSelect"
             @filter="handleFiltering"
         ></entity-chooser-list>
         <div class="entity-chooser-buttons">
-            <button class="btn btn-default btn-block" @click="chooseAll" :disabled="disabled || hasNoUnchosenEntities" title="Select all">all</button>
-            <button class="btn btn-default btn-block" @click="chooseNone" :disabled="disabled || hasNoChosenEntities" title="Select none">none</button>
+            <button
+                class="btn btn-default btn-block"
+                @click="chooseAll"
+                :disabled="(disabled || hasNoUnchosenEntities) || null"
+                title="Select all"
+                >all</button>
+            <button
+                class="btn btn-default btn-block"
+                @click="chooseNone"
+                :disabled="(disabled || hasNoChosenEntities) || null"
+                title="Select none"
+                >none</button>
         </div>
         <entity-chooser-list
             class="entity-chooser-list--right"
             :entities="chosenEntities"
-            :disabled="disabled"
+            :disabled="disabled || null"
             @select="handleDeselect"
         ></entity-chooser-list>
     </div>

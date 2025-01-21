@@ -52,11 +52,11 @@
             <div class="form-group">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="_method" value="PUT">
-                <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
+                <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading || null" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
 
                 <span class="pull-right">
                     <loader :active="loading"></loader>
-                    <input type="submit" class="btn btn-success" value="Continue" :disabled="cannotContinue">
+                    <input type="submit" class="btn btn-success" value="Continue" :disabled="cannotContinue || null">
                 </span>
             </div>
         </form>

@@ -61,7 +61,7 @@
                             @endif
                         </div>
                         <div v-if="filterFiles" class="form-group" v-cloak>
-                            <button :disabled="!showTestQueryBtn" type="button" v-on:click="loadFilesMatchingPattern" class="btn-xs btn btn-success pull-right">Test query</button>
+                            <button :disabled="!showTestQueryBtn || null" type="button" v-on:click="loadFilesMatchingPattern" class="btn-xs btn btn-success pull-right">Test query</button>
                             @if ($volume->isImageVolume())
                                 <label>Image(s):</label>
                                 <input type="text" class="form-control" id="files"
@@ -149,9 +149,9 @@
                     </div>
                     <div class="form-group">
                         <span class="pull-right">
-                            <a class="btn btn-default" :disabled="loading" type="button"
+                            <a class="btn btn-default" :disabled="loading || null" type="button"
                                href="{{URL::previous()}}">Cancel</a>
-                        <input type="submit" class="btn btn-success" :disabled="cannotSubmit" value="Clone" :title="cloneBtnTitle">
+                        <input type="submit" class="btn btn-success" :disabled="cannotSubmit || null" value="Clone" :title="cloneBtnTitle">
                         </span>
                         <input v-if="filterAnnotations" v-for="id in selectedAnnotationLabelIds" type="hidden"
                                name="only_annotation_labels[]"

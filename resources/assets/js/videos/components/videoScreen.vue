@@ -25,14 +25,14 @@
             <div class="btn-group">
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-backward"
                     :title="jumpBackwardMessage"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-caret-square-left"
                     title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="emitPreviousFrame"
@@ -41,26 +41,26 @@
                     v-if="playing"
                     icon="fa-pause"
                     title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="pause"
                     ></control-button>
                 <control-button
                     v-else
                     icon="fa-play"
                     title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="play"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-caret-square-right"
                     title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="emitNextFrame"
                     ></control-button>
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-forward"
                     :title="jumpForwardMessage"
                     @click="jumpForward"
@@ -73,20 +73,20 @@
                     :hover="false"
                     :open="isDrawingPoint"
                     :active="isDrawingPoint"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawPoint"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
                             :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
@@ -96,13 +96,13 @@
                     :hover="false"
                     :open="isDrawingRectangle"
                     :active="isDrawingRectangle"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawRectangle"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -112,20 +112,20 @@
                     :hover="false"
                     :open="isDrawingCircle"
                     :active="isDrawingCircle"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawCircle"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
                             :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
@@ -135,13 +135,13 @@
                     :hover="false"
                     :open="isDrawingLineString"
                     :active="isDrawingLineString"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawLineString"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -150,14 +150,14 @@
                     title="Start a polygon annotation 𝗚"
                     :open="isDrawingPolygon"
                     :active="isDrawingPolygon"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawPolygon"
                     >
                         <control-button
                             v-if="isDrawingPolygon || isUsingPolygonBrush"
                             icon="fa-check"
                             title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
@@ -185,13 +185,13 @@
                     :hover="false"
                     :open="isDrawingWholeFrame"
                     :active="isDrawingWholeFrame"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawWholeFrame"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -202,14 +202,14 @@
                     icon="fa-tag"
                     title="Attach the currently selected label to existing annotations 𝗟"
                     :active="isAttaching"
-                    :disabled="hasNoSelectedLabel || hasError"
+                    :disabled="(hasNoSelectedLabel || hasError) || null"
                     @click="toggleAttaching"
                     >
                         <control-button
                             icon="fa-sync-alt"
                             title="Swap the most recent label of an existing annotation with the currently selected one 𝗦𝗵𝗶𝗳𝘁+𝗟"
                             :active="isSwapping"
-                            :disabled="hasNoSelectedLabel || hasError"
+                            :disabled="(hasNoSelectedLabel || hasError) || null"
                             @click="toggleSwapping"
                             ></control-button>
                     </control-button>
@@ -218,28 +218,28 @@
                     icon="fa-arrows-alt"
                     title="Move selected annotations 𝗠"
                     :active="isTranslating"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="toggleTranslating"
                     ></control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-link"
                     title="Link selected annotations"
-                    :disabled="cannotLinkAnnotations || hasError"
+                    :disabled="(cannotLinkAnnotations || hasError) || null"
                     @click="emitLinkAnnotations"
                     ></control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-unlink"
                     title="Split selected annotation"
-                    :disabled="cannotSplitAnnotation || hasError"
+                    :disabled="(cannotSplitAnnotation || hasError) || null"
                     @click="emitSplitAnnotation"
                     ></control-button>
                 <control-button
                     v-if="canDelete"
                     icon="fa-trash"
                     title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲"
-                    :disabled="hasNoSelectedAnnotations || hasError"
+                    :disabled="(hasNoSelectedAnnotations || hasError) || null"
                     @click="emitDelete"
                     ></control-button>
             </div>

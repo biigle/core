@@ -1,7 +1,7 @@
 <template>
     <div class="filter-select">
         <typeahead :items="items" :value="value" :placeholder="placeholder" @select="select" :more-info="typeaheadMoreInfo"></typeahead>
-        <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>
+        <button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem || null">Add rule</button>
     </div>
 </template>
 

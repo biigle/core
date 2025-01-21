@@ -23,8 +23,8 @@
 @section('project-content')
 <div id="projects-show-statistics" class="project-volume-charts">
     <span class="btn-group">
-        <button class="btn btn-default" :class="toggleImageVolumesClass" title="Show statistics of image volumes only" v-on:click="toggleImageVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-image"></i></button>
-        <button class="btn btn-default" :class="toggleVideoVolumesClass" title="Show statistics of video volumes only" v-on:click="toggleVideoVolumes" :disabled="!hasVolumes || !hasMixedMediaTypes"><i class="fa fa-film"></i></button>
+        <button class="btn btn-default" :class="toggleImageVolumesClass" title="Show statistics of image volumes only" v-on:click="toggleImageVolumes" :disabled="(!hasVolumes || !hasMixedMediaTypes) || null"><i class="fa fa-image"></i></button>
+        <button class="btn btn-default" :class="toggleVideoVolumesClass" title="Show statistics of video volumes only" v-on:click="toggleVideoVolumes" :disabled="(!hasVolumes || !hasMixedMediaTypes) || null"><i class="fa fa-film"></i></button>
     </span>
     <annotation-timeline v-if="showTimeline"
         :annotation-time-series="computedData.annotationTimeSeries"

@@ -1,6 +1,6 @@
 <template>
     <div class="entity-chooser-list" :class="classObject">
-        <input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled">
+        <input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled || null">
         <ul>
             <li v-for="e in entities" :key="e.id" @click="select(e)">
                 <i v-if="e.icon" :class="`fa fa-${e.icon}`"></i>

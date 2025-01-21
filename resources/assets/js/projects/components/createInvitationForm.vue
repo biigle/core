@@ -48,7 +48,7 @@
             class="btn btn-success btn-block"
             type="submit"
             title="Create a new project invitation"
-            :disabled="loading"
+            :disabled="loading || null"
             >
             <loader :active="loading"></loader> Create
         </button>

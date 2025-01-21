@@ -45,7 +45,7 @@
             <div v-if="hasSelectComponent" class="select-component">
                 <component :is="selectComponent" :volume-id="volumeId" v-on:select="addRule"></component>
             </div>
-            <button v-else-if="selectedFilter" type="submit" class="btn btn-default pull-right" v-on:click="addRule(null)" :disabled="loading">Add rule</button>
+            <button v-else-if="selectedFilter" type="submit" class="btn btn-default pull-right" v-on:click="addRule(null)" :disabled="loading || null">Add rule</button>
             <div v-if="helpText" class="help-block" v-text="helpText"></div>
         </form>
         <ul class="list-group">

@@ -66,15 +66,15 @@
                     </div>
                 </div>
                 <div v-if="hasNewSession">
-                    <button type="button" class="btn btn-default pull-right" title="Clear form data" v-on:click="clearEditedSession" :disabled="loading">Clear</button>
-                    <button type="submit" class="btn btn-success" title="Create new annotation session" :disabled="loading">Create</button>
+                    <button type="button" class="btn btn-default pull-right" title="Clear form data" v-on:click="clearEditedSession" :disabled="loading || null">Clear</button>
+                    <button type="submit" class="btn btn-success" title="Create new annotation session" :disabled="loading || null">Create</button>
                 </div>
                 <div v-else>
                     <span class="pull-right">
-                        <button type="button" class="btn btn-default" title="Cancel editing" v-on:click="clearEditedSession" :disabled="loading">Cancel</button>
-                        <button type="button" class="btn btn-danger" title="Delete this annotation session" v-on:click="deleteSession" :disabled="loading">Delete</button>
+                        <button type="button" class="btn btn-default" title="Cancel editing" v-on:click="clearEditedSession" :disabled="loading || null">Cancel</button>
+                        <button type="button" class="btn btn-danger" title="Delete this annotation session" v-on:click="deleteSession" :disabled="loading || null">Delete</button>
                     </span>
-                    <button type="submit" class="btn btn-success" title="Save changes" :disabled="loading">Save</button>
+                    <button type="submit" class="btn btn-success" title="Save changes" :disabled="loading || null">Save</button>
                 </div>
             </form>
         </div>

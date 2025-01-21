@@ -5,7 +5,7 @@
                 v-if="labelToAdd"
                 class="btn btn-sm btn-default"
                 :class="addButtonClass"
-                :disabled="disabled"
+                :disabled="disabled || null"
                 title="Accept the addition"
                 @click="emitResolved"
                 >
@@ -17,7 +17,7 @@
                 :class="removeButtonClass"
                 :title="removeTitle"
                 @click="emitResolved"
-                :disabled="!acceptable || disabled"
+                :disabled="(!acceptable || disabled) || null"
                 >
                     <i class="fa fa-minus"></i>
             </button>

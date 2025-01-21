@@ -15,7 +15,7 @@
                 class="btn btn-default pull-right"
                 title="Change mapped label"
                 type="button"
-                :disabled="loading"
+                :disabled="loading || null"
                 @click="handleChange"
                 ><i class="fa fa-pen fa-fw"></i></button>
 
@@ -64,14 +64,14 @@
                                 class="btn btn-default"
                                 type="button"
                                 title="Cancel creating a new label"
-                                :disabled="loading"
+                                :disabled="loading || null"
                                 @click="cancelCreating"
                                 ><i class="fa fa-times fa-fw"></i></button>
                             <button
                                 class="btn btn-success"
                                 type="button"
                                 title="Create the new label"
-                                :disabled="cantCreate"
+                                :disabled="cantCreate || null"
                                 @click="emitCreate"
                                 ><i class="fa fa-check fa-fw"></i></button>
                         </span>
@@ -83,7 +83,7 @@
                     class="btn btn-default pull-right"
                     title="Create a new label"
                     type="button"
-                    :disabled="loading"
+                    :disabled="loading || null"
                     @click="handleCreate"
                     ><i class="fa fa-plus fa-fw"></i></button>
 

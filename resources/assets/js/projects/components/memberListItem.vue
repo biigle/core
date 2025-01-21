@@ -3,10 +3,10 @@
         <h4 class="list-group-item-heading">
             <span v-if="editable" v-show="isEditing" class="pull-right">
                 <form class="form-inline">
-                    <select :disabled="isOwnUser" class="form-control input-sm" :title="`Change the role of ${name}`" v-model="roleId" @change="changeRole">
+                    <select :disabled="isOwnUser || null" class="form-control input-sm" :title="`Change the role of ${name}`" v-model="roleId" @change="changeRole">
                         <option v-for="role in roles" :value="role.id" v-text="role.name"></option>
                     </select>
-                    <button :disabled="isOwnUser" type="button" class="btn btn-default btn-sm" :title="`Remove ${name}`" @click="removeMember"><i class="fa fa-trash"></i></button>
+                    <button :disabled="isOwnUser || null" type="button" class="btn btn-default btn-sm" :title="`Remove ${name}`" @click="removeMember"><i class="fa fa-trash"></i></button>
                 </form>
             </span>
             <span v-show="!isEditing" class="pull-right label" :class="labelClass" v-text="role.name"></span>

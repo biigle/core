@@ -70,8 +70,8 @@
         </fieldset>
         <div class="form-group">
              <input type="hidden" name="_token" value="{{ csrf_token() }}">
-             <a href="{{ route('project', $project->id) }}" class="btn btn-default" :disabled="loading">Cancel</a>
-             <input type="submit" class="btn btn-success pull-right" value="Continue" :disabled="loading" title="Proceed to enter the volume details">
+             <a href="{{ route('project', $project->id) }}" class="btn btn-default" :disabled="loading || null">Cancel</a>
+             <input type="submit" class="btn btn-success pull-right" value="Continue" :disabled="loading || null" title="Proceed to enter the volume details">
          </div>
       </form>
     </div>

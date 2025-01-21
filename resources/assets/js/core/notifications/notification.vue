@@ -8,7 +8,7 @@
                 class="btn btn-default btn-xs"
                 title="Mark as read"
                 @click="markRead"
-                :disabled="isLoading"
+                :disabled="isLoading || null"
                 >
                 <i class="fa fa-check"></i>
             </button>
@@ -37,7 +37,7 @@ export default {
     props: ['item', 'removeItem'],
     data() {
         return {
-            isLoading: null
+            isLoading: false
         };
     },
     computed: {
@@ -64,7 +64,7 @@ export default {
                 })
                 .catch(Messages.handleErrorResponse)
                 .finally(() => {
-                    this.isLoading = null;
+                    this.isLoading = false;
                 });
         },
         markReadAndOpenLink() {

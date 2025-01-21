@@ -12,7 +12,7 @@
                 class="btn btn-default pull-right"
                 title="Change mapped user"
                 type="button"
-                :disabled="loading"
+                :disabled="loading || null"
                 @click="handleChange"
                 ><i class="fa fa-pen fa-fw"></i></button>
 
@@ -24,7 +24,7 @@
                 class="btn btn-default pull-right"
                 title="Select yourself"
                 type="button"
-                :disabled="loading"
+                :disabled="loading || null"
                 @click="handleSelectSelf"
                 ><i class="fa fa-user fa-fw"></i></button>
 
