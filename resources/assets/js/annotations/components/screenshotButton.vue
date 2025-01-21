@@ -12,7 +12,7 @@ export default {
     props: {
         fileNames: {
             type: Array,
-            default: [],
+            default: () => [],
         },
         currentId: {
             type: Number,
@@ -20,7 +20,7 @@ export default {
         },
         ids: {
             type: Array,
-            default: []
+            default: () => []
         }
     },
     data() {
