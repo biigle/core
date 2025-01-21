@@ -683,7 +683,7 @@ export default {
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
-        this.imageFileNames = biigle.$require('annotations.imagesObj');
+        this.imageFileNames = biigle.$require('annotations.imagesFilenames');
         this.annotationFilters = [
             new LabelFilter(),
             new UserFilter(),

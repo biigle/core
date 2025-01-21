@@ -19,8 +19,8 @@ export default {
             default: false,
         },
         videoFileNames: {
-            type: Object,
-            default: () => {}
+            type: Array,
+            default: []
         },
         currentId: {
             type: Number,
@@ -29,6 +29,10 @@ export default {
         map: {
             type: Object,
             default: null,
+        },
+        ids: {
+            type: Array,
+            default: []
         }
     },
     data() {

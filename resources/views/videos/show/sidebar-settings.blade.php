@@ -5,6 +5,7 @@
         :cross-origin-error="hasCrossOriginError"
         :current-id="videoId"
         :video-file-names="videoFileNames"
+        :ids="videoIds"
         >
             <div class="annotator-tab settings-tab">
                 <div class="sidebar-tab__section">
@@ -14,6 +15,7 @@
                     inline-template
                     :current-id="currentId"
                     :file-names="videoFileNames"
+                    :ids="ids"
                     >
                         <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                     </screenshot-button>

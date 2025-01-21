@@ -31,13 +31,17 @@ export default {
             default: null,
         },
         imageFileNames: {
-            type: Object,
-            default: () => {},
+            type: Array,
+            default: [],
         },
         currentId: {
             type: Number,
             default: -1,
         },
+        ids: {
+            type: Array,
+            default: []
+        }
     },
     data() {
         return {

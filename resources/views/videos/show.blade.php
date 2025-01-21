@@ -67,7 +67,6 @@
     biigle.$declare('videos.isEditor', @can('add-annotation', $video) true @else false @endcan);
     biigle.$declare('videos.videoIds', {!! $videos->keys() !!});
     biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});
-    biigle.$declare('videos.videosObj', {!! $videos !!});
     biigle.$declare('videos.user', {!! $user !!});
     biigle.$declare('videos.isAdmin', @can('update', $volume) true @else false @endcan);
     biigle.$declare('videos.fileUuids', {!! $fileIds !!});

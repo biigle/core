@@ -736,7 +736,7 @@ export default {
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
-        this.videoFileNames = biigle.$require('videos.videosObj');
+        this.videoFileNames = biigle.$require('videos.videoFilenames');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();

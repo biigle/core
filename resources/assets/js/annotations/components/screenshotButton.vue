@@ -11,18 +11,27 @@ import Events from '../../core/events';
 export default {
     props: {
         fileNames: {
-            type: Object,
-            default: () => {}
+            type: Array,
+            default: [],
         },
         currentId: {
             type: Number,
             default: -1,
         },
+        ids: {
+            type: Array,
+            default: []
+        }
+    },
+    data() {
+        return {
+            filesObj: {}
+        }
     },
     computed: {
         filename() {
             if (this.currentId) {
-                let name = this.fileNames[this.currentId].split('.');
+                let name = this.filesObj[this.currentId].split('.');
                 if (name.length > 1) {
                     name[name.length - 1] = 'png';
                 }
@@ -151,6 +160,10 @@ export default {
         },
     },
     created() {
+        this.fileNames.forEach((filename, index) => {
+            this.filesObj[this.ids[index]] = filename;
+        });
+
         Keyboard.on('p', this.capture);
         Events.$on('annotations.map.init', this.setMap);
         Events.$on('videos.map.init', this.setMap);
