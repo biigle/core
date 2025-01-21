@@ -97,9 +97,7 @@
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
             ref="canvas"
-            inline-template>
-            @include('annotations.show.annotationCanvas')
-        </annotation-canvas>
+            ></annotation-canvas>
     </div>
     <sidebar
         ref="sidebar"
@@ -118,4 +116,8 @@
         @include('annotations.show.tabs.settings')
     </sidebar>
 </div>
+
+<script type="text/html" id="annotation-canvas-template">
+    @include('annotations.show.annotationCanvas')
+</script>
 @endsection

@@ -21,10 +21,25 @@ import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import UserFilter from './models/UserAnnotationFilter.vue';
 import VolumeImageAreaApi from './api/volumes.js';
+import {defineAsyncComponent} from 'vue'
 import {CrossOriginError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
+
+const asyncAnnotationCanvas = defineAsyncComponent({
+    loader: function () {
+        // This enables the addition of mixins to the annotation canvas from modules
+        // at runtime (e.g. by biigle/magic-sam).
+        AnnotationCanvasMixins.forEach(function (mixin) {
+            if (!AnnotationCanvas.mixins.includes(mixin)) {
+                AnnotationCanvas.mixins.push(mixin);
+            }
+        });
+
+        return Promise.resolve(AnnotationCanvas);
+    },
+});
 
 /**
  * View model for the annotator container
@@ -41,16 +56,7 @@ export default {
         colorAdjustmentTab: ColorAdjustmentTab,
         imageLabelTab: ImageLabelTab,
         settingsTab: SettingsTab,
-        annotationCanvas: function (resolve) {
-            // This enables the addition of mixins to the annotation canvas from modules
-            // at runtime (e.g. by biigle/magic-sam).
-            AnnotationCanvasMixins.forEach(function (mixin) {
-                if (!AnnotationCanvas.mixins.includes(mixin)) {
-                    AnnotationCanvas.mixins.push(mixin);
-                }
-            });
-            resolve(AnnotationCanvas);
-        },
+        annotationCanvas: asyncAnnotationCanvas,
     },
     data() {
         return {
@@ -755,9 +761,6 @@ export default {
         }
 
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
-    },
-    mounted() {
-        Events.emit('annotations.map.init', this.$refs.canvas.map);
     },
 };
 </script>

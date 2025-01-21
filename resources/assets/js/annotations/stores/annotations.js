@@ -8,12 +8,15 @@ import ImagesApi from '@/core/api/images.js';
 class Annotations {
     constructor() {
         this.cache = {};
-        this.shapeMap = this.getShapeMap();
-        this.inverseShapeMap = this.getInverseShapeMap();
+        this.initialized = false;
+        this.shapeMap = {};
+        this.inverseShapeMap = {};
     }
 
-    getShapeMap() {
-        return biigle.$require('annotations.shapes');
+    initialize() {
+        this.initialized = true;
+        this.shapeMap = biigle.$require('annotations.shapes');
+        this.inverseShapeMap = this.getInverseShapeMap();
     }
 
     getInverseShapeMap() {
@@ -54,6 +57,10 @@ class Annotations {
     }
 
     fetchAnnotations(id) {
+        if (!this.initialized) {
+            this.initialize();
+        }
+
         if (!this.cache.hasOwnProperty(id)) {
             this.cache[id] = ImagesApi.getAnnotations({id: id})
                 .catch(function () {

@@ -54,6 +54,7 @@ import { isInvalidShape } from '../utils.js';
  * @type {Object}
  */
 export default {
+    template: '#annotation-canvas-template',
     emits: [
         'moveend',
         'update',
@@ -848,6 +849,7 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
+        Events.emit('annotations.map.init', this.map);
     },
 };
 </script>

@@ -301,9 +301,6 @@ class Images {
     }
 
     drawImage(image) {
-        if (!this.initialized) {
-            this.initialize();
-        }
 
         this.checkSupportsColorAdjustment(image);
         this.currentlyDrawnImage = image;
@@ -318,6 +315,10 @@ class Images {
     }
 
     fetchImage(id, next) {
+        if (!this.initialized) {
+            this.initialize();
+        }
+
         if (!this.cache.hasOwnProperty(id)) {
             Events.emit('images.fetching', id);
             this.cache[id] = this.createImage(id);
@@ -344,7 +345,7 @@ class Images {
     }
 
     fetchAndDrawImage(id) {
-        return this.fetchImage(id).then(this.drawImage);
+        return this.fetchImage(id).then(this.drawImage.bind(this));
     }
 
     updateColorAdjustment(params) {
