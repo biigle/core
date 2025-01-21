@@ -225,6 +225,31 @@ class ProcessNewVideoTest extends TestCase
         $job->handle();
         $this->assertNull($video->fresh()->error);
     }
+    public function testHasInvalidMoovAtomPosition()
+    {
+        $video = VideoTest::create(['filename' => 'test_invalid_moov_atom.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $job->passThroughMimeType = true;
+        $job->handle();
+        $this->assertSame(Video::INVALID_MOOV_POS, $video->fresh()->error);
+    }
+
+    public function testHasInvalidMoovAtomPositionNoAtom()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $video->mimeType = 'video/webm';
+        $job->passThroughMimeType = true;
+        $job->handle();
+        $this->assertEmpty($video->fresh()->error);
+
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $video->mimeType = 'video/mpeg';
+        $job->passThroughMimeType = true;
+        $job->handle();
+        $this->assertEmpty($video->fresh()->error);
+    }
 }
 
 class ProcessNewVideoStub extends ProcessNewVideo
@@ -234,6 +259,7 @@ class ProcessNewVideoStub extends ProcessNewVideo
     public $duration = 0;
     public $passThroughDimensions = false;
     public $passThroughCodec = false;
+    public $passThroughMimeType = false;
 
     protected function getVideoDimensions($url)
     {
@@ -271,5 +297,13 @@ class ProcessNewVideoStub extends ProcessNewVideo
     protected function generateThumbnail(string $file, int $width, int $height): VipsImage
     {
         return VipsImage::black(100, 100);
+    }
+
+    protected function hasInvalidMoovAtomPosition($source)
+    {
+        if ($this->passThroughMimeType) {
+            return parent::hasInvalidMoovAtomPosition($source);
+        }
+        return false;
     }
 }
