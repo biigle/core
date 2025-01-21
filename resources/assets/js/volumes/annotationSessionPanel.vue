@@ -249,7 +249,13 @@ export default {
         this.volumeId = biigle.$require('volumes.id');
         this.sessions = biigle.$require('volumes.annotationSessions')
             .map(this.parseSession);
-        this.$once('editing.start', this.loadUsers);
+
+        const unwatch = this.$watch('editing', (editing) => {
+            if (editing) {
+                this.loadUsers();
+                unwatch();
+            }
+        });
     },
 };
 </script>
