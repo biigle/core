@@ -31,7 +31,7 @@ export default class {
             this.data[key] = value;
         }
 
-        debounce(this.persist, 100, this.storageKey);
+        debounce(this.persist.bind(this), 100, this.storageKey);
     }
 
     delete(key) {
@@ -58,7 +58,7 @@ export default class {
     restoreFromLocalStorage() {
         let data = JSON.parse(window.localStorage.getItem(this.storageKey));
         if (data) {
-            this.data = data;
+            this.data = reactive(data);
         }
     }
 
