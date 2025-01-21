@@ -20,6 +20,7 @@ export let plugins = {};
  * @type {Object}
  */
 export default {
+    template: '#settings-tab-template',
     emits: ['change'],
     components: {
         screenshotButton: ScreenshotButton,

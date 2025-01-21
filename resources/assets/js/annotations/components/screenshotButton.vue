@@ -1,3 +1,13 @@
+<template>
+<button
+    class="btn btn-default"
+    title="Get a screenshot of the visible area 𝗣"
+    @click="capture"
+    >
+    <span class="fa fa-camera" aria-hidden="true"></span>
+    Capture screenshot
+</button>
+</template>
 <script>
 import Events from '@/core/events.js';
 import Messages from '@/core/messages/store.js';

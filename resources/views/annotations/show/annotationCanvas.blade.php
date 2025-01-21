@@ -1,20 +1,12 @@
 <div class="annotation-canvas" v-on:wheel="conditionalHandleScroll">
     <minimap v-if="showMinimap" :extent="extent"></minimap>
     <div class="annotation-canvas__left-indicators">
-        <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution" inline-template>
-            <div class="scale-line-indicator" title="Scale">
-                <span class="scale-line-indicator__line" :style="styleObject" v-text="text"></span>
-            </div>
-        </scale-line-indicator>
+        <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution"></scale-line-indicator>
         <mouse-position-indicator v-if="showMousePosition" :position="mousePositionIC"></mouse-position-indicator>
-        <zoom-level-indicator v-if="showZoomLevel" :resolution="resolution" inline-template>
-            <div class="zoom-level-indicator" title="Zoom level of the viewport" v-text="zoomLevelText"></div>
-        </zoom-level-indicator>
+        <zoom-level-indicator v-if="showZoomLevel" :resolution="resolution"></zoom-level-indicator>
     </div>
     <div class="annotation-canvas__right-indicators">
-        <label-indicator v-if="selectedLabel" :label="selectedLabel" inline-template>
-            <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
-        </label-indicator>
+        <label-indicator v-if="selectedLabel" :label="selectedLabel"></label-indicator>
     </div>
     <label-tooltip watch="hoverFeatures" :show="showLabelTooltip" :position="mousePosition"></label-tooltip>
     <measure-tooltip watch="hoverFeatures" :show="showMeasureTooltip" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>

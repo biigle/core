@@ -1,3 +1,8 @@
+<template>
+<div class="scale-line-indicator" title="Scale">
+    <span class="scale-line-indicator__line" :style="styleObject" v-text="text"></span>
+</div>
+</template>
 <script>
 import MeasureComponent from '../mixins/measureComponent.vue';
 

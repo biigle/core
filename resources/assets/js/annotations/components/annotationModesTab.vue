@@ -11,6 +11,7 @@ import {urlParams as UrlParams} from '@/core/utils.js';
  * @type {Object}
  */
 export default {
+    template: '#annotation-modes-tab-template',
     emits: [
         'attach-label',
         'change',

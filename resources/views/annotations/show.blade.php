@@ -105,7 +105,8 @@
         :toggle-on-keyboard="true"
         v-on:open="handleOpenedTab"
         v-on:close="handleClosedTab"
-        v-cloak>
+        v-cloak
+        >
         @include('annotations.show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations.show.tabs.labels')

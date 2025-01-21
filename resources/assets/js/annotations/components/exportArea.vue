@@ -21,6 +21,7 @@ import {never as neverCondition} from '@biigle/ol/events/condition';
  * @type {Object}
  */
 export default {
+    template: '#export-area-template',
     props: {
         settings: {
             type: Object,

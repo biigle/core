@@ -5,6 +5,7 @@
  * @type {Object}
  */
 export default {
+    template: '#color-adjustment-tab-template',
     emits: ['change'],
     data() {
         return {

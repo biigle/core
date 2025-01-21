@@ -17,6 +17,7 @@ export let plugins = {};
  * @type {Object}
  */
 export default {
+    template: '#labels-tab-template',
     emits: [
         'open',
         'select',
