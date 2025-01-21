@@ -24,23 +24,7 @@
                     <button class="btn btn-default btn-s pull-right" v-on:click="markAllAsRead" v-bind:disabled="isLoading">Mark all as read</button>
                 </p>
             @endif
-            <notification v-for="item in notifications" v-bind:key="item.id" v-bind:item="item" v-bind:remove-item="{{$all ? 'false': 'true'}}" inline-template>
-                <div class="panel" v-bind:class="classObject">
-                    <div class="panel-heading">
-                        <span class="pull-right">
-                            <span v-bind:title="item.created_at" v-text="item.created_at_diff"></span>
-                            <button class="btn btn-default btn-xs" title="Mark as read" v-on:click="markRead" v-if="isUnread" v-bind:disabled="isLoading"><i class="fa fa-check"></i></button>
-                        </span>
-                        <h3 class="panel-title" v-text="item.data.title"></h3>
-                    </div>
-                    <div class="panel-body">
-                        @{{item.data.message}}
-                        <p class="notification__action" v-if="item.data.action">
-                            <a v-bind:href="item.data.actionLink" v-text="item.data.action" v-on:click.prevent="markReadAndOpenLink" v-bind:title="item.data.action"></a>
-                        </p>
-                    </div>
-                </div>
-            </notification>
+            <notification v-for="item in notifications" v-bind:key="item.id" v-bind:item="item" v-bind:remove-item="{{$all ? 'false': 'true'}}"></notification>
             @if ($all)
                 <p class="text-muted" v-if="!hasNotifications" v-cloak>
                     You have no notifications.
