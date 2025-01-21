@@ -5,20 +5,17 @@
 @section('manual-content')
 <div class="row">
     <p class="lead">
-        Fix invalid video moov atom position
-    </p>
-    <p>
-    A video contains a "Moov Atom" in its metadata, which holds information about the video. Videos with the Moov Atom located at the end of the file will not be processed by Biigle. To change the position of the Moov Atom, follow these steps:
+        Fix moov atom position
     </p>
     <p>
     Download and install the video converting tool <a href="https://www.ffmpeg.org/">FFMPEG</a>.
     </p>
     <p>
-    <b>Linux or Mac</b>
+    <b>Linux or MacOS</b>
     <ol>
-        <li>Open a terminal</li>
-        <li>Download: <kbd>sudo apt-get install ffmpeg</kbd></li>
-        <li>Run: <kbd>ffmpeg -i path/input.mp4 -movflags +faststart path/output.mp4</kbd> </li>
+        <li>Open terminal</li>
+        <li>Install: <kbd>sudo apt-get install ffmpeg</kbd></li>
+        <li>Run: <kbd>ffmpeg -i path/input.mp4 -vcodec copy -acodec copy -movflags faststart  path/output.mp4</kbd> </li>
         <li>Use <kbd>output.mp4</kbd> for Biigle upload</li>
     </ol>
     </p>
@@ -31,9 +28,9 @@
     <p>
     <b>Windows</b>
     <ol>
-        <li>Download FFMPEG</li>
+        <li>Install FFMPEG</li>
         <li>Open cmd</li>
-        <li>Run: <kbd>"path\ffmpeg.exe" -i "path\input.mp4" -movflags +faststart "path\output.mp4"
+        <li>Run: <kbd>"path\ffmpeg.exe" -i "path\input.mp4" -vcodec copy -acodec copy -movflags faststart "path\output.mp4"
         </kbd> </li>
         <li>Use <kbd>output.mp4</kbd> for Biigle upload</li>
     </ol>
