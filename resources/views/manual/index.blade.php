@@ -234,7 +234,7 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['videos', 'invalid-moov-atom'])}}">Invalid Moov Atom Position</a>
+                <a href="{{route('manual-tutorials', ['videos', 'fixing-invalid-moov-atom'])}}">Invalid Moov Atom Position</a>
             </h4>
 
             <p>
