@@ -225,6 +225,7 @@ class ProcessNewVideoTest extends TestCase
         $job->handle();
         $this->assertNull($video->fresh()->error);
     }
+
     public function testHasInvalidMoovAtomPosition()
     {
         $video = VideoTest::create(['filename' => 'test_invalid_moov_atom.mp4']);
