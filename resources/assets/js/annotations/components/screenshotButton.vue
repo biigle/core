@@ -10,7 +10,7 @@ import Events from '../../core/events';
  */
 export default {
     props: {
-        fileNames: {
+        filenames: {
             type: Array,
             default: () => [],
         },
@@ -160,7 +160,7 @@ export default {
         },
     },
     created() {
-        this.fileNames.forEach((filename, index) => {
+        this.filenames.forEach((filename, index) => {
             this.filesObj[this.ids[index]] = filename;
         });
 

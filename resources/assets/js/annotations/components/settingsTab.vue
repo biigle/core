@@ -30,7 +30,7 @@ export default {
             type: Object,
             default: null,
         },
-        imageFileNames: {
+        imageFilenames: {
             type: Array,
             default: () => [],
         },

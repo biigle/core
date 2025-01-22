@@ -3,7 +3,7 @@
     v-cloak
     :image="image"
     :current-id="imageId"
-    :image-file-names="imageFileNames"
+    :image-filenames="imageFilenames"
     :ids="allImagesIds"
     v-on:change="handleSettingsChange"
     inline-template>
@@ -14,7 +14,7 @@
                     v-else
                     inline-template
                     :current-id="currentId"
-                    :file-names="imageFileNames"
+                    :filenames="imageFilenames"
                     :ids="ids"
                     >
                     <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>

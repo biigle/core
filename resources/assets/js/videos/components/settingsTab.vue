@@ -18,7 +18,7 @@ export default {
             type: Boolean,
             default: false,
         },
-        videoFileNames: {
+        videoFilenames: {
             type: Array,
             default: () => []
         },
