@@ -1,6 +1,7 @@
 <script>
 import LabelTooltip from '../labelTooltip.vue';
 import MeasureTooltip from '../measureTooltip.vue';
+import {markRaw} from 'vue';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the annotation tooltip.
@@ -8,7 +9,6 @@ import MeasureTooltip from '../measureTooltip.vue';
  * @type {Object}
  */
 export default {
-    emits: ['hoverFeatures'],
     components: {
         labelTooltip: LabelTooltip,
         measureTooltip: MeasureTooltip,
@@ -32,6 +32,7 @@ export default {
         return {
             // Used to determine when to notify watchers for hovered annotations.
             hoveredFeaturesHash: '',
+            hoveredFeatures: [],
         };
     },
     methods: {
@@ -44,12 +45,15 @@ export default {
 
             if (this.hoveredFeaturesHash !== hash) {
                 this.hoveredFeaturesHash = hash;
-                this.$emit('hoverFeatures', features);
+                // Explixitly mark as raw so the OpenLayers map will not accidentally be
+                // made reactive.
+                // See: https://github.com/biigle/annotations/issues/108
+                this.hoveredFeatures = markRaw(features);
             }
         },
         resetHoveredAnnotations() {
             this.hoveredFeaturesHash = '';
-            this.$emit('hoverFeatures', []);
+            this.hoveredFeatures = [];
         },
     },
     watch: {

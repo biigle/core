@@ -8,9 +8,26 @@
     <div class="annotation-canvas__right-indicators">
         <label-indicator v-if="selectedLabel" :label="selectedLabel"></label-indicator>
     </div>
-    <label-tooltip watch="hoverFeatures" :show="showLabelTooltip" :position="mousePosition"></label-tooltip>
-    <measure-tooltip watch="hoverFeatures" :show="showMeasureTooltip" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>
-    <measure-tooltip watch="changeMeasureFeature" :show="hasMeasureFeature" :position="measureFeaturePosition" positioning="center-left" :image="image" :areas="imagesArea"></measure-tooltip>
+    <label-tooltip
+        :show="showLabelTooltip"
+        :position="mousePosition"
+        :features="hoveredFeatures"
+        ></label-tooltip>
+    <measure-tooltip
+        :show="showMeasureTooltip"
+        :position="mousePosition"
+        :image="image"
+        :areas="imagesArea"
+        :features="hoveredFeatures"
+        ></measure-tooltip>
+    <measure-tooltip
+        positioning="center-left"
+        :features="measureFeatures"
+        :show="hasMeasureFeature"
+        :position="measureFeaturePosition"
+        :image="image"
+        :areas="imagesArea"
+        ></measure-tooltip>
     <div class="annotation-canvas__toolbar">
         <div class="btn-group" v-on:wheel.stop="handleScroll">
             <control-button icon="fa-step-backward" :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'" v-on:click="handlePrevious" :disabled="modifyInProgress"></control-button>

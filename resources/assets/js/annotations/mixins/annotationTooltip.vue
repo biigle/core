@@ -8,9 +8,9 @@ import Overlay from '@biigle/ol/Overlay';
  */
 export default {
     props: {
-        watch: {
+        features: {
             required: true,
-            type: String,
+            type: Array,
         },
         position: {
             required: true,
@@ -46,23 +46,17 @@ export default {
         },
     },
     watch: {
-        show: {
-            immediate: true,
-            handler(show) {
-                // Do NOT pass the features as prop of this component because this would
-                // make them reactive. As the features store a reference back to the map,
-                // EVERYTHING would be made reactive.
-                // See: https://github.com/biigle/annotations/issues/108
-                if (show) {
-                    this.$parent.$on(this.watch, this.updateAnnotations);
-                } else {
-                    this.$parent.$off(this.watch, this.updateAnnotations);
-                }
-
-            },
+        // This is a shallow array watcher on purpose.
+        features(features) {
+            if (this.show) {
+                this.updateAnnotations(features);
+            }
         },
-        position(position) {
-            this.overlay.setPosition(position);
+        position: {
+            deep: true,
+            handler(position) {
+                this.overlay.setPosition(position);
+            },
         },
         showThis(show) {
             if (show) {

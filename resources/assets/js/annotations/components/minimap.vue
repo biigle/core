@@ -21,6 +21,9 @@ import {getCenter} from '@biigle/ol/extent';
  * @type {Object}
  */
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
     props: {
         extent: {
             type: Array,
@@ -146,8 +149,11 @@ export default {
     },
     watch: {
         // Refresh the view if the extent (i.e. image size) changed.
-        extent() {
-            this.updateElementSize();
+        extent: {
+            deep: true,
+            handler() {
+                this.updateElementSize();
+            },
         },
     },
     created() {

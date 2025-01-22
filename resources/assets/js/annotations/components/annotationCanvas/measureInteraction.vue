@@ -4,6 +4,7 @@ import Keyboard from '@/core/keyboard.js';
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import {markRaw} from 'vue';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the measure interaction.
@@ -14,13 +15,11 @@ let measureLayer;
 let measureInteraction;
 
 export default {
-    emits: [
-        'changeMeasureFeature',
-        'measuring',
-    ],
+    emits: ['measuring'],
     data() {
         return {
             hasMeasureFeature: false,
+            measureFeatures: [],
             measureFeaturePosition: [0, 0],
             cantConvertMeasureFeature: true,
         };
@@ -48,7 +47,10 @@ export default {
         },
         updateMeasureFeature(e) {
             this.measureFeaturePosition = e.target.getGeometry().getLastCoordinate();
-            this.$emit('changeMeasureFeature', [e.target]);
+            // Explixitly mark as raw so the OpenLayers map will not accidentally be
+            // made reactive.
+            // See: https://github.com/biigle/annotations/issues/108
+            this.measureFeatures = markRaw([e.target]);
         },
         setMeasureFeature(feature) {
             this.measureFeature = feature;
