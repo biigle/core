@@ -101,7 +101,6 @@
                 v-slot="{onActive}"
                 >
                 <control-button
-                    v-cloak
                     icon="fa-paint-brush"
                     title="Draw a polygon using the brush tool 𝗘"
                     :active="isUsingPolygonBrush"
@@ -109,14 +108,13 @@
                     v-on:active="onActive"
                     ></control-button>
                 <control-button
-                    v-cloak icon="fa-eraser"
+                    icon="fa-eraser"
                     title="Modify selected polygons using the eraser tool 𝗥"
                     :active="isUsingPolygonEraser"
                     v-on:click="togglePolygonEraser"
                     v-on:active="onActive"
                     ></control-button>
                 <control-button
-                    v-cloak
                     icon="fa-fill-drip"
                     title="Modify selected polygons using the fill tool 𝗧"
                     :active="isUsingPolygonFill"
@@ -131,7 +129,6 @@
                     ></control-button>
                 <control-button
                     v-else
-                    v-cloak
                     icon="fa-magic"
                     title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
                     :active="isMagicWanding"
