@@ -55,16 +55,19 @@ export default {
             this.hoveredFeaturesHash = '';
             this.hoveredFeatures = [];
         },
-    },
-    watch: {
-        showAnnotationTooltip(show) {
-            if (show) {
+        updatePointerMoveHandler() {
+            if (this.showAnnotationTooltip) {
                 this.map.on('pointermove', this.updateHoveredAnnotations);
             } else {
                 this.map.un('pointermove', this.updateHoveredAnnotations);
                 this.resetHoveredAnnotations();
             }
         },
+    },
+    mounted() {
+        // Wait until the OpenLayers map is created.
+        this.updatePointerMoveHandler();
+        this.$watch('showAnnotationTooltip', this.updatePointerMoveHandler);
     },
 };
 </script>
