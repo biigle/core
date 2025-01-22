@@ -158,14 +158,17 @@ export default {
         },
     },
     watch: {
-        selectedAnnotations(annotations) {
-            if (annotations.length > 0) {
-                // Wait for the annotations list to be rendered so the offsetTop of each
-                // item can be determined.
-                this.$nextTick(function () {
-                    this.scrollIntoView(annotations);
-                });
-            }
+        selectedAnnotations : {
+            deep: true,
+            handler(annotations) {
+                if (annotations.length > 0) {
+                    // Wait for the annotations list to be rendered so the offsetTop of each
+                    // item can be determined.
+                    this.$nextTick(function () {
+                        this.scrollIntoView(annotations);
+                    });
+                }
+            },
         },
     },
 };

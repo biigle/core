@@ -1,5 +1,6 @@
 import AnnotationsApi from '@/core/api/annotations.js';
 import ImagesApi from '@/core/api/images.js';
+import {reactive} from 'vue';
 
 /**
 * Store for the annotations of the annotation tool
@@ -29,7 +30,7 @@ class Annotations {
     }
 
     parseResponse(response) {
-        return response.data;
+        return reactive(response.data);
     }
 
     resolveShape(annotation) {

@@ -15,7 +15,10 @@ export let plugins = {};
  * tool.
  */
 export default {
-    mixins: [AnnotationsTab],
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
+    extends: AnnotationsTab,
     computed: {
         plugins() {
             return plugins;

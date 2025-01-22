@@ -54,6 +54,9 @@ import { isInvalidShape } from '../utils.js';
  * @type {Object}
  */
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
     template: '#annotation-canvas-template',
     emits: [
         'moveend',
@@ -714,39 +717,45 @@ export default {
                 this.handleRegularImage(image, oldImage);
             }
         },
-        annotations(annotations) {
-            this.refreshAnnotationSource(annotations, this.annotationSource);
-            this.resetHoveredAnnotations();
+        annotations: {
+            deep: true,
+            handler(annotations) {
+                this.refreshAnnotationSource(annotations, this.annotationSource);
+                this.resetHoveredAnnotations();
+            },
         },
-        selectedAnnotations(annotations) {
-            // This allows selection of annotations outside OpenLayers and forwards
-            // the state to the SelectInteraction.
-            let features = this.selectedFeatures;
-            let featureIdMap = {};
-            let annotationIdMap = {};
-            annotations.forEach(a => annotationIdMap[a.id] = true);
-            let toRemove = [];
+        selectedAnnotations: {
+            deep: true,
+            handler(annotations) {
+                // This allows selection of annotations outside OpenLayers and forwards
+                // the state to the SelectInteraction.
+                let features = this.selectedFeatures;
+                let featureIdMap = {};
+                let annotationIdMap = {};
+                annotations.forEach(a => annotationIdMap[a.id] = true);
+                let toRemove = [];
 
-            features.forEach(f => {
-                const id = f.getId();
-                if (annotationIdMap[id]) {
-                    featureIdMap[id] = true;
+                features.forEach(f => {
+                    const id = f.getId();
+                    if (annotationIdMap[id]) {
+                        featureIdMap[id] = true;
+                    } else {
+                        toRemove.push(f);
+                    }
+                });
+
+                if (toRemove.length === features.getLength()) {
+                    features.clear();
                 } else {
-                    toRemove.push(f);
+                    toRemove.forEach(f => features.remove(f));
                 }
-            });
 
-            if (toRemove.length === features.getLength()) {
-                features.clear();
-            } else {
-                toRemove.forEach(f => features.remove(f));
-            }
-
-            annotations
-                .filter(a => !featureIdMap[a.id])
-                .forEach(
-                    a => features.push(this.annotationSource.getFeatureById(a.id))
-                );
+                annotations
+                    .filter(a => !featureIdMap[a.id])
+                    .forEach(
+                        a => features.push(this.annotationSource.getFeatureById(a.id))
+                    );
+            },
         },
         extent(extent, oldExtent) {
             // The extent only truly changes if the width and height changed.
