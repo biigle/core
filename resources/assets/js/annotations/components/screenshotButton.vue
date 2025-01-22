@@ -155,8 +155,8 @@ export default {
         setMap(map) {
             this.map = map;
         },
-        updateCurrentId(id) {
-            this.currentId = id;
+        updateCurrentId(e) {
+            this.currentId = e.id;
         },
     },
     created() {

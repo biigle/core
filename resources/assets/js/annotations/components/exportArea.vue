@@ -50,8 +50,10 @@ export default {
         hasExportArea() {
             return this.exportArea !== null;
         },
-        layer() {
-            return new VectorLayer({
+    },
+    methods: {
+        initialize() {
+            this.layer = new VectorLayer({
                 source: new VectorSource({
                     features: new Collection(),
                 }),
@@ -85,9 +87,8 @@ export default {
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
             });
-        },
-        drawInteraction() {
-            return new DrawInteraction({
+
+            this.drawInteraction = new DrawInteraction({
                 source: this.layer.getSource(),
                 type: 'Rectangle',
                 style: this.layer.getStyle(),
@@ -111,16 +112,18 @@ export default {
                     return geometry;
                 }
             });
-        },
-        modifyInteraction() {
-            return new ModifyInteraction({
+
+            this.modifyInteraction = new ModifyInteraction({
                 features: this.layer.getSource().getFeaturesCollection(),
                 style: this.layer.getStyle(),
                 deleteCondition: neverCondition,
             });
+
+            this.drawInteraction.setActive(false);
+            this.modifyInteraction.setActive(false);
+            this.drawInteraction.on('drawend', this.handleDrawend);
+            this.modifyInteraction.on('modifyend', this.handleModifyend);
         },
-    },
-    methods: {
         toggleEditing() {
             this.isEditing = !this.isEditing;
             if (this.isEditing) {
@@ -144,8 +147,8 @@ export default {
                     });
             }
         },
-        updateCurrentImage(id, image) {
-            this.currentImage = image;
+        updateCurrentImage(e) {
+            this.currentImage = e.image;
         },
         maybeDrawArea() {
             this.clearSource();
@@ -221,6 +224,7 @@ export default {
         },
     },
     created() {
+        this.initialize();
         this.volumeId = biigle.$require('annotations.volumeId');
 
         if (this.settings.has('exportAreaOpacity')) {
@@ -228,11 +232,6 @@ export default {
         }
 
         this.exportArea = biigle.$require('annotations.exportArea');
-
-        this.drawInteraction.setActive(false);
-        this.modifyInteraction.setActive(false);
-        this.drawInteraction.on('drawend', this.handleDrawend);
-        this.modifyInteraction.on('modifyend', this.handleModifyend);
 
         Events.on('images.change', this.updateCurrentImage);
         Events.on('annotations.map.init', this.extendMap);

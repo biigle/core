@@ -48,8 +48,8 @@ export default {
         updateShowIndicator(show) {
             this.showIndicator = show !== false;
         },
-        updateCurrentId(id) {
-            this.currentId = id;
+        updateCurrentId(e) {
+            this.currentId = e.id;
         },
     },
     watch: {

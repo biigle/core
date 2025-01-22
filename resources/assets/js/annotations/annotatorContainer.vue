@@ -470,7 +470,7 @@ export default {
             this.selectedAnnotations.forEach(this.handleAttachLabel);
         },
         emitImageChanged() {
-            Events.emit('images.change', this.imageId, this.image);
+            Events.emit('images.change', {id: this.imageId, image: this.image});
         },
         cachePreviousAndNext() {
             let toCache = [];
