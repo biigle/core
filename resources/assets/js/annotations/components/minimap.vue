@@ -1,5 +1,5 @@
 <template>
-    <div class="minimap"></div>
+    <div class="minimap" :style="styleObject"></div>
 </template>
 
 <script>
@@ -40,11 +40,25 @@ export default {
     },
     data() {
         return {
-            //
+            // Give the element some initial dimension so openlayers does not show a
+            // "zero size" warning.
+            width: 100,
+            height: 100,
         };
     },
     computed: {
-        //
+        visible() {
+            return this.extent.some(x => x > 0);
+        },
+        styleObject() {
+            return {
+                width: this.width + 'px',
+                height: this.height + 'px',
+                // This is used to hide the minimap while the image is still loading
+                // so no empty element is shown.
+                visibility: this.visible ? 'visible' : 'hidden',
+            };
+        },
     },
     methods: {
         updateViewport() {
@@ -86,11 +100,14 @@ export default {
                 resolution: resolution,
             }));
 
+            if (resolution <= 0) {
+                return;
+            }
+
             // Update the minimap element size so it has the same dimensions than the
             // image displayed by OpenLayers.
-            this.$el.style.width = Math.round(imageWidth / resolution) + 'px';
-            this.$el.style.height = Math.round(imageHeight / resolution) + 'px';
-            this.minimap.updateSize();
+            this.width = Math.round(imageWidth / resolution);
+            this.height = Math.round(imageHeight / resolution);
         },
         refreshImageLayer(e) {
             // Set or refresh the layer that displays the image. This is done after
@@ -153,6 +170,7 @@ export default {
             deep: true,
             handler() {
                 this.updateElementSize();
+                this.$nextTick(() => this.minimap.updateSize());
             },
         },
     },
@@ -194,10 +212,12 @@ export default {
     },
     mounted() {
         this.updateElementSize();
-        this.minimap.setTarget(this.$el);
-        // Manually update the viewport in case the minimap was created/toggled when
-        // the annotation map is already there.
-        this.updateViewport();
+        this.$nextTick(() => {
+            this.minimap.setTarget(this.$el);
+            // Manually update the viewport in case the minimap was created/toggled when
+            // the annotation map is already there.
+            this.updateViewport();
+        });
     },
     beforeUnmount() {
         let map = this.$parent.map;
