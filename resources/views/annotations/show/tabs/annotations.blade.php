@@ -1,9 +1,9 @@
 <sidebar-tab name="annotations" icon="map-marker-alt" title="Annotations" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
     <annotations-tab
         :annotations="filteredAnnotations"
+        :all-annotations="annotations"
         :total-annotation-count="annotationCount"
         :selected-annotations="selectedAnnotations"
-        :annotation-filters="annotationFilters"
         :can-detach-others="@can('forceEditIn', $volume) true @else false @endcan"
         :has-active-filter="hasAnnotationFilter"
         :own-user-id="{{$user->id}}"
@@ -22,8 +22,8 @@
     <div class="annotations-tab">
         <div class="annotations-tab__header">
             <filters
-                 :annotation-filters="annotationFilters"
                  :has-active-filter="hasActiveFilter"
+                 :annotations="allAnnotations"
                  v-on:select="emitSelectFilter"
                  v-on:unselect="emitUnselectFilter"
                 ></filters>

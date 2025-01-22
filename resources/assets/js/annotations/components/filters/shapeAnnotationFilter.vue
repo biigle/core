@@ -1,11 +1,10 @@
 <script>
-import AnnotationFilter from '../mixins/annotationFilter.vue';
+import AnnotationFilter from '@/annotations/mixins/annotationFilter.vue';
 
-export default Vue.extend({
-    mixins: [AnnotationFilter],
+export default {
+    extends: AnnotationFilter,
     data() {
         return {
-            name: 'shape',
             shapes: [],
             placeholder: 'shape name',
         };
@@ -31,5 +30,8 @@ export default Vue.extend({
             });
         },
     },
-});
+    created() {
+        this.shapes = biigle.$require('annotations.shapes');
+    },
+};
 </script>

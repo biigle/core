@@ -9,17 +9,13 @@ import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.js';
 import Keyboard from '@/core/keyboard.js';
-import LabelFilter from './models/LabelAnnotationFilter.vue';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
-import SessionFilter from './models/SessionAnnotationFilter.vue';
 import Settings from './stores/settings.js';
 import SettingsTab from './components/settingsTab.vue';
-import ShapeFilter from './models/ShapeAnnotationFilter.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
-import UserFilter from './models/UserAnnotationFilter.vue';
 import VolumeImageAreaApi from './api/volumes.js';
 import {defineAsyncComponent} from 'vue'
 import {CrossOriginError} from './stores/images.js';
@@ -67,7 +63,6 @@ export default {
             image: null,
             annotations: [],
             annotationFilter: null,
-            annotationFilters: [],
             lastCreatedAnnotation: null,
             lastCreatedAnnotationTimeout: null,
             annotationOpacity: 1,
@@ -675,10 +670,6 @@ export default {
                 this.userUpdatedVolareResolution = true;
             }
         },
-        annotations(annotations) {
-            this.annotationFilters[0].annotations = annotations;
-            this.annotationFilters[1].annotations = annotations;
-        },
         image(image) {
             this.crossOriginError = image?.crossOrigin;
         },
@@ -688,16 +679,6 @@ export default {
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
-        this.annotationFilters = [
-            new LabelFilter(),
-            new UserFilter(),
-            new ShapeFilter({
-                data: {shapes: biigle.$require('annotations.shapes')}
-            }),
-            new SessionFilter({
-                data: {sessions: biigle.$require('annotations.sessions')}
-            }),
-        ];
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');

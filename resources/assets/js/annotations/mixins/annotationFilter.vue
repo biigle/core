@@ -15,12 +15,17 @@ export default {
         'select',
         'unselect',
     ],
+    props: {
+        annotations: {
+            type: Array,
+            required: true,
+        },
+    },
     components: {
         typeahead: Typeahead,
     },
     data() {
         return {
-            name: '',
             placeholder: '',
             selectedItem: null,
         };
@@ -52,9 +57,6 @@ export default {
                 this.$emit('unselect');
             }
         },
-    },
-    created() {
-        this.$mount();
     },
 };
 </script>

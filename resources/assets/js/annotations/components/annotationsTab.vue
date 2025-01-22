@@ -27,7 +27,7 @@ export default {
                 return [];
             },
         },
-        annotationFilters: {
+        allAnnotations: {
             type: Array,
             default() {
                 return [];

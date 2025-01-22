@@ -1,11 +1,10 @@
 <script>
-import AnnotationFilter from '../mixins/annotationFilter.vue';
+import AnnotationFilter from '@/annotations/mixins/annotationFilter.vue';
 
-export default Vue.extend({
-    mixins: [AnnotationFilter],
+export default {
+    extends: AnnotationFilter,
     data() {
         return {
-            name: 'session',
             sessions: [],
             placeholder: 'session name',
         };
@@ -57,5 +56,8 @@ export default Vue.extend({
             });
         },
     },
-});
+    created() {
+        this.sessions = biigle.$require('annotations.sessions');
+    },
+};
 </script>

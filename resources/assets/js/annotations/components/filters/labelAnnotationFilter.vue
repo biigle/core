@@ -1,13 +1,15 @@
 <script>
-import AnnotationFilter from '../mixins/annotationFilter.vue';
+import AnnotationFilter from '@/annotations/mixins/annotationFilter.vue';
+import LabelTypeahead from '@/label-trees/components/labelTypeahead.vue';
 
-export default Vue.extend({
-    mixins: [AnnotationFilter],
+export default {
+    extends: AnnotationFilter,
+    components: {
+        typeahead: LabelTypeahead,
+    },
     data() {
         return {
-            name: 'user',
-            annotations: [],
-            placeholder: 'user name',
+            placeholder: 'label name',
         };
     },
     computed: {
@@ -15,14 +17,11 @@ export default Vue.extend({
             let map = {};
             this.annotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (annotationLabel) {
-                    map[annotationLabel.user_id] = annotationLabel.user;
+                    map[annotationLabel.label.id] = annotationLabel.label;
                 });
             });
 
-            return Object.values(map).map(function (user) {
-                user.name = user.firstname + ' ' + user.lastname;
-                return user;
-            });
+            return Object.values(map);
         },
     },
     methods: {
@@ -35,10 +34,10 @@ export default Vue.extend({
 
             return annotations.filter(function (annotation) {
                 return annotation.labels.reduce(function (carry, annotationLabel) {
-                    return carry || annotationLabel.user_id === id;
+                    return carry || annotationLabel.label.id === id;
                 }, false);
             });
         },
     },
-});
+};
 </script>
