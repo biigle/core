@@ -5,16 +5,25 @@ import mitt from 'mitt';
  */
 const bus = mitt();
 
+const emit = bus.emit;
+bus.emit = function () {
+    if (arguments.length > 2) {
+        throw new Error('The events.emit() method does not support more than two arguments.');
+    }
+
+    return emit(...arguments);
+};
+
 // Vue 2 legacy support.
 bus.$on = function () {
     console.warn('The events.$on() method is deprecated. Use events.on() instead.');
-    bus.on(...arguments);
+    return bus.on(...arguments);
 };
 
 // Vue 2 legacy support.
 bus.$emit = function () {
     console.warn('The events.$emit() method is deprecated. Use events.emit() instead.');
-    bus.emit(...arguments);
+    return bus.emit(...arguments);
 };
 
 // Once polyfill. See: https://github.com/developit/mitt/issues/136#issuecomment-977934794
@@ -24,13 +33,13 @@ bus.once = (type, handler) => {
       handler(args);
     };
 
-    bus.on(type, fn);
+    return bus.on(type, fn);
 };
 
 // Vue 2 legacy support.
 bus.$once = function () {
     console.warn('The events.$once() method is deprecated. Use events.once() instead.');
-    bus.once(...arguments);
+    return bus.once(...arguments);
 };
 
 export default bus;
