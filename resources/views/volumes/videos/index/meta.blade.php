@@ -33,21 +33,22 @@
             @if (is_array($video->taken_at))
                 <metadata-modal v-bind:show-modal="showModal" v-bind:times="times" v-bind:items="items" v-bind:name="name" v-on:close-modal="hideMetadataModal"></metadata-modal>
                 <tr>
-                    <th>Created</th>
-                    <td>
-                        <button class="btn btn-default" type="button" title="Show full timestamps" v-on:click.prevent="showTimes()">Show values</button>
-                    </td>
+                    <th>
+                        <a class="btn-link" v-on:click.prevent="showTimes()">Created</a>
+                    </th>
+                    <td></td>
                 </tr>
                 @foreach ($metadata as $field => $value)
                     <tr>
+                    @if (is_array($value))
+                        <th>
+                            <a class="btn-link" v-on:click.prevent="showMetadata({{ json_encode($field) }})">{{ $metadataMap[$field] }}</a>
+                        </th>
+                        <td></td>
+                    @else
                         <th>{{ $metadataMap[$field] }}</th>
-                        @if (is_array($value))
-                            <td>
-                                <button class="btn btn-default" type="button" title="Show full metadata array" v-on:click.prevent="showMetadata({{ json_encode($field) }})">Show values</button>
-                            </td>
-                        @else
-                            <td>{{ $value }}</td>
-                        @endif
+                        <td>{{ $value }}</td>
+                    @endif
                     </tr>
                 @endforeach
             @else
