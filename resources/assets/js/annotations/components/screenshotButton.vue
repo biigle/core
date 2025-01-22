@@ -1,7 +1,7 @@
 <script>
+import Events from '../../core/events';
 import Messages from '../../core/messages/store';
 import Keyboard from '../../core/keyboard';
-import Events from '../../core/events';
 
 /**
  * A button that produces a screenshot of the map
@@ -163,11 +163,10 @@ export default {
         this.filenames.forEach((filename, index) => {
             this.filesObj[this.ids[index]] = filename;
         });
-
+        
         Keyboard.on('p', this.capture);
         Events.$on('annotations.map.init', this.setMap);
         Events.$on('videos.map.init', this.setMap);
     },
-
 };
 </script>
