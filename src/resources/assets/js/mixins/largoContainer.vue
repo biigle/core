@@ -527,16 +527,12 @@ export default {
         },
         fetchAllAnnotations() {
             this.startLoading();
-            Promise.all([
-                AnnotationsApi.fetchImageVolumeAnnotations({ id: this.volumeId }),
-                AnnotationsApi.fetchVideoVolumeAnnotations({ id: this.volumeId })
-            ])
+            AnnotationsApi.fetchVolumeAnnotations({ id: this.volumeId })
                 .then(this.parseResponse)
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        parseResponse(responses) {
-            let res = responses[0].body.length > 0 ? responses[0] : responses[1];
+        parseResponse(res) {
             // Map API-labels to LabelTree-labels to enable label selection between tabs
             this.annotationLabels = res.body.reduce((labelsObj, l) => {
                 let tIdx = this.labelTreesIndex[l.label_tree_id].index;
