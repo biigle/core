@@ -14,7 +14,7 @@
             v-if="hasSubControls"
             @click.stop class="control-button__sub-controls btn-group"
             >
-            <slot></slot>
+            <slot @active="updateActiveSubControls"></slot>
         </span>
     </span>
 </template>
@@ -29,8 +29,8 @@ import Loader from '@/core/components/loader.vue';
  */
 export default {
     emits: [
+        'active',
         'click',
-        'control-button-active',
     ],
     props: {
         title: {
@@ -125,17 +125,12 @@ export default {
         }
     },
     watch: {
-        active(active) {
-            this.$parent.$emit('control-button-active', active);
+        active: {
+            immediate: true,
+            handler(active) {
+                this.$emit('active', active);
+            },
         },
-    },
-    created() {
-        this.$on('control-button-active', this.updateActiveSubControls);
-    },
-    mounted() {
-        if (this.active) {
-            this.$parent.$emit('control-button-active', true);
-        }
     },
 };
 </script>

@@ -61,12 +61,14 @@
                 title="Draw a circle 𝗗"
                 :active="isDrawingCircle"
                 v-on:click="drawCircle"
+                v-slot="{onActive}"
                 >
                 <control-button
                     icon="icon-ellipse"
                     title="Draw an ellipse 𝗦𝗵𝗶𝗳𝘁+𝗗"
                     :active="isDrawingEllipse"
                     v-on:click="drawEllipse"
+                    v-on:active="onActive"
                     ></control-button>
             </control-button>
             <control-button
@@ -74,18 +76,21 @@
                 title="Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand"
                 :active="isDrawingLineString"
                 v-on:click="drawLineString"
+                v-slot="{onActive}"
                 >
                 <control-button
                     icon="fa-ruler"
                     title="Measure a line string 𝗦𝗵𝗶𝗳𝘁+𝗙"
                     :active="isMeasuring"
                     v-on:click="toggleMeasuring"
+                    v-on:active="onActive"
                     ></control-button>
                 <control-button
                     icon="fa-check"
                     title="Convert measurement to a line string 𝗘𝗻𝘁𝗲𝗿"
                     :disabled="cantConvertMeasureFeature"
                     v-on:click="convertMeasurement"
+                    v-on:active="onActive"
                     ></control-button>
             </control-button>
             <control-button
@@ -93,6 +98,7 @@
                 title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand"
                 :active="isDrawingPolygon"
                 v-on:click="drawPolygon"
+                v-slot="{onActive}"
                 >
                 <control-button
                     v-cloak
@@ -100,12 +106,14 @@
                     title="Draw a polygon using the brush tool 𝗘"
                     :active="isUsingPolygonBrush"
                     v-on:click="togglePolygonBrush"
+                    v-on:active="onActive"
                     ></control-button>
                 <control-button
                     v-cloak icon="fa-eraser"
                     title="Modify selected polygons using the eraser tool 𝗥"
                     :active="isUsingPolygonEraser"
                     v-on:click="togglePolygonEraser"
+                    v-on:active="onActive"
                     ></control-button>
                 <control-button
                     v-cloak
@@ -113,6 +121,7 @@
                     title="Modify selected polygons using the fill tool 𝗧"
                     :active="isUsingPolygonFill"
                     v-on:click="togglePolygonFill"
+                    v-on:active="onActive"
                     ></control-button>
                 <control-button
                     v-if="crossOrigin"
@@ -127,6 +136,7 @@
                     title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
                     :active="isMagicWanding"
                     v-on:click="toggleMagicWand"
+                    v-on:active="onActive"
                     ></control-button>
                 @mixin('imageAnnotationPolygonTools')
             </control-button>
@@ -138,12 +148,14 @@
                 title="Attach the currently selected label to existing annotations 𝗟"
                 :active="isAttaching"
                 v-on:click="toggleAttaching"
+                v-slot="{onActive}"
                 >
                 <control-button
                     icon="fa-sync-alt"
                     title="Swap the most recent label of an existing annotation with the currently selected one 𝗦𝗵𝗶𝗳𝘁+𝗟"
                     :active="isSwapping"
                     v-on:click="toggleSwapping"
+                    v-on:active="onActive"
                     ></control-button>
             </control-button>
             <control-button
