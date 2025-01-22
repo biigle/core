@@ -565,7 +565,7 @@ export default {
         },
         handleRequiresSelectedLabel() {
             Messages.info('Please select a label first.');
-            this.$refs.sidebar.handleOpenTab('open');
+            this.$refs.sidebar.handleOpenTab('labels');
         },
         maybeShowTilingInProgressMessage: function() {
             if (this.image.tilingInProgress) {
