@@ -20,9 +20,17 @@
 </template>
 
 <script>
-import AnnotationTrack from './annotationTrack';
+import AnnotationTrack from './annotationTrack.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'drag-x',
+        'overflow-bottom',
+        'overflow-top',
+        'scroll-y',
+        'select',
+    ],
     components: {
         annotationTrack: AnnotationTrack,
     },

@@ -1,12 +1,12 @@
 <script>
-import {simplifyPolygon} from "../../../annotations/ol/PolygonValidator";
+import {simplifyPolygon} from "@/annotations/ol/PolygonValidator";
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '../../../core/keyboard';
-import Styles from '../../../annotations/stores/styles';
+import Keyboard from '@/core/keyboard.js';
+import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import snapInteraction from "./snapInteraction.vue";
-import { isInvalidShape } from '../../../annotations/utils';
+import { isInvalidShape } from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -14,6 +14,13 @@ import { isInvalidShape } from '../../../annotations/utils';
  * @type {Object}
  */
 export default {
+    emits: [
+        'create-annotation',
+        'is-invalid-shape',
+        'pending-annotation',
+        'requires-selected-label',
+        'track-annotation',
+    ],
     mixins: [snapInteraction],
     data() {
         return {

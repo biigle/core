@@ -55,7 +55,7 @@
 </div>
 @endsection
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('videos.volumeId', {{$volume->id}});
     biigle.$declare('videos.id', {{$video->id}});
     biigle.$declare('videos.errors', {!!$errors!!});

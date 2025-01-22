@@ -119,7 +119,7 @@
 @endsection
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('admin.dayNames', {!! $dayNames !!});
         biigle.$declare('admin.imageAnnotationWeek', {!! $imageAnnotationWeek !!});
         biigle.$declare('admin.videoAnnotationWeek', {!! $videoAnnotationWeek !!});

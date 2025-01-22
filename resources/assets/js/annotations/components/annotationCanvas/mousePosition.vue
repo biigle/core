@@ -1,6 +1,6 @@
 <script>
-import MousePositionIndicator from '../mousePositionIndicator';
-import {throttle} from '../../../core/utils';
+import MousePositionIndicator from '../mousePositionIndicator.vue';
+import {throttle} from '@/core/utils.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the mouse position indicator.

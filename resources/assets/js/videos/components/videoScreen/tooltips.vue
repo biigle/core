@@ -1,5 +1,5 @@
 <script>
-import LabelTooltip from '../../../annotations/components/labelTooltip';
+import LabelTooltip from '@/annotations/components/labelTooltip.vue';
 
 /**
  * Mixin for the videoScreen component that contains logic for the tooltips.
@@ -7,6 +7,7 @@ import LabelTooltip from '../../../annotations/components/labelTooltip';
  * @type {Object}
  */
 export default {
+    emits: ['hoverFeatures'],
     components: {
         labelTooltip: LabelTooltip,
     },

@@ -18,7 +18,9 @@
                     @else
                         <img src="{{ asset(config('thumbnails.empty_url')) }}">
                     @endif
-                    <figcaption slot="caption">{{$volume->name}}</figcaption>
+                    <template #caption>
+                        <figcaption>{{$volume->name}}</figcaption>
+                    </template>
                 </preview-thumbnail>
             </a>
         </li>

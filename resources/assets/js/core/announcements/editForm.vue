@@ -1,5 +1,5 @@
 <script>
-import DatepickerDropdown from '../../uiv/datepickerDropdown';
+import DatepickerDropdown from '@/uiv/datepickerDropdown.vue';
 /**
  * The a form that creates a announcement
  */

@@ -1,12 +1,12 @@
-import SortComponent from '../components/sortComponent';
-import VolumeApi from '../api/volumes';
-import {handleErrorResponse} from '../../core/messages/store';
+import SortComponent from '../components/sortComponent.vue';
+import VolumeApi from '../api/volumes.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 let filenameSorter = {
     id: 'filename',
     types: ['image', 'video'],
     component: {
-        mixins: [SortComponent],
+        extends: SortComponent,
         data() {
             return {
                 fileIds: [],
@@ -30,7 +30,7 @@ let idSorter = {
     id: 'id',
     types: ['image', 'video'],
     component: {
-        mixins: [SortComponent],
+        extends: SortComponent,
         data() {
             return {
                 fileIds: [],
@@ -62,7 +62,8 @@ let randomSorter = {
     id: 'random',
     types: ['image', 'video'],
     component: {
-        mixins: [SortComponent],
+        extends: SortComponent,
+        emits: ['select'],
         data() {
             return {
                 fileIds: [],
@@ -105,7 +106,7 @@ let annotationTime = {
     id: 'annotationTime',
     types: ['image', 'video'],
     component: {
-        mixins: [SortComponent],
+        extends: SortComponent,
         data() {
             return {
                 volumeId: -1,
@@ -120,7 +121,7 @@ let annotationTime = {
             getSequence() {
                 return VolumeApi.getFileIdsSortedByAnnotationTimestamps({'id': this.volumeId})
                 .then((res) => res.body)
-                .catch(handleErrorResponse);           
+                .catch(handleErrorResponse);
             },
         },
         created() {

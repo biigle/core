@@ -1,12 +1,12 @@
-import AnnotationCanvas from './components/annotationCanvas';
-import AnnotationCanvasMixins from './stores/annotationCanvasMixins';
-import AnnotationsStore from './stores/annotations';
-import AttachLabelInteraction from './ol/AttachLabelInteraction';
-import ImagesStore from './stores/images';
-import StylesStore from './stores/styles';
-import {plugins as annotationsTabPlugins} from './components/siaAnnotationsTab';
-import {plugins as labelsTabPlugins} from './components/labelsTab';
-import {plugins as settingsTabPlugins} from './components/settingsTab';
+import AnnotationCanvas from './components/annotationCanvas.vue';
+import AnnotationCanvasMixins from './stores/annotationCanvasMixins.js';
+import AnnotationsStore from './stores/annotations.js';
+import AttachLabelInteraction from './ol/AttachLabelInteraction.js';
+import ImagesStore from './stores/images.js';
+import StylesStore from './stores/styles.js';
+import {plugins as annotationsTabPlugins} from './components/siaAnnotationsTab.vue';
+import {plugins as labelsTabPlugins} from './components/labelsTab.vue';
+import {plugins as settingsTabPlugins} from './components/settingsTab.vue';
 
 biigle.$declare('annotations.components.annotationCanvas', AnnotationCanvas);
 biigle.$declare('annotations.components.annotationsTabPlugins', annotationsTabPlugins);

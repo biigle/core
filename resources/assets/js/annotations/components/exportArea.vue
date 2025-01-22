@@ -2,8 +2,8 @@
 import Circle from '@biigle/ol/style/Circle';
 import Collection from '@biigle/ol/Collection';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Events from '../../core/events';
-import ExportAreaApi from '../api/exportArea';
+import Events from '@/core/events.js';
+import ExportAreaApi from '../api/exportArea.js';
 import Feature from '@biigle/ol/Feature';
 import Fill from '@biigle/ol/style/Fill';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
@@ -12,7 +12,7 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import {handleErrorResponse} from '../../core/messages/store';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 
 /**
@@ -21,6 +21,7 @@ import {never as neverCondition} from '@biigle/ol/events/condition';
  * @type {Object}
  */
 export default {
+    template: '#export-area-template',
     props: {
         settings: {
             type: Object,
@@ -49,8 +50,10 @@ export default {
         hasExportArea() {
             return this.exportArea !== null;
         },
-        layer() {
-            return new VectorLayer({
+    },
+    methods: {
+        initialize() {
+            this.layer = new VectorLayer({
                 source: new VectorSource({
                     features: new Collection(),
                 }),
@@ -84,9 +87,8 @@ export default {
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
             });
-        },
-        drawInteraction() {
-            return new DrawInteraction({
+
+            this.drawInteraction = new DrawInteraction({
                 source: this.layer.getSource(),
                 type: 'Rectangle',
                 style: this.layer.getStyle(),
@@ -110,16 +112,18 @@ export default {
                     return geometry;
                 }
             });
-        },
-        modifyInteraction() {
-            return new ModifyInteraction({
+
+            this.modifyInteraction = new ModifyInteraction({
                 features: this.layer.getSource().getFeaturesCollection(),
                 style: this.layer.getStyle(),
                 deleteCondition: neverCondition,
             });
+
+            this.drawInteraction.setActive(false);
+            this.modifyInteraction.setActive(false);
+            this.drawInteraction.on('drawend', this.handleDrawend);
+            this.modifyInteraction.on('modifyend', this.handleModifyend);
         },
-    },
-    methods: {
         toggleEditing() {
             this.isEditing = !this.isEditing;
             if (this.isEditing) {
@@ -143,8 +147,8 @@ export default {
                     });
             }
         },
-        updateCurrentImage(id, image) {
-            this.currentImage = image;
+        updateCurrentImage(e) {
+            this.currentImage = e.image;
         },
         maybeDrawArea() {
             this.clearSource();
@@ -220,6 +224,7 @@ export default {
         },
     },
     created() {
+        this.initialize();
         this.volumeId = biigle.$require('annotations.volumeId');
 
         if (this.settings.has('exportAreaOpacity')) {
@@ -228,13 +233,8 @@ export default {
 
         this.exportArea = biigle.$require('annotations.exportArea');
 
-        this.drawInteraction.setActive(false);
-        this.modifyInteraction.setActive(false);
-        this.drawInteraction.on('drawend', this.handleDrawend);
-        this.modifyInteraction.on('modifyend', this.handleModifyend);
-
-        Events.$on('images.change', this.updateCurrentImage);
-        Events.$on('annotations.map.init', this.extendMap);
+        Events.on('images.change', this.updateCurrentImage);
+        Events.on('annotations.map.init', this.extendMap);
     },
 };
 </script>

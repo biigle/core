@@ -1,5 +1,5 @@
 <script>
-import FileLabelsTab from '../../annotations/mixins/fileLabelsTab';
+import FileLabelsTab from '@/annotations/mixins/fileLabelsTab.vue';
 
 export default {
     mixins: [FileLabelsTab],

@@ -1,7 +1,17 @@
+<template>
+<button
+    class="btn btn-default"
+    title="Get a screenshot of the visible area 𝗣"
+    @click="capture"
+    >
+    <span class="fa fa-camera" aria-hidden="true"></span>
+    Capture screenshot
+</button>
+</template>
 <script>
-import Events from '../../core/events';
-import Messages from '../../core/messages/store';
-import Keyboard from '../../core/keyboard';
+import Events from '@/core/events.js';
+import Messages from '@/core/messages/store.js';
+import Keyboard from '@/core/keyboard.js';
 
 /**
  * A button that produces a screenshot of the map
@@ -145,8 +155,8 @@ export default {
         setMap(map) {
             this.map = map;
         },
-        updateCurrentId(id) {
-            this.currentId = id;
+        updateCurrentId(e) {
+            this.currentId = e.id;
         },
     },
     created() {
@@ -157,8 +167,8 @@ export default {
         });
         this.filenames = filenames;
         this.currentId = biigle.$require('annotations.imageId');
-        Events.$on('images.change', this.updateCurrentId);
-        Events.$on('annotations.map.init', this.setMap);
+        Events.on('images.change', this.updateCurrentId);
+        Events.on('annotations.map.init', this.setMap);
         Keyboard.on('p', this.capture);
     },
 };

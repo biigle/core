@@ -9,6 +9,7 @@
  * @type {Object}
  */
 export default {
+    emits: ['select'],
     props: {
         activeSorter: {
             type: String,

@@ -1,9 +1,9 @@
 <script>
-import LabelTreesApi from '../core/api/labelTree';
-import LoaderMixin from '../core/mixins/loader';
-import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
-import {handleErrorResponse} from '../core/messages/store';
+import LabelTreesApi from '@/core/api/labelTree.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import ProjectsApi from '@/core/api/projects.js';
+import Typeahead from '@/core/components/typeahead.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The panel for editing the authorized projects of a label tree
@@ -46,7 +46,7 @@ export default {
     methods: {
         fetchOwnProjects() {
             ProjectsApi.query().then((response) => {
-                Vue.set(this, 'ownProjects', response.body);
+                this.ownProjects = response.body;
             }, handleErrorResponse);
         },
         addAuthorizedProject(project) {

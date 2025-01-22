@@ -1,7 +1,7 @@
 <script>
-import CanvasSource from '../../../annotations/ol/source/Canvas';
+import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '../../../core/keyboard';
+import Keyboard from '@/core/keyboard.js';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
 
@@ -11,6 +11,11 @@ import View from '@biigle/ol/View';
  * @type {Object}
  */
 export default {
+    emits: [
+        'map-ready',
+        'seek',
+        'start-seeking',
+    ],
     data() {
         return {
             playing: false,

@@ -35,6 +35,11 @@
 
 <script>
 export default {
+    emits: [
+        'remove',
+        'select',
+        'unselect',
+    ],
     props: {
         file: {
             type: [Object, File],

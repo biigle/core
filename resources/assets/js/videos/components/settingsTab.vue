@@ -1,9 +1,10 @@
 <script>
-import PowerToggle from '../../core/components/powerToggle';
-import Settings from '../stores/settings';
-import Keyboard from '../../core/keyboard';
+import Keyboard from '@/core/keyboard.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import Settings from '../stores/settings.js';
 
 export default {
+    emits: ['update'],
     components: {
         powerToggle: PowerToggle,
     },

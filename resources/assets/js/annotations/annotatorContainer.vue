@@ -1,30 +1,41 @@
 <script>
-import AnnotationCanvas from './components/annotationCanvas';
-import AnnotationCanvasMixins from './stores/annotationCanvasMixins';
-import AnnotationModesTab from './components/annotationModesTab';
-import AnnotationsStore from './stores/annotations';
-import AnnotationsTab from './components/siaAnnotationsTab';
-import ColorAdjustmentTab from './components/colorAdjustmentTab';
-import Events from '../core/events';
-import ImageLabelTab from './components/imageLabelTab';
-import ImagesStore from './stores/images';
-import LabelFilter from './models/LabelAnnotationFilter';
-import LabelsTab from './components/labelsTab';
-import Loader from '../core/mixins/loader';
-import Messages from '../core/messages/store';
-import SessionFilter from './models/SessionAnnotationFilter';
-import Settings from './stores/settings';
-import SettingsTab from './components/settingsTab';
-import ShapeFilter from './models/ShapeAnnotationFilter';
-import Sidebar from '../core/components/sidebar';
-import SidebarTab from '../core/components/sidebarTab';
-import UserFilter from './models/UserAnnotationFilter';
-import VolumeImageAreaApi from './api/volumes';
-import {CrossOriginError} from './stores/images';
-import {debounce} from './../core/utils';
-import {handleErrorResponse} from '../core/messages/store';
-import {urlParams as UrlParams} from '../core/utils';
-import Keyboard from '../core/keyboard';
+import AnnotationCanvas from './components/annotationCanvas.vue';
+import AnnotationCanvasMixins from './stores/annotationCanvasMixins.js';
+import AnnotationModesTab from './components/annotationModesTab.vue';
+import AnnotationsStore from './stores/annotations.js';
+import AnnotationsTab from './components/siaAnnotationsTab.vue';
+import ColorAdjustmentTab from './components/colorAdjustmentTab.vue';
+import Events from '@/core/events.js';
+import ImageLabelTab from './components/imageLabelTab.vue';
+import ImagesStore from './stores/images.js';
+import Keyboard from '@/core/keyboard.js';
+import LabelsTab from './components/labelsTab.vue';
+import Loader from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.js';
+import Settings from './stores/settings.js';
+import SettingsTab from './components/settingsTab.vue';
+import Sidebar from '@/core/components/sidebar.vue';
+import SidebarTab from '@/core/components/sidebarTab.vue';
+import VolumeImageAreaApi from './api/volumes.js';
+import {defineAsyncComponent} from 'vue'
+import {CrossOriginError} from './stores/images.js';
+import {debounce} from '@/core/utils.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
+import {urlParams as UrlParams} from '@/core/utils.js';
+
+const asyncAnnotationCanvas = defineAsyncComponent({
+    loader: function () {
+        // This enables the addition of mixins to the annotation canvas from modules
+        // at runtime (e.g. by biigle/magic-sam).
+        AnnotationCanvasMixins.forEach(function (mixin) {
+            if (!AnnotationCanvas.mixins.includes(mixin)) {
+                AnnotationCanvas.mixins.push(mixin);
+            }
+        });
+
+        return Promise.resolve(AnnotationCanvas);
+    },
+});
 
 /**
  * View model for the annotator container
@@ -41,16 +52,7 @@ export default {
         colorAdjustmentTab: ColorAdjustmentTab,
         imageLabelTab: ImageLabelTab,
         settingsTab: SettingsTab,
-        annotationCanvas: function (resolve) {
-            // This enables the addition of mixins to the annotation canvas from modules
-            // at runtime (e.g. by biigle/magic-sam).
-            AnnotationCanvasMixins.forEach(function (mixin) {
-                if (!AnnotationCanvas.mixins.includes(mixin)) {
-                    AnnotationCanvas.mixins.push(mixin);
-                }
-            });
-            resolve(AnnotationCanvas);
-        },
+        annotationCanvas: asyncAnnotationCanvas,
     },
     data() {
         return {
@@ -61,7 +63,6 @@ export default {
             image: null,
             annotations: [],
             annotationFilter: null,
-            annotationFilters: [],
             lastCreatedAnnotation: null,
             lastCreatedAnnotationTimeout: null,
             annotationOpacity: 1,
@@ -117,9 +118,6 @@ export default {
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.selected);
         },
-        supportsColorAdjustment() {
-            return ImagesStore.supportsColorAdjustment;
-        },
         focussedAnnotation() {
             return this.filteredAnnotations[this.focussedAnnotationIndex];
         },
@@ -169,6 +167,9 @@ export default {
         }
     },
     methods: {
+        supportsColorAdjustment() {
+            return ImagesStore.supportsColorAdjustment;
+        },
         getImageAndAnnotationsPromises(id) {
             return [
                 ImagesStore.fetchAndDrawImage(id),
@@ -377,7 +378,7 @@ export default {
 
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
-            Vue.set(annotation, 'markedForDeletion', true);
+            annotation.markedForDeletion = true;
             AnnotationsStore.delete(annotation)
                 .catch(function (response) {
                     annotation.markedForDeletion = false;
@@ -464,7 +465,7 @@ export default {
             this.selectedAnnotations.forEach(this.handleAttachLabel);
         },
         emitImageChanged() {
-            Events.$emit('images.change', this.imageId, this.image);
+            Events.emit('images.change', {id: this.imageId, image: this.image});
         },
         cachePreviousAndNext() {
             let toCache = [];
@@ -564,7 +565,7 @@ export default {
         },
         handleRequiresSelectedLabel() {
             Messages.info('Please select a label first.');
-            this.$refs.sidebar.$emit('open', 'labels');
+            this.$refs.sidebar.handleOpenTab('labels');
         },
         maybeShowTilingInProgressMessage: function() {
             if (this.image.tilingInProgress) {
@@ -601,7 +602,7 @@ export default {
             this.handleSelectAnnotation(lastAnnotation);
         },
         openSidebarLabels() {
-            this.$refs.sidebar.$emit('open', 'labels');
+            this.$refs.sidebar.handleOpenTab('labels');
         },
     },
     watch: {
@@ -669,10 +670,6 @@ export default {
                 this.userUpdatedVolareResolution = true;
             }
         },
-        annotations(annotations) {
-            this.annotationFilters[0].annotations = annotations;
-            this.annotationFilters[1].annotations = annotations;
-        },
         image(image) {
             this.crossOriginError = image?.crossOrigin;
         },
@@ -682,16 +679,6 @@ export default {
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
-        this.annotationFilters = [
-            new LabelFilter(),
-            new UserFilter(),
-            new ShapeFilter({
-                data: {shapes: biigle.$require('annotations.shapes')}
-            }),
-            new SessionFilter({
-                data: {sessions: biigle.$require('annotations.sessions')}
-            }),
-        ];
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');
@@ -718,15 +705,15 @@ export default {
 
         // These Events are used by the SHERPA client of Michael Kloster and
         // retained for backwards compatibility.
-        Events.$on('annotations.select', this.handleSelectAnnotation);
-        Events.$on('annotations.deselect', this.handleDeselectAnnotation);
-        Events.$on('annotations.detachLabel', this.handleDetachAnnotationLabel);
-        Events.$on('annotations.delete', this.handleDeleteAnnotation);
-        Events.$on('annotations.focus', this.focusAnnotation);
+        Events.on('annotations.select', this.handleSelectAnnotation);
+        Events.on('annotations.deselect', this.handleDeselectAnnotation);
+        Events.on('annotations.detachLabel', this.handleDetachAnnotationLabel);
+        Events.on('annotations.delete', this.handleDeleteAnnotation);
+        Events.on('annotations.focus', this.focusAnnotation);
 
         if (UrlParams.get('annotation')) {
             let id = parseInt(UrlParams.get('annotation'));
-            Events.$once('images.change', () => {
+            Events.once('images.change', () => {
                 let annotations = this.annotations;
                 for (let i = annotations.length - 1; i >= 0; i--) {
                     if (annotations[i].id === id) {
@@ -744,8 +731,8 @@ export default {
         if (Settings.has('openTab')) {
             let openTab = Settings.get('openTab');
             if (openTab === 'color-adjustment') {
-                Events.$once('images.change', () => {
-                    if (this.supportsColorAdjustment) {
+                Events.once('images.change', () => {
+                    if (this.supportsColorAdjustment()) {
                         this.openTab = openTab;
                     }
                 });
@@ -755,9 +742,6 @@ export default {
         }
 
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
-    },
-    mounted() {
-        Events.$emit('annotations.map.init', this.$refs.canvas.map);
     },
 };
 </script>

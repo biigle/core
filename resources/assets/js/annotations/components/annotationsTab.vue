@@ -1,8 +1,17 @@
 <script>
-import Filters from './annotationsTabFilters';
-import LabelItem from './annotationsTabLabelItem';
+import Filters from './annotationsTabFilters.vue';
+import LabelItem from './annotationsTabLabelItem.vue';
 
 export default {
+    template: '#annotations-tab-template',
+    emits: [
+        'deselect',
+        'detach',
+        'focus',
+        'select',
+        'select-filter',
+        'unselect-filter',
+    ],
     components: {
         filters: Filters,
         labelItem: LabelItem,
@@ -18,7 +27,7 @@ export default {
                 return [];
             },
         },
-        annotationFilters: {
+        allAnnotations: {
             type: Array,
             default() {
                 return [];
@@ -149,14 +158,17 @@ export default {
         },
     },
     watch: {
-        selectedAnnotations(annotations) {
-            if (annotations.length > 0) {
-                // Wait for the annotations list to be rendered so the offsetTop of each
-                // item can be determined.
-                this.$nextTick(function () {
-                    this.scrollIntoView(annotations);
-                });
-            }
+        selectedAnnotations : {
+            deep: true,
+            handler(annotations) {
+                if (annotations.length > 0) {
+                    // Wait for the annotations list to be rendered so the offsetTop of each
+                    // item can be determined.
+                    this.$nextTick(function () {
+                        this.scrollIntoView(annotations);
+                    });
+                }
+            },
         },
     },
 };

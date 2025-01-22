@@ -1,5 +1,5 @@
 <script>
-import AnnotationsTab from './annotationsTab';
+import AnnotationsTab from './annotationsTab.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -15,7 +15,10 @@ export let plugins = {};
  * tool.
  */
 export default {
-    mixins: [AnnotationsTab],
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
+    extends: AnnotationsTab,
     computed: {
         plugins() {
             return plugins;

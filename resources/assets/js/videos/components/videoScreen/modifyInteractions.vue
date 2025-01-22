@@ -1,12 +1,12 @@
 <script>
-import AttachLabelInteraction from '../../../annotations/ol/AttachLabelInteraction';
-import Keyboard from '../../../core/keyboard';
+import AttachLabelInteraction from '@/annotations/ol/AttachLabelInteraction.js';
+import Keyboard from '@/core/keyboard.js';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
-import TranslateInteraction from '../../../annotations/ol/TranslateInteraction';
+import TranslateInteraction from '@/annotations/ol/TranslateInteraction.js';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
-import {simplifyPolygon} from "../../../annotations/ol/PolygonValidator";
-import {isInvalidShape} from '../../../annotations/utils';
+import {simplifyPolygon} from '@/annotations/ol/PolygonValidator.js';
+import {isInvalidShape} from '@/annotations/utils.js';
 
 const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
 
@@ -17,6 +17,17 @@ const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
  * @type {Object}
  */
 export default {
+    emits: [
+        'attach-label',
+        'attaching-active',
+        'delete',
+        'is-invalid-shape',
+        'link-annotations',
+        'modify',
+        'split-annotation',
+        'swap-label',
+        'swapping-active',
+    ],
     data() {
         return {
             // This is no interaction mode because we want the select interaction

@@ -1,10 +1,10 @@
 <script>
-import Events from '../core/events';
-import LabelTreeList from './components/labelTreeList';
-import LoaderMixin from '../core/mixins/loader';
-import ProjectsApi from '../core/api/projects';
-import {handleErrorResponse} from '../core/messages/store';
-import Typeahead from '../core/components/typeahead';
+import Events from '@/core/events.js';
+import LabelTreeList from './components/labelTreeList.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import ProjectsApi from '@/core/api/projects.js';
+import Typeahead from '@/core/components/typeahead.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],
@@ -24,7 +24,7 @@ export default {
     },
     computed: {
         hasLabelTrees() {
-            return this.labelTrees.length > 0;
+            return this.labelTreesCount > 0;
         },
         labelTreeIds() {
             return this.labelTrees.map((tree) => tree.id);
@@ -33,6 +33,9 @@ export default {
             return this.availableLabelTrees.filter(
                 (tree) => this.labelTreeIds.indexOf(tree.id) === -1
             );
+        },
+        labelTreesCount() {
+            return this.labelTrees.length;
         },
     },
     methods: {
@@ -91,8 +94,8 @@ export default {
         },
     },
     watch: {
-        labelTrees(labelTrees) {
-            Events.$emit('project.label-trees.count', labelTrees.length)
+        labelTreesCount(count) {
+            Events.emit('project.label-trees.count', count);
         },
     },
     created() {

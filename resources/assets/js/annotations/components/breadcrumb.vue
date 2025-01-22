@@ -14,7 +14,7 @@
     </span>
 </template>
 <script>
-import {capitalize} from '../../core/utils';
+import {capitalize} from '@/core/utils.js';
 
 const arcPosition = function (percent) {
     return [

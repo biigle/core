@@ -1,6 +1,6 @@
 <script>
-import LabelTypeaheadItem from './labelTypeaheadItem';
-import Typeahead from '../../core/components/typeahead';
+import LabelTypeaheadItem from './labelTypeaheadItem.vue';
+import Typeahead from '@/core/components/typeahead.vue';
 
 /**
  * A component that displays a single label of a label tree.
