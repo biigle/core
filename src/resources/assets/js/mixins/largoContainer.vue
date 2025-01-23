@@ -310,7 +310,7 @@ export default {
                 .then(
                     (response) => {
                         this.waitForSessionId = response.body.id;
-                        this.deleteLabelCount();
+                        this.resetLabelCount();
                     },
                     (response) => {
                         this.finishLoading();
@@ -510,7 +510,7 @@ export default {
             }, {});
             this.fetchedLabelCount = true;
         },
-        deleteLabelCount() {
+        resetLabelCount() {
             this.fetchedLabelCount = false;
             this.annotationLabels = {};
         }
