@@ -31,12 +31,8 @@ export default Vue.resource('api/v1/projects{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/projects{/id}/annotations/sort/similarity',
     },
-    getAllProjectsImageAnnotationLabels: {
+    getProjectAnnotationLabelCounts: {
         method: 'GET',
-        url: 'api/v1/projects{/id}/image-annotations'
+        url: 'api/v1/projects{/id}/labels-count'
     },
-    getAllProjectsVideoAnnotationLabels: {
-        method: 'GET',
-        url: 'api/v1/projects{/id}/video-annotations'
-    }
 });
