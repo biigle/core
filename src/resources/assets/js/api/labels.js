@@ -20,8 +20,4 @@ export default Vue.resource('api/v1/labels{/id}', {}, {
         method: 'GET',
         url: 'api/v1/labels{/id}/video-annotations',
     },
-    fetchVolumeAnnotationLabelCount: {
-        method: 'GET',
-        url: 'api/v1/volume{/id}/label-count',
-    },
 });
