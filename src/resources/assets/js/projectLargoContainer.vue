@@ -2,7 +2,6 @@
 import LargoContainer from './mixins/largoContainer';
 import ProjectsApi from './api/projects';
 import {IMAGE_ANNOTATION} from './constants';
-import {handleErrorResponse} from './import';
 
 /**
  * View model for the main Largo container (for projects)
@@ -13,7 +12,6 @@ export default {
         return {
             projectId: null,
             labelTrees: [],
-            annotationLabels: {},
         };
     },
     methods: {
@@ -44,11 +42,7 @@ export default {
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
         fetchLabelCount() {
-            this.startLoading();
-            ProjectsApi.getProjectAnnotationLabelCount({ id: this.projectId })
-                .then(this.parseResponse)
-                .catch(handleErrorResponse)
-                .finally(this.finishLoading);
+            return ProjectsApi.getProjectAnnotationLabelCount({ id: this.projectId });
         },
     },
     created() {

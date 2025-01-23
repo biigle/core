@@ -49,6 +49,9 @@ export default {
             }
 
             return response;
+        },
+        fetchLabelCount() {
+            return VolumesApi.fetchVolumeAnnotationLabelCount({ id: this.volumeId });
         }
     },
     created() {

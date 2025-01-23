@@ -15,7 +15,6 @@ import {SidebarTab} from '../import';
 import {Sidebar} from '../import';
 import LabelList from '../components/labelList.vue';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
-import AnnotationsApi from '../api/labels';
 
 /**
  * Mixin for largo view models
@@ -55,7 +54,6 @@ export default {
             similarityReference: null,
             pinnedImage: null,
             annotationLabels: {},
-            volumeId: 0,
             fetchedLabelCount: false,
         };
     },
@@ -490,12 +488,12 @@ export default {
         },
         handleOpenTab(tab) {
             if (tab === "annotations" && !this.fetchedLabelCount) {
-                this.fetchLabelCount();
+                this.getLabelCount();
             }
         },
-        fetchLabelCount() {
+        getLabelCount() {
             this.startLoading();
-            AnnotationsApi.fetchVolumeAnnotationLabelCount({ id: this.volumeId })
+            this.fetchLabelCount()
                 .then(this.parseResponse)
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
