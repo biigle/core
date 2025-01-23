@@ -4,7 +4,6 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use Biigle\Project;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Biigle\Http\Controllers\Api\Controller;
 
@@ -13,7 +12,7 @@ class ProjectAnnotationLabels extends Controller
     /**
      * Get all image labels and annotation count for a given project
      * 
-     * @api {get} projects/:pid/labels-count Get annotation labels with a annotation count
+     * @api {get} projects/:pid/label-count Get annotation labels with a annotation count
      * @apiGroup Projects
      * @apiName test
      * @apiParam {Number} id The Project ID

@@ -53,7 +53,7 @@ $router->group([
         'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
     ]);
 
-    $router->get('projects/{id}/labels-count', [
+    $router->get('projects/{id}/label-count', [
         'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
     ]);
 

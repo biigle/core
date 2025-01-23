@@ -33,6 +33,6 @@ export default Vue.resource('api/v1/projects{/id}/largo', {}, {
     },
     getProjectAnnotationLabelCounts: {
         method: 'GET',
-        url: 'api/v1/projects{/id}/labels-count'
+        url: 'api/v1/projects{/id}/label-count'
     },
 });
