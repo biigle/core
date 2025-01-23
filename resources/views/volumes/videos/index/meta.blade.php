@@ -34,7 +34,7 @@
                 <metadata-modal v-bind:show-modal="showModal" v-bind:times="times" v-bind:items="items" v-bind:name="name" v-on:close-modal="hideMetadataModal"></metadata-modal>
                 <tr>
                     <th>
-                        <a class="btn-link" v-on:click.prevent="showTimes()">Created</a>
+                        <a href="#" v-on:click.prevent="showTimes()">Created</a>
                     </th>
                     <td></td>
                 </tr>
@@ -42,7 +42,7 @@
                     <tr>
                     @if (is_array($value))
                         <th>
-                            <a class="btn-link" v-on:click.prevent="showMetadata({{ json_encode($field) }})">{{ $metadataMap[$field] }}</a>
+                            <a href="#" v-on:click.prevent="showMetadata({{ json_encode($field) }})">{{ $metadataMap[$field] }}</a>
                         </th>
                         <td></td>
                     @else

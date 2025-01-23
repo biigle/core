@@ -47,8 +47,6 @@ export default {
             this.showModal = true;
         },
         hideMetadataModal() {
-            // reset items for next metadata
-            this.items = [];
             this.showModal = false;
         },
         handleError(message) {

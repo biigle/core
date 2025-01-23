@@ -358,9 +358,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'show-video-annotation',
             'uses' => 'VideoAnnotationController@show',
         ]);
-
-        // Legacy support.
-        $router->redirect('video-annotate/{id}', '/videos/{id}/annotations');
     });
 
 });

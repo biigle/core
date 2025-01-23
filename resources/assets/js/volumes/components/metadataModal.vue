@@ -2,7 +2,7 @@
     <modal
         ref="modal"
         v-model="show"
-        size="sm"
+        size="md"
         :title="name"
         :footer="false"
         >
