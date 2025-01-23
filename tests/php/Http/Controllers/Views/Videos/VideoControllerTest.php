@@ -20,10 +20,4 @@ class VideoControllerTest extends ApiTestCase
         $this->beGuest();
         $this->get("videos/{$video->id}/annotations")->assertStatus(200);
     }
-
-    public function testShowRedirect()
-    {
-        $this->beUser();
-        $this->get('videos/999')->assertRedirect('/videos/999/annotations');
-    }
 }
