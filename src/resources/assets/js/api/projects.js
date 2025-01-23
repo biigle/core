@@ -31,7 +31,7 @@ export default Vue.resource('api/v1/projects{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/projects{/id}/annotations/sort/similarity',
     },
-    getProjectAnnotationLabelCounts: {
+    getProjectAnnotationLabelCount: {
         method: 'GET',
         url: 'api/v1/projects{/id}/label-count'
     },

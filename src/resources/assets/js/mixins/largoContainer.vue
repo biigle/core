@@ -495,7 +495,7 @@ export default {
         },
         fetchLabelCount() {
             this.startLoading();
-            AnnotationsApi.fetchVolumeAnnotations({ id: this.volumeId })
+            AnnotationsApi.fetchVolumeAnnotationLabelCount({ id: this.volumeId })
                 .then(this.parseResponse)
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);

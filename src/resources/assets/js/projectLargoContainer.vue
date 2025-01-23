@@ -45,7 +45,7 @@ export default {
         },
         fetchLabelCount() {
             this.startLoading();
-            ProjectsApi.getProjectAnnotationLabelCounts({ id: this.projectId })
+            ProjectsApi.getProjectAnnotationLabelCount({ id: this.projectId })
                 .then(this.parseResponse)
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
