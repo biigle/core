@@ -39,7 +39,7 @@
           selected="Shapes"
           v-model="selectedFilter"
           @change="changeSelectedFilter"
-          title="Which filter rules to apply"
+          title="Select attribute for filtering"
           @click.once="loadApiFilters"
         >
           <option
@@ -50,7 +50,7 @@
         </select>
       </div>
       <div class="form-group largo-filter-select filter-select">
-        <select title="Filter annotations that have or do not have the selected value" class="form-control" v-model="negate" selected="true" required>
+        <select class="form-control" v-model="negate" selected="true" required>
           <option :value="false">is</option>
           <option :value="true">is not</option>
         </select>
@@ -67,8 +67,8 @@
         </select>
       </div>
       <div class="form-group filter-select largo-filter-select">
-        <button type="button" class="btn btn-default" @click="addFilter">
-        Add filter
+        <button type="button" class="btn btn-default btn-block" title="Add the selected filter rule" @click="addFilter">
+        Add rule
       </button>
 
       </div>

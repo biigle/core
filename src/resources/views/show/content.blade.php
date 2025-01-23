@@ -56,7 +56,7 @@
         @endcan
         <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
     </sidebar-tab>
-    <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">
+    <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort" :highlight="sortingIsActive">
         <sorting-tab
             :needs-similarity-reference="needsSimilarityReference"
             :sort-key="sortingKey"
@@ -67,7 +67,7 @@
             v-on:cancel-similarity="handleCancelSimilaritySort"
             ></sorting-tab>
     </sidebar-tab>
-<sidebar-tab :highlight="hasActiveFilters" v-on:disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter annotations">
+<sidebar-tab :highlight="hasActiveFilters" v-on:disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter">
         <filtering-tab
             v-on:handle-selected-filters="handleSelectedFilters"
         ></filtering-tab>

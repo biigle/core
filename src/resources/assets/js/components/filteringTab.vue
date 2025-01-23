@@ -9,13 +9,13 @@
       </annotation-filter>
     </form>
     <ul class="list-group">
-      <li class="list-group-item" v-if="activeFilters.length == 0">
-        <span>No filter rules</span>
+      <li class="list-group-item text-muted" v-if="activeFilters.length == 0">
+        No filter rules
       </li>
       <li class="list-group-item" v-for="(filter, k) in activeFilters">
-          <span v-if="k > 0"> {{ logicString }} </span> <span>{{ filter.name }}</span>
-        <button @click="removeFilter(k)" type="button" class="close">
-          <span aria-hidden="true">x</span>
+        <span v-if="k > 0"> {{ logicString }} </span> <span>{{ filter.name }}</span>
+        <button @click="removeFilter(k)" type="button" class="close" title="Remove this rule">
+          <span aria-hidden="true">&times;</span>
         </button>
       </li>
     </ul>
@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       activeFilters: [],
-      logicString: 'And ',
+      logicString: 'and ',
     };
   },
   methods: {
@@ -47,7 +47,7 @@ export default {
     },
     setUnionLogic(union){
       this.union  = union
-      this.logicString = union ? 'Or ' : 'And '
+      this.logicString = union ? 'or ' : 'and '
       this.filterAnnotations()
     },
     addNewFilter(filter) {
