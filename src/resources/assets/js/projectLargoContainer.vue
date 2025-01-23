@@ -43,7 +43,7 @@ export default {
 
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
-        fetchAllAnnotations() {
+        fetchLabelCount() {
             this.startLoading();
             ProjectsApi.getProjectAnnotationLabelCounts({ id: this.projectId })
                 .then(this.parseResponse)

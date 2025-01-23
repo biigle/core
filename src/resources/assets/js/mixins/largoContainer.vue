@@ -56,8 +56,7 @@ export default {
             pinnedImage: null,
             annotationLabels: {},
             volumeId: 0,
-            fetchedAllAnnotations: false,
-            changedAnnotations: {},
+            fetchedLabelCount: false,
         };
     },
     provide() {
@@ -286,37 +285,6 @@ export default {
                 }
             }
         },
-        getChangedAnnotations() {
-            // No need to save changes if data was not loaded yet
-            if (!this.fetchedAllAnnotations) {
-                return;
-            }
-
-            let changedAnnotations = {};
-
-            this.dismissedAnnotations.forEach((a) => {
-                changedAnnotations[a.id] = { oldLabelId: a.label_id, newLabelId: null };
-            });
-
-            this.annotationsWithNewLabel.forEach((a) => {
-                if (a.label_id != a.newLabel.id) {
-                    changedAnnotations[a.id] = { oldLabelId: a.label_id, newLabelId: a.newLabel.id };
-                } else if (changedAnnotations[a.id] && a.label_id === a.newLabel.id) {
-                    delete changedAnnotations[a.id];
-                }
-                // Add new label to annotation tab
-                if (!this.annotationLabels.hasOwnProperty(a.newLabel.id)) {
-                    let tIdx = this.labelTreesIndex[a.newLabel.label_tree_id].index;
-                    let lIdx = this.labelTreesIndex[a.newLabel.label_tree_id].labels[a.newLabel.id];
-                    let label = this.labelTrees[tIdx].labels[lIdx];
-                    label.count = 0;
-                    Vue.set(this.annotationLabels, a.newLabel.id, label);
-                }
-
-            });
-
-            return changedAnnotations;
-        },
         save() {
             if (this.loading) {
                 return
@@ -344,7 +312,7 @@ export default {
                 .then(
                     (response) => {
                         this.waitForSessionId = response.body.id;
-                        this.changedAnnotations = this.getChangedAnnotations();
+                        this.deleteLabelCount();
                     },
                     (response) => {
                         this.finishLoading();
@@ -521,11 +489,11 @@ export default {
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
         handleOpenTab(tab) {
-            if (tab === "annotations" && !this.fetchedAllAnnotations) {
-                this.fetchAllAnnotations();
+            if (tab === "annotations" && !this.fetchedLabelCount) {
+                this.fetchLabelCount();
             }
         },
-        fetchAllAnnotations() {
+        fetchLabelCount() {
             this.startLoading();
             AnnotationsApi.fetchVolumeAnnotations({ id: this.volumeId })
                 .then(this.parseResponse)
@@ -542,8 +510,12 @@ export default {
                 labelsObj[label.id] = label;
                 return labelsObj;
             }, {});
-            this.fetchedAllAnnotations = true;
+            this.fetchedLabelCount = true;
         },
+        deleteLabelCount() {
+            this.fetchedLabelCount = false;
+            this.annotationLabels = {};
+        }
     },
     watch: {
         annotations(annotations) {
