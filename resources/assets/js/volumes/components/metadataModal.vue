@@ -1,22 +1,28 @@
 <template>
     <modal
-        id="modal-show-metadata"
         ref="modal"
         v-model="show"
-        size="lg"
+        size="sm"
         :title="name"
         :footer="false"
         >
-        <div class="panel panel-default table-responsive">
+        <div class="panel panel-default">
             <table class="table">
                 <thead>
                     <tr>
-                        <th v-for="time in times">{{ time }}</th>
+                        <th class="text-center" v-if="times">{{ "Time" }}</th>
+                        <th class="text-center" v-if="name !== 'Times'">{{ name }}</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-if="items">
-                        <td v-for="item in items">{{ item }}</td>
+                <tbody v-if="name === 'Times'">
+                    <tr v-for="time in times">
+                        <td class="text-center">{{ time }}</td>
+                    </tr>
+                </tbody>
+                <tbody v-else-if="times.length === items.length">
+                    <tr v-for="(item, index) in items">
+                        <td class="text-center">{{ times[index] }}</td>
+                        <td class="text-center">{{ item }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -70,7 +76,6 @@ export default {
     },
     created() {
         this.show = false;
-        this.$emit('load-modal');
     }
 }
 </script>

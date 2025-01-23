@@ -16,6 +16,8 @@ export default {
     data() {
         return {
             showModal: false,
+            metadata: null,
+            metadataMap: {},
             times: [],
             items: [],
             name: "",
@@ -39,9 +41,9 @@ export default {
             this.name = "Times";
             this.showModal = true;
         },
-        getMetadata(key, data) {
-            this.name = key;
-            this.items = data;
+        showMetadata(field) {
+            this.name = this.metadataMap[field];
+            this.items = this.metadata[field];
             this.showModal = true;
         },
         hideMetadataModal() {
@@ -53,5 +55,10 @@ export default {
             Messages.danger(message);
         },
     },
+    created() {
+        this.getTimes(biigle.$require('videos.times'));
+        this.metadata = biigle.$require('videos.metadata');
+        this.metadataMap = biigle.$require('videos.metadataMap');
+    }
 };
 </script>
