@@ -163,6 +163,9 @@ export default {
             return this.needsSimilarityReference || this.sortingKey === SORT_KEY.SIMILARITY;
         },
         labelTreesIndex() {
+            // Map api-labels to labelTree-labels to enable label selection between tabs.
+            // Label selection only works between tabs if the same label object is used.
+            // Retrieve label from tree by using labels tree index.
             let index = {};
             this.labelTrees.forEach((t, i) => {
                 index[t.id] = { index: i, labels: {} };
@@ -499,7 +502,6 @@ export default {
                 .finally(this.finishLoading);
         },
         parseResponse(res) {
-            // Map API-labels to LabelTree-labels to enable label selection between tabs
             this.annotationLabels = res.body.reduce((labelsObj, l) => {
                 let tIdx = this.labelTreesIndex[l.label_tree_id].index;
                 let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
