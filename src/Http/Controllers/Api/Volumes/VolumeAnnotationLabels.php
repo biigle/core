@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
+use Biigle\Label;
 use Biigle\Volume;
-use Illuminate\Support\Facades\DB;
 use Biigle\Http\Controllers\Api\Controller;
 
 class VolumeAnnotationLabels extends Controller
@@ -38,13 +38,13 @@ class VolumeAnnotationLabels extends Controller
         $this->authorize('access', $volume);
 
         if ($volume->isImageVolume()) {
-            $labelQuery = DB::table('labels')
+            $labelQuery = Label::query()
                 ->join('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
                 ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
                 ->join('images', 'image_annotations.image_id', '=', 'images.id')
                 ->where('images.volume_id', '=', $id);
         } else {
-            $labelQuery = DB::table('labels')
+            $labelQuery = Label::query()
                 ->join('video_annotation_labels', 'labels.id', '=', 'video_annotation_labels.label_id')
                 ->join('video_annotations', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
                 ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
@@ -52,8 +52,8 @@ class VolumeAnnotationLabels extends Controller
         }
 
         return $labelQuery
-            ->select('labels.*', DB::raw('COUNT(labels.id) as count'))
-            ->groupBy('labels.id')
+            ->selectRaw('labels.id, labels.name, labels.color, labels.label_tree_id, count(labels.id) as count')
+            ->groupBy(['labels.id', 'labels.name', 'labels.color', 'labels.label_tree_id'])
             ->orderBy('labels.name')
             ->get();
     }
