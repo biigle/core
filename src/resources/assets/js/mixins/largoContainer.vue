@@ -503,11 +503,16 @@ export default {
         },
         parseResponse(res) {
             this.annotationLabels = res.body.reduce((labelsObj, l) => {
-                let tIdx = this.labelTreesIndex[l.label_tree_id].index;
-                let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
-                let label = this.labelTrees[tIdx].labels[lIdx];
-                label.count = l.count;
-                labelsObj[label.id] = label;
+                if (this.labelTreesIndex.hasOwnProperty(l.label_tree_id)) {
+                    let tIdx = this.labelTreesIndex[l.label_tree_id].index;
+                    let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
+                    let label = this.labelTrees[tIdx].labels[lIdx];
+                    label.count = l.count;
+                    labelsObj[label.id] = label;
+                } else {
+                    l.selected = false;
+                    labelsObj[l.id] = l;
+                }
                 return labelsObj;
             }, {});
             this.fetchedLabelCount = true;
