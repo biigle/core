@@ -5,8 +5,8 @@
         v-on:deselect="handleDeselectedLabel"
         inline-template
         >
-            <div class="annotations-tab">
-                <div class="annotations-tab__header">
+            <div class="annotations-tab--largo">
+                <div class="annotations-tab__header--largo">
                     <div class="text-muted">Total
                         <span
                             class="pull-right badge"
@@ -14,7 +14,7 @@
                         ></span>          
                     </div> 
                 </div>
-                <ul class="annotations-tab__list list-unstyled" ref="scrollList">
+                <ul class="annotations-tab__list--largo list-unstyled" ref="scrollList">
                     <label-item
                          v-for="item in labels"
                          :key="item.id"
