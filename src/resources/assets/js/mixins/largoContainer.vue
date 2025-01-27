@@ -53,7 +53,7 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            annotationLabels: {},
+            labels: {},
             fetchedLabelCount: false,
         };
     },
@@ -502,7 +502,7 @@ export default {
                 .finally(this.finishLoading);
         },
         parseResponse(res) {
-            this.annotationLabels = res.body.reduce((labelsObj, l) => {
+            this.labels = res.body.reduce((labelsObj, l) => {
                 if (this.labelTreesIndex.hasOwnProperty(l.label_tree_id)) {
                     let tIdx = this.labelTreesIndex[l.label_tree_id].index;
                     let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
@@ -519,7 +519,7 @@ export default {
         },
         resetLabelCount() {
             this.fetchedLabelCount = false;
-            this.annotationLabels = {};
+            this.labels = {};
         }
     },
     watch: {
