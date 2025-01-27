@@ -1,5 +1,5 @@
 <template>
-    <li v-if="showLabel" class="annotations-tab-item--largo" :class="classObject" :title="title">
+    <li class="annotations-tab-item--largo" :class="classObject" :title="title">
         <div class="annotations-tab-item__title--largo" @click="emitSelectLabel">
             <span class="pull-right badge" v-text="count" :title="countTitle"></span>
             <span class="annotations-tab-item__color--largo" :style="colorStyle"></span>
@@ -37,9 +37,6 @@ export default {
         count() {
             return this.label.count;
         },
-        showLabel() {
-            return this.count > 0;
-        }
     },
     methods: {
         emitSelectLabel() {
