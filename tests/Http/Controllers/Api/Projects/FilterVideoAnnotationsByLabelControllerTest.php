@@ -3,16 +3,9 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
-use Carbon\Carbon;
-use Biigle\MediaType;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VideoTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
-use Illuminate\Testing\TestResponse;
-use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
-use Symfony\Component\HttpFoundation\Response;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 
 class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 {

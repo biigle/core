@@ -2,11 +2,10 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
-use Biigle\Project;
-use Biigle\ImageAnnotation;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
+use Biigle\Project;
+use Illuminate\Http\Request;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {

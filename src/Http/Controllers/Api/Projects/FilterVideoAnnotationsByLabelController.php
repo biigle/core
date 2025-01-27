@@ -2,11 +2,10 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Biigle\Http\Controllers\Api\Controller;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {

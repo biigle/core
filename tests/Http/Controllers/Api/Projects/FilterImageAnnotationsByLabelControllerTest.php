@@ -3,14 +3,9 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
-use Illuminate\Testing\TestResponse;
-use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
-use Symfony\Component\HttpFoundation\Response;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
 
 class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 {
