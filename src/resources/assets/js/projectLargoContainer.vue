@@ -42,7 +42,7 @@ export default {
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
         fetchLabelCount() {
-            return ProjectsApi.getProjectAnnotationLabelCount({ id: this.projectId });
+            return ProjectsApi.fetchProjectAnnotationLabelCount({ id: this.projectId });
         },
     },
     created() {
