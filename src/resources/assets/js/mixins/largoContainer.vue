@@ -536,6 +536,7 @@ export default {
             if (this.isInDismissStep) {
                 this.$refs.dismissGrid.setOffset(0);
             }
+            // Old label can still be selected if selection was triggered in label list component
             if (oldLabel?.selected) {
                 oldLabel.selected = false;
             }
