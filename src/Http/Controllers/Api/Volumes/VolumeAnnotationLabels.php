@@ -16,17 +16,13 @@ class VolumeAnnotationLabels extends Controller
      * @apiName test
      * @apiParam {Number} id The Volume ID
      * @apiPermission projectMember
-     * @apiDescription Returns a collection of project image labels, and annotation label counts
+     * @apiDescription Returns a collection of project image labels and annotation label counts
      * 
      * @apiSuccessExample {json} Success response:
      * [{"id":1,
      * "name":"a",
      * "color":"f2617c",
-     * "parent_id":null,
      * "label_tree_id":1,
-     * "source_id":null,
-     * "label_source_id":null,
-     * "uuid":"6d2e6061-9ed1-41df-92f0-4862d0d4b12e",
      * "count":10}]
      *
      * @param int $id Volume ID

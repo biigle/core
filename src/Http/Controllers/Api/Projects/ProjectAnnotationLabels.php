@@ -23,11 +23,7 @@ class ProjectAnnotationLabels extends Controller
      * [{"id":1,
      * "name":"a",
      * "color":"f2617c",
-     * "parent_id":null,
      * "label_tree_id":1,
-     * "source_id":null,
-     * "label_source_id":null,
-     * "uuid":"6d2e6061-9ed1-41df-92f0-4862d0d4b12e",
      * "count":10}]
      *
      * @param int $id Project ID
