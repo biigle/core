@@ -164,7 +164,7 @@ export default {
         },
         labelTreesIndex() {
             // Map api-labels to labelTree-labels to enable label selection between tabs.
-            // Label selection only works between tabs if the same label object is used.
+            // Selected labels are highlighted in label tree and label list tabs if the same label object is used.
             // Retrieve label from tree by using labels tree index.
             let index = {};
             this.labelTrees.forEach((t, i) => {
