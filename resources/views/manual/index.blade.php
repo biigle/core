@@ -234,11 +234,11 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', ['videos', 'fixing-invalid-moov-atom'])}}">Invalid Moov Atom Position</a>
+                <a href="{{route('manual-tutorials', ['videos', 'fix-video-encoding'])}}">Fix video encoding</a>
             </h4>
 
             <p>
-                Learn how to fix a video's invalid moov atom position.
+                Learn how to fix invalid video encoding.
             </p>
 
             <h3>Reports</h3>
