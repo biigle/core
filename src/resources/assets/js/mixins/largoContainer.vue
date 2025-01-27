@@ -544,7 +544,6 @@ export default {
     },
     created() {
         this.user = biigle.$require('largo.user');
-        this.volumeId = biigle.$require('largo.volumeId');
 
         window.addEventListener('beforeunload', (e) => {
             if (this.hasDismissedAnnotations) {
