@@ -490,7 +490,7 @@ export default {
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
         handleOpenTab(tab) {
-            if (tab === "annotations" && !this.fetchedLabelCount) {
+            if (tab === "label-list" && !this.fetchedLabelCount) {
                 this.getLabelCount();
             }
         },
