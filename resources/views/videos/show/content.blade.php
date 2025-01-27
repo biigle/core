@@ -22,7 +22,7 @@
             </span>
             <span v-if="hasMoovAtomError">
                 The video's moov atom position is invalid.<br>
-                See biigle.de/manual/tutorials/videos/fixing-invalid-moov-atom
+                See {{url("/manual/tutorials/videos/fixing-invalid-moov-atom")}}
             </span>
         </div>
     </div>
