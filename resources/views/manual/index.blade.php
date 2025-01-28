@@ -238,7 +238,7 @@
             </h4>
 
             <p>
-                Learn how to fix invalid video encoding.
+                Fix errors in video files that can cause problems in BIIGLE.
             </p>
 
             <h3>Reports</h3>
