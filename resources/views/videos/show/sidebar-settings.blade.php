@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="sidebar-tab__section">
-                    <power-toggle :active="singleAnnotation" title-off="activate Single-Frame Annotation" title-on="disable Single-Frame Annotation" v-on:on="handleSingleAnnotation" v-on:off="handleDisableSingleAnnotation">Single-Frame Annotation</power-toggle>
+                    <power-toggle :active="singleAnnotation" title-off="Enable Single-Frame Annotation" title-on="Disable Single-Frame Annotation" v-on:on="handleSingleAnnotation" v-on:off="handleDisableSingleAnnotation">Single-Frame Annotation</power-toggle>
                 </div>
             </div>
     </settings-tab>

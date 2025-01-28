@@ -24,4 +24,10 @@ let getRoundToPrecision = function (reference) {
     };
 };
 
-export {getRoundToPrecision};
+let computeDistance = function (point1, point2) {
+    let p1 = point1.getCoordinates();
+    let p2 = point2.getCoordinates();
+    return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
+};
+
+export { getRoundToPrecision, computeDistance };

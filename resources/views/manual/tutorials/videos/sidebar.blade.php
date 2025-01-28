@@ -89,7 +89,7 @@
         </p>
 
         <p>
-            The single frame annotation automatically complete new annotations after the first frame. When enabled, additional controls for finishing or tracking will be disabled.
+            The Single Frame Annotation switch allows you to add annotations with a single click by automatically completing them after the first frame. When enabled, additional controls for finishing and tracking are disabled.
         </p>
     </div>
 @endsection

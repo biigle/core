@@ -9,12 +9,7 @@ import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
 import settings from "../../stores/settings";
 import { Point } from '@biigle/ol/geom';
-
-function computeDistance(point1, point2) {
-    let p1 = point1.getCoordinates();
-    let p2 = point2.getCoordinates();
-    return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
-}
+import { computeDistance } from '../../utils';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -36,6 +31,9 @@ export default {
             lastDrawnPointTime: 0,
         };
     },
+    props: ({
+        singleAnnotation: Boolean
+    }),
     computed: {
         hasSelectedLabel() {
             return !!this.selectedLabel;
@@ -77,9 +75,8 @@ export default {
         cantFinishTrackAnnotation() {
             return !this.pendingAnnotation.frames || this.pendingAnnotation.frames.length !== 1;
         },
-
         singleAnnotationActive() {
-            return settings.get('singleAnnotation');
+            return this.singleAnnotation;
         },
     },
     methods: {
@@ -232,7 +229,6 @@ export default {
                         this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
                     }
                 }
-
             } else {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
@@ -245,6 +241,16 @@ export default {
             this.$emit('pending-annotation', this.pendingAnnotation);
 
             if (this.singleAnnotationActive) {
+                if (this.isDrawingPoint) {
+                    if (this.isPointDoubleClick(e)) {
+                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                        return;
+                    }
+                    this.lastDrawnPointTime = new Date().getTime();
+                    this.lastDrawnPoint = e.feature.getGeometry();
+                }
+            this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
+                /*
                 if (!this.isDrawingPoint) {
                     this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
                 }
@@ -256,10 +262,9 @@ export default {
                     this.lastDrawnPointTime = new Date().getTime();
                     this.lastDrawnPoint = e.feature.getGeometry();
                     this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-                }
+                } */
             }
         },
-
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < POINT_CLICK_COOLDOWN
                 && computeDistance(this.lastDrawnPoint, e.feature.getGeometry()) < POINT_CLICK_DISTANCE;
