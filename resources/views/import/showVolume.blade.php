@@ -104,7 +104,7 @@
                 <p>
                     The selected volumes will be attached to this project during import.
                 </p>
-                <typeahead class="typeahead-sync--block" v-bind:items="availableProjects" placeholder="Project name" title="Select a target project" v-on:select="selectTargetProject" v-bind:clear-on-select="true" more-info="description"></typeahead>
+                <typeahead class="typeahead--block typeahead--sync" v-bind:items="availableProjects" placeholder="Project name" title="Select a target project" v-on:select="selectTargetProject" v-bind:clear-on-select="true" more-info="description"></typeahead>
                 <div v-if="targetProject" class="panel panel-info" v-cloak>
                     <div class="panel-body text-info">
                         Target project: <strong v-text="targetProject.name"></strong>
