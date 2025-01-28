@@ -7,7 +7,6 @@ import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
-import settings from "../../stores/settings";
 import { Point } from '@biigle/ol/geom';
 import { computeDistance } from '../../utils';
 
