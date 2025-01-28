@@ -9,16 +9,29 @@ import Keyboard from '../../core/keyboard';
  * @type {Object}
  */
 export default {
+    props: {
+        filenames: {
+            type: Array,
+            default: () => [],
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        ids: {
+            type: Array,
+            default: () => []
+        }
+    },
     data() {
         return {
-            filenames: {},
-            currentId: null,
-        };
+            filesObj: {}
+        }
     },
     computed: {
         filename() {
             if (this.currentId) {
-                let name = this.filenames[this.currentId].split('.');
+                let name = this.filesObj[this.currentId].split('.');
                 if (name.length > 1) {
                     name[name.length - 1] = 'png';
                 }
@@ -145,21 +158,14 @@ export default {
         setMap(map) {
             this.map = map;
         },
-        updateCurrentId(id) {
-            this.currentId = id;
-        },
     },
     created() {
-        let ids = biigle.$require('annotations.imagesIds');
-        let filenames = {};
-        biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
-            filenames[ids[index]] = filename;
+        this.filenames.forEach((filename, index) => {
+            this.filesObj[this.ids[index]] = filename;
         });
-        this.filenames = filenames;
-        this.currentId = biigle.$require('annotations.imageId');
-        Events.$on('images.change', this.updateCurrentId);
-        Events.$on('annotations.map.init', this.setMap);
+        
         Keyboard.on('p', this.capture);
+        Events.$on(['annotations.map.init', 'videos.map.init'], this.setMap);
     },
 };
 </script>

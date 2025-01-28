@@ -30,6 +30,18 @@ export default {
             type: Object,
             default: null,
         },
+        imageFilenames: {
+            type: Array,
+            default: () => [],
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        ids: {
+            type: Array,
+            default: () => []
+        }
     },
     data() {
         return {

@@ -1,17 +1,39 @@
 <script>
 import PowerToggle from '../../core/components/powerToggle';
 import Settings from '../stores/settings';
+import ScreenshotButton from '../../annotations/components/screenshotButton.vue';
 import Keyboard from '../../core/keyboard';
 
 export default {
     components: {
         powerToggle: PowerToggle,
+        screenshotButton: ScreenshotButton
     },
     props: {
         supportsJumpByFrame: {
             type: Boolean,
             default: false,
         },
+        crossOriginError: {
+            type: Boolean,
+            default: false,
+        },
+        videoFilenames: {
+            type: Array,
+            default: () => []
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        map: {
+            type: Object,
+            default: null,
+        },
+        ids: {
+            type: Array,
+            default: () => []
+        }
     },
     data() {
         return {
