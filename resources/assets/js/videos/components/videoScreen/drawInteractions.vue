@@ -30,9 +30,12 @@ export default {
             lastDrawnPointTime: 0,
         };
     },
-    props: ({
-        singleAnnotation: Boolean
-    }),
+    props: {
+        singleAnnotation: {
+            type: Boolean,
+            default: false
+        }
+    },
     computed: {
         hasSelectedLabel() {
             return !!this.selectedLabel;
@@ -73,9 +76,6 @@ export default {
         },
         cantFinishTrackAnnotation() {
             return !this.pendingAnnotation.frames || this.pendingAnnotation.frames.length !== 1;
-        },
-        singleAnnotationActive() {
-            return this.singleAnnotation;
         },
     },
     methods: {
@@ -213,12 +213,11 @@ export default {
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
 
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
-                if (this.singleAnnotationActive && this.isPointDoubleClick(e)) { 
+                if (this.singleAnnotation && this.isPointDoubleClick(e)) { 
                     this.pendingAnnotationSource.once('addfeature', function (e) {
                         this.removeFeature(e.feature);
                     });
-                }
-                else {
+                } else {
                     this.pendingAnnotation.frames.push(this.video.currentTime);
                     this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
 
@@ -239,7 +238,7 @@ export default {
 
             this.$emit('pending-annotation', this.pendingAnnotation);
 
-            if (this.singleAnnotationActive) {
+            if (this.singleAnnotation) {
                 if (this.isDrawingPoint) {
                     if (this.isPointDoubleClick(e)) {
                         this.resetPendingAnnotation(this.pendingAnnotation.shape);
@@ -248,20 +247,7 @@ export default {
                     this.lastDrawnPointTime = new Date().getTime();
                     this.lastDrawnPoint = e.feature.getGeometry();
                 }
-            this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-                /*
-                if (!this.isDrawingPoint) {
-                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-                }
-                else {
-                    if (this.isPointDoubleClick(e)) {
-                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
-                        return;
-                    }
-                    this.lastDrawnPointTime = new Date().getTime();
-                    this.lastDrawnPoint = e.feature.getGeometry();
-                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-                } */
+                this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
             }
         },
         isPointDoubleClick(e) {
