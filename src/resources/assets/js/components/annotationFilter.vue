@@ -93,7 +93,7 @@ export default {
         shape_id: possibleShapes,
         user_id: {},
       },
-      shapeToValue: {
+      filterToValue: {
         Shape: "shape_id",
         User: "user_id",
       },
@@ -118,7 +118,7 @@ export default {
     },
     changeSelectedFilter() {
       this.activeFilter =
-        this.filterValues[this.shapeToValue[this.selectedFilter]];
+        this.filterValues[this.filterToValue[this.selectedFilter]];
       this.selectedFilterValue = null;
     },
     loadApiFilters() {
@@ -167,7 +167,7 @@ export default {
           logicalString +
           " " +
           this.selectedFilterValue[0],
-        filter: this.shapeToValue[this.selectedFilter],
+        filter: this.filterToValue[this.selectedFilter],
         value: this.selectedFilterValue[1],
       };
       this.$emit("add-filter", filterToAdd);
