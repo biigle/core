@@ -52,7 +52,7 @@ export default {
     },
     addNewFilter(filter) {
       if (this.activeFilters.length > 0) {
-        if (_.some(this.activeFilters, filter)){
+        if (this.activeFilters.some(f => f.filter === filter.filter && f.value === filter.value)) {
           Messages.danger('Filter already present!')
           return
         }
