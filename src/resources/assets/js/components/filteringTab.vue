@@ -24,7 +24,6 @@
 <script>
 import AnnotationFilter from "../components/annotationFilter.vue";
 import {Messages} from '../import'
-import _ from 'lodash';
 
 export default {
   components: {
