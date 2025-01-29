@@ -3,12 +3,14 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Largo\Traits\CompileFilters;
 use Biigle\Project;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
+    use CompileFilters;
     /**
      * Show all video annotations of the project that have a specific label attached.
      *
@@ -59,35 +61,4 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
     }
-
-    private function compileFilterConditions(&$query, $union, $filters, $filterName)
-    {
-        if ($union){
-            $included = [];
-            $excluded = [];
-            foreach ($filters as &$filterValue){
-                if ($filterValue < 0) {
-                    array_push($excluded, intval(abs($filterValue)));
-                } else {
-                    array_push($included, intval($filterValue));
-                }}
-                $query->where(function($query) use ($included, $excluded, $filterName) {
-                    if (count($included)){
-                        $query->whereIn($filterName, $included, 'or');
-                    }
-                    if (count($excluded)){
-                        $query->whereNotIn($filterName, $excluded, 'or');
-                    }
-            });
-        } else {
-            foreach ($filters as &$filterValue){
-                if ($filterValue < 0) {
-                    $query->whereNot($filterName, intval(abs($filterValue)));
-                } else {
-                    $query->where($filterName, intval($filterValue));
-                }
-            }
-        }
-    }
-
 }

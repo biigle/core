@@ -4,11 +4,13 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
+use Biigle\Modules\Largo\Traits\CompileFilters;
 use Biigle\Project;
 use Illuminate\Http\Request;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
+    use CompileFilters;
     /**
      * Show all image annotations of the project that have a specific label attached.
      *
@@ -68,43 +70,5 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')
             ->pluck('images.uuid', 'image_annotations.id');
-    }
-
-    /**
-    *
-    * Compile filter(s) that were requested and add them to the query
-    * @param Query &$query To add filters to
-    * @param bool $union Whether filters are considered inclusive (OR) or exclusive (AND)
-    * @param array $filters Array of filters to add to the query
-    * @param string $filterName Name of the filter column to apply the  filter to
-    */
-    private function compileFilterConditions(Query &$query, bool $union, array $filters, string $filterName): void
-    {
-        if ($union){
-            $included = [];
-            $excluded = [];
-            foreach ($filters as $filterValue){
-                if ($filterValue < 0) {
-                    array_push($excluded, abs($filterValue));
-                } else {
-                    array_push($included, $filterValue);
-                }}
-                $query->where(function($query) use ($included, $excluded, $filterName) {
-                    if (count($included)){
-                        $query->whereIn($filterName, $included, 'or');
-                    }
-                    if (count($excluded)){
-                        $query->whereNotIn($filterName, $excluded, 'or');
-                    }
-                });
-            } else {
-            foreach ($filters as $filterValue){
-                if ($filterValue < 0) {
-                    $query->whereNot($filterName, abs($filterValue));
-                } else {
-                    $query->where($filterName, $filterValue);
-                }
-            }
-        }
     }
 }

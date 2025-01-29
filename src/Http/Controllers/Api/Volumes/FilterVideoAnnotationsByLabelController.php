@@ -3,12 +3,14 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Largo\Traits\CompileFilters;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
+    use CompileFilters;
     /**
      * Show all video annotations of the volume that have a specific label attached.
      *
@@ -18,6 +20,9 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The Label ID
      * @apiParam (Optional arguments) {Number} take Number of video annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
+     * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
+     * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
+     * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered exclusive (AND) or inclusive (OR)
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for video volumes.
      *
@@ -67,34 +72,5 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
-    }
-    private function compileFilterConditions(&$query, $union, $filters, $filterName)
-    {
-        if ($union){
-            $included = [];
-            $excluded = [];
-            foreach ($filters as &$filterValue){
-                if ($filterValue < 0) {
-                    array_push($excluded, intval(abs($filterValue)));
-                } else {
-                    array_push($included, intval($filterValue));
-                }}
-                $query->where(function($query) use ($included, $excluded, $filterName) {
-                    if (count($included)){
-                        $query->whereIn($filterName, $included, 'or');
-                    }
-                    if (count($excluded)){
-                        $query->whereNotIn($filterName, $excluded, 'or');
-                    }
-                });
-        } else {
-            foreach ($filters as &$filterValue){
-                if ($filterValue < 0) {
-                    $query->whereNot($filterName, intval(abs($filterValue)));
-                } else {
-                    $query->where($filterName, intval($filterValue));
-                }
-            }
-        }
     }
 }
