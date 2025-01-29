@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Views\Volumes;
 
 use Biigle\Http\Controllers\Views\Controller;
-use Biigle\ImageAnnotationLabel;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\Project;
@@ -11,7 +10,6 @@ use Biigle\Role;
 use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Storage;
 
 class LargoController extends Controller
@@ -60,7 +58,7 @@ class LargoController extends Controller
         $shapes = Shape::pluck('name', 'id');
 
         if ($volume->media_type_id != MediaType::videoId()){
-            $wholeframeId =Shape::wholeFrameId() ;
+            $wholeframeId = Shape::wholeFrameId() ;
             unset($shapes[$wholeframeId]);
         }
 

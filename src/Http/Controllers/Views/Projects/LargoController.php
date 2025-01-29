@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
-use Biigle\ImageAnnotationLabel;
 use Biigle\Project;
 use Biigle\Shape;
 use Illuminate\Http\Request;
