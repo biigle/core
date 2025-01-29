@@ -29,12 +29,17 @@ export default {
   components: {
     AnnotationFilter,
   },
+  computed: {
+      logicString(){
+        return this.union ? 'or' : 'and';
+      }
+  },
   data() {
     return {
       activeFilters: [],
-      logicString: 'and ',
     };
   },
+
   methods: {
     resetFilters() {
       this.activeFilters = [];
@@ -45,14 +50,12 @@ export default {
       this.filterAnnotations();
     },
     setUnionLogic(union){
-      this.union  = union
-      this.logicString = union ? 'or ' : 'and '
+      this.union = union
       this.filterAnnotations()
     },
     addNewFilter(filter) {
       if (this.activeFilters.length > 0) {
         if (this.activeFilters.some(f => f.filter === filter.filter && f.value === filter.value)) {
-          Messages.danger('Filter already present!')
           return
         }
       }

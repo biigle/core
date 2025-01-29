@@ -67,8 +67,8 @@
         </select>
       </div>
       <div class="form-group filter-select largo-filter-select">
-        <button type="button" class="btn btn-default btn-block" title="Add the selected filter rule" @click="addFilter">
-        Add rule
+          <button type="button" :class="{ disabled: !this.selectedFilterValue }" class="btn btn-default btn-block" title="Add the selected filter rule" @click="addFilter">
+              Add rule
       </button>
 
       </div>
@@ -107,11 +107,11 @@ export default {
   methods: {
     activateAndOperator() {
       this.union = false;
-      this.$emit('set-union-logic', 0);
+      this.$emit('set-union-logic', false);
     },
     activateOrOperator() {
       this.union = true;
-      this.$emit('set-union-logic', 1);
+      this.$emit('set-union-logic', true);
     },
     reset() {
       this.$emit("reset-filters");
@@ -140,12 +140,11 @@ export default {
           (user) =>
             (this.filterValues["user_id"][user.user_id] =
               user.lastname + " " + user.firstname),
-        ),
+        ), Messages.handleErrorResponse
       );
     },
     addFilter() {
       if (!this.selectedFilterValue) {
-        Messages.danger("No filter selected!");
         return;
       }
       let logicalString;
