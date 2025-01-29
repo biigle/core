@@ -1,5 +1,7 @@
 <script>
 import LabelTrees from '../../label-trees/components/labelTrees';
+import powerToggle from '../../core/components/powerToggle.vue';
+import Messages from '../../core/messages/store';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -18,11 +20,13 @@ export let plugins = {};
 export default {
     components: {
         labelTrees: LabelTrees,
+        powerToggle: powerToggle,
     },
     data() {
         return {
             labelTrees: [],
             selectedLabel: null,
+            labelBOTIsOn: false,
         };
     },
     computed: {
@@ -39,9 +43,20 @@ export default {
             this.selectedLabel = null;
             this.$emit('select', null);
         },
+        activateLabelBOT() {
+            if (!this.labelTrees.every(tree => tree.labels.length === 0)) {
+                this.labelBOTIsOn = true;
+            } else {
+                Messages.warning("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
+            }
+        },
+        deactivateLabelBOT() {
+            this.labelBOTIsOn = false;
+        }
     },
     created() {
         this.labelTrees = biigle.$require('annotations.labelTrees');
     },
 };
 </script>
+
