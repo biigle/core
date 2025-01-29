@@ -30,13 +30,14 @@ export default {
     AnnotationFilter,
   },
   computed: {
-      logicString(){
+      logicString() {
         return this.union ? 'or' : 'and';
       }
   },
   data() {
     return {
       activeFilters: [],
+      union: false,
     };
   },
 
