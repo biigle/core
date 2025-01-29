@@ -23,15 +23,15 @@ trait CompileFilters {
                     array_push($included, $filterValue);
                 }}
             $query->where(function($query) use ($included, $excluded, $filterName) {
-                if (count($included)){
+                if (count($included) > 0){
                     $query->whereIn($filterName, $included, 'or');
                 }
-                if (count($excluded)){
+                if (count($excluded) > 0){
                     $query->whereNotIn($filterName, $excluded, 'or');
                 }
             });
         } else {
-            foreach ($filters as &$filterValue){
+            foreach ($filters as $filterValue){
                 if ($filterValue < 0) {
                     $query->whereNot($filterName, abs($filterValue));
                 } else {
