@@ -31,7 +31,7 @@
             Please choose a label in the sidebar.
         </div>
         <div v-cloak v-if="isInDismissStep && hasNoAnnotations" class="text-info">
-            There are no annotations with the label <strong v-text="selectedLabel.name"></strong><span v-if="Object.keys(selectedFilters).length > 0"> and the selected filters</span>.
+            There are no annotations with the label <strong v-text="selectedLabel.name"></strong><span v-if="hasActiveFilters"> and the selected filters</span>.
         </div>
     </div>
 </div>
