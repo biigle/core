@@ -17,53 +17,40 @@ use Biigle\Role;
 
 class GetUsersWithAnnotationsProjectsTest extends ApiTestCase
 {
-    public function setUp(): void
+    public function testGetUsersWithAnnotations(): void
     {
-        parent::setUp();
         // make sure the label tree and label are set up
         $this->labelRoot();
-        $this->user1 = UserTest::create();
-        $this->user2 = UserTest::create();
-        $this->user3 = UserTest::create();
+        $user = $this->newProjectUser();
+        $user2 = $this->newProjectUser();
+        $user3 = $this->newProjectUser();
 
-        $this->imageVolume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
-        ]);
-        $this->project = ProjectTest::create();
-        $this->project->addUserId($this->user1->id, Role::editorId());
+        $image = ImageTest::create(['volume_id' => $this->volume(['media_type_id' => MediaType::imageId()])->id]);
+        $imageAnnotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
-        $this->project->addVolumeId($this->imageVolume->id);
-
-        $image = ImageTest::create(['volume_id' => $this->imageVolume->id]);
-        $this->imageAnnotation = ImageAnnotationTest::create(['image_id' => $image->id]);
-
-        $this->imageAnnotationLabel = ImageAnnotationLabelTest::create([
-            'annotation_id' => $this->imageAnnotation->id,
-            'user_id' => $this->user1->id,
+        $imageAnnotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $imageAnnotation->id,
+            'user_id' => $user->id,
         ]);
 
-        $this->videoVolume = VolumeTest::create([
+        $videoVolume = VolumeTest::create([
             'media_type_id' => MediaType::videoId(),
         ]);
-        $this->project->addVolumeId($this->videoVolume->id);
+        $this->project()->addVolumeId($videoVolume->id);
 
-        $video = VideoTest::create(['volume_id' => $this->videoVolume->id]);
-        $this->videoAnnotation = VideoAnnotationTest::create(['video_id' => $video->id]);
+        $video = VideoTest::create(['volume_id' => $videoVolume->id]);
+        $videoAnnotation = VideoAnnotationTest::create(['video_id' => $video->id]);
 
-        $this->videoAnnotationLabel = VideoAnnotationLabelTest::create([
-            'annotation_id' => $this->videoAnnotation->id,
-            'user_id' => $this->user2->id,
+        $videoAnnotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $videoAnnotation->id,
+            'user_id' => $user2->id,
         ]);
-    }
-
-    public function testGetUsersWithAnnotations()
-    {
         $this->beEditor();
-        $this->get('api/v1/projects/'.$this->project->id.'/users-with-annotations')->assertStatus(403);
+        $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')->assertStatus(403);
 
-        $this->be($this->user1);
-        $response = $this->get('api/v1/projects/'.$this->project->id.'/users-with-annotations')->assertStatus(200)->getContent();
-        $expected = [['user_id' =>$this->user1->id, 'firstname' => $this->user1->firstname, 'lastname' => $this->user1->lastname],['user_id' =>$this->user2->id, 'firstname' => $this->user2->firstname, 'lastname' => $this->user2->lastname]];
-        $this->assertEquals($expected, json_decode($response, true));
+        $this->be($user);
+        $response = $this->get('api/v1/projects/'.$project->id.'/users-with-annotations')->assertStatus(200)->getContent();
+        $expected = [['user_id' =>$user->id, 'firstname' => $user->firstname, 'lastname' => $user->lastname],['user_id' =>$user2->id, 'firstname' => $user2->firstname, 'lastname' => $user2->lastname]];
+        $this->assertExactJson($expected, $response);
     }
 }
