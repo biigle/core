@@ -23,7 +23,6 @@
 </template>
 <script>
 import AnnotationFilter from "../components/annotationFilter.vue";
-import {Messages} from '../import'
 
 export default {
   components: {
