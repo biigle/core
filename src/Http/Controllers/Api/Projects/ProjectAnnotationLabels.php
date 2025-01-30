@@ -55,6 +55,7 @@ class ProjectAnnotationLabels extends Controller
         return DB::query()->fromSub($union, 'labels')
             ->selectRaw('labels.id, labels.name, labels.color, labels.label_tree_id, count(labels.id) as count')
             ->groupBy(['labels.id', 'labels.name', 'labels.color', 'labels.label_tree_id'])
+            ->orderBy('labels.name')
             ->get();
     }
 }
