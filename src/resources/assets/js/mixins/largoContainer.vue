@@ -53,7 +53,7 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            labels: {},
+            labels: [],
             fetchedLabelCount: false,
         };
     },
@@ -502,24 +502,24 @@ export default {
                 .finally(this.finishLoading);
         },
         parseResponse(res) {
-            this.labels = res.body.reduce((labelsObj, l) => {
+            this.labels = res.body.reduce((labels, l) => {
                 if (this.labelTreesIndex.hasOwnProperty(l.label_tree_id)) {
                     let tIdx = this.labelTreesIndex[l.label_tree_id].index;
                     let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
                     let label = this.labelTrees[tIdx].labels[lIdx];
                     label.count = l.count;
-                    labelsObj[label.id] = label;
+                    labels.push(label);
                 } else {
                     l.selected = false;
-                    labelsObj[l.id] = l;
+                    labels.push(l);
                 }
-                return labelsObj;
-            }, {});
+                return labels;
+            }, []);
             this.fetchedLabelCount = true;
         },
         resetLabelCount() {
             this.fetchedLabelCount = false;
-            this.labels = {};
+            this.labels = [];
         }
     },
     watch: {

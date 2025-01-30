@@ -8,16 +8,18 @@ export default {
     },
     props: {
         labels: {
-            type: Object,
+            type: Array,
             default() {
-                return {};
+                return [];
             },
         },
     },
-    data() {
-        return {
-            annotationBadgeCount: 0,
-        };
+    computed: {
+        annotationBadgeCount() {
+            return this.labels.reduce((acc, l) => {
+                return acc + l.count;
+            }, 0);
+        },
     },
     methods: {
         handleSelectedLabel(label) {
@@ -27,12 +29,5 @@ export default {
             this.$emit('deselect');
         },
     },
-    watch: {
-        labels() {
-            this.annotationBadgeCount = Object.values(this.labels).reduce((acc, l) => {
-                return acc + l.count;
-            }, 0);
-        },
-    }
 };
 </script>
