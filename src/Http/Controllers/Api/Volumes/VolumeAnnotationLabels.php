@@ -58,15 +58,21 @@ class VolumeAnnotationLabels extends Controller
                 ->where('videos.volume_id', '=', $id);
         }
 
+  
         return $labelQuery
-            ->when($session, function ($query) use ($session, $request) {
+            ->when($session, function ($query) use ($session, $request, $isImageVolume) {
                 if ($session->hide_other_users_annotations) {
-                    $query->where('image_annotation_labels.user_id', $request->user()->id);
+                    if ($isImageVolume) {
+                        $query->where('image_annotation_labels.user_id', $request->user()->id);
+                    } else {
+                        $query->where('video_annotation_labels.user_id', $request->user()->id);
+                    }
                 }
             })
             ->selectRaw('labels.id, labels.name, labels.color, labels.label_tree_id, count(labels.id) as count')
             ->groupBy(['labels.id', 'labels.name', 'labels.color', 'labels.label_tree_id'])
             ->orderBy('labels.name')
             ->get();
+
     }
 }
