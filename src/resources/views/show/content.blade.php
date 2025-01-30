@@ -27,7 +27,7 @@
         <div v-cloak v-if="loading">
             <loader :active="true" :fancy="true"></loader>
         </div>
-        <div v-if="isInDismissStep && !selectedLabel" class="text-info">
+        <div v-if="isInDismissStep && !selectedLabel && !loading" class="text-info">
             Please choose a label in the sidebar.
         </div>
         <div v-cloak v-if="isInDismissStep && hasNoAnnotations" class="text-info">
@@ -35,7 +35,7 @@
         </div>
     </div>
 </div>
-<sidebar v-cloak open-tab="labels">
+<sidebar v-cloak open-tab="labels" v-on:open="handleOpenTab">
     <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div class="largo-tab__button">
             <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the relabelling step" v-on:click="goToRelabel">Continue</button>
@@ -56,6 +56,7 @@
         @endcan
         <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
     </sidebar-tab>
+    @include('largo::labelList')
     <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">
         <sorting-tab
             :needs-similarity-reference="needsSimilarityReference"

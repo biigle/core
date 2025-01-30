@@ -39,4 +39,8 @@ export default Vue.resource('api/v1/volumes{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/annotations/sort/similarity',
     },
+    fetchVolumeAnnotationLabelCount: {
+        method: 'GET',
+        url: 'api/v1/volume{/id}/label-count',
+    },
 });

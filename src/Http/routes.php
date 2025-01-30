@@ -53,6 +53,10 @@ $router->group([
         'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
     ]);
 
+    $router->get('projects/{id}/label-count', [
+        'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
+    ]);
+
     $router->get('volumes/{id}/annotations/sort/outliers/{id2}', [
         'uses' => 'Volumes\SortAnnotationsByOutliersController@index',
     ]);
@@ -75,5 +79,9 @@ $router->group([
 
     $router->get('volumes/{id}/video-annotations/filter/label/{id2}', [
         'uses' => 'Volumes\FilterVideoAnnotationsByLabelController@index',
+    ]);
+
+    $router->get('volume/{id}/label-count', [
+        'uses' => 'Volumes\VolumeAnnotationLabels@getVolumeAnnotationLabels'
     ]);
 });

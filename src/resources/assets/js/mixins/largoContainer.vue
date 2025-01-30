@@ -13,6 +13,7 @@ import {Messages} from '../import';
 import {PowerToggle} from '../import';
 import {SidebarTab} from '../import';
 import {Sidebar} from '../import';
+import LabelList from '../components/labelList.vue';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
 
 /**
@@ -29,6 +30,7 @@ export default {
         relabelImageGrid: RelabelImageGrid,
         settingsTab: SettingsTab,
         sortingTab: SortingTab,
+        labelList: LabelList,
     },
     data() {
         return {
@@ -51,6 +53,8 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
+            labels: [],
+            fetchedLabelCount: false,
         };
     },
     provide() {
@@ -157,6 +161,19 @@ export default {
         imagesPinnable() {
             return this.needsSimilarityReference || this.sortingKey === SORT_KEY.SIMILARITY;
         },
+        labelTreesIndex() {
+            // Map api-labels to labelTree-labels to enable label selection between tabs.
+            // Selected labels are highlighted in label tree and label list tabs if the same label object is used.
+            // Retrieve label from tree by using labels tree index.
+            let index = {};
+            this.labelTrees.forEach((t, i) => {
+                index[t.id] = { index: i, labels: {} };
+                t.labels.forEach((l, j) => {
+                    index[t.id].labels[l.id] = j;
+                })
+            });
+            return index;
+        }
     },
     methods: {
         getAnnotations(label) {
@@ -293,7 +310,10 @@ export default {
                     force: this.forceChange,
                 })
                 .then(
-                    response => this.waitForSessionId = response.body.id,
+                    (response) => {
+                        this.waitForSessionId = response.body.id;
+                        this.resetLabelCount();
+                    },
                     (response) => {
                         this.finishLoading();
                         handleErrorResponse(response);
@@ -468,6 +488,38 @@ export default {
             return this.updateSortKey(SORT_KEY.ANNOTATION_ID)
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
+        handleOpenTab(tab) {
+            if (tab === "label-list" && !this.fetchedLabelCount) {
+                this.getLabelCount();
+            }
+        },
+        getLabelCount() {
+            this.startLoading();
+            this.fetchLabelCount()
+                .then(this.parseResponse)
+                .catch(handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+        parseResponse(res) {
+            this.labels = res.body.reduce((labels, l) => {
+                if (this.labelTreesIndex.hasOwnProperty(l.label_tree_id)) {
+                    let tIdx = this.labelTreesIndex[l.label_tree_id].index;
+                    let lIdx = this.labelTreesIndex[l.label_tree_id].labels[l.id];
+                    let label = this.labelTrees[tIdx].labels[lIdx];
+                    label.count = l.count;
+                    labels.push(label);
+                } else {
+                    l.selected = false;
+                    labels.push(l);
+                }
+                return labels;
+            }, []);
+            this.fetchedLabelCount = true;
+        },
+        resetLabelCount() {
+            this.fetchedLabelCount = false;
+            this.labels = [];
+        }
     },
     watch: {
         annotations(annotations) {
@@ -479,9 +531,13 @@ export default {
         step(step) {
             Events.$emit('step', step);
         },
-        selectedLabel() {
+        selectedLabel(_, oldLabel) {
             if (this.isInDismissStep) {
                 this.$refs.dismissGrid.setOffset(0);
+            }
+            // Old label can still be selected if selection was triggered in label list component
+            if (oldLabel?.selected) {
+                oldLabel.selected = false;
             }
         },
     },

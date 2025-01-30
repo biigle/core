@@ -113,3 +113,71 @@
         margin-bottom: 0;
     }
 }
+
+.annotations-tab--largo {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    overflow: none;
+}
+
+.annotations-tab__header--largo {
+    padding: 1em;
+    width: 100%;
+}
+
+.annotations-tab__list--largo {
+    // Positioning is required for the automatic scrolling to selected annotations.
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    margin: 0;
+}
+
+.annotations-tab-item--largo {
+    // must not be position:relative because .annotation-list-item calculates the
+    // offsetTop property relative to .annotations-tab!
+    user-select: none;
+    padding: 0 1em;
+    border-bottom: 1px solid #353535;
+
+    &:first-child {
+        border-top: 1px solid #353535;
+    }
+
+    &.selected {
+        .annotations-tab-item__title--largo {
+            font-weight: bold;
+        }
+    }
+
+    &.selected .annotations-tab-item__title--largo,
+    .annotations-tab-item__title--largo:hover {
+        color: white;
+
+        .badge {
+            background-color: white;
+            color: $body-bg;
+        }
+    }
+
+    .annotations-tab-item__title--largo {
+        position: relative;
+        padding: 1em 0 1em 1.25em;
+        cursor: pointer;
+    }
+
+    .annotations-tab-item__color--largo {
+        position: absolute;
+        left: 0;
+        top: 1.2em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .annotations-tab-item__list--largo {
+        padding-bottom: 1em;
+    }
+}
