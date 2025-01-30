@@ -37,7 +37,7 @@
         </p>
 
         <p>
-            The initial view of Largo shows a sidebar with all available label trees of the project or volume. When you select one of the labels, all annotations to which this label is attached will be shown in the grid. You can navigate the grid in the same way than the thumbnail grid of the <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">volume overview</a>.
+            In the initial view of Largo, the sidebar has one tab with all available label trees <button class="btn btn-xs btn-default"><span class="fa fa-tags" aria-hidden="true"></span></button> and one tab with a list of used labels and their counts <button class="btn btn-xs btn-default"><span class="fa fa-list" aria-hidden="true"></span></button> in the project or volume. When you select one of the labels, all annotations to which this label is attached will be shown in the grid. You can navigate the grid in the same way than the thumbnail grid of the <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">volume overview</a>.
         </p>
 
         <p class="text-center">
@@ -54,7 +54,7 @@
         </p>
 
         <p>
-            Also displayed on hover is the big <span class="fa fa-times" aria-hidden="true"></span> symbol. This symbol indicates the "dismissal" of an annotation. Click on an annotation in the grid to mark it as dismissed. You can dismiss annotations belonging to different labels, too. Once there are dismissed annotations, the <button class="btn btn-success btn-xs">Continue</button> button in the sidebar becomes clickable. Click this button when you are finished marking annotations as dismissed to continue to the next step.
+            Also displayed on hover is the big <span class="fa fa-times" aria-hidden="true"></span> symbol. This symbol indicates the "dismissal" of an annotation. Click on an annotation in the grid to mark it as dismissed. You can dismiss annotations belonging to different labels, too. Once there are dismissed annotations, the <button class="btn btn-success btn-xs">Continue</button> button in the label trees <button class="btn btn-xs btn-default"><span class="fa fa-tags" aria-hidden="true"></span></button> tab of the sidebar becomes clickable. Click this button when you are finished marking annotations as dismissed to continue to the next step.
         </p>
 
         <p>
