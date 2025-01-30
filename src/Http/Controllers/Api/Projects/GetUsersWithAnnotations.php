@@ -10,15 +10,15 @@ use Illuminate\Http\Request;
 
 class GetUsersWithAnnotations extends Controller
 {
-/**
-     * Show all image annotations of the volume that have a specific label attached.
+    /**
+     * Get all users with annotations in the project
      *
-     * @api {get} projects/image/users-with-annotations/:vid Get users with annotations
+     * @api {get} projects/:pid/users-with-annotations Get users with annotations
      * @apiGroup Projects
-     * @apiName ShowUsersWithImageAnnotations
+     * @apiName GetUsersWithAnnotationsProject
      * @apiParam {Number} pid The Project ID
      * @apiPermission projectMember
-     * @apiDescription Returns the users with annotations
+     * @apiDescription Returns the users with annotations in the project
      *
      * @param Request $request
      * @param  int  $pid Project ID
