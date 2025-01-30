@@ -53,9 +53,9 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            selectedFilters: {},
+            selectedFilters: [],
             hasActiveFilters: false,
-            union: false,
+            union: 0,
         };
     },
     provide() {
@@ -112,12 +112,9 @@ export default {
                     // 'v' to avoid duplicate IDs whe sorting both types of annotations.
                     map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] = a;
                 });
-                let sortingSequence = this.sortingSequence;
-                annotations.sort(
-                    function(a, b, sequence = sortingSequence){
-                        return sequence.indexOf(a.id) <= sequence.indexOf(b.id)
-                    }
-                )
+                annotations = this.sortingSequence
+                   .map(id => map[id])
+                   .filter(id => id !== undefined);
             }
 
             if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
@@ -183,18 +180,19 @@ export default {
         },
     },
     methods: {
-        compileFilters(filters, union){
+        compileFilters(filters, union) {
             let parameters = [];
+
             filters.forEach(
                 (filter) => {
                     //If we have an union in the current filter, we need to execute the last request
-                    if (!parameters[filter.filter]){
+                    if (!parameters[filter.filter]) {
                         parameters[filter.filter] = [];
                     }
                     parameters[filter.filter].push(filter.value);
                 }
             )
-            parameters['union'] = union ? 1 : 0;
+            parameters['union'] = union;
             return parameters
         },
         getAnnotations(label, filters, union) {
@@ -209,37 +207,16 @@ export default {
 
             let labelFilterCombination = JSON.stringify(labelFilters);
 
-
             if (!this.annotationsCache.hasOwnProperty(labelFilterCombination)) {
                 Vue.set(this.annotationsCache, labelFilterCombination, []);
-
                 this.startLoading();
-                if (filters.length > 0) {
-                    this.startLoading();
-                    let requestParams = this.compileFilters(filters, union);
-                    promise1 = this.queryAnnotations(label, requestParams).then(
-                        (response) => {
-                            let imageAnnotations = response[0].data;
-                            let videoAnnotations = response[1].data;
-                            let annotations = [];
-
-                            if (imageAnnotations) {
-                                annotations = annotations.concat(this.initAnnotations(label, imageAnnotations, IMAGE_ANNOTATION));
-                            }
-
-                            if (videoAnnotations) {
-                                annotations = annotations.concat(this.initAnnotations(label, videoAnnotations, VIDEO_ANNOTATION));
-                            }
-
-                            this.gotAnnotations(label, labelFilterCombination, null, annotations);
-                        },
-                        handleErrorResponse
-                    ).finally(this.finishLoading);
-                } else {
-                    promise1 = this.queryAnnotations(label, {}).then(
-                        (response) => this.gotAnnotations(label, labelFilterCombination, response),
-                            handleErrorResponse
-                    )}
+                let requestParams = this.compileFilters(filters, union);
+                promise1 = this.queryAnnotations(label, requestParams).then(
+                    (response) => {
+                        this.gotAnnotations(label, labelFilterCombination, response);
+                    },
+                    handleErrorResponse
+                ).finally(this.finishLoading);
             } else {
                 promise1 = Vue.Promise.resolve();
             }
@@ -258,18 +235,11 @@ export default {
 
         },
 
-        gotAnnotations(label, selectedAnnotationName = '', response = null, annotations = null) {
+        gotAnnotations(label, selectedAnnotationName = '', response = null) {
 
-            let imageAnnotations
-            let videoAnnotations
-
-            // This is the object that we will use to store information for each
-            // annotation patch.
-            if (!annotations) {
-              annotations = [];
-              imageAnnotations = response[0].data;
-              videoAnnotations = response[1].data;
-            }
+            let imageAnnotations = response[0].data;
+            let videoAnnotations = response[1].data;
+            let annotations = [];
 
             if (imageAnnotations) {
                 annotations = annotations.concat(this.initAnnotations(label, imageAnnotations, IMAGE_ANNOTATION));
@@ -278,11 +248,6 @@ export default {
             if (videoAnnotations) {
                 annotations = annotations.concat(this.initAnnotations(label, videoAnnotations, VIDEO_ANNOTATION));
             }
-
-            //Filter repeated annotations
-            annotations = annotations.filter((obj1, i, arr) =>
-              arr.findIndex(obj2 => (obj2.id === obj1.id)) === i
-            )
 
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
@@ -303,8 +268,8 @@ export default {
             if (!this.selectedLabel){
                 return []
             }
-            this.union = union
-            this.getAnnotations(this.selectedLabel, filters, union);
+            this.union = union ? 1 : 0;
+            this.getAnnotations(this.selectedLabel, filters, this.union);
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
