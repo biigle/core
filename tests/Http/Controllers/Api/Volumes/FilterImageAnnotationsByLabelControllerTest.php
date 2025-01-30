@@ -1,8 +1,5 @@
 <?php
-
-namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
-
-use ApiTestCase;
+namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes; use ApiTestCase;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -232,6 +229,14 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         //Case 5: combine users with union
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=1")
             ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid, $a3->id => $image->uuid]);
+
+        //Case 6: combine uncompatible shapes
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=0")
+            ->assertExactJson([]);
+
+        //Case 7: combine with a 'not' case
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]=!{$u2->id}&union=0")
+            ->assertExactJson([$a1->id => $image->uuid]);
 
     }
 }
