@@ -237,9 +237,7 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
             ->assertExactJson([]);
 
         //Case 7: combine with a 'not' case
-        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]=!{$u2->id}&union=0")
+        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]=-{$u2->id}&union=0")
             ->assertExactJson([$a1->id => $video->uuid]);
-
-
     }
 }
