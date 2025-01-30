@@ -17,7 +17,7 @@ class ProjectAnnotationLabels extends Controller
      * @apiName test
      * @apiParam {Number} id The Project ID
      * @apiPermission projectMember
-     * @apiDescription Returns a collection of project image labels and annotation label counts
+     * @apiDescription Returns a collection of annotation labels and their counts in the project
      * 
      * @apiSuccessExample {json} Success response:
      * [{"id":1,

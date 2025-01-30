@@ -16,7 +16,7 @@ class VolumeAnnotationLabels extends Controller
      * @apiName test
      * @apiParam {Number} id The Volume ID
      * @apiPermission projectMember
-     * @apiDescription Returns a collection of project image labels and annotation label counts
+     * @apiDescription Returns a collection of annotation labels and their counts in the volume
      * 
      * @apiSuccessExample {json} Success response:
      * [{"id":1,
