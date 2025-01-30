@@ -20,7 +20,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
     {
         $id = $this->volume()->id;
         $img = ImageTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
-        $a = ImageAnnotationTest::create(['image_id' => $img]);
+        $a = ImageAnnotationTest::create(['image_id' => $img->id]);
         $l = LabelTest::create();
         ImageAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
         ImageAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
@@ -48,7 +48,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
     {
         $id = $this->volume(['media_type_id' => MediaType::video()])->id;
         $vid = VideoTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
-        $a = VideoAnnotationTest::create(['video_id' => $vid]);
+        $a = VideoAnnotationTest::create(['video_id' => $vid->id]);
         $l = LabelTest::create();
         VideoAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
         VideoAnnotationLabelTest::create(['annotation_id' => $a->id, 'label_id' => $l->id]);
@@ -98,7 +98,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
     {
         $id = $this->volume()->id;
         $img = ImageTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
-        $a = ImageAnnotationTest::create(['image_id' => $img]);
+        $a = ImageAnnotationTest::create(['image_id' => $img->id]);
         $l1 = LabelTest::create(['name' => '1']);
         $l2 = LabelTest::create(['name' => '11']);
         $l3 = LabelTest::create(['name' => '2']);
