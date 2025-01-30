@@ -34,10 +34,7 @@ class VolumeAnnotationLabels extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
-        $this->validate($request, ['take' => 'integer']);
-        $take = $request->input('take');
         $isImageVolume = $volume->isImageVolume();
-
         $session = $volume->getActiveAnnotationSession($request->user());
 
         if ($session) {
@@ -66,9 +63,6 @@ class VolumeAnnotationLabels extends Controller
                 if ($session->hide_other_users_annotations) {
                     $query->where('image_annotation_labels.user_id', $request->user()->id);
                 }
-            })
-            ->when(!is_null($take), function ($query) use ($take) {
-                return $query->take($take);
             })
             ->selectRaw('labels.id, labels.name, labels.color, labels.label_tree_id, count(labels.id) as count')
             ->groupBy(['labels.id', 'labels.name', 'labels.color', 'labels.label_tree_id'])
