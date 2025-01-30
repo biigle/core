@@ -107,11 +107,11 @@ export default {
   methods: {
     activateAndOperator() {
       this.union = false;
-      this.$emit('set-union-logic', false);
+      this.$emit('set-union-logic', 0);
     },
     activateOrOperator() {
       this.union = true;
-      this.$emit('set-union-logic', true);
+      this.$emit('set-union-logic', 1);
     },
     reset() {
       this.$emit("reset-filters");
