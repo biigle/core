@@ -143,7 +143,7 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
             $geometry = $this->estimateAnnotationPosition($item);
 
             $feature = new Feature($geometry, $properties);
-            $file->put(json_encode($feature)."\n");
+            $file->put(json_encode($feature));
         });
         $file->close();
 

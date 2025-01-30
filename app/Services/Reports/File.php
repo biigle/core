@@ -94,7 +94,7 @@ class File
     public function put($content)
     {
         if (is_string($content)) {
-            return fwrite($this->handle, $content);
+            return fwrite($this->handle, $content."\n");
         }
     }
 }
