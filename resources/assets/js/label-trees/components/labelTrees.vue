@@ -5,8 +5,8 @@
             <typeahead v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
         </div>
         <div class="label-trees__body">
-            <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :showFavouriteShortcuts="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
-            <label-tree v-for="tree in trees" :key="tree.id" :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>
+            <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :showFavouriteShortcuts="true" :collapsible="collapsible" :labelBOTIsOn="labelBOTIsOn" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
+            <label-tree v-for="tree in trees" :key="tree.id" :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" :labelBOTIsOn="labelBOTIsOn" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>
         </div>
     </div>
 </template>
@@ -74,6 +74,10 @@ export default {
             type: String,
             default: 'default',
         },
+        labelBOTIsOn: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         localeCompareSupportsLocales() {

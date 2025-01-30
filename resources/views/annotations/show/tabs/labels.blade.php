@@ -5,7 +5,7 @@
                 <power-toggle :active="labelBOTIsOn" title-off="Activate LabelBOT" title-on="Deactivate LabelBOT" v-on:on="activateLabelBOT" v-on:off="deactivateLabelBOT">LabelBOT</power-toggle>
             </div>
             <div class="labels-tab__trees">
-                <label-trees :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
+                <label-trees :trees="labelTrees" :show-favourites="true" :label-b-o-t-is-on="labelBOTIsOn" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
             </div>
             <div class="labels-tab__plugins">
                 @mixin('annotationsLabelsTab')

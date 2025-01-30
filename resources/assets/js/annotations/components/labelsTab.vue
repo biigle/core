@@ -36,18 +36,25 @@ export default {
     },
     methods: {
         handleSelectedLabel(label) {
-            this.selectedLabel = label;
-            this.$emit('select', label);
+            if (this.labelBOTIsOn) {
+                Messages.warning("Please turn off LabelBOT first to select a label!");
+            } else {
+                this.selectedLabel = label;
+                this.$emit('select', label);
+            }
         },
         handleDeselectedLabel() {
             this.selectedLabel = null;
             this.$emit('select', null);
         },
         activateLabelBOT() {
-            if (!this.labelTrees.every(tree => tree.labels.length === 0)) {
-                this.labelBOTIsOn = true;
-            } else {
+            if (this.selectedLabel) {
+                Messages.warning("LabelBOT can't be activated! Please deselect the selected label!");
+            }
+            else if (this.labelTrees.every(tree => tree.labels.length === 0)) {
                 Messages.warning("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
+            } else {
+                this.labelBOTIsOn = true;
             }
         },
         deactivateLabelBOT() {
@@ -59,4 +66,3 @@ export default {
     },
 };
 </script>
-
