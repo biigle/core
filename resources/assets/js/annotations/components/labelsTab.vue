@@ -47,7 +47,13 @@ export default {
             this.selectedLabel = null;
             this.$emit('select', null);
         },
-        activateLabelBOT() {
+        handleLabelBOT() {
+            if (this.labelBOTIsOn) {
+                this.labelBOTIsOn = false;
+                this.$emit('labelbot', false);
+                return;
+            };
+
             if (this.selectedLabel) {
                 Messages.warning("LabelBOT can't be activated! Please deselect the selected label!");
             }
@@ -55,11 +61,9 @@ export default {
                 Messages.warning("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
             } else {
                 this.labelBOTIsOn = true;
+                this.$emit('labelbot', true);
             }
         },
-        deactivateLabelBOT() {
-            this.labelBOTIsOn = false;
-        }
     },
     created() {
         this.labelTrees = biigle.$require('annotations.labelTrees');

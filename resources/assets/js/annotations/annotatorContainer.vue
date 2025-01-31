@@ -87,6 +87,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            labelBOTIsOn: false,
         };
     },
     computed: {
@@ -408,6 +409,9 @@ export default {
         },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
+        },
+        handleLabelBOT(labelBOTIsOn) {
+            this.labelBOTIsOn = labelBOTIsOn;
         },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {

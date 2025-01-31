@@ -1,3 +1,4 @@
+
 @extends('app')
 @section('full-navbar', true)
 
@@ -84,6 +85,7 @@
             :show-measure-tooltip="showMeasureTooltip"
             :show-minimap="showMinimap"
             :user-id="userId"
+            :label-b-o-t-is-on="labelBOTIsOn"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"
             v-on:next="handleNext"
