@@ -43,6 +43,9 @@ export default {
 
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
+        fetchLabelCount() {
+            return ProjectsApi.fetchProjectAnnotationLabelCount({ id: this.projectId });
+        },
     },
     created() {
         this.projectId = biigle.$require('largo.projectId');

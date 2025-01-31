@@ -42,5 +42,9 @@ export default Vue.resource('api/v1/volumes{/id}/largo', {}, {
     getUsersWithAnnotations: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/users-with-annotations',
-    }
+    },
+    fetchVolumeAnnotationLabelCount: {
+        method: 'GET',
+        url: 'api/v1/volume{/id}/label-count',
+    },
 });
