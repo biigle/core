@@ -182,7 +182,7 @@ export default {
     },
     methods: {
         prepareAnnotation(annotation) {
-            return new Annotation({data: annotation});
+            return new Annotation(annotation);
         },
         setAnnotations(args) {
             this.annotations = args[0].body.map(this.prepareAnnotation);
@@ -272,7 +272,7 @@ export default {
                     pending: true,
                 });
 
-                this.pendingAnnotation = new Annotation({data});
+                this.pendingAnnotation = new Annotation(data);
             } else {
                 this.pendingAnnotation = null;
             }
