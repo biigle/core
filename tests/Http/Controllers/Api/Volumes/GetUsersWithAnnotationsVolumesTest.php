@@ -21,16 +21,15 @@ class GetUsersWithAnnotationsVolumesTest extends ApiTestCase
     {
         // make sure the label tree and label are set up
         $this->labelRoot();
-        $user = $this->newProjectUser();
-        $user2 = $this->newProjectUser();
-        $user3 = $this->newProjectUser();
+        $user2 = UserTest::create();
+        $user3 = UserTest::create();
 
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $imageAnnotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
         $imageAnnotationLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $imageAnnotation->id,
-            'user_id' => $user->id,
+            'user_id' => $this->user()->id,
         ]);
 
         $videoVolume = VolumeTest::create([
@@ -46,16 +45,15 @@ class GetUsersWithAnnotationsVolumesTest extends ApiTestCase
             'user_id' => $user2->id,
         ]);
 
-        $this->beEditor();
+        $this->beGlobalGuest();
         $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')->assertStatus(403);
 
-        $this->be($user);
-        $response = $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')->assertStatus(200)->getContent();
-        $expected = [['user_id' =>$user->id, 'firstname' => $user->firstname, 'lastname' => $user->lastname]];
-        $this->assertJsonEquals($expected, $response);
+        $this->beEditor();
 
-        $response = $this->get('api/v1/volumes/'.$this->videoVolume->id.'/users-with-annotations')->assertStatus(200)->getContent();
+        $expected = [['user_id' =>$this->user()->id, 'firstname' => $this->user()->firstname, 'lastname' => $this->user()->lastname]];
+        $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')->assertStatus(200)->assertExactJson($expected);
+
         $expected = [['user_id' =>$user2->id, 'firstname' => $user2->firstname, 'lastname' => $user2->lastname]];
-        $this->assertExactJson($expected, $response);
+        $this->get('api/v1/volumes/'.$videoVolume->id.'/users-with-annotations')->assertStatus(200)->assertExactJson($expected);
     }
 }
