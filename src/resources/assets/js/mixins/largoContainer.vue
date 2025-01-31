@@ -88,12 +88,12 @@ export default {
                 filterLabel["union"] = this.union;
             }
 
-            let filterLabelCombination = JSON.stringify(filterLabel);
+            let cacheKey = JSON.stringify(filterLabel);
 
             if (
-                this.annotationsCache.hasOwnProperty(filterLabelCombination)
+                this.annotationsCache.hasOwnProperty(cacheKey)
             ) {
-                return this.annotationsCache[filterLabelCombination];
+                return this.annotationsCache[cacheKey];
             }
 
             return [];
@@ -205,18 +205,17 @@ export default {
                 labelFilters['union'] = union;
             }
 
-            let labelFilterCombination = JSON.stringify(labelFilters);
+            let cacheKey = JSON.stringify(labelFilters);
 
-            if (!this.annotationsCache.hasOwnProperty(labelFilterCombination)) {
-                Vue.set(this.annotationsCache, labelFilterCombination, []);
+            if (!this.annotationsCache.hasOwnProperty(cacheKey)) {
+                Vue.set(this.annotationsCache, cacheKey, []);
                 this.startLoading();
                 let requestParams = this.compileFilters(filters, union);
                 promise1 = this.queryAnnotations(label, requestParams).then(
-                    (response) => {
-                        this.gotAnnotations(label, labelFilterCombination, response);
-                    },
+                    (response) => this.gotAnnotations(label, response),
                     handleErrorResponse
-                ).finally(this.finishLoading);
+                ).then(a => Vue.set(this.annotationsCache, cacheKey, a))
+                .finally(this.finishLoading);
             } else {
                 promise1 = Vue.Promise.resolve();
             }
@@ -235,7 +234,7 @@ export default {
 
         },
 
-        gotAnnotations(label, selectedAnnotationName = '', response = null) {
+        gotAnnotations(label, response) {
 
             let imageAnnotations = response[0].data;
             let videoAnnotations = response[1].data;
@@ -252,11 +251,9 @@ export default {
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
 
-            Vue.set(
-                this.annotationsCache,
-                selectedAnnotationName,
-                annotations,
-            )
+            return annotations
+
+
         },
         handleSelectedFilters(filters, union) {
             if (Object.keys(filters).length > 0) {
