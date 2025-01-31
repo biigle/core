@@ -7,9 +7,9 @@
     >
         <annotations-tab
             :annotations="filteredAnnotations"
+            :all-annotations="annotations"
             :total-annotation-count="annotationCount"
             :selected-annotations="selectedAnnotations"
-            :annotation-filters="annotationFilters"
             :can-detach-others="@can('forceEditIn', $volume) true @else false @endcan"
             :has-active-filter="hasActiveAnnotationFilter"
             :own-user-id="{{$user->id}}"
@@ -24,7 +24,6 @@
                 <div class="annotations-tab">
                     <div class="annotations-tab__header">
                         <filters
-                             :annotation-filters="annotationFilters"
                              :has-active-filter="hasActiveFilter"
                              v-on:select="emitSelectFilter"
                              v-on:unselect="emitUnselectFilter"

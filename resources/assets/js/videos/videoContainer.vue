@@ -4,16 +4,13 @@ import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
-import LabelAnnotationFilter from '@/annotations/models/LabelAnnotationFilter.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
 import Settings from './stores/settings.js';
 import SettingsTab from './components/settingsTab.vue';
-import ShapeAnnotationFilter from '@/annotations/models/ShapeAnnotationFilter.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
-import UserAnnotationFilter from '@/annotations/models/UserAnnotationFilter.vue';
 import VideoAnnotationApi from './api/videoAnnotations.js';
 import VideoApi from './api/videos.js';
 import VideoLabelsTab from './components/videoLabelsTab.vue';
@@ -85,7 +82,6 @@ export default {
             initialMapCenter: [0, 0],
             initialMapResolution: 0,
             initialFocussedAnnotation: 0,
-            annotationFilters: [],
             activeAnnotationFilter: null,
             resizingTimeline: false,
             timelineOffsetReference: 0,
@@ -468,22 +464,6 @@ export default {
         refreshSingleAnnotation(annotation) {
             this.$refs.videoScreen.refreshSingleAnnotation(annotation);
         },
-        initAnnotationFilters() {
-            let reverseShapes = {};
-            for (let name in this.shapes) {
-                reverseShapes[this.shapes[name]] = name;
-            }
-
-            this.annotationFilters = [
-                new LabelAnnotationFilter({data: {annotations: this.annotations}}),
-                new UserAnnotationFilter({data: {annotations: this.annotations}}),
-                new ShapeAnnotationFilter({data: {shapes: reverseShapes}}),
-            ];
-        },
-        updateAnnotationFilters() {
-            this.annotationFilters[0].annotations = this.annotations;
-            this.annotationFilters[1].annotations = this.annotations;
-        },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
         },
@@ -560,7 +540,6 @@ export default {
             let annotationPromise = VideoAnnotationApi.query({id: video.id});
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
-                .then(this.updateAnnotationFilters)
                 .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
 
@@ -708,7 +687,7 @@ export default {
         },
     },
     created() {
-        let shapes = biigle.$require('videos.shapes');
+        let shapes = biigle.$require('annotations.shapes');
         let map = {};
         Object.keys(shapes).forEach((id) => {
             map[shapes[id]] = parseInt(id);
@@ -724,7 +703,6 @@ export default {
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
 
-        this.initAnnotationFilters();
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
