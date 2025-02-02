@@ -142,12 +142,16 @@ export default new Vue({
             // on each switch (unless color adjustment is active).
             let canvas = document.createElement('canvas');
 
+            // Another Canvas for LabelBOT to ignore color adjustments.
+            let labelBOTCanvas = document.createElement('canvas');
+
             let imageWrapper = {
                 id: id,
                 source: img,
                 width: 0,
                 height: 0,
                 canvas: canvas,
+                labelBOTCanvas: labelBOTCanvas,
                 crossOrigin: false,
             };
 
@@ -182,6 +186,11 @@ export default new Vue({
                     imageWrapper.canvas._dirty = false;
                     document.body.removeChild(img);
                     document.body.removeChild(imageWrapper.canvas);
+
+                    // Draw the image to the labelBOT canvas
+                    imageWrapper.labelBOTCanvas.width = img.width;
+                    imageWrapper.labelBOTCanvas.height = img.height;
+                    imageWrapper.labelBOTCanvas.getContext('2d').drawImage(img, 0, 0);
 
                     resolve(imageWrapper);
                 };
