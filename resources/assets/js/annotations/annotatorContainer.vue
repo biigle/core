@@ -25,6 +25,7 @@ import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
 import Keyboard from '../core/keyboard';
+import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
 
 /**
  * View model for the annotator container
@@ -87,6 +88,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            onnxModel: null,
             labelBOTIsOn: false,
         };
     },
@@ -413,17 +415,117 @@ export default {
         handleLabelBOT(labelBOTIsOn) {
             this.labelBOTIsOn = labelBOTIsOn;
         },
+        getBoundingBox(points) {
+            let minX = this.image.width;
+            let minY = this.image.height;
+            let maxX = 0;
+            let maxY = 0;
+            // Point
+            if (points.length === 2) {
+                // TODO: maybe use SAM or PTP module to convert point to shape
+                const tempRadius = 60;
+                const [x, y] = points;
+                minX = Math.max(0, x - tempRadius);
+                minY = Math.max(0, y - tempRadius);
+                maxX = Math.min(this.image.width, x + tempRadius);
+                maxY = Math.min(this.image.height, y + tempRadius);
+            } else if (points.length === 3) { // Circle
+                const [centerX, centerY, radius] = points;
+                minX = Math.max(0, centerX - radius);
+                minY = Math.max(0, centerY - radius);
+                maxX = Math.min(this.image.width, centerX + radius);
+                maxY = Math.min(this.image.height, centerY + radius);
+            } else {
+                for (let i = 0; i < points.length; i += 2) {
+                    const x = points[i];
+                    const y = points[i + 1];
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                }
+                // Ensure the bounding box is within the image dimensions
+                minX = Math.max(0, minX);
+                minY = Math.max(0, minY);
+                maxX = Math.min(this.image.width, maxX);
+                maxY = Math.min(this.image.height, maxY);
+            }
+
+            const width = maxX - minX;
+            const height = maxY - minY;
+            return [minX, minY, width, height];
+        },
+        initONNXModel() {
+            // Load the onnx model with webgpu first 
+            // if the client does not have one then fallback to wasm
+            const modelPath = biigle.$require('labelbot.onnx-url');
+            InferenceSession.create(modelPath, { executionProviders: ['webgpu'] })
+            .then((onnxModel) => {
+                this.onnxModel = onnxModel;
+            })
+            .catch((error) => {
+                InferenceSession.create(modelPath, { executionProviders: ['wasm'] })
+                .then((onnxModel) => {
+                    this.onnxModel = onnxModel;
+                }).catch(handleErrorResponse)
+            })
+        },
+        generateFeatureVector(points) {
+            // Get selected region
+            const [x, y, width, height] = this.getBoundingBox(points);
+
+            // Create a temporary canvas for processing the selected region
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 224;
+            tempCanvas.height = 224;
+            const tempContext = tempCanvas.getContext('2d');
+
+            // Draw the selected region on the temporary canvas
+            tempContext.drawImage(this.image.labelBOTCanvas, x, y, width, height, 0, 0, 224, 224);
+
+            // Extract image data
+            const annotationData = tempContext.getImageData(0, 0, 224, 224).data;
+            const annotationDataArray = new Float32Array(224 * 224 * 3);
+            for (let i = 0, j = 0; i < annotationData.length; i += 4, j++) {
+                annotationDataArray[j] = annotationData[i] / 255.0;
+                annotationDataArray[224 * 224 + j] = annotationData[i + 1] / 255.0;
+                annotationDataArray[2 * 224 * 224 + j] = annotationData[i + 2] / 255.0;
+            }
+
+            // Convert the annotation data to tensor
+            const tensor = new Tensor('float32', annotationDataArray, [1, 3, 224, 224]);
+
+            // Generate feature vector
+            return this.onnxModel.run({ input: tensor}).then((output) => {
+                return output[Object.keys(output)[0]].data
+            })
+            .catch(handleErrorResponse);
+
+        },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {
-                annotation.label_id = this.selectedLabel.id;
+                let promise;
+
+                // LabelBOT
+                if (!this.selectedLabel && this.labelBOTIsOn) {
+                    promise = this.generateFeatureVector(annotation.points).then((featureVector => {
+                        // Assign feature vector to the annotation
+                        annotation.feature_vector = featureVector;
+                    }));
+                } else {
+                    promise = Promise.resolve()
+                    annotation.label_id = this.selectedLabel.id;
+                }
                 // TODO: confidence control
                 annotation.confidence = 1;
-                AnnotationsStore.create(this.imageId, annotation)
-                    .then(this.setLastCreatedAnnotation)
-                    .catch(handleErrorResponse)
-                    // Remove the temporary annotation if saving succeeded or failed.
-                    .finally(removeCallback);
-            }
+                promise.then(() => {
+                    AnnotationsStore.create(this.imageId, annotation)
+                })
+                .then(this.setLastCreatedAnnotation)
+                .catch(handleErrorResponse)
+                // Remove the temporary annotation if saving succeeded or failed.
+                .finally(removeCallback);
+                }
         },
         handleAttachLabel(annotation, label) {
             label = label || this.selectedLabel;
@@ -756,6 +858,10 @@ export default {
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
+
+        // Load the onnx model
+        console.log(this.onnxModel);
+        this.initONNXModel();
     },
 };
 </script>

@@ -1,4 +1,3 @@
-
 @extends('app')
 @section('full-navbar', true)
 
@@ -20,6 +19,7 @@
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
+    biigle.$declare('labelbot.onnx-url', '{{cachebust_asset(config('labelbot.onnx_file'))}}')
 
 </script>
 @mixin('annotationsScripts')
