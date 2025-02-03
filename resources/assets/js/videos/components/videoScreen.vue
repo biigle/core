@@ -77,12 +77,26 @@
                     @click="drawPoint"
                     >
                         <control-button
+                            v-if="this.singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button> 
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="disableFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
+                            v-if="this.singleAnnotation"
+                            icon="fa-project-diagram"
+                            title="Disable the single-frame annotation option to track annotations"
+                            :disabled="true"
+                            ></control-button> 
+                        <control-button
+                            v-else
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
                             v-on:click="finishTrackAnnotation"
@@ -100,6 +114,13 @@
                     @click="drawRectangle"
                     >
                         <control-button
+                        v-if="this.singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>    
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="disableFinishDrawAnnotation"
@@ -116,12 +137,26 @@
                     @click="drawCircle"
                     >
                         <control-button
+                            v-if="this.singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="disableFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
+                            v-if="this.singleAnnotation"
+                            icon="fa-project-diagram"
+                            title="Disable the single-frame annotation option to track annotations"
+                            :disabled="true"
+                            ></control-button> 
+                        <control-button
+                            v-else
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
                             v-on:click="finishTrackAnnotation"
@@ -139,6 +174,13 @@
                     @click="drawLineString"
                     >
                         <control-button
+                            v-if="this.singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>     
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="disableFinishDrawAnnotation"
@@ -154,7 +196,13 @@
                     @click="drawPolygon"
                     >
                         <control-button
-                            v-if="isDrawingPolygon || isUsingPolygonBrush"
+                            v-if="(isDrawingPolygon || isUsingPolygonBrush) && this.singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>     
+                        <control-button
+                            v-else-if="isDrawingPolygon || isUsingPolygonBrush"
                             icon="fa-check"
                             title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="disableFinishDrawAnnotation"
@@ -189,9 +237,16 @@
                     @click="drawWholeFrame"
                     >
                         <control-button
+                            v-if="this.singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>     
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="disableFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
