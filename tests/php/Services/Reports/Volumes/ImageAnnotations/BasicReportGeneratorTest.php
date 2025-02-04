@@ -41,7 +41,7 @@ class BasicReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with("\n");
+            ->with('');
 
         $mock->shouldReceive('putCsv')
             ->once()
