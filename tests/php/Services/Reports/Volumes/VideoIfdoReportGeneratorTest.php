@@ -710,9 +710,22 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $this->assertSame($expect, $generator->ifdo);
     }
 
-    public function testGenerateReportNoIfdo()
+    public function testGenerateReportNoIfdoParser()
     {
-        $volume = Volume::factory()->create();
+        $volume = Volume::factory()->create([
+            'metadata_file_path' => 'abc',
+        ]);
+        $generator = new VideoIfdoReportGeneratorStub();
+        $generator->setSource($volume);
+        $this->expectException(Exception::class);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportNoIfdoPath()
+    {
+        $volume = Volume::factory()->create([
+            'metadata_parser' => IfdoParser::class,
+        ]);
         $generator = new VideoIfdoReportGeneratorStub();
         $generator->setSource($volume);
         $this->expectException(Exception::class);

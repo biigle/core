@@ -171,7 +171,7 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
      */
     protected function hasIfdo(Volume $source): bool
     {
-        return $source->metadata_parser === IfdoParser::class;
+        return $source->metadata_file_path && $source->metadata_parser === IfdoParser::class;
     }
 
     /**
@@ -184,10 +184,6 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
      */
     protected function getIfdo(Volume $source): ?Ifdo
     {
-        if (!$source->metadata_file_path) {
-            return null;
-        }
-
         $content = Storage::disk($source->getMetadataFileDisk())
             ->get($source->metadata_file_path);
 

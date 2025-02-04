@@ -580,10 +580,13 @@ class VolumeTest extends ModelTestCase
         $disk = Storage::fake('metadata');
         $disk->put($this->model->id.'.csv', 'abc');
         $this->model->metadata_file_path = $this->model->id.'.csv';
+        $this->model->metadata_parser = 'myparser';
         $this->model->save();
         $this->model->deleteMetadata();
         $disk->assertMissing($this->model->id.'.csv');
-        $this->assertNull($this->model->fresh()->metadata_file_path);
+        $this->model->refresh();
+        $this->assertNull($this->model->metadata_file_path);
+        $this->assertNull($this->model->metadata_parser);
     }
 
     public function testGetMetadata()
