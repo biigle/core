@@ -13,25 +13,29 @@ trait CompileFilters {
     */
     private function compileFilterConditions(Builder &$query, bool $union, array $filters, string $filterName): void
     {
-        if ($union){
+        if ($union) {
             $included = [];
             $excluded = [];
-            foreach ($filters as $filterValue){
+            
+            foreach ($filters as $filterValue) {
                 if ($filterValue < 0) {
                     array_push($excluded, abs($filterValue));
                 } else {
                     array_push($included, $filterValue);
-                }}
+                }
+            }
+            
             $query->where(function($query) use ($included, $excluded, $filterName) {
-                if (count($included) > 0){
+                if (count($included) > 0) {
                     $query->whereIn($filterName, $included, 'or');
                 }
-                if (count($excluded) > 0){
+                
+                if (count($excluded) > 0) {
                     $query->whereNotIn($filterName, $excluded, 'or');
                 }
             });
         } else {
-            foreach ($filters as $filterValue){
+            foreach ($filters as $filterValue) {
                 if ($filterValue < 0) {
                     $query->whereNot($filterName, abs($filterValue));
                 } else {
