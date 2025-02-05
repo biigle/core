@@ -81,7 +81,7 @@ export default {
             return this.step === 1;
         },
         annotations() {
-            if (!this.selectedLabel){
+            if (!this.selectedLabel) {
                 return [];
             }
 
