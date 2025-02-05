@@ -94,9 +94,7 @@ export default {
 
             let cacheKey = JSON.stringify(filterLabel);
 
-            if (
-                this.annotationsCache.hasOwnProperty(cacheKey)
-            ) {
+            if (this.annotationsCache.hasOwnProperty(cacheKey)) {
                 return this.annotationsCache[cacheKey];
             }
 
