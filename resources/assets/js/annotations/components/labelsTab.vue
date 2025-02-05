@@ -60,7 +60,7 @@ export default {
                 this.labelBOTIsOn = false;
                 this.$emit('labelbot', false);
                 return;
-            };
+            }
 
             if (this.selectedLabel) {
                 Messages.warning("LabelBOT can't be activated! Please deselect the selected label!");

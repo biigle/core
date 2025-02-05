@@ -467,7 +467,7 @@ export default {
             .then((onnxModel) => {
                 this.onnxModel = onnxModel;
             })
-            .catch((error) => {
+            .catch(() => {
                 InferenceSession.create(modelPath, { executionProviders: ['wasm'] })
                 .then((onnxModel) => {
                     this.onnxModel = onnxModel;
@@ -868,7 +868,6 @@ export default {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
 
         // Load the onnx model
-        console.log(this.onnxModel);
         this.initONNXModel();
     },
 };
