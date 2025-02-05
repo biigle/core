@@ -16,8 +16,8 @@
             biigle.$declare('volumes.infoUri', '{{ route('image', ':id') }}');
         @else
             biigle.$declare('volumes.thumbCount', {{ config('videos.thumbnail_count') }});
-            biigle.$declare('volumes.annotateUri', '{{ route('video', ':id') }}');
-            biigle.$declare('volumes.infoUri', undefined);
+            biigle.$declare('volumes.annotateUri', '{{ route('video-annotate', ':id') }}');
+            biigle.$declare('volumes.infoUri', '{{ route('video', ':id') }}');
         @endif
 
         biigle.$declare('volumes.userId', {!! $user->id !!});
@@ -57,6 +57,7 @@
         <sidebar-tab name="sorting" icon="exchange-alt fa-rotate-90" title="Sort files" :highlight="sortingActive">
             @include('volumes.show.sorting')
         </sidebar-tab>
+        <sidebar-tab name="reports" icon="file" title="Request reports for this volume" href="{{route('volume-reports', $volume->id)}}"></sidebar-tab>
         @mixin('volumesSidebar')
     </sidebar>
     <div class="sidebar-container__content">

@@ -29,6 +29,7 @@ class VideoMimeTypeError extends VideoError {}
 class VideoCodecError extends VideoError {}
 class VideoMalformedError extends VideoError {}
 class VideoTooLargeError extends VideoError {}
+class VideoMoovAtomError extends VideoError {}
 
 // Used to round and parse the video current time from the URL, as it is stored as an int
 // there (without decimal dot).
@@ -99,6 +100,9 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            hasCrossOriginError: false,
+            videoFilenames: null,
+            focusInputFindlabel: false,
         };
     },
     computed: {
@@ -155,6 +159,9 @@ export default {
         hasTooLargeError() {
             return this.error instanceof VideoTooLargeError;
         },
+        hasMoovAtomError() {
+            return this.error instanceof VideoMoovAtomError;
+        },
         errorClass() {
             if (this.hasVideoError) {
                 if (this.error instanceof VideoNotProcessedError) {
@@ -174,6 +181,9 @@ export default {
         },
         reachedTrackedAnnotationLimit() {
             return this.disableJobTracking;
+        },
+        annotationsAreHidden() {
+            return this.settings.annotationOpacity === 0;
         }
     },
     methods: {
@@ -532,6 +542,8 @@ export default {
                 throw new VideoMalformedError();
             } else if (video.error === this.errors['too-large']) {
                 throw new VideoTooLargeError();
+            } else if (video.error === this.errors['moov-atom']) {
+                throw new VideoMoovAtomError();
             } else if (video.size === null) {
                 throw new VideoNotProcessedError();
             }
@@ -553,6 +565,7 @@ export default {
             let videoPromise = new Vue.Promise((resolve) => {
                 this.video.addEventListener('canplay', resolve);
             });
+            videoPromise.then(this.checkCORSProperty);
             let annotationPromise = VideoAnnotationApi.query({id: video.id});
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
@@ -581,6 +594,16 @@ export default {
                 });
 
             return promise;
+        },
+        checkCORSProperty() {
+            let testCanvas = document.createElement('canvas');
+            let ctx = testCanvas.getContext('2d');
+            ctx.drawImage(this.video, 0, 0);
+            try {
+                ctx.getImageData(0, 0, 1, 1);
+            } catch (e) {                
+                this.hasCrossOriginError = true;
+            }
         },
         showPreviousVideo() {
             this.reset();
@@ -677,6 +700,16 @@ export default {
         selectLastAnnotation() {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
             this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
+        },
+        openSidebarLabels() {
+            this.$refs.sidebar.$emit('open', 'labels');
+            this.setFocusInputFindLabel()
+        },
+        setFocusInputFindLabel() {
+            this.focusInputFindlabel = false;
+            this.$nextTick(() => {
+                this.focusInputFindlabel = true;
+            });
         }
     },
     watch: {
@@ -709,6 +742,7 @@ export default {
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
+        this.videoFilenames = biigle.$require('videos.videoFilenames');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();
@@ -742,6 +776,9 @@ export default {
         if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
             this.supportsJumpByFrame = true;
         }
+
+        Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
+
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before
@@ -752,6 +789,8 @@ export default {
         if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
+
+        Events.$emit('videos.map.init', this.$refs.videoScreen.map);
     },
 };
 </script>

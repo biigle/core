@@ -88,6 +88,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            imageFilenames: {},
             onnxModel: null,
             labelBOTIsOn: false,
         };
@@ -166,6 +167,9 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
+        },
+        highlightSettingsTab() {
+            return this.annotationOpacity === 0;
         }
     },
     methods: {
@@ -702,7 +706,10 @@ export default {
         selectLastAnnotation() {
             let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
             this.handleSelectAnnotation(lastAnnotation);
-        }
+        },
+        openSidebarLabels() {
+            this.$refs.sidebar.$emit('open', 'labels');
+        },
     },
     watch: {
         async imageId(id) {
@@ -782,6 +789,7 @@ export default {
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
+        this.imageFilenames = biigle.$require('annotations.imagesFilenames');
         this.annotationFilters = [
             new LabelFilter(),
             new UserFilter(),

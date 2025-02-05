@@ -7,6 +7,7 @@ use Biigle\Traits\HasMetadataFile;
 use Cache;
 use Carbon\Carbon;
 use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -420,6 +421,36 @@ class Volume extends Model
     public function getCreatingAsyncAttribute()
     {
         return (bool) $this->getJsonAttr('creating_async', false);
+    }
+
+    /**
+     * Return the dynamic attribute for the export area.
+     *
+     * @return ?array
+     */
+    public function getExportAreaAttribute()
+    {
+        return $this->getJsonAttr('export_area');
+    }
+
+    /**
+     * Set or update the dynamic attribute for the export area.
+     */
+    public function setExportAreaAttribute(?array $value)
+    {
+        if ($value !== null) {
+            if (sizeof($value) !== 4) {
+                throw new Exception('Malformed export area coordinates!');
+            }
+
+            foreach ($value as $coordinate) {
+                if (!is_int($coordinate)) {
+                    throw new Exception('Malformed export area coordinates!');
+                }
+            }
+        }
+
+        $this->setJsonAttr('export_area', $value);
     }
 
     /**

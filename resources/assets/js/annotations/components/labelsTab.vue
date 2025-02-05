@@ -1,5 +1,6 @@
 <script>
 import LabelTrees from '../../label-trees/components/labelTrees';
+import Keyboard from '../../core/keyboard';
 import powerToggle from '../../core/components/powerToggle.vue';
 import Messages from '../../core/messages/store';
 
@@ -27,7 +28,14 @@ export default {
             labelTrees: [],
             selectedLabel: null,
             labelBOTIsOn: false,
+            focusInputFindlabel: false,
         };
+    },
+    props: {
+        focusInput:{
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         plugins() {
@@ -64,9 +72,18 @@ export default {
                 this.$emit('labelbot', true);
             }
         },
+        setFocusInputFindLabel() {
+            this.$emit('open', 'labels');
+            this.focusInputFindlabel = false;
+            this.$nextTick(() => {
+                this.focusInputFindlabel = true;
+            });
+        },
     },
     created() {
         this.labelTrees = biigle.$require('annotations.labelTrees');
+
+        Keyboard.on('control+k', this.setFocusInputFindLabel, 0, this.listenerSet);
     },
 };
 </script>
