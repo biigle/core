@@ -87,7 +87,7 @@ export default {
 
             let filterLabel = { label: this.selectedLabel.id };
 
-            if (this.selectedFilters.length > 0){
+            if (this.selectedFilters.length > 0) {
                 filterLabel["filters"] = this.selectedFilters;
                 filterLabel["union"] = this.union;
             }
