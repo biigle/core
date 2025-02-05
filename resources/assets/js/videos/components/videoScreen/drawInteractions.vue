@@ -8,16 +8,13 @@ import VectorSource from '@biigle/ol/source/Vector';
 import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
 import { Point } from '@biigle/ol/geom';
-import { computeDistance } from '../../utils';
+import * as preventDoubleclick from '../../../prevent-doubleclick';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
  * @type {Object}
  */
-
-const POINT_CLICK_COOLDOWN = 400;
-const POINT_CLICK_DISTANCE = 5;
 
 export default {
     mixins: [snapInteraction],
@@ -213,19 +210,31 @@ export default {
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
 
             if (lastFrame === undefined || lastFrame < this.video.currentTime) {
-                if (this.singleAnnotation && this.isPointDoubleClick(e)) { 
-                    this.pendingAnnotationSource.once('addfeature', function (e) {
-                        this.removeFeature(e.feature);
-                    });
-                } else {
-                    this.pendingAnnotation.frames.push(this.video.currentTime);
-                    this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
+                this.pendingAnnotation.frames.push(this.video.currentTime);
+                this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
 
-                    if (!this.video.ended && this.autoplayDraw > 0) {
-                        this.play();
-                        window.clearTimeout(this.autoplayDrawTimeout);
-                        this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                if (!this.video.ended && this.autoplayDraw > 0) {
+                    this.play();
+                    window.clearTimeout(this.autoplayDrawTimeout);
+                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                }
+
+                if (this.singleAnnotation) {
+                    if (this.isDrawingPoint) {
+                        if (this.isPointDoubleClick(e)) {
+                            // The feature is added to the source only after this event
+                            // is handled, so remove has to happen after the addfeature
+                            // event.
+                            this.pendingAnnotationSource.once('addfeature', function (e) {
+                                this.removeFeature(e.feature);
+                            });
+                            this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                            return
+                        }
+                        this.lastDrawnPointTime = new Date().getTime();
+                        this.lastDrawnPoint = e.feature.getGeometry();
                     }
+                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
                 }
             } else {
                 // If the pending annotation (time) is invalid, remove it again.
@@ -238,21 +247,10 @@ export default {
 
             this.$emit('pending-annotation', this.pendingAnnotation);
 
-            if (this.singleAnnotation) {
-                if (this.isDrawingPoint) {
-                    if (this.isPointDoubleClick(e)) {
-                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
-                        return;
-                    }
-                    this.lastDrawnPointTime = new Date().getTime();
-                    this.lastDrawnPoint = e.feature.getGeometry();
-                }
-                this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-            }
         },
         isPointDoubleClick(e) {
-            return new Date().getTime() - this.lastDrawnPointTime < POINT_CLICK_COOLDOWN
-                && computeDistance(this.lastDrawnPoint, e.feature.getGeometry()) < POINT_CLICK_DISTANCE;
+            return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
+                && preventDoubleclick.computeDistance(this.lastDrawnPoint, e.feature.getGeometry()) < preventDoubleclick.POINT_CLICK_DISTANCE;
         },
     },
     created() {
