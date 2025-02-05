@@ -140,9 +140,14 @@ class VolumeUrl implements Rule
 
         // Access the adapter directly to check for contents without loading the full
         // file/directory listing.
-        $generator = $disk->getAdapter()->listContents($url[1], false);
+        $iterable = $disk->getAdapter()->listContents($url[1], false);
+        $hasContent = false;
+        foreach ($iterable as $item) {
+            $hasContent = true;
+            break;
+        }
 
-        if ($generator->current() === null) {
+        if (!$hasContent) {
             $this->message = "Unable to access '{$url[1]}'. Does it exist and you have access permissions?";
 
             return false;
