@@ -29,7 +29,6 @@ class VideoMimeTypeError extends VideoError {}
 class VideoCodecError extends VideoError {}
 class VideoMalformedError extends VideoError {}
 class VideoTooLargeError extends VideoError {}
-class VideoMoovAtomError extends VideoError {}
 
 // Used to round and parse the video current time from the URL, as it is stored as an int
 // there (without decimal dot).
@@ -158,9 +157,6 @@ export default {
         },
         hasTooLargeError() {
             return this.error instanceof VideoTooLargeError;
-        },
-        hasMoovAtomError() {
-            return this.error instanceof VideoMoovAtomError;
         },
         errorClass() {
             if (this.hasVideoError) {
@@ -542,8 +538,6 @@ export default {
                 throw new VideoMalformedError();
             } else if (video.error === this.errors['too-large']) {
                 throw new VideoTooLargeError();
-            } else if (video.error === this.errors['moov-atom']) {
-                throw new VideoMoovAtomError();
             } else if (video.size === null) {
                 throw new VideoNotProcessedError();
             }
