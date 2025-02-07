@@ -233,14 +233,6 @@
                 Advanced configuration of the video annotation tool.
             </p>
 
-            <h4>
-                <a href="{{route('manual-tutorials', ['videos', 'fix-video-encoding'])}}">Fix video encoding</a>
-            </h4>
-
-            <p>
-                Fix errors in video files that can cause problems in BIIGLE.
-            </p>
-
             <h3>Reports</h3>
             <h4>
                 <a href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}">Reports schema</a>
