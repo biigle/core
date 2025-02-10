@@ -134,6 +134,12 @@ export default {
                 if (this.isDrawingWholeFrame) {
                     this.pendingAnnotation.frames.push(this.video.currentTime);
                     this.$emit('pending-annotation', this.pendingAnnotation);
+                   /* if (this.singleAnnotation) {
+                        this.finishDrawAnnotation();
+                       // this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
+                     //  console.log("Finish muesste Aufgerufen werden");
+                       
+                    }*/
                 } else {
                     this.drawInteraction = new DrawInteraction({
                         source: this.pendingAnnotationSource,
@@ -158,6 +164,8 @@ export default {
             }
         },
         finishDrawAnnotation() {
+            console.log("FINISH!");
+            
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
@@ -229,7 +237,7 @@ export default {
                                 this.removeFeature(e.feature);
                             });
                             this.resetPendingAnnotation(this.pendingAnnotation.shape);
-                            return
+                            return;
                         }
                         this.lastDrawnPointTime = new Date().getTime();
                         this.lastDrawnPoint = e.feature.getGeometry();

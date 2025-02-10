@@ -86,7 +86,7 @@
                             v-else
                             icon="fa-check"
                             title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="disableFinishDrawAnnotation"
+                            :disabled="this.cantFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
@@ -100,7 +100,7 @@
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="disableFinishTrackAnnotation"
+                            :disabled="this.cantFinishTrackAnnotation || this.disableJobTracking"
                             :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
@@ -123,7 +123,7 @@
                             v-else
                             icon="fa-check"
                             title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="disableFinishDrawAnnotation"
+                            :disabled="this.cantFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -146,7 +146,7 @@
                             v-else
                             icon="fa-check"
                             title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="disableFinishDrawAnnotation"
+                            :disabled="this.cantFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
@@ -160,7 +160,7 @@
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
                             v-on:click="finishTrackAnnotation"
-                            :disabled="disableFinishTrackAnnotation"
+                            :disabled="this.cantFinishTrackAnnotation || this.disableJobTracking"
                             :loading="disableJobTracking"
                             ></control-button>
                 </control-button>
@@ -183,7 +183,7 @@
                             v-else
                             icon="fa-check"
                             title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="disableFinishDrawAnnotation"
+                            :disabled="this.cantFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -205,7 +205,7 @@
                             v-else-if="isDrawingPolygon || isUsingPolygonBrush"
                             icon="fa-check"
                             title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="disableFinishDrawAnnotation"
+                            :disabled="this.cantFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                         <control-button
@@ -246,7 +246,7 @@
                             v-else
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="disableFinishDrawAnnotation"
+                            :disabled="this.cantFinishDrawAnnotation"
                             @click="finishDrawAnnotation"
                             ></control-button>
                 </control-button>
@@ -487,12 +487,6 @@ export default {
         },
         jumpForwardMessage() {
             return `Advance video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄`;
-        },
-        disableFinishTrackAnnotation() {
-            return this.cantFinishTrackAnnotation || this.disableJobTracking || this.singleAnnotation
-        },
-        disableFinishDrawAnnotation() {
-            return this.cantFinishDrawAnnotation || this.singleAnnotation
         },
     },
     methods: {
