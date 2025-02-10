@@ -11,6 +11,7 @@ let defaults = {
     enableJumpByFrame: false,
     jumpStep: 5.0,
     muteVideo: true,
+    singleAnnotation: false,
 };
 
 export default new Settings({

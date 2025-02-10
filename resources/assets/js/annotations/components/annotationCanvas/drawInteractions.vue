@@ -5,13 +5,8 @@ import Styles from '../../stores/styles';
 import { shiftKeyOnly } from '@biigle/ol/events/condition';
 import snapInteraction from '../../snapInteraction.vue';
 import { Point } from '@biigle/ol/geom';
+import * as preventDoubleclick from '../../../prevent-doubleclick';
 
-
-function computeDistance(point1, point2) {
-    let p1=point1.getCoordinates();
-    let p2=point2.getCoordinates();
-    return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
-}
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the draw interactions.
@@ -20,9 +15,6 @@ function computeDistance(point1, point2) {
  */
 
 let drawInteraction;
-
-const POINT_CLICK_COOLDOWN = 400;
-const POINT_CLICK_DISTANCE = 5;
 
 // Custom OpenLayers freehandCondition that is true if a pen is used for input or
 // if Shift is pressed otherwise.
@@ -142,8 +134,8 @@ export default {
             }
         },
         isPointDoubleClick(e) {
-            return new Date().getTime() - this.lastDrawnPointTime < POINT_CLICK_COOLDOWN
-                && computeDistance(this.lastDrawnPoint,e.feature.getGeometry()) < POINT_CLICK_DISTANCE;
+            return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
+                && preventDoubleclick.computeDistance(this.lastDrawnPoint,e.feature.getGeometry()) < preventDoubleclick.POINT_CLICK_DISTANCE;
         },
     },
     watch: {

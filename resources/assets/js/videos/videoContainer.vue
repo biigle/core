@@ -73,6 +73,7 @@ export default {
                 showThumbnailPreview: true,
                 enableJumpByFrame: false,
                 muteVideo: true,
+                singleAnnotation: false,
             },
             openTab: '',
             urlParams: {
