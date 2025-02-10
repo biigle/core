@@ -145,7 +145,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
 
         if ($this->hasInvalidMoovAtomPosition($path)) {
             $this->video->error = Video::ERROR_INVALID_MOOV_POS;
-        } else if ($this->video->error) {
+        } elseif ($this->video->error) {
             $this->video->error = null;
         }
 
@@ -329,7 +329,6 @@ class ProcessNewVideo extends Job implements ShouldQueue
     {
         return VipsImage::thumbnail($file, $width, ['height' => $height]);
     }
-
 
     protected function hasInvalidMoovAtomPosition($sourcePath)
     {
