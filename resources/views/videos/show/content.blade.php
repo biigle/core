@@ -23,6 +23,14 @@
         </div>
     </div>
 </div>
+<message-curtain v-if="invalidMoovAtomPosition" v-cloak>
+    <div class="message-curtain--text text-danger">
+        <div class="lead">
+            Please <a href="/manual/tutorials/videos/fix-video-encoding">fix the video encoding</a>.<br>This may cause problems if you continue.
+        </div>
+        <button type="button" class="btn btn-default" v-on:click="dismissMoovAtomError">Continue at own risk</button>
+    </div>
+</message-curtain>
 <video-screen
       ref="videoScreen"
       :annotations="filteredAnnotations"
