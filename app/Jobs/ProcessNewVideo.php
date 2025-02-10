@@ -143,9 +143,12 @@ class ProcessNewVideo extends Job implements ShouldQueue
             // ignore and leave dimensions at null.
         }
 
-        if ($this->video->error) {
+        if ($this->hasInvalidMoovAtomPosition($path)) {
+            $this->video->error = Video::ERROR_INVALID_MOOV_POS;
+        } else if ($this->video->error) {
             $this->video->error = null;
         }
+
         $this->video->save();
 
         $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
@@ -325,5 +328,20 @@ class ProcessNewVideo extends Job implements ShouldQueue
     protected function generateThumbnail(string $file, int $width, int $height): VipsImage
     {
         return VipsImage::thumbnail($file, $width, ['height' => $height]);
+    }
+
+
+    protected function hasInvalidMoovAtomPosition($sourcePath)
+    {
+        // Webm and mpeg videos don't have a moov atom
+        if (in_array($this->video->mimeType, ['video/mpeg', 'video/webm'])) {
+            return false;
+        }
+
+        $process = Process::forever()
+            ->run("ffprobe -v trace -i '{$sourcePath}'  2>&1 | grep -o -e type:\'mdat\' -e type:\'moov\'")
+            ->throw();
+        $output = explode("\n", $process->output());
+        return !str_contains($output[0], 'moov');
     }
 }
