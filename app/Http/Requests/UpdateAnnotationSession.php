@@ -37,7 +37,7 @@ class UpdateAnnotationSession extends FormRequest
             'name' => 'filled|max:256',
             'starts_at' => 'filled|date',
             'ends_at' => 'filled|date',
-            'users' => 'filled|array',
+            'users' => 'array',
             'users.*' => 'distinct|integer|exists:users,id',
             'hide_other_users_annotations' => 'filled|boolean',
             'hide_own_annotations' => 'filled|boolean',

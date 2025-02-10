@@ -121,17 +121,20 @@ class VolumeAnnotationSessionController extends Controller
     public function store(StoreAnnotationSession $request)
     {
         $users = $request->input('users');
-        // count users of all attached projects that match the given user IDs
-        $count = $request->volume->users()
-            ->whereIn('id', $users)
-            ->count();
+        $hasUsers = $users != null && count($users) > 0;
+        if ($hasUsers) {
+            // count users of all attached projects that match the given user IDs
+            $count = $request->volume->users()
+                ->whereIn('id', $users)
+                ->count();
 
-        // Previous validation ensures that the user IDs are distinct so we can validate
-        // the volume users using the count.
-        if ($count !== count($users)) {
-            throw ValidationException::withMessages([
-                'users' => ['All users must belong to one of the projects, this volume is attached to.'],
-            ]);
+            // Previous validation ensures that the user IDs are distinct so we can validate
+            // the volume users using the count.
+            if ($count !== count($users)) {
+                throw ValidationException::withMessages([
+                    'users' => ['All users must belong to one of the projects, this volume is attached to.'],
+                ]);
+            }
         }
 
         $session = new AnnotationSession;
@@ -149,7 +152,9 @@ class VolumeAnnotationSessionController extends Controller
         }
 
         $request->volume->annotationSessions()->save($session);
-        $session->users()->attach($users);
+        if ($hasUsers) {
+            $session->users()->attach($users);
+        }
 
         return $session->load('users');
     }
