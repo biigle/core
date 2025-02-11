@@ -529,24 +529,20 @@ export default {
         handleVideoInformationResponse(response) {
             let video = response.body;
 
-            // Show only warning to user because of https://github.com/orgs/biigle/discussions/1076#discussioncomment-12083987
-            this.invalidMoovAtomPosition = video.error === this.errors['moov-atom'];
-
-            // No need to check for errors if a warning is present, as it occurs after all error checks
-            if (!this.invalidMoovAtomPosition) {
-                if (video.error === this.errors['not-found']) {
-                    throw new VideoNotFoundError();
-                } else if (video.error === this.errors['mimetype']) {
-                    throw new VideoMimeTypeError();
-                } else if (video.error === this.errors['codec']) {
-                    throw new VideoCodecError();
-                } else if (video.error === this.errors['malformed']) {
-                    throw new VideoMalformedError();
-                } else if (video.error === this.errors['too-large']) {
-                    throw new VideoTooLargeError();
-                } else if (video.size === null) {
-                    throw new VideoNotProcessedError();
-                }
+            if (video.error === this.errors['not-found']) {
+                throw new VideoNotFoundError();
+            } else if (video.error === this.errors['mimetype']) {
+                throw new VideoMimeTypeError();
+            } else if (video.error === this.errors['codec']) {
+                throw new VideoCodecError();
+            } else if (video.error === this.errors['malformed']) {
+                throw new VideoMalformedError();
+            } else if (video.error === this.errors['too-large']) {
+                throw new VideoTooLargeError();
+            } else if (video.error === this.errors['moov-atom']) {
+                this.invalidMoovAtomPosition = true;
+            } else if (video.size === null) {
+                throw new VideoNotProcessedError();
             }
 
             this.error = null;
