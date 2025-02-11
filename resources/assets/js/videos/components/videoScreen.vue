@@ -5,7 +5,7 @@
             :extent="extent"
             ></minimap>
         <label-tooltip
-            watch="hoverFeatures"
+            :features="hoveredFeatures"
             :show="showLabelTooltip"
             :position="mousePosition"
             ></label-tooltip>

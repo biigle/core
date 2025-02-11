@@ -55,7 +55,9 @@ export default {
         position: {
             deep: true,
             handler(position) {
-                this.overlay.setPosition(position);
+                if (this.show) {
+                    this.overlay.setPosition(position);
+                }
             },
         },
         showThis(show) {
