@@ -67,6 +67,9 @@ export default {
 
             return breakpoint > 0 && this.scrollTop < breakpoint;
         },
+        trackCount() {
+            return this.tracks.length;
+        },
     },
     methods: {
         emitSelect(annotation, time, shift) {
@@ -112,7 +115,7 @@ export default {
         },
     },
     watch: {
-        tracks() {
+        trackCount() {
             this.$nextTick(this.updateScrollHeight);
         },
         hasOverflowTop(has) {

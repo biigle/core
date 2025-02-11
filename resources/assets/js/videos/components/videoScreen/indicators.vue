@@ -24,8 +24,11 @@ export default {
         },
     },
     watch: {
-        mousePosition() {
-            throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
+        mousePosition: {
+            deep: true,
+            handler() {
+                throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
+            },
         },
     },
 };

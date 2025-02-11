@@ -285,6 +285,9 @@ import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
     emits: [
         'map-created',
         'moveend',
@@ -582,41 +585,44 @@ export default {
         }
     },
     watch: {
-        selectedAnnotations(annotations) {
-            // This allows selection of annotations outside OpenLayers and forwards
-            // the state to the SelectInteraction.
-            let source = this.annotationSource;
-            let features = this.selectedFeatures;
-            if (!source || !features) {
-                return;
-            }
-
-            let featureIdMap = {};
-            let annotationIdMap = {};
-            annotations.forEach(a => annotationIdMap[a.id] = true);
-            let toRemove = [];
-
-            features.forEach(f => {
-                const id = f.getId();
-                if (annotationIdMap[id]) {
-                    featureIdMap[id] = true;
-                } else {
-                    toRemove.push(f);
+        selectedAnnotations: {
+            deep: true,
+            handler(annotations) {
+                // This allows selection of annotations outside OpenLayers and forwards
+                // the state to the SelectInteraction.
+                let source = this.annotationSource;
+                let features = this.selectedFeatures;
+                if (!source || !features) {
+                    return;
                 }
-            });
 
-            if (toRemove.length === features.getLength()) {
-                features.clear();
-            } else {
-                toRemove.forEach(f => features.remove(f));
-            }
+                let featureIdMap = {};
+                let annotationIdMap = {};
+                annotations.forEach(a => annotationIdMap[a.id] = true);
+                let toRemove = [];
 
-            annotations
-                .filter(a => !featureIdMap[a.id])
-                .map(a => source.getFeatureById(a.id))
-                // Ignore a==null because the selected annotation may not exist in the
-                // current video frame.
-                .forEach(a => a && features.push(a));
+                features.forEach(f => {
+                    const id = f.getId();
+                    if (annotationIdMap[id]) {
+                        featureIdMap[id] = true;
+                    } else {
+                        toRemove.push(f);
+                    }
+                });
+
+                if (toRemove.length === features.getLength()) {
+                    features.clear();
+                } else {
+                    toRemove.forEach(f => features.remove(f));
+                }
+
+                annotations
+                    .filter(a => !featureIdMap[a.id])
+                    .map(a => source.getFeatureById(a.id))
+                    // Ignore a==null because the selected annotation may not exist in the
+                    // current video frame.
+                    .forEach(a => a && features.push(a));
+            },
         },
         isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
