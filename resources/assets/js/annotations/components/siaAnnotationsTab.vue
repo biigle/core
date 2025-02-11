@@ -18,6 +18,7 @@ export default {
     compatConfig: {
         WATCH_ARRAY: false,
     },
+    template: '#annotations-tab-template',
     extends: AnnotationsTab,
     computed: {
         plugins() {

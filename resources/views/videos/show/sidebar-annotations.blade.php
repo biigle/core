@@ -19,37 +19,5 @@
             v-on:detach="detachAnnotationLabel"
             v-on:select-filter="setActiveAnnotationFilter"
             v-on:unselect-filter="resetAnnotationFilter"
-            inline-template
-            >
-                <div class="annotations-tab">
-                    <div class="annotations-tab__header">
-                        <filters
-                             :has-active-filter="hasActiveFilter"
-                             v-on:select="emitSelectFilter"
-                             v-on:unselect="emitUnselectFilter"
-                            ></filters>
-                        <div v-if="annotationsHiddenByFilter" class="text-info">
-                            Some annotations are hidden by a filter.
-                        </div>
-                        <div class="text-muted">Total 
-                            <span
-                                class="pull-right badge"
-                                v-text="annotationBadgeCount"
-                            ></span>          
-                        </div>                       
-                    </div>
-                    <ul class="annotations-tab__list list-unstyled" ref="scrollList">
-                        <label-item
-                             v-for="item in labelItems"
-                             :key="item.id"
-                             :label="item.label"
-                             :annotations="item.annotations"
-                             :can-detach-others="canDetachOthers"
-                             :own-user-id="ownUserId"
-                             v-on:select="handleSelect"
-                             v-on:detach="emitDetach"
-                             ></label-item>
-                    </ul>
-                </div>
-        </annotations-tab>
+            ></annotations-tab>
 </sidebar-tab>

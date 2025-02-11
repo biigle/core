@@ -30,7 +30,8 @@
             <div v-if="annotationsHiddenByFilter" class="text-info">
                 Some annotations are hidden by a filter.
             </div>
-            <div class="text-muted">Total
+            <div class="text-muted">
+                Total
                 <span
                     class="pull-right badge"
                     v-text="annotationBadgeCount"

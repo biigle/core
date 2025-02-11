@@ -2,7 +2,8 @@
 import FileLabelsTab from '@/annotations/mixins/fileLabelsTab.vue';
 
 export default {
-    mixins: [FileLabelsTab],
+    template: '#video-labels-tab-template',
+    extends: FileLabelsTab,
     created() {
         let user = biigle.$require('videos.user');
         this.userId = user ? user.id : null;
