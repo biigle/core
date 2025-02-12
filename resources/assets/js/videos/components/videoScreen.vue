@@ -75,19 +75,22 @@
                     :active="isDrawingPoint"
                     :disabled="hasError || null"
                     @click="drawPoint"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
-                            v-on:click="finishTrackAnnotation"
                             :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
                             :loading="disableJobTracking"
+                            @click="finishTrackAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -98,12 +101,14 @@
                     :active="isDrawingRectangle"
                     :disabled="hasError || null"
                     @click="drawRectangle"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -114,19 +119,22 @@
                     :active="isDrawingCircle"
                     :disabled="hasError || null"
                     @click="drawCircle"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
-                            v-on:click="finishTrackAnnotation"
                             :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
                             :loading="disableJobTracking"
+                            @click="finishTrackAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -137,12 +145,14 @@
                     :active="isDrawingLineString"
                     :disabled="hasError || null"
                     @click="drawLineString"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -152,6 +162,7 @@
                     :active="isDrawingPolygon"
                     :disabled="hasError || null"
                     @click="drawPolygon"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             v-if="isDrawingPolygon || isUsingPolygonBrush"
@@ -159,24 +170,28 @@
                             title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-paint-brush"
                             title="Draw a polygon using the brush tool 𝗘"
                             :active="isUsingPolygonBrush"
                             @click="togglePolygonBrush"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-eraser"
                             title="Modify selected polygons using the eraser tool 𝗥"
                             :active="isUsingPolygonEraser"
                             @click="togglePolygonEraser"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-fill-drip"
                             title="Modify selected polygons using the fill tool 𝗧"
                             :active="isUsingPolygonFill"
                             @click="togglePolygonFill"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -187,12 +202,14 @@
                     :active="isDrawingWholeFrame"
                     :disabled="hasError || null"
                     @click="drawWholeFrame"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
             </div>
@@ -204,6 +221,7 @@
                     :active="isAttaching"
                     :disabled="(hasNoSelectedLabel || hasError) || null"
                     @click="toggleAttaching"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             icon="fa-sync-alt"
@@ -211,6 +229,7 @@
                             :active="isSwapping"
                             :disabled="(hasNoSelectedLabel || hasError) || null"
                             @click="toggleSwapping"
+                            @active="onActive"
                             ></control-button>
                     </control-button>
                 <control-button
