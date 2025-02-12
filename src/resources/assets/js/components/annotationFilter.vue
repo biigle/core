@@ -101,7 +101,6 @@ export default {
   },
   computed: {
       activeFilterValue() {
-        this.selectedFilterValue = null;
         return this.filterValues[this.selectedFilter];
       }
   },
