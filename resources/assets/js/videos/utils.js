@@ -24,4 +24,4 @@ let getRoundToPrecision = function (reference) {
     };
 };
 
-export { getRoundToPrecision };
+export {getRoundToPrecision};
