@@ -7,6 +7,7 @@ import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import {getRoundToPrecision} from '@/videos/utils.js';
+import {markRaw} from 'vue';
 
 /**
  * Mixin for the videoScreen component that contains logic for the annotation playback.
@@ -54,7 +55,10 @@ export default {
             let selected = this.selectedFeatures;
             let annotations = this.annotationsPreparedToRender;
             let oldRendered = this.renderedAnnotationMap;
-            let newRendered = {};
+            // markRaw is crucial here, otherwise there will be a mixup between the actual
+            // features and their Vue proxies which would be generated if this were not
+            // marked as raw.
+            let newRendered = markRaw({});
             this.renderedAnnotationMap = newRendered;
             let toCreate = [];
             let annotation;
