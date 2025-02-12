@@ -26,7 +26,8 @@
 <message-curtain v-if="invalidMoovAtomPosition" v-cloak>
     <div class="message-curtain--text text-danger">
         <div class="lead">
-            The video file contains an invalid moov atom position. This can cause performance issues or incorrect annotation thumbnails in Largo. See <a href="/manual/tutorials/videos/fix-video-encoding">the manual</a> for how to fix this.        </div>
+            The video file contains an invalid moov atom position.<br>This can cause performance issues or incorrect annotation thumbnails in Largo.<br>See <a href="/manual/tutorials/videos/fix-video-encoding">the manual</a> for how to fix this.
+        </div>
         <button type="button" class="btn btn-default" v-on:click="dismissMoovAtomError">Continue at own risk</button>
     </div>
 </message-curtain>
