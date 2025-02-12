@@ -229,7 +229,7 @@
                 </control-button>
                 <control-button
                     icon="icon-wholeframe"
-                    :title="(singleAnnotation ? 'Draw a whole frame' : 'Start a whole frame annotation') + ' 𝗛'"
+                    :title="(singleAnnotation ? 'Create a whole frame annotation' : 'Start a whole frame annotation') + ' 𝗛'"
                     :hover="false"
                     :open="isDrawingWholeFrame"
                     :active="isDrawingWholeFrame"
