@@ -17,6 +17,7 @@ import VideoLabelsTab from './components/videoLabelsTab.vue';
 import VideoScreen from './components/videoScreen.vue';
 import VideoTimeline from './components/videoTimeline.vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
+import {markRaw} from 'vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
 
 class VideoError extends Error {}
@@ -178,7 +179,9 @@ export default {
     },
     methods: {
         prepareAnnotation(annotation) {
-            return new Annotation(annotation);
+            // Use annotations as raw (non-reactive) objects for performance reasons.
+            // Reactive properties are selectively set in the Annotation class.
+            return markRaw(new Annotation(annotation));
         },
         setAnnotations(args) {
             this.annotations = args[0].body.map(this.prepareAnnotation);
@@ -268,7 +271,7 @@ export default {
                     pending: true,
                 });
 
-                this.pendingAnnotation = new Annotation(data);
+                this.pendingAnnotation = markRaw(new Annotation(data));
             } else {
                 this.pendingAnnotation = null;
             }

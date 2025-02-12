@@ -3,6 +3,7 @@ import Messages from '@/core/messages/store.js';
 import VideoAnnotationApi from '../api/videoAnnotations.js';
 import {getRoundToPrecision} from '../utils.js';
 import {interpolate} from 'polymorph-js';
+import {ref} from 'vue';
 
 let SHAPE_CACHE;
 
@@ -16,11 +17,43 @@ export default class Annotation {
         this.created_at = args.created_at;
         this.updated_at = args.updated_at;
         this.labels = args.labels;
-        this.pending = args.pending || false;
 
-        this.selected = false;
-        this.revision = 1;
-        this.tracking = false;
+        this._pending = ref(args.pending || false);
+        this._selected = ref(false);
+        this._revision = ref(1);
+        this._tracking = ref(false);
+    }
+
+    get pending() {
+        return this._pending.value;
+    }
+
+    set pending(value) {
+        this._pending.value = value;
+    }
+
+    get selected() {
+        return this._selected.value;
+    }
+
+    set selected(value) {
+        this._selected.value = value;
+    }
+
+    get revision() {
+        return this._revision.value;
+    }
+
+    set revision(value) {
+        this._revision.value = value;
+    }
+
+    get tracking() {
+        return this._tracking.value;
+    }
+
+    set tracking(value) {
+        this._tracking.value = value;
     }
 
     get startFrame() {
