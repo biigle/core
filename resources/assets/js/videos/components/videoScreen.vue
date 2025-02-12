@@ -69,7 +69,7 @@
             <div v-if="canAdd" class="btn-group">
                 <control-button
                     icon="icon-point"
-                    :title="(singleAnnotation ? 'Set a point'  : 'Start a point annotation') +' 𝗔'"
+                    :title="(singleAnnotation ? 'Set a point'  : 'Start a point annotation') + ' 𝗔'"
                     :hover="false"
                     :open="isDrawingPoint"
                     :active="isDrawingPoint"
@@ -106,7 +106,7 @@
                 </control-button>
                 <control-button
                     icon="icon-rectangle"
-                    :title="(singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') +' 𝗦'"
+                    :title="(singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') + ' 𝗦'"
                     :hover="false"
                     :open="isDrawingRectangle"
                     :active="isDrawingRectangle"
