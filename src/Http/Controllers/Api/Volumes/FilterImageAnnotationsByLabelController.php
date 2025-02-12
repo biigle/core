@@ -64,7 +64,7 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);
             })
-            ->when(!is_null($user_ids), fn ($query) => $this->compileFilterConditions($query, $union, $shape_ids, 'user_id'))
+            ->when(!is_null($user_ids), fn ($query) => $this->compileFilterConditions($query, $union, $user_ids, 'user_id'))
             ->when(!is_null($shape_ids), fn ($query) => $this->compileFilterConditions($query, $union, $shape_ids, 'shape_id'))
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {

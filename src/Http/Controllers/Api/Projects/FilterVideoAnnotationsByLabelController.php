@@ -54,7 +54,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
                     ->where('project_id', $pid);
             })
             ->where('video_annotation_labels.label_id', $lid)
-            ->when(!is_null($user_ids), fn ($query) => $this->compileFilterConditions($query, $union, $shape_ids, 'user_id'))
+            ->when(!is_null($user_ids), fn ($query) => $this->compileFilterConditions($query, $union, $user_ids, 'user_id'))
             ->when(!is_null($shape_ids), fn ($query) => $this->compileFilterConditions($query, $union, $shape_ids, 'shape_id'))
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);

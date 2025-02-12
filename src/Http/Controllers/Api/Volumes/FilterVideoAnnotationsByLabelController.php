@@ -61,7 +61,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->where('videos.volume_id', $vid)
             ->where('video_annotation_labels.label_id', $lid)
-            ->when(!is_null($user_ids), fn ($query) => $this->compileFilterConditions($query, $union, $shape_ids, 'user_id'))
+            ->when(!is_null($user_ids), fn ($query) => $this->compileFilterConditions($query, $union, $user_ids, 'user_id'))
             ->when(!is_null($shape_ids), fn ($query) => $this->compileFilterConditions($query, $union, $shape_ids, 'shape_id'))
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
