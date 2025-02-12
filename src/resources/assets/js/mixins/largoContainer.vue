@@ -87,9 +87,7 @@ export default {
 
             let cacheKey = JSON.stringify({ label: this.selectedLabel.id });
 
-            if (
-                this.annotationsCache.hasOwnProperty(cacheKey)
-            ) {
+            if (this.annotationsCache.hasOwnProperty(cacheKey)) {
                 let annotations = this.annotationsCache[cacheKey];
                 let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union})
 

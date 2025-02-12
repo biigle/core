@@ -51,8 +51,8 @@ class GetUsersWithAnnotationsProjectsTest extends ApiTestCase
         $this->beEditor();
 
         $expected = [
-            ['user_id' =>$this->user()->id, 'firstname' => $this->user()->firstname, 'lastname' => $this->user()->lastname],
-            ['user_id' =>$user2->id, 'firstname' => $user2->firstname, 'lastname' => $user2->lastname]
+            ['user_id' => $this->user()->id, 'firstname' => $this->user()->firstname, 'lastname' => $this->user()->lastname],
+            ['user_id' => $user2->id, 'firstname' => $user2->firstname, 'lastname' => $user2->lastname]
         ];
         $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')->assertStatus(200)->assertExactJson($expected);
     }

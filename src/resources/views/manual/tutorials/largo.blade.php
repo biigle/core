@@ -143,7 +143,7 @@
             <li>Whether the annotations should have all of the desired characteristics (<i>'And'</i>) or at least one of this characteristics (<i>'Or'</i>).</li>
         </ul>
         <p>
-            These filters are available today:
+            These filters are available:
         </p>
         <ul>
             <li><b>Shape</b>: the shape of the annotation.</li>
