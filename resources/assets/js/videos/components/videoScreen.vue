@@ -302,13 +302,13 @@ import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
+import {markRaw} from 'vue';
 
 export default {
     compatConfig: {
         WATCH_ARRAY: false,
     },
     emits: [
-        'map-created',
         'moveend',
         'next',
         'previous',
@@ -428,6 +428,8 @@ export default {
             interactionMode: 'default',
             // Mouse position in OpenLayers coordinates.
             mousePosition: [0, 0],
+            mapReadyRevision: 0,
+            map: null,
         };
     },
     computed: {
@@ -657,12 +659,17 @@ export default {
         enableJumpByFrame() {
             this.adaptKeyboardShortcuts();
         },
+        mapReadyRevision: {
+            once: true,
+            handler() {
+                this.initLayersAndInteractions(this.map);
+                this.initInitialCenterAndResolution(this.map);
+            },
+        },
     },
     created() {
-        this.$once('map-ready', this.initLayersAndInteractions);
-        this.$once('map-ready', this.initInitialCenterAndResolution);
-        this.map = this.createMap();
-        this.$emit('map-created', this.map);
+        // markRaw is essential here!
+        this.map = markRaw(this.createMap());
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 

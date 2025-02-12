@@ -232,14 +232,17 @@ export default {
     },
     created() {
         if (this.canModify) {
-            this.$once('map-created', () => {
-                // Add the event listener after initLayersAndInteractions of
-                // videoScreen so the select interaction is created before the
-                // modify interaction.
-                this.$once('map-ready', this.initModifyInteraction);
-                this.$once('map-ready', this.initTranslateInteraction);
-                this.$once('map-ready', this.initAttachInteraction);
-                this.$once('map-ready', this.initSwapInteraction);
+            this.$watch('mapReadyRevision', {
+                once: true,
+                handler() {
+                    // Add the event listener after initLayersAndInteractions of
+                    // videoScreen so the select interaction is created before the
+                    // modify interaction.
+                    this.initModifyInteraction(this.map);
+                    this.initTranslateInteraction(this.map);
+                    this.initAttachInteraction(this.map);
+                    this.initSwapInteraction(this.map);
+                },
             });
 
             this.$watch('isDefaultInteractionMode', this.maybeUpdateModifyInteractionMode);

@@ -249,11 +249,15 @@ export default {
             }
         },
     },
-    created() {
-        this.$once('map-ready', () => {
-            this.$watch('annotationsRevision', this.refreshAllAnnotations);
+    watch: {
+        mapReadyRevision() {
             this.videoSource.on('change', this.refreshAllAnnotations);
-        });
+        },
+        annotationsRevision() {
+            if (this.map) {
+                this.refreshAllAnnotations();
+            }
+        },
     },
 };
 </script>

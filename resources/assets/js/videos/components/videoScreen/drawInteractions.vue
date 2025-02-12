@@ -226,9 +226,15 @@ export default {
             this.$emit('pending-annotation', this.pendingAnnotation);
         },
     },
+    watch: {
+        mapReadyRevision: {
+            once: true,
+            handler() {
+                this.initPendingAnnotationLayer(this.map);
+            },
+        },
+    },
     created() {
-        this.$once('map-ready', this.initPendingAnnotationLayer);
-
         if (this.canAdd) {
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
             Keyboard.on('a', this.drawPoint, 0, this.listenerSet);

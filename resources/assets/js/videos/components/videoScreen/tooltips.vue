@@ -56,9 +56,12 @@ export default {
         showTooltip() {
             this.updateTooltipEventListeners();
         },
-    },
-    created() {
-        this.$once('map-created', this.updateTooltipEventListeners);
+        map: {
+            once: true,
+            handler() {
+                this.updateTooltipEventListeners(this.map);
+            },
+        },
     },
 };
 </script>

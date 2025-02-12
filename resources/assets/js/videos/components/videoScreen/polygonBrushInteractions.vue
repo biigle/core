@@ -137,8 +137,11 @@ export default {
         }
 
         if (this.canModify) {
-            this.$once('map-created', () => {
-                this.$once('map-ready', this.initShiftSelectInteraction);
+            this.$watch('mapReadyRevision', {
+                once: true,
+                handler() {
+                    this.initShiftSelectInteraction(this.map);
+                },
             });
 
             this.$watch('isUsingPolygonEraser', this.togglePolygonEraserInteraction);
