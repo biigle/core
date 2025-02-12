@@ -38,12 +38,11 @@
           class="form-control"
           selected="Shapes"
           v-model="selectedFilter"
-          @change="changeSelectedFilter"
           title="Select attribute for filtering"
           @click.once="loadApiFilters"
         >
           <option
-            v-for="value in this.allowedFilters"
+            v-for="value in Object.keys(filterValues)"
             :value="value"
             v-text="value"
           ></option>
@@ -60,7 +59,7 @@
       <div class="form-group largo-filter-select">
         <select class="form-control" v-model="selectedFilterValue">
           <option
-            v-for="(filter_name, filter_id) in this.activeFilter"
+            v-for="(filter_name, filter_id) in this.activeFilterValue"
             :value="[filter_name, filter_id]"
             v-text="filter_name"
           ></option>
@@ -83,26 +82,28 @@ import VolumesApi from "../api/volumes";
 export default {
   data() {
     //TODO: add more filters here. See https://github.com/biigle/largo/issues/66
-    let possibleShapes = biigle.$require("largo.availableShapes");
+    let availableShapes = biigle.$require("largo.availableShapes");
 
     return {
-      selectedAnnotationShape: null,
-      selectedAnnotationUser: null,
-      allowedFilters: ["Shape", "User"],
       filterValues: {
-        shape_id: possibleShapes,
-        user_id: {},
+        Shape: availableShapes,
+        User: {},
       },
-      filterToValue: {
+      filterToKeyMapping: {
         Shape: "shape_id",
         User: "user_id",
       },
-      activeFilter: possibleShapes,
       selectedFilter: "Shape",
       selectedFilterValue: null,
       negate: false,
       union: false,
     };
+  },
+  computed: {
+      activeFilterValue() {
+        this.selectedFilterValue = null;
+        return this.filterValues[this.selectedFilter];
+      }
   },
   methods: {
     activateAndOperator() {
@@ -115,11 +116,6 @@ export default {
     },
     reset() {
       this.$emit("reset-filters");
-    },
-    changeSelectedFilter() {
-      this.activeFilter =
-        this.filterValues[this.filterToValue[this.selectedFilter]];
-      this.selectedFilterValue = null;
     },
     loadApiFilters() {
       //Load here filters that should be loaded AFTER the page is rendered
@@ -138,7 +134,7 @@ export default {
       usersWithAnnotationsPromise.then((response) =>
         response.data.forEach(
           (user) =>
-            (this.filterValues["user_id"][user.user_id] =
+            (this.filterValues["User"][user.user_id] =
               user.lastname + " " + user.firstname),
         ), Messages.handleErrorResponse
       );
@@ -149,12 +145,16 @@ export default {
       }
       let logicalString;
 
+      //Avoid changing directly the value of selectedFilterValue
+      //This can cause weird bugs on the frontend otherwise
+      let selectedFilterValue = [...this.selectedFilterValue];
+
       //convert to integer
-      this.selectedFilterValue[1] = +this.selectedFilterValue[1];
+      selectedFilterValue[1] = +selectedFilterValue[1];
       if (this.negate) {
         logicalString = "is not";
-        if (this.selectedFilterValue[1] > 0){
-          this.selectedFilterValue[1] = -this.selectedFilterValue[1];
+        if (selectedFilterValue[1] > 0){
+          selectedFilterValue[1] = -selectedFilterValue[1];
         }
       } else {
         logicalString = "is";
@@ -166,9 +166,9 @@ export default {
           " " +
           logicalString +
           " " +
-          this.selectedFilterValue[0],
-        filter: this.filterToValue[this.selectedFilter],
-        value: this.selectedFilterValue[1],
+          selectedFilterValue[0],
+        filter: this.filterToKeyMapping[this.selectedFilter],
+        value: selectedFilterValue[1],
       };
       this.$emit("add-filter", filterToAdd);
     },
