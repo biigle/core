@@ -15,7 +15,7 @@ export default {
         };
     },
     methods: {
-        queryAnnotations(label, filters) {
+        queryAnnotations(label, filters = []) {
             let imagePromise;
             let videoPromise;
             let params = { ...filters, id: this.volumeId, label_id: label.id };

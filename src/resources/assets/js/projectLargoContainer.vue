@@ -15,7 +15,7 @@ export default {
         };
     },
     methods: {
-        queryAnnotations(label, filters) {
+        queryAnnotations(label, filters = []) {
 
             let params = { ...filters, id: this.projectId, label_id: label.id };
 

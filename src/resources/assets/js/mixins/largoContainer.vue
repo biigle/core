@@ -1,7 +1,6 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
-import RelabelImageGrid from '../components/relabelImageGrid';
-import SettingsTab from '../components/settingsTab';
+import RelabelImageGrid from '../components/relabelImageGrid'; import SettingsTab from '../components/settingsTab';
 import SortingTab from '../components/sortingTab';
 import FilteringTab from '../components/filteringTab';
 import {Echo} from '../import';
@@ -59,6 +58,7 @@ export default {
             hasActiveFilters: false,
             union: 0,
             labels: [],
+            filtersCache: {},
             fetchedLabelCount: false,
         };
     },
@@ -85,29 +85,32 @@ export default {
                 return [];
             }
 
-            let filterLabel = { label: this.selectedLabel.id };
-
-            if (this.selectedFilters.length > 0) {
-                filterLabel["filters"] = this.selectedFilters;
-                filterLabel["union"] = this.union;
-            }
-
-            let cacheKey = JSON.stringify(filterLabel);
+            let cacheKey = JSON.stringify({ label: this.selectedLabel.id });
 
             if (
                 this.annotationsCache.hasOwnProperty(cacheKey)
             ) {
-                return this.annotationsCache[cacheKey];
+                let annotations = this.annotationsCache[cacheKey];
+                let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union})
+
+                if (this.hasActiveFilters && this.filtersCache.hasOwnProperty(filtersCacheKey)) {
+                    annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].includes(annotation.id));
+                }
+
+                return annotations
             }
 
             return [];
         },
+
         sortedAnnotations() {
             let annotations = this.annotations;
 
             if (annotations.length === 0) {
                 return annotations;
             }
+
+            let cacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union})
 
             if (this.sortingKey !== SORT_KEY.ANNOTATION_ID) {
                 const map = {};
@@ -139,7 +142,7 @@ export default {
             return annotations;
         },
         hasNoAnnotations() {
-            return this.selectedLabel && !this.loading && this.annotations.length === 0;
+            return this.selectedLabel && !this.loading && this.sortedAnnotations.length === 0;
         },
         dismissedAnnotations() {
             return this.allAnnotations.filter(item => item.dismissed);
@@ -212,27 +215,27 @@ export default {
             parameters['union'] = union;
             return parameters
         },
-        getAnnotations(label, filters, union) {
+        getAnnotations(label) {
             let promise1;
             let promise2;
 
-            let labelFilters = {label: label.id};
-            if (filters.length > 0){
-                labelFilters['filters'] = filters;
-                labelFilters['union'] = union;
-            }
+            let cacheKey = JSON.stringify({label: label.id});
 
-            let cacheKey = JSON.stringify(labelFilters);
+            //store in variables to avoid race conditions
+            let union = this.union;
+            let selectedFilters = this.selectedFilters;
 
             if (!this.annotationsCache.hasOwnProperty(cacheKey)) {
                 Vue.set(this.annotationsCache, cacheKey, []);
                 this.startLoading();
-                let requestParams = this.compileFilters(filters, union);
-                promise1 = this.queryAnnotations(label, requestParams).then(
-                    (response) => this.gotAnnotations(label, response),
-                    handleErrorResponse
-                ).then(a => Vue.set(this.annotationsCache, cacheKey, a))
-                .finally(this.finishLoading);
+                promise1 = this.queryAnnotations(label)
+                    .then(
+                        (response) => this.gotAnnotations(label, response),
+                        handleErrorResponse
+                    )
+                    .then(a => Vue.set(this.annotationsCache, cacheKey, a))
+                    .then(this.loadFilters(label, selectedFilters, union))
+                    .finally(this.finishLoading);
             } else {
                 promise1 = Vue.Promise.resolve();
             }
@@ -248,8 +251,8 @@ export default {
             }
 
             Vue.Promise.all([promise1, promise2]).finally(this.finishLoading);
-
         },
+
 
         gotAnnotations(label, response) {
 
@@ -269,10 +272,10 @@ export default {
             annotations = annotations.sort((a, b) => b.id - a.id);
 
             return annotations
-
-
         },
         handleSelectedFilters(filters, union) {
+            union = union ? 1 : 0;
+            this.union = union ;
             if (Object.keys(filters).length > 0) {
                 this.hasActiveFilters = true
             } else {
@@ -282,9 +285,29 @@ export default {
             if (!this.selectedLabel){
                 return []
             }
-            this.union = union ? 1 : 0;
-            this.getAnnotations(this.selectedLabel, filters, this.union);
+            this.loadFilters(this.selectedLabel.id, filters, union)
         },
+
+        loadFilters(label, filters, union) {
+            if (filters.length == 0){
+                return
+            }
+            let cacheKey = JSON.stringify({...filters, label: label, union: union});
+            if (!this.filtersCache.hasOwnProperty(cacheKey)) {
+                Vue.set(this.annotationsCache, cacheKey, []);
+                let requestParams = this.compileFilters(filters, union);
+                this.startLoading();
+                this.queryAnnotations(this.selectedLabel, requestParams)
+                    .then(
+                        (response) => this.gotAnnotations(label, response),
+                        handleErrorResponse
+                    )
+                    .then(a => a.map(ann => ann.id))
+                    .then(a => Vue.set(this.filtersCache, cacheKey, a))
+                    .finally(this.finishLoading);
+            }
+        },
+
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
                 .map(function (id) {
