@@ -102,6 +102,7 @@ export default {
             hasCrossOriginError: false,
             videoFilenames: null,
             focusInputFindlabel: false,
+            isRemote: false,
         };
     },
     computed: {
@@ -567,6 +568,11 @@ export default {
                 .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
 
+            // storage endpoint requires the crossOrigin attribute if CORS was explicitly enabled
+            if (!this.isRemote) {
+                this.video.setAttribute('crossOrigin', '');
+            }
+
             this.video.src = this.videoFileUri.replace(':id', video.id);
 
             return promise;
@@ -737,6 +743,7 @@ export default {
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
         this.videoFilenames = biigle.$require('videos.videoFilenames');
+        this.isRemote = biigle.$require('videos.isRemote');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();

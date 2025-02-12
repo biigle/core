@@ -75,5 +75,6 @@
     biigle.$declare('videos.spritesThumbnailInterval', {!! $spritesThumbnailInterval !!});
     biigle.$declare('videos.spritesMaxThumbnails', {!! $spritesMaxThumbnails !!});
     biigle.$declare('videos.spritesMinThumbnails', {!! $spritesMinThumbnails !!});
+    biigle.$declare('videos.isRemote', {{$volume->isRemote()}});
 </script>
 @endpush
