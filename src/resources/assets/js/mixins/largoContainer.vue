@@ -108,8 +108,6 @@ export default {
                 return annotations;
             }
 
-            let cacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union})
-
             if (this.sortingKey !== SORT_KEY.ANNOTATION_ID) {
                 const map = {};
                 annotations.forEach((a) => {
