@@ -582,7 +582,7 @@ export default {
             ctx.drawImage(this.video, 0, 0);
             try {
                 ctx.getImageData(0, 0, 1, 1);
-            } catch (e) {                
+            } catch (e) {
                 this.hasCrossOriginError = true;
             }
         },
@@ -694,7 +694,7 @@ export default {
         },
         dismissMoovAtomError() {
             this.invalidMoovAtomPosition = false;
-        }
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
