@@ -74,7 +74,7 @@
                                        v-on:keydown.enter="loadFilesMatchingPattern">
                             @endif
                             <span class="help-block">
-                                Filter by using a list of comma-separated file names or pattern that matches specific file names. A pattern may contain the wildcard character * that matches any string of zero or more characters
+                                Filter by using a list of comma-separated file names or a pattern that matches specific file names. A pattern may contain the wildcard character * that matches any string of zero or more characters
                             </span>
                             <div class="volume-files-panel">
                                 <ul class="list-group files-list">
