@@ -24,7 +24,13 @@
                     <button class="btn btn-default btn-s pull-right" v-on:click="markAllAsRead" v-bind:disabled="isLoading || null">Mark all as read</button>
                 </p>
             @endif
-            <notification v-for="item in notifications" v-bind:key="item.id" v-bind:item="item" v-bind:remove-item="{{$all ? 'false': 'true'}}"></notification>
+            <notification
+                v-for="item in notifications"
+                :key="item.id"
+                :item="item"
+                :remove-item="{{$all ? 'false': 'true'}}"
+                v-on:mark-read="handleRead"
+                ></notification>
             @if ($all)
                 <p class="text-muted" v-if="!hasNotifications" v-cloak>
                     You have no notifications.

@@ -28,7 +28,7 @@ export default {
             return NotificationsApi.markReadAll({}, {})
                 .then(() => {
                     this.notifications.map(item => {
-                        item.read_at = new Date();
+                        this.handleRead(item);
                         Store.remove(item.id);
                     });
                 })
@@ -36,7 +36,10 @@ export default {
                 .finally(() => {
                     this.isLoading = false;
                 });
-        }
+        },
+        handleRead(notification) {
+            notification.read_at = new Date();
+        },
     },
     created() {
         Store.initialize(biigle.$require('initialNotifications'));

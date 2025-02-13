@@ -34,6 +34,7 @@ import Store from './store.js';
 import Messages from '../messages/store.js';
 
 export default {
+    emits: ['mark-read'],
     props: ['item', 'removeItem'],
     data() {
         return {
@@ -57,7 +58,7 @@ export default {
             this.isLoading = true;
             return NotificationsApi.markRead({id: this.item.id}, {})
                 .then(() => {
-                    this.item.read_at = new Date();
+                    this.$emit('mark-read', this.item);
                     if (this.removeItem) {
                         Store.remove(this.item.id);
                     }
