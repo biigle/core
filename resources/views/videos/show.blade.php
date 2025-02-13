@@ -61,6 +61,7 @@
         biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
     @endcan
     biigle.$declare('annotations.shapes', {!! $shapes !!});
+    biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('videos.isEditor', @can('add-annotation', $video) true @else false @endcan);
     biigle.$declare('videos.videoIds', {!! $videos->keys() !!});
     biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});
