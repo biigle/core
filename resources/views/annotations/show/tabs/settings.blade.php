@@ -1,5 +1,12 @@
 <sidebar-tab name="settings" icon="cog" title="Settings" :highlight="highlightSettingsTab">
-    <settings-tab v-cloak :image="image" v-on:change="handleSettingsChange"></settings-tab>
+    <settings-tab
+        v-cloak
+        :image="image"
+        :current-id="imageId"
+        :image-filenames="imageFilenames"
+        :ids="allImagesIds"
+        v-on:change="handleSettingsChange"
+        ></settings-tab>
 </sidebar-tab>
 
 @push('scripts')
@@ -7,7 +14,12 @@
     <div class="annotator-tab">
         <div class="sidebar-tab__section">
             <button v-if="crossOrigin" class="btn btn-default" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
-            <screenshot-button v-else></screenshot-button>
+            <screenshot-button
+                v-else
+                :current-id="currentId"
+                :filenames="imageFilenames"
+                :ids="ids"
+                ></screenshot-button>
         </div>
 
         <div class="sidebar-tab__section">

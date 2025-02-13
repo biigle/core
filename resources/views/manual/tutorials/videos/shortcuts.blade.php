@@ -123,6 +123,9 @@
                     <td><kbd>c</kbd></td>
                     <td>Select last created annotation</td>
                 </tr>
+                 <tr>
+                    <td><kbd>p</kbd></td>
+                    <td>Capture a screenshot</td>
                 <tr>
                     <td><kbd>Ctrl</kbd>+<kbd>k</kbd></td>
                     <td>Open label trees sidebar and focus the find label input field</td>

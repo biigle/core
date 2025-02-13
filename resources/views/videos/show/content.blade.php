@@ -20,6 +20,10 @@
             <span v-if="hasTooLargeError">
                 The video file is too large.
             </span>
+            <span v-if="hasMoovAtomError">
+                The video's moov atom position is invalid.<br>
+                See <a href="{{url("manual/tutorials/videos/fix-video-encoding")}}">the manual</a> for how to fix this.
+            </span>
         </div>
     </div>
 </div>

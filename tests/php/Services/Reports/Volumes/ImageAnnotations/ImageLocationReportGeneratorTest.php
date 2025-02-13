@@ -73,7 +73,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->once();
@@ -180,7 +180,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $jsonContent = [
             'type' => 'Feature',
@@ -197,7 +197,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->twice();
@@ -280,7 +280,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $jsonContent = [
             'type' => 'Feature',
@@ -298,7 +298,7 @@ class ImageLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->twice();

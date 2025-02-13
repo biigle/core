@@ -88,6 +88,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            imageFilenames: {}
         };
     },
     computed: {
@@ -679,6 +680,7 @@ export default {
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
+        this.imageFilenames = biigle.$require('annotations.imagesFilenames');
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');

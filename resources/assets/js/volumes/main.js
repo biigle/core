@@ -1,5 +1,6 @@
 import './export';
 import AnnotationSessionPanel from './annotationSessionPanel.vue';
+import CloneForm from './cloneForm.vue';
 import CreateFormStep1 from './createFormStep1.vue';
 import CreateFormStep2 from './createFormStep2.vue';
 import CreateFormStep3 from './createFormStep3.vue';
@@ -7,12 +8,12 @@ import CreateFormStep4 from './createFormStep4.vue';
 import CreateFormStep5 from './createFormStep5.vue';
 import CreateFormStep6 from './createFormStep6.vue';
 import CreateFormStep7 from './createFormStep7.vue';
-import CloneForm from './cloneForm.vue';
 import FileCount from './fileCount.vue';
 import FilePanel from './filePanel.vue';
 import MetadataUpload from './metadataUpload.vue';
 import ProjectsBreadcrumb from './projectsBreadcrumb.vue';
 import SearchResults from './searchResults.vue';
+import VideoMetadata from './videoMetadata.vue';
 import VolumeContainer from './volumeContainer.vue';
 
 biigle.$mount('annotation-session-panel', AnnotationSessionPanel);
@@ -30,3 +31,4 @@ biigle.$mount('search-results', SearchResults);
 biigle.$mount('volume-container', VolumeContainer);
 biigle.$mount('volume-file-count', FileCount);
 biigle.$mount('volume-metadata-upload', MetadataUpload);
+biigle.$mount('video-metadata-modal', VideoMetadata);

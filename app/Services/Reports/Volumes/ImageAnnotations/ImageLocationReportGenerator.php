@@ -138,7 +138,7 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
             }
 
             $feature = new Feature(new Point([$image->lng, $image->lat]), $properties);
-            $file->put(json_encode($feature)."\n");
+            $file->put(json_encode($feature));
         });
         $file->close();
 

@@ -1,13 +1,27 @@
 <sidebar-tab name="settings" icon="cog" title="Settings" :highlight="annotationsAreHidden">
     <settings-tab
         :supports-jump-by-frame="supportsJumpByFrame"
+        :cross-origin-error="hasCrossOriginError"
+        :current-id="videoId"
+        :video-filenames="videoFilenames"
+        :ids="videoIds"
         v-on:update="handleUpdatedSettings"
         ></settings-tab>
 </sidebar-tab>
 
 @push('scripts')
 <script type="text/html" id="settings-tab-template">
-    <div class="annotator-tab settings-tab">
+<div class="annotator-tab settings-tab">
+
+    <div class="sidebar-tab__section">
+        <button v-if="crossOriginError" class="btn btn-default" title="Screenshots are not available for remote videos without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+        <screenshot-button
+            v-else
+            :current-id="currentId"
+            :filenames="videoFilenames"
+            :ids="ids"
+            ></screenshot-button>
+    </div>
 
     <div class="sidebar-tab__section">
         <h5 title="Set the opacity of annotations">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
