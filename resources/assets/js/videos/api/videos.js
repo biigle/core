@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for videos.
  *
@@ -11,10 +13,8 @@
  *
  * Delete a video:
  * resource.delete({id: videoId}, {force: false}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/videos{/id}', {}, {
+export default Resource('api/v1/videos{/id}', {}, {
     save: {
         method: 'POST',
         url: 'api/v1/projects{/id}/videos',

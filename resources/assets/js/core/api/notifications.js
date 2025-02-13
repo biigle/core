@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for DB notifications.
  *
@@ -10,10 +12,8 @@
  * Delete:
  *
  * resource.delete({id: notificationId}).then(...)
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/notifications{/id}', {}, {
+export default Resource('api/v1/notifications{/id}', {}, {
     markRead: {method: 'PUT'},
     markReadAll: {
         method: 'PUT',

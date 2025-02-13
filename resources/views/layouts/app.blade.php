@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="http-root" content="{{url('/')}}">
     <link rel="icon" type="image/png" href="{{ cachebust_asset('favicon.png') }}">
     @hasSection('title')
         <title>@yield('title') - BIIGLE</title>
@@ -28,9 +29,6 @@
     @yield('content')
 
     @vite(['resources/assets/js/main.js'])
-    <script type="module">
-        Vue.http.options.root = '{{url('/')}}';
-    </script>
     @stack('scripts')
 </body>
 </html>

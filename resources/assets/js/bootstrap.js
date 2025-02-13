@@ -1,20 +1,33 @@
 import Vue from 'vue';
-import VueResource from 'vue-resource';
 import { configureCompat } from 'vue'
+import { Resource, Http } from 'vue-resource';
 
 configureCompat({
     FILTERS: false,
 });
 
 window.Vue = Vue;
-window.Vue.use(VueResource);
+
+// Vue resource is not officially supported with Vue 3 and it no longer works as Vue
+// plugin. It can be used stand-alone, though, and this is what we do for now. Any
+// change here would require significant work with the existing resource definitions.
+Vue.resource = function () {
+    console.trace('Vue.resource is deprecated. Import Resource directly.');
+    return Resource(...arguments);
+};
+
+const httpRootElement = document.querySelector('meta[name="http-root"]');
+
+if (httpRootElement) {
+    Http.options.root = httpRootElement.getAttribute('content');
+}
 
 const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
 
 if (csrfTokenElement) {
     const readMethods = ['HEAD', 'GET', 'OPTIONS'];
 
-    Vue.http.interceptors.push(function(request) {
+    Http.interceptors.push(function(request) {
         // Only add the CSRF token for non-read requests. This is important for
         // remote volume locations and CORS, as it would require a special CORS
         // configuration to allow this header.
