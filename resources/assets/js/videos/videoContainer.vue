@@ -449,10 +449,9 @@ export default {
             }
         },
         attachAnnotationLabel(annotation) {
-            let promise = annotation.attachAnnotationLabel(this.selectedLabel);
-            promise.catch(handleErrorResponse);
-
-            return promise;
+            annotation
+                .attachAnnotationLabel(this.selectedLabel)
+                .catch(handleErrorResponse);
         },
         swapAnnotationLabel(annotation) {
             let lastLabel = annotation.labels
@@ -460,7 +459,9 @@ export default {
                 .sort((a, b) => a.id - b.id)
                 .pop();
 
-            this.attachAnnotationLabel(annotation)
+            // Can't use attachAnnotationLabel() because detachAnnotationLabel() should
+            // not be called on error.
+            annotation.attachAnnotationLabel(this.selectedLabel)
                 .then(() => {
                     if (lastLabel) {
                         this.detachAnnotationLabel(annotation, lastLabel);
