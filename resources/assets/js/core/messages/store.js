@@ -89,6 +89,6 @@ class Store {
 
 let store = new Store();
 
-export let handleErrorResponse = store.handleErrorResponse;
+export let handleErrorResponse = store.handleErrorResponse.bind(store);
 
 export default store;

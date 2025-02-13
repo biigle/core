@@ -295,8 +295,9 @@ export default class Annotation {
     }
 
     attachAnnotationLabel(label) {
-        return VideoAnnotationApi.attachLabel({id: this.id}, {label_id: label.id})
-            .then(this.handleAttachedLabel);
+        return VideoAnnotationApi
+            .attachLabel({id: this.id}, {label_id: label.id})
+            .then(this.handleAttachedLabel.bind(this));
     }
 
     handleAttachedLabel(response) {
@@ -333,8 +334,9 @@ export default class Annotation {
     }
 
     split(time) {
-        return VideoAnnotationApi.split({id: this.id}, {time: time})
-            .then(this.handleFinishedSplit);
+        return VideoAnnotationApi
+            .split({id: this.id}, {time: time})
+            .then(this.handleFinishedSplit.bind(this));
     }
 
     handleFinishedSplit(response) {
@@ -346,8 +348,9 @@ export default class Annotation {
     }
 
     link(other) {
-        return VideoAnnotationApi.link({id: this.id}, {annotation_id: other.id})
-            .then(this.handleFinishedLink);
+        return VideoAnnotationApi
+            .link({id: this.id}, {annotation_id: other.id})
+            .then(this.handleFinishedLink.bind(this));
     }
 
     handleFinishedLink(response) {
