@@ -67,7 +67,7 @@ class Annotations {
                 .catch(function () {
                     return Vue.Promise.reject(`Failed to load annotations for image ${id}!`);
                 })
-                .then(this.parseResponse)
+                .then(this.parseResponse.bind(this))
                 .then(this.resolveAllShapes.bind(this));
         }
 
@@ -79,9 +79,9 @@ class Annotations {
         delete annotation.shape;
 
         return ImagesApi.saveAnnotations({id: imageId}, annotation)
-            .then(this.parseResponse)
+            .then(this.parseResponse.bind(this))
             .then(this.resolveShape.bind(this))
-            .then(this.setDeselected)
+            .then(this.setDeselected.bind(this))
             .then((annotation) => {
                 this.cache[imageId].then(function (annotations) {
                     annotations.unshift(annotation);
