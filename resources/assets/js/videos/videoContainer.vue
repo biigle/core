@@ -198,14 +198,14 @@ export default {
         },
         seek(time, force) {
             if (this.seeking) {
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
             if (this.video.currentTime === time && force !== true) {
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
-            let promise = new Vue.Promise((resolve, reject) => {
+            let promise = new Promise((resolve, reject) => {
                 this.video.addEventListener('seeked', resolve);
                 this.video.addEventListener('error', reject);
             });
@@ -221,11 +221,11 @@ export default {
             if (this.attachingLabel) {
                 this.attachAnnotationLabel(annotation);
 
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             } else if (this.swappingLabel) {
                 this.swapAnnotationLabel(annotation);
 
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
             if (shift) {
@@ -252,7 +252,7 @@ export default {
                 return this.seek(time);
             }
 
-            return Vue.Promise.resolve();
+            return Promise.resolve();
         },
         deselectAnnotation(annotation) {
             if (annotation) {
@@ -416,7 +416,7 @@ export default {
         maybeInitCurrentTime() {
             // Ignore initial time if an initial annotation is selected.
             if (this.initialCurrentTime === 0 || this.selectedAnnotations.length > 0) {
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
             return this.seek(this.initialCurrentTime);
@@ -430,7 +430,7 @@ export default {
                 }
             }
 
-            return Vue.Promise.resolve();
+            return Promise.resolve();
         },
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
@@ -544,12 +544,12 @@ export default {
             }
         },
         fetchVideoContent(video) {
-            let videoPromise = new Vue.Promise((resolve) => {
+            let videoPromise = new Promise((resolve) => {
                 this.video.addEventListener('canplay', resolve);
             });
             videoPromise.then(this.checkCORSProperty);
             let annotationPromise = VideoAnnotationApi.query({id: video.id});
-            let promise = Vue.Promise.all([annotationPromise, videoPromise])
+            let promise = Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
                 .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);

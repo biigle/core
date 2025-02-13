@@ -17,7 +17,7 @@ let filenameSorter = {
         },
         methods: {
             getSequence() {
-                return new Vue.Promise.resolve(this.fileIds);
+                return new Promise.resolve(this.fileIds);
             },
         },
         created() {
@@ -46,7 +46,7 @@ let idSorter = {
         },
         methods: {
             getSequence() {
-                return new Vue.Promise.resolve(this.ids);
+                return new Promise.resolve(this.ids);
             },
             compare(a, b) {
                 return a - b;
@@ -88,7 +88,7 @@ let randomSorter = {
             getSequence() {
                 let ids = this.shuffle(this.fileIds.slice());
 
-                return new Vue.Promise.resolve(ids);
+                return new Promise.resolve(ids);
             },
             handleClick() {
                 // Emit the event even if active so a new random sequence is

@@ -165,7 +165,7 @@ export default {
             this.seekingFrame = false;
         },
         frameInfoCallback() {
-            let promise = new Vue.Promise((resolve) => {
+            let promise = new Promise((resolve) => {
                 this.video.requestVideoFrameCallback((now, metadata) => {
                     resolve(metadata);
                 })
@@ -251,7 +251,7 @@ export default {
         this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
-        let mapPromise = new Vue.Promise((resolve) => {
+        let mapPromise = new Promise((resolve) => {
             this.$watch('map', {
                 once: true,
                 handler(map) {
@@ -259,10 +259,10 @@ export default {
                 },
             });
         });
-        let metadataPromise = new Vue.Promise((resolve) => {
+        let metadataPromise = new Promise((resolve) => {
             this.video.addEventListener('loadedmetadata', resolve);
         });
-        Vue.Promise.all([mapPromise, metadataPromise])
+        Promise.all([mapPromise, metadataPromise])
             .then(this.updateVideoLayer)
             .then(this.attachUpdateVideoLayerListener);
 

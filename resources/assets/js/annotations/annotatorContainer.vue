@@ -391,7 +391,7 @@ export default {
         },
         handleUpdateAnnotations(annotations) {
             if (this.isEditor) {
-                Vue.Promise.all(annotations.map(AnnotationsStore.update))
+                Promise.all(annotations.map(AnnotationsStore.update))
                     .catch(handleErrorResponse);
             }
         },
@@ -440,7 +440,7 @@ export default {
                 return promise;
             }
 
-            return Vue.Promise.reject();
+            return Promise.reject();
         },
         handleSwapLabel(annotation, label) {
             label = label || this.selectedLabel;
@@ -495,7 +495,7 @@ export default {
             // Ignore errors in this case. The application will try to reload
             // the data again if the user switches to the respective image
             // and display the error message then.
-            Vue.Promise.all(toCache).catch(function () {});
+            Promise.all(toCache).catch(function () {});
         },
         setLastCreatedAnnotation(annotation) {
             if (this.lastCreatedAnnotationTimeout) {
@@ -616,7 +616,7 @@ export default {
             this.crossOriginError = false;
 
             try {
-                let [image, annotations] = await Vue.Promise.all(this.getImageAndAnnotationsPromises(id));
+                let [image, annotations] = await Promise.all(this.getImageAndAnnotationsPromises(id));
                 this.image = image;
                 this.annotations = annotations;
                 this.maybeUpdateAnnotationMode();

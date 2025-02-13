@@ -163,7 +163,7 @@ export default {
             return [directories, files];
         },
         fetchDirectoryContent(disk, path) {
-            return Vue.Promise.all([
+            return Promise.all([
                     this.fetchDirectories(disk, path),
                     this.fetchFiles(disk, path),
                 ])
@@ -263,7 +263,7 @@ export default {
             if (!directory.loaded) {
                 promise = this.handleLoadDirectory(directory, path);
             } else {
-                promise = Vue.Promise.resolve(directory);
+                promise = Promise.resolve(directory);
             }
 
             promise.then((directory) => {
@@ -293,7 +293,7 @@ export default {
             if (breadcrumbs.length > 1) {
                 promise = this.recurseLoadDirectories(breadcrumbs.join('/'));
             } else {
-                promise = Vue.Promise.resolve(this.selectedDiskRoot);
+                promise = Promise.resolve(this.selectedDiskRoot);
             }
 
             return promise.then((directory) => {

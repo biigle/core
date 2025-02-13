@@ -179,7 +179,7 @@ class Images {
         // active.
         canvas._dirty = true;
 
-        let promise = new Vue.Promise(function (resolve, reject) {
+        let promise = new Promise(function (resolve, reject) {
             img.onload = function () {
                 // The element must be appended to the DOM so the dimensions are
                 // correctly determined. Otherwise imageOrientation=none has no
@@ -251,7 +251,7 @@ class Images {
                     return promise;
                 }
 
-                return Vue.Promise.reject(`Failed to load image ${id}!`);
+                return Promise.reject(`Failed to load image ${id}!`);
             });
     }
 

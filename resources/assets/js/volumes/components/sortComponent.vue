@@ -28,7 +28,7 @@ export default {
     },
     methods: {
         getSequence() {
-            return new Vue.Promise.resolve([]);
+            return new Promise.resolve([]);
         },
         handleClick() {
             if (!this.active) {

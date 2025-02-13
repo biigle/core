@@ -110,7 +110,7 @@ export default {
             try {
                 canvas = this.trimCanvas(canvas);
             } catch (error) {
-                return Vue.Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+                return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
 
             let type = 'image/png';
@@ -124,11 +124,11 @@ export default {
                     arr[i] = binStr.charCodeAt(i);
                 }
 
-                return new Vue.Promise(function (resolve) {
+                return new Promise(function (resolve) {
                     resolve(new Blob([arr], {type: type}));
                 });
             } else {
-                return new Vue.Promise(function (resolve) {
+                return new Promise(function (resolve) {
                     canvas.toBlob(resolve, type);
                 });
             }

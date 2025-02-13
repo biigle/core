@@ -392,7 +392,7 @@ export default class Annotation {
             });
         }
 
-        return Vue.Promise.reject(`Unknown keyframe ${frame} of annotation ${this.id}`);
+        return Promise.reject(`Unknown keyframe ${frame} of annotation ${this.id}`);
     }
 
     delete() {

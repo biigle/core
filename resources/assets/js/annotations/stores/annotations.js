@@ -65,7 +65,7 @@ class Annotations {
         if (!this.cache.hasOwnProperty(id)) {
             this.cache[id] = ImagesApi.getAnnotations({id: id})
                 .catch(function () {
-                    return Vue.Promise.reject(`Failed to load annotations for image ${id}!`);
+                    return Promise.reject(`Failed to load annotations for image ${id}!`);
                 })
                 .then(this.parseResponse.bind(this))
                 .then(this.resolveAllShapes.bind(this));
