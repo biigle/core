@@ -22,16 +22,13 @@
 @endsection
 
 @section('content')
-<div
-    id="video-container"
-    class="video-container sidebar-container"
-    v-bind:class="classObject"
-    >
+<div id="video-container" class="video-container sidebar-container">
     <div
         class="sidebar-container__content"
         v-on:mousemove="updateTimelineHeight"
         v-on:mouseleave="finishUpdateTimelineHeight"
         v-on:mouseup="finishUpdateTimelineHeight"
+        v-bind:class="classObject"
         >
         @include('videos.show.content')
     </div>
