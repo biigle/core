@@ -137,6 +137,10 @@ export default {
             type: Number,
             required: true,
         },
+        labelBOTIsOn: {
+            type: Boolean,
+            default: false,
+        }
     },
     data() {
         return {
@@ -513,7 +517,7 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (!this.hasSelectedLabel) {
+            if (!this.hasSelectedLabel && !this.labelBOTIsOn) {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
@@ -535,7 +539,8 @@ export default {
                 PolygonValidator.simplifyPolygon(e.feature);
             }
 
-            e.feature.set('color', this.selectedLabel.color);
+            // If LabelBOT is on then selectedLabel is null
+            e.feature.set('color', this.selectedLabel ? this.selectedLabel.color : null);
 
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
@@ -565,9 +570,9 @@ export default {
             }
         },
         createPointAnnotationAt(x, y) {
-            if (this.hasSelectedLabel) {
+            if (this.hasSelectedLabel || this.labelBOTIsOn) {
                 let feature = new Feature(new Point([x, y]));
-                // Simulare a feature created event so we can reuse the apropriate
+                // Simulate a feature created event so we can reuse the appropriate
                 // function.
                 this.annotationSource.addFeature(feature);
                 this.handleNewFeature({feature: feature});
