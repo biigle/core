@@ -10,7 +10,7 @@ let SHAPE_CACHE;
 export default class Annotation {
     constructor(args) {
         this.id = args.id;
-        this.frames = args.frames;
+        this._frames = ref(args.frames);
         this._points = args.points;
         this.video_id = args.video_id;
         this.shape_id = args.shape_id;
@@ -54,6 +54,14 @@ export default class Annotation {
 
     set tracking(value) {
         this._tracking.value = value;
+    }
+
+    get frames() {
+        return this._frames.value;
+    }
+
+    set frames(value) {
+        this._frames.value = value;
     }
 
     get startFrame() {
