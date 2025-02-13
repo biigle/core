@@ -1,18 +1,21 @@
 <script>
-import {simplifyPolygon} from "@/annotations/ol/PolygonValidator";
+import * as preventDoubleclick from '@/prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
+import snapInteraction from "./snapInteraction.vue";
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '@/annotations/utils.js';
+import { Point } from '@biigle/ol/geom';
+import {simplifyPolygon} from "@/annotations/ol/PolygonValidator";
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
  *
  * @type {Object}
  */
+
 export default {
     emits: [
         'create-annotation',
@@ -27,7 +30,15 @@ export default {
             pendingAnnotation: {},
             autoplayDrawTimeout: null,
             drawEnded: true,
+            lastDrawnPoint: new Point(0, 0),
+            lastDrawnPointTime: 0,
         };
+    },
+    props: {
+        singleAnnotation: {
+            type: Boolean,
+            default: false
+        }
     },
     computed: {
         hasSelectedLabel() {
@@ -130,6 +141,9 @@ export default {
                 if (this.isDrawingWholeFrame) {
                     this.pendingAnnotation.frames.push(this.video.currentTime);
                     this.$emit('pending-annotation', this.pendingAnnotation);
+                    if (this.singleAnnotation) {
+                        this.finishDrawAnnotation();
+                    }
                 } else {
                     this.drawInteraction = new DrawInteraction({
                         source: this.pendingAnnotationSource,
@@ -214,6 +228,24 @@ export default {
                     window.clearTimeout(this.autoplayDrawTimeout);
                     this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
                 }
+
+                if (this.singleAnnotation) {
+                    if (this.isDrawingPoint) {
+                        if (this.isPointDoubleClick(e)) {
+                            // The feature is added to the source only after this event
+                            // is handled, so remove has to happen after the addfeature
+                            // event.
+                            this.pendingAnnotationSource.once('addfeature', function (e) {
+                                this.removeFeature(e.feature);
+                            });
+                            this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                            return;
+                        }
+                        this.lastDrawnPointTime = new Date().getTime();
+                        this.lastDrawnPoint = e.feature.getGeometry();
+                    }
+                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
+                }
             } else {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
@@ -224,6 +256,11 @@ export default {
             }
 
             this.$emit('pending-annotation', this.pendingAnnotation);
+
+        },
+        isPointDoubleClick(e) {
+            return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
+                && preventDoubleclick.computeDistance(this.lastDrawnPoint, e.feature.getGeometry()) < preventDoubleclick.POINT_CLICK_DISTANCE;
         },
     },
     watch: {

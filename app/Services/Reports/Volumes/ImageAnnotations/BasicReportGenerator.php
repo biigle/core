@@ -90,7 +90,7 @@ class BasicReportGenerator extends AnnotationReportGenerator
      * @param string $title The title to put in the first row of the CSV
      * @return CsvFile
      */
-    protected function createCsv($labels, $title = "\n")
+    protected function createCsv($labels, $title = '')
     {
         $csv = CsvFile::makeTmp();
         // The title must not be empty as the Python

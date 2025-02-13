@@ -69,7 +69,7 @@
             <div v-if="canAdd" class="btn-group">
                 <control-button
                     icon="icon-point"
-                    title="Start a point annotation 𝗔"
+                    :title="(singleAnnotation ? 'Set a point'  : 'Start a point annotation') + ' 𝗔'"
                     :hover="false"
                     :open="isDrawingPoint"
                     :active="isDrawingPoint"
@@ -78,6 +78,13 @@
                     v-slot="{onActive}"
                     >
                         <control-button
+                            v-if="singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button> 
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
@@ -85,6 +92,13 @@
                             @active="onActive"
                             ></control-button>
                         <control-button
+                            v-if="singleAnnotation"
+                            icon="fa-project-diagram"
+                            title="Disable the single-frame annotation option to track annotations"
+                            :disabled="true"
+                            ></control-button> 
+                        <control-button
+                            v-else
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
                             :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
@@ -95,7 +109,7 @@
                 </control-button>
                 <control-button
                     icon="icon-rectangle"
-                    title="Start a rectangle annotation 𝗦"
+                    :title="(singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') + ' 𝗦'"
                     :hover="false"
                     :open="isDrawingRectangle"
                     :active="isDrawingRectangle"
@@ -104,6 +118,13 @@
                     v-slot="{onActive}"
                     >
                         <control-button
+                        v-if="singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>    
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
@@ -113,7 +134,7 @@
                 </control-button>
                 <control-button
                     icon="icon-circle"
-                    title="Start a circle annotation 𝗗"
+                    :title="(singleAnnotation ? 'Draw a circle' : 'Start a circle annotation') + ' 𝗗'"
                     :hover="false"
                     :open="isDrawingCircle"
                     :active="isDrawingCircle"
@@ -122,6 +143,13 @@
                     v-slot="{onActive}"
                     >
                         <control-button
+                            v-if="singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
@@ -129,6 +157,13 @@
                             @active="onActive"
                             ></control-button>
                         <control-button
+                            v-if="singleAnnotation"
+                            icon="fa-project-diagram"
+                            title="Disable the single-frame annotation option to track annotations"
+                            :disabled="true"
+                            ></control-button> 
+                        <control-button
+                            v-else
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
                             :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
@@ -139,7 +174,7 @@
                 </control-button>
                 <control-button
                     icon="icon-linestring"
-                    title="Start a line annotation 𝗙"
+                    :title="(singleAnnotation ? 'Draw a line string' : 'Start a line annotation') + ' 𝗙'"
                     :hover="false"
                     :open="isDrawingLineString"
                     :active="isDrawingLineString"
@@ -148,6 +183,13 @@
                     v-slot="{onActive}"
                     >
                         <control-button
+                            v-if="singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>     
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
@@ -157,7 +199,7 @@
                 </control-button>
                 <control-button
                     icon="icon-polygon"
-                    title="Start a polygon annotation 𝗚"
+                    :title="(singleAnnotation ? 'Draw a polygon' : 'Start a polygon annotation') + ' 𝗚'"
                     :open="isDrawingPolygon"
                     :active="isDrawingPolygon"
                     :disabled="hasError || null"
@@ -165,7 +207,13 @@
                     v-slot="{onActive}"
                     >
                         <control-button
-                            v-if="isDrawingPolygon || isUsingPolygonBrush"
+                            v-if="(isDrawingPolygon || isUsingPolygonBrush) && singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>     
+                        <control-button
+                            v-else-if="isDrawingPolygon || isUsingPolygonBrush"
                             icon="fa-check"
                             title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
@@ -196,7 +244,7 @@
                 </control-button>
                 <control-button
                     icon="icon-wholeframe"
-                    title="Start a whole frame annotation 𝗛"
+                    :title="(singleAnnotation ? 'Create a whole frame annotation' : 'Start a whole frame annotation') + ' 𝗛'"
                     :hover="false"
                     :open="isDrawingWholeFrame"
                     :active="isDrawingWholeFrame"
@@ -205,6 +253,13 @@
                     v-slot="{onActive}"
                     >
                         <control-button
+                            v-if="singleAnnotation"
+                            icon="fa-check"
+                            title="Disable the single-frame annotation option to create multi-frame annotations"
+                            :disabled="true"
+                            ></control-button>     
+                        <control-button
+                            v-else
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
                             :disabled="cantFinishDrawAnnotation || null"
@@ -389,6 +444,10 @@ export default {
         showMinimap: {
             type: Boolean,
             default: true,
+        },
+        singleAnnotation: {
+            type: Boolean,
+            default: false,
         },
         showMousePosition: {
             type: Boolean,
