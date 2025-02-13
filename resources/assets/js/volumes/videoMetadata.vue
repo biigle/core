@@ -1,7 +1,7 @@
 <script>
-import LoaderMixin from '../core/mixins/loader';
-import Messages from '../core/messages/store';
-import metadataModal from './components/metadataModal';
+import LoaderMixin from '../core/mixins/loader.vue';
+import Messages from '../core/messages/store.js';
+import metadataModal from './components/metadataModal.vue';
 
 /**
  * The video container for metadata.

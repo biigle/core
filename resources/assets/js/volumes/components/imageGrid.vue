@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import Image from './imageGridImage';
-import Keyboard from '../../core/keyboard';
-import Progress from './imageGridProgress';
+import Image from './imageGridImage.vue';
+import Keyboard from '@/core/keyboard.js';
+import Progress from './imageGridProgress.vue';
 
 /**
  * A component that displays a grid of lots of images for Largo
@@ -52,6 +52,11 @@ import Progress from './imageGridProgress';
  * @type {Object}
  */
 export default {
+    emits: [
+        'pin',
+        'scroll',
+        'select',
+    ],
     data() {
         return {
             clientWidth: 0,
@@ -253,7 +258,6 @@ export default {
     mounted() {
         // Only call updateDimensions when the element actually exists.
         window.addEventListener('resize', this.updateDimensions);
-        this.$on('resize', this.updateDimensions);
         this.$nextTick(this.updateDimensions);
         this.$watch('canScroll', this.updateDimensions);
     },

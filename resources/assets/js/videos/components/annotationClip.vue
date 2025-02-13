@@ -20,9 +20,13 @@
 </template>
 
 <script>
-import Segment from './annotationSegment';
+import Segment from './annotationSegment.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'select',
+    ],
     components: {
         segment: Segment,
     },

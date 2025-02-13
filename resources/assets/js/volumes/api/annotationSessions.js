@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for annotation sessions.
  *
@@ -21,10 +23,8 @@
  *
  * Delete a session:
  * resource.delete({id: 2}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/annotation-sessions{/id}', {}, {
+export default Resource('api/v1/annotation-sessions{/id}', {}, {
     query: {
         method: 'GET',
         url: 'api/v1/volumes{/volume_id}/annotation-sessions',

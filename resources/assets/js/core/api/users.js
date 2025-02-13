@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for users.
  *
@@ -29,10 +31,8 @@
  *
  * Query users by name:
  * resource.find({query: 'jo'}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/users{/id}', {}, {
+export default Resource('api/v1/users{/id}', {}, {
     find: {
         method: 'GET',
         url: 'api/v1/users/find{/query}',

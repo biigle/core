@@ -3,7 +3,7 @@
 @section('title', "Merge '{$mergeTree->versionedName}' into '{$baseTree->versionedName}'")
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.baseTree', {!! $baseTree !!});
     biigle.$declare('labelTrees.mergeTree', {!! $mergeTree !!});
     biigle.$declare('labelTrees.usedLabels', {!! $usedLabels !!});
@@ -30,7 +30,7 @@
                 ></label-tree-diff>
             <div class="pull-right">
                 <a href="{{route('label-trees', $baseTree->id)}}" class="btn btn-default" title="Back to {{$baseTree->versionedName}}">Back</a>
-                <button class="btn btn-success" title="Merge the resolved differences into {{$baseTree->versionedName}}" v-on:click="submitMerge" v-bind:disabled="cannotMerge">
+                <button class="btn btn-success" title="Merge the resolved differences into {{$baseTree->versionedName}}" v-on:click="submitMerge" v-bind:disabled="cannotMerge || null">
                     <span v-cloak v-if="merged">
                         Merge successful!
                     </span>

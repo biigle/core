@@ -1,13 +1,13 @@
 <script>
-import EditorMixin from '../core/mixins/editor';
-import ListItem from './components/annotationSessionListItem';
-import LoaderMixin from '../core/mixins/loader';
-import SessionsApi from './api/annotationSessions';
-import Typeahead from '../core/components/typeahead';
-import UserTag from './components/annotationSessionUserTag';
-import VolumesApi from './api/volumes';
-import {handleErrorResponse} from '../core/messages/store';
-import DatepickerDropdown from '../uiv/datepickerDropdown';
+import EditorMixin from '@/core/mixins/editor.vue';
+import ListItem from './components/annotationSessionListItem.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import SessionsApi from './api/annotationSessions.js';
+import Typeahead from '@/core/components/typeahead.vue';
+import UserTag from './components/annotationSessionUserTag.vue';
+import VolumesApi from './api/volumes.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
+import DatepickerDropdown from '@/uiv/datepickerDropdown.vue';
 
 /**
  * The panel for editing annotation sessions
@@ -193,7 +193,7 @@ export default {
             response.data.forEach(function (user) {
                 user.name = user.firstname + ' ' + user.lastname;
             });
-            Vue.set(this, 'users', response.data);
+            this.users = response.data;
         },
         selectUser(user) {
             this.editedSession.users.push(user);
@@ -249,7 +249,13 @@ export default {
         this.volumeId = biigle.$require('volumes.id');
         this.sessions = biigle.$require('volumes.annotationSessions')
             .map(this.parseSession);
-        this.$once('editing.start', this.loadUsers);
+
+        const unwatch = this.$watch('editing', (editing) => {
+            if (editing) {
+                this.loadUsers();
+                unwatch();
+            }
+        });
     },
 };
 </script>

@@ -1,5 +1,5 @@
 <script>
-import Events from '../core/events';
+import Events from '@/core/events.js';
 
 /**
  * The panel for editing the members of a project
@@ -11,7 +11,7 @@ export default {
         },
     },
     created() {
-        Events.$on('project.label-trees.count', this.updateCount);
+        Events.on('project.label-trees.count', this.updateCount);
     },
 };
 </script>

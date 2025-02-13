@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import videoTime from '@/videos/filters/videoTime';
 
 let transformUuid = function (uuid) {
     return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;
@@ -93,7 +94,7 @@ export default {
             return [nbrCols, nbrRows];
         },
         hoverTimeText() {
-            return Vue.filter('videoTime')(this.hoverTime);
+            return videoTime(this.hoverTime);
         },
         hoverTimeStyle() {
             return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc' };
