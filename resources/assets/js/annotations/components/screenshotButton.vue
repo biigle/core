@@ -174,7 +174,8 @@ export default {
             this.filesObj[this.ids[index]] = filename;
         });
         Keyboard.on('p', this.capture);
-        Events.$on(['annotations.map.init', 'videos.map.init'], this.setMap);
+        Events.on('videos.map.init', this.setMap);
+        Events.on('annotations.map.init', this.setMap);
     },
 };
 </script>
