@@ -35,6 +35,7 @@ class FilterImageAnnotationsByLabelController extends Controller
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
+
         $this->validate($request, [
             'take' => 'integer',
             'shape_id' => 'array',
@@ -43,6 +44,7 @@ class FilterImageAnnotationsByLabelController extends Controller
             'user_id.*' => 'integer',
             'union' => 'boolean',
         ]);
+
         $take = $request->input('take');
         $shape_ids = $request->input('shape_id');
         $user_ids = $request->input('user_id');

@@ -44,6 +44,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'user_id.*' => 'integer',
             'union' => 'boolean',
         ]);
+
         $take = $request->input('take');
         $shape_ids = $request->input('shape_id');
         $user_ids = $request->input('user_id');
