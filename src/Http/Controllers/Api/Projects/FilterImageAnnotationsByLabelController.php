@@ -18,7 +18,7 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiGroup Projects
      * @apiName ShowProjectsImageAnnotationsFilterLabels
      * @apiParam {Number} pid The project ID
-     * @apiParam {Number} lit The Label ID
+     * @apiParam {Number} lid The Label ID
      * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
      * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values

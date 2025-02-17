@@ -14,12 +14,15 @@ class FilterVideoAnnotationsByLabelController extends Controller
     /**
      * Show all video annotations of the project that have a specific label attached.
      *
-     * @api {get} projects/:tid/video-annotations/filter/label/:lid Get video annotations with a label
+     * @api {get} projects/:pid/video-annotations/filter/label/:lid Get video annotations with a label
      * @apiGroup Projects
      * @apiName ShowProjectsVideoAnnotationsFilterLabels
      * @apiParam {Number} pid The project ID
-     * @apiParam {Number} lit The Label ID
+     * @apiParam {Number} lid The Label ID
      * @apiParam (Optional arguments) {Number} take Number of video annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
+     * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
+     * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
+     * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered exclusive (AND) or inclusive (OR)
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs.
      *

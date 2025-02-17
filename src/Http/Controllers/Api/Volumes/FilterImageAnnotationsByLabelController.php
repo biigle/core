@@ -8,7 +8,6 @@ use Biigle\Modules\Largo\Traits\CompileFilters;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
-
 class FilterImageAnnotationsByLabelController extends Controller
 {
     use CompileFilters;
