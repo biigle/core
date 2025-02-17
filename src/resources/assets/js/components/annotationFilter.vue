@@ -1,6 +1,5 @@
 <template>
-  <div class="annotation-filter">
-    <div class="form-group">
+  <div class="annotation-filter"> <div class="form-group">
       <div class="btn-group" role="group">
         <button
           type="button"
@@ -98,27 +97,33 @@ export default {
       union: false,
     };
   },
+
   computed: {
       activeFilterValue() {
         return this.filterValues[this.selectedFilter];
       }
   },
+
   methods: {
     activateAndOperator() {
       this.union = false;
       this.$emit('set-union-logic', 0);
     },
+
     activateOrOperator() {
       this.union = true;
       this.$emit('set-union-logic', 1);
     },
+
     reset() {
       this.$emit("reset-filters");
     },
+
     loadApiFilters() {
       //Load here filters that should be loaded AFTER the page is rendered
       let volumeId = biigle.$require("largo.volumeId");
       let usersWithAnnotationsPromise;
+
       if (typeof volumeId === "number") {
         usersWithAnnotationsPromise = VolumesApi.getUsersWithAnnotations({
           id: volumeId,
@@ -129,6 +134,7 @@ export default {
           id: projectId,
         });
       }
+
       usersWithAnnotationsPromise.then((response) =>
         response.data.forEach(
           (user) =>
@@ -137,10 +143,12 @@ export default {
         ), Messages.handleErrorResponse
       );
     },
+
     addFilter() {
       if (!this.selectedFilterValue) {
         return;
       }
+
       let logicalString;
 
       //Avoid changing directly the value of selectedFilterValue
@@ -149,6 +157,7 @@ export default {
 
       //convert to integer
       selectedFilterValue[1] = +selectedFilterValue[1];
+
       if (this.negate) {
         logicalString = "is not";
         if (selectedFilterValue[1] > 0){
