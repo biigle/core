@@ -22,7 +22,7 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
      * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
-     * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered exclusive (AND) or inclusive (OR)
+     * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs.
      *
