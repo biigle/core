@@ -103,6 +103,7 @@ export default {
             videoFilenames: null,
             focusInputFindlabel: false,
             corsRequestBreaksVideo: false,
+            showErrorMsg: true,
         };
     },
     computed: {
@@ -560,13 +561,16 @@ export default {
             let videoPromise = new Vue.Promise((resolve) => {
                 this.video.addEventListener('canplay', resolve);
                 this.video.addEventListener('error', (e) => {
-                    this.corsRequestBreaksVideo = e.target.error.message.startsWith("2152924148");
+                    this.corsRequestBreaksVideo = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED;
                     resolve();
                 }, { once: true });
             });
 
+            videoPromise.finally(() => { this.showErrorMsg = true });
+
             // Try requesting video by using CORS
             this.video.setAttribute('crossOrigin', '');
+            this.showErrorMsg = false;
             this.video.src = this.videoFileUri.replace(':id', video.id);
 
             return videoPromise;
@@ -770,19 +774,20 @@ export default {
         this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
+            if (!this.showErrorMsg) {
+                return;
+            }
+
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
                 if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
                     Messages.danger('Unable to access the video file.');
-                } else if (e.target.error.message.startsWith("2152924148")) {
-                    // Don't show error message, because failed cors requests are already handled
-                    return;
                 } else {
                     Messages.danger('The video file could not be accessed or the codec is not supported by your browser.');
                 }
             } else if (e.target.error.code !== MediaError.MEDIA_ERR_ABORTED) {
                 Messages.danger('Error while loading video file.');
             }
-        });
+        }.bind(this));
         this.video.addEventListener('seeked', this.handleVideoSeeked);
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
