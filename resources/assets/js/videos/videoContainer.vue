@@ -102,6 +102,7 @@ export default {
             hasCrossOriginError: false,
             videoFilenames: null,
             focusInputFindlabel: false,
+            corsRequestBreaksVideo: false,
         };
     },
     computed: {
@@ -558,18 +559,41 @@ export default {
         fetchVideoContent(video) {
             let videoPromise = new Vue.Promise((resolve) => {
                 this.video.addEventListener('canplay', resolve);
+                this.video.addEventListener('error', (e) => {
+                    this.corsRequestBreaksVideo = e.target.error.message.startsWith("2152924148");
+                    resolve();
+                }, { once: true });
             });
-            videoPromise.then(this.checkCORSProperty);
-            let annotationPromise = VideoAnnotationApi.query({id: video.id});
-            let promise = Vue.Promise.all([annotationPromise, videoPromise])
+
+            // Try requesting video by using CORS
+            this.video.setAttribute('crossOrigin', '');
+            this.video.src = this.videoFileUri.replace(':id', video.id);
+
+            return videoPromise;
+        },
+        fetchAnnotations(videoPromise) {
+            let annotationPromise = VideoAnnotationApi.query({ id: this.videoId });
+            return Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
                 .then(this.updateAnnotationFilters)
                 .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
+        },
+        maybeFetchVideoWithoutCors(promise) {
+            if (!this.corsRequestBreaksVideo) {
+                return promise;
+            }
+            this.video.removeEventListener('canPlay', Vue.Promise.resolve());
 
-            this.video.src = this.videoFileUri.replace(':id', video.id);
+            let videoPromise = new Vue.Promise((resolve) => {
+                this.video.addEventListener('canplay', resolve);
+            });
 
-            return promise;
+            // Request video without CORS to allow video playback again
+            this.video.removeAttribute('crossOrigin');
+            this.video.src = this.videoFileUri.replace(':id', this.videoId);
+
+            return videoPromise;
         },
         loadVideo(id) {
             this.videoId = id;
@@ -580,6 +604,9 @@ export default {
             let promise = VideoApi.get({id})
                 .then(this.handleVideoInformationResponse)
                 .then(this.fetchVideoContent)
+                .then(this.maybeFetchVideoWithoutCors)
+                .then(this.fetchAnnotations)
+                .then(this.checkCORSProperty)
                 .catch(this.handleVideoError)
                 .finally(() => {
                     this.finishLoading();
@@ -746,6 +773,9 @@ export default {
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
                 if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
                     Messages.danger('Unable to access the video file.');
+                } else if (e.target.error.message.startsWith("2152924148")) {
+                    // Don't show error message, because failed cors requests are already handled
+                    return;
                 } else {
                     Messages.danger('The video file could not be accessed or the codec is not supported by your browser.');
                 }
