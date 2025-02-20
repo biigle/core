@@ -1,0 +1,64 @@
+.labelbot-labels {
+    list-style-type: none;
+    max-width: min-content;
+    display: block;
+    padding: $padding-large-vertical;
+    border: 1px solid $input-border;
+    border-radius: $input-border-radius;
+    margin: 0;
+}
+
+.labelbot-labels-label {
+    position: relative;
+
+    .labelbot-labels-label__color {
+        position: absolute;
+        top: 14px;
+        left: $padding-small-vertical;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .labelbot-labels-label__name,
+    .labelbot-labels-label__nameProgressColor {
+        position: relative;
+        padding: $padding-large-vertical 27px;
+        margin-bottom: 4px;
+        border: 1px solid $input-border;
+        border-radius: $input-border-radius;
+        word-wrap: break-word;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            color: white;
+            cursor: pointer;
+            background-color: $gray-lighter;
+        }
+    }
+
+    .labelbot-labels-label__nameProgress {
+        position: relative;
+
+        .labelbot-labels-label__nameProgressColor {
+            border-color: #219b19;
+
+            &:hover {
+                background-color: #219b19;
+            }
+        }
+
+        .labelbot-labels-label__progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: #186612;
+            transition: width 10s ease-in-out;
+            border: 1px solid #219b19;
+            border-radius: $input-border-radius;
+        }
+    }
+}
