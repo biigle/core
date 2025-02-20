@@ -148,6 +148,7 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
+            'users' => [],
         ]);
         $response->assertSuccessful();
         $this->assertSame(1, $this->volume()->annotationSessions()->count());
