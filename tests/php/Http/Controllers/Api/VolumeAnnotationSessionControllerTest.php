@@ -3,8 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Tests\AnnotationSessionTest;
 use Carbon\Carbon;
+use Biigle\MediaType;
+use Biigle\Tests\AnnotationSessionTest;
 
 class VolumeAnnotationSessionControllerTest extends ApiTestCase
 {
@@ -139,9 +140,31 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
         $this->assertTrue(Carbon::parse('2016-09-20T22:00:00.000Z')->eq($session->ends_at));
     }
 
-    public function testSessionWithoutUser()
+    public function testSessionWithoutImageVolumeUser()
     {
         $id = $this->volume()->id;
+        $this->beAdmin();
+
+        $response = $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => [],
+        ]);
+        $response->assertSuccessful();
+        $this->assertSame(1, $this->volume()->annotationSessions()->count());
+
+        $session = $this->volume()->annotationSessions()
+            ->with('users')
+            ->orderBy('id', 'desc')
+            ->first();
+        $this->assertFalse($session->users()->exists());
+        $response->assertExactJson($session->toArray());
+    }
+
+    public function testSessionWithoutVideoVolumeUser()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $this->beAdmin();
 
         $response = $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
