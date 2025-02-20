@@ -121,7 +121,7 @@ class VolumeAnnotationSessionController extends Controller
     public function store(StoreAnnotationSession $request)
     {
         $users = $request->input('users');
-        $hasUsers = $users != null && count($users) > 0;
+        $hasUsers = count($users) > 0;
         if ($hasUsers) {
             // count users of all attached projects that match the given user IDs
             $count = $request->volume->users()
