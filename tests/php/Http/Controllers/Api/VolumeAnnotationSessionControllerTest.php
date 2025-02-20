@@ -145,6 +145,21 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
         $id = $this->volume()->id;
         $this->beAdmin();
 
+        // Users field must be present
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ])->assertUnprocessable();
+
+        // Users field must be an array
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => null,
+        ])->assertUnprocessable();
+
         $response = $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
@@ -166,6 +181,21 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
     {
         $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $this->beAdmin();
+
+        // Users field must be present
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ])->assertUnprocessable();
+
+        // Users field must be an array
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => null,
+        ])->assertUnprocessable();
 
         $response = $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
