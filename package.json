@@ -33,7 +33,6 @@
     "polymorph-js": "^0.2.4",
     "uiv": "^2.0.6",
     "vue": "^3.5.11",
-    "vue-echarts": "^6.0.3",
     "vue-resource": "^1.0.3"
   },
   "type": "module"

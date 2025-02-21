@@ -64,7 +64,7 @@ const option = {
 
 const root = ref(null);
 onMounted(() => {
-    const chart = init(root.value, 'dark');
+    const chart = init(root.value, 'dark', { renderer: 'svg' });
     chart.setOption(option);
 });
 </script>
