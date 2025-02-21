@@ -42,6 +42,10 @@ class Announcement extends Model
      */
     protected static function booted()
     {
+        static::created(function ($announcement) {
+            Cache::forget(self::CACHE_KEY);
+        });
+
         static::deleted(function ($announcement) {
             Cache::forget(self::CACHE_KEY);
         });
