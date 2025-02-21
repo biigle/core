@@ -1,75 +1,77 @@
 <template>
-    <v-chart :option="option"></v-chart>
+    <span ref="root" class="admin-chart"></span>
 </template>
-<script>
-import * as echarts from 'echarts/core';
-import {TooltipComponent, GridComponent} from 'echarts/components';
-import { BarChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY } from "vue-echarts";
 
-export default {
-    components: {
-        VChart,
+<script setup>
+import { use, init } from 'echarts/core';
+import { TooltipComponent, GridComponent } from 'echarts/components';
+import { BarChart } from 'echarts/charts';
+import { SVGRenderer } from 'echarts/renderers';
+import { ref, onMounted } from "vue";
+
+const props = defineProps({
+    data: {
+        required: true,
+        type: Array,
     },
-    provide: {
-        [THEME_KEY]: "dark",
-    },
-    props: {
-        data: {
-            required: true,
-            type: Array,
+});
+
+use([
+    TooltipComponent,
+    GridComponent,
+    BarChart,
+    SVGRenderer,
+]);
+
+const option = {
+    backgroundColor: 'transparent',
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow',
         },
     },
-    computed: {
-        option() {
-            return {
-                backgroundColor: 'transparent',
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'shadow',
-                    },
-                },
-                grid: {
-                    left: 0,
-                    right: 0,
-                    top: 50,
-                },
-                xAxis: {
-                    type: 'category',
-                    data: this.data[0],
-                    axisTick: {
-                        alignWithLabel: true,
-                    },
-                    axisLabel: {
-                        fontSize: 10,
-                        margin: 8,
-                    },
-                },
-                yAxis:{
-                    show: false,
-                    axisLabel: {
-                        show: false,
-                    },
-                },
-                series: [
-                    {
-                        type: 'bar',
-                        barWidth: '60%',
-                        data: this.data[1],
-                    },
-                ],
-            };
+    grid: {
+        left: 0,
+        right: 0,
+        top: 50,
+    },
+    xAxis: {
+        type: 'category',
+        data: props.data[0],
+        axisTick: {
+            alignWithLabel: true,
+        },
+        axisLabel: {
+            fontSize: 10,
+            margin: 8,
         },
     },
-    beforeCreate() {
-        echarts.use([
-            TooltipComponent,
-            GridComponent,
-            BarChart,
-            CanvasRenderer,
-        ]);
+    yAxis:{
+        show: false,
+        axisLabel: {
+            show: false,
+        },
     },
-}
+    series: [
+        {
+            type: 'bar',
+            barWidth: '60%',
+            data: props.data[1],
+        },
+    ],
+};
+
+const root = ref(null);
+onMounted(() => {
+    const chart = init(root.value, 'dark');
+    chart.setOption(option);
+});
 </script>
+
+<style scoped>
+.admin-chart {
+    display: block;
+    height: 70px;
+}
+</style>
