@@ -210,7 +210,7 @@ class Images {
         // the preflight request is automatically performed. If CORS is blocked,
         // the catch() block below handles fallback loading of images.
         //
-        // Use fetch() instead of Vue.http.get() because Laravel Echo automatically
+        // Use fetch() instead of Http.get() because Laravel Echo automatically
         // adds an interceptor that adds an additional header whcih could cause
         // problems with CORS.
         //
