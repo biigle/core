@@ -12,7 +12,7 @@ window.Vue = Vue;
 // plugin. It can be used stand-alone, though, and this is what we do for now. Any
 // change here would require significant work with the existing resource definitions.
 Vue.resource = function () {
-    console.trace('Vue.resource is deprecated. Import Resource directly.');
+    console.warn('Vue.resource is deprecated. Import Resource directly.');
     return Resource(...arguments);
 };
 
