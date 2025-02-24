@@ -340,6 +340,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $this->assertEquals($this->admin()->id, $session->users()->get()->first()->id);
 
         $this->beAdmin();
+        // Redirect because user must not be null
         $this->put("api/v1/annotation-sessions/{$session->id}", [
             'users' => null,
         ])->assertFound();
@@ -383,12 +384,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $this->assertEquals($this->admin()->id, $session->users()->get()->first()->id);
 
         $this->beAdmin();
-
-        $res = $this->put("api/v1/annotation-sessions/{$session->id}", [
+        // Redirect because user must not be null
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
             'users' => null,
-        ]);
-        $res->assertFound();
+        ])->assertFound();
 
+        // Cannot remove user who created annotations witout 'force' being set
         $this->put("api/v1/annotation-sessions/{$session->id}", [
             'users' => [],
         ])->assertBadRequest();
