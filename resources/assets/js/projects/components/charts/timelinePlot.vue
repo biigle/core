@@ -181,7 +181,7 @@ export default {
         createTimelineSeries() {
             // create a series Array with entries for each user, used for the timeline-plot
             let series = [];
-            let end = this.sourcedata[0].length;
+            let end = this.sourcedata[1].length - 1;
 
             // create a series of data which is specific to each user
             // skip first entry (idx=1), as it is an array of x-axis names and not user-data
