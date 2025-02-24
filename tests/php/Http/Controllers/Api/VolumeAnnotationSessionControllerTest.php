@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Carbon\Carbon;
 use Biigle\MediaType;
 use Biigle\Tests\AnnotationSessionTest;
+use Carbon\Carbon;
 
 class VolumeAnnotationSessionControllerTest extends ApiTestCase
 {
