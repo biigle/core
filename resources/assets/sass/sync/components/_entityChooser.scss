@@ -15,6 +15,7 @@
         flex-flow: column;
         border: 1px solid $panel-default-border;
         border-radius: $panel-border-radius;
+        overflow-x: auto;
 
         &.entity-chooser-list--left li {
             padding-right: 30px;
