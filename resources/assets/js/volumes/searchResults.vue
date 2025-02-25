@@ -1,5 +1,5 @@
 <script>
-import PreviewThumbnail from '../projects/components/previewThumbnail';
+import PreviewThumbnail from '@/projects/components/previewThumbnail.vue';
 
 export default {
     components: {

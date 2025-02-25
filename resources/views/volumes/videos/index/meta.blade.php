@@ -1,5 +1,5 @@
 @push('scripts')
-   <script type="text/javascript">
+   <script type="module">
         biigle.$declare('videos.times', {!! collect($video->taken_at) !!});
         biigle.$declare('videos.metadata', {!! collect($video->metadata) !!});
         biigle.$declare('videos.metadataMap', {!! collect($metadataMap) !!});

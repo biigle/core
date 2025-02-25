@@ -1,6 +1,6 @@
 <script>
-import AttachLabelInteraction from '../../ol/AttachLabelInteraction';
-import Keyboard from '../../../core/keyboard';
+import AttachLabelInteraction from '@/annotations/ol/AttachLabelInteraction.js';
+import Keyboard from '@/core/keyboard.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the attach label interaction.
@@ -10,6 +10,10 @@ import Keyboard from '../../../core/keyboard';
 let attachLabelInteraction, swapLabelInteraction;
 
 export default {
+    emits: [
+        'attach',
+        'swap',
+    ],
     computed: {
         isAttaching() {
             return this.interactionMode === 'attach';

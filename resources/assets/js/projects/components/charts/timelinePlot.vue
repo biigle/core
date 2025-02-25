@@ -1,10 +1,9 @@
 <template>
-    <v-chart class="chart grid-col-span-3" :option="option" :update-options="updateOptions"
-        @updateAxisPointer="handleUpdate"></v-chart>
+    <span ref="root" class="chart grid-col-span-3"></span>
 </template>
 
 <script>
-import * as echarts from 'echarts/core';
+import { use, init } from 'echarts/core';
 import {
     DatasetComponent,
     TooltipComponent,
@@ -15,8 +14,8 @@ import {
 import { LineChart, PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY } from "vue-echarts";
 import { IDToColor } from "./IDToColor";
+import { markRaw } from "vue";
 
 export default {
     props: {
@@ -28,22 +27,10 @@ export default {
             required: true,
             type: String,
         },
-        volumeType: {
-            required: false,
-            type: String,
-        },
-    },
-    components: {
-        VChart
-    },
-    provide: {
-        [THEME_KEY]: "dark"
     },
     data() {
         return {
-            updateOptions: {
-                notMerge: true,
-            },
+            chart: null,
             pieObj: {
                 type: 'pie',
                 radius: '30%',
@@ -80,6 +67,10 @@ export default {
             this.pieObj.label.formatter = '{b}: {@[' + dimension + ']} ({d}%)';
             this.pieObj.encode.value = dimension;
             this.pieObj.encode.tooltip = dimension;
+
+            if (this.chart) {
+                this.chart.setOption(this.option);
+            }
         },
         extractYearMonth() {
             // helper-function to get all X-Axis data (yearsmonth)
@@ -261,8 +252,15 @@ export default {
             }
         }
     },
+    watch: {
+        option() {
+            if (this.chart) {
+                this.chart.setOption(this.option);
+            }
+        },
+    },
     beforeCreate() {
-        echarts.use([
+        use([
             DatasetComponent,
             TooltipComponent,
             GridComponent,
@@ -273,6 +271,11 @@ export default {
             LabelLayout,
             TitleComponent,
         ]);
+    },
+    mounted() {
+        this.chart = markRaw(init(this.$refs.root, 'dark', { renderer: 'svg' }));
+        this.chart.setOption(this.option);
+        this.chart.on('updateAxisPointer', this.handleUpdate);
     },
 };
 </script>

@@ -1,7 +1,7 @@
 <script>
-import Events from '../core/events';
-import Settings from './stores/settings';
-import Breadcrumb from './components/breadcrumb';
+import Events from '@/core/events.js';
+import Settings from './stores/settings.js';
+import Breadcrumb from './components/breadcrumb.vue';
 
 /**
 * View model for the annotator navbar
@@ -48,8 +48,8 @@ export default {
         updateShowIndicator(show) {
             this.showIndicator = show !== false;
         },
-        updateCurrentId(id) {
-            this.currentId = id;
+        updateCurrentId(e) {
+            this.currentId = e.id;
         },
     },
     watch: {
@@ -67,7 +67,7 @@ export default {
         this.filenames = filenames;
         this.currentId = biigle.$require('annotations.imageId');
 
-        Events.$on('images.change', this.updateCurrentId);
+        Events.on('images.change', this.updateCurrentId);
 
         this.updateShowIndicator(Settings.get('progressIndicator'));
         Settings.watch('progressIndicator', this.updateShowIndicator);

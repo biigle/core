@@ -6,6 +6,7 @@
 /public/assets/styles
 /public/mix-manifest.json
 /public/vendor
+/public/build
 /storage/*.key
 /storage/largo_patches
 /storage/metadata

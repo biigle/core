@@ -1,11 +1,11 @@
 <script>
-import EditorMixin from '../core/mixins/editor';
-import FileItem from './components/filePanelItem';
-import ImagesApi from '../core/api/images';
-import VideosApi from '../videos/api/videos';
-import LoaderMixin from '../core/mixins/loader';
-import VolumesApi from './api/volumes';
-import {handleErrorResponse} from '../core/messages/store';
+import EditorMixin from '@/core/mixins/editor.vue';
+import FileItem from './components/filePanelItem.vue';
+import ImagesApi from '@/core/api/images.js';
+import VideosApi from '../videos/api/videos.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import VolumesApi from './api/volumes.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The panel for editing volume images
