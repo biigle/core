@@ -98,23 +98,26 @@ export default {
     methods: {
         handleSelect(entity) {
             this.chosenIds[entity.id] = true;
+            this.$emit('select', this.chosenEntities);
         },
         handleDeselect(entity) {
             this.chosenIds[entity.id] = false;
+            this.$emit('select', this.chosenEntities);
         },
         chooseAll() {
-            this.unchosenFilteredEntities.forEach(this.handleSelect);
+            this.unchosenFilteredEntities.forEach(
+                entity => this.chosenIds[entity.id] = true
+            );
+            this.$emit('select', this.chosenEntities);
         },
         chooseNone() {
-            this.chosenEntities.forEach(this.handleDeselect);
+            this.chosenEntities.forEach(
+                entity => this.chosenIds[entity.id] = false
+            );
+            this.$emit('select', []);
         },
         handleFiltering(query) {
             this.filterQuery = query;
-        },
-    },
-    watch: {
-        chosenEntities(entities) {
-            this.$emit('select', entities);
         },
     },
 };
