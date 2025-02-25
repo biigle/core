@@ -63,8 +63,12 @@ export default {
         },
         labelTrees() {
             return this.entities.labelTrees.map(function (tree) {
+                if (!tree.originalName) {
+                    tree.originalName = tree.name;
+                }
+
                 if (tree.version) {
-                    tree.name = tree.name + ' @ ' + tree.version.name;
+                    tree.name = tree.originalName + ' @ ' + tree.version.name;
                 }
 
                 return tree;
