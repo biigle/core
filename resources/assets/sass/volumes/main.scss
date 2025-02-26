@@ -26,6 +26,12 @@ $volume-image-padding: 0.5em;
     background-color: $gray-lighter;
 }
 
+.prevent-overflow {
+    object-fit: contain;
+    width:100%;
+    height:100%;
+}
+
 .volume-storage-disk-btn {
     overflow-x: hidden;
     text-overflow: ellipsis;

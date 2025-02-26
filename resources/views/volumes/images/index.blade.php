@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-sm-6 col-lg-4">
             <div class="panel panel-default panel-image">
-                <img src="{{ thumbnail_url($image->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                <img src="{{ thumbnail_url($image->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'" @if($image->height < $image->width) class="prevent-overflow" @endif>
             </div>
             @include('volumes.images.index.meta')
         </div>
