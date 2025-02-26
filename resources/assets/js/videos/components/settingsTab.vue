@@ -1,16 +1,39 @@
 <script>
 import PowerToggle from '../../core/components/powerToggle';
 import Settings from '../stores/settings';
+import ScreenshotButton from '../../annotations/components/screenshotButton.vue';
+import Keyboard from '../../core/keyboard';
 
 export default {
     components: {
         powerToggle: PowerToggle,
+        screenshotButton: ScreenshotButton
     },
     props: {
         supportsJumpByFrame: {
             type: Boolean,
             default: false,
         },
+        crossOriginError: {
+            type: Boolean,
+            default: false,
+        },
+        videoFilenames: {
+            type: Array,
+            default: () => []
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        map: {
+            type: Object,
+            default: null,
+        },
+        ids: {
+            type: Array,
+            default: () => []
+        }
     },
     data() {
         return {
@@ -25,6 +48,7 @@ export default {
                 'enableJumpByFrame',
                 'jumpStep',
                 'muteVideo',
+                'singleAnnotation',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -37,6 +61,7 @@ export default {
             showThumbnailPreview: true,
             enableJumpByFrame: false,
             muteVideo: true,
+            singleAnnotation: false,
         };
     },
     computed: {
@@ -86,6 +111,19 @@ export default {
         },
         handleUnmuteVideo() {
             this.muteVideo = false;
+        },
+        handleSingleAnnotation() {
+            this.singleAnnotation = true;
+        },
+        handleDisableSingleAnnotation() {
+            this.singleAnnotation = false;
+        },
+        toggleAnnotationOpacity() {
+            if (this.annotationOpacity > 0) {
+                this.annotationOpacity = 0;
+            } else {
+                this.annotationOpacity = 1;
+            }
         },
     },
     watch: {
@@ -140,11 +178,17 @@ export default {
             this.$emit('update', 'muteVideo', show);
             Settings.set('muteVideo', show);
         },
+        singleAnnotation(show) {
+            this.$emit('update', 'singleAnnotation', show);
+            Settings.set('singleAnnotation', show);
+        },
     },
     created() {
         this.restoreKeys.forEach((key) => {
             this[key] = Settings.get(key);
         });
+
+        Keyboard.on('o', this.toggleAnnotationOpacity);
     },
 };
 </script>

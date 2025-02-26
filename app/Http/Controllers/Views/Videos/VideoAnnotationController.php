@@ -18,7 +18,7 @@ class VideoAnnotationController extends Controller
         $annotation = VideoAnnotation::findOrFail($id);
         $this->authorize('access', $annotation);
 
-        return redirect()->route('video', [
+        return redirect()->route('video-annotate', [
             'id' => $annotation->video_id,
             'annotation' => $annotation->id,
         ]);

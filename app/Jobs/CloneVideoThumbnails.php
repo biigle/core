@@ -26,9 +26,17 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
 
     /**
      * Cloned video of cloned volume
+     *
      * @var Video
      */
     public $video;
+
+    /**
+     * Ignore this job if the video does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
 
     public function __construct(Video $video, String $prefix)
     {

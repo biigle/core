@@ -3,7 +3,7 @@
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $video)
         <li class="col-xs-4">
-            <a href="{{route('video', $video->id)}}" title="Show video {{$video->filename}}">
+            <a href="{{route('video-annotate', $video->id)}}" title="Show video {{$video->filename}}">
                 <preview-thumbnail class="preview-thumbnail" :id="{{$video->id}}" thumb-uris="{{$video->thumbnailsUrl->implode(',')}}">
                     <img src="{{ $video->thumbnailUrl }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     <figcaption slot="caption">{{$video->filename}}</figcaption>

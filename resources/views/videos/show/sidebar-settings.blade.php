@@ -1,9 +1,25 @@
-<sidebar-tab name="settings" icon="cog" title="Settings">
+<sidebar-tab name="settings" icon="cog" title="Settings" :highlight="annotationsAreHidden">
     <settings-tab inline-template
         v-on:update="handleUpdatedSettings"
         :supports-jump-by-frame="supportsJumpByFrame"
+        :cross-origin-error="hasCrossOriginError"
+        :current-id="videoId"
+        :video-filenames="videoFilenames"
+        :ids="videoIds"
         >
             <div class="annotator-tab settings-tab">
+                <div class="sidebar-tab__section">
+                    <button v-if="crossOriginError" class="btn btn-default" title="Screenshots are not available for remote videos without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+                    <screenshot-button
+                    v-else
+                    inline-template
+                    :current-id="currentId"
+                    :filenames="videoFilenames"
+                    :ids="ids"
+                    >
+                        <button class="btn btn-default" title="Get a screenshot of the visible area 𝗣" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+                    </screenshot-button>
+                </div>
 
                 <div class="sidebar-tab__section">
                     <h5 title="Set the opacity of annotations">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
@@ -51,6 +67,10 @@
 
                 <div class="sidebar-tab__section">
                     <power-toggle :active="muteVideo" title-off="Mute video" title-on="Unmute video" v-on:on="handleMuteVideo" v-on:off="handleUnmuteVideo">Mute Video</power-toggle>
+                </div>
+
+                <div class="sidebar-tab__section">
+                    <power-toggle :active="singleAnnotation" title-off="Enable always creating single-frame annotations" title-on="Disable always creating single-frame annotations" v-on:on="handleSingleAnnotation" v-on:off="handleDisableSingleAnnotation">Single-Frame Annotation</power-toggle>
                 </div>
             </div>
     </settings-tab>

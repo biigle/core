@@ -69,6 +69,13 @@ class Video extends VolumeFile
     const ERROR_TOO_LARGE = 5;
 
     /**
+     * Error if moov atom is not located at beginning.
+     *
+     * @var int
+     */
+    const ERROR_INVALID_MOOV_POS = 6;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

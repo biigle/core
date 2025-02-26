@@ -73,6 +73,7 @@ export default {
                 showThumbnailPreview: true,
                 enableJumpByFrame: false,
                 muteVideo: true,
+                singleAnnotation: false,
             },
             openTab: '',
             urlParams: {
@@ -99,7 +100,10 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            hasCrossOriginError: false,
+            videoFilenames: null,
             focusInputFindlabel: false,
+            invalidMoovAtomPosition: false,
         };
     },
     computed: {
@@ -175,6 +179,9 @@ export default {
         },
         reachedTrackedAnnotationLimit() {
             return this.disableJobTracking;
+        },
+        annotationsAreHidden() {
+            return this.settings.annotationOpacity === 0;
         }
     },
     methods: {
@@ -533,6 +540,8 @@ export default {
                 throw new VideoMalformedError();
             } else if (video.error === this.errors['too-large']) {
                 throw new VideoTooLargeError();
+            } else if (video.error === this.errors['moov-atom']) {
+                this.invalidMoovAtomPosition = true;
             } else if (video.size === null) {
                 throw new VideoNotProcessedError();
             }
@@ -554,6 +563,7 @@ export default {
             let videoPromise = new Vue.Promise((resolve) => {
                 this.video.addEventListener('canplay', resolve);
             });
+            videoPromise.then(this.checkCORSProperty);
             let annotationPromise = VideoAnnotationApi.query({id: video.id});
             let promise = Vue.Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
@@ -582,6 +592,16 @@ export default {
                 });
 
             return promise;
+        },
+        checkCORSProperty() {
+            let testCanvas = document.createElement('canvas');
+            let ctx = testCanvas.getContext('2d');
+            ctx.drawImage(this.video, 0, 0);
+            try {
+                ctx.getImageData(0, 0, 1, 1);
+            } catch (e) {                
+                this.hasCrossOriginError = true;
+            }
         },
         showPreviousVideo() {
             this.reset();
@@ -688,6 +708,9 @@ export default {
             this.$nextTick(() => {
                 this.focusInputFindlabel = true;
             });
+        },
+        dismissMoovAtomError() {
+            this.invalidMoovAtomPosition = false;
         }
     },
     watch: {
@@ -720,6 +743,7 @@ export default {
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
+        this.videoFilenames = biigle.$require('videos.videoFilenames');
 
         this.initAnnotationFilters();
         this.restoreUrlParams();
@@ -766,6 +790,8 @@ export default {
         if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
+
+        Events.$emit('videos.map.init', this.$refs.videoScreen.map);
     },
 };
 </script>

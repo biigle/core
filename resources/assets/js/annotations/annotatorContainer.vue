@@ -87,6 +87,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            imageFilenames: {}
         };
     },
     computed: {
@@ -163,6 +164,9 @@ export default {
         },
         annotationCount() {
             return this.annotations.length;
+        },
+        highlightSettingsTab() {
+            return this.annotationOpacity === 0;
         }
     },
     methods: {
@@ -679,6 +683,7 @@ export default {
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
         this.userId = biigle.$require('annotations.userId');
+        this.imageFilenames = biigle.$require('annotations.imagesFilenames');
         this.annotationFilters = [
             new LabelFilter(),
             new UserFilter(),

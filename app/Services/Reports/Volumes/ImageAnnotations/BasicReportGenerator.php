@@ -93,6 +93,8 @@ class BasicReportGenerator extends AnnotationReportGenerator
     protected function createCsv($labels, $title = '')
     {
         $csv = CsvFile::makeTmp();
+        // The title must not be empty as the Python
+        // script expects one line as title.
         $csv->put($title);
 
         foreach ($labels as $label) {

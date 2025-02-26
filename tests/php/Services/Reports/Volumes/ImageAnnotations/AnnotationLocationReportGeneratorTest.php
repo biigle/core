@@ -89,7 +89,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->once();
@@ -175,7 +175,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->once();
@@ -263,7 +263,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->once();
@@ -353,7 +353,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->once();
@@ -473,7 +473,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $jsonContent['properties']['_id'] = $al2->id;
         $jsonContent['properties']['_label_name'] = $label2->name;
@@ -481,7 +481,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->twice();
@@ -577,7 +577,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $jsonContent['properties']['_id'] = $al2->id;
         $jsonContent['properties']['_label_name'] = $al2->label->name;
@@ -585,7 +585,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(json_encode($jsonContent)."\n");
+            ->with(json_encode($jsonContent));
 
         $mock->shouldReceive('close')
             ->twice();
