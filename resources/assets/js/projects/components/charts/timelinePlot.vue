@@ -100,11 +100,13 @@ export default {
                 let nextDate = new Date(nextYearMonth);
                 while (currentDate.getMonth() < nextDate.getMonth() - 1 || currentDate.getFullYear() < nextDate.getFullYear()) {
                     currentDate.setMonth(currentDate.getMonth() + 1);
-                    let year = currentDate.getFullYear();
-                    let month = currentDate.getMonth() + 1;
-                    let yearMonth = year + '-' + (month < 10 ? '0' + month : month);
-                    xAxis.splice(i + 1, 0, yearMonth);
-                    i++;
+                    if (!(currentDate.getMonth() == nextDate.getMonth()) && (currentDate.getFullYear() == nextDate.getFullYear())) {
+                        let year = currentDate.getFullYear();
+                        let month = currentDate.getMonth() + 1;
+                        let yearMonth = year + '-' + (month < 10 ? '0' + month : month);
+                        xAxis.splice(i + 1, 0, yearMonth);
+                        i++;
+                    }
                 }
             }
 
