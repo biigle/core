@@ -559,7 +559,7 @@ export default {
         },
         fetchVideoContent(video) {
             let videoPromise = new Vue.Promise((resolve) => {
-                this.video.addEventListener('canplay', resolve);
+                this.video.addEventListener('canplay', resolve, { once: true });
                 this.video.addEventListener('error', (e) => {
                     this.corsRequestBreaksVideo = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED;
                     resolve();
@@ -587,10 +587,9 @@ export default {
             if (!this.corsRequestBreaksVideo) {
                 return promise;
             }
-            this.video.removeEventListener('canPlay', Vue.Promise.resolve());
 
             let videoPromise = new Vue.Promise((resolve) => {
-                this.video.addEventListener('canplay', resolve);
+                this.video.addEventListener('canplay', resolve, { once: true });
             });
 
             // Request video without CORS to allow video playback again
