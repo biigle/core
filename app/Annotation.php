@@ -40,6 +40,11 @@ abstract class Annotation extends Model implements AnnotationContract
     ];
 
     /**
+     * The additional labels suggested by the LabelBOT.
+     */
+    public $labelBOTLabels = [];
+
+    /**
      * Scope a query to only include annotations that are visible for a certain user.
      *
      * @param \Illuminate\Database\Query\Builder $query
@@ -208,5 +213,15 @@ abstract class Annotation extends Model implements AnnotationContract
     public function getFile(): VolumeFile
     {
         return $this->file;
+    }
+
+    /**
+     * Get the LabelBOT suggested labels.
+     *
+     * @return array<int>
+     */
+    public function getLabelBOTLabelsAttribute(): array
+    {
+        return $this->labelBOTLabels;
     }
 }
