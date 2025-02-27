@@ -103,7 +103,7 @@ export default {
             videoFilenames: null,
             focusInputFindlabel: false,
             corsRequestBreaksVideo: false,
-            showErrorMsg: true,
+            attemptWithCors: false,
         };
     },
     computed: {
@@ -566,11 +566,11 @@ export default {
                 }, { once: true });
             });
 
-            videoPromise.finally(() => { this.showErrorMsg = true });
+            videoPromise.finally(() => { this.attemptWithCors = false });
 
             // Try requesting video by using CORS
             this.video.setAttribute('crossOrigin', '');
-            this.showErrorMsg = false;
+            this.attemptWithCors = true;
             this.video.src = this.videoFileUri.replace(':id', video.id);
 
             return videoPromise;
@@ -773,7 +773,7 @@ export default {
         this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
         this.video.addEventListener('error', function (e) {
-            if (!this.showErrorMsg) {
+            if (this.attemptWithCors) {
                 return;
             }
 
