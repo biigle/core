@@ -772,7 +772,7 @@ export default {
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
-        this.video.addEventListener('error', function (e) {
+        this.video.addEventListener('error', (e) => {
             if (this.attemptWithCors) {
                 return;
             }
@@ -786,7 +786,7 @@ export default {
             } else if (e.target.error.code !== MediaError.MEDIA_ERR_ABORTED) {
                 Messages.danger('Error while loading video file.');
             }
-        }.bind(this));
+        });
         this.video.addEventListener('seeked', this.handleVideoSeeked);
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
