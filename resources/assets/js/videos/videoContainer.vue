@@ -73,6 +73,7 @@ export default {
                 showThumbnailPreview: true,
                 enableJumpByFrame: false,
                 muteVideo: true,
+                singleAnnotation: false,
             },
             openTab: '',
             urlParams: {
@@ -104,6 +105,7 @@ export default {
             focusInputFindlabel: false,
             corsRequestBreaksVideo: false,
             attemptWithCors: false,
+            invalidMoovAtomPosition: false,
         };
     },
     computed: {
@@ -540,6 +542,8 @@ export default {
                 throw new VideoMalformedError();
             } else if (video.error === this.errors['too-large']) {
                 throw new VideoTooLargeError();
+            } else if (video.error === this.errors['moov-atom']) {
+                this.invalidMoovAtomPosition = true;
             } else if (video.size === null) {
                 throw new VideoNotProcessedError();
             }
@@ -734,6 +738,9 @@ export default {
             this.$nextTick(() => {
                 this.focusInputFindlabel = true;
             });
+        },
+        dismissMoovAtomError() {
+            this.invalidMoovAtomPosition = false;
         }
     },
     watch: {

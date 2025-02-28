@@ -48,6 +48,7 @@ export default {
                 'enableJumpByFrame',
                 'jumpStep',
                 'muteVideo',
+                'singleAnnotation',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -60,6 +61,7 @@ export default {
             showThumbnailPreview: true,
             enableJumpByFrame: false,
             muteVideo: true,
+            singleAnnotation: false,
         };
     },
     computed: {
@@ -109,6 +111,12 @@ export default {
         },
         handleUnmuteVideo() {
             this.muteVideo = false;
+        },
+        handleSingleAnnotation() {
+            this.singleAnnotation = true;
+        },
+        handleDisableSingleAnnotation() {
+            this.singleAnnotation = false;
         },
         toggleAnnotationOpacity() {
             if (this.annotationOpacity > 0) {
@@ -169,6 +177,10 @@ export default {
         muteVideo(show) {
             this.$emit('update', 'muteVideo', show);
             Settings.set('muteVideo', show);
+        },
+        singleAnnotation(show) {
+            this.$emit('update', 'singleAnnotation', show);
+            Settings.set('singleAnnotation', show);
         },
     },
     created() {
