@@ -6,6 +6,7 @@
     border: 1px solid $input-border;
     border-radius: $input-border-radius;
     margin: 0;
+    background-color: #333333;
 }
 
 .labelbot-labels-label {
@@ -29,7 +30,6 @@
         border: 1px solid $input-border;
         border-radius: $input-border-radius;
         word-wrap: break-word;
-        transition: background-color 0.3s ease;
 
         &:hover {
             color: white;
@@ -51,12 +51,9 @@
 
         .labelbot-labels-label__progress-bar {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
             height: 100%;
             background-color: #186612;
-            transition: width 10s ease-in-out;
+            transition: width 10s linear;
             border: 1px solid #219b19;
             border-radius: $input-border-radius;
         }
