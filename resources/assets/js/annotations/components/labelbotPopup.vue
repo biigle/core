@@ -1,7 +1,7 @@
 <template>
   <ul class="labelbot-labels">
     <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index">
-      <div v-if="index === 0" class="labelbot-labels-label__nameProgress" @click="selectLabel(label, index)">
+      <div v-if="index === 0" class="labelbot-labels-label__nameProgress" @click="selectLabel(label)">
         <!-- Progress bar -->
           <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelBOTPopup()"></div>
         <!-- Label name -->
@@ -41,7 +41,8 @@ export default {
   data() {
     return {
       progressBarWidth: -1,
-      trees : [],
+      selectedLabel: null,
+      trees: [],
     };
   },
   computed: {
@@ -69,14 +70,15 @@ export default {
     labelbotLabels() {
       this.progressBarWidth = 0;
       if (this.labelbotLabels.length > 0) {
+        this.selectedLabel = this.labelbotLabels[0];
         setTimeout(() => this.progressBarWidth = 100, 10);
       }
     },
   },
   methods: {
-    selectLabel(label, index) {
-      // Top 1 label is already attached
-      if (index !== 0) {
+    selectLabel(label) {
+      // Top 1 label is already attached/selected
+      if (this.selectedLabel.id !== label.id) {
         this.$emit('update-labelbot-label', label);
       }
       this.closeLabelBOTPopup();
