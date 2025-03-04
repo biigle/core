@@ -47,6 +47,11 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_id' => $child->id,
         ]);
 
+        // Inlcude images without labels, too
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
+        $this->assertEmpty($i3->annotations()->get());
+
         $mock = Mockery::mock();
 
         $mock->shouldReceive('put')
@@ -68,6 +73,10 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('putCsv')
             ->once()
             ->with(['b.jpg', 0, 1]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['c.jpg', 0, 0]);
 
         $mock->shouldReceive('close')
             ->once();
