@@ -17,6 +17,7 @@ export default {
                     'separate_users',
                     'annotation_session_id',
                     'only_labels',
+                    'all_labels',
                     'aggregate_child_labels',
                 ],
                 'ImageLabels': [
