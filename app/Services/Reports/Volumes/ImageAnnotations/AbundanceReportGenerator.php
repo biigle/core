@@ -40,6 +40,17 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $rows = $this->query()->get();
 
+        if ($this->options->get('all_labels', false)) {
+            $this->collectDataWithAllLabels($rows);
+        } else {
+            $this->collectData($rows);
+        }
+
+        $this->executeScript('csvs_to_xlsx', $path);
+    }
+
+    protected function collectData($rows)
+    {
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
             $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
@@ -64,8 +75,41 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
         }
+    }
+    protected function collectDataWithAllLabels($rows)
+    {
+        $allLabels = DB::table('project_volume')
+            ->where('project_volume.volume_id', '=', $this->source->id)
+            ->join('projects', 'project_volume.project_id', '=', 'projects.id')
+            ->join('label_tree_project', 'projects.id', '=', 'label_tree_project.project_id')
+            ->join('label_trees', 'label_tree_project.label_tree_id', '=', 'label_trees.id')
+            ->join('labels', 'label_trees.id', '=', 'labels.label_tree_id')
+            ->select('labels.*');
 
-        $this->executeScript('csvs_to_xlsx', $path);
+        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
+            $rows = $rows->groupBy('label_tree_id');
+            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+
+            foreach ($trees as $id => $name) {
+                $rowGroup = $rows->get($id);
+                $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
+                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+            }
+        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $rows = $rows->groupBy('user_id');
+            $users = User::whereIn('id', $rows->keys())
+                ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->pluck('name', 'id');
+
+            foreach ($users as $id => $name) {
+                $rowGroup = $rows->get($id);
+                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+            }
+        } else {
+            $labels = $allLabels->get();
+            $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
+        }
     }
 
     /**
