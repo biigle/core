@@ -89,29 +89,27 @@ export default {
             // sort the yearmonths entries
             xAxis = xAxis.sort();
 
-            // filter duplicated yearsmonth
-            xAxis = [...new Set(xAxis)];
-            
-            // fill in the missing yearmonths
-            for (let i = 0; i < xAxis.length - 1; i++) {
-                let currentYearMonth = xAxis[i];
-                let nextYearMonth = xAxis[i + 1];
-                let currentDate = new Date(currentYearMonth);
-                let nextDate = new Date(nextYearMonth);
-                while (currentDate.getMonth() < nextDate.getMonth() - 1 || currentDate.getFullYear() < nextDate.getFullYear()) {
-                    currentDate.setMonth(currentDate.getMonth() + 1);
-                    if (!(currentDate.getMonth() == nextDate.getMonth()) && (currentDate.getFullYear() == nextDate.getFullYear())) {
-                        let year = currentDate.getFullYear();
-                        let month = currentDate.getMonth() + 1;
-                        let yearMonth = year + '-' + (month < 10 ? '0' + month : month);
-                        xAxis.splice(i + 1, 0, yearMonth);
-                        i++;
-                    }
-                }
-            }
+            //generate dates for xAxis
+            let currentDate = new Date(xAxis[0]);
+            let lastDate = new Date(xAxis[xAxis.length - 1]);
+            let xAxisFin = [];
 
-            // sort the years (increasing)
-            return xAxis;
+            while (currentDate.getTime() < lastDate.getTime()) {
+                let year = currentDate.getFullYear();
+                let month = currentDate.getMonth() + 1;
+                let yearMonth = year + '-' + month.toString().padStart(2, '0');
+
+                xAxisFin.push(yearMonth);
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+            /*
+            if (!xAxisFin.includes(xAxis[xAxis.length - 1])) {
+                xAxisFin.push(xAxis[xAxis.length - 1]);
+            }*/
+            if (!xAxisFin.includes(lastDate)) {
+                xAxisFin.push(lastDate);
+            }
+            return xAxisFin;
         },
     },
     computed: {
@@ -183,8 +181,7 @@ export default {
         createTimelineSeries() {
             // create a series Array with entries for each user, used for the timeline-plot
             let series = [];
-            let end = this.sourcedata[1].length - 1;
-
+            let end = this.sourcedata[0].length;
             // create a series of data which is specific to each user
             // skip first entry (idx=1), as it is an array of x-axis names and not user-data
             // sourcedata-structure: [['all', 'year', 2020, 2021, 2022], [1195,"Name1",1195,0,0], [6,"Name2",0,2,4]]
