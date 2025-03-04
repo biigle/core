@@ -142,6 +142,7 @@ export default {
         },
         inputText(v) {
             this.isTyping = true;
+            this.$emit('typing', this.inputText);
             debounce(() => {
                 let added = v.trim().includes(this.oldInput.trim());
                 let useTypeaheadFilter = this.oldInput.length > 3 && added;

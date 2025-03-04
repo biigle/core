@@ -3,7 +3,7 @@
     <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index">
       <div v-if="index === 0" class="labelbot-labels-label__nameProgress" @click="selectLabel(label, index)">
         <!-- Progress bar -->
-          <div ref="progressBar" class="labelbot-labels-label__progress-bar" :style="{ width: progressWidth + '%' }" @transitionend="closeLabelBOTPopup()"></div>
+          <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelBOTPopup()"></div>
         <!-- Label name -->
         <div class="labelbot-labels-label__nameProgressColor">
           <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
@@ -16,13 +16,18 @@
       </div>
     </li>
     <li class="labelbot-labels-label">
-      <input class="form-control" placeholder="type...">
+      <typeahead ref="typeahead" :items="labels" more-info="tree.versionedName" @typing="resetProgressBarWidth" @select="selectLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
 </template>
 
 <script>
+import Typeahead from '../../label-trees/components/labelTypeahead.vue';
+
 export default {
+  components: {
+    typeahead: Typeahead,
+  },
   props: {
     labelbotLabels: {
       type: Array,
@@ -31,18 +36,40 @@ export default {
     labelBOTIsOn: {
       type: Boolean,
       required: true,
-    }
+    },
   },
   data() {
     return {
-      progressWidth: 0,
+      progressBarWidth: -1,
+      trees : [],
     };
+  },
+  computed: {
+    labels() {
+        let labels = [];
+        this.trees.forEach(function (tree) {
+            Array.prototype.push.apply(labels, tree.labels);
+        });
+
+        if (this.localeCompareSupportsLocales) {
+            let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+            labels.sort(function (a, b) {
+                return collator.compare(a.name, b.name);
+            });
+        } else {
+            labels.sort(function (a, b) {
+                return a.name < b.name ? -1 : 1;
+            });
+        }
+
+        return labels;
+    },
   },
   watch: {
     labelbotLabels() {
-      this.progressWidth = 0;
+      this.progressBarWidth = 0;
       if (this.labelbotLabels.length > 0) {
-        setTimeout(() => this.progressWidth = 100, 10);
+        setTimeout(() => this.progressBarWidth = 100, 10);
       }
     },
   },
@@ -56,7 +83,13 @@ export default {
     },
     closeLabelBOTPopup() {
       this.$emit('delete-labelbot-labels');
-    }
+    },
+    resetProgressBarWidth() {
+      this.progressBarWidth = -1;
+    },
+  },
+  created() {
+    this.trees = biigle.$require('annotations.labelTrees');
   },
 };
 </script>
