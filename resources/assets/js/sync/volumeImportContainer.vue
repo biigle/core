@@ -10,6 +10,7 @@ import {handleErrorResponse} from '@/core/messages/store.js';
  * View model for the volume import container
  */
 export default {
+    compatConfig: { WATCH_ARRAY: false },
     mixins: [
         ImportContainer,
         LabelTreeImportContainer,
