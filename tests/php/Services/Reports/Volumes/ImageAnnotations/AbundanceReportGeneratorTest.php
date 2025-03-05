@@ -97,8 +97,13 @@ class AbundanceReportGeneratorTest extends TestCase
     {
         $label1 = LabelTest::create();
         $label2 = LabelTest::create();
+        LabelTest::create(['label_tree_id' => $label2->label_tree_id]);
 
         $image = ImageTest::create();
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $image->volume_id
+        ]);
 
         $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
@@ -115,6 +120,7 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock = Mockery::mock();
 
+        // Show used labels only
         $mock->shouldReceive('put')
             ->once()
             ->with($label1->tree->name);
@@ -131,6 +137,7 @@ class AbundanceReportGeneratorTest extends TestCase
             ->once()
             ->with(['image_filename', $label2->name]);
 
+        // Show all images for every page
         $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 1]);
@@ -138,6 +145,15 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 1]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0]);
+
 
         $mock->shouldReceive('close')
             ->twice();
