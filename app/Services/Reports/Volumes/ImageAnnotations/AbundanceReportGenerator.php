@@ -89,12 +89,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+            $treeIds = $rows->keys()->filter(fn($k) => $k != null);
+            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
-                $rowGroup = $rows->get($id);
-                $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                $labels = with(clone $allLabels)->where('labels.label_tree_id', '=', $id)->get();
+                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
