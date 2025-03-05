@@ -70,12 +70,6 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
-            'users' => [],
-        ]);
-        // users must not be empty
-        $response->assertStatus(422);
-
-        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'users' => [$this->user()->id],
         ]);
         // user does not belong to volume
@@ -318,5 +312,132 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'force' => true,
         ]);
         $response->assertStatus(200);
+    }
+
+    public function testSessionWithoutImageVolumeUser()
+    {
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume()->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+        $session->users()->attach($this->admin());
+
+        $image = ImageTest::create([
+            'volume_id' => $session->volume_id,
+        ]);
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'user_id' => $this->admin()->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->assertEquals($this->admin()->id, $session->users()->get()->first()->id);
+
+        $this->beAdmin();
+        // Redirect because user must not be null
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => null,
+        ])->assertFound();
+
+        // Cannot remove user who created annotations witout 'force' being set
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [],
+        ])->assertBadRequest();
+
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [],
+            'force' => true,
+        ])->assertSuccessful();
+
+        $this->assertTrue($session->users()->get()->isEmpty());
+    }
+
+    public function testSessionWithoutVideoVolumeUser()
+    {
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume(['media_type_id' => MediaType::videoId()])->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+        $session->users()->attach($this->admin());
+
+        $video = VideoTest::create([
+            'volume_id' => $session->volume_id,
+        ]);
+
+        $annotation = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        VideoAnnotationLabelTest::create([
+            'user_id' => $this->admin()->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->assertEquals($this->admin()->id, $session->users()->get()->first()->id);
+
+        $this->beAdmin();
+        // Redirect because user must not be null
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => null,
+        ])->assertFound();
+
+        // Cannot remove user who created annotations witout 'force' being set
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [],
+        ])->assertBadRequest();
+
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [],
+            'force' => true,
+        ])->assertSuccessful();
+
+        $this->assertTrue($session->users()->get()->isEmpty());
+    }
+
+    public function testSessionWithoutImageVolumeUserNoAnnotations()
+    {
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume()->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+        $session->users()->attach($this->admin());
+
+        $this->assertEquals($this->admin()->id, $session->users()->get()->first()->id);
+
+        $this->beAdmin();
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [],
+        ])->assertSuccessful();
+
+        $this->assertTrue($session->users()->get()->isEmpty());
+    }
+
+    public function testSessionWithoutVideoVolumeUserNoAnnotations()
+    {
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume(['media_type_id' => MediaType::videoId()])->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+        $session->users()->attach($this->admin());
+
+        $this->assertEquals($this->admin()->id, $session->users()->get()->first()->id);
+
+        $this->beAdmin();
+
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [],
+        ])->assertSuccessful();
+
+        $this->assertTrue($session->users()->get()->isEmpty());
     }
 }

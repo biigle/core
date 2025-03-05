@@ -100,6 +100,8 @@ export default {
             hasCrossOriginError: false,
             videoFilenames: null,
             focusInputFindlabel: false,
+            corsRequestBreaksVideo: false,
+            attemptWithCors: false,
             invalidMoovAtomPosition: false,
         };
     },
@@ -545,18 +547,43 @@ export default {
         },
         fetchVideoContent(video) {
             let videoPromise = new Promise((resolve) => {
-                this.video.addEventListener('canplay', resolve);
+                this.video.addEventListener('canplay', resolve, { once: true });
+                this.video.addEventListener('error', (e) => {
+                    this.corsRequestBreaksVideo = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED;
+                    resolve();
+                }, { once: true });
             });
-            videoPromise.then(this.checkCORSProperty);
-            let annotationPromise = VideoAnnotationApi.query({id: video.id});
-            let promise = Promise.all([annotationPromise, videoPromise])
+
+            videoPromise.finally(() => { this.attemptWithCors = false });
+
+            // Try requesting video by using CORS
+            this.video.setAttribute('crossOrigin', '');
+            this.attemptWithCors = true;
+            this.video.src = this.videoFileUri.replace(':id', video.id);
+
+            return videoPromise;
+        },
+        fetchAnnotations(videoPromise) {
+            let annotationPromise = VideoAnnotationApi.query({ id: this.videoId });
+            return Promise.all([annotationPromise, videoPromise])
                 .then(this.setAnnotations)
                 .then(this.maybeFocusInitialAnnotation)
                 .then(this.maybeInitCurrentTime);
+        },
+        maybeFetchVideoWithoutCors(promise) {
+            if (!this.corsRequestBreaksVideo) {
+                return promise;
+            }
 
-            this.video.src = this.videoFileUri.replace(':id', video.id);
+            let videoPromise = new Promise((resolve) => {
+                this.video.addEventListener('canplay', resolve, { once: true });
+            });
 
-            return promise;
+            // Request video without CORS to allow video playback again
+            this.video.removeAttribute('crossOrigin');
+            this.video.src = this.videoFileUri.replace(':id', this.videoId);
+
+            return videoPromise;
         },
         loadVideo(id) {
             this.videoId = id;
@@ -567,6 +594,9 @@ export default {
             let promise = VideoApi.get({id})
                 .then(this.handleVideoInformationResponse)
                 .then(this.fetchVideoContent)
+                .then(this.maybeFetchVideoWithoutCors)
+                .then(this.fetchAnnotations)
+                .then(this.checkCORSProperty)
                 .catch(this.handleVideoError)
                 .finally(() => {
                     this.finishLoading();
@@ -731,7 +761,11 @@ export default {
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
-        this.video.addEventListener('error', function (e) {
+        this.video.addEventListener('error', (e) => {
+            if (this.attemptWithCors) {
+                return;
+            }
+
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
                 if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
                     Messages.danger('Unable to access the video file.');

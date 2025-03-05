@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-sm-6 col-lg-4">
             <div class="panel panel-default panel-image">
-                <img src="{{ $video->thumbnail_url }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                <img src="{{ $video->thumbnail_url }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'" class="prevent-overflow">
             </div>
             @include('volumes.videos.index.meta')
         </div>
