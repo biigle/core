@@ -29,6 +29,7 @@ export default {
                 separate_users: false,
                 only_labels: [],
                 aggregate_child_labels: false,
+                all_labels: false,
             },
         };
     },

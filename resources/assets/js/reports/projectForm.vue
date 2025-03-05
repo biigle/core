@@ -17,6 +17,7 @@ export default {
                     'separate_label_trees',
                     'separate_users',
                     'only_labels',
+                    'all_labels',
                     'aggregate_child_labels',
                 ],
                 'ImageLabels': [
