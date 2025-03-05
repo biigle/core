@@ -53,12 +53,13 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+            $treeIds = $rows->keys()->filter(fn($k) => $k != null);
+            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $rowGroup = $rows->get($id);
                 $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
@@ -159,7 +160,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         if ($this->shouldAggregateChildLabels()) {
             [$rows, $labels] = $this->aggregateChildLabels($rows, $labels);
         }
-
         $labels = $labels->sortBy('id');
 
         $csv = CsvFile::makeTmp();
@@ -181,7 +181,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     $row[] = 0;
                 }
             }
-
             $csv->putCsv($row);
         }
 
