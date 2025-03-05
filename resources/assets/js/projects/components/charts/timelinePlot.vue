@@ -102,13 +102,10 @@ export default {
                 xAxisFin.push(yearMonth);
                 currentDate.setMonth(currentDate.getMonth() + 1);
             }
-            /*
             if (!xAxisFin.includes(xAxis[xAxis.length - 1])) {
                 xAxisFin.push(xAxis[xAxis.length - 1]);
-            }*/
-            if (!xAxisFin.includes(lastDate)) {
-                xAxisFin.push(lastDate);
             }
+
             return xAxisFin;
         },
     },
