@@ -18,6 +18,9 @@
         <li>
             <a href="{{route('search', ['t' => 'label-trees'])}}" title="Label trees">Label trees</a>
         </li>
+        <li>
+            <a href="{{route('search', ['t' => 'reports'])}}" title="Reports">Reports</a>
+        </li>
         @mixin('navbarMenuItem')
         @can('sudo')
             <li>
