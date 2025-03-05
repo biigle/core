@@ -4,8 +4,8 @@
         <ul>
             <li v-for="e in entities" :key="e.id" @click="select(e)">
                 <i v-if="e.icon" :class="`fa fa-${e.icon}`"></i>
-                <span v-text="e.name"></span>
-                <span><br><span class="text-muted" v-text="e.description"></span></span>
+                <span v-text="e.name" :title="e.name"></span>
+                <span><br><span class="text-muted" v-text="e.description" :title="e.description"></span></span>
             </li>
         </ul>
     </div>
