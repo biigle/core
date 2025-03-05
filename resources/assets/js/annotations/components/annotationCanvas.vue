@@ -47,6 +47,8 @@ import {getCenter} from '@biigle/ol/extent';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 import { isInvalidShape } from '../utils';
+import LabelbotPopup from './labelbotPopup';
+import Overlay from '@biigle/ol/Overlay';
 
 /**
  * The annotator canvas
@@ -73,6 +75,7 @@ export default {
         minimap: Minimap,
         labelIndicator: LabelIndicator,
         controlButton: ControlButton,
+        labelbotPopup: LabelbotPopup,
     },
     props: {
         canAdd: {
@@ -137,10 +140,18 @@ export default {
             type: Number,
             required: true,
         },
-        labelBOTIsOn: {
+        labelbotIsOn: {
             type: Boolean,
             default: false,
-        }
+        },
+        labelbotLabels: {
+            type: Array,
+            required: true,
+        },
+        freeLabelbotOverlayIdx: {
+            type: Number,
+            required: true,
+        },
     },
     data() {
         return {
@@ -160,6 +171,7 @@ export default {
             // Mouse position in OpenLayers coordinates.
             mousePosition: [0, 0],
             modifyInProgress: false,
+            labelbotOverlays: [],
         };
     },
     computed: {
@@ -293,6 +305,12 @@ export default {
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
                 style: Styles.features,
+            });
+            
+            this.labelbotOverlays = this.labelbotLabels.map(() => {
+                const overlay = new Overlay({});
+                this.map.addOverlay(overlay);
+                return overlay;
             });
 
             this.selectInteraction = new SelectInteraction({
@@ -517,7 +535,7 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (!this.hasSelectedLabel && !this.labelBOTIsOn) {
+            if (!this.hasSelectedLabel && !this.labelbotIsOn) {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
@@ -558,6 +576,9 @@ export default {
                 points: this.getPoints(geometry),
             }, removeCallback);
 
+            if (this.labelbotIsOn) {
+                this.showLabelbotPopup(e);
+            }
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
@@ -570,7 +591,7 @@ export default {
             }
         },
         createPointAnnotationAt(x, y) {
-            if (this.hasSelectedLabel || this.labelBOTIsOn) {
+            if (this.hasSelectedLabel || this.labelbotIsOn) {
                 let feature = new Feature(new Point([x, y]));
                 // Simulate a feature created event so we can reuse the appropriate
                 // function.
@@ -683,6 +704,18 @@ export default {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
+        },
+        showLabelbotPopup(e) {
+            const coordinates = this.convertPointsFromOlToDb(this.getPoints(e.feature.getGeometry()));
+            this.labelbotOverlays[this.freeLabelbotOverlayIdx].setElement(document.getElementById(`labelbot-popup-${this.freeLabelbotOverlayIdx}`));
+            this.labelbotOverlays[this.freeLabelbotOverlayIdx].setPosition(coordinates);
+            if (this.freeLabelbotOverlayIdx === this.labelbotLabels.length - 1) this.resetInteractionMode();
+        },
+        updateLabelbotLabel(labelIdx) {
+            this.$emit('update-labelbot-label', labelIdx);
+        },
+        deleteLabelbotLabels(parentIndex) {
+            this.$emit('delete-labelbot-labels', parentIndex);
         },
     },
     watch: {

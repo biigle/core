@@ -27,7 +27,7 @@ export default {
         return {
             labelTrees: [],
             selectedLabel: null,
-            labelBOTIsOn: false,
+            labelbotIsOn: false,
             focusInputFindlabel: false,
         };
     },
@@ -44,7 +44,7 @@ export default {
     },
     methods: {
         handleSelectedLabel(label) {
-            if (this.labelBOTIsOn) {
+            if (this.labelbotIsOn) {
                 Messages.warning("Please turn off LabelBOT first to select a label!");
             } else {
                 this.selectedLabel = label;
@@ -56,8 +56,8 @@ export default {
             this.$emit('select', null);
         },
         handleLabelBOT() {
-            if (this.labelBOTIsOn) {
-                this.labelBOTIsOn = false;
+            if (this.labelbotIsOn) {
+                this.labelbotIsOn = false;
                 this.$emit('labelbot', false);
                 return;
             }
@@ -68,7 +68,7 @@ export default {
             else if (this.labelTrees.every(tree => tree.labels.length === 0)) {
                 Messages.warning("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
             } else {
-                this.labelBOTIsOn = true;
+                this.labelbotIsOn = true;
                 this.$emit('labelbot', true);
             }
         },

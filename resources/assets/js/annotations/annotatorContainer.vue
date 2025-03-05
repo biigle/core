@@ -90,7 +90,10 @@ export default {
             crossOriginError: false,
             imageFilenames: {},
             onnxModel: null,
-            labelBOTIsOn: false,
+            labelbotIsOn: false,
+            labelbotLabels: new Array(5).fill([]),
+            labelbotAnnotationOverlay: new Array(5).fill([]),
+            freeLabelbotOverlayIdx: 0,
         };
     },
     computed: {
@@ -416,8 +419,8 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
         },
-        handleLabelBOT(labelBOTIsOn) {
-            this.labelBOTIsOn = labelBOTIsOn;
+        handleLabelBOT(labelbotIsOn) {
+            this.labelbotIsOn = labelbotIsOn;
         },
         getBoundingBox(points) {
             let minX = this.image.width;
@@ -504,18 +507,22 @@ export default {
                 return output[Object.keys(output)[0]].data
             })
             .catch(handleErrorResponse);
-
         },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {
                 let promise;
-
                 // LabelBOT
-                if (!this.selectedLabel && this.labelBOTIsOn) {
-                    promise = this.generateFeatureVector(annotation.points).then((featureVector => {
+                if (!this.selectedLabel && this.labelbotIsOn) {
+                    if (this.freeLabelbotOverlayIdx < 0) {
+                        Messages.info("Max number of requests reached!")
+                        return;
+                    }
+                    promise = this.generateFeatureVector(annotation.points)
+                    .then((featureVector) => {
                         // Assign feature vector to the annotation
                         annotation.feature_vector = featureVector;
-                    }));
+                    })
+                    .catch(handleErrorResponse);
                 } else {
                     promise = Promise.resolve()
                     annotation.label_id = this.selectedLabel.id;
@@ -524,12 +531,13 @@ export default {
                 annotation.confidence = 1;
                 promise.then(() => {
                     AnnotationsStore.create(this.imageId, annotation)
+                    .then(this.setLabelbotLabels)
+                    .then(this.setLastCreatedAnnotation)
                 })
-                .then(this.setLastCreatedAnnotation)
                 .catch(handleErrorResponse)
                 // Remove the temporary annotation if saving succeeded or failed.
                 .finally(removeCallback);
-                }
+            }
         },
         handleAttachLabel(annotation, label) {
             label = label || this.selectedLabel;
@@ -610,6 +618,19 @@ export default {
             this.lastCreatedAnnotationTimeout = window.setTimeout(() => {
                 this.lastCreatedAnnotation = null;
             }, 10000);
+        },
+        setLabelbotLabels(annotation) {
+            if (this.freeLabelbotOverlayIdx > -1) {
+                this.labelbotAnnotationOverlay[this.freeLabelbotOverlayIdx] = annotation;
+                this.$set(this.labelbotLabels, this.freeLabelbotOverlayIdx, [annotation.labels[0].label].concat(annotation.labelBOTLabels));
+            }
+            return annotation;
+        },
+        updateLabelbotLabel(labelIdx) {
+            this.handleSwapLabel(this.labelbotAnnotationOverlay[labelIdx.idx], labelIdx.label)
+        },
+        deleteLabelbotLabels(parentIndex) {
+            this.$set(this.labelbotLabels, parentIndex, []);
         },
         updateColorAdjustment(params) {
             debounce(() => {
@@ -782,6 +803,9 @@ export default {
         },
         image(image) {
             this.crossOriginError = image?.crossOrigin;
+        },
+        labelbotLabels() {
+            this.freeLabelbotOverlayIdx = this.labelbotLabels.findIndex(labels => labels.length === 0);
         },
     },
     created() {

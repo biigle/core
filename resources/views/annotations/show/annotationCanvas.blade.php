@@ -55,6 +55,8 @@
             <div class="btn-group drawing-controls" v-if="!canAdd && image" @cannot('add-annotation') v-cloak @endcannot>
                 <control-button icon="fa-ruler" title="Measure a line string  𝗦𝗵𝗶𝗳𝘁+𝗙" :active="isMeasuring" v-on:click="toggleMeasuring"></control-button>
             </div>
-        
+    </div>
+    <div v-show="labelbotLabels[index].length > 0" v-for="(overlay, index) in labelbotOverlays" :key="index" :id="'labelbot-popup-' + index">
+        <labelbot-popup :parent-index="index" :labelbot-labels="labelbotLabels[index]" @update-labelbot-label="updateLabelbotLabel" @delete-labelbot-labels="deleteLabelbotLabels"></labelbot-popup>
     </div>
 </div>
