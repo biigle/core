@@ -2,7 +2,19 @@
     <div class="row">
         <div class="col-xs-6">
             <div v-cloak class="panel panel-default">
-                <label-tree class="label-tree--panel" name="{{$tree->name}}" :labels="labels" :show-title="false" :collapsible="false" :editable="editable" v-on:save="saveLabel" v-on:delete="deleteLabel" v-on:select="selectLabel" v-on:deselect="deselectLabel"></label-tree>
+                <label-tree
+                    class="label-tree--panel"
+                    name="{{$tree->name}}"
+                    :labels="labels"
+                    :show-title="false"
+                    :collapsible="false"
+                    :editable="editable"
+                    :standalone="true"
+                    v-on:save="saveLabel"
+                    v-on:delete="deleteLabel"
+                    v-on:select="selectLabel"
+                    v-on:deselect="deselectLabel"
+                    ></label-tree>
             </div>
         </div>
         @can('create-label', $tree)
