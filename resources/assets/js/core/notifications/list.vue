@@ -27,10 +27,8 @@ export default {
             this.isLoading = true;
             return NotificationsApi.markReadAll({}, {})
                 .then(() => {
-                    this.notifications.map(item => {
-                        this.handleRead(item);
-                        Store.remove(item.id);
-                    });
+                    this.notifications.map(item => this.handleRead(item));
+                    Store.clear();
                 })
                 .catch(Messages.handleErrorResponse)
                 .finally(() => {

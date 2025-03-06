@@ -35,6 +35,10 @@ class Notifications {
         }
     }
 
+    clear() {
+        this.all.length = 0;
+    }
+
     initialize(initialNotifications) {
         if (!this.initialized) {
             this.all = reactive(initialNotifications || []);
