@@ -82,7 +82,8 @@ export default {
     mixins: [LoaderMixin],
     props: {
         id: {
-            type: Number,
+            // This can be a string in the search view.
+            type: [Number, String],
             required: true,
         },
         // Either as array or comma separated string.
