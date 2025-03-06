@@ -53,13 +53,11 @@ class VolumeFilePolicy extends CachedPolicy
      */
     public function addAnnotation(User $user, VolumeFile $file)
     {
-        return $this->remember("volume-file-can-add-annotation-{$user->id}-{$file->volume_id}", function () use ($user, $file) {
-            return Project::inCommon($user, $file->volume_id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
-            ])->exists();
-        });
+        return $this->remember("volume-file-can-add-annotation-{$user->id}-{$file->volume_id}", fn () => Project::inCommon($user, $file->volume_id, [
+            Role::editorId(),
+            Role::expertId(),
+            Role::adminId(),
+        ])->exists());
     }
 
     /**
@@ -71,11 +69,9 @@ class VolumeFilePolicy extends CachedPolicy
      */
     public function destroy(User $user, VolumeFile $file)
     {
-        return $this->remember("volume-file-can-destroy-{$user->id}-{$file->volume_id}", function () use ($user, $file) {
-            return Project::inCommon($user, $file->volume_id, [
-                Role::adminId(),
-            ])->exists();
-        });
+        return $this->remember("volume-file-can-destroy-{$user->id}-{$file->volume_id}", fn () => Project::inCommon($user, $file->volume_id, [
+            Role::adminId(),
+        ])->exists());
     }
 
     /**

@@ -101,13 +101,11 @@ class Volume extends Model
             return $query;
         }
 
-        return $query->whereIn('id', function ($query) use ($user) {
-            return $query->select('project_volume.volume_id')
-                ->from('project_volume')
-                ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
-                ->where('project_user.user_id', $user->id)
-                ->distinct();
-        });
+        return $query->whereIn('id', fn ($query) => $query->select('project_volume.volume_id')
+            ->from('project_volume')
+            ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
+            ->where('project_user.user_id', $user->id)
+            ->distinct());
     }
 
     /**
