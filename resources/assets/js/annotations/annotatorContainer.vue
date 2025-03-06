@@ -391,7 +391,7 @@ export default {
         },
         handleUpdateAnnotations(annotations) {
             if (this.isEditor) {
-                Promise.all(annotations.map(AnnotationsStore.update))
+                Promise.all(annotations.map(a => AnnotationsStore.update(a)))
                     .catch(handleErrorResponse);
             }
         },
