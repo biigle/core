@@ -62,14 +62,35 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $labels = DB::table('project_volume')
+                ->where('project_volume.volume_id', '=', $this->source->id)
+                ->join('projects', 'project_volume.project_id', '=', 'projects.id')
+                ->join('label_tree_project', 'projects.id', '=', 'label_tree_project.project_id')
+                ->join('label_trees', 'label_tree_project.label_tree_id', '=', 'label_trees.id')
+                ->join('labels', 'label_trees.id', '=', 'labels.label_tree_id')
+                ->select('labels.*')
+                ->get();
+
+            $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            $userIds = $rows->keys()->filter(fn($k) => $k != null);
+            $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
                 $rowGroup = $rows->get($id);
+                $userFilenames = $rowGroup->pluck('filename')->unique();
+                $missingFiles = $allFilenames->diff($userFilenames);
+                // Create empty entries to show all images
+                foreach ($missingFiles as $f) {
+                    $rowGroup->add([
+                        'filename' => $f,
+                        'count' => 0,
+                        'label_id' => null,
+                        'user_id' => $id
+                    ]);
+                }
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
         } else {
@@ -170,7 +191,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             $columns[] = $label->name;
         }
         $csv->putCsv($columns);
-
         foreach ($rows as $filename => $annotations) {
             $row = [$filename];
             $annotations = $annotations->keyBy('label_id');
