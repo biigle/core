@@ -161,11 +161,9 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->assertStringEndsWith('}', $content);
 
         $id = json_decode($content)->id;
-        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) use ($id) {
-            return $job->volume->id === $id &&
+        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->volume->id === $id &&
                 in_array('1.jpg', $job->filenames) &&
-                in_array('2.jpg', $job->filenames);
-        });
+                in_array('2.jpg', $job->filenames));
     }
 
     public function testStoreHandle()
@@ -424,11 +422,9 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->assertSame($count + 1, $this->project()->volumes()->count());
 
         $id = json_decode($response->getContent())->id;
-        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) use ($id) {
-            return $job->volume->id === $id &&
+        Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->volume->id === $id &&
                 in_array('1.mp4', $job->filenames) &&
-                in_array('2.mp4', $job->filenames);
-        });
+                in_array('2.mp4', $job->filenames));
     }
 
     public function testStoreEmptyImageMetadataText()
