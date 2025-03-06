@@ -80,27 +80,24 @@ export default {
             // sort the yearmonths entries
             xAxis = xAxis.sort();
 
-            // filter duplicated yearsmonth
-            xAxis = [...new Set(xAxis)];
-            
-            // fill in the missing yearmonths
-            for (let i = 0; i < xAxis.length - 1; i++) {
-                let currentYearMonth = xAxis[i];
-                let nextYearMonth = xAxis[i + 1];
-                let currentDate = new Date(currentYearMonth);
-                let nextDate = new Date(nextYearMonth);
-                while (currentDate.getMonth() < nextDate.getMonth() - 1 || currentDate.getFullYear() < nextDate.getFullYear()) {
-                    currentDate.setMonth(currentDate.getMonth() + 1);
-                    let year = currentDate.getFullYear();
-                    let month = currentDate.getMonth() + 1;
-                    let yearMonth = year + '-' + (month < 10 ? '0' + month : month);
-                    xAxis.splice(i + 1, 0, yearMonth);
-                    i++;
-                }
+            //generate dates for xAxis
+            let currentDate = new Date(xAxis[0]);
+            let lastDate = new Date(xAxis[xAxis.length - 1]);
+            let xAxisFin = [];
+
+            while (currentDate.getTime() < lastDate.getTime()) {
+                let year = currentDate.getFullYear();
+                let month = currentDate.getMonth() + 1;
+                let yearMonth = year + '-' + month.toString().padStart(2, '0');
+
+                xAxisFin.push(yearMonth);
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+            if (!xAxisFin.includes(xAxis[xAxis.length - 1])) {
+                xAxisFin.push(xAxis[xAxis.length - 1]);
             }
 
-            // sort the years (increasing)
-            return xAxis;
+            return xAxisFin;
         },
     },
     computed: {

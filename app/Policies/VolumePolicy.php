@@ -49,15 +49,13 @@ class VolumePolicy extends CachedPolicy
      */
     public function editIn(User $user, Volume $volume)
     {
-        return $this->remember("volume-can-edit-in-{$user->id}-{$volume->id}", function () use ($user, $volume) {
-            return $this->getBaseQuery($user, $volume)
-                ->whereIn('project_role_id', [
-                    Role::editorId(),
-                    Role::expertId(),
-                    Role::adminId(),
-                ])
-                ->exists();
-        });
+        return $this->remember("volume-can-edit-in-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)
+            ->whereIn('project_role_id', [
+                Role::editorId(),
+                Role::expertId(),
+                Role::adminId(),
+            ])
+            ->exists());
     }
 
     /**
@@ -69,11 +67,9 @@ class VolumePolicy extends CachedPolicy
      */
     public function forceEditIn(User $user, Volume $volume)
     {
-        return $this->remember("volume-can-force-edit-in-{$user->id}-{$volume->id}", function () use ($user, $volume) {
-            return $this->getBaseQuery($user, $volume)
-                ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
-                ->exists();
-        });
+        return $this->remember("volume-can-force-edit-in-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)
+            ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
+            ->exists());
     }
 
     /**
@@ -85,11 +81,9 @@ class VolumePolicy extends CachedPolicy
      */
     public function update(User $user, Volume $volume)
     {
-        return $this->remember("volume-can-update-{$user->id}-{$volume->id}", function () use ($user, $volume) {
-            return $this->getBaseQuery($user, $volume)
-                ->where('project_role_id', Role::adminId())
-                ->exists();
-        });
+        return $this->remember("volume-can-update-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)
+            ->where('project_role_id', Role::adminId())
+            ->exists());
     }
 
     /**

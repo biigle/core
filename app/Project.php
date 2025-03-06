@@ -57,12 +57,10 @@ class Project extends Model
             return $query;
         }
 
-        return $query->whereIn('id', function ($query) use ($user) {
-            return $query->select('project_user.project_id')
-                ->from('project_user')
-                ->where('project_user.user_id', $user->id)
-                ->distinct();
-        });
+        return $query->whereIn('id', fn ($query) => $query->select('project_user.project_id')
+            ->from('project_user')
+            ->where('project_user.user_id', $user->id)
+            ->distinct());
     }
 
     /**
@@ -332,12 +330,10 @@ class Project extends Model
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("project-{$this->id}-has-geo-info", 3600, function () {
-            return Image::whereIn('volume_id', fn ($q) => $q->select('volume_id')->from('project_volume')->where('project_id', $this->id))
-                ->whereNotNull('lng')
-                ->whereNotNull('lat')
-                ->exists();
-        });
+        return Cache::remember("project-{$this->id}-has-geo-info", 3600, fn () => Image::whereIn('volume_id', fn ($q) => $q->select('volume_id')->from('project_volume')->where('project_id', $this->id))
+            ->whereNotNull('lng')
+            ->whereNotNull('lat')
+            ->exists());
     }
 
     /**
