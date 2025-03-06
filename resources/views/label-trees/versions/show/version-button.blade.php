@@ -1,5 +1,5 @@
 <dropdown menu-right>
-    <button type="button" class="btn btn-default">
+    <button type="button" class="btn btn-default dropdown-toggle">
         Version: <strong>{{$version->name}}</strong>
         <span class="caret"></span>
     </button>
