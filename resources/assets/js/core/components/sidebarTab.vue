@@ -1,5 +1,7 @@
 <template>
-    <div class="sidebar__tab" :class="classObject"><slot></slot></div>
+    <div class="sidebar__tab" :class="classObject">
+        <slot></slot>
+    </div>
 </template>
 
 <script>
@@ -12,7 +14,6 @@ export default {
     data() {
         return {
             id: null,
-            open: false,
         };
     },
     props: {
@@ -44,16 +45,11 @@ export default {
                 'sidebar__tab--open': this.open
             };
         },
+        open() {
+            return this.$parent.currentOpenTab === this.name;
+        },
     },
     beforeCreate() {
-        this.$parent.$on('open', (name) => {
-            this.open = name === this.name;
-        });
-
-        this.$parent.$on('close', () => {
-            this.open = false;
-        });
-
         this.$parent.registerTab(this);
     },
 };

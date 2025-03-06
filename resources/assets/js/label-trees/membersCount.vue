@@ -1,5 +1,5 @@
 <script>
-import Events from '../core/events';
+import Events from '@/core/events.js';
 
 export default {
     methods: {
@@ -8,7 +8,7 @@ export default {
         },
     },
     created() {
-        Events.$on('label-trees.members.count', this.updateCount);
+        Events.on('label-trees.members.count', this.updateCount);
     },
 };
 </script>

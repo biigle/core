@@ -1,22 +1,16 @@
 <template>
-     <v-chart class="chart" :option="option" ></v-chart>
+     <span ref="root" class="chart" ></span>
 </template>
 
 <script>
-import * as echarts from 'echarts/core';
+import { use, init } from 'echarts/core';
 import { TooltipComponent, LegendComponent, TitleComponent } from 'echarts/components';
 import { PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY } from "vue-echarts";
+import { SVGRenderer } from 'echarts/renderers';
+import { markRaw } from "vue";
 
 export default {
-    components: {
-        VChart
-    },
-    provide: {
-        [THEME_KEY]: "dark"
-    },
     props: {
         annotatedFiles: {
             required: true,
@@ -34,6 +28,11 @@ export default {
             required: false,
             type: String,
         },
+    },
+    data() {
+        return {
+            chart: null,
+        };
     },
     computed: {
         option() {
@@ -86,15 +85,26 @@ export default {
             };
         }
     },
+    watch: {
+        option() {
+            if (this.chart) {
+                this.chart.setOption(this.option);
+            }
+        },
+    },
     beforeCreate() {
-        echarts.use([
+        use([
             TooltipComponent,
             LegendComponent,
             PieChart,
-            CanvasRenderer,
+            SVGRenderer,
             LabelLayout,
             TitleComponent,
         ]);
+    },
+    mounted() {
+        this.chart = markRaw(init(this.$refs.root, 'dark', { renderer: 'svg' }));
+        this.chart.setOption(this.option);
     },
 }
 </script>

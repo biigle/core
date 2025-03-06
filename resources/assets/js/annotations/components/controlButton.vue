@@ -3,7 +3,7 @@
         class="control-button btn"
         :title="title"
         :class="classObject"
-        :disabled="disabled"
+        :disabled="disabled || null"
         @click="handleClick"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
@@ -14,13 +14,13 @@
             v-if="hasSubControls"
             @click.stop class="control-button__sub-controls btn-group"
             >
-            <slot></slot>
+            <slot @active="updateActiveSubControls"></slot>
         </span>
     </span>
 </template>
 
 <script>
-import Loader from '../../core/components/loader';
+import Loader from '@/core/components/loader.vue';
 
 /**
  * A generic control button of the annotation canvas
@@ -28,6 +28,10 @@ import Loader from '../../core/components/loader';
  * @type {Object}
  */
 export default {
+    emits: [
+        'active',
+        'click',
+    ],
     props: {
         title: {
             type: String,
@@ -121,17 +125,12 @@ export default {
         }
     },
     watch: {
-        active(active) {
-            this.$parent.$emit('control-button-active', active);
+        active: {
+            immediate: true,
+            handler(active) {
+                this.$emit('active', active);
+            },
         },
-    },
-    created() {
-        this.$on('control-button-active', this.updateActiveSubControls);
-    },
-    mounted() {
-        if (this.active) {
-            this.$parent.$emit('control-button-active', true);
-        }
     },
 };
 </script>

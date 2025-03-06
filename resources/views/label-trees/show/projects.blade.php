@@ -1,7 +1,7 @@
 @extends('label-trees.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     @can('update', $tree)
         biigle.$declare('labelTrees.authorizedProjects', {!! $authorizedProjects !!});
         biigle.$declare('labelTrees.authorizedOwnProjects', {!! $authorizedOwnProjects !!});

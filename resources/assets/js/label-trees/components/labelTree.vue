@@ -1,21 +1,52 @@
 <template>
     <div class="label-tree">
-        <h4 class="label-tree__title" v-if="showTitle">
-            <button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle" type="button">
-                <span v-if="collapsed" class="fa fa-chevron-down" aria-hidden="true"></span>
+        <h4
+            v-if="showTitle"
+            class="label-tree__title"
+            >
+            <button
+                v-if="collapsible"
+                @click.stop="collapse"
+                class="btn btn-default btn-xs pull-right"
+                :title="collapseTitle"
+                type="button"
+                >
+                <span
+                    v-if="collapsed"
+                    class="fa fa-chevron-down"
+                    aria-hidden="true"
+                    ></span>
                 <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
             </button>
             {{name}}
         </h4>
-        <ul v-if="!collapsed" class="label-tree__list">
-            <label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" :showFavouriteShortcuts="showFavouriteShortcuts" v-for="(label, index) in rootLabels" :position="index" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+        <ul
+            v-if="!collapsed"
+            class="label-tree__list"
+            >
+            <label-tree-label
+                v-for="(label, index) in rootLabels"
+                :key="label.id"
+                :label="label"
+                :editable="editable"
+                :show-favourites="showFavourites"
+                :flat="flat"
+                :showFavouriteShortcuts="showFavouriteShortcuts"
+                :position="index"
+                @select="emitSelect"
+                @deselect="emitDeselect"
+                @save="emitSave"
+                @delete="emitDelete"
+                @add-favourite="emitAddFavourite"
+                @remove-favourite="emitRemoveFavourite"
+                ></label-tree-label>
             <li v-if="hasNoLabels" class="text-muted">No labels</li>
         </ul>
     </div>
 </template>
 
 <script>
-import LabelTreeLabel from './labelTreeLabel';
+import LabelTreeLabel from './labelTreeLabel.vue';
 
 /**
  * A component that displays a label tree. The labels can be searched and selected.
@@ -23,6 +54,14 @@ import LabelTreeLabel from './labelTreeLabel';
  * @type {Object}
  */
 export default {
+    emits: [
+        'add-favourite',
+        'delete',
+        'deselect',
+        'remove-favourite',
+        'save',
+        'select',
+    ],
     data() {
         return {
             collapsed: false
@@ -120,9 +159,9 @@ export default {
                 // update the label children with the compiled datastructure
                 this.labels.forEach(function (label) {
                     if (compiled.hasOwnProperty(label.id)) {
-                        Vue.set(label, 'children', compiled[label.id]);
+                        label.children = compiled[label.id];
                     } else {
-                        Vue.set(label, 'children', undefined);
+                        label.children = undefined;
                         // If the last child was deleted, close the label.
                         label.open = false;
                     }
@@ -194,9 +233,15 @@ export default {
         },
         emitSelect(label, e) {
             this.$emit('select', label, e);
+            if (this.standalone) {
+                this.selectLabel({label, e});
+            }
         },
         emitDeselect(label, e) {
             this.$emit('deselect', label, e);
+            if (this.standalone) {
+                this.deselectLabel({label, e});
+            }
         },
         emitSave(label, reject) {
             this.$emit('save', label, reject);
@@ -216,12 +261,13 @@ export default {
             }
             return this.allowSelectChildren && e.ctrlKey;
         },
-        selectLabel(label, e) {
+        selectLabel(args) {
+            const {label, e} = args;
             if (!this.multiselect) {
                 this.clearSelectedLabels();
             }
 
-            // The selected label does not nessecarily belong to this label tree since
+            // The selected label does not neccesarily belong to this label tree since
             // the tree may be displayed in a label-trees component with other trees.
             if (label && this.hasLabel(label.id)) {
                 label.selected = true;
@@ -247,7 +293,8 @@ export default {
                 }
             }
         },
-        deselectLabel(label, e) {
+        deselectLabel(args) {
+            const {label, e} = args;
             if (this.hasLabel(label.id)) {
                 label.selected = false;
 
@@ -305,15 +352,15 @@ export default {
         // Set the reactive label properties
         this.labels.forEach(function (label) {
             if (!label.hasOwnProperty('open')) {
-                Vue.set(label, 'open', false);
+                label.open = false;
             }
 
             if (!label.hasOwnProperty('selected')) {
-                Vue.set(label, 'selected', false);
+                label.selected = false;
             }
 
             if (!label.hasOwnProperty('favourite')) {
-                Vue.set(label, 'favourite', false);
+                label.favourite = false;
             }
         });
 
@@ -321,16 +368,13 @@ export default {
         // tree. In a label-trees component only one label can be selected in all label
         // trees so the parent handles the event. A single label tree handles the event
         // by itself.
-        if (this.standalone) {
-            this.$on('select', this.selectLabel);
-            this.$on('deselect', this.deselectLabel);
-        } else {
-            this.$parent.$on('select', this.selectLabel);
-            this.$parent.$on('deselect', this.deselectLabel);
-            this.$parent.$on('clear', this.clearSelectedLabels);
+        if (!this.standalone) {
+            this.$parent.on('select', this.selectLabel);
+            this.$parent.on('deselect', this.deselectLabel);
+            this.$parent.on('clear', this.clearSelectedLabels);
             // Label favourites only work with the label-trees component.
-            this.$parent.$on('add-favourite', this.addFavouriteLabel);
-            this.$parent.$on('remove-favourite', this.removeFavouriteLabel);
+            this.$parent.on('add-favourite', this.addFavouriteLabel);
+            this.$parent.on('remove-favourite', this.removeFavouriteLabel);
         }
     },
 };
