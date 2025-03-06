@@ -266,6 +266,16 @@ class ReportGenerator
     }
 
     /**
+     * Should this report show all labels?
+     *
+     * @return bool
+     */
+    protected function shouldUseAllLabels()
+    {
+        return $this->options->get('all_labels', false);
+    }
+
+    /**
      * Returns the array of label ids to which this report should be restricted.
      *
      * @return array
