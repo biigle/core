@@ -2,11 +2,11 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use DB;
+use Biigle\User;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\User;
-use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -75,7 +75,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        $query = $this->initQuery()
+        $query = DB::table('image_annotation_labels')
+            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
+            ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id')            ->where('images.volume_id', $this->source->id)
+            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
+            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source))
+            ->when($this->isRestrictedToLabels(), fn($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
             ->orderBy('images.filename')
             ->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
             ->groupBy('image_annotation_labels.label_id', 'images.id');
