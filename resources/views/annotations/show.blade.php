@@ -19,7 +19,9 @@
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
-    biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});
+    biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});    
+    biigle.$declare('labelbot.onnx-url', '{{cachebust_asset(config('labelbot.onnx_file'))}}')
+
 </script>
 @mixin('annotationsScripts')
 @endpush
@@ -84,6 +86,11 @@
             :show-measure-tooltip="showMeasureTooltip"
             :show-minimap="showMinimap"
             :user-id="userId"
+            :labelbot-is-on="labelbotIsOn"
+            :labelbot-labels="labelbotLabels"
+            :free-labelbot-overlay-idx="freeLabelbotOverlayIdx"
+            v-on:update-labelbot-label="updateLabelbotLabel"
+            v-on:delete-labelbot-labels="deleteLabelbotLabels"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"
             v-on:next="handleNext"

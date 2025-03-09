@@ -90,6 +90,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        labelBOTIsOn: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         labelMap() {
@@ -221,9 +225,9 @@ export default {
                 this.clearSelectedLabels();
             }
 
-            // The selected label does not nessecarily belong to this label tree since
+            // The selected label does not necessarily belong to this label tree since
             // the tree may be displayed in a label-trees component with other trees.
-            if (label && this.hasLabel(label.id)) {
+            if (label && this.hasLabel(label.id) && !this.labelBOTIsOn) {
                 label.selected = true;
                 this.collapsed = false;
                 if (!this.flat) {
