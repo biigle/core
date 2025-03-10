@@ -9,6 +9,8 @@ use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
@@ -47,6 +49,11 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_id' => $child->id,
         ]);
 
+        // Inlcude images without labels, too
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
+        $this->assertEmpty($i3->annotations()->get());
+
         $mock = Mockery::mock();
 
         $mock->shouldReceive('put')
@@ -69,6 +76,10 @@ class AbundanceReportGeneratorTest extends TestCase
             ->once()
             ->with(['b.jpg', 0, 1]);
 
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['c.jpg', 0, 0]);
+
         $mock->shouldReceive('close')
             ->once();
 
@@ -82,12 +93,155 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportAllLabels()
+    {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume->id);
+
+        $lt = LabelTreeTest::create();
+        $lt2 = LabelTreeTest::create();
+        $lt->projects()->attach($project->id);
+        $lt2->projects()->attach($project->id);
+
+        $l1 = LabelTest::create(['label_tree_id' => $lt]);
+        // Unused labels should be included in report
+        $l2 = LabelTest::create(['label_tree_id' => $lt]);
+        $l3 = LabelTest::create(['label_tree_id' => $lt2]);
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $l1->id,
+        ]);
+
+        $this->assertCount(2, $project->labelTrees()->get());
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                'image_filename',
+                $l1->name,
+                $l2->name,
+                $l3->name,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['a.jpg', 1, 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'all_labels' => true,
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
     public function testGenerateReportSeparateLabelTrees()
     {
         $label1 = LabelTest::create();
         $label2 = LabelTest::create();
+        LabelTest::create(['label_tree_id' => $label2->label_tree_id]);
 
         $image = ImageTest::create();
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $image->volume_id
+        ]);
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label1->id,
+        ]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label2->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        // Show used labels only
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($label1->tree->name);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($label2->tree->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $label1->name]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $label2->name]);
+
+        // Show all images for every page
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image->filename, 1]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image->filename, 1]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0]);
+
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'separateLabelTrees' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateLabelTreesAllLabels()
+    {
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+        $label3 = LabelTest::create(['label_tree_id' => $label2->label_tree_id]);
+
+        $project = ProjectTest::create();
+        $image = ImageTest::create();
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $image->volume_id
+        ]);
+        $project->addVolumeId($image->volume_id);
 
         $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
@@ -118,15 +272,25 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['image_filename', $label2->name]);
+            ->with(['image_filename', $label2->name, $label3->name]);
 
+        // Show all images on every page
         $mock->shouldReceive('putCsv')
             ->once()
             ->with([$image->filename, 1]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image->filename, 1]);
+            ->with([$image->filename, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0, 0]);
+
 
         $mock->shouldReceive('close')
             ->twice();
@@ -135,6 +299,7 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $generator = new AbundanceReportGenerator([
             'separateLabelTrees' => true,
+            'all_labels' => true
         ]);
         $generator->setSource($image->volume);
         $mock = Mockery::mock();
@@ -145,7 +310,20 @@ class AbundanceReportGeneratorTest extends TestCase
 
     public function testGenerateReportSeparateUsers()
     {
+        $project = ProjectTest::create();
         $image = ImageTest::create();
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $image->volume_id
+        ]);
+        $project->addVolumeId($image->volume_id);
+
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project->id);
+
+        $l1 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $l2 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $l3 = LabelTest::create(['label_tree_id' => $lt->id]);
 
         $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
@@ -153,10 +331,12 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
+            'label_id' => $l1->id
         ]);
 
         $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
+            'label_id' => $l2->id
         ]);
 
         $mock = Mockery::mock();
@@ -171,19 +351,27 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['image_filename', $al1->label->name, $al2->label->name]);
+            ->with(['image_filename', $l1->name, $l2->name, $l3->name]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['image_filename', $al1->label->name, $al2->label->name]);
+            ->with(['image_filename', $l1->name, $l2->name, $l3->name]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image->filename, 1, 0]);
+            ->with([$image->filename, 1, 0, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image->filename, 0, 1]);
+            ->with([$image->filename, 0, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0, 0, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0, 0, 0]);
 
         $mock->shouldReceive('close')
             ->twice();
@@ -209,6 +397,8 @@ class AbundanceReportGeneratorTest extends TestCase
             'parent_id' => $root->id,
             'label_tree_id' => $root->label_tree_id,
         ]);
+        // Don't show unused label
+        LabelTest::create(['label_tree_id' => $root->label_tree_id]);
 
         $childchild = LabelTest::create([
             'parent_id' => $child->id,
@@ -234,6 +424,8 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_id' => $childchild->id,
         ]);
 
+        ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
         $mock = Mockery::mock();
 
         $mock->shouldReceive('put')
@@ -254,6 +446,10 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('putCsv')
             ->once()
             ->with(['b.jpg', 2]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['c.jpg', 0]);
 
         $mock->shouldReceive('close')
             ->once();
@@ -393,6 +589,92 @@ class AbundanceReportGeneratorTest extends TestCase
                 $root4->id,
                 $child4->id,
             ],
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportAllLabelsAggregateChildLabels()
+    {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume->id);
+
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project->id);
+
+        $root = LabelTest::create(['label_tree_id' => $lt->id]);
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+        $childchild = LabelTest::create([
+            'parent_id' => $child->id,
+            'label_tree_id' => $child->label_tree_id,
+        ]);
+
+        $label = LabelTest::create(['label_tree_id' => $lt->id]);
+
+
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $child->id,
+        ]);
+
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $child->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $childchild->id,
+        ]);
+
+        ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                'image_filename',
+                $root->name,
+                $label->name,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['a.jpg', 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['b.jpg', 2, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['c.jpg', 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'aggregateChildLabels' => true,
+            'all_labels' => true
         ]);
         $generator->setSource($volume);
         $mock = Mockery::mock();
