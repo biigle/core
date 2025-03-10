@@ -56,7 +56,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             foreach ($trees as $id => $name) {
                 if ($useAllLabels) {
                     $rowGroup = $rows->flatten();
-                    $labels = with(clone $allLabelsQuery)->where('labels.label_tree_id', '=', $id)->get();
+                    $labels = (clone $allLabelsQuery)->where('labels.label_tree_id', '=', $id)->get();
                 } else {
                     $rowGroup = $rows->get($id);
                     $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
