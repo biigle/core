@@ -219,7 +219,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         foreach ($rows as $filename => $annotations) {
             // Aggregate the number of annotations of child labels to the number of their
             // parent.
-            $annotations = $annotations->keyBy('label_id');
+            $annotations = $annotations->keyBy('label_id')->reject(fn($a) => is_null($a->label_id));
             foreach ($annotations as $labelId => $annotation) {
                 $parentId = $parentIdMap->get($labelId);
                 if ($parentId) {
@@ -245,9 +245,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 ->reject(fn ($annotation) => $parentIdMap->has($annotation->label_id));
         }
 
-        // Remove all labels that did not occur (as parent) in the rows.
-        $presentLabels = $presentLabels->unique()->flip();
-        $labels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
+        if ($this->shouldUseAllLabels()) {
+            // Remove all labels that are not parent labels
+            $labels = $labels->filter(fn($l) => is_null($l->parent_id));
+        } else {
+            // Remove all labels that did not occur (as parent) in the rows.
+            $presentLabels = $presentLabels->unique()->flip();
+            $labels = $labels->filter(fn($label) => $presentLabels->has($label->id));
+        }
 
         return [$rows, $labels];
     }
