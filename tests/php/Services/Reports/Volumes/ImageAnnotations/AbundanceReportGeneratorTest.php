@@ -3,17 +3,17 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
-use Biigle\Tests\ProjectTest;
-use Mockery;
-use TestCase;
+use Biigle\Services\Reports\CsvFile;
+use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
 use Biigle\Tests\LabelTreeTest;
-use Biigle\Services\Reports\CsvFile;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\VolumeTest;
+use Mockery;
+use TestCase;
 
 class AbundanceReportGeneratorTest extends TestCase
 {
@@ -140,7 +140,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'all_labels' => true,
@@ -657,15 +657,15 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['a.jpg', 1,0]);
+            ->with(['a.jpg', 1, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['b.jpg', 2,0]);
+            ->with(['b.jpg', 2, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['c.jpg', 0,0]);
+            ->with(['c.jpg', 0, 0]);
 
         $mock->shouldReceive('close')
             ->once();

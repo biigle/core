@@ -2,11 +2,11 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
-use DB;
-use Biigle\User;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
+use Biigle\User;
+use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -50,7 +50,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $treeIds = $rows->keys()->filter(fn($k) => $k != null);
+            $treeIds = $rows->keys()->filter(fn ($k) => $k != null);
             $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
@@ -67,7 +67,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             $labels = $allLabelsQuery->get();
             $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $userIds = $rows->keys()->filter(fn($k) => $k != null);
+            $userIds = $rows->keys()->filter(fn ($k) => $k != null);
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
@@ -104,12 +104,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $query = DB::table('image_annotation_labels')
             ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
             ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
-            ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id')            
+            ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
-            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source))
-            ->when($this->isRestrictedToLabels(), fn($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
+            ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source))
+            ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
             ->orderBy('images.filename')
             ->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
             ->groupBy('image_annotation_labels.label_id', 'images.id');
@@ -219,7 +219,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         foreach ($rows as $filename => $annotations) {
             // Aggregate the number of annotations of child labels to the number of their
             // parent.
-            $annotations = $annotations->keyBy('label_id')->reject(fn($a) => is_null($a->label_id));
+            $annotations = $annotations->keyBy('label_id')->reject(fn ($a) => is_null($a->label_id));
             foreach ($annotations as $labelId => $annotation) {
                 $parentId = $parentIdMap->get($labelId);
                 if ($parentId) {
@@ -247,11 +247,11 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldUseAllLabels()) {
             // Remove all labels that are not parent labels
-            $labels = $labels->filter(fn($l) => is_null($l->parent_id));
+            $labels = $labels->filter(fn ($l) => is_null($l->parent_id));
         } else {
             // Remove all labels that did not occur (as parent) in the rows.
             $presentLabels = $presentLabels->unique()->flip();
-            $labels = $labels->filter(fn($label) => $presentLabels->has($label->id));
+            $labels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
         }
 
         return [$rows, $labels];
