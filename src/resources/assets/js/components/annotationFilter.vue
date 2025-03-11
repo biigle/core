@@ -139,7 +139,7 @@ export default {
         response.data.forEach(
           (user) =>
             (this.filterValues.User[user.user_id] =
-              user.lastname + " " + user.firstname),
+              user.firstname + " " + user.lastname),
         ), Messages.handleErrorResponse
       );
     },
