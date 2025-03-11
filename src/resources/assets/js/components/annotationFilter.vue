@@ -1,5 +1,6 @@
 <template>
-  <div class="annotation-filter"> <div class="form-group">
+  <div class="annotation-filter">
+    <div class="form-group">
       <div class="btn-group" role="group">
         <button
           type="button"
