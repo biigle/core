@@ -138,7 +138,7 @@ export default {
       usersWithAnnotationsPromise.then((response) =>
         response.data.forEach(
           (user) =>
-            (this.filterValues["User"][user.user_id] =
+            (this.filterValues.User[user.user_id] =
               user.lastname + " " + user.firstname),
         ), Messages.handleErrorResponse
       );
