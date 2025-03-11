@@ -1,5 +1,6 @@
 <template>
-  <div class="annotation-filter"> <div class="form-group">
+  <div class="annotation-filter">
+    <div class="form-group">
       <div class="btn-group" role="group">
         <button
           type="button"
@@ -138,8 +139,8 @@ export default {
       usersWithAnnotationsPromise.then((response) =>
         response.data.forEach(
           (user) =>
-            (this.filterValues["User"][user.user_id] =
-              user.lastname + " " + user.firstname),
+            (this.filterValues.User[user.user_id] =
+              user.firstname + " " + user.lastname),
         ), Messages.handleErrorResponse
       );
     },

@@ -1,6 +1,7 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid';
-import RelabelImageGrid from '../components/relabelImageGrid'; import SettingsTab from '../components/settingsTab';
+import RelabelImageGrid from '../components/relabelImageGrid';
+import SettingsTab from '../components/settingsTab';
 import SortingTab from '../components/sortingTab';
 import FilteringTab from '../components/filteringTab';
 import {Echo} from '../import';
