@@ -74,6 +74,8 @@ export default {
                 this.resetInteractionMode();
             } else if (!this.hasSelectedLabel && !this.labelbotIsOn && this.canAdd) {
                 this.requireSelectedLabel();
+            } else if (this.labelbotIsOn && this.freeLabelbotOverlayIdx < 0) {
+                this.resetInteractionMode();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
             }

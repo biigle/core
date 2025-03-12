@@ -513,9 +513,8 @@ export default {
                 let promise;
                 // LabelBOT
                 if (!this.selectedLabel && this.labelbotIsOn) {
-                    if (this.freeLabelbotOverlayIdx < 0) {
+                    if (this.freeLabelbotOverlayIdx === this.labelbotLabels.length - 1) {
                         Messages.info("Max number of requests reached!")
-                        return;
                     }
                     promise = this.generateFeatureVector(annotation.points)
                     .then((featureVector) => {
