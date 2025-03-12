@@ -91,8 +91,8 @@ export default {
             imageFilenames: {},
             onnxModel: null,
             labelbotIsOn: false,
-            labelbotLabels: new Array(5).fill([]),
-            labelbotAnnotationOverlay: new Array(5).fill([]),
+            labelbotLabels: [],
+            labelbotAnnotationOverlay: [],
             freeLabelbotOverlayIdx: 0,
         };
     },
@@ -853,6 +853,10 @@ export default {
                 parseInt(UrlParams.get('y'), 10),
             ];
         }
+
+        const maxNumberOfLabelBOTRequests = biigle.$require('labelbot.m');
+        this.labelbotLabels = new Array(maxNumberOfLabelBOTRequests).fill([]),
+        this.labelbotAnnotationOverlay = new Array(maxNumberOfLabelBOTRequests).fill([]),
 
         // These Events are used by the SHERPA client of Michael Kloster and
         // retained for backwards compatibility.
