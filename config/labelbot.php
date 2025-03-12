@@ -32,7 +32,7 @@ return [
     |
     | The value of M specifies the maximum number of vector searches in a row.
     | This value is only needed for the UI. Once the result of a vector search
-    | is resolved by the user, a new request can be made. A higher value means more 
+    | is resolved by the user, a new request can be made. A higher value means more
     | concurrent searches and increased database workload.
     */
     'M' => 5,
