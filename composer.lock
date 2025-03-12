@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4d87e3e7307ae2d1aa0296d2726b033",
+    "content-hash": "bae242cfd693f4b2c5b72123575885f6",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -306,6 +306,60 @@
                 "source": "https://github.com/biigle/auth-lslogin"
             },
             "time": "2024-08-21T09:13:27+00:00"
+        },
+        {
+            "name": "biigle/auth-nfdi",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/auth-nfdi.git",
+                "reference": "b929e887fbbd2c6324cecc32897b734d98b094ec"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/auth-nfdi/zipball/b929e887fbbd2c6324cecc32897b734d98b094ec",
+                "reference": "b929e887fbbd2c6324cecc32897b734d98b094ec",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "socialiteproviders/manager": "^4.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\AuthNfdi\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\AuthNfdi\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module to offer authentication via Nfdi Login.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/auth-nfdi/issues",
+                "source": "https://github.com/biigle/auth-nfdi"
+            },
+            "time": "2025-03-11T10:56:13+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -12375,6 +12429,7 @@
     "stability-flags": {
         "biigle/ananas": 20,
         "biigle/auth-lslogin": 20,
+        "biigle/auth-nfdi": 20,
         "biigle/color-sort": 20,
         "biigle/demo": 20,
         "biigle/denbi-service": 20,
