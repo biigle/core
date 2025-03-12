@@ -626,7 +626,7 @@ export default {
             }, 10000);
         },
         setLabelbotLabels(annotation) {
-            if (this.freeLabelbotOverlayIdx > -1) {
+            if (this.labelbotIsOn && this.freeLabelbotOverlayIdx > -1) {
                 this.labelbotAnnotationOverlay[this.freeLabelbotOverlayIdx] = annotation;
                 this.$set(this.labelbotLabels, this.freeLabelbotOverlayIdx, [annotation.labels[0].label].concat(annotation.labelBOTLabels));
             }
