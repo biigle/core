@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import Item from './fileLabelListItem';
+import Item from './fileLabelListItem.vue';
 
 /**
  * List of image labels.
@@ -21,6 +21,7 @@ import Item from './fileLabelListItem';
  * @type {Object}
  */
 export default {
+    emits: ['deleted'],
     components: {
         listItem: Item,
     },

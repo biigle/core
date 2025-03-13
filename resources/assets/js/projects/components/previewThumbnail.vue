@@ -69,15 +69,21 @@
  *
  * @type {Object}
  */
-import LoaderMixin from '../../core/mixins/loader';
-import volumeStatisticsApi from '../api/volumeStatistics';
-import {handleErrorResponse} from '../../core/messages/store';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import volumeStatisticsApi from '../api/volumeStatistics.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
+    emits: [
+        'click',
+        'statistics',
+        'remove',
+    ],
     mixins: [LoaderMixin],
     props: {
         id: {
-            type: Number,
+            // This can be a string in the search view.
+            type: [Number, String],
             required: true,
         },
         // Either as array or comma separated string.

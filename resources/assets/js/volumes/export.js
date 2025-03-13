@@ -1,10 +1,10 @@
-import FilterListComponent from './components/filterListComponent';
-import FilterStore from './stores/filters';
-import ImageGrid from './components/imageGrid';
-import ImageGridImage from './components/imageGridImage';
-import SortComponent from './components/sortComponent';
-import SorterStore from './stores/sorters';
-import VolumesApi from './api/volumes';
+import FilterListComponent from './components/filterListComponent.vue';
+import FilterStore from './stores/filters.js';
+import ImageGrid from './components/imageGrid.vue';
+import ImageGridImage from './components/imageGridImage.vue';
+import SortComponent from './components/sortComponent.vue';
+import SorterStore from './stores/sorters.js';
+import VolumesApi from './api/volumes.js';
 
 biigle.$declare('annotations.api.volumes', VolumesApi); // Legacy support
 biigle.$declare('volumes.components.filterListComponent', FilterListComponent);

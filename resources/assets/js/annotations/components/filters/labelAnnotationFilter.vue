@@ -1,16 +1,14 @@
 <script>
-import AnnotationFilter from '../mixins/annotationFilter';
-import LabelTypeahead from '../../label-trees/components/labelTypeahead';
+import AnnotationFilter from '@/annotations/mixins/annotationFilter.vue';
+import LabelTypeahead from '@/label-trees/components/labelTypeahead.vue';
 
-export default Vue.extend({
-    mixins: [AnnotationFilter],
+export default {
+    extends: AnnotationFilter,
     components: {
         typeahead: LabelTypeahead,
     },
     data() {
         return {
-            name: 'label',
-            annotations: [],
             placeholder: 'label name',
         };
     },
@@ -41,5 +39,5 @@ export default Vue.extend({
             });
         },
     },
-});
+};
 </script>

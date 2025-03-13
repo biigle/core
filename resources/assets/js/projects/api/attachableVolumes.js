@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for volume that can be attached to a project.
  *
@@ -8,4 +10,4 @@
  * var resource = biigle.$require('api.attachableVolumes');
  * resource.get({id: projectId}).then(...);
  */
-export default Vue.resource('api/v1/projects{/id}/attachable-volumes{/name}');
+export default Resource('api/v1/projects{/id}/attachable-volumes{/name}');

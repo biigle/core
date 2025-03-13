@@ -21,7 +21,6 @@
     },
     "globals": {
         "biigle": "readonly",
-        "Vue": "readonly",
-        "process": "readonly"
+        "defineProps": "readonly"
     }
 }

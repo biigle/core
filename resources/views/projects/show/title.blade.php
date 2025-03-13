@@ -2,13 +2,13 @@
     <span class="pull-right project-buttons">
         @can('update', $project)
             <span v-if="editing" v-cloak>
-                <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="loading || !isChanged"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
-                <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
+                <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="(loading || !isChanged) || null"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
+                <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading || null">Cancel</button>
             </span>
         @endcan
         <dropdown menu-right>
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
-            <template slot="dropdown">
+            <template #dropdown>
                 @if ($isMember)
                     <li @unless($isPinned || $canPin) class="disabled" @endunless>
                         @if ($isPinned)
@@ -57,9 +57,16 @@
             @if ($isPinned)
                 <i class="fa fa-thumbtack text-muted" title="This project is pinned to the dashboard"></i>
             @endif
-            <span v-text="name">{{$project->name}}</span>
-            <span v-if="hasDescription" @if (!$project->description) v-cloak @endif>
-                <br><small v-text="description">{{$project->description}}</small>
+            <span v-if="false">{{$project->name}}</span>
+            <span v-text="name" v-cloak></span>
+
+            @if ($project->description)
+                <span v-if="false">
+                    <br><small>{{$project->description}}</small>
+                </span>
+            @endif
+            <span v-if="hasDescription" v-cloak>
+                <br><small v-text="description"></small>
             </span>
         </h2>
     @else

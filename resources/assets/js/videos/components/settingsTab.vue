@@ -1,10 +1,12 @@
 <script>
-import PowerToggle from '../../core/components/powerToggle';
-import Settings from '../stores/settings';
-import ScreenshotButton from '../../annotations/components/screenshotButton.vue';
-import Keyboard from '../../core/keyboard';
+import Keyboard from '@/core/keyboard.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
+import Settings from '../stores/settings.js';
 
 export default {
+    template: '#settings-tab-template',
+    emits: ['update'],
     components: {
         powerToggle: PowerToggle,
         screenshotButton: ScreenshotButton
