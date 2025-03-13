@@ -52,13 +52,21 @@ export default {
             return this.flatLabels(this.fileLabelTrees).filter(label => label.selected)
         },
         selectedFileLabelIds() {
+            if (!this.filterFileLabels) {
+                return [];
+            }
+
             return this.selectedFileLabels.map(label => label.id);
         },
         selectedAnnotationLabels() {
             return this.flatLabels(this.annotationLabelTrees).filter((label) => label.selected);
 
         },
-        selectedAnnotationLabelIds(){
+        selectedAnnotationLabelIds() {
+            if (!this.filterAnnotations) {
+                return [];
+            }
+
             return this.selectedAnnotationLabels.map((label) => label.id);
         },
         selectedFileLabelsCount() {
