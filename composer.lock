@@ -313,12 +313,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/auth-nfdi.git",
-                "reference": "b929e887fbbd2c6324cecc32897b734d98b094ec"
+                "reference": "3b6a639ceb01866ae386b32a893cc88024ca8a00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/auth-nfdi/zipball/b929e887fbbd2c6324cecc32897b734d98b094ec",
-                "reference": "b929e887fbbd2c6324cecc32897b734d98b094ec",
+                "url": "https://api.github.com/repos/biigle/auth-nfdi/zipball/3b6a639ceb01866ae386b32a893cc88024ca8a00",
+                "reference": "3b6a639ceb01866ae386b32a893cc88024ca8a00",
                 "shasum": ""
             },
             "require": {
@@ -349,7 +349,7 @@
                     "email": "m.zurowietz@uni-bielefeld.de"
                 }
             ],
-            "description": "BIIGLE module to offer authentication via Nfdi Login.",
+            "description": "BIIGLE module to offer authentication via NFDI Login.",
             "homepage": "https://biigle.de",
             "keywords": [
                 "biigle",
@@ -359,7 +359,7 @@
                 "issues": "https://github.com/biigle/auth-nfdi/issues",
                 "source": "https://github.com/biigle/auth-nfdi"
             },
-            "time": "2025-03-11T10:56:13+00:00"
+            "time": "2025-03-13T12:50:09+00:00"
         },
         {
             "name": "biigle/color-sort",
