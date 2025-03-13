@@ -94,6 +94,7 @@ export default {
             labelbotLabels: [],
             labelbotAnnotationOverlay: [],
             freeLabelbotOverlayIdx: 0,
+            labelbotState: {},
         };
     },
     computed: {
@@ -470,19 +471,27 @@ export default {
             return [minX, minY, width, height];
         },
         initONNXModel() {
+            this.handleLabelBOTState('initializing')
             // Load the onnx model with webgpu first 
             // if the client does not have one then fallback to wasm
             const modelPath = biigle.$require('labelbot.onnx-url');
             InferenceSession.create(modelPath, { executionProviders: ['webgpu'] })
             .then((onnxModel) => {
                 this.onnxModel = onnxModel;
+                this.handleLabelBOTState('ready')
             })
             .catch(() => {
                 InferenceSession.create(modelPath, { executionProviders: ['wasm'] })
                 .then((onnxModel) => {
                     this.onnxModel = onnxModel;
-                }).catch(handleErrorResponse)
+                    this.handleLabelBOTState('ready')
+                })
+                .catch(handleErrorResponse)
             })
+            .finally()
+        },
+        handleLabelBOTState(state) {
+            this.$set(this.labelbotState, 'state', state);
         },
         generateFeatureVector(points) {
             // Get selected region
@@ -520,6 +529,9 @@ export default {
                 let promise;
                 // LabelBOT
                 if (!this.selectedLabel && this.labelbotIsOn) {
+
+                    this.handleLabelBOTState('computing')
+                    
                     if (this.freeLabelbotOverlayIdx === this.labelbotLabels.length - 1) {
                         Messages.info("The maximum number of LabelBOT's requests has been reached!")
                     }
@@ -540,6 +552,7 @@ export default {
                     .then(this.setLabelbotLabels)
                     .then(this.setLastCreatedAnnotation)
                 })
+                .then(this.handleLabelBOTState('ready'))
                 .catch(handleErrorResponse)
                 // Remove the temporary annotation if saving succeeded or failed.
                 .finally(removeCallback);

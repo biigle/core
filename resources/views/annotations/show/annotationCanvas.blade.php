@@ -15,6 +15,9 @@
         <label-indicator v-if="selectedLabel" :label="selectedLabel" inline-template>
             <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
         </label-indicator>
+        <div v-show="labelbotIsOn" class="labelbot-indicator-info-box" :title="`LabelBOT is ${labelbotState}`">
+            <labelbot-indicator class="labelbot-indicator" :labelbot-state="labelbotState"></labelbot-indicator>
+        </div>
     </div>
     <label-tooltip watch="hoverFeatures" :show="showLabelTooltip" :position="mousePosition"></label-tooltip>
     <measure-tooltip watch="hoverFeatures" :show="showMeasureTooltip" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>

@@ -90,6 +90,7 @@
             :labelbot-is-on="labelbotIsOn"
             :labelbot-labels="labelbotLabels"
             :free-labelbot-overlay-idx="freeLabelbotOverlayIdx"
+            :labelbot-state="labelbotState['state']"
             v-on:update-labelbot-label="updateLabelbotLabel"
             v-on:delete-labelbot-labels="deleteLabelbotLabels"
             v-on:moveend="handleMapMoveend"

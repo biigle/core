@@ -49,6 +49,7 @@ import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 import { isInvalidShape } from '../utils';
 import LabelbotPopup from './labelbotPopup';
 import Overlay from '@biigle/ol/Overlay';
+import LabelbotIndicator from './labelbotIndicator.vue';
 
 /**
  * The annotator canvas
@@ -76,6 +77,7 @@ export default {
         labelIndicator: LabelIndicator,
         controlButton: ControlButton,
         labelbotPopup: LabelbotPopup,
+        labelbotIndicator: LabelbotIndicator
     },
     props: {
         canAdd: {
@@ -143,6 +145,10 @@ export default {
         labelbotIsOn: {
             type: Boolean,
             default: false,
+        },
+        labelbotState: {
+            type: String,
+            default: 'init',
         },
         labelbotLabels: {
             type: Array,
