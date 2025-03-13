@@ -28,7 +28,7 @@ export default {
     },
     methods: {
         getSequence() {
-            return new Promise.resolve([]);
+            return Promise.resolve([]);
         },
         handleClick() {
             if (!this.active) {
