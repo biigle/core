@@ -3,7 +3,8 @@
 @section('title', $volume->name)
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
+    @vite(['src/resources/assets/js/main.js'], 'vendor/largo')
+    {{-- <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script> --}}
     <script type="text/javascript">
         biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
@@ -16,7 +17,8 @@
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/largo/styles/main.css') }}" rel="stylesheet">
+    @vite(['src/resources/assets/js/main.scss'], 'vendor/largo')
+    {{-- <link href="{{ cachebust_asset('vendor/largo/styles/main.css') }}" rel="stylesheet"> --}}
 @endpush
 
 @section('navbar')
