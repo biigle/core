@@ -15,6 +15,9 @@
         <label-indicator v-if="selectedLabel" :label="selectedLabel" inline-template>
             <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
         </label-indicator>
+        <div v-show="labelbotIsOn" class="labelbot-indicator-info-box" :title="`LabelBOT is ${labelbotState}`">
+            <labelbot-indicator class="labelbot-indicator" :labelbot-state="labelbotState"></labelbot-indicator>
+        </div>
     </div>
     <label-tooltip watch="hoverFeatures" :show="showLabelTooltip" :position="mousePosition"></label-tooltip>
     <measure-tooltip watch="hoverFeatures" :show="showMeasureTooltip" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>
@@ -55,6 +58,8 @@
             <div class="btn-group drawing-controls" v-if="!canAdd && image" @cannot('add-annotation') v-cloak @endcannot>
                 <control-button icon="fa-ruler" title="Measure a line string  𝗦𝗵𝗶𝗳𝘁+𝗙" :active="isMeasuring" v-on:click="toggleMeasuring"></control-button>
             </div>
-        
+    </div>
+    <div v-show="labelbotLabels[index].length > 0" v-for="(overlay, index) in labelbotOverlays" :key="index" :id="'labelbot-popup-' + index">
+        <labelbot-popup :parent-index="index" :labelbot-labels="labelbotLabels[index]" @update-labelbot-label="updateLabelbotLabel" @delete-labelbot-labels="deleteLabelbotLabels"></labelbot-popup>
     </div>
 </div>
