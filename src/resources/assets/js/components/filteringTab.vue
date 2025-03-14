@@ -50,8 +50,8 @@ export default {
       this.filterAnnotations();
     },
     setUnionLogic(union){
-      this.union = union
-      this.filterAnnotations()
+      this.union = union;
+      this.filterAnnotations();
     },
     addNewFilter(filter) {
       if (this.activeFilters.length > 0) {

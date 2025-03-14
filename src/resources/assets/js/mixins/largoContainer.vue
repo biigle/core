@@ -1,5 +1,4 @@
-<script>
-import DismissImageGrid from '../components/dismissImageGrid';
+<script> import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
 import SettingsTab from '../components/settingsTab';
 import SortingTab from '../components/sortingTab';
@@ -88,13 +87,12 @@ export default {
 
             if (this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
                 let annotations = this.annotationsCache[this.selectedLabel.id];
-                let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union})
-
+                let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});//move below
                 if (this.hasActiveFilters && this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-                    annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].includes(annotation.id));
+                    annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].get(annotation.id) === true);
                 }
 
-                return annotations
+                return annotations;
             }
 
             return [];
@@ -208,7 +206,7 @@ export default {
                 }
             )
             parameters['union'] = union;
-            return parameters
+            return parameters;
         },
         getAnnotations(label) {
             let promise1;
@@ -264,29 +262,32 @@ export default {
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
 
-            return annotations
+            return annotations;
         },
         handleSelectedFilters(filters, union) {
             union = union ? 1 : 0;
-            this.union = union ;
+            this.union = union;
             if (Object.keys(filters).length > 0) {
-                this.hasActiveFilters = true
+                this.hasActiveFilters = true;
             } else {
-                this.hasActiveFilters = false
+                this.hasActiveFilters = false;
             }
             this.selectedFilters = filters;
             if (!this.selectedLabel){
-                return []
+                return [];
             }
-            this.loadFilters(this.selectedLabel.id, filters, union)
+            this.loadFilters(this.selectedLabel.id, filters, union);
         },
 
         loadFilters(label, filters, union) {
             if (filters.length == 0){
-                return
+                return;
             }
+
+            let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});
+
             if (!this.filtersCache.hasOwnProperty(label.id)) {
-                Vue.set(this.annotationsCache, label.id, []);
+
                 let requestParams = this.compileFilters(filters, union);
                 this.startLoading();
                 this.queryAnnotations(this.selectedLabel, requestParams)
@@ -294,8 +295,9 @@ export default {
                         (response) => this.gotAnnotations(label, response),
                         handleErrorResponse
                     )
-                    .then(a => a.map(ann => ann.id))
-                    .then(a => Vue.set(this.filtersCache, label.id, a))
+                    .then(a => a.map(ann => [ann.id, true]))
+                    .then(a => new Map(a))
+                    .then(a => Vue.set(this.filtersCache, filtersCacheKey, a)) //This is not right
                     .finally(this.finishLoading);
             }
         },
