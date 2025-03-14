@@ -3,15 +3,17 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
-use Biigle\Services\Reports\CsvFile;
-use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ProjectTest;
+use Mockery;
+use TestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
-use Mockery;
-use TestCase;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Services\Reports\CsvFile;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
 
 class AbundanceReportGeneratorTest extends TestCase
 {
@@ -393,6 +395,103 @@ class AbundanceReportGeneratorTest extends TestCase
                 $root4->id,
                 $child4->id,
             ],
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateLabelTreesAggregateLabels()
+    {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume);
+        $lt1 = LabelTreeTest::create();
+        $lt2 = LabelTreeTest::create();
+        $lt1->projects()->attach($project);
+        $lt2->projects()->attach($project);
+
+        $root = LabelTest::create(['label_tree_id' => $lt1->id]);
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
+        $childchild = LabelTest::create([
+            'parent_id' => $child->id,
+            'label_tree_id' => $child->label_tree_id,
+        ]);
+
+        $root2 = LabelTest::create(['label_tree_id' => $lt2->id]);
+        $child2 = LabelTest::create([
+            'parent_id' => $root2->id,
+            'label_tree_id' => $root2->label_tree_id,
+        ]);
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $child->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $child2->id,
+        ]);
+
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $child->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $childchild->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($lt1->name);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($lt2->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $root->name]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $root2->name]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i1->filename, 1]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i1->filename, 1]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i2->filename, 2]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn() => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'separateLabelTrees' => true,
+            'aggregateChildLabels' => true,
         ]);
         $generator->setSource($volume);
         $mock = Mockery::mock();
