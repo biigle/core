@@ -633,4 +633,207 @@ class AnnotationReportGeneratorTest extends TestCase
         $this->assertEquals($al3->user_id, $results[1]->user_id);
         $this->assertEquals($al4->user_id, $results[2]->user_id);
     }
+
+    public function testAnnotationSessionRestrictedLabel()
+    {
+        $volume = VolumeTest::create();
+        $userId = $volume->creator_id;
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume->id
+        ]);
+
+        $session->users()->attach($userId);
+
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-10-05 09:15:00',
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $userId,
+        ]);
+
+        // Even if there are two labels created in the same second, we only want the
+        // newest one (as determined by the ID).
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $userId,
+        ]);
+
+        $al3 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $al4 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $al5 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-04 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $generator = new AnnotationReportGenerator([
+            'annotationSession' => $session->id,
+            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id]
+        ]);
+        $generator->setSource($session->volume);
+        $results = $generator->initQuery(['image_annotation_labels.id'])->get();
+        $this->assertCount(3, $results);
+        $this->assertEquals($al1->id, $results[0]->id);
+        $this->assertEquals($al2->id, $results[1]->id);
+        $this->assertEquals($al4->id, $results[2]->id);
+    }
+
+    public function testAnnotationSessionRestrictedLabelSeparateLabelTrees()
+    {
+        $volume = VolumeTest::create();
+        $userId = $volume->creator_id;
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume->id
+        ]);
+
+        $session->users()->attach($userId);
+
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-10-05 09:15:00',
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $userId,
+        ]);
+
+        // Even if there are two labels created in the same second, we only want the
+        // newest one (as determined by the ID).
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $userId,
+        ]);
+
+        $al3 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $al4 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $al5 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-04 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $generator = new AnnotationReportGenerator([
+            'annotationSession' => $session->id,
+            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id],
+            'separateLabelTrees' => true,
+        ]);
+        $generator->setSource($session->volume);
+        $results = $generator->initQuery()->get();
+        $this->assertCount(3, $results);
+        $this->assertEquals($al1->label->label_tree_id, $results[0]->label_tree_id);
+        $this->assertEquals($al2->label->label_tree_id, $results[1]->label_tree_id);
+        $this->assertEquals($al4->label->label_tree_id, $results[2]->label_tree_id);
+    }
+
+    public function testAnnotationSessionRestrictedLabelSeparateUser()
+    {
+        $volume = VolumeTest::create();
+        $userId = $volume->creator_id;
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume->id
+        ]);
+
+        $session->users()->attach($userId);
+
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-10-05 09:15:00',
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $userId,
+        ]);
+
+        // Even if there are two labels created in the same second, we only want the
+        // newest one (as determined by the ID).
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $userId,
+        ]);
+
+        $al3 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $al4 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $al5 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-04 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
+        $generator = new AnnotationReportGenerator([
+            'annotationSession' => $session->id,
+            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id],
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($session->volume);
+        $results = $generator->initQuery([])->get();
+        $this->assertCount(3, $results);
+        $this->assertEquals($al1->user_id, $results[0]->user_id);
+        $this->assertEquals($al2->user_id, $results[1]->user_id);
+        $this->assertEquals($al4->user_id, $results[2]->user_id);
+    }
 }
