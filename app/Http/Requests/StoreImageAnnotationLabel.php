@@ -30,10 +30,18 @@ class StoreImageAnnotationLabel extends FormRequest
     public function authorize()
     {
         $this->annotation = ImageAnnotation::findOrFail($this->route('id'));
-        $this->label = Label::findOrFail($this->input('label_id'));
+
+        $labelId = $this->input('label_id');
+
+        if (!is_numeric($labelId) || intval($labelId) != $labelId) {
+            return false;
+        }
+
+        $this->label = Label::findOrFail($labelId);
 
         return $this->user()->can('attach-label', [$this->annotation, $this->label]);
     }
+
 
     /**
      * Get the validation rules that apply to the request.

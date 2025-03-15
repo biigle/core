@@ -28,10 +28,16 @@ abstract class StoreVolumeFileLabel extends FormRequest
      */
     public function authorize()
     {
+        $labelId = $this->input('label_id');
+
+        if (!is_numeric($labelId) || intval($labelId) != $labelId) {
+            return false;
+        }
+
         $model = $this->getFileModel();
         $this->file = $model::findOrFail($this->route('id'));
-        $this->label = Label::find($this->input('label_id'));
-
+        $this->label = Label::findOrFail($labelId);
+        
         if (is_null($this->label)) {
             // Skip authorization if the label could not be found. The validation rules
             // will take care of rejecting this request with the proper response code.
