@@ -42,7 +42,6 @@ class StoreImageAnnotationLabel extends FormRequest
         return $this->user()->can('attach-label', [$this->annotation, $this->label]);
     }
 
-
     /**
      * Get the validation rules that apply to the request.
      *
