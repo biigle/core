@@ -42,22 +42,35 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
-
+            $treeIds = $rows->keys()->reject(fn($k) => !$k);
+            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
             foreach ($trees as $id => $name) {
                 $rowGroup = $rows->get($id);
                 $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            $userIds = $rows->keys()->reject(fn($k) => !$k);
+            $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
                 $rowGroup = $rows->get($id);
+                $userFilenames = $rowGroup->pluck('filename')->unique();
+                $missingFiles = $allFilenames->diff($userFilenames);
+                // Create empty entries to show all images
+                foreach ($missingFiles as $f) {
+                    $rowGroup->add((object) [
+                        'filename' => $f,
+                        'count' => 0,
+                        'label_id' => null,
+                        'user_id' => $id
+                    ]);
+                }
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
         } else {
@@ -75,7 +88,15 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        $query = $this->initQuery()
+        $query = DB::table('image_annotation_labels')
+            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
+            ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
+            ->where('images.volume_id', $this->source->id)
+            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source))
+            ->when($this->isRestrictedToLabels(), fn($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
+            ->orWhereNull('labels.id')
             ->orderBy('images.filename')
             ->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
             ->groupBy('image_annotation_labels.label_id', 'images.id');
