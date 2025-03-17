@@ -550,13 +550,11 @@ class VolumeImport extends Import
             return $file;
         }, $files);
 
-        $toInsert = array_map(function ($file) {
-            return [
-                'filename' => $file['filename'],
-                'volume_id' => $file['volume_id'],
-                'uuid' => $file['uuid'],
-            ];
-        }, $files);
+        $toInsert = array_map(fn ($file) => [
+            'filename' => $file['filename'],
+            'volume_id' => $file['volume_id'],
+            'uuid' => $file['uuid'],
+        ], $files);
 
         $volumeIds = [];
         foreach ($files as $file) {

@@ -46,27 +46,21 @@ class ProjectsAttachableVolumesController extends Controller
         $volumes = Volume::select('id', 'name', 'updated_at', 'media_type_id')
             ->with('mediaType')
             // All volumes of other projects where the user has admin rights on.
-            ->whereIn('id', function ($query) use ($request, $id) {
-                return $query->select('volume_id')
-                    ->from('project_volume')
-                    ->whereIn('project_id', function ($query) use ($request, $id) {
-                        return $query->select('project_id')
-                            ->from('project_user')
-                            ->where('user_id', $request->user()->id)
-                            ->where('project_role_id', Role::adminId())
-                            ->where('project_id', '!=', $id);
-                    });
-            })
+            ->whereIn('id', fn ($query) => $query->select('volume_id')
+                ->from('project_volume')
+                ->whereIn('project_id', fn ($query) => $query->select('project_id')
+                    ->from('project_user')
+                    ->where('user_id', $request->user()->id)
+                    ->where('project_role_id', Role::adminId())
+                    ->where('project_id', '!=', $id)))
             ->where('name', 'ilike', "%{$name}%")
             // Do not return volumes that are already attached to this project.
             // This is needed although we are already excluding the project in the
             // previous statement because other projects may already share volumes with
             // this one.
-            ->whereNotIn('id', function ($query) use ($id) {
-                return $query->select('volume_id')
-                    ->from('project_volume')
-                    ->where('project_id', $id);
-            })
+            ->whereNotIn('id', fn ($query) => $query->select('volume_id')
+                ->from('project_volume')
+                ->where('project_id', $id))
             ->distinct()
             ->get();
 
