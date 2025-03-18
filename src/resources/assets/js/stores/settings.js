@@ -9,8 +9,6 @@ let defaults = {
 };
 
 export default new Settings({
-    data: {
-        storageKey: 'biigle.largo.settings',
-        defaults: defaults,
-    },
+    storageKey: 'biigle.largo.settings',
+    defaults: defaults,
 });
