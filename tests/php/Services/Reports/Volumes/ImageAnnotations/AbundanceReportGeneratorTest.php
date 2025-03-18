@@ -732,4 +732,86 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
     }
+    public function testGenerateReportSeparateLabelTreesAllLabels()
+    {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume->id);
+
+        $lt = LabelTreeTest::create();
+        $lt2 = LabelTreeTest::create();
+        $lt->projects()->attach($project->id);
+        $lt2->projects()->attach($project->id);
+
+        $label1 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $label2 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $label3 = LabelTest::create(['label_tree_id' => $lt2->id]);
+
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $volume->id
+        ]);
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label1->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($lt->name);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($lt2->name);
+
+        // Unused labels should be included in report
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $label1->name, $label2->name]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $label3->name]);
+
+        // Show all images on every page
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image->filename, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image->filename, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0]);
+
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'separateLabelTrees' => true,
+            'all_labels' => true
+        ]);
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
 }
