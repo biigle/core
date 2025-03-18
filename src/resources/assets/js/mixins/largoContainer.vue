@@ -186,7 +186,7 @@ export default {
                 promise1 = this.queryAnnotations(label)
                     .then((response) => this.gotAnnotations(label, response), handleErrorResponse)
             } else {
-                promise1 = Vue.Promise.resolve();
+                promise1 = Promise.resolve();
             }
 
             if (this.sortingKey === SORT_KEY.SIMILARITY) {
@@ -196,10 +196,10 @@ export default {
                 // Reload sequence for new label.
                 promise2 = this.updateSortKey(this.sortingKey);
             } else {
-                promise2 = Vue.Promise.resolve();
+                promise2 = Promise.resolve();
             }
 
-            Vue.Promise.all([promise1, promise2]).finally(this.finishLoading);
+            Promise.all([promise1, promise2]).finally(this.finishLoading);
         },
         gotAnnotations(label, response) {
             let imageAnnotations = response[0].data;
@@ -417,12 +417,12 @@ export default {
         fetchSortingSequence(key, labelId) {
             const sequence = this.sortingSequenceCache?.[labelId]?.[key];
             if (sequence) {
-                return Vue.Promise.resolve(sequence);
+                return Promise.resolve(sequence);
             }
 
             let promise;
             if (!this.selectedLabel) {
-                promise = Vue.Promise.resolve([]);
+                promise = Promise.resolve([]);
             } else if (key === SORT_KEY.OUTLIER) {
                 promise = this.querySortByOutlier(labelId)
                     .then(response => response.body);
@@ -431,7 +431,7 @@ export default {
                 return this.querySortBySimilarity(labelId, this.similarityReference)
                     .then(response => response.body);
             } else {
-                promise = Vue.Promise.resolve([]);
+                promise = Promise.resolve([]);
             }
 
             return promise.then(ids => this.putSortingSequenceToCache(key, labelId, ids));

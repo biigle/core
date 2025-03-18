@@ -21,7 +21,7 @@ export default {
             let imagePromise = LabelsApi.queryImageAnnotations({id: label.id});
             let videoPromise = LabelsApi.queryVideoAnnotations({id: label.id});
 
-            return Vue.Promise.all([imagePromise, videoPromise]);
+            return Promise.all([imagePromise, videoPromise]);
         },
         showOutlines() {
             this.showAnnotationOutlines = true;

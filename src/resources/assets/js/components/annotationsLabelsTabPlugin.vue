@@ -90,7 +90,7 @@ export default {
                         .then(this.parseResponse);
                 }
 
-                Vue.Promise.all([this.cache[this.label.id], this.label.id])
+                Promise.all([this.cache[this.label.id], this.label.id])
                     .then(this.setExampleAnnotations)
                     .finally(this.finishLoading);
             }
