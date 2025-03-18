@@ -1,3 +1,5 @@
+import {Resource} from '../import.js';
+
 /**
  * Resource for Largo operations on labels.
  *
@@ -8,10 +10,8 @@
  *
  * Get first 4 video annotations with a specific label (that the user is allowed to see):
  * resource.queryVideoAnnotations({id: 1, take: 4}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/labels{/id}', {}, {
+export default Resource('api/v1/labels{/id}', {}, {
     queryImageAnnotations: {
         method: 'GET',
         url: 'api/v1/labels{/id}/image-annotations',
