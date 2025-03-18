@@ -1,6 +1,6 @@
 <script>
-import {Events} from '../import';
-import {PowerToggle} from '../import';
+import {Events} from '../import.js';
+import {PowerToggle} from '../import.js';
 
 /**
  * The plugin component to change the settings whether to show the example annotations.

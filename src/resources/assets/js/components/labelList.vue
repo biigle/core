@@ -1,5 +1,5 @@
 <script>
-import LabelItem from './labelListLabelItem';
+import LabelItem from './labelListLabelItem.vue';
 
 
 export default {

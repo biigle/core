@@ -1,8 +1,8 @@
 <script>
-import AnnotationPatch from'./annotationPatch';
-import VolumesApi from '../api/volumes';
-import {Events} from '../import';
-import {LoaderMixin} from '../import';
+import AnnotationPatch from'./annotationPatch.vue';
+import VolumesApi from '../api/volumes.js';
+import {Events} from '../import.js';
+import {LoaderMixin} from '../import.js';
 
 /**
  * The plugin component to show example annotation patches in the labels tab of the

@@ -1,5 +1,5 @@
 <script>
-import {VIDEO_ANNOTATION, IMAGE_ANNOTATION} from '../constants';
+import {VIDEO_ANNOTATION, IMAGE_ANNOTATION} from '../constants.js';
 
 export default {
     computed: {

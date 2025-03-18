@@ -1,6 +1,6 @@
 <script>
-import {ImageGrid} from '../import';
-import Image from './relabelImageGridImage';
+import {ImageGrid} from '../import.js';
+import Image from './relabelImageGridImage.vue';
 
 /**
  * A variant of the image grid used for the relabel step of Largo

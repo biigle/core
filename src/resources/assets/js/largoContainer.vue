@@ -1,6 +1,6 @@
 <script>
-import LargoContainer from './mixins/largoContainer';
-import VolumesApi from './api/volumes';
+import LargoContainer from './mixins/largoContainer.vue';
+import VolumesApi from './api/volumes.js';
 
 /**
  * View model for the main Largo container

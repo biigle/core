@@ -1,4 +1,4 @@
-import {Settings} from '../import';
+import {Settings} from '../import.js';
 
 /**
  * Store for largo settings

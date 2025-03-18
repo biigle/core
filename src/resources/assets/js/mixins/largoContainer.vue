@@ -1,20 +1,20 @@
 <script>
-import DismissImageGrid from '../components/dismissImageGrid';
-import RelabelImageGrid from '../components/relabelImageGrid';
-import SettingsTab from '../components/settingsTab';
-import SortingTab from '../components/sortingTab';
-import {Echo} from '../import';
-import {Events} from '../import';
-import {handleErrorResponse} from '../import';
-import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants';
-import {LabelTrees} from '../import';
-import {LoaderMixin} from '../import';
-import {Messages} from '../import';
-import {PowerToggle} from '../import';
-import {SidebarTab} from '../import';
-import {Sidebar} from '../import';
+import DismissImageGrid from '../components/dismissImageGrid.vue';
+import RelabelImageGrid from '../components/relabelImageGrid.vue';
+import SettingsTab from '../components/settingsTab.vue';
+import SortingTab from '../components/sortingTab.vue';
+import {Echo} from '../import.js';
+import {Events} from '../import.js';
+import {handleErrorResponse} from '../import.js';
+import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants.js';
+import {LabelTrees} from '../import.js';
+import {LoaderMixin} from '../import.js';
+import {Messages} from '../import.js';
+import {PowerToggle} from '../import.js';
+import {SidebarTab} from '../import.js';
+import {Sidebar} from '../import.js';
 import LabelList from '../components/labelList.vue';
-import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
+import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab.vue';
 
 /**
  * Mixin for largo view models

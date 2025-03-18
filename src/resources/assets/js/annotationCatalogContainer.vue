@@ -1,7 +1,7 @@
 <script>
-import ImageGrid from './components/catalogImageGrid';
-import LabelsApi from './api/labels';
-import LargoContainer from './mixins/largoContainer';
+import ImageGrid from './components/catalogImageGrid.vue';
+import LabelsApi from './api/labels.js';
+import LargoContainer from './mixins/largoContainer.vue';
 
 /**
  * View model for the annotation catalog

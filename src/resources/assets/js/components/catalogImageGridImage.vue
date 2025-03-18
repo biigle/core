@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import AnnotationPatch from '../mixins/annotationPatch';
-import {IMAGE_ANNOTATION} from '../constants';
-import {ImageGridImage} from '../import';
+import AnnotationPatch from '../mixins/annotationPatch.vue';
+import {IMAGE_ANNOTATION} from '../constants.js';
+import {ImageGridImage} from '../import.js';
 
 /**
  * A variant of the image grid image used for the annotation catalog

@@ -1,6 +1,6 @@
 <script>
-import {ImageGrid} from '../import';
-import Image from './dismissImageGridImage';
+import {ImageGrid} from '../import.js';
+import Image from './dismissImageGridImage.vue';
 
 /**
  * A variant of the image grid used for the dismiss step of Largo
