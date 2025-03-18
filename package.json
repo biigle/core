@@ -4,7 +4,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && php ../../../artisan vendor:publish --provider Biigle\\\\Modules\\\\Largo\\\\LargoServiceProvider --tag public",
+    "build": "vite build && php ../../../artisan vendor:publish --provider Biigle\\\\Modules\\\\Largo\\\\LargoServiceProvider --tag public --force",
     "lint": "eslint --ext .js,.vue --resolve-plugins-relative-to . src/resources/assets/js/"
   },
   "devDependencies": {
