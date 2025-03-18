@@ -42,12 +42,23 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $treeIds = $rows->keys()->reject(fn ($k) => !$k);
-            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
-            foreach ($trees as $id => $name) {
-                $rowGroup = $rows->get($id);
-                $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
+            if ($this->shouldUseAllLabels()) {
+                $allLabels = $this->getVolumeLabels();
+                $treeIds = $allLabels->pluck('label_tree_id');
+                $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+                $allLabels = $allLabels->groupBy('label_tree_id');
+                foreach ($trees as $id => $name) {
+                    $labels = $allLabels->get($id);
+                    $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
+                }
+            } else {
+                $treeIds = $rows->keys()->reject(fn($k) => !$k);
+                $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+                foreach ($trees as $id => $name) {
+                    $labelIds = $rows->get($id)->pluck('label_id')->unique();
+                    $labels = Label::whereIn('id', $labelIds)->get();
+                    $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
+                }
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
