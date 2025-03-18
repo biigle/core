@@ -124,9 +124,15 @@ class AnnotationReportGenerator extends VolumeReportGenerator
         return $query;
     }
 
+    /**
+     * Query that joins images, annotations and annotation labels
+     *
+     * @return \Illuminate\Database\Query\Builder|Image
+     */
     protected function getImageAnnotationLabelQuery()
     {
         if ($this->shouldUseAllImages()) {
+            // Use leftJoin to collect images without annotations too
             return Image::leftJoin('image_annotations', 'images.id', '=', 'image_annotations.image_id')
                 ->leftJoin('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
                 ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id');
