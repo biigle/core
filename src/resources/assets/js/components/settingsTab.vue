@@ -18,6 +18,9 @@ import {PowerToggle} from '../import.js';
 import { Keyboard } from '../import.js';
 
 export default {
+    emits: [
+        'change-outlines',
+    ],
     components: {
         PowerToggle
     },

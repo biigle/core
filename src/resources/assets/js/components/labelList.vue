@@ -3,6 +3,10 @@ import LabelItem from './labelListLabelItem.vue';
 
 
 export default {
+    emits: [
+        'select',
+        'deselect',
+    ],
     components: {
         labelItem: LabelItem,
     },

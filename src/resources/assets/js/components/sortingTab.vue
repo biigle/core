@@ -92,6 +92,12 @@ export const SORT_KEY = {
 };
 
 export default {
+    emits: [
+        'change-direction',
+        'change-key',
+        'init-similarity',
+        'cancel-similarity',
+    ],
     props: {
         sortKey: {
             type: Number,
