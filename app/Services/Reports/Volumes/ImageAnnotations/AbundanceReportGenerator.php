@@ -88,15 +88,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
-        $query = DB::table('image_annotation_labels')
-            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
-            ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
-            ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
-            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source))
-            ->when($this->isRestrictedToLabels(), fn($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
-            ->orWhereNull('labels.id')
+        $query = $this->initQuery()
             ->orderBy('images.filename')
             ->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
             ->groupBy('image_annotation_labels.label_id', 'images.id');
