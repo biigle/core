@@ -3,8 +3,8 @@
 @section('title', $tree->name)
 
 @push('scripts')
-<script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
-<script type="text/javascript">
+{{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}
+<script type="module">
     biigle.$declare('annotationCatalog.labelTree', {!! $tree !!});
     biigle.$declare('annotationCatalog.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
     biigle.$declare('annotationCatalog.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
@@ -14,7 +14,7 @@
 
 
 @push('styles')
-<link href="{{ cachebust_asset('vendor/largo/styles/main.css') }}" rel="stylesheet">
+{{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/sass/main.scss'], 'vendor/largo')}}
 @endpush
 
 @section('navbar')
@@ -45,7 +45,6 @@
             <power-toggle v-cloak class="largo-tab__button" :active="showAnnotationOutlines" title-off="Show annotation outlines" title-on="Hide annotation outlines" v-on:on="showOutlines" v-on:off="hideOutlines">Show annotation outlines</power-toggle>
             <label-trees class="largo-tab__label-trees" :trees="labelTrees" :collapsible="false" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </sidebar-tab>
-        
     </sidebar>
 </div>
 

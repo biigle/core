@@ -3,8 +3,8 @@
 @section('title', $project->name)
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
-    <script type="text/javascript">
+    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}
+    <script type="module">
         biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.projectId', {!! $project->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
@@ -15,7 +15,7 @@
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/largo/styles/main.css') }}" rel="stylesheet">
+    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/sass/main.scss'], 'vendor/largo')}}
 @endpush
 
 @section('navbar')

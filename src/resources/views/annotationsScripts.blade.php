@@ -1,1 +1,1 @@
-<script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
+{{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}

@@ -4,7 +4,7 @@
 
 @push('scripts')
     {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
         biigle.$declare('largo.mediaType', @if ($volume->isImageVolume()) 'image' @else 'video' @endif);
