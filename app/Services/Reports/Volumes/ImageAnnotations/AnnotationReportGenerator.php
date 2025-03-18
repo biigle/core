@@ -2,12 +2,12 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
-use DB;
 use Biigle\Image;
-use Illuminate\Support\Str;
+use Biigle\Services\Reports\Volumes\VolumeReportGenerator;
 use Biigle\Traits\RestrictsToExportArea;
 use Biigle\Traits\RestrictsToNewestLabels;
-use Biigle\Services\Reports\Volumes\VolumeReportGenerator;
+use DB;
+use Illuminate\Support\Str;
 
 class AnnotationReportGenerator extends VolumeReportGenerator
 {
@@ -112,7 +112,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source))
             ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
-            ->when($this->shouldUseAllImages(), fn($q) => $q->orWhereNull('labels.id'))
+            ->when($this->shouldUseAllImages(), fn ($q) => $q->orWhereNull('labels.id'))
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {

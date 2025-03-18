@@ -860,12 +860,12 @@ class AnnotationReportGeneratorTest extends TestCase
         ]);
 
         $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
             'user_id' => $userId,
         ]);
 
         $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
             'user_id' => $userId,
         ]);
 
@@ -903,12 +903,12 @@ class AnnotationReportGeneratorTest extends TestCase
         ]);
 
         $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
             'user_id' => $userId,
         ]);
 
         $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
             'user_id' => $userId,
         ]);
 
@@ -947,12 +947,12 @@ class AnnotationReportGeneratorTest extends TestCase
         ]);
 
         $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
             'user_id' => $userId,
         ]);
 
         $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
             'user_id' => $userId,
         ]);
 
