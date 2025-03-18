@@ -31,13 +31,9 @@ class StoreImageAnnotationLabel extends FormRequest
     {
         $this->annotation = ImageAnnotation::findOrFail($this->route('id'));
 
-        $labelId = $this->input('label_id');
+        $this->validate(['label_id' => 'integer']);
 
-        if (!is_numeric($labelId) || intval($labelId) != $labelId) {
-            return false;
-        }
-
-        $this->label = Label::findOrFail($labelId);
+        $this->label = Label::findOrFail($this->input('label_id'));
 
         return $this->user()->can('attach-label', [$this->annotation, $this->label]);
     }
