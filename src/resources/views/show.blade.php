@@ -2,12 +2,8 @@
 @section('full-navbar', true)
 @section('title', $volume->name)
 
-@php
-    $vite = (new Illuminate\Foundation\Vite)->useHotFile(base_path('vendor/biigle/largo/hot'));
-@endphp
-
 @push('scripts')
-    {{$vite(['src/resources/assets/js/main.js'], 'vendor/largo')}}
+    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}
     <script type="text/javascript">
         biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
@@ -20,7 +16,7 @@
 @endpush
 
 @push('styles')
-    {{$vite(['src/resources/assets/sass/main.scss'], 'vendor/largo')}}
+    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/sass/main.scss'], 'vendor/largo')}}
 @endpush
 
 @section('navbar')
