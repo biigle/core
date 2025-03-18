@@ -523,13 +523,13 @@ export default {
     },
     watch: {
         annotations(annotations) {
-            Events.$emit('annotations-count', annotations.length);
+            Events.emit('annotations-count', annotations.length);
         },
         dismissedAnnotations(annotations) {
-            Events.$emit('dismissed-annotations-count', annotations.length);
+            Events.emit('dismissed-annotations-count', annotations.length);
         },
         step(step) {
-            Events.$emit('step', step);
+            Events.emit('step', step);
         },
         selectedLabel(_, oldLabel) {
             if (this.isInDismissStep) {

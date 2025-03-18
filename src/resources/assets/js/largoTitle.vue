@@ -39,9 +39,9 @@ export default {
         },
     },
     created() {
-        Events.$on('annotations-count', this.updateCount);
-        Events.$on('dismissed-annotations-count', this.updateDismissedCount);
-        Events.$on('step', this.updateStep);
+        Events.on('annotations-count', this.updateCount);
+        Events.on('dismissed-annotations-count', this.updateDismissedCount);
+        Events.on('step', this.updateStep);
     },
 };
 </script>

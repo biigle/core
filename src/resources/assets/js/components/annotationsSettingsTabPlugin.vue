@@ -34,7 +34,7 @@ export default {
     },
     watch: {
         isShown(shown) {
-            Events.$emit('settings.exampleAnnotations', shown);
+            Events.emit('settings.exampleAnnotations', shown);
         },
     },
     created() {

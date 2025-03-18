@@ -105,7 +105,7 @@ export default {
         },
     },
     created() {
-        Events.$on('settings.exampleAnnotations', this.updateShown);
+        Events.on('settings.exampleAnnotations', this.updateShown);
     },
 };
 </script>
