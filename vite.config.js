@@ -3,18 +3,15 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-    server: {
-        port: 5174,
-        strictPort: true,
-    },
     plugins: [
         laravel({
-            buildDirectory: 'vendor/largo',
+            publicDirectory: 'src',
+            buildDirectory: 'public',
             input: [
                 'src/resources/assets/sass/main.scss',
                 'src/resources/assets/js/main.js',
             ],
-            hotFile: 'vendor/largo/hot',
+            hotFile: 'hot',
         }),
         vue({
             template: {

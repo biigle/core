@@ -4,11 +4,10 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && php ../../../artisan vendor:publish --provider Biigle\\\\Modules\\\\Largo\\\\LargoServiceProvider --tag public",
     "lint": "eslint --ext .js,.vue --resolve-plugins-relative-to . src/resources/assets/js/"
   },
   "devDependencies": {
-    "@mzur/laravel-mix-artisan-publish": "^1.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "cross-env": "^5.1",
     "eslint": "^7.3.1",

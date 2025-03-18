@@ -34,7 +34,11 @@ class LargoServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/Database/migrations');
 
         $this->publishes([
-            __DIR__.'/../public/vendor/largo' => public_path('vendor/largo'),
+            __DIR__.'/public' => public_path('vendor/largo'),
+        ], 'public');
+
+        $this->publishes([
+            __DIR__.'/resources/assets/images' => public_path('vendor/largo/images'),
         ], 'public');
 
         $this->publishes([
