@@ -52,7 +52,6 @@ class VideoLabelControllerTest extends ApiTestCase
         $this->beEditor();
         $this
             ->postJson("/api/v1/videos/{$id}/labels")->assertStatus(422);
-        
         $this->assertSame(0, $this->video->labels()->count());
 
         $this->beUser();
