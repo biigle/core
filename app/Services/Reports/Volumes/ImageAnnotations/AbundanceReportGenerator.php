@@ -42,22 +42,35 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
-
+            $treeIds = $rows->keys()->reject(fn($k) => !$k);
+            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
             foreach ($trees as $id => $name) {
                 $rowGroup = $rows->get($id);
                 $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            $userIds = $rows->keys()->reject(fn($k) => !$k);
+            $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
                 $rowGroup = $rows->get($id);
+                $userFilenames = $rowGroup->pluck('filename')->unique();
+                $missingFiles = $allFilenames->diff($userFilenames);
+                // Create empty entries to show all images
+                foreach ($missingFiles as $f) {
+                    $rowGroup->add((object) [
+                        'filename' => $f,
+                        'count' => 0,
+                        'label_id' => null,
+                        'user_id' => $id
+                    ]);
+                }
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
         } else {
