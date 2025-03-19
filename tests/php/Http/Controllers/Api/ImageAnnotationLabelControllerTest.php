@@ -10,6 +10,7 @@ use Biigle\Tests\ImageAnnotationTest;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Session;
 
 class ImageAnnotationLabelControllerTest extends ApiTestCase
@@ -185,6 +186,17 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         // the same user cannot attach the same label twice
         $response->assertStatus(400);
         $this->assertSame(2, $this->annotation->labels()->count());
+    }
+
+    public function testStoreLabelIdTypeString()
+    {
+        $this->beEditor();
+        $id = $this->annotation->id;
+        $response = $this->json('POST', "api/v1/image-annotations/{$id}/labels", [
+            'label_id' => Str::random(2),
+            'confidence' => 10,
+        ]);
+        $response->assertStatus(422);
     }
 
     public function testUpdate()
