@@ -20,7 +20,6 @@
         "vue/require-v-for-key": "off"
     },
     "globals": {
-        "biigle": "readonly",
-        "Vue": "readonly"
+        "biigle": "readonly"
     }
 }
