@@ -82,6 +82,9 @@ export default {
 
             return [];
         },
+        annotationsCount() {
+            return this.annotations.length;
+        },
         sortedAnnotations() {
             let annotations = this.annotations;
 
@@ -122,6 +125,9 @@ export default {
         },
         dismissedAnnotations() {
             return this.allAnnotations.filter(item => item.dismissed);
+        },
+        dismissedAnnotationsCount() {
+            return this.dismissedAnnotations.length;
         },
         annotationsWithNewLabel() {
             return this.dismissedAnnotations.filter(item => !!item.newLabel);
@@ -181,7 +187,7 @@ export default {
             let promise2;
 
             if (!this.annotationsCache.hasOwnProperty(label.id)) {
-                Vue.set(this.annotationsCache, label.id, []);
+                this.annotationsCache[label.id] = [];
                 this.startLoading();
                 promise1 = this.queryAnnotations(label)
                     .then((response) => this.gotAnnotations(label, response), handleErrorResponse)
@@ -219,7 +225,7 @@ export default {
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
 
-            Vue.set(this.annotationsCache, label.id, annotations);
+            this.annotationsCache[label.id] = annotations;
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
@@ -438,7 +444,7 @@ export default {
         },
         putSortingSequenceToCache(key, labelId, sequence) {
             if (!this.sortingSequenceCache[labelId]) {
-                Vue.set(this.sortingSequenceCache, labelId, {});
+                this.sortingSequenceCache[labelId] = {};
             }
 
             this.sortingSequenceCache[labelId][key] = sequence;
@@ -522,11 +528,11 @@ export default {
         }
     },
     watch: {
-        annotations(annotations) {
-            Events.emit('annotations-count', annotations.length);
+        annotationsCount(count) {
+            Events.emit('annotations-count', count);
         },
-        dismissedAnnotations(annotations) {
-            Events.emit('dismissed-annotations-count', annotations.length);
+        dismissedAnnotationsCount(count) {
+            Events.emit('dismissed-annotations-count', count);
         },
         step(step) {
             Events.emit('step', step);
