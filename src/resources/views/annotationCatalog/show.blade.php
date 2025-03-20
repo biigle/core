@@ -19,7 +19,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-largo-breadcrumbs">
-    <a href="{{route('label-trees', $tree->id)}}" title="Show label tree {{$tree->name}}" class="navbar-link">{{$tree->name}}</a> / <strong>Annotation catalog</strong> <span id="largo-title"><small>(<span v-text="shownCount">0</span>&nbsp;annotations)</small></span>
+    <a href="{{route('label-trees', $tree->id)}}" title="Show label tree {{$tree->name}}" class="navbar-link">{{$tree->name}}</a> / <strong>Annotation catalog</strong> <span id="largo-title"><small>(<span v-if="false">0</span><span v-text="shownCount"></span>&nbsp;annotations)</small></span>
 </div>
 @endsection
 
