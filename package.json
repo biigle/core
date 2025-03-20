@@ -7,15 +7,16 @@
     "lint": "eslint --ext .js,.vue resources/assets/js/"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.4",
-    "@vue/compiler-sfc": "^3.5.11",
+    "@vitejs/plugin-vue": "^5.2.3",
     "eslint": "^7.3.1",
     "eslint-plugin-vue": "^7.0.0",
-    "laravel-echo": "^1.14.2",
-    "laravel-vite-plugin": "^1.0.5",
+    "laravel-echo": "^2.0.2",
+    "laravel-vite-plugin": "^1.2.0",
     "pusher-js": "^7.5.0",
     "sass": "1.32.*",
-    "vite": "^5.4.8"
+    "vite": "^5.4.14",
+    "vite-plugin-externalize-dependencies": "^1.0.1",
+    "vite-plugin-static-copy": "^2.3.0"
   },
   "dependencies": {
     "@biigle/ol": "^9.2.4",

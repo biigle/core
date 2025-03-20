@@ -18,6 +18,15 @@
         <meta name="description" content="The Bio-Image Indexing and Graphical Labelling Environment is a web service for the efficient and rapid annotation of still images.">
     @endif
 
+    <script type="importmap">
+        {{-- See vite.config.js for explanation why Vue is added as importmap. --}}
+        @if (config('app.env') !== 'production')
+            {"imports": {"vue": "{{cachebust_asset('build/vue.esm-browser.js')}}"}}
+        @else
+            {"imports": {"vue": "{{cachebust_asset('build/vue.esm-browser.prod.js')}}"}}
+        @endif
+    </script>
+
     @vite(['resources/assets/sass/main.scss'])
     @stack('styles')
 </head>
