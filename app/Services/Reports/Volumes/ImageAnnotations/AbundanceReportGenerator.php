@@ -41,9 +41,10 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $rows = $this->query()->get();
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
-            $rows = $rows->groupBy('label_tree_id');
             if ($this->shouldUseAllLabels()) {
-                $allLabels = $this->getVolumeLabels();
+                $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+                $rows = $rows->groupBy('label_tree_id');
+                $allLabels = $this->getAllFilteredVolumeLabels($allLabelIds);
                 $treeIds = $allLabels->pluck('label_tree_id');
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 $allLabels = $allLabels->groupBy('label_tree_id');
@@ -52,6 +53,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
                 }
             } else {
+                $rows = $rows->groupBy('label_tree_id');
                 $treeIds = $rows->keys()->reject(fn($k) => !$k);
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 foreach ($trees as $id => $name) {
