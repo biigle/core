@@ -1,5 +1,35 @@
+<template>
+<div v-if="isShown" class="largo-example-annotations">
+    <p v-if="loading" class="text-muted">
+        Loading example annotations...
+    </p>
+    <div v-else>
+        <div v-if="hasExamples">
+            <p class="text-muted" v-if="label.id !== exampleLabel.id">
+                Examples with label <strong v-text="exampleLabel.name"></strong>, may be similar to <strong v-text="label.name"></strong>:
+            </p>
+            <div class="largo-example-annotations__images">
+                <annotation-patch
+                    v-for="(uuid, id) in exampleAnnotations"
+                    :key="id"
+                    :_id="id"
+                    :_uuid="uuid"
+                    :label="label"
+                    :empty-src="emptySrc"
+                    :_url-template="urlTemplate"
+                    >
+                </annotation-patch>
+            </div>
+        </div>
+        <p v-else class="text-muted">
+            No example annotations available.
+        </p>
+    </div>
+</div>
+</template>
+
 <script>
-import AnnotationPatch from'./annotationPatch.vue';
+import AnnotationPatch from'./annotationExamplePatch.vue';
 import VolumesApi from '../api/volumes.js';
 import {Events} from '../import.js';
 import {LoaderMixin} from '../import.js';
@@ -26,6 +56,14 @@ export default {
         count: {
             type: Number,
             default: 3,
+        },
+        emptySrc: {
+            type: String,
+            required: true,
+        },
+        urlTemplate: {
+            type: String,
+            required: true,
         },
     },
     data() {
