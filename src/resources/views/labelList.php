@@ -1,4 +1,4 @@
-<sidebar-tab :disabled="isInRelabelStep" name="label-list" icon="list" title="Label list" class="sidebar__tab--nopad">
+<sidebar-tab :disabled="isInRelabelStep || null" name="label-list" icon="list" title="Label list" class="sidebar__tab--nopad">
     <label-list
         :labels="labels"
         v-on:select="handleSelectedLabel"

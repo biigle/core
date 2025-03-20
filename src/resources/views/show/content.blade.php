@@ -38,10 +38,10 @@
 <sidebar v-cloak open-tab="labels" v-on:open="handleOpenTab">
     <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div class="largo-tab__button">
-            <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the relabelling step" v-on:click="goToRelabel">Continue</button>
+            <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations || null" title="Go to the relabelling step" v-on:click="goToRelabel">Continue</button>
             <div v-else class="btn-group btn-group-justified">
                 <div class="btn-group">
-                    <button class="btn btn-default col-xs-6" title="Go back to dismissing annotations" :disabled="loading" v-on:click="goToDismiss">Back</button>
+                    <button class="btn btn-default col-xs-6" title="Go back to dismissing annotations" :disabled="loading || null" v-on:click="goToDismiss">Back</button>
                 </div>
                 <div class="btn-group">
                     <button v-if="loading" class="btn col-xs-6" :class="saveButtonClass" title="Saving the changes" disabled><loader :active="true"></loader> Saving</button>
@@ -51,13 +51,13 @@
         </div>
         @can('force-edit-in', $target)
             <div v-if="isInRelabelStep" class="largo-tab__button">
-                <power-toggle :active="forceChange" type="danger" title="Delete or replace annotation labels created by other users" v-on:on="enableForceChange" :disabled="loading" v-on:off="disableForceChange">Force delete/relabel</power-toggle>
+                <power-toggle :active="forceChange" type="danger" title="Delete or replace annotation labels created by other users" v-on:on="enableForceChange" :disabled="loading || null" v-on:off="disableForceChange">Force delete/relabel</power-toggle>
             </div>
         @endcan
         <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
     </sidebar-tab>
     @include('largo::labelList')
-    <sidebar-tab :disabled="isInRelabelStep" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">
+    <sidebar-tab :disabled="isInRelabelStep || null" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">
         <sorting-tab
             :needs-similarity-reference="needsSimilarityReference"
             :sort-key="sortingKey"
