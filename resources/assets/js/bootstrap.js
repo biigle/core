@@ -1,15 +1,32 @@
-import Vue from 'vue';
-import VueResource from 'vue-resource';
+import { configureCompat } from 'vue'
+import { Http } from 'vue-resource';
 
-window.Vue = Vue;
-window.Vue.use(VueResource);
+// TODO: Remove this when migration is complete.
+configureCompat({
+    FILTERS: false,
+    GLOBAL_MOUNT: false,
+    GLOBAL_EXTEND: false,
+    // GLOBAL_PROTOTYPE: false,
+    // CONFIG_WHITESPACE: false,
+    TRANSITION_GROUP_ROOT: false,
+    COMPONENT_V_MODEL: false,
+    RENDER_FUNCTION: false,
+    ATTR_FALSE_VALUE: false,
+    // MODE: 3,
+});
+
+const httpRootElement = document.querySelector('meta[name="http-root"]');
+
+if (httpRootElement) {
+    Http.options.root = httpRootElement.getAttribute('content');
+}
 
 const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
 
 if (csrfTokenElement) {
     const readMethods = ['HEAD', 'GET', 'OPTIONS'];
 
-    Vue.http.interceptors.push(function(request) {
+    Http.interceptors.push(function(request) {
         // Only add the CSRF token for non-read requests. This is important for
         // remote volume locations and CORS, as it would require a special CORS
         // configuration to allow this header.

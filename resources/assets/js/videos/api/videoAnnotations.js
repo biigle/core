@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for video annotations.
  *
@@ -29,10 +31,8 @@
  *
  * Detach a label:
  * resource.detachLabel({id: annotationLabelId}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/video-annotations{/id}', {}, {
+export default Resource('api/v1/video-annotations{/id}', {}, {
     query: {
         method: 'GET',
         url: 'api/v1/videos{/id}/annotations',

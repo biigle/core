@@ -1,6 +1,6 @@
 <script>
-import LabelTypeahead from '../components/labelTypeahead';
-import {randomColor} from '../utils';
+import LabelTypeahead from '../components/labelTypeahead.vue';
+import {randomColor} from '../utils.js';
 
 /**
  * A mixin for components that create new labels
@@ -8,6 +8,11 @@ import {randomColor} from '../utils';
  * @type {Object}
  */
 export default {
+    emits: [
+        'color',
+        'name',
+        'parent',
+    ],
     props: {
         labels: {
             type: Array,

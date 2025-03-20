@@ -3,7 +3,7 @@
 @section('title', $volume->name)
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.volumeId', {!! $volume->id !!});
         biigle.$declare('volumes.type', '{!! $type !!}');
         {{-- Add file IDs as array, too, because the ordering is important! --}}
@@ -36,7 +36,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-volumes-breadcrumbs">
-    @include('volumes.partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small>(<span id="volume-file-count" v-text="text">{{ $fileIds->count() }}</span>&nbsp;{{$type}}s)</small> @include('volumes.partials.annotationSessionIndicator') @include('volumes.partials.handleIndicator') @include('volumes.partials.metadataIndicator')
+    @include('volumes.partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small id="volume-file-count">(<span v-text="text" v-cloak></span><span v-if="false">{{ $fileIds->count() }}</span>&nbsp;{{$type}}s)</small> @include('volumes.partials.annotationSessionIndicator') @include('volumes.partials.handleIndicator') @include('volumes.partials.metadataIndicator')
 </div>
 @endsection
 

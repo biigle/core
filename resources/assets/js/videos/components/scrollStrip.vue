@@ -60,13 +60,20 @@
 </template>
 
 <script>
-import AnnotationTracks from './annotationTracks';
-import Events from '../../core/events';
-import Keyboard from '../../core/keyboard';
-import VideoProgress from './videoProgress';
-import ThumbnailPreview from './thumbnailPreview';
+import AnnotationTracks from './annotationTracks.vue';
+import Events from '@/core/events.js';
+import Keyboard from '@/core/keyboard.js';
+import VideoProgress from './videoProgress.vue';
+import ThumbnailPreview from './thumbnailPreview.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'hover-time',
+        'scroll-y',
+        'seek',
+        'select',
+    ],
     components: {
         videoProgress: VideoProgress,
         annotationTracks: AnnotationTracks,
@@ -264,7 +271,7 @@ export default {
     },
     created() {
         window.addEventListener('resize', this.updateInitialElementWidth);
-        Events.$on('sidebar.toggle', () => {
+        Events.on('sidebar.toggle', () => {
             this.$nextTick(this.updateInitialElementWidth);
         });
 

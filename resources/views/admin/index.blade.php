@@ -83,7 +83,7 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <chart class="admin-chart" v-bind:data="data"></chart>
+                <chart v-bind:data="data"></chart>
             </div>
         </div>
     </div>
@@ -109,7 +109,7 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <chart class="admin-chart" v-bind:data="data"></chart>
+                <chart v-bind:data="data"></chart>
             </div>
         </div>
     </div>
@@ -119,7 +119,7 @@
 @endsection
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('admin.dayNames', {!! $dayNames !!});
         biigle.$declare('admin.imageAnnotationWeek', {!! $imageAnnotationWeek !!});
         biigle.$declare('admin.videoAnnotationWeek', {!! $videoAnnotationWeek !!});

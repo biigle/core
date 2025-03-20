@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for label trees.
  *
@@ -29,10 +31,8 @@
  *
  * Detach a user from a label tree:
  * resource.delete({id: 1, user_id: 1}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/label-trees{/id}', {}, {
+export default Resource('api/v1/label-trees{/id}', {}, {
     addAuthorizedProject: {
         method: 'POST',
         url: 'api/v1/label-trees{/id}/authorized-projects',

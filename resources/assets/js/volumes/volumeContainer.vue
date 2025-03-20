@@ -1,15 +1,15 @@
 <script>
-import FilterTab from './components/filterTab';
-import ImageGrid from './components/volumeImageGrid';
-import FilesStore from './stores/files';
-import LabelsTab from './components/labelsTab';
-import LoaderMixin from '../core/mixins/loader';
-import Settings from '../core/models/Settings';
-import Sidebar from '../core/components/sidebar';
-import SidebarTab from '../core/components/sidebarTab';
-import SortingTab from './components/sortingTab';
-import VolumesApi from './api/volumes';
-import {urlParams as UrlParams} from '../core/utils';
+import FilterTab from './components/filterTab.vue';
+import ImageGrid from './components/volumeImageGrid.vue';
+import FilesStore from './stores/files.js';
+import LabelsTab from './components/labelsTab.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Settings from '@/core/models/Settings.js';
+import Sidebar from '@/core/components/sidebar.vue';
+import SidebarTab from '@/core/components/sidebarTab.vue';
+import SortingTab from './components/sortingTab.vue';
+import VolumesApi from './api/volumes.js';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 let transformUuid = function (uuid) {
     return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;
@@ -27,6 +27,9 @@ let transformUuid = function (uuid) {
  * forEach method or set local variables wherever we can.
  */
 export default {
+    compatConfig: {
+        WATCH_ARRAY: false,
+    },
     mixins: [LoaderMixin],
     components: {
         sidebar: Sidebar,
@@ -127,7 +130,7 @@ export default {
     },
     methods: {
         handleSidebarToggle() {
-            this.$nextTick(() => this.$refs.imageGrid.$emit('resize'));
+            this.$nextTick(() => this.$refs.imageGrid.updateDimensions());
         },
         handleSidebarOpen(tab) {
             this.imageLabelMode = tab === 'labels';
@@ -213,31 +216,34 @@ export default {
         },
     },
     watch: {
-        fileIdsToShow(fileIdsToShow) {
-            // If the shown files differ from the default sequence, store them for
-            // the annotation tool.
-            let fileIds = this.fileIds;
-            let equal = fileIdsToShow.length === fileIds.length;
+        fileIdsToShow: {
+            deep: true,
+            handler(fileIdsToShow) {
+                // If the shown files differ from the default sequence, store them for
+                // the annotation tool.
+                let fileIds = this.fileIds;
+                let equal = fileIdsToShow.length === fileIds.length;
 
-            if (equal) {
-                for (let i = fileIdsToShow.length - 1; i >= 0; i--) {
-                    if (fileIdsToShow[i] !== fileIds[i]) {
-                        equal = false;
-                        break;
+                if (equal) {
+                    for (let i = fileIdsToShow.length - 1; i >= 0; i--) {
+                        if (fileIdsToShow[i] !== fileIds[i]) {
+                            equal = false;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (equal) {
-                localStorage.removeItem(this.filesStorageKey);
-            } else {
-                localStorage.setItem(
-                    this.filesStorageKey,
-                    JSON.stringify(fileIdsToShow)
-                );
-            }
+                if (equal) {
+                    localStorage.removeItem(this.filesStorageKey);
+                } else {
+                    localStorage.setItem(
+                        this.filesStorageKey,
+                        JSON.stringify(fileIdsToShow)
+                    );
+                }
 
-            FilesStore.count = fileIdsToShow.length;
+                FilesStore.count = fileIdsToShow.length;
+            },
         },
         showFilenames(show) {
             this.settings.set('showFilenames', show);
@@ -253,12 +259,10 @@ export default {
         this.sortingSequence = this.fileIds;
         this.volumeId = biigle.$require('volumes.volumeId');
         this.settings = new Settings({
-            data: {
-                storageKey: 'biigle.volumes.settings',
-                defaults: {
-                    showFilenames: false,
-                    showLabels: false,
-                },
+            storageKey: 'biigle.volumes.settings',
+            defaults: {
+                showFilenames: false,
+                showLabels: false,
             },
         });
 

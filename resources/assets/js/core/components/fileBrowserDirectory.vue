@@ -88,11 +88,21 @@
 </template>
 
 <script>
-import FileComponent from './fileBrowserFile';
-import LoaderComponent from './loader';
+import FileComponent from './fileBrowserFile.vue';
+import LoaderComponent from './loader.vue';
 
 export default {
     name: 'file-browser-directory',
+    emits: [
+        'load',
+        'remove-directory',
+        'remove-file',
+        'select',
+        'select-file',
+        'uncollapse',
+        'unselect',
+        'unselect-file',
+    ],
     props: {
         path: {
             type: String,

@@ -4,14 +4,14 @@
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $image)
         <li class="col-xs-4">
-            <figure class="image-thumbnail">
-                <a href="{{ route('annotate', $image->id) }}" title="Annotate image {{$image->filename}}">
+            <a href="{{ route('annotate', $image->id) }}" title="Annotate image {{$image->filename}}">
+                <figure class="image-thumbnail">
                     <img src="{{ thumbnail_url($image->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     <figcaption class="caption">
                         {{ $image->filename }}
                     </figcaption>
-                </a>
-            </figure>
+                </figure>
+            </a>
         </li>
     @endforeach
 

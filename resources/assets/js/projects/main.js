@@ -1,12 +1,12 @@
-import Dashboard from './dashboard';
-import LabelTreesContainer from './labelTreesContainer';
-import LabelTreesCount from './labelTreesCount';
-import MembersContainer from './membersContainer';
-import MembersCount from './membersCount';
-import StatisticsContainer from './statisticsContainer';
-import Title from './title';
-import VolumesContainer from './volumesContainer';
-import VolumesCount from './volumesCount';
+import Dashboard from './dashboard.vue';
+import LabelTreesContainer from './labelTreesContainer.vue';
+import LabelTreesCount from './labelTreesCount.vue';
+import MembersContainer from './membersContainer.vue';
+import MembersCount from './membersCount.vue';
+import StatisticsContainer from './statisticsContainer.vue';
+import Title from './title.vue';
+import VolumesContainer from './volumesContainer.vue';
+import VolumesCount from './volumesCount.vue';
 
 biigle.$mount('project-label-trees-count', LabelTreesCount);
 biigle.$mount('project-members-count', MembersCount);

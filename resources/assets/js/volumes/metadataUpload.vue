@@ -1,8 +1,8 @@
 <script>
-import Dropdown from 'uiv/dist/Dropdown';
-import LoaderMixin from '../core/mixins/loader';
-import MetadataApi from './api/volumeMetadata';
-import MessageStore from '../core/messages/store';
+import {Dropdown} from 'uiv';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import MetadataApi from './api/volumeMetadata.js';
+import MessageStore from '@/core/messages/store.js';
 
 /**
  * The metadata upload of the volume edit page.

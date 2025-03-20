@@ -1,7 +1,7 @@
 @extends('projects.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     @can('update', $project)
         biigle.$declare('projects.canEdit', true);
         biigle.$declare('projects.invitations', {!! $invitations !!});
@@ -41,7 +41,7 @@
                     </span>
                 </p>
                 <popover target="#member-btn" placement="left" v-model="memberPopoverOpen">
-                    <template slot="popover">
+                    <template #popover>
                         <add-member-form
                             :members="members"
                             :roles="roles"
@@ -52,7 +52,7 @@
                     </template>
                 </popover>
                 <popover target="#invitation-btn" placement="left" v-model="invitationPopoverOpen">
-                    <template slot="popover">
+                    <template #popover>
                         <create-invitation-form
                             :project="project"
                             :roles="rolesWithoutAdmin"

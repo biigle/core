@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for the area of images of a volume.
  *
@@ -5,7 +7,6 @@
  *
  * Get the area in m² of all images of the volume:
  * resource.get({id: 1}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/volumes{/id}/images/area');
+export default Resource('api/v1/volumes{/id}/images/area');
+

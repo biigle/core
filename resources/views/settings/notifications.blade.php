@@ -47,7 +47,7 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$mount('report-notification-settings', {
         mixins: [biigle.$require('core.mixins.notificationSettings')],
         data: {

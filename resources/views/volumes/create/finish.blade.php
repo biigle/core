@@ -62,11 +62,11 @@
         @if (!$labelMapOk)
             <a href="{{route('pending-volume-label-map', $pv->id)}}" class="btn btn-warning pull-right">Back to label mapping</a>
 
-            <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
+            <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading || null" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
         @elseif (!$userMapOk)
             <a href="{{route('pending-volume-user-map', $pv->id)}}" class="btn btn-warning pull-right">Back to user mapping</a>
 
-            <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
+            <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading || null" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
         @else
             <form role="form" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}/import") }}" v-on:submit="startLoading">
                 <div class="form-group{{ $errors->has('id') ? ' has-error' : '' }}">
@@ -74,9 +74,9 @@
                        <span class="help-block">{{ $errors->first('id') }}</span>
                     @endif
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
+                    <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading || null" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
 
-                    <input type="submit" class="btn btn-success pull-right" value="Finish import" :disabled="loading">
+                    <input type="submit" class="btn btn-success pull-right" value="Finish import" :disabled="loading || null">
                 </div>
             </form>
         @endif

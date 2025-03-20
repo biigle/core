@@ -1,8 +1,8 @@
 <script>
-import LabelFormComponent from '../mixins/labelFormComponent';
-import LabelSourceApi from '../../core/api/labelSource';
-import WormsResultItem from './wormsResultItem';
-import {handleErrorResponse} from '../../core/messages/store';
+import LabelFormComponent from '../mixins/labelFormComponent.vue';
+import LabelSourceApi from '@/core/api/labelSource.js';
+import WormsResultItem from './wormsResultItem.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * A component for a form to manually create a new label for a label tree
@@ -10,7 +10,13 @@ import {handleErrorResponse} from '../../core/messages/store';
  * @type {Object}
  */
 export default {
-    mixins: [LabelFormComponent],
+    template: '#worms-label-form-template',
+    extends: LabelFormComponent,
+    emits: [
+        'load-finish',
+        'load-start',
+        'submit',
+    ],
     components: {
         wormsResultItem: WormsResultItem,
     },
