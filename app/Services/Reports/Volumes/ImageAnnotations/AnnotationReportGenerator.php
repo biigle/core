@@ -127,7 +127,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     /**
      * Query that joins images, annotations and annotation labels
      *
-     * @return \Illuminate\Database\Query\Builder|Image
+     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
     protected function getImageAnnotationLabelQuery()
     {

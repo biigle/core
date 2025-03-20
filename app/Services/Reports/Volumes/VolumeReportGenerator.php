@@ -66,7 +66,7 @@ class VolumeReportGenerator extends ReportGenerator
     /**
      * Get query for all labels that are attached to the volume of this report (through project label trees).
      *
-     * @return \Biigle\Label
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function getVolumeLabels()
     {
