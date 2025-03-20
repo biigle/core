@@ -31,6 +31,8 @@ import Keyboard from '@/core/keyboard.js';
 
 import {Popover, Tab, Tabs} from 'uiv';
 
+import {Resource} from 'vue-resource';
+
 window.biigle = {};
 window.biigle.$mount = mount;
 window.biigle.$declare = declare;
@@ -75,3 +77,5 @@ biigle.$declare('core.keyboard', Keyboard); // Legacy support.
 biigle.$declare('uiv.popover', Popover);
 biigle.$declare('uiv.tab', Tab);
 biigle.$declare('uiv.tabs', Tabs);
+
+biigle.$declare('resource', Resource);

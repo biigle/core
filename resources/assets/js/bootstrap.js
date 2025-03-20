@@ -1,20 +1,19 @@
-import Vue from 'vue';
 import { configureCompat } from 'vue'
-import { Resource, Http } from 'vue-resource';
+import { Http } from 'vue-resource';
 
+// TODO: Remove this when migration is complete.
 configureCompat({
     FILTERS: false,
+    GLOBAL_MOUNT: false,
+    GLOBAL_EXTEND: false,
+    // GLOBAL_PROTOTYPE: false,
+    // CONFIG_WHITESPACE: false,
+    TRANSITION_GROUP_ROOT: false,
+    COMPONENT_V_MODEL: false,
+    RENDER_FUNCTION: false,
+    ATTR_FALSE_VALUE: false,
+    // MODE: 3,
 });
-
-window.Vue = Vue;
-
-// Vue resource is not officially supported with Vue 3 and it no longer works as Vue
-// plugin. It can be used stand-alone, though, and this is what we do for now. Any
-// change here would require significant work with the existing resource definitions.
-Vue.resource = function () {
-    console.warn('Vue.resource is deprecated. Import Resource directly.');
-    return Resource(...arguments);
-};
 
 const httpRootElement = document.querySelector('meta[name="http-root"]');
 
