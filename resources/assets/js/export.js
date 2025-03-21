@@ -22,6 +22,7 @@ import SidebarTabComponent from '@/core/components/sidebarTab.vue';
 import TypeaheadComponent from '@/core/components/typeahead.vue';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import {mount, declare, require} from './utils.js';
 
 import {debounce, urlParams, throttle} from '@/core/utils.js';
@@ -57,6 +58,7 @@ biigle.$declare('core.components.sidebar', SidebarComponent);
 biigle.$declare('core.components.sidebarTab', SidebarTabComponent);
 biigle.$declare('core.components.typeahead', TypeaheadComponent);
 biigle.$declare('messages', Messages);
+biigle.$declare('handleErrorResponse', handleErrorResponse);
 biigle.$declare('messages.store', Messages); // Legacy support.
 window.$biiglePostMessage = Messages.post; // Legacy support.
 biigle.$declare('core.mixins.editor', EditorMixin);
