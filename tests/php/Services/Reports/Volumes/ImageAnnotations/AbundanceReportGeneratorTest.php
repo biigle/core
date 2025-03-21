@@ -257,8 +257,13 @@ class AbundanceReportGeneratorTest extends TestCase
     public function testGenerateReportAggregateChildLabels()
     {
         $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
 
-        $root = LabelTest::create();
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $root = LabelTest::create(['label_tree_id' => $lt->id]);
         $child = LabelTest::create([
             'parent_id' => $root->id,
             'label_tree_id' => $root->label_tree_id,
@@ -577,12 +582,174 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportOnlyLabelsAggregateChildLabelsAllLabels()
+    {
+        $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
+        $image = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $image2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $root1 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $child1 = LabelTest::create([
+            'parent_id' => $root1->id,
+            'label_tree_id' => $root1->label_tree_id,
+        ]);
+
+        // Test case where the child label should not be included.
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $root1->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $root1->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $child1->id,
+        ]);
+
+        $root2 = LabelTest::create();
+        $child2 = LabelTest::create([
+            'parent_id' => $root2->id,
+            'label_tree_id' => $root2->label_tree_id,
+        ]);
+
+        // Test case where the root label should not be included but has annotations.
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $root2->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $root2->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $child2->id,
+        ]);
+
+        $root3 = LabelTest::create();
+        $child3 = LabelTest::create([
+            'parent_id' => $root3->id,
+            'label_tree_id' => $root3->label_tree_id,
+        ]);
+
+        // Test case where the root label should not be included but has no annotations.
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $child3->id,
+        ]);
+
+        $root4 = LabelTest::create();
+        $child4 = LabelTest::create([
+            'parent_id' => $root4->id,
+            'label_tree_id' => $root4->label_tree_id,
+        ]);
+
+        // Test case where the root label should be included but has no annotations.
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $child4->id,
+        ]);
+
+        $root5 = LabelTest::create(['label_tree_id' => $lt->id]);
+        // Test case where the root label should be included but has no annotations.
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $root5->id,
+        ]);
+        $root6 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $root7 = LabelTest::create(['label_tree_id' => $lt->id]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                'image_filename',
+                $root1->name,
+                $child2->name,
+                $child3->name,
+                $root4->name,
+                $root5->name,
+                $root6->name,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image->filename, 2, 1, 1, 1, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image2->filename, 0, 0, 0, 0, 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'aggregateChildLabels' => true,
+            'onlyLabels' => [
+                $root1->id,
+                $child2->id,
+                $child3->id,
+                $root4->id,
+                $child4->id,
+                $root5->id,
+                $root6->id
+            ],
+            'all_labels' => true
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
     public function testGenerateReportSeparateUsersAggregateLabels()
     {
+        $project = ProjectTest::create();
         $u = UserTest::create();
         $volume = VolumeTest::create();
+        $project->addVolumeId($volume);
+        $lt = LabelTreeTest::create();
+        $lt2 = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+        $lt2->projects()->attach($project);
 
-        $root = LabelTest::create();
+        $root = LabelTest::create(['label_tree_id' => $lt->id]);
         $child = LabelTest::create([
             'parent_id' => $root->id,
             'label_tree_id' => $root->label_tree_id,
@@ -592,6 +759,8 @@ class AbundanceReportGeneratorTest extends TestCase
             'parent_id' => $child->id,
             'label_tree_id' => $child->label_tree_id,
         ]);
+
+        $root2 = LabelTest::create(['label_tree_id' => $lt2->id]);
 
         $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
 
@@ -630,35 +799,35 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['image_filename', $root->name]);
+            ->with(['image_filename', $root->name, $root2->name]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['image_filename', $root->name]);
+            ->with(['image_filename', $root->name, $root2->name]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$i1->filename, 1]);
+            ->with([$i1->filename, 1, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$i1->filename, 0]);
+            ->with([$i1->filename, 0, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$i2->filename, 2]);
+            ->with([$i2->filename, 2, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$i2->filename, 0]);
+            ->with([$i2->filename, 0, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$i3->filename, 0]);
+            ->with([$i3->filename, 0, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$i3->filename, 0]);
+            ->with([$i3->filename, 0, 0]);
 
         $mock->shouldReceive('close')
             ->twice();
