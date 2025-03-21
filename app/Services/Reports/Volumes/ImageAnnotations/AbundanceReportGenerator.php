@@ -2,11 +2,11 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use DB;
+use Biigle\User;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\User;
-use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -63,9 +63,10 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
             $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
+            $labels = $this->getAllFilteredVolumeLabels($allLabelIds);
             $userIds = $rows->keys()->reject(fn ($k) => !$k);
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
