@@ -3,18 +3,18 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
-use Biigle\Services\Reports\CsvFile;
-use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\VolumeTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Services\Reports\CsvFile;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
 
 class AbundanceReportGeneratorTest extends TestCase
 {
@@ -183,6 +183,7 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $l1 = LabelTest::create(['label_tree_id' => $lt->id]);
         $l2 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $l3 = LabelTest::create(['label_tree_id' => $lt->id]);
 
         $annotation = ImageAnnotationTest::create([
             'image_id' => $image->id,
@@ -208,29 +209,30 @@ class AbundanceReportGeneratorTest extends TestCase
             ->once()
             ->with("{$al2->user->firstname} {$al2->user->lastname}");
 
+        // Report should also include unused labels
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['image_filename', $l1->name, $l2->name]);
+            ->with(['image_filename', $l1->name, $l2->name, $l3->name]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['image_filename', $l1->name, $l2->name]);
+            ->with(['image_filename', $l1->name, $l2->name, $l3->name]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image->filename, 1, 0]);
+            ->with([$image->filename, 1, 0, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image->filename, 0, 1]);
+            ->with([$image->filename, 0, 1, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image2->filename, 0, 0]);
+            ->with([$image2->filename, 0, 0, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image2->filename, 0, 0]);
+            ->with([$image2->filename, 0, 0, 0]);
 
         $mock->shouldReceive('close')
             ->twice();
