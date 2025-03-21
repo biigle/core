@@ -29,8 +29,13 @@ class AbundanceReportGeneratorTest extends TestCase
     public function testGenerateReport()
     {
         $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
 
-        $root = LabelTest::create();
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $root = LabelTest::create(['label_tree_id' => $lt->id]);
         $child = LabelTest::create([
             'parent_id' => $root->id,
             'label_tree_id' => $root->label_tree_id,
