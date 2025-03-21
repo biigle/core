@@ -6,6 +6,7 @@ use DB;
 use Biigle\User;
 use Biigle\Label;
 use Biigle\LabelTree;
+use Illuminate\Support\Facades\Log;
 use Biigle\Services\Reports\CsvFile;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
@@ -180,6 +181,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         // Add all possible labels because the parent to which the child labels should
         // be aggregated may not have "own" annotations. Unused labels are filtered
         // later.
+        $originalLabels = $labels;
         $addLabels = Label::whereIn('label_tree_id', $labels->pluck('label_tree_id')->unique())
             ->whereNotIn('id', $labels->pluck('id'))
             ->when($this->isRestrictedToLabels(), function ($query) {
@@ -198,7 +200,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     return in_array($value, $onlyLabels) ? $value : null;
                 });
             })
-            ->reject(fn ($value) => is_null($value));
+            ->reject(fn($value) => is_null($value));
 
         // Determine the highest parent label for all child labels.
         do {
@@ -244,7 +246,19 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         // Remove all labels that did not occur (as parent) in the rows.
         $presentLabels = $presentLabels->unique()->flip();
-        $labels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
+        $usedParentLabels = $labels->filter(fn($label) => $presentLabels->has($label->id));
+
+        // Add unused labels again
+        if ($this->shouldUseAllLabels() || $this->shouldSeparateUsers()) {
+            $usedParentLabelIds = $usedParentLabels->pluck('id');
+            $unusedLabels = $originalLabels
+                ->when($this->isRestrictedToLabels(), fn($c) => $c
+                    ->filter(fn($l) => in_array($l->id, $this->getOnlyLabels())))
+                ->filter(callback: fn($l) => is_null($l->parent_id) && !$usedParentLabelIds->contains($l->id));
+            $labels = $usedParentLabels->merge($unusedLabels);
+        } else {
+            $labels = $usedParentLabels;
+        }
 
         return [$rows, $labels];
     }
