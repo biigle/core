@@ -88,7 +88,8 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
         } else {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+            $labels = $this->getAllFilteredVolumeLabels($allLabelIds);
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
         }
 
