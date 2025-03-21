@@ -99,7 +99,8 @@ class VolumeReportGenerator extends ReportGenerator
                 // include already filtered labels
                 ->orWhereIn('labels.id', $filteredLabelIds)
                 ->select($columns)
-                ->get();
+                ->get()
+                ->unique();
         }
 
         return $this->getVolumeLabels()->get();
