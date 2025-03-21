@@ -18,6 +18,7 @@ import { Modal } from 'uiv';
 
 
 export default {
+    emits: ['close-modal'],
     components: {
         modal: Modal,
         annotationTimeline: AnnotationTimeline,

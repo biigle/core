@@ -4,7 +4,7 @@
             <button
                 class="btn btn-default"
                 title="Accept all merge items"
-                :disabled="cannotResolveAll"
+                :disabled="cannotResolveAll || null"
                 @click="acceptAll"
                 >
                     Accept all
@@ -13,7 +13,7 @@
             <button
                 class="btn btn-default"
                 title="Set all merge items as not accepted"
-                :disabled="cannotResolveNone"
+                :disabled="cannotResolveNone || null"
                 @click="acceptNone"
                 >
                     Accept none
@@ -32,7 +32,7 @@
                     v-for="item in diff"
                     :key="item.id"
                     :item="item"
-                    :disabled="disabled"
+                    :disabled="disabled || null"
                     @accepted="handleResolved"
                     ></label-tree-diff-row>
             </tbody>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Row from './labelTreeDiffRow';
+import Row from './labelTreeDiffRow.vue';
 
 /**
  * A component that displays a single label of a label tree.
@@ -52,6 +52,12 @@ import Row from './labelTreeDiffRow';
  * @type {Object}
  */
 export default {
+    emits: [
+        'add',
+        'cancel-add',
+        'cancel-remove',
+        'remove',
+    ],
     components: {
         labelTreeDiffRow: Row,
     },

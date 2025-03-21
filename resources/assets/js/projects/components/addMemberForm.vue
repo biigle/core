@@ -6,7 +6,7 @@
             <typeahead
                 more-info="affiliation"
                 placeholder=""
-                :disabled="disabled"
+                :disabled="disabled || null"
                 :items="availableUsers"
                 :value="selectedMemberName"
                 @select="selectMember"
@@ -19,7 +19,7 @@
             <select
                 class="form-control"
                 v-model="selectedRole"
-                :disabled="disabled"
+                :disabled="disabled || null"
                 >
                 <option
                     v-for="role in roles"
@@ -31,7 +31,7 @@
         <button
             class="btn btn-success btn-block"
             type="submit"
-            :disabled="!canAttachMember"
+            :disabled="!canAttachMember || null"
             >
             Add
         </button>
@@ -39,12 +39,13 @@
 </template>
 
 <script>
-import LoaderMixin from '../../core/mixins/loader';
-import Typeahead from '../../core/components/typeahead';
-import UsersApi from '../../core/api/users';
-import {handleErrorResponse} from '../../core/messages/store';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Typeahead from '@/core/components/typeahead.vue';
+import UsersApi from '@/core/api/users.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
+    emits: ['attach'],
     mixins: [LoaderMixin],
     props: {
         members: {

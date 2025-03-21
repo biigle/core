@@ -1,3 +1,18 @@
+<template>
+<li class="list-group-item" :class="classObject">
+    <small class="text-muted" v-text="classification"></small>
+    <div class="clearfix">
+        <span class="pull-right">
+            <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle" :disabled="selected || null"><span class="fa fa-plus" aria-hidden="true"></span></button>
+        </span>
+        <span v-text="item.rank"></span>:
+        <a :href="item.url" target="_blank" title="Show WoRMS page">
+            <span v-text="item.name"></span>
+            <span v-if="!item.accepted">(unaccepted)</span>
+        </a>
+    </div>
+</li>
+</template>
 <script>
 /**
  * An item of the results list of a WoRMS search
@@ -5,6 +20,7 @@
  * @type {Object}
  */
 export default {
+    emits: ['select'],
     props: {
         item: {
             type: Object,

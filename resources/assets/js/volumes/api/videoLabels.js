@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for video labels.
  *
@@ -11,10 +13,8 @@
  *
  * Detach a label:
  * resource.delete({id: label_id}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/video-labels{/id}', {}, {
+export default Resource('api/v1/video-labels{/id}', {}, {
     query: {
         method: 'GET',
         url: 'api/v1/videos{/video_id}/labels',

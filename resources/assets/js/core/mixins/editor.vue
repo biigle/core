@@ -5,6 +5,10 @@
  * @type {Object}
  */
 export default {
+    emits: [
+        'editing.start',
+        'editing.stop',
+    ],
     data() {
         return {
             editing: false,

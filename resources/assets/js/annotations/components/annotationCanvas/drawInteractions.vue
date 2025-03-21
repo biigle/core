@@ -1,9 +1,9 @@
 <script>
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '../../../core/keyboard';
-import Styles from '../../stores/styles';
+import Keyboard from '@/core/keyboard.js';
+import Styles from '@/annotations/stores/styles.js';
 import { shiftKeyOnly } from '@biigle/ol/events/condition';
-import snapInteraction from '../../snapInteraction.vue';
+import snapInteraction from '@/annotations/ol/snapInteraction.js';
 import { Point } from '@biigle/ol/geom';
 import * as preventDoubleclick from '../../../prevent-doubleclick';
 

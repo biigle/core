@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import Image from './volumeImageGridImage';
-import ImageGrid from './imageGrid';
+import Image from './volumeImageGridImage.vue';
+import ImageGrid from './imageGrid.vue';
 
 /**
  * A variant of the image grid used to display vomule images

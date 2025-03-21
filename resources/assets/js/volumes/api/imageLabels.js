@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for image labels.
  *
@@ -11,10 +13,8 @@
  *
  * Detach a label:
  * resource.delete({id: label_id}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/image-labels{/id}', {}, {
+export default Resource('api/v1/image-labels{/id}', {}, {
     query: {
         method: 'GET',
         url: 'api/v1/images{/image_id}/labels',

@@ -3,7 +3,7 @@
 @section('title', 'Select metadata anntation labels to import')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.labels', {!! $labels !!});
     </script>
 @endpush
@@ -44,10 +44,10 @@
         <div class="form-group">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <input type="hidden" name="_method" value="PUT">
-            <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
+            <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading || null" title="Discard metadata and continue to the new volume" onclick="return confirm('Are you sure you want to abort the metadata import?')">Cancel</button>
 
             <a v-if="allSelected" @if ($pv->import_file_labels) href="{{ route('pending-volume-file-labels', $pv->id) }}" @else href="{{ route('pending-volume-label-map', $pv->id) }}" @endif class="btn btn-success pull-right">Continue</a>
-            <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Continue" :disabled="cannotContinue">
+            <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Continue" :disabled="cannotContinue || null">
          </div>
       </form>
       <form id="cancel-pending-volume" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">

@@ -1,9 +1,9 @@
 <script>
-import Events from '../../core/events';
-import Keyboard from '../../core/keyboard';
-import PowerToggle from '../../core/components/powerToggle';
-import Settings from '../stores/settings';
-import {urlParams as UrlParams} from '../../core/utils';
+import Events from '@/core/events.js';
+import Keyboard from '@/core/keyboard.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import Settings from '../stores/settings.js';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 /**
  * The annotation modes tab of the annotator
@@ -11,6 +11,12 @@ import {urlParams as UrlParams} from '../../core/utils';
  * @type {Object}
  */
 export default {
+    template: '#annotation-modes-tab-template',
+    emits: [
+        'attach-label',
+        'change',
+        'create-sample',
+    ],
     components: {
         powerToggle: PowerToggle,
     },
@@ -125,7 +131,7 @@ export default {
 
         let mode = UrlParams.get('annotationMode');
         if (mode) {
-            Events.$once('images.change', () => this.setMode(mode));
+            Events.once('images.change', () => this.setMode(mode));
         }
     },
 };
