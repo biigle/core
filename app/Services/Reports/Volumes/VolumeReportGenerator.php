@@ -83,7 +83,7 @@ class VolumeReportGenerator extends ReportGenerator
     }
 
     /**
-     * Return used and empty filtered labels
+     * Return all (filtered) labels that are attached to the volume including unused labels
      * @param \Illuminate\Support\Collection $filteredLabelIds Ids of filtered labels
      * @return \Illuminate\Database\Eloquent\Collection
      */
@@ -92,7 +92,7 @@ class VolumeReportGenerator extends ReportGenerator
         if ($this->isRestrictedToLabels() || $this->isRestrictedToNewestLabel() || $this->isRestrictedToAnnotationSession()) {
             $columns = ['labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id'];
             return $this->getVolumeLabels()
-                // include empty labels
+                // include unused labels
                 ->leftJoin('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
                 ->whereNull('image_annotation_labels.annotation_id')
                 ->when($this->isRestrictedToLabels(), fn($q) => $q->whereIn('labels.id', $this->getOnlyLabels()))
