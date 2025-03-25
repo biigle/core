@@ -32,7 +32,7 @@ import Keyboard from '@/core/keyboard.js';
 
 import {Popover, Tab, Tabs} from 'uiv';
 
-import {Resource} from 'vue-resource';
+import {Resource, Http} from 'vue-resource';
 
 window.biigle = {};
 window.biigle.$mount = mount;
@@ -81,3 +81,4 @@ biigle.$declare('uiv.tab', Tab);
 biigle.$declare('uiv.tabs', Tabs);
 
 biigle.$declare('resource', Resource);
+biigle.$declare('http', Http);
