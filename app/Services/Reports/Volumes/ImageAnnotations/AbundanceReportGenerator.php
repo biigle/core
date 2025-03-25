@@ -6,7 +6,6 @@ use DB;
 use Biigle\User;
 use Biigle\Label;
 use Biigle\LabelTree;
-use Illuminate\Support\Facades\Log;
 use Biigle\Services\Reports\CsvFile;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
