@@ -735,7 +735,7 @@ class AbundanceReportGeneratorTest extends TestCase
                 $root5->id,
                 $root6->id
             ],
-            'all_labels' => true
+            'allLabels' => true
         ]);
         $generator->setSource($volume);
         $mock = Mockery::mock();
@@ -924,7 +924,7 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $generator = new AbundanceReportGenerator([
             'separateLabelTrees' => true,
-            'all_labels' => true
+            'allLabels' => true
         ]);
         $generator->setSource($image->volume);
         $mock = Mockery::mock();
@@ -1019,7 +1019,7 @@ class AbundanceReportGeneratorTest extends TestCase
         App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
-            'all_labels' => true
+            'allLabels' => true
         ]);
         $generator->setSource($volume);
         $mock = Mockery::mock();

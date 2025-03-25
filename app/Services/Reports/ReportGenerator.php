@@ -292,6 +292,6 @@ class ReportGenerator
      */
     protected function shouldUseAllLabels()
     {
-        return $this->options->get('all_labels', false);
+        return $this->options->get('allLabels', false);
     }
 }
