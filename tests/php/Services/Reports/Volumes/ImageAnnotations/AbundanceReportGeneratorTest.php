@@ -949,6 +949,11 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_id' => $root->id,
         ]);
 
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $root->id,
+        ]);
+
         $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
 
         ImageAnnotationLabelTest::create([
@@ -957,6 +962,18 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         $root2 = LabelTest::create(['label_tree_id' => $lt->id]);
+
+        $a = ImageAnnotationTest::create(['image_id' => $i2->id]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'label_id' => $root->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'label_id' => $root->id,
+        ]);
 
         // Inlcude images without labels, too
         $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
@@ -980,11 +997,11 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['a.jpg', 1, 0, 0]);
+            ->with(['a.jpg', 2, 0, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with(['b.jpg', 0, 1, 0]);
+            ->with(['b.jpg', 2, 1, 0]);
 
         $mock->shouldReceive('putCsv')
             ->once()
