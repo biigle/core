@@ -24,6 +24,7 @@ class StoreReport extends FormRequest
             'aggregate_child_labels' => "nullable|boolean",
             'disable_notifications' => "nullable|boolean",
             'strip_ifdo' => "nullable|boolean",
+            'all_labels' => 'nullable|boolean'
         ];
     }
 
@@ -65,6 +66,7 @@ class StoreReport extends FormRequest
             'separateUsers' => boolval($this->input('separate_users', false)),
             'newestLabel' => boolval($this->input('newest_label', false)),
             'onlyLabels' => $this->input('only_labels', []),
+            'allLabels' => $this->input('all_labels', false)
         ];
 
         if ($this->isAllowedForExportArea()) {
