@@ -2,7 +2,7 @@
 import LoaderComponent from '../components/loader.vue';
 import LoaderBlockComponent from '../components/loaderBlock.vue';
 import MessageCurtainComponent from '../components/messageCurtain.vue';
-import Messages from '../messages/store.js';
+import {handleErrorResponse} from '../messages/store.js';
 
 /**
  * A mixin for view models that have a loading state
@@ -41,7 +41,7 @@ export default {
             }
         },
         handleErrorResponse(response) {
-            return Messages.handleErrorResponse(response);
+            return handleErrorResponse(response);
         },
     },
 };
