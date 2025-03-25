@@ -35,6 +35,9 @@ class AbundanceReportGeneratorTest extends TestCase
         $lt = LabelTreeTest::create();
         $lt->projects()->attach($project);
 
+        // should be ignored
+        LabelTest::create(['label_tree_id' => $lt->id]);
+
         $root = LabelTest::create(['label_tree_id' => $lt->id]);
         $child = LabelTest::create([
             'parent_id' => $root->id,
@@ -103,6 +106,9 @@ class AbundanceReportGeneratorTest extends TestCase
     {
         $label1 = LabelTest::create();
         $label2 = LabelTest::create();
+
+        // should be ignored
+        LabelTest::create();
 
         $image = ImageTest::create();
         $image2 = ImageTest::create([
@@ -1012,7 +1018,9 @@ class AbundanceReportGeneratorTest extends TestCase
 
         App::singleton(CsvFile::class, fn () => $mock);
 
-        $generator = new AbundanceReportGenerator;
+        $generator = new AbundanceReportGenerator([
+            'all_labels' => true
+        ]);
         $generator->setSource($volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
