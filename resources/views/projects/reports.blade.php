@@ -104,6 +104,17 @@
                     <div v-else class="help-block">
                         Only the newest label of each annotation will be included in the report.
                     </div>
+                <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="options.all_labels"> Include all volume labels
+                            </label>
+                    </div>
+                        <div v-if="errors.all_labels" v-cloak class="help-block" v-text="getError('all_labels')"></div>
+                        <div v-else class="help-block">
+                            Include all labels that can be used in a volume.
+                        </div>
+                    </div>
                 </div>
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
                     <div class="checkbox">

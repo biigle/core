@@ -2,11 +2,11 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use DB;
+use Biigle\User;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\User;
-use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -41,27 +41,59 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $rows = $this->query()->get();
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
-            $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
-
-            foreach ($trees as $id => $name) {
-                $rowGroup = $rows->get($id);
-                $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+            if ($this->shouldUseAllLabels()) {
+                $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+                $rows = $rows->groupBy('label_tree_id');
+                $allLabels = $this->getAllFilteredVolumeLabels($allLabelIds);
+                $treeIds = $allLabels->pluck('label_tree_id');
+                $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+                $allLabels = $allLabels->groupBy('label_tree_id');
+                foreach ($trees as $id => $name) {
+                    $labels = $allLabels->get($id);
+                    $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
+                }
+            } else {
+                $rows = $rows->groupBy('label_tree_id');
+                $treeIds = $rows->keys()->reject(fn($k) => !$k);
+                $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+                foreach ($trees as $id => $name) {
+                    $labelIds = $rows->get($id)->pluck('label_id')->unique();
+                    $labels = Label::whereIn('id', $labelIds)->get();
+                    $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
+                }
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+            $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            $labels = $this->getAllFilteredVolumeLabels($allLabelIds);
+            $userIds = $rows->keys()->reject(fn ($k) => !$k);
+            $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
                 $rowGroup = $rows->get($id);
+                $userFilenames = $rowGroup->pluck('filename')->unique();
+                $missingFiles = $allFilenames->diff($userFilenames);
+                // Create empty entries to show all images
+                foreach ($missingFiles as $f) {
+                    $rowGroup->add((object) [
+                        'filename' => $f,
+                        'count' => 0,
+                        'label_id' => null,
+                        'user_id' => $id
+                    ]);
+                }
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
         } else {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+            if ($this->shouldUseAllLabels()) {
+                $labels = $this->getAllFilteredVolumeLabels($allLabelIds);
+            } else {
+                $labels = Label::whereIn('id', $allLabelIds)->get();
+            }
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
         }
 
@@ -152,6 +184,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         // Add all possible labels because the parent to which the child labels should
         // be aggregated may not have "own" annotations. Unused labels are filtered
         // later.
+        $originalLabels = $labels;
         $addLabels = Label::whereIn('label_tree_id', $labels->pluck('label_tree_id')->unique())
             ->whereNotIn('id', $labels->pluck('id'))
             ->when($this->isRestrictedToLabels(), function ($query) {
@@ -170,7 +203,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     return in_array($value, $onlyLabels) ? $value : null;
                 });
             })
-            ->reject(fn ($value) => is_null($value));
+            ->reject(fn($value) => is_null($value));
 
         // Determine the highest parent label for all child labels.
         do {
@@ -216,7 +249,19 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         // Remove all labels that did not occur (as parent) in the rows.
         $presentLabels = $presentLabels->unique()->flip();
-        $labels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
+        $usedParentLabels = $labels->filter(fn($label) => $presentLabels->has($label->id));
+
+        // Add unused labels again
+        if ($this->shouldUseAllLabels() || $this->shouldSeparateUsers()) {
+            $usedParentLabelIds = $usedParentLabels->pluck('id');
+            $unusedLabels = $originalLabels
+                ->when($this->isRestrictedToLabels(), fn($c) => $c
+                    ->filter(fn($l) => in_array($l->id, $this->getOnlyLabels())))
+                ->filter(callback: fn($l) => is_null($l->parent_id) && !$usedParentLabelIds->contains($l->id));
+            $labels = $usedParentLabels->merge($unusedLabels);
+        } else {
+            $labels = $usedParentLabels;
+        }
 
         return [$rows, $labels];
     }

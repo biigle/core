@@ -57,20 +57,20 @@ class VolumeReportGenerator extends ReportGenerator
         if (is_null($this->labels)) {
             // We expect most of the used labels to belong to a label tree currently
             // attached to the volume (through its projects).
-            $this->labels = $this->getVolumeLabels()->keyBy('id');
+            $this->labels = $this->getVolumeLabels()->get()->keyBy('id');
         }
 
         return parent::expandLabelName($id);
     }
 
     /**
-     * Get all labels that are attached to the volume of this report (through project label trees).
+     * Get query for all labels that are attached to the volume of this report (through project label trees).
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function getVolumeLabels()
     {
-        return Label::select('id', 'name', 'parent_id')
+        return Label::select('id', 'name', 'parent_id', 'label_tree_id')
             ->whereIn('label_tree_id', function ($query) {
                 $query->select('label_tree_id')
                     ->from('label_tree_project')
@@ -79,8 +79,31 @@ class VolumeReportGenerator extends ReportGenerator
                             ->from('project_volume')
                             ->where('volume_id', $this->source->id);
                     });
-            })
-            ->get();
+            });
+    }
+
+    /**
+     * Return all (filtered) labels that are attached to the volume including unused labels
+     * @param \Illuminate\Support\Collection $filteredLabelIds Ids of filtered labels
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function getAllFilteredVolumeLabels($filteredLabelIds)
+    {
+        if ($this->isRestrictedToLabels() || $this->isRestrictedToNewestLabel() || $this->isRestrictedToAnnotationSession()) {
+            $columns = ['labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id'];
+            return $this->getVolumeLabels()
+                // include unused labels
+                ->leftJoin('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
+                ->whereNull('image_annotation_labels.annotation_id')
+                ->when($this->isRestrictedToLabels(), fn($q) => $q->whereIn('labels.id', $this->getOnlyLabels()))
+                // include already filtered labels
+                ->orWhereIn('labels.id', $filteredLabelIds)
+                ->select($columns)
+                ->get()
+                ->unique();
+        }
+
+        return $this->getVolumeLabels()->get();
     }
 
     /**

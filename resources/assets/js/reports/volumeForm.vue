@@ -18,6 +18,7 @@ export default {
                     'annotation_session_id',
                     'only_labels',
                     'aggregate_child_labels',
+                    'all_labels'
                 ],
                 'ImageLabels': [
                     'separate_label_trees',
