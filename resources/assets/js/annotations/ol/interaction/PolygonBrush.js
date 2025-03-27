@@ -216,7 +216,7 @@ class PolygonBrush extends Draw {
     this.dispatchEvent(new DrawEvent(DrawEventType.DRAWSTART, this.sketchFeature_));
   }
 
-  addToDrawing_(coordinate) {
+  addToDrawing_() {
     // This function is not required here. It would cause an error if this interactions
     // is in freehand mode (with pen input) because it expects the sketchCoords_ to be
     // filled, which aren't used here.
