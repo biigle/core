@@ -2,7 +2,7 @@
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../stores/styles';
-import { shiftKeyOnly } from '@biigle/ol/events/condition';
+import { shiftKeyOnly, penOnly, never } from '@biigle/ol/events/condition';
 import snapInteraction from '../../snapInteraction.vue';
 import { Point } from '@biigle/ol/geom';
 import * as preventDoubleclick from '../../../prevent-doubleclick';
@@ -16,16 +16,18 @@ import * as preventDoubleclick from '../../../prevent-doubleclick';
 
 let drawInteraction;
 
-// Custom OpenLayers freehandCondition that is true if a pen is used for input or
-// if Shift is pressed otherwise.
+// Custom OpenLayers freehandCondition that is true if either the input is a pen or the
+// shift key is pressed (but not both).
+let penXorShift = function (mapBrowserEvent) {
+    let isPen = penOnly(mapBrowserEvent);
+    let isShift = shiftKeyOnly(mapBrowserEvent);
+
+    return isPen && !isShift || !isPen && isShift;
+};
+
+// Custom OpenLayers freehandCondition that is true if either the input is a pen or the shift key is pressed or both.
 let penOrShift = function (mapBrowserEvent) {
-  let pointerEvent = mapBrowserEvent.pointerEvent;
-
-  if (pointerEvent && pointerEvent.pointerType === "pen") {
-    return true;
-  }
-
-  return shiftKeyOnly(mapBrowserEvent);
+    return penOnly(mapBrowserEvent) || shiftKeyOnly(mapBrowserEvent);
 };
 
 export default {
@@ -99,7 +101,7 @@ export default {
                     source: this.annotationSource,
                     type: mode.slice(4), // remove 'draw' prefix
                     style: Styles.editing,
-                    freehandCondition: penOrShift,
+                    freehandCondition: this.getFreehandCondition(mode),
                     condition: this.updateSnapCoords
                 });
                 this.map.addInteraction(drawInteraction);
@@ -136,6 +138,17 @@ export default {
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
                 && preventDoubleclick.computeDistance(this.lastDrawnPoint,e.feature.getGeometry()) < preventDoubleclick.POINT_CLICK_DISTANCE;
+        },
+        getFreehandCondition(mode) {
+            if (mode === 'drawCircle') {
+                return penOrShift
+            }
+
+            if (mode === 'drawLineString' || mode === 'drawPolygon') {
+                return penXorShift
+            }
+
+            return never;
         },
     },
     watch: {
