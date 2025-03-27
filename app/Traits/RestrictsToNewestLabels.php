@@ -13,7 +13,7 @@ trait RestrictsToNewestLabels
      *
      * @return \Illuminate\Contracts\Database\Query\Builder
      */
-    public function restrictToNewestLabelQuery($query, Volume $volume)
+    public function restrictToNewestLabelQuery($query, Volume $volume, $keepEmptyImgs = false)
     {
         // The subquery join is the fastest approach I could come up with that can be used
         // as an addition to the existing query (instead of rewiriting the entire query,
@@ -43,6 +43,11 @@ trait RestrictsToNewestLabels
                 ->orderBy('image_annotation_labels.annotation_id', 'desc')
                 ->orderBy('image_annotation_labels.id', 'desc')
                 ->orderBy('image_annotation_labels.created_at', 'desc');
+        }
+        if ($keepEmptyImgs) {
+            return $query->joinSub($subquery, 'latest_labels', fn($join) => $join
+                ->on("{$table}.id", '=', 'latest_labels.id')
+                ->orWhereNull("{$table}.annotation_id"));
         }
 
         return $query->joinSub($subquery, 'latest_labels', fn ($join) => $join->on("{$table}.id", '=', 'latest_labels.id'));

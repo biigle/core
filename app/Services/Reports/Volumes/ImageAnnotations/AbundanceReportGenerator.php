@@ -128,7 +128,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $query = $this->getImageAnnotationLabelQuery()
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source))
+            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
             ->when($this->isRestrictedToLabels(), fn($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
             // Add empty images here because filters would remove them
             ->orWhere(function ($query) {
