@@ -2,7 +2,6 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
-use Biigle\Image;
 use Biigle\Services\Reports\Volumes\VolumeReportGenerator;
 use Biigle\Traits\RestrictsToExportArea;
 use Biigle\Traits\RestrictsToNewestLabels;
@@ -106,17 +105,15 @@ class AnnotationReportGenerator extends VolumeReportGenerator
      */
     public function initQuery($columns = [])
     {
-        $query = $this->getImageAnnotationLabelQuery()
+        $query = DB::table('image_annotation_labels')
+            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
+            ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id')
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source))
             ->when($this->isRestrictedToLabels(), fn ($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
-            // Add empty images here because filters would remove them
-            ->when($this->shouldUseAllImages(), fn($query) => $query->orWhere(function ($query) {
-                $query->where('images.volume_id', $this->source->id)
-                    ->whereNull('labels.id');
-            }))
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {
@@ -126,31 +123,6 @@ class AnnotationReportGenerator extends VolumeReportGenerator
         }
 
         return $query;
-    }
-
-    /**
-     * Query that joins images, annotations and annotation labels
-     *
-     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
-     */
-    protected function getImageAnnotationLabelQuery()
-    {
-        if ($this->shouldUseAllImages()) {
-            // Use leftJoin to collect images without annotations too
-            return Image::leftJoin('image_annotations', 'images.id', '=', 'image_annotations.image_id')
-                ->leftJoin('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-                ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id');
-        }
-
-        return DB::table('image_annotation_labels')
-            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-            ->join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->join('labels', 'image_annotation_labels.label_id', '=', 'labels.id');
-    }
-
-    protected function shouldUseAllImages()
-    {
-        return get_called_class() === AbundanceReportGenerator::class;
     }
 
     /**

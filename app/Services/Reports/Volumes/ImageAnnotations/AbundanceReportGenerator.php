@@ -4,6 +4,7 @@ namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
 use DB;
 use Biigle\User;
+use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
@@ -121,6 +122,57 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         }
 
         return $query;
+    }
+
+    public function initQuery($columns = [])
+    {
+        $query = $this->getImageAnnotationLabelQuery()
+            ->where('images.volume_id', $this->source->id)
+            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source))
+            ->when($this->isRestrictedToLabels(), fn($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
+            // Add empty images here because filters would remove them
+            ->orWhere(function ($query) {
+                $query->where('images.volume_id', $this->source->id)
+                    ->whereNull('labels.id');
+            })
+            ->addSelect($columns);
+
+        if ($this->shouldSeparateLabelTrees()) {
+            $query->addSelect('labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->addSelect('image_annotation_labels.user_id');
+        }
+
+        return $query;
+    }
+
+    protected function getImageAnnotationLabelQuery()
+    {
+        if ($this->isRestrictedToAnnotationSession()) {
+            $session = $this->getAnnotationSession();
+            // Use leftJoin to collect images without annotations 
+            // and keep images whose annotations dont belong to the session
+            return Image::leftJoin('image_annotations', function ($join) use ($session) {
+                // If annotation doesn't belong to the session then set annotations and labesl to null
+                $join->on('image_annotations.image_id', '=', 'images.id')
+                    ->where('image_annotations.created_at', '>=', $session->starts_at)
+                    ->where('image_annotations.created_at', '<', $session->ends_at);
+            })
+                ->leftJoin('image_annotation_labels', function ($join) use ($session) {
+                    $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+                        ->whereIn('image_annotation_labels.user_id', function ($query) use ($session) {
+                            $query->select('user_id')
+                                ->from('annotation_session_user')
+                                ->where('annotation_session_id', $session->id);
+                        });
+                })
+                ->leftJoin('labels', 'labels.id', '=', 'image_annotation_labels.label_id');
+
+        }
+        // Use leftJoin to collect images without annotations too
+        return Image::leftJoin('image_annotations', 'images.id', '=', 'image_annotations.image_id')
+            ->leftJoin('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id');
     }
 
     /**
