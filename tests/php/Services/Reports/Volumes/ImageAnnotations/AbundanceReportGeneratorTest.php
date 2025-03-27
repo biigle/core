@@ -13,6 +13,7 @@ use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
 
@@ -1078,5 +1079,121 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
+    }
+
+    public function testInitQuery(){
+        $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $image = ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $volume
+        ]);
+
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $volume
+        ]);
+
+        $a = ImageAnnotationTest::create(['image_id' => $image]);
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a,
+        ]);
+
+        $generator = new AbundanceReportGenerator;
+
+        $generator->setSource($volume);
+        $results = $generator->initQuery(['images.filename', 'image_annotations.id'])->get();
+        $this->assertCount(2, $results);
+        $this->assertSame($image->filename, $results[0]->filename);
+        $this->assertSame($image2->filename, $results[1]->filename);
+        $this->assertSame($a->id, $results[0]->id);
+        $this->assertNull($results[1]->id);
+    }
+
+    public function testInitQueryAnnotationSession()
+    {
+        $user = UserTest::create();
+        $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $image = ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $volume
+        ]);
+
+        // Images of excluded annotations should be included in the report
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $volume
+        ]);
+
+        // Empty images should be included in the report
+        $image3 = ImageTest::create([
+            'filename' => 'c.jpg',
+            'volume_id' => $volume
+        ]);
+
+        $l1 = LabelTest::create(['label_tree_id' => $lt]);
+        $l2 = LabelTest::create(['label_tree_id' => $lt]);
+        $l3 = LabelTest::create(['label_tree_id' => $lt]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume,
+        ]);
+
+        $session->users()->attach($user);
+
+        // Annotation was created before the session
+        $a1 = ImageAnnotationTest::create([
+            'created_at' => '2016-10-04',
+            'image_id' => $image2,
+        ]);
+
+        $a2 = ImageAnnotationTest::create([
+            'image_id' => $image,
+            'created_at' => '2016-10-05',
+        ]);
+
+        // Annotation doesn't belong to the session
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $user->id,
+            'label_id' => $l1->id
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $user->id,
+            'label_id' => $l2->id
+        ]);
+
+        // Session user didn't create this annotation
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'label_id' => $l3->id
+        ]);
+
+        $generator = new AbundanceReportGenerator([
+            'annotationSession' => $session->id,
+        ]);
+
+        $generator->setSource($session->volume);
+        $results = $generator->initQuery(['images.filename', 'image_annotations.id'])->get();
+        $this->assertCount(3, $results);
+        $this->assertSame($image->filename, $results[0]->filename);
+        $this->assertSame($image2->filename, $results[1]->filename);
+        $this->assertSame($image3->filename, $results[2]->filename);
+        $this->assertSame($a2->id, $results[0]->id);
+        $this->assertNull($results[1]->id);
+        $this->assertNull($results[2]->id);
     }
 }
