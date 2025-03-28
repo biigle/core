@@ -1,12 +1,10 @@
 <script>
-import AnnotationFilter from '../mixins/annotationFilter';
+import AnnotationFilter from '@/annotations/mixins/annotationFilter.vue';
 
-export default Vue.extend({
-    mixins: [AnnotationFilter],
+export default {
+    extends: AnnotationFilter,
     data() {
         return {
-            name: 'user',
-            annotations: [],
             placeholder: 'user name',
         };
     },
@@ -40,5 +38,5 @@ export default Vue.extend({
             });
         },
     },
-});
+};
 </script>

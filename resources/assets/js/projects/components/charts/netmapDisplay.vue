@@ -1,27 +1,19 @@
 <template>
     <div class="grid-col-span-3 netmap-chart">
-        <v-chart class="chart chart--netmap" :option="option" @click="toggleColor"></v-chart>
+        <div ref="chart" class="chart chart--netmap"></div>
         <button class="btn btn-default force-button" title="Toggle force layout" v-on:click="toggleForceLayout" :class="buttonClass"><i class="fa fa-project-diagram"></i></button>
     </div>
 </template>
 
 <script>
-import * as echarts from 'echarts/core';
-import {TitleComponent, TooltipComponent } from 'echarts/components';
+import { use, init } from 'echarts/core';
+import { TitleComponent, TooltipComponent } from 'echarts/components';
 import { GraphChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY } from "vue-echarts";
+import { markRaw } from "vue";
 
 export default {
     name: "NetmapDisplay",
-    components: {
-        VChart,
-    },
-    provide() {
-        return {
-            [THEME_KEY]: "dark",
-        };
-    },
     props: {
         annotationLabels: {
             required: true,
@@ -38,6 +30,7 @@ export default {
     },
     data() {
         return {
+            chart: null,
             layoutType: 'circular',
             currentNode: {
                 id: null,
@@ -209,13 +202,25 @@ export default {
             };
         },
     },
+    watch: {
+        option() {
+            if (this.chart) {
+                this.chart.setOption(this.option);
+            }
+        },
+    },
     beforeCreate() {
-        echarts.use([
+        use([
             TitleComponent,
             TooltipComponent,
             GraphChart,
             CanvasRenderer,
         ]);
+    },
+    mounted() {
+        this.chart = markRaw(init(this.$refs.chart, 'dark', { renderer: 'canvas' }));
+        this.chart.setOption(this.option);
+        this.chart.on('click', this.toggleColor);
     },
 };
 

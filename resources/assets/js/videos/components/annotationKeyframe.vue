@@ -9,6 +9,7 @@
 
 <script>
 export default {
+    emits: ['select'],
     props: {
         frame: {
             type: Object,

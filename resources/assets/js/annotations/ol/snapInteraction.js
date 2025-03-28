@@ -1,4 +1,3 @@
-<script>
 import { Feature } from '@biigle/ol';
 import LineString from '@biigle/ol/geom/LineString';
 import { Snap } from '@biigle/ol/interaction';
@@ -140,4 +139,3 @@ export default {
         })
     }
 }
-</script>

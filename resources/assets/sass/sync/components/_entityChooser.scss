@@ -37,6 +37,9 @@
             border-radius: $list-group-border-radius;
             padding: 5px 10px;
             position: relative;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     }
 

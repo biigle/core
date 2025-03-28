@@ -1,16 +1,16 @@
 <script>
-import {simplifyPolygon} from "../../../annotations/ol/PolygonValidator";
+import * as preventDoubleclick from '@/prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '../../../core/keyboard';
-import Styles from '../../../annotations/stores/styles';
+import Keyboard from '@/core/keyboard.js';
+import snapInteraction from "./snapInteraction.vue";
+import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import snapInteraction from "./snapInteraction.vue";
-import { isInvalidShape } from '../../../annotations/utils';
-import { Point } from '@biigle/ol/geom';
-import { penXorShift, penOrShift } from '../../../annotations/ol/events/condition.js';
+import { isInvalidShape } from '@/annotations/utils.js';
 import { never } from '@biigle/ol/events/condition';
-import * as preventDoubleclick from '../../../prevent-doubleclick';
+import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
+import { Point } from '@biigle/ol/geom';
+import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -19,6 +19,13 @@ import * as preventDoubleclick from '../../../prevent-doubleclick';
  */
 
 export default {
+    emits: [
+        'create-annotation',
+        'is-invalid-shape',
+        'pending-annotation',
+        'requires-selected-label',
+        'track-annotation',
+    ],
     mixins: [snapInteraction],
     data() {
         return {
@@ -270,9 +277,15 @@ export default {
             return never;
         },
     },
+    watch: {
+        mapReadyRevision: {
+            once: true,
+            handler() {
+                this.initPendingAnnotationLayer(this.map);
+            },
+        },
+    },
     created() {
-        this.$once('map-ready', this.initPendingAnnotationLayer);
-
         if (this.canAdd) {
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
             Keyboard.on('a', this.drawPoint, 0, this.listenerSet);

@@ -1,9 +1,9 @@
 <dropdown menu-right>
-    <button type="button" class="btn btn-default">
+    <button type="button" class="btn btn-default dropdown-toggle">
         Version: <strong>{{$version->name}}</strong>
         <span class="caret"></span>
     </button>
-    <template slot="dropdown">
+    <template #dropdown>
         <li><a href="{{route('label-trees', $masterTree->id)}}" title="Show latest version">latest</a></li>
         @foreach($masterTree->versions->sortByDesc('id') as $v)
             <?php if ($version->id === $v->id) continue; ?>

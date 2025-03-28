@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for requesting reports for volumes
  *
@@ -13,4 +15,4 @@
  * }).then(...)
  *
  */
-export default Vue.resource('/api/v1/volumes{/id}/reports');
+export default Resource('/api/v1/volumes{/id}/reports');

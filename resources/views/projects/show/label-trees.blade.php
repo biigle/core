@@ -1,7 +1,7 @@
 @extends('projects.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     @can('update', $project)
         biigle.$declare('projects.canEdit', true);
     @else

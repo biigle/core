@@ -1,6 +1,6 @@
 <script>
-import LabelTrees from '../../label-trees/components/labelTrees';
-import LoaderMixin from '../../core/mixins/loader';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
 
 /**
  * A mixin for a report form
@@ -150,8 +150,11 @@ export default {
         },
     },
     watch: {
-        selectedLabels(labels) {
-            this.options.only_labels = labels.map((label) => label.id);
+        selectedLabels: {
+            deep: true,
+            handler(labels) {
+                this.options.only_labels = labels.map((label) => label.id);
+            },
         },
         hasOnlyLabels(has) {
             if (!has) {

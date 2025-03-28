@@ -10,7 +10,7 @@ import {createEditingStyle} from '@biigle/ol/style/Style';
 import {fromCircle} from '@biigle/ol/geom/Polygon';
 import {polygon as turfPolygon} from '@turf/helpers';
 import {shiftKeyOnly, penOnly} from '@biigle/ol/events/condition';
-import {union} from '../geom/flat/union';
+import {union} from '../geom/flat/union.js';
 
 const MIN_BRUSH_SIZE = 5;
 const BRUSH_RESIZE_STEP = 5;

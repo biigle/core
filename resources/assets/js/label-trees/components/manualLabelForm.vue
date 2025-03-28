@@ -1,5 +1,5 @@
 <script>
-import LabelFormComponent from '../mixins/labelFormComponent';
+import LabelFormComponent from '../mixins/labelFormComponent.vue';
 
 /**
  * A component for a form to manually create a new label for a label tree
@@ -7,7 +7,9 @@ import LabelFormComponent from '../mixins/labelFormComponent';
  * @type {Object}
  */
 export default {
-    mixins: [LabelFormComponent],
+    template: '#manual-label-form-template',
+    emits: ['submit'],
+    extends: LabelFormComponent,
     methods: {
         submit() {
             let label = {

@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for finding labels from an external source.
  *
@@ -6,7 +8,5 @@
  * Find labels:
  *
  * resource.query({id: 1, query: 'Kolga'}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/label-sources{/id}/find');
+export default Resource('api/v1/label-sources{/id}/find');
