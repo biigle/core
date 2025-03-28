@@ -7,8 +7,10 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
+import { never } from '@biigle/ol/events/condition';
+import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
-import {simplifyPolygon} from "@/annotations/ol/PolygonValidator";
+import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -149,6 +151,7 @@ export default {
                         source: this.pendingAnnotationSource,
                         type: shape,
                         style: Styles.editing,
+                        freehandCondition: this.getFreehandCondition(mode),
                         condition: this.updateSnapCoords
                     });
 
@@ -261,6 +264,17 @@ export default {
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
                 && preventDoubleclick.computeDistance(this.lastDrawnPoint, e.feature.getGeometry()) < preventDoubleclick.POINT_CLICK_DISTANCE;
+        },
+        getFreehandCondition(mode) {
+            if (mode === 'drawCircle') {
+                return penOrShift
+            }
+
+            if (mode === 'drawLineString' || mode === 'drawPolygon') {
+                return penXorShift
+            }
+
+            return never;
         },
     },
     watch: {
