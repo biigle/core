@@ -2,7 +2,8 @@
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '../../../core/keyboard';
 import Styles from '../../stores/styles';
-import { shiftKeyOnly, penOnly, never } from '@biigle/ol/events/condition';
+import { never } from '@biigle/ol/events/condition';
+import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
 import snapInteraction from '../../snapInteraction.vue';
 import { Point } from '@biigle/ol/geom';
 import * as preventDoubleclick from '../../../prevent-doubleclick';
@@ -15,20 +16,6 @@ import * as preventDoubleclick from '../../../prevent-doubleclick';
  */
 
 let drawInteraction;
-
-// Custom OpenLayers freehandCondition that is true if either the input is a pen or the
-// shift key is pressed (but not both).
-let penXorShift = function (mapBrowserEvent) {
-    let isPen = penOnly(mapBrowserEvent);
-    let isShift = shiftKeyOnly(mapBrowserEvent);
-
-    return isPen && !isShift || !isPen && isShift;
-};
-
-// Custom OpenLayers freehandCondition that is true if either the input is a pen or the shift key is pressed or both.
-let penOrShift = function (mapBrowserEvent) {
-    return penOnly(mapBrowserEvent) || shiftKeyOnly(mapBrowserEvent);
-};
 
 export default {
     mixins: [snapInteraction],
