@@ -53,8 +53,10 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && this.canAdd) {
+            } else if (!this.hasSelectedLabel && !this.labelbotIsOn && this.canAdd) {
                 this.requireSelectedLabel();
+            } else if (this.labelbotIsOn && this.freeLabelbotOverlayIdx < 0) {
+                this.resetInteractionMode();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
             }
@@ -144,9 +146,13 @@ export default {
                 this.resetInteractionMode();
             }
         },
+        labelbotIsOn(labelbotIsOn) {
+            if (this.isDrawing && !labelbotIsOn) {
+                this.resetInteractionMode();
+            }
+        },
         interactionMode(mode) {
             this.maybeUpdateDrawInteractionMode(mode)
-
         },
     },
     created() {
