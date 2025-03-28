@@ -133,7 +133,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             // Add empty images here because filters would remove them
             ->orWhere(function ($query) {
                 $query->where('images.volume_id', $this->source->id)
-                    ->whereNull('labels.id');
+                    ->whereNull('image_annotations.id');
             })
             ->addSelect($columns);
 
