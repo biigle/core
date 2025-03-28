@@ -5,6 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
+use Illuminate\Support\Str;
 
 class VideoLabelControllerTest extends ApiTestCase
 {
@@ -47,12 +48,10 @@ class VideoLabelControllerTest extends ApiTestCase
     {
         $id = $this->video->id;
         $this->doTestApiRoute('POST', "/api/v1/videos/{$id}/labels");
-
         // missing arguments
         $this->beEditor();
         $this
             ->postJson("/api/v1/videos/{$id}/labels")->assertStatus(422);
-
         $this->assertSame(0, $this->video->labels()->count());
 
         $this->beUser();
@@ -103,6 +102,16 @@ class VideoLabelControllerTest extends ApiTestCase
                 'role_id' => $this->admin()->role_id,
             ]);
         $this->assertSame(2, $this->video->labels()->count());
+    }
+
+    public function testStoreLabelIdTypeString()
+    {
+        $this->beEditor();
+        $id = $this->video->id;
+        $response = $this->json('POST', "/api/v1/videos/{$id}/labels", [
+            'label_id' => Str::random(2)
+        ]);
+        $response->assertStatus(422);
     }
 
     public function testDestroy()
