@@ -8,7 +8,7 @@ import VectorSource from '@biigle/ol/source/Vector';
 import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
 import { Point } from '@biigle/ol/geom';
-import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
+import { penXorShift, penOrShift } from '../../../annotations/ol/events/condition.js';
 import { never } from '@biigle/ol/events/condition';
 import * as preventDoubleclick from '../../../prevent-doubleclick';
 
