@@ -58,10 +58,10 @@ export function getNewSketchPointRadius(event, radius) {
 }
 
 export function getNewSketchPointRadiusByPressure(event, radius) {
-  if (event.pointerEvent.pressure != 0) {
+  if (event.originalEvent.pressure != 0) {
     radius = getNewSketchPointRadius(event, radius);
 
-    return Math.max(radius * event.pointerEvent.pressure, MIN_BRUSH_SIZE) *
+    return Math.max(radius * event.originalEvent.pressure, MIN_BRUSH_SIZE) *
       event.map.getView().getResolution();
   }
 
@@ -198,7 +198,7 @@ class PolygonBrush extends Draw {
       this.sketchCircle_.setRadius(this.sketchPoint_.getGeometry().getRadius())
     }
 
-    if (event.originalEvent.pointerType === 'pen') {
+    if (penOnly(event)) {
       this.sketchCircle_.setRadius(
         getNewSketchPointRadiusByPressure(event, this.sketchPointRadius_)
       );
@@ -214,6 +214,13 @@ class PolygonBrush extends Draw {
     this.sketchFeature_ = new Feature(fromCircle(this.sketchCircle_));
     this.updateSketchFeatures_();
     this.dispatchEvent(new DrawEvent(DrawEventType.DRAWSTART, this.sketchFeature_));
+  }
+
+  addToDrawing_() {
+    // This function is not required here. It would cause an error if this interactions
+    // is in freehand mode (with pen input) because it expects the sketchCoords_ to be
+    // filled, which aren't used here.
+    return;
   }
 
   handlePointerMove_(event) {
