@@ -8,6 +8,8 @@ import VectorSource from '@biigle/ol/source/Vector';
 import snapInteraction from "./snapInteraction.vue";
 import { isInvalidShape } from '../../../annotations/utils';
 import { Point } from '@biigle/ol/geom';
+import { penXorShift, penOrShift } from '../../../annotations/ol/events/condition.js';
+import { never } from '@biigle/ol/events/condition';
 import * as preventDoubleclick from '../../../prevent-doubleclick';
 
 /**
@@ -142,6 +144,7 @@ export default {
                         source: this.pendingAnnotationSource,
                         type: shape,
                         style: Styles.editing,
+                        freehandCondition: this.getFreehandCondition(mode),
                         condition: this.updateSnapCoords
                     });
 
@@ -254,6 +257,17 @@ export default {
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
                 && preventDoubleclick.computeDistance(this.lastDrawnPoint, e.feature.getGeometry()) < preventDoubleclick.POINT_CLICK_DISTANCE;
+        },
+        getFreehandCondition(mode) {
+            if (mode === 'drawCircle') {
+                return penOrShift
+            }
+
+            if (mode === 'drawLineString' || mode === 'drawPolygon') {
+                return penXorShift
+            }
+
+            return never;
         },
     },
     created() {
