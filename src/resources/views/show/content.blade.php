@@ -68,8 +68,8 @@
             v-on:cancel-similarity="handleCancelSimilaritySort"
             ></sorting-tab>
     </sidebar-tab>
-<sidebar-tab :highlight="hasActiveFilters" v-on:disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter">
-        <filtering-tab v-on:handle-selected-filters="handleSelectedFilters"></filtering-tab>
+<sidebar-tab :highlight="hasActiveFilters" :disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter">
+        <filtering-tab v-on:handle-selected-filters="handleSelectedFilters" ref="filteringTab"></filtering-tab>
 </sidebar-tab>
     <sidebar-tab name="settings" icon="cog" title="Settings">
         <settings-tab

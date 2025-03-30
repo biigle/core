@@ -87,7 +87,7 @@ export default {
 
             if (this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
                 let annotations = this.annotationsCache[this.selectedLabel.id];
-                let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});//move below
+                let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});
                 if (this.hasActiveFilters && this.filtersCache.hasOwnProperty(filtersCacheKey)) {
                     annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].get(annotation.id) === true);
                 }
@@ -97,7 +97,6 @@ export default {
 
             return [];
         },
-
         sortedAnnotations() {
             let annotations = this.annotations;
 
@@ -125,6 +124,7 @@ export default {
         },
         allAnnotations() {
             let annotations = [];
+
             for (let id in this.annotationsCache) {
                 if (!this.annotationsCache.hasOwnProperty(id)) continue;
                 // This MUST use concat() because for lots of annotations, solutions
@@ -135,7 +135,7 @@ export default {
             return annotations;
         },
         hasNoAnnotations() {
-            return this.selectedLabel && !this.loading && this.sortedAnnotations.length === 0;
+            return this.selectedLabel && !this.loading && this.annotations.length === 0;
         },
         dismissedAnnotations() {
             return this.allAnnotations.filter(item => item.dismissed);
@@ -243,8 +243,6 @@ export default {
 
             Vue.Promise.all([promise1, promise2]).finally(this.finishLoading);
         },
-
-
         gotAnnotations(label, response) {
 
             let imageAnnotations = response[0].data;
@@ -278,7 +276,6 @@ export default {
             }
             this.loadFilters(this.selectedLabel.id, filters, union);
         },
-
         loadFilters(label, filters, union) {
             if (filters.length == 0){
                 return;
@@ -286,7 +283,7 @@ export default {
 
             let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});
 
-            if (!this.filtersCache.hasOwnProperty(label.id)) {
+            if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
 
                 let requestParams = this.compileFilters(filters, union);
                 this.startLoading();
@@ -301,7 +298,6 @@ export default {
                     .finally(this.finishLoading);
             }
         },
-
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
                 .map(function (id) {
@@ -341,6 +337,7 @@ export default {
         goToRelabel() {
             this.step = 1;
             this.lastSelectedImage = null;
+            this.resetFilteringTab();
         },
         goToDismiss() {
             this.step = 0;
@@ -368,7 +365,7 @@ export default {
         },
         save() {
             if (this.loading) {
-                return
+                return;
             }
 
             if (this.toDeleteCount > 0) {
@@ -600,6 +597,9 @@ export default {
         resetLabelCount() {
             this.fetchedLabelCount = false;
             this.labels = [];
+        },
+        resetFilteringTab() {
+            this.$refs.filteringTab.resetFilters();
         }
     },
     watch: {
