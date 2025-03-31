@@ -129,7 +129,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $query = $this->getImageAnnotationLabelQuery()
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
-            ->when($this->isRestrictedToLabels(), fn($query) => $this->restrictToLabelsQuery($query, 'image_annotation_labels'))
             // Add empty images here because filters would remove them
             ->orWhere(function ($query) {
                 $query->where('images.volume_id', $this->source->id)
@@ -148,31 +147,26 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
     protected function getImageAnnotationLabelQuery()
     {
-        if ($this->isRestrictedToAnnotationSession()) {
-            $session = $this->getAnnotationSession();
-            // Use leftJoin to collect images without annotations 
-            // and keep images whose annotations dont belong to the session
-            return Image::leftJoin('image_annotations', function ($join) use ($session) {
-                // If annotation doesn't belong to the session then set annotations and labesl to null
-                $join->on('image_annotations.image_id', '=', 'images.id')
-                    ->where('image_annotations.created_at', '>=', $session->starts_at)
-                    ->where('image_annotations.created_at', '<', $session->ends_at);
-            })
-                ->leftJoin('image_annotation_labels', function ($join) use ($session) {
-                    $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-                        ->whereIn('image_annotation_labels.user_id', function ($query) use ($session) {
-                            $query->select('user_id')
-                                ->from('annotation_session_user')
-                                ->where('annotation_session_id', $session->id);
-                        });
+        // Filter records here to keep images with either no selected labels or without any labels
+        if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels()) {
+            // Start join with 'Label' to set unselected labels and annotations on null
+            return Label::
+                join('image_annotation_labels', function ($join) {
+                    $join->on('labels.id', '=', 'image_annotation_labels.label_id')
+                        ->when($this->isRestrictedToLabels(), fn($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
                 })
-                ->leftJoin('labels', 'labels.id', '=', 'image_annotation_labels.label_id');
-
+                ->join('image_annotations', function ($join) {
+                    $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+                        ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery']);
+                })
+                ->rightJoin('images', function ($join) {
+                    $join->on('image_annotations.image_id', '=', 'images.id');
+                });
         }
-        // Use leftJoin to collect images without annotations too
-        return Image::leftJoin('image_annotations', 'images.id', '=', 'image_annotations.image_id')
-            ->leftJoin('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-            ->leftJoin('labels', 'image_annotation_labels.label_id', '=', 'labels.id');
+
+        return Label::join('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
+            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id');
     }
 
     /**
