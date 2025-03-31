@@ -161,7 +161,8 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 })
                 ->rightJoin('images', function ($join) {
                     $join->on('image_annotations.image_id', '=', 'images.id');
-                });
+                })
+                ->distinct();
         }
 
         return Label::join('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
