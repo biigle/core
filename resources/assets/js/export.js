@@ -22,6 +22,7 @@ import SidebarTabComponent from '@/core/components/sidebarTab.vue';
 import TypeaheadComponent from '@/core/components/typeahead.vue';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
+import VolumesExtraApi from '@/volumes/api/volumes.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {mount, declare, require} from './utils.js';
 
@@ -49,6 +50,7 @@ biigle.$declare('api.notifications', NotificationsApi);
 biigle.$declare('api.projects', ProjectsApi);
 biigle.$declare('api.users', UsersApi);
 biigle.$declare('api.volumes', VolumesApi);
+biigle.$declare('volumes.api.volumes', VolumesExtraApi);
 biigle.$declare('core.components.fileBrowser', FileBrowserComponent);
 biigle.$declare('core.components.fileBrowserDirectory', FileBrowserDirectoryComponent);
 biigle.$declare('core.components.loader', LoaderComponent);
