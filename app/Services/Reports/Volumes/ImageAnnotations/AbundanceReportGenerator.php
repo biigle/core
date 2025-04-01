@@ -124,6 +124,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         return $query;
     }
 
+    /**
+     * Assembles the part of the DB query that is the same for all annotation reports.
+     * Overrides AnnotationReportGenerator's initQuery() because it requires a special query  
+     * where images without (selected) annotation labels are kept after filtering.
+     *
+     * @param mixed $columns The columns to select
+     * @return \Illuminate\Database\Query\Builder
+     */
     public function initQuery($columns = [])
     {
         $query = $this->getImageAnnotationLabelQuery()
@@ -145,9 +153,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         return $query;
     }
 
+    /**
+     * Construct a join query for (filtered) images, image annotations, image annotation labels, and labels
+     * 
+     * @return Label
+     */
     protected function getImageAnnotationLabelQuery()
     {
-        // Filter records here to keep images with either no selected labels or without any labels
+        // Filter records here to keep images with either no selected annotation labels or without any annotation labels
         if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels()) {
             // Start join with 'Label' to set unselected labels and annotations on null
             return Label::
@@ -298,7 +311,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $presentLabels = $presentLabels->unique()->flip();
         $usedParentLabels = $labels->filter(fn($label) => $presentLabels->has($label->id));
 
-        // Add unused labels again
+        // Add unused (empty) labels again
         if ($this->shouldUseAllLabels() || $this->shouldSeparateUsers()) {
             $usedParentLabelIds = $usedParentLabels->pluck('id');
             $unusedLabels = $originalLabels
