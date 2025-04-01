@@ -47,7 +47,7 @@ export default {
         },
         updateMeasureFeature(e) {
             this.measureFeaturePosition = e.target.getGeometry().getLastCoordinate();
-            // Explixitly mark as raw so the OpenLayers map will not accidentally be
+            // Explicitly mark as raw so the OpenLayers map will not accidentally be
             // made reactive.
             // See: https://github.com/biigle/annotations/issues/108
             this.measureFeatures = markRaw([e.target]);

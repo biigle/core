@@ -45,7 +45,7 @@ export default {
 
             if (this.hoveredFeaturesHash !== hash) {
                 this.hoveredFeaturesHash = hash;
-                // Explixitly mark as raw so the OpenLayers map will not accidentally be
+                // Explicitly mark as raw so the OpenLayers map will not accidentally be
                 // made reactive.
                 // See: https://github.com/biigle/annotations/issues/108
                 this.hoveredFeatures = markRaw(features);
