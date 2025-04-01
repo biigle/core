@@ -43,9 +43,8 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             if ($this->shouldUseAllLabels()) {
-                $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
                 $rows = $rows->groupBy('label_tree_id');
-                $allLabels = $this->getAllFilteredVolumeLabels($allLabelIds);
+                $allLabels = $this->getVolumeLabels();
                 $treeIds = $allLabels->pluck('label_tree_id');
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 $allLabels = $allLabels->groupBy('label_tree_id');
@@ -64,10 +63,9 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
             $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $labels = $this->getAllFilteredVolumeLabels($allLabelIds);
+            $labels = $this->getVolumeLabels();
             $userIds = $rows->keys()->reject(fn ($k) => !$k);
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
@@ -77,7 +75,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $rowGroup = $rows->get($id);
                 $userFilenames = $rowGroup->pluck('filename')->unique();
                 $missingFiles = $allFilenames->diff($userFilenames);
-                // Create empty entries to show all images
+                // Create empty entries to include all images
                 foreach ($missingFiles as $f) {
                     $rowGroup->add((object) [
                         'filename' => $f,
@@ -91,7 +89,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         } else {
             $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
             if ($this->shouldUseAllLabels()) {
-                $labels = $this->getAllFilteredVolumeLabels($allLabelIds);
+                $labels = $this->getVolumeLabels();
             } else {
                 $labels = Label::whereIn('id', $allLabelIds)->get();
             }
