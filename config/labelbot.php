@@ -45,5 +45,23 @@ return [
     | Path to the ONNX file for the DINOv2 ViT-S/14 (384) model, used to generate
     | the feature vector for LabelBOT vector search.
     */
-    'onnx_file' => 'assets/dinov2_vits14.onnx'
+    'onnx_file' => env('LABELBOT_ONNX_MODEL_FILE', 'assets/dinov2_vits14.onnx'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | LabelBOT ONNX Model URL
+    |--------------------------------------------------------------------------
+    |
+    | URL of the hosted ONNX model file for LabelBOT.
+    */
+    'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', 'http://host.docker.internal:8000/assets/dinov2_vits14.onnx'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | LabelBOT ONNX Model Chunk Size
+    |--------------------------------------------------------------------------
+    |
+    | The chunk size for streaming the ONNX model file.
+    */
+    'onnx_chunk_size' => 8192,
 ];

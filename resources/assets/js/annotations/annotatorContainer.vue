@@ -26,6 +26,7 @@ import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
 import Keyboard from '../core/keyboard';
 import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
+import LabelbotApi from './api/labelbot';
 
 /**
  * View model for the annotator container
@@ -472,23 +473,31 @@ export default {
         },
         initONNXModel() {
             this.handleLabelBOTState('initializing')
+
+            LabelbotApi.fetch()
+            .then(response => response.blob())
+            .then(blob => {
+                const modelUrl = URL.createObjectURL(blob);
+                return this.loadONNXModel(modelUrl);
+            })
+            .catch(handleErrorResponse);
+        },
+        loadONNXModel(modelUrl) {
             // Load the onnx model with webgpu first 
             // if the client does not have one then fallback to wasm
-            const modelPath = biigle.$require('labelbot.onnx-url');
-            InferenceSession.create(modelPath, { executionProviders: ['webgpu'] })
+            InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] })
             .then((onnxModel) => {
                 this.onnxModel = onnxModel;
                 this.handleLabelBOTState('ready')
             })
             .catch(() => {
-                InferenceSession.create(modelPath, { executionProviders: ['wasm'] })
+                InferenceSession.create(modelUrl, { executionProviders: ['wasm'] })
                 .then((onnxModel) => {
                     this.onnxModel = onnxModel;
                     this.handleLabelBOTState('ready')
                 })
                 .catch(handleErrorResponse)
             })
-            .finally()
         },
         handleLabelBOTState(state) {
             this.$set(this.labelbotState, 'state', state);
