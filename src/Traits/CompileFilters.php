@@ -1,8 +1,10 @@
 <?php
 namespace Biigle\Modules\Largo\Traits;
+
 use Illuminate\Database\Eloquent\Builder;
 
-trait CompileFilters {
+trait CompileFilters
+{
     /**
     *
     * Compile Largo filter(s) that were requested and add them to the query
@@ -25,7 +27,7 @@ trait CompileFilters {
                 }
             }
 
-            $query->where(function($query) use ($included, $excluded, $filterName) {
+            $query->where(function ($query) use ($included, $excluded, $filterName) {
                 if (count($included) > 0) {
                     $query->whereIn($filterName, $included, 'or');
                 }
@@ -45,4 +47,3 @@ trait CompileFilters {
         }
     }
 }
-

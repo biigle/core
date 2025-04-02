@@ -57,7 +57,7 @@ class LargoController extends Controller
 
         $shapes = Shape::pluck('name', 'id');
 
-        if ($volume->media_type_id != MediaType::videoId()){
+        if ($volume->media_type_id != MediaType::videoId()) {
             $wholeframeId = Shape::wholeFrameId() ;
             unset($shapes[$wholeframeId]);
         }

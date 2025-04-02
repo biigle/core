@@ -3,17 +3,15 @@
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Tests\UserTest;
-use Biigle\Role;
-use Biigle\MediaType;
 
 class GetUsersWithAnnotationsVolumesTest extends ApiTestCase
 {

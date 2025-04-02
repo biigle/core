@@ -4,9 +4,9 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotationLabel;
+use Biigle\MediaType;
 use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
-use Biigle\MediaType;
 use Illuminate\Http\Request;
 
 class GetUsersWithAnnotations extends Controller
@@ -30,7 +30,7 @@ class GetUsersWithAnnotations extends Controller
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
-        if ($volume->media_type_id == MediaType::imageId()){
+        if ($volume->media_type_id == MediaType::imageId()) {
             $usersWithAnnotations = ImageAnnotationLabel::query()
                 ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
                 ->join('images', 'image_annotations.image_id', '=', 'images.id')

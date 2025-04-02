@@ -4,8 +4,8 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotationLabel;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Project;
+use Biigle\VideoAnnotationLabel;
 use Illuminate\Http\Request;
 
 class GetUsersWithAnnotations extends Controller

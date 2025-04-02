@@ -1,11 +1,13 @@
 <?php
-namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes; use ApiTestCase;
+namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
+
+use ApiTestCase;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\ShapeTest;
+use Biigle\Tests\UserTest;
 use Carbon\Carbon;
 
 class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
