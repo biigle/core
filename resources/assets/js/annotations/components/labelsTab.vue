@@ -27,7 +27,6 @@ export default {
         return {
             labelTrees: [],
             selectedLabel: null,
-            labelbotIsOn: false,
             focusInputFindlabel: false,
         };
     },
@@ -35,7 +34,11 @@ export default {
         focusInput:{
             type: Boolean,
             default: false,
-        }
+        },
+        labelbotIsOn: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         plugins() {
@@ -44,33 +47,33 @@ export default {
     },
     methods: {
         handleSelectedLabel(label) {
+            // Turn off LabelBOT if its on
             if (this.labelbotIsOn) {
-                Messages.warning("Please turn off LabelBOT first to select a label!");
-            } else {
-                this.selectedLabel = label;
-                this.$emit('select', label);
+                this.handleLabelbotOff();
             }
+
+            this.selectedLabel = label;
+            this.$emit('select', label);
         },
         handleDeselectedLabel() {
             this.selectedLabel = null;
             this.$emit('select', null);
         },
-        handleLabelBOT() {
-            if (this.labelbotIsOn) {
-                this.labelbotIsOn = false;
-                this.$emit('labelbot', false);
+        handleLabelbotOn() {
+            if (this.labelTrees.every(tree => tree.labels.length === 0)) {
+                Messages.info("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
                 return;
             }
 
+            // Deselect the selected label when LabelBOT is on
             if (this.selectedLabel) {
-                Messages.warning("LabelBOT can't be activated! Please deselect the selected label!");
+                this.handleDeselectedLabel();
             }
-            else if (this.labelTrees.every(tree => tree.labels.length === 0)) {
-                Messages.warning("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
-            } else {
-                this.labelbotIsOn = true;
-                this.$emit('labelbot', true);
-            }
+
+            this.$emit('labelbot', true);
+        },
+        handleLabelbotOff() {
+            this.$emit('labelbot', false);
         },
         setFocusInputFindLabel() {
             this.$emit('open', 'labels');

@@ -428,8 +428,8 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
         },
-        handleLabelBOT(labelbotIsOn) {
-            this.labelbotIsOn = labelbotIsOn;
+        handleLabelbot(labelbotIsOn) {
+            this.$set(this, 'labelbotIsOn', labelbotIsOn);
         },
         getBoundingBox(points) {
             let minX = this.image.width;
