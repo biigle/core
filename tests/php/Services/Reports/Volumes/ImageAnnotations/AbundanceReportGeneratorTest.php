@@ -593,163 +593,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
-    public function testGenerateReportOnlyLabelsAggregateChildLabelsAllLabels()
-    {
-        $volume = VolumeTest::create();
-        $project = ProjectTest::create();
-        $project->addVolumeId($volume);
-        $image = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
-        // Empty images should be included in the report
-        $image2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
-        $lt = LabelTreeTest::create();
-        $lt->projects()->attach($project);
-
-        $root1 = LabelTest::create(['label_tree_id' => $lt->id]);
-        $child1 = LabelTest::create([
-            'parent_id' => $root1->id,
-            'label_tree_id' => $root1->label_tree_id,
-        ]);
-
-        // Test case where the child label should not be included.
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root1->id,
-        ]);
-
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root1->id,
-        ]);
-
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $child1->id,
-        ]);
-
-        $root2 = LabelTest::create();
-        $child2 = LabelTest::create([
-            'parent_id' => $root2->id,
-            'label_tree_id' => $root2->label_tree_id,
-        ]);
-
-        // Test case where the root label should not be included but has annotations.
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root2->id,
-        ]);
-
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root2->id,
-        ]);
-
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $child2->id,
-        ]);
-
-        $root3 = LabelTest::create();
-        $child3 = LabelTest::create([
-            'parent_id' => $root3->id,
-            'label_tree_id' => $root3->label_tree_id,
-        ]);
-
-        // Test case where the root label should not be included but has no annotations.
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $child3->id,
-        ]);
-
-        $root4 = LabelTest::create();
-        $child4 = LabelTest::create([
-            'parent_id' => $root4->id,
-            'label_tree_id' => $root4->label_tree_id,
-        ]);
-
-        // Test case where the root label should be included but has no annotations.
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $child4->id,
-        ]);
-
-        $root5 = LabelTest::create(['label_tree_id' => $lt->id]);
-        // Test case where the root label should be included but has no annotations.
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root5->id,
-        ]);
-        $root6 = LabelTest::create(['label_tree_id' => $lt->id]);
-        $root7 = LabelTest::create(['label_tree_id' => $lt->id]);
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('put')
-            ->once()
-            ->with($volume->name);
-
-        $mock->shouldReceive('putCsv')
-            ->once()
-            ->with([
-                'image_filename',
-                $root1->name,
-                $child2->name,
-                $child3->name,
-                $root4->name,
-                $root5->name,
-                $root6->name,
-            ]);
-
-        $mock->shouldReceive('putCsv')
-            ->once()
-            ->with([$image->filename, 2, 1, 1, 1, 1, 0]);
-
-        $mock->shouldReceive('putCsv')
-            ->once()
-            ->with([$image2->filename, 0, 0, 0, 0, 0, 0]);
-
-        $mock->shouldReceive('close')
-            ->once();
-
-        App::singleton(CsvFile::class, fn () => $mock);
-
-        $generator = new AbundanceReportGenerator([
-            'aggregateChildLabels' => true,
-            'onlyLabels' => [
-                $root1->id,
-                $child2->id,
-                $child3->id,
-                $root4->id,
-                $child4->id,
-                $root5->id,
-                $root6->id
-            ],
-            'allLabels' => true
-        ]);
-        $generator->setSource($volume);
-        $mock = Mockery::mock();
-        $mock->shouldReceive('run')->once();
-        $generator->setPythonScriptRunner($mock);
-        $generator->generateReport('my/path');
-    }
-
     public function testGenerateReportSeparateUsersAggregateLabels()
     {
         $project = ProjectTest::create();
@@ -1056,43 +899,153 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator = new AbundanceReportGenerator;
 
         $generator->setSource($image->volume);
-        $results = $generator->initQuery(['images.filename', 'image_annotations.id'])->get();
+        $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
         $this->assertCount(2, $results);
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($a->id, $results[0]->id);
+        $this->assertSame($al->id, $results[0]->id);
         $this->assertNull($results[1]->id);
+    }
+
+    public function testInitQueryAnnotationWithMultipleLabels()
+    {
+        $image = ImageTest::create([
+            'filename' => 'a.jpg',
+        ]);
+
+        $a = ImageAnnotationTest::create(['image_id' => $image]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a,
+        ]);
+
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a,
+        ]);
+
+        $generator = new AbundanceReportGenerator();
+
+        $generator->setSource($image->volume);
+        $results = $generator->initQuery(['images.filename', 'labels.id'])->get();
+        $this->assertCount(2, $results);
+        $this->assertSame($image->filename, $results[0]->filename);
+        $this->assertSame($image->filename, $results[1]->filename);
+        $this->assertSame($al1->label_id, $results[0]->id);
+        $this->assertSame($al2->label_id, $results[1]->id);
+    }
+
+    public function testInitQueryDuplicatedRecords()
+    {
+        $image = ImageTest::create([
+            'filename' => 'a.jpg',
+        ]);
+
+        // Use this id to deselect both annotation labels
+        $labelId = -1;
+
+        $a = ImageAnnotationTest::create(['image_id' => $image]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a,
+        ]);
+
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a,
+        ]);
+
+        $generator = new AbundanceReportGenerator([
+            'onlyLabels' => [$labelId]
+        ]);
+
+        $generator->setSource($image->volume);
+        $results = $generator->initQuery(['images.filename', 'labels.id'])->get();
+        // Duplicate null records will be reduced to one record
+        $this->assertCount(1, $results);
+        $this->assertSame($image->filename, $results[0]->filename);
+        $this->assertNull($results[0]->id);
+    }
+
+    public function testInitQuerySeparateLabelTrees()
+    {
+        $image = ImageTest::create([
+            'filename' => 'a.jpg',
+        ]);
+
+        // Empty images should be included in the report
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $image->volume_id
+        ]);
+
+        $a = ImageAnnotationTest::create(['image_id' => $image]);
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a,
+        ]);
+
+        $generator = new AbundanceReportGenerator([
+            'separateLabelTrees' => True
+        ]);
+
+        $generator->setSource($image->volume);
+        $results = $generator->initQuery(['images.filename'])->get();
+        $this->assertCount(2, $results);
+        $this->assertSame($image->filename, $results[0]->filename);
+        $this->assertSame($image2->filename, $results[1]->filename);
+        $this->assertSame($al->label->label_tree_id, $results[0]->label_tree_id);
+        $this->assertNull($results[1]->label_tree_id);
+    }
+
+    public function testInitQuerySeparateUser()
+    {
+        $image = ImageTest::create([
+            'filename' => 'a.jpg',
+        ]);
+
+        // Empty images should be included in the report
+        $image2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'volume_id' => $image->volume_id
+        ]);
+
+        $a = ImageAnnotationTest::create(['image_id' => $image]);
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a,
+        ]);
+
+        $generator = new AbundanceReportGenerator([
+            'separateUsers' => True
+        ]);
+
+        $generator->setSource($image->volume);
+        $results = $generator->initQuery(['images.filename'])->get();
+        $this->assertCount(2, $results);
+        $this->assertSame($image->filename, $results[0]->filename);
+        $this->assertSame($image2->filename, $results[1]->filename);
+        $this->assertSame($al->user_id, $results[0]->user_id);
+        $this->assertNull($results[1]->user_id);
     }
 
     public function testInitQueryAnnotationSession()
     {
         $user = UserTest::create();
         $volume = VolumeTest::create();
-        $project = ProjectTest::create();
-        $project->addVolumeId($volume);
-        $lt = LabelTreeTest::create();
-        $lt->projects()->attach($project);
 
         $image = ImageTest::create([
             'filename' => 'a.jpg',
             'volume_id' => $volume
         ]);
 
-        // Images of excluded annotations should be included in the report
+        // Empty images should be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $volume
         ]);
 
-        // Empty images should be included in the report
+        // Images without selected labels should be included
         $image3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $volume
         ]);
-
-        $l1 = LabelTest::create(['label_tree_id' => $lt]);
-        $l2 = LabelTest::create(['label_tree_id' => $lt]);
-        $l3 = LabelTest::create(['label_tree_id' => $lt]);
 
         $session = AnnotationSessionTest::create([
             'starts_at' => '2016-10-05',
@@ -1105,7 +1058,7 @@ class AbundanceReportGeneratorTest extends TestCase
         // Annotation was created before the session
         $a1 = ImageAnnotationTest::create([
             'created_at' => '2016-10-04',
-            'image_id' => $image2,
+            'image_id' => $image,
         ]);
 
         $a2 = ImageAnnotationTest::create([
@@ -1113,23 +1066,29 @@ class AbundanceReportGeneratorTest extends TestCase
             'created_at' => '2016-10-05',
         ]);
 
-        // Annotation doesn't belong to the session
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $user->id,
+        ]);
+
+        // Annotation does not belong to the session
         ImageAnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $user->id,
-            'label_id' => $l1->id
         ]);
 
+        // Annotation from another user
         ImageAnnotationLabelTest::create([
             'annotation_id' => $a2->id,
+        ]);
+
+        // Annotation was created after session
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image2,
+                'created_at' => '2016-10-07',
+            ])->id,
             'user_id' => $user->id,
-            'label_id' => $l2->id
-        ]);
-
-        // Session user didn't create this annotation
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => $a2->id,
-            'label_id' => $l3->id
         ]);
 
         $generator = new AbundanceReportGenerator([
@@ -1137,12 +1096,12 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         $generator->setSource($session->volume);
-        $results = $generator->initQuery(['images.filename', 'image_annotations.id'])->get();
+        $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
         $this->assertCount(3, $results);
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertSame($image2->filename, $results[1]->filename);
         $this->assertSame($image3->filename, $results[2]->filename);
-        $this->assertSame($a2->id, $results[0]->id);
+        $this->assertSame($al->id, $results[0]->id);
         $this->assertNull($results[1]->id);
         $this->assertNull($results[2]->id);
     }
@@ -1196,6 +1155,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'filename' => 'a.jpg',
         ]);
 
+        // Images without selected labels should be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $image->volume_id
@@ -1208,9 +1168,12 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         $a1 = ImageAnnotationTest::create(['image_id' => $image]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image2]);
+
+
         $al1 = ImageAnnotationLabelTest::create(['annotation_id' => $a1->id]);
 
-        $a2 = ImageAnnotationTest::create(['image_id' => $image2]);
+        // Label was not selected
         $al2 = ImageAnnotationLabelTest::create(['annotation_id' => $a2->id]);
 
         $generator = new AbundanceReportGenerator([
@@ -1242,6 +1205,12 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
+        // Images without selected labels should be included
+        $image3 = ImageTest::create([
+            'filename' => 'c.jpg',
+            'volume_id' => $volume->id
+        ]);
+
         $session = AnnotationSessionTest::create([
             'starts_at' => '2016-10-05',
             'ends_at' => '2016-10-06',
@@ -1268,6 +1237,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $userId,
         ]);
 
+        // Label was not selected
         $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
@@ -1276,14 +1246,16 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $userId,
         ]);
 
+        // Label was not selected
         $al4 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
+                'image_id' => $image3->id,
                 'created_at' => '2016-10-05 09:15:00',
             ])->id,
             'user_id' => $userId,
         ]);
 
+        // Annotation was created before session
         $al5 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
@@ -1292,19 +1264,28 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $userId,
         ]);
 
+        // Annotation was created before session
+        $al6 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image3->id,
+                'created_at' => '2016-10-04 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
         $generator = new AbundanceReportGenerator([
             'annotationSession' => $session->id,
             'newestLabel' => true,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id]
+            'onlyLabels' => [$al1->label_id, $al2->label_id, $al5->label_id, $al6->label_id]
         ]);
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
         $this->assertCount(3, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image->filename, $results[1]->filename);
-        $this->assertSame($image2->filename, $results[2]->filename);
-        $this->assertEquals($al2->id, $results[0]->id);
-        $this->assertEquals($al4->id, $results[1]->id);
+        $this->assertSame($image2->filename, $results[1]->filename);
+        $this->assertSame($image3->filename, $results[2]->filename);
+        $this->assertSame($al2->id, $results[0]->id);
+        $this->assertNull($results[1]->id);
         $this->assertNull($results[2]->id);
     }
 
@@ -1323,6 +1304,12 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
+        // Images without selected labels should be included
+        $image3 = ImageTest::create([
+            'filename' => 'c.jpg',
+            'volume_id' => $volume->id
+        ]);
+
         $session = AnnotationSessionTest::create([
             'starts_at' => '2016-10-05',
             'ends_at' => '2016-10-06',
@@ -1356,14 +1343,16 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $userId,
         ]);
 
+        // Annotation was created before session
         $al4 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
+                'image_id' => $image3->id,
+                'created_at' => '2016-10-04 09:15:00',
             ])->id,
             'user_id' => $userId,
         ]);
 
+        // Annotation was created before session
         $al5 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
@@ -1377,15 +1366,15 @@ class AbundanceReportGeneratorTest extends TestCase
             'newestLabel' => true,
         ]);
         $generator->setSource($session->volume);
-        $results = $generator->initQuery(['images.filename','image_annotation_labels.id'])->get();
+        $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
         $this->assertCount(4, $results);
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertSame($image->filename, $results[1]->filename);
-        $this->assertSame($image->filename, $results[2]->filename);
-        $this->assertSame($image2->filename, $results[3]->filename);
-        $this->assertEquals($al2->id, $results[0]->id);
-        $this->assertEquals($al3->id, $results[1]->id);
-        $this->assertEquals($al4->id, $results[2]->id);
+        $this->assertSame($image2->filename, $results[2]->filename);
+        $this->assertSame($image3->filename, $results[3]->filename);
+        $this->assertSame($al2->id, $results[0]->id);
+        $this->assertSame($al3->id, $results[1]->id);
+        $this->assertNull($results[2]->id);
         $this->assertNull($results[3]->id);
     }
 
@@ -1404,6 +1393,12 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
+        // Images without selected labels should be included
+        $image3 = ImageTest::create([
+            'filename' => 'c.jpg',
+            'volume_id' => $volume->id
+        ]);
+
         $session = AnnotationSessionTest::create([
             'starts_at' => '2016-10-05',
             'ends_at' => '2016-10-06',
@@ -1412,40 +1407,33 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $session->users()->attach($userId);
 
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
         $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ]),
             'user_id' => $userId,
         ]);
 
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
+        // Label was not selected
         $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
             'user_id' => $userId,
         ]);
 
+        // Annotation was created from other user
         $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05 09:15:00',
             ])->id,
-            'user_id' => $userId,
         ]);
 
+        // Annotation was created before session
         $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al5 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
                 'created_at' => '2016-10-04 09:15:00',
@@ -1453,27 +1441,33 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $userId,
         ]);
 
+        // Label was not selected
+        $al5 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image3->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
+            'user_id' => $userId,
+        ]);
+
         $generator = new AbundanceReportGenerator([
             'annotationSession' => $session->id,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id]
+            'onlyLabels' => [$al1->label_id, $al3->label_id, $al4->label_id]
         ]);
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(4, $results);
+        $this->assertCount(3, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image->filename, $results[1]->filename);
-        $this->assertSame($image->filename, $results[2]->filename);
-        $this->assertSame($image2->filename, $results[3]->filename);
-        $this->assertEquals($al1->id, $results[0]->id);
-        $this->assertEquals($al2->id, $results[1]->id);
-        $this->assertEquals($al4->id, $results[2]->id);
-        $this->assertNull($results[3]->id);
+        $this->assertSame($image2->filename, $results[1]->filename);
+        $this->assertSame($image3->filename, $results[2]->filename);
+        $this->assertSame($al1->id, $results[0]->id);
+        $this->assertNull($results[1]->id);
+        $this->assertNull($results[2]->id);
     }
 
     public function testInitQueryNewestLabelRestrictedLabel()
     {
         $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
         $image = ImageTest::create([
             'filename' => 'a.jpg',
             'volume_id' => $volume->id
@@ -1485,625 +1479,52 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
+        // Images without selected labels should be included
+        $image3 = ImageTest::create([
+            'filename' => 'c.jpg',
+            'volume_id' => $volume->id
+        ]);
+
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
         ]);
 
         $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
-            'user_id' => $userId,
         ]);
 
         // Even if there are two labels created in the same second, we only want the
         // newest one (as determined by the ID).
         $al2 = ImageAnnotationLabelTest::create([
             'annotation_id' => $a->id,
-            'user_id' => $userId,
         ]);
 
+        // Label was not selected
         $al3 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
-            'user_id' => $userId,
         ]);
 
+        // Label was not selected
         $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
-            'user_id' => $userId,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image3->id,])->id,
         ]);
 
         $generator = new AbundanceReportGenerator([
             'newestLabel' => true,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id]
+            'onlyLabels' => [$al1->label_id, $al2->label_id]
         ]);
         $generator->setSource($volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
         $this->assertCount(3, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image->filename, $results[1]->filename);
-        $this->assertSame($image2->filename, $results[2]->filename);
-        $this->assertEquals($al2->id, $results[0]->id);
-        $this->assertEquals($al4->id, $results[1]->id);
+        $this->assertSame($image2->filename, $results[1]->filename);
+        $this->assertSame($image3->filename, $results[2]->filename);
+        $this->assertSame($al2->id, $results[0]->id);
+        $this->assertNull($results[1]->id);
         $this->assertNull($results[2]->id);
     }
 
-    public function testInitQueryAnnotationSessionNewestLabelRestrictedLabelSeparateLabelTrees()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-10-05',
-            'ends_at' => '2016-10-06',
-            'volume_id' => $volume->id
-        ]);
-
-        $session->users()->attach($userId);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al5 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-04 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'annotationSession' => $session->id,
-            'newestLabel' => true,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id],
-            'separateLabelTrees' => true
-        ]);
-        $generator->setSource($session->volume);
-        $results = $generator->initQuery()->get();
-        $this->assertCount(3, $results);
-        $this->assertEquals($al2->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[1]->label_tree_id);
-        $this->assertNull($results[2]->label_tree_id);
-    }
-
-    public function testInitQueryAnnotationSessionNewestLabelRestrictedLabelSeparateUser()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-10-05',
-            'ends_at' => '2016-10-06',
-            'volume_id' => $volume->id
-        ]);
-
-        $session->users()->attach($userId);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al5 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-04 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'annotationSession' => $session->id,
-            'newestLabel' => true,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id],
-            'separateUsers' => true
-        ]);
-        $generator->setSource($session->volume);
-        $results = $generator->initQuery()->get();
-        $this->assertCount(2, $results);
-        $this->assertEquals($al2->user_id, $results[0]->user_id);
-        $this->assertNull($results[1]->user_id);
-    }
-
-    public function testInitQueryAnnotationSessionNewestLabelSeparateLabelTree()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-10-05',
-            'ends_at' => '2016-10-06',
-            'volume_id' => $volume->id
-        ]);
-
-        $session->users()->attach($userId);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al5 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-04 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'annotationSession' => $session->id,
-            'newestLabel' => true,
-            'separateLabelTrees' => true,
-        ]);
-        $generator->setSource($session->volume);
-        $results = $generator->initQuery()->get();
-        $this->assertCount(4, $results);
-        $this->assertEquals($al2->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al3->label->label_tree_id, $results[1]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[2]->label_tree_id);
-        $this->assertNull($results[3]->label_tree_id);
-    }
-
-    public function testInitQueryAnnotationSessionNewestLabelSeparateUser()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-10-05',
-            'ends_at' => '2016-10-06',
-            'volume_id' => $volume->id
-        ]);
-
-        $session->users()->attach($userId);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al5 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-04 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'annotationSession' => $session->id,
-            'newestLabel' => true,
-            'separateUsers' => true,
-        ]);
-        $generator->setSource($session->volume);
-        $results = $generator->initQuery()->get();
-        $this->assertCount(2, $results);
-        $this->assertEquals($userId, $results[0]->user_id);
-        $this->assertNull( $results[1]->user_id);
-    }
-
-    public function testInitQueryAnnotationSessionRestrictedLabelSeparateLabelTrees()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-10-05',
-            'ends_at' => '2016-10-06',
-            'volume_id' => $volume->id
-        ]);
-
-        $session->users()->attach($userId);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al5 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-04 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'annotationSession' => $session->id,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id],
-            'separateLabelTrees' => true,
-        ]);
-        $generator->setSource($session->volume);
-        $results = $generator->initQuery()->get();
-        $this->assertCount(4, $results);
-        $this->assertEquals($al1->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al2->label->label_tree_id, $results[1]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[2]->label_tree_id);
-        $this->assertNull($results[3]->label_tree_id);
-    }
-
-    public function testInitQueryAnnotationSessionRestrictedLabelSeparateUser()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-10-05',
-            'ends_at' => '2016-10-06',
-            'volume_id' => $volume->id
-        ]);
-
-        $session->users()->attach($userId);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-05 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al5 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-                'created_at' => '2016-10-04 09:15:00',
-            ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'annotationSession' => $session->id,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id, $al5->label_id],
-            'separateUsers' => true,
-        ]);
-        $generator->setSource($session->volume);
-        $results = $generator->initQuery([])->get();
-        $this->assertCount(2, $results);
-        $this->assertEquals($al1->user_id, $results[0]->user_id);
-        $this->assertNull($results[1]->user_id);
-    }
-
-    public function testNewestLabelRestrictedLabelSeparateLabelTrees()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'newestLabel' => true,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id],
-            'separateLabelTrees' => true
-        ]);
-        $generator->setSource($volume);
-        $results = $generator->initQuery()->get();
-        $this->assertCount(3, $results);
-        $this->assertEquals($al2->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[1]->label_tree_id);
-        $this->assertNull($results[2]->label_tree_id);
-    }
-
-    public function testInitQueryNewestLabelRestrictedLabelSeparateUser()
-    {
-        $volume = VolumeTest::create();
-        $userId = $volume->creator_id;
-        
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        // Empty images should be included
-        ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $volume->id
-        ]);
-
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-        ]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        // Even if there are two labels created in the same second, we only want the
-        // newest one (as determined by the ID).
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
-            'user_id' => $userId,
-        ]);
-
-        $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
-            'user_id' => $userId,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'newestLabel' => true,
-            'onlyLabels' => [$al1->label_id, $al2->label_id, $al4->label_id],
-            'separateUsers' => true
-        ]);
-        $generator->setSource($volume);
-        $results = $generator->initQuery()->get();
-        $this->assertCount(2, $results);
-        $this->assertEquals($al2->user_id, $results[0]->user_id);
-        $this->assertNull( $results[1]->user_id);
-    }
-
-    public function testGenerateReportAllLabelsFiltered()
+    public function testGenerateReportAllLabelsRestrictLabels()
     {
         $volume = VolumeTest::create();
         $project = ProjectTest::create();
@@ -2163,7 +1584,7 @@ class AbundanceReportGeneratorTest extends TestCase
             ->once()
             ->with($volume->name);
 
-        // All labels should be included
+        // All labels should be included as categories
         $mock->shouldReceive('putCsv')
             ->once()
             ->with([
