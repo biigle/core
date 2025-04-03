@@ -49,14 +49,14 @@ export default {
       this.activeFilters.splice(key, 1);
       this.filterAnnotations();
     },
-    setUnionLogic(union){
+    setUnionLogic(union) {
       this.union = union;
       this.filterAnnotations();
     },
     addNewFilter(filter) {
       if (this.activeFilters.length > 0) {
         if (this.activeFilters.some(f => f.filter === filter.filter && f.value === filter.value)) {
-          return
+          return;
         }
       }
       this.activeFilters.push(filter);
