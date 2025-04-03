@@ -44,10 +44,16 @@ class StoreReport extends FormRequest
             }
 
             $aggregate = boolval($this->input('aggregate_child_labels', false));
-            $allLabels = boolval($this->input('all_labels', false));
             if ($aggregate && !$this->isAllowedForAggregateChildLabels()) {
                 $validator->errors()->add('aggregate_child_labels', 'Child labels can only be aggregated for basic, extended and abundance image annotation reports.');
-            } else if ($aggregate && $allLabels) {
+            }
+
+            $allLabels = boolval($this->input('all_labels', false));
+            if ($allLabels && !$this->isAllowedForAllLabels()) {
+                $validator->errors()->add('all_labels', 'All labels option can only be used for abundance image annotation reports.');
+            }
+
+            if ($aggregate && $allLabels) {
                 $validator->errors()->add('all_labels', 'All labels option cannot be combined with aggregate child labels option.');
             }
 
@@ -132,6 +138,18 @@ class StoreReport extends FormRequest
      * @return boolean
      */
     protected function isAllowedForAggregateChildLabels()
+    {
+        return $this->isType([
+            ReportType::imageAnnotationsAbundanceId(),
+        ]);
+    }
+
+    /**
+     * Check if all_labels may be configured for the requested report type.
+     *
+     * @return boolean
+     */
+    protected function isAllowedForAllLabels()
     {
         return $this->isType([
             ReportType::imageAnnotationsAbundanceId(),
