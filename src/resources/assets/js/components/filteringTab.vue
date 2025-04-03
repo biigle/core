@@ -39,7 +39,6 @@ export default {
       union: false,
     };
   },
-
   methods: {
     resetFilters() {
       this.activeFilters = [];

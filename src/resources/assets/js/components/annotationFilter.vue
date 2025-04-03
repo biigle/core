@@ -40,6 +40,7 @@
           v-model="selectedFilter"
           title="Select attribute for filtering"
           @click.once="loadApiFilters"
+          @change="resetSelectedFilter"
         >
           <option
             v-for="value in Object.keys(filterValues)"
@@ -66,8 +67,13 @@
         </select>
       </div>
       <div class="form-group filter-select largo-filter-select">
-          <button type="button" :disabled="!this.selectedFilterValue" class="btn btn-default btn-block" title="Add the selected filter rule" @click="addFilter">
-              Add rule
+          <button
+              type="button"
+              :disabled="!this.selectedFilterValue"
+              class="btn btn-default btn-block"
+              title="Add the selected filter rule"
+              @click="addFilter"
+           >Add rule
           </button>
       </div>
     </div>
@@ -110,16 +116,16 @@ export default {
       this.union = false;
       this.$emit('set-union-logic', 0);
     },
-
     activateOrOperator() {
       this.union = true;
       this.$emit('set-union-logic', 1);
     },
-
     reset() {
       this.$emit("reset-filters");
     },
-
+    resetSelectedFilter() {
+        this.selectedFilterValue = null;
+    },
     loadApiFilters() {
       //Load here filters that should be loaded AFTER the page is rendered
       let volumeId = biigle.$require("largo.volumeId");
@@ -144,7 +150,6 @@ export default {
         ), Messages.handleErrorResponse
       );
     },
-
     addFilter() {
       if (!this.selectedFilterValue) {
         return;
