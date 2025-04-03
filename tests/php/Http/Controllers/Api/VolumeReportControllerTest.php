@@ -377,4 +377,19 @@ class VolumeReportControllerTest extends ApiTestCase
         ])->assertStatus(201);
         Queue::assertPushed(GenerateReportJob::class);
     }
+
+    public function testStoreOptionsAllLabelsAggregateChildLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'aggregate_child_labels' => true,
+        ])->assertStatus(422);
+
+        Queue::assertNotPushed(GenerateReportJob::class);
+    }
 }
