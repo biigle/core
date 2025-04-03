@@ -44,8 +44,11 @@ class StoreReport extends FormRequest
             }
 
             $aggregate = boolval($this->input('aggregate_child_labels', false));
+            $allLabels = boolval($this->input('all_labels', false));
             if ($aggregate && !$this->isAllowedForAggregateChildLabels()) {
                 $validator->errors()->add('aggregate_child_labels', 'Child labels can only be aggregated for basic, extended and abundance image annotation reports.');
+            } else if ($aggregate && $allLabels) {
+                $validator->errors()->add('all_labels', 'All labels option cannot be combined with aggregate child labels option.');
             }
 
             if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
