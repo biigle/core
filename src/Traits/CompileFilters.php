@@ -9,38 +9,39 @@ trait CompileFilters
     * Compile Largo filter(s) that were requested and add them to the query
     * @param Builder Query $query To add filters to
     * @param bool $union Whether filters are considered inclusive (OR) or exclusive (AND)
-    * @param array $filters Array of filters to add to the query
-    * @param string $filterName Name of the filter column to apply the  filter to
+    * @param array $filters Array of filters to add to the query in the form `filterName => filterValue`
     */
-    private function compileFilterConditions(Builder $query, bool $union, array $filters, string $filterName): void
+    private function compileFilterConditions(Builder $query, bool $union, array $filters): void
     {
         if ($union) {
-            $included = [];
-            $excluded = [];
 
-            foreach ($filters as $filterValue) {
-                if ($filterValue < 0) {
-                    array_push($excluded, abs($filterValue));
-                } else {
-                    array_push($included, $filterValue);
-                }
-            }
+            $query->where(function ($q) use ($filters) {
+                foreach ($filters as $filterName => $filterValues) {
+                    $toInclude = array_filter($filterValues, function($num) {
+                        return $num > 0;
+                    });
 
-            $query->where(function ($query) use ($included, $excluded, $filterName) {
-                if (count($included) > 0) {
-                    $query->whereIn($filterName, $included, 'or');
-                }
+                    $toExclude = array_map('abs', array_filter($filterValues, function($num) {
+                        return $num < 0;
+                    }));
 
-                if (count($excluded) > 0) {
-                    $query->whereNotIn($filterName, $excluded, 'or');
+                    if (!empty($toInclude)) {
+                        $q->whereIn($filterName, $toInclude, 'or');
+                    }
+
+                    if (!empty($toExclude)) {
+                        $q->whereNotIn($filterName, $toExclude, 'or');
+                    }
                 }
             });
         } else {
-            foreach ($filters as $filterValue) {
-                if ($filterValue < 0) {
-                    $query->whereNot($filterName, abs($filterValue));
-                } else {
-                    $query->where($filterName, $filterValue);
+            foreach ($filters as $filterName => $filterValues) {
+                foreach ($filterValues as $value) {
+                    if ($value < 0) {
+                        $query->whereNot($filterName, abs($value));
+                    } else {
+                        $query->where($filterName, $value);
+                    }
                 }
             }
         }

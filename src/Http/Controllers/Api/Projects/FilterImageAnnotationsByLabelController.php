@@ -46,8 +46,11 @@ class FilterImageAnnotationsByLabelController extends Controller
         ]);
 
         $take = $request->input('take');
-        $shape_ids = $request->input('shape_id');
-        $user_ids = $request->input('user_id');
+        $filters = [
+            'shape_id' => $request->input('shape_id'),
+            'user_id' => $request->input('user_id'),
+        ];
+        $filters = array_filter($filters);
         $union = $request->input('union', false);
 
         return ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
@@ -61,8 +64,7 @@ class FilterImageAnnotationsByLabelController extends Controller
                 return $query->take($take);
             })
             ->where('image_annotation_labels.label_id', $lid)
-            ->when(!is_null($user_ids), fn ($query) => $this->compileFilterConditions($query, $union, $user_ids, 'user_id'))
-            ->when(!is_null($shape_ids), fn ($query) => $this->compileFilterConditions($query, $union, $shape_ids, 'shape_id'))
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')

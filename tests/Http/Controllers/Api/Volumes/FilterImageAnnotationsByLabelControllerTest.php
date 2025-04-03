@@ -228,9 +228,15 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->id}&user_id[]=-{$u2->id}&union=0")
             ->assertExactJson([$a1->id => $image->uuid]);
 
-        //Case 5: combine users with union
+        //Case 5: combine filters (excluding values and not) with union
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=1")
             ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid, $a3->id => $image->uuid]);
+
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->id}&user_id[]={$u1->id}&union=1")
+            ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid]);
+
+        $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s1->id}&user_id[]={$u1->id}&union=1")
+            ->assertExactJson([$a1->id => $image->uuid, $a3->id => $image->uuid]);
 
         //Case 6: combine incompatible filters: annotations should be of user1 and user2 at the same time
         $this->get("/api/v1/volumes/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=0")
