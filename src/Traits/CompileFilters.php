@@ -6,9 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 trait CompileFilters
 {
     /**
-    *
     * Compile Largo filter(s) that were requested and add them to the query
-    * @param Query &$query To add filters to
+    * @param Builder Query $query To add filters to
     * @param bool $union Whether filters are considered inclusive (OR) or exclusive (AND)
     * @param array $filters Array of filters to add to the query
     * @param string $filterName Name of the filter column to apply the  filter to
