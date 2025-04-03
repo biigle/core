@@ -1,4 +1,5 @@
-<script> import DismissImageGrid from '../components/dismissImageGrid';
+<script>
+import DismissImageGrid from '../components/dismissImageGrid';
 import RelabelImageGrid from '../components/relabelImageGrid';
 import SettingsTab from '../components/settingsTab';
 import SortingTab from '../components/sortingTab';
@@ -247,6 +248,9 @@ export default {
 
             let imageAnnotations = response[0].data;
             let videoAnnotations = response[1].data;
+
+            // This is the object that we will use to store information for each
+            // annotation patch.
             let annotations = [];
 
             if (imageAnnotations) {
@@ -259,8 +263,6 @@ export default {
 
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
-
-            return annotations;
         },
         handleSelectedFilters(filters, union) {
             union = union ? 1 : 0;
@@ -271,13 +273,13 @@ export default {
                 this.hasActiveFilters = false;
             }
             this.selectedFilters = filters;
-            if (!this.selectedLabel){
+            if (!this.selectedLabel) {
                 return [];
             }
             this.loadFilters(this.selectedLabel.id, filters, union);
         },
         loadFilters(label, filters, union) {
-            if (filters.length == 0){
+            if (filters.length == 0) {
                 return;
             }
 
@@ -294,7 +296,7 @@ export default {
                     )
                     .then(a => a.map(ann => [ann.id, true]))
                     .then(a => new Map(a))
-                    .then(a => Vue.set(this.filtersCache, filtersCacheKey, a)) //This is not right
+                    .then(a => Vue.set(this.filtersCache, filtersCacheKey, a))
                     .finally(this.finishLoading);
             }
         },
@@ -315,7 +317,7 @@ export default {
             this.selectedLabel = label;
 
             if (this.isInDismissStep) {
-                this.getAnnotations(label, this.selectedFilters, this.union);
+                this.getAnnotations(label);
             }
         },
         handleDeselectedLabel() {
@@ -343,7 +345,7 @@ export default {
             this.step = 0;
             this.lastSelectedImage = null;
             if (this.selectedLabel) {
-                this.getAnnotations(this.selectedLabel, this.selectedFilters, this.union);
+                this.getAnnotations(this.selectedLabel);
             }
         },
         handleSelectedImageRelabel(image, event) {
