@@ -123,7 +123,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     }
 
     /**
-     * Assembles the part of the DB query that is the same for all annotation reports.
+     * Assembles the part of the DB query that is used for the abundance report.
      * Overrides AnnotationReportGenerator's initQuery() because it requires a special query  
      * where images without (selected) annotation labels are kept after filtering.
      *
@@ -158,7 +158,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     protected function getImageAnnotationLabelQuery()
     {
-        // Filter records here to keep images with either no selected annotation labels or without any annotation labels
+        // Filter records here to keep images with no selected annotation labels or without any annotation labels
         if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels()) {
             // Start join with 'Label' to set unselected labels and annotations on null
             return Label::
