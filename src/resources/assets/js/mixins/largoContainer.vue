@@ -263,6 +263,8 @@ export default {
 
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
+
+            return annotations
         },
         handleSelectedFilters(filters, union) {
             union = union ? 1 : 0;
