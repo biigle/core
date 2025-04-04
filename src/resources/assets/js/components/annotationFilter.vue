@@ -74,7 +74,7 @@
             <div class="form-group filter-select largo-filter-select">
                 <button
                     type="button"
-                    :disabled="!this.selectedFilterValue"
+                    :disabled="!selectedFilterValue"
                     class="btn btn-default btn-block"
                     title="Add the selected filter rule"
                     @click="addFilter"
