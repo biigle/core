@@ -29,7 +29,7 @@ class GetUsersWithAnnotations extends Controller
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
-        if ($volume->media_type_id === MediaType::imageId()) {
+        if ($volume->isImageVolume()) {
             $usersWithAnnotations = ImageAnnotationLabel::query()
                 ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
                 ->join('images', 'image_annotations.image_id', '=', 'images.id')
