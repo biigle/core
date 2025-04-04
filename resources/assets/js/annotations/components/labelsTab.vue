@@ -70,10 +70,10 @@ export default {
                 this.handleDeselectedLabel();
             }
 
-            this.$emit('labelbot', true);
+            this.$emit('change', 'labelbot', true);
         },
         handleLabelbotOff() {
-            this.$emit('labelbot', false);
+            this.$emit('change', 'labelbot', false);
         },
         setFocusInputFindLabel() {
             this.$emit('open', 'labels');

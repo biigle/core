@@ -1,5 +1,5 @@
 <sidebar-tab name="labels" icon="tags" title="Label trees">
-    <labels-tab v-on:select="handleSelectedLabel" v-on:open="openSidebarLabels" v-on:labelbot="handleLabelbot" :labelbot-is-on="labelbotIsOn" v-cloak inline-template>
+    <labels-tab v-on:select="handleSelectedLabel" v-on:open="openSidebarLabels" v-on:change="handleSettingsChange" :labelbot-is-on="labelbotIsOn" v-cloak inline-template>
         <div class="labels-tab">
             <div class="labelBOT-button">
                 <power-toggle :active="labelbotIsOn" title-off="Activate LabelBOT" title-on="Deactivate LabelBOT" v-on:on="handleLabelbotOn" v-on:off="handleLabelbotOff">LabelBOT</power-toggle>

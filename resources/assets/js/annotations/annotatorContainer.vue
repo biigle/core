@@ -428,9 +428,6 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
         },
-        handleLabelbot(labelbotIsOn) {
-            this.$set(this, 'labelbotIsOn', labelbotIsOn);
-        },
         getBoundingBox(points) {
             let minX = this.image.width;
             let minY = this.image.height;
@@ -692,6 +689,8 @@ export default {
                 case 'minimap':
                     this.showMinimap = value;
                     break;
+                case 'labelbot':
+                    this.labelbotIsOn = value;
             }
         },
         handleAnnotationModeChange(mode, data) {
