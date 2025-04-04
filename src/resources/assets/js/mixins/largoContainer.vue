@@ -199,7 +199,6 @@ export default {
 
             filters.forEach(
                 (filter) => {
-                    //If we have an union in the current filter, we need to execute the last request
                     if (!parameters[filter.filter]) {
                         parameters[filter.filter] = [];
                     }
