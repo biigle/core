@@ -2,12 +2,12 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
-use DB;
-use Biigle\User;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
+use Biigle\User;
+use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -54,7 +54,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
             } else {
                 $rows = $rows->groupBy('label_tree_id');
-                $treeIds = $rows->keys()->reject(fn($k) => !$k);
+                $treeIds = $rows->keys()->reject(fn ($k) => !$k);
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 foreach ($trees as $id => $name) {
                     $labelIds = $rows->get($id)->pluck('label_id')->unique();
@@ -87,7 +87,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
         } else {
-            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+            $allLabelIds = $rows->pluck('label_id')->reject(fn ($k) => !$k);
             if ($this->shouldUseAllLabels()) {
                 $labels = $this->getVolumeLabels();
             } else {
@@ -124,7 +124,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
     /**
      * Assembles the part of the DB query that is used for the abundance report.
-     * Overrides AnnotationReportGenerator's initQuery() because it requires a special query  
+     * Overrides AnnotationReportGenerator's initQuery() because it requires a special query
      * where images without (selected) annotation labels are kept after filtering.
      *
      * @param mixed $columns The columns to select
@@ -134,7 +134,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $query = $this->getImageAnnotationLabelQuery()
             ->where('images.volume_id', $this->source->id)
-            ->when($this->isRestrictedToNewestLabel(), fn($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
+            ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
             ->addSelect($columns);
 
         if ($this->shouldSeparateLabelTrees()) {
@@ -148,7 +148,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
     /**
      * Construct a join query for (filtered) images, image annotations, image annotation labels, and labels
-     * 
+     *
      * @return Label
      */
     protected function getImageAnnotationLabelQuery()
@@ -156,11 +156,10 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         // Filter records here to keep images with no selected annotation labels or without any annotation labels
         if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels()) {
             // Start join with 'Label' to set unselected labels and annotations on null
-            return Label::
-                join('image_annotation_labels', function ($join) {
-                    $join->on('labels.id', '=', 'image_annotation_labels.label_id')
-                        ->when($this->isRestrictedToLabels(), fn($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
-                })
+            return Label::join('image_annotation_labels', function ($join) {
+                $join->on('labels.id', '=', 'image_annotation_labels.label_id')
+                    ->when($this->isRestrictedToLabels(), fn ($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
+            })
                 ->join('image_annotations', function ($join) {
                     $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
                         ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery']);
@@ -189,7 +188,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $rows = $rows
             ->groupBy('filename')
-            ->sortBy(fn($annotation, $file) => $file, SORT_NATURAL);
+            ->sortBy(fn ($annotation, $file) => $file, SORT_NATURAL);
 
         if ($this->shouldAggregateChildLabels()) {
             [$rows, $labels] = $this->aggregateChildLabels($rows, $labels);
@@ -258,7 +257,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     return in_array($value, $onlyLabels) ? $value : null;
                 });
             })
-            ->reject(fn($value) => is_null($value));
+            ->reject(fn ($value) => is_null($value));
 
         // Determine the highest parent label for all child labels.
         do {
@@ -304,15 +303,15 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         // Remove all labels that did not occur (as parent) in the rows.
         $presentLabels = $presentLabels->unique()->flip();
-        $usedParentLabels = $labels->filter(fn($label) => $presentLabels->has($label->id));
+        $usedParentLabels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
 
         // Add unused (empty) labels again
         if ($this->shouldUseAllLabels() || $this->shouldSeparateUsers()) {
             $usedParentLabelIds = $usedParentLabels->pluck('id');
             $unusedLabels = $originalLabels
-                ->when($this->isRestrictedToLabels(), fn($c) => $c
-                    ->filter(fn($l) => in_array($l->id, $this->getOnlyLabels())))
-                ->filter(callback: fn($l) => is_null($l->parent_id) && !$usedParentLabelIds->contains($l->id));
+                ->when($this->isRestrictedToLabels(), fn ($c) => $c
+                    ->filter(fn ($l) => in_array($l->id, $this->getOnlyLabels())))
+                ->filter(callback: fn ($l) => is_null($l->parent_id) && !$usedParentLabelIds->contains($l->id));
             $labels = $usedParentLabels->merge($unusedLabels);
         } else {
             $labels = $usedParentLabels;

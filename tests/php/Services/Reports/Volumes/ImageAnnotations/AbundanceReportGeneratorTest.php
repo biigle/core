@@ -3,19 +3,19 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
-use Mockery;
-use TestCase;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\LabelTreeTest;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
+use Mockery;
+use TestCase;
 
 class AbundanceReportGeneratorTest extends TestCase
 {
@@ -296,7 +296,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateLabelTrees' => true,
@@ -828,6 +828,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
     }
+
     public function testGenerateReportSeparateLabelTreesAllLabels()
     {
         $project = ProjectTest::create();
@@ -1111,7 +1112,7 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         $generator = new AbundanceReportGenerator([
-            'separateLabelTrees' => True
+            'separateLabelTrees' => true
         ]);
 
         $generator->setSource($image->volume);
@@ -1141,7 +1142,7 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
 
         $generator = new AbundanceReportGenerator([
-            'separateUsers' => True
+            'separateUsers' => true
         ]);
 
         $generator->setSource($image->volume);
@@ -1629,12 +1630,12 @@ class AbundanceReportGeneratorTest extends TestCase
 
         // Label was not selected
         $al3 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id, ])->id,
         ]);
 
         // Label was not selected
         $al4 = ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image3->id,])->id,
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $image3->id, ])->id,
         ]);
 
         $generator = new AbundanceReportGenerator([
@@ -1739,7 +1740,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'onlyLabels' => [$l2->id, $l4->id],

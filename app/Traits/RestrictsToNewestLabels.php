@@ -45,7 +45,7 @@ trait RestrictsToNewestLabels
                 ->orderBy('image_annotation_labels.created_at', 'desc');
         }
         if ($keepEmptyImgs) {
-            return $query->joinSub($subquery, 'latest_labels', fn($join) => $join
+            return $query->joinSub($subquery, 'latest_labels', fn ($join) => $join
                 ->on("{$table}.id", '=', 'latest_labels.id')
                 ->orWhereNull("{$table}.annotation_id"));
         }
