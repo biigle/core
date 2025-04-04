@@ -13,7 +13,7 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 
-class GetUsersWithAnnotationsVolumesTest extends ApiTestCase
+class GetUsersWithAnnotationsTest extends ApiTestCase
 {
     public function testGetUsersWithAnnotations()
     {

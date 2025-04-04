@@ -65,8 +65,7 @@
             <div class="form-group largo-filter-select">
                 <select class="form-control" v-model="selectedFilterValue">
                     <option
-                        v-for="(filter_name, filter_id) in this
-                            .activeFilterValue"
+                        v-for="(filter_name, filter_id) in activeFilterValue"
                         :value="[filter_name, filter_id]"
                         v-text="filter_name"
                     ></option>
@@ -75,7 +74,7 @@
             <div class="form-group filter-select largo-filter-select">
                 <button
                     type="button"
-                    :disabled="!this.selectedFilterValue"
+                    :disabled="!selectedFilterValue"
                     class="btn btn-default btn-block"
                     title="Add the selected filter rule"
                     @click="addFilter"

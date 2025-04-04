@@ -90,7 +90,7 @@ export default {
                 let annotations = this.annotationsCache[this.selectedLabel.id];
                 let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});
                 if (this.hasActiveFilters && this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-                    annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].get(annotation.id) === true);
+                    annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].get(annotation.id));
                 }
 
                 return annotations;

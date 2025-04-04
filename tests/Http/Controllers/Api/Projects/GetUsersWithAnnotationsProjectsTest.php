@@ -15,7 +15,7 @@ use Biigle\Tests\UserTest;
 use Biigle\MediaType;
 use Biigle\Role;
 
-class GetUsersWithAnnotationsProjectsTest extends ApiTestCase
+class GetUsersWithAnnotationsTest extends ApiTestCase
 {
     public function testGetUsersWithAnnotations(): void
     {
