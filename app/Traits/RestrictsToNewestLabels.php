@@ -44,12 +44,13 @@ trait RestrictsToNewestLabels
                 ->orderBy('image_annotation_labels.id', 'desc')
                 ->orderBy('image_annotation_labels.created_at', 'desc');
         }
-        if ($keepEmptyImgs) {
-            return $query->joinSub($subquery, 'latest_labels', fn ($join) => $join
-                ->on("{$table}.id", '=', 'latest_labels.id')
-                ->orWhereNull("{$table}.annotation_id"));
-        }
 
-        return $query->joinSub($subquery, 'latest_labels', fn ($join) => $join->on("{$table}.id", '=', 'latest_labels.id'));
+        return $query
+            ->joinSub($subquery, 'latest_labels', function ($join) use ($table, $keepEmptyImgs) {
+                $join
+                    ->on("{$table}.id", '=', 'latest_labels.id')
+                    // Add empty images again
+                    ->when($keepEmptyImgs, fn($query) => $query->orWhereNull("{$table}.annotation_id"));
+            });
     }
 }
