@@ -16,8 +16,12 @@ let transformUuid = function (uuid) {
 };
 
 /**
- * View model for the main volume container
+ * Additional components that can be dynamically added by other BIIGLE modules via
+ * view mixins. This will be new tabs most of the time.
+ *
+ * @type {Object}
  */
+export let plugins = {};
 
 /*
  * ABOUT PERFORMANCE
@@ -62,6 +66,9 @@ export default {
         };
     },
     computed: {
+        plugins() {
+            return plugins;
+        },
         // Map from file ID to index of sorted array to compute sortedFiles fast.
         sortingMap() {
             let map = {};

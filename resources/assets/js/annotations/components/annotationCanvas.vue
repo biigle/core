@@ -308,6 +308,7 @@ export default {
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
                 style: Styles.features,
+                opacity: this.annotationOpacity,
             });
 
             this.selectInteraction = new SelectInteraction({
