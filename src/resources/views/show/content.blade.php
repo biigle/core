@@ -1,6 +1,6 @@
 <div class="sidebar-container__content">
     <dismiss-image-grid
-        v-if="isInDismissStep"
+        v-if="isInDismissStep && !hasNoAnnotations"
         ref="dismissGrid"
         empty-url="{{ asset(config('thumbnails.empty_url')) }}"
         selected-icon="times"
@@ -9,7 +9,7 @@
         :height="{{config('thumbnails.height')}}"
         :selectable="true"
         :pinnable="imagesPinnable"
-        :pinned-image="pinnedImage"
+        :pinned-image="pinnedImageInAnnotations ? pinnedImage : null"
         v-on:select="handleSelectedImageDismiss"
         v-on:pin="handlePinImage"
         ></dismiss-image-grid>
@@ -23,7 +23,7 @@
         :selectable="true"
         v-on:select="handleSelectedImageRelabel"
         ></relabel-image-grid>
-    <div class="largo-images__alerts" :class="{block: loading}">
+    <div class="largo-images__alerts"  :class="{block: loading}">
         <div v-cloak v-if="loading">
             <loader :active="true" :fancy="true"></loader>
         </div>

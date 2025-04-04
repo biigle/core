@@ -82,7 +82,7 @@ export default {
             return this.step === 1;
         },
         annotations() {
-            if (!this.selectedLabel) {
+            if (!this.selectedLabel || this.loading) {
                 return [];
             }
 
@@ -191,6 +191,9 @@ export default {
                 })
             });
             return index;
+        },
+        pinnedImageInAnnotations() {
+            return this.annotations.includes(this.pinnedImage);
         }
     },
     methods: {
@@ -211,6 +214,7 @@ export default {
         getAnnotations(label) {
             let promise1;
             let promise2;
+            let filterPromise;
 
             //store in variables to avoid race conditions
             let union = this.union;
@@ -225,8 +229,6 @@ export default {
                         handleErrorResponse
                     )
                     .then(a => Vue.set(this.annotationsCache, label.id, a))
-                    .then(this.loadFilters(label, selectedFilters, union))
-                    .finally(this.finishLoading);
             } else {
                 promise1 = Vue.Promise.resolve();
             }
@@ -241,7 +243,25 @@ export default {
                 promise2 = Vue.Promise.resolve();
             }
 
-            Vue.Promise.all([promise1, promise2]).finally(this.finishLoading);
+            if (selectedFilters.length > 0) {
+                let filtersCacheKey = JSON.stringify({...selectedFilters, label: this.selectedLabel.id, union: union});
+
+                if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
+                    this.startLoading();
+                    filterPromise = this.loadFilters(label, selectedFilters, union)
+                        .then(
+                            (response) => this.gotAnnotations(label, response),
+                            handleErrorResponse
+                        )
+                        .then(a => a.map(ann => [ann.id, true]))
+                        .then(a => new Map(a))
+                        .then(a => Vue.set(this.filtersCache, filtersCacheKey, a))
+                        .finally(this.finishLoading);
+                }
+            } else {
+                filterPromise = Vue.Promise.resolve();
+            }
+            Vue.Promise.all([promise1, promise2, filterPromise]).finally(this.finishLoading);
         },
         gotAnnotations(label, response) {
 
@@ -277,20 +297,13 @@ export default {
             if (!this.selectedLabel) {
                 return [];
             }
-            this.loadFilters(this.selectedLabel.id, filters, union);
-        },
-        loadFilters(label, filters, union) {
-            if (filters.length == 0) {
-                return;
-            }
+            let label = this.selectedLabel;
 
-            let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});
+            let filtersCacheKey = JSON.stringify({...filters, label: label.id, union: union});
 
             if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-
-                let requestParams = this.compileFilters(filters, union);
                 this.startLoading();
-                this.queryAnnotations(this.selectedLabel, requestParams)
+                this.loadFilters(label, filters, union)
                     .then(
                         (response) => this.gotAnnotations(label, response),
                         handleErrorResponse
@@ -300,6 +313,10 @@ export default {
                     .then(a => Vue.set(this.filtersCache, filtersCacheKey, a))
                     .finally(this.finishLoading);
             }
+        },
+        loadFilters(label, filters, union) {
+            let requestParams = this.compileFilters(filters, union);
+            return this.queryAnnotations(label, requestParams);
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
