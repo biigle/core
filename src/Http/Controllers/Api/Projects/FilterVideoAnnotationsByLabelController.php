@@ -51,7 +51,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'user_id' => $request->input('user_id'),
         ];
         $filters = array_filter($filters);
-        $union = $request->input('union', 0);
+        $union = $request->input('union', false);
 
         return VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
