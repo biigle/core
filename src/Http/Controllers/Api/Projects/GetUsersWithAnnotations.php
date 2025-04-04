@@ -31,23 +31,22 @@ class GetUsersWithAnnotations extends Controller
         $volumes = $project->volumes()->pluck('id');
 
         $usersWithImageAnnotations = ImageAnnotationLabel::query()
-            ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-            ->join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->whereIn('images.volume_id', $volumes)
-            ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
-            ->distinct('image_annotation_labels.user_id')
-            ->select('image_annotation_labels.user_id', 'users.lastname', 'users.firstname')
-            ->get()->toArray();
+        ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+        ->join('images', 'image_annotations.image_id', '=', 'images.id')
+        ->whereIn('images.volume_id', $volumes)
+        ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
+        ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
 
         $usersWithVideoAnnotations = VideoAnnotationLabel::query()
             ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->whereIn('videos.volume_id', $volumes)
             ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
-            ->distinct('video_annotation_labels.user_id')
-            ->select('video_annotation_labels.user_id', 'users.lastname', 'users.firstname')
-            ->get()->toArray();
+            ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
 
-        return array_merge($usersWithImageAnnotations, $usersWithVideoAnnotations);
+        return $usersWithImageAnnotations
+            ->union($usersWithVideoAnnotations)
+            ->distinct('user_id')
+            ->get();
     }
 };

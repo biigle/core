@@ -156,7 +156,7 @@ export default {
                     response.data.forEach(
                         (user) =>
                             (this.filterValues.User[user.user_id] =
-                                user.firstname + " " + user.lastname)
+                                user.name)
                     ),
                 Messages.handleErrorResponse
             );

@@ -36,8 +36,7 @@ class GetUsersWithAnnotations extends Controller
                 ->where('images.volume_id', $vid)
                 ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
                 ->distinct('image_annotation_labels.user_id')
-                ->select('image_annotation_labels.user_id', 'users.lastname', 'users.firstname')
-                ->get();
+                ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
         } else {
             $usersWithAnnotations = VideoAnnotationLabel::query()
                 ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
@@ -45,10 +44,9 @@ class GetUsersWithAnnotations extends Controller
                 ->where('videos.volume_id', $vid)
                 ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
                 ->distinct('video_annotation_labels.user_id')
-                ->select('video_annotation_labels.user_id', 'users.lastname', 'users.firstname')
-                ->get();
+                ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
         }
 
-        return $usersWithAnnotations;
+        return $usersWithAnnotations->get();
     }
 };
