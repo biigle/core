@@ -149,7 +149,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     /**
      * Construct a join query for (filtered) images, image annotations, image annotation labels, and labels
      *
-     * @return Label
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function getImageAnnotationLabelQuery()
     {
