@@ -30,7 +30,7 @@ import {debounce, urlParams, throttle} from '@/core/utils.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
 
-import {Popover, Tab, Tabs} from 'uiv';
+import {Popover, Tab, Tabs, Modal} from 'uiv';
 
 import {Resource, Http} from 'vue-resource';
 
@@ -80,6 +80,7 @@ biigle.$declare('core.keyboard', Keyboard); // Legacy support.
 biigle.$declare('uiv.popover', Popover);
 biigle.$declare('uiv.tab', Tab);
 biigle.$declare('uiv.tabs', Tabs);
+biigle.$declare('uiv.modal', Modal);
 
 biigle.$declare('resource', Resource);
 biigle.$declare('http', Http);
