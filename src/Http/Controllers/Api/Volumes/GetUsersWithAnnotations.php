@@ -22,15 +22,14 @@ class GetUsersWithAnnotations extends Controller
      * @apiDescription Returns the users with annotations in the volume
      *
      * @param Request $request
-     * @param  int  $vid Volume ID
-     * @param int $lid Label ID
+     * @param int $vid Volume ID
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request, $vid)
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
-        if ($volume->media_type_id == MediaType::imageId()) {
+        if ($volume->media_type_id === MediaType::imageId()) {
             $usersWithAnnotations = ImageAnnotationLabel::query()
                 ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
                 ->join('images', 'image_annotations.image_id', '=', 'images.id')
