@@ -7,6 +7,7 @@ import SorterStore from './stores/sorters.js';
 import VolumesApi from './api/volumes.js';
 
 biigle.$declare('annotations.api.volumes', VolumesApi); // Legacy support
+biigle.$declare('volumes.api.volumes', VolumesApi);
 biigle.$declare('volumes.components.filterListComponent', FilterListComponent);
 biigle.$declare('volumes.components.imageGrid', ImageGrid);
 biigle.$declare('volumes.components.imageGridImage', ImageGridImage);
