@@ -54,7 +54,7 @@ $router->group([
     ]);
 
     $router->get('projects/{pid}/users-with-annotations', [
-        'uses' => 'Projects\GetUsersWithAnnotations@index',
+        'uses' => 'Projects\GetUsersWithAnnotationsProject@index',
     ]);
 
     $router->get('projects/{id}/label-count', [
@@ -78,7 +78,7 @@ $router->group([
     ]);
 
     $router->get('volumes/{vid}/users-with-annotations', [
-        'uses' => 'Volumes\GetUsersWithAnnotations@index',
+        'uses' => 'Volumes\GetUsersWithAnnotationsVolume@index',
     ]);
 
     $router->post('volumes/{id}/largo', [

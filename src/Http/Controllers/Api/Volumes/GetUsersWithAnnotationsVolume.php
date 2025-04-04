@@ -4,12 +4,11 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotationLabel;
-use Biigle\MediaType;
 use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
-class GetUsersWithAnnotations extends Controller
+class GetUsersWithAnnotationsVolume extends Controller
 {
     /**
      * Get users with at least one annotation in the volume
@@ -34,19 +33,18 @@ class GetUsersWithAnnotations extends Controller
                 ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
                 ->join('images', 'image_annotations.image_id', '=', 'images.id')
                 ->where('images.volume_id', $vid)
-                ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
-                ->distinct('image_annotation_labels.user_id')
-                ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
+                ->join('users', 'image_annotation_labels.user_id', '=', 'users.id');
         } else {
             $usersWithAnnotations = VideoAnnotationLabel::query()
                 ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
                 ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
                 ->where('videos.volume_id', $vid)
-                ->join('users', 'video_annotation_labels.user_id', '=', 'users.id')
-                ->distinct('video_annotation_labels.user_id')
-                ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
+                ->join('users', 'video_annotation_labels.user_id', '=', 'users.id');
         }
 
-        return $usersWithAnnotations->get();
+        return $usersWithAnnotations
+            ->selectRaw("user_id, CONCAT(users.firstname, ' ', users.lastname) as name")
+            ->orderBy('user_id')
+            ->get();
     }
 };

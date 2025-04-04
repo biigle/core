@@ -8,7 +8,7 @@ use Biigle\Project;
 use Biigle\VideoAnnotationLabel;
 use Illuminate\Http\Request;
 
-class GetUsersWithAnnotations extends Controller
+class GetUsersWithAnnotationsProject extends Controller
 {
     /**
      * Get all users with annotations in the project
@@ -47,6 +47,7 @@ class GetUsersWithAnnotations extends Controller
         return $usersWithImageAnnotations
             ->union($usersWithVideoAnnotations)
             ->distinct('user_id')
+            ->orderBy('user_id')
             ->get();
     }
 };
