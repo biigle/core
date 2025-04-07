@@ -61,8 +61,6 @@ class FilterImageAnnotationsByLabelController extends Controller
             $query = ImageAnnotation::query();
         }
 
-
-
         return $query->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->where('images.volume_id', $vid)
