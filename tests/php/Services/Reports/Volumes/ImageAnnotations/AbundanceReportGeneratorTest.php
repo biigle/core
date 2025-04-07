@@ -829,6 +829,99 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsersAggregateLabelsRestrictToLabels()
+    {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume);
+
+        $lt = LabelTreeTest::create();
+        $lt2 = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+        $lt2->projects()->attach($project);
+
+        $u = UserTest::create();
+        $u2 = UserTest::create();
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+        // Empty images should be included in the report
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
+        // Label should not be included in report due to selection
+        $root = LabelTest::create(['label_tree_id' => $lt->id]);
+        // Label should not be included in report due to selection
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
+        $childchild = LabelTest::create([
+            'parent_id' => $child->id,
+            'label_tree_id' => $child->label_tree_id,
+        ]);
+
+        // Unused (empty) label should be included in report
+        $root2 = LabelTest::create(['label_tree_id' => $lt2->id]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $child->id,
+            'user_id' => $u->id,
+        ]);
+
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $child->id,
+            'user_id' => $u2->id,
+        ]);
+
+        $al3 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $childchild->id,
+            'user_id' => $u2->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        // Create csv only for one user, as other user's annotation were not selected
+        $mock->shouldReceive('put')
+            ->once()
+            ->with("{$u2->firstname} {$u2->lastname}");
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $childchild->name, $root2->name]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i1->filename, 0, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i2->filename, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i3->filename, 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'separateUsers' => true,
+            'aggregateChildLabels' => true,
+            'onlyLabels' => [$childchild->id, $root2->id]
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
     public function testGenerateReportSeparateLabelTreesAllLabels()
     {
         $project = ProjectTest::create();
