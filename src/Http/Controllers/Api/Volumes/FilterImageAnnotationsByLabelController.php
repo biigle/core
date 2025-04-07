@@ -1,5 +1,4 @@
 <?php
-
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
@@ -61,6 +60,8 @@ class FilterImageAnnotationsByLabelController extends Controller
         } else {
             $query = ImageAnnotation::query();
         }
+
+
 
         return $query->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')

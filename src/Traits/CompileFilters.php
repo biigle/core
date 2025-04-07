@@ -14,7 +14,6 @@ trait CompileFilters
     private function compileFilterConditions(Builder $query, bool $union, array $filters): void
     {
         if ($union) {
-
             $query->where(function ($q) use ($filters) {
                 foreach ($filters as $filterName => $filterValues) {
                     $toInclude = array_filter($filterValues, function($num) {
@@ -25,12 +24,13 @@ trait CompileFilters
                         return $num < 0;
                     }));
 
-                    if (!empty($toInclude)) {
-                        $q->whereIn($filterName, $toInclude, 'or');
+                    foreach ($toInclude as $valueToInclude) {
+                        $q->orWhere($filterName, $valueToInclude);
                     }
 
-                    if (!empty($toExclude)) {
-                        $q->whereNotIn($filterName, $toExclude, 'or');
+
+                    foreach ($toExclude as $valueToExclude) {
+                        $q->orWhereNot($filterName, $valueToExclude);
                     }
                 }
             });
