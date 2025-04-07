@@ -50,11 +50,11 @@ class StoreReport extends FormRequest
 
             $allLabels = boolval($this->input('all_labels', false));
             if ($allLabels && !$this->isAllowedForAllLabels()) {
-                $validator->errors()->add('all_labels', 'All labels option can only be used for abundance image annotation reports.');
+                $validator->errors()->add('all_labels', "The 'all labels' option is only supported for image annotation abundance reports.");
             }
 
             if ($aggregate && $allLabels) {
-                $validator->errors()->add('all_labels', 'All labels option cannot be combined with aggregate child labels option.');
+                $validator->errors()->add('all_labels', "The 'all labels' and 'aggregate child labels' option cannot be selected at the same time.");
             }
 
             if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
