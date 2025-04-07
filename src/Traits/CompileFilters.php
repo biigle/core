@@ -28,7 +28,6 @@ trait CompileFilters
                         $q->orWhere($filterName, $valueToInclude);
                     }
 
-
                     foreach ($toExclude as $valueToExclude) {
                         $q->orWhereNot($filterName, $valueToExclude);
                     }
