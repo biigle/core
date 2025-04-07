@@ -476,17 +476,19 @@ export default {
                     })
                     .catch(handleErrorResponse);
                 } else {
-                    promise = Promise.resolve()
+                    promise = Vue.Promise.resolve()
                     annotation.label_id = this.selectedLabel.id;
                 }
                 // TODO: confidence control
                 annotation.confidence = 1;
                 promise.then(() => {
-                    AnnotationsStore.create(this.imageId, annotation)
+                    return AnnotationsStore.create(this.imageId, annotation)
                     .then(this.setLabelbotLabels)
                     .then(this.setLastCreatedAnnotation)
                 })
-                .then(this.updateLabelbotState('ready'))
+                .then(() => {
+                    this.updateLabelbotState('ready');
+                })
                 .catch(handleErrorResponse)
                 // Remove the temporary annotation if saving succeeded or failed.
                 .finally(removeCallback);
