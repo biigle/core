@@ -31,11 +31,11 @@ class GetUsersWithAnnotationsProject extends Controller
         $volumes = $project->volumes()->pluck('id');
 
         $usersWithImageAnnotations = ImageAnnotationLabel::query()
-        ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
-        ->join('images', 'image_annotations.image_id', '=', 'images.id')
-        ->whereIn('images.volume_id', $volumes)
-        ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
-        ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
+            ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
+            ->whereIn('images.volume_id', $volumes)
+            ->join('users', 'image_annotation_labels.user_id', '=', 'users.id')
+            ->selectRaw("users.id as user_id, CONCAT(users.firstname, ' ', users.lastname) as name");
 
         $usersWithVideoAnnotations = VideoAnnotationLabel::query()
             ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
