@@ -244,10 +244,10 @@ export default {
             }
 
             if (selectedFilters.length > 0) {
+
                 let filtersCacheKey = JSON.stringify({...selectedFilters, label: this.selectedLabel.id, union: union});
 
                 if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-                    this.startLoading();
                     filterPromise = this.loadFilters(label, selectedFilters, union)
                         .then(
                             (response) => this.gotAnnotations(label, response),
