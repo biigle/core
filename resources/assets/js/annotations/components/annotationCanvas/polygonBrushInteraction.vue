@@ -34,7 +34,7 @@ export default {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && this.canAdd) {
+            } else if (!this.hasSelectedLabel && !this.labelbotIsOn && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'polygonBrush';
