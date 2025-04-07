@@ -11,21 +11,34 @@ export default {
             labelbotIsBusy: false, // true if max number of requests is reached.
             labelbotState: 'initializing',
             labelbotOverlays: [],
+            // Cache api
+            cacheName: 'labelbot-model-cache',
+            modelCacheKey: '/cached-labelbot-model.onnx',
         };
-    },
-    computed: {
-       
     },
     methods: {
         initModel() {
-            // no need if default is init, maybe later when model is cached...
-            //this.labelbotState = 'initializing',
+            this.labelbotState = 'initializing';
 
-            LabelbotApi.fetch()
-            .then(response => response.blob())
-            .then(blob => {
-                const modelUrl = URL.createObjectURL(blob);
-                return this.loadModel(modelUrl);
+            caches.open(this.cacheName).then((cache) => {
+                cache.match(this.modelCacheKey).then((cachedResponse) => {
+                    // Model is cached
+                    if (cachedResponse) {
+                        cachedResponse.blob().then((modelBlob) => {
+                            const modelUrl = URL.createObjectURL(modelBlob);
+                            this.loadModel(modelUrl);
+                        });
+                    } else {
+                        LabelbotApi.fetch()
+                        .then((response) => response.blob())
+                        .then((blob) => {
+                            // Cache the model before loading it
+                            cache.put(this.modelCacheKey, new Response(blob));
+                            const modelUrl = URL.createObjectURL(blob);
+                            this.loadModel(modelUrl);
+                        })
+                    }
+                });
             })
             .catch(handleErrorResponse);
         },
