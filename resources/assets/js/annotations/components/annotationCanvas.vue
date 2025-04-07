@@ -148,15 +148,17 @@ export default {
         },
         labelbotState: {
             type: String,
-            default: 'init',
+            default: 'initializing',
         },
-        labelbotLabels: {
+        labelbotIsBusy: {
+            type: Boolean,
+            default: false,
+        },
+        labelbotOverlays: {
             type: Array,
-            required: true,
-        },
-        freeLabelbotOverlayIdx: {
-            type: Number,
-            required: true,
+            default() {
+                return [];
+            },
         },
     },
     data() {
@@ -177,7 +179,6 @@ export default {
             // Mouse position in OpenLayers coordinates.
             mousePosition: [0, 0],
             modifyInProgress: false,
-            labelbotOverlays: [],
         };
     },
     computed: {
@@ -313,12 +314,6 @@ export default {
                 style: Styles.features,
             });
             
-            this.labelbotOverlays = this.labelbotLabels.map(() => {
-                const overlay = new Overlay({});
-                this.map.addOverlay(overlay);
-                return overlay;
-            });
-
             this.selectInteraction = new SelectInteraction({
                 // Use click instead of default singleclick because the latter is
                 // delayed 250ms to ensure the event is no doubleclick. But we want
@@ -582,9 +577,7 @@ export default {
                 points: this.getPoints(geometry),
             }, removeCallback);
 
-            if (this.labelbotIsOn) {
-                this.showLabelbotPopup(e);
-            }
+
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
@@ -711,17 +704,21 @@ export default {
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
         },
-        showLabelbotPopup(e) {
-            const coordinates = this.convertPointsFromOlToDb(this.getPoints(e.feature.getGeometry()));
-            this.labelbotOverlays[this.freeLabelbotOverlayIdx].setElement(document.getElementById(`labelbot-popup-${this.freeLabelbotOverlayIdx}`));
-            this.labelbotOverlays[this.freeLabelbotOverlayIdx].setPosition(coordinates);
-            if (this.freeLabelbotOverlayIdx === this.labelbotLabels.length - 1) this.resetInteractionMode();
+        initLabelbotOverlays() {
+            this.labelbotOverlays.forEach((labelbotOverlay, id) => {
+                labelbotOverlay.overlay = new Overlay({
+                    element: document.getElementById(`labelbot-popup-${id}`),
+                    positioning: 'center-right',
+                });
+                this.map.addOverlay(labelbotOverlay.overlay);
+                labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb;
+            });
         },
-        updateLabelbotLabel(labelIdx) {
-            this.$emit('update-labelbot-label', labelIdx);
+        updateLabelbotLabel(label) {
+            this.$emit('update-labelbot-label', label);
         },
-        deleteLabelbotLabels(parentIndex) {
-            this.$emit('delete-labelbot-labels', parentIndex);
+        deleteLabelbotLabels(popupKey) {
+            this.$emit('delete-labelbot-labels', popupKey);
         },
     },
     watch: {
@@ -840,6 +837,11 @@ export default {
         canDelete() {
             this.updateDeleteInteractions();
         },
+        labelbotIsBusy(labelbotIsBusy) {
+            if (labelbotIsBusy) {
+                this.resetInteractionMode();
+            }
+        },
     },
     created() {
         this.declareNonReactiveProperties();
@@ -881,6 +883,8 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
+
+        this.initLabelbotOverlays();
     },
 };
 </script>

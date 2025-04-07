@@ -33,7 +33,7 @@ export default {
       type: Array,
       required: true,
     },
-    parentIndex: {
+    popupKey: {
       type: Number,
       required: true,
     }
@@ -79,12 +79,12 @@ export default {
     selectLabel(label) {
       // Top 1 label is already attached/selected
       if (this.selectedLabel.id !== label.id) {
-        this.$emit('update-labelbot-label', {"label": label, "idx" : this.parentIndex});
+        this.$emit('update-labelbot-label', {"label": label, "popupKey" : this.popupKey});
       }
       this.closeLabelBOTPopup();
     },
     closeLabelBOTPopup() {
-      this.$emit('delete-labelbot-labels', this.parentIndex);
+      this.$emit('delete-labelbot-labels', this.popupKey);
     },
     resetProgressBarWidth() {
       this.progressBarWidth = -1;

@@ -25,15 +25,14 @@ import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
 import Keyboard from '../core/keyboard';
-import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
-import LabelbotApi from './api/labelbot';
+import Labelbot from './mixins/labelbot.vue';
 
 /**
  * View model for the annotator container
  */
 
 export default {
-    mixins: [Loader],
+    mixins: [Loader, Labelbot],
     components: {
         sidebar: Sidebar,
         sidebarTab: SidebarTab,
@@ -90,12 +89,6 @@ export default {
             userId: null,
             crossOriginError: false,
             imageFilenames: {},
-            onnxModel: null,
-            labelbotIsOn: false,
-            labelbotLabels: [],
-            labelbotAnnotationOverlay: [],
-            freeLabelbotOverlayIdx: 0,
-            labelbotState: {},
         };
     },
     computed: {
@@ -384,8 +377,8 @@ export default {
                 this.lastCreatedAnnotation = null;
             }
             if (this.labelbotIsOn) {
-                this.labelbotAnnotationOverlay.map((labelbotAnnotaion, idx) => {
-                    if (labelbotAnnotaion.id === annotation.id) {
+                this.labelbotOverlays.map((overlay, idx) => {
+                    if (overlay.annotation?.id === annotation.id && !overlay.available) {
                         this.deleteLabelbotLabels(idx)
                         return;
                     }
@@ -468,79 +461,14 @@ export default {
             const height = maxY - minY;
             return [minX, minY, width, height];
         },
-        initONNXModel() {
-            this.handleLabelBOTState('initializing')
-
-            LabelbotApi.fetch()
-            .then(response => response.blob())
-            .then(blob => {
-                const modelUrl = URL.createObjectURL(blob);
-                return this.loadONNXModel(modelUrl);
-            })
-            .catch(handleErrorResponse);
-        },
-        loadONNXModel(modelUrl) {
-            // Load the onnx model with webgpu first 
-            // if the client does not have one then fallback to wasm
-            InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] })
-            .then((onnxModel) => {
-                this.onnxModel = onnxModel;
-                this.handleLabelBOTState('ready')
-            })
-            .catch(() => {
-                InferenceSession.create(modelUrl, { executionProviders: ['wasm'] })
-                .then((onnxModel) => {
-                    this.onnxModel = onnxModel;
-                    this.handleLabelBOTState('ready')
-                })
-                .catch(handleErrorResponse)
-            })
-        },
-        handleLabelBOTState(state) {
-            this.$set(this.labelbotState, 'state', state);
-        },
-        generateFeatureVector(points) {
-            // Get selected region
-            const [x, y, width, height] = this.getBoundingBox(points);
-
-            // Create a temporary canvas for processing the selected region
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = 224;
-            tempCanvas.height = 224;
-            const tempContext = tempCanvas.getContext('2d');
-
-            // Draw the selected region on the temporary canvas
-            tempContext.drawImage(this.image.labelBOTCanvas, x, y, width, height, 0, 0, 224, 224);
-
-            // Extract image data
-            const annotationData = tempContext.getImageData(0, 0, 224, 224).data;
-            const annotationDataArray = new Float32Array(224 * 224 * 3);
-            for (let i = 0, j = 0; i < annotationData.length; i += 4, j++) {
-                annotationDataArray[j] = annotationData[i] / 255.0;
-                annotationDataArray[224 * 224 + j] = annotationData[i + 1] / 255.0;
-                annotationDataArray[2 * 224 * 224 + j] = annotationData[i + 2] / 255.0;
-            }
-
-            // Convert the annotation data to tensor
-            const tensor = new Tensor('float32', annotationDataArray, [1, 3, 224, 224]);
-
-            // Generate feature vector
-            return this.onnxModel.run({ input: tensor}).then((output) => {
-                return output[Object.keys(output)[0]].data
-            })
-            .catch(handleErrorResponse);
-        },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {
                 let promise;
                 // LabelBOT
                 if (!this.selectedLabel && this.labelbotIsOn) {
 
-                    this.handleLabelBOTState('computing')
+                    this.updateLabelbotState('computing')
                     
-                    if (this.freeLabelbotOverlayIdx === this.labelbotLabels.length - 1) {
-                        Messages.info("The maximum number of LabelBOT's requests has been reached!")
-                    }
                     promise = this.generateFeatureVector(annotation.points)
                     .then((featureVector) => {
                         // Assign feature vector to the annotation
@@ -558,7 +486,7 @@ export default {
                     .then(this.setLabelbotLabels)
                     .then(this.setLastCreatedAnnotation)
                 })
-                .then(this.handleLabelBOTState('ready'))
+                .then(this.updateLabelbotState('ready'))
                 .catch(handleErrorResponse)
                 // Remove the temporary annotation if saving succeeded or failed.
                 .finally(removeCallback);
@@ -643,19 +571,6 @@ export default {
             this.lastCreatedAnnotationTimeout = window.setTimeout(() => {
                 this.lastCreatedAnnotation = null;
             }, 10000);
-        },
-        setLabelbotLabels(annotation) {
-            if (this.labelbotIsOn && this.freeLabelbotOverlayIdx > -1) {
-                this.labelbotAnnotationOverlay[this.freeLabelbotOverlayIdx] = annotation;
-                this.$set(this.labelbotLabels, this.freeLabelbotOverlayIdx, [annotation.labels[0].label].concat(annotation.labelBOTLabels));
-            }
-            return annotation;
-        },
-        updateLabelbotLabel(labelIdx) {
-            this.handleSwapLabel(this.labelbotAnnotationOverlay[labelIdx.idx], labelIdx.label)
-        },
-        deleteLabelbotLabels(parentIndex) {
-            this.$set(this.labelbotLabels, parentIndex, []);
         },
         updateColorAdjustment(params) {
             debounce(() => {
@@ -831,9 +746,11 @@ export default {
         image(image) {
             this.crossOriginError = image?.crossOrigin;
         },
-        labelbotLabels() {
-            this.freeLabelbotOverlayIdx = this.labelbotLabels.findIndex(labels => labels.length === 0);
-        },
+        labelbotIsBusy(labelbotIsBusy) {
+            if (labelbotIsBusy) {
+                Messages.info("The maximum number of LabelBOT's requests is reached!")
+            }
+        }
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
@@ -874,10 +791,6 @@ export default {
                 parseInt(UrlParams.get('y'), 10),
             ];
         }
-
-        const maxNumberOfLabelBOTRequests = biigle.$require('labelbot.m');
-        this.labelbotLabels = new Array(maxNumberOfLabelBOTRequests).fill([]),
-        this.labelbotAnnotationOverlay = new Array(maxNumberOfLabelBOTRequests).fill([]),
 
         // These Events are used by the SHERPA client of Michael Kloster and
         // retained for backwards compatibility.
@@ -921,9 +834,6 @@ export default {
     },
     mounted() {
         Events.$emit('annotations.map.init', this.$refs.canvas.map);
-
-        // Load the onnx model
-        this.initONNXModel();
     },
 };
 </script>
