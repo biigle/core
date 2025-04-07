@@ -75,7 +75,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $rowGroup = $rows->get($id);
                 $userFilenames = $rowGroup->pluck('filename')->unique();
                 $missingFiles = $allFilenames->diff($userFilenames);
-                // Create empty entries to include all images
+                // Include empty images again, as they were removed during grouping
                 foreach ($missingFiles as $f) {
                     $rowGroup->add((object) [
                         'filename' => $f,
