@@ -255,8 +255,7 @@ export default {
                         )
                         .then(a => a.map(ann => [ann.id, true]))
                         .then(a => new Map(a))
-                        .then(a => Vue.set(this.filtersCache, filtersCacheKey, a))
-                        .finally(this.finishLoading);
+                        .then(a => Vue.set(this.filtersCache, filtersCacheKey, a));
                 }
             } else {
                 filterPromise = Vue.Promise.resolve();
@@ -297,6 +296,7 @@ export default {
             if (!this.selectedLabel) {
                 return [];
             }
+
             let label = this.selectedLabel;
 
             let filtersCacheKey = JSON.stringify({...filters, label: label.id, union: union});
