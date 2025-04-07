@@ -43,6 +43,7 @@ class GetUsersWithAnnotationsVolume extends Controller
         }
 
         return $usersWithAnnotations
+            ->distinct('user_id')
             ->selectRaw("user_id, CONCAT(users.firstname, ' ', users.lastname) as name")
             ->orderBy('user_id')
             ->get();
