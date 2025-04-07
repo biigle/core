@@ -32,6 +32,7 @@
 </template>
 <script>
 import AnnotationFilter from "../components/annotationFilter.vue";
+import {Events} from '../import';
 
 export default {
     components: {
@@ -84,6 +85,9 @@ export default {
                 this.union
             );
         }
+    },
+    created() {
+        Events.$on('reset-filtering-tab', this.resetFilters)
     }
 };
 </script>

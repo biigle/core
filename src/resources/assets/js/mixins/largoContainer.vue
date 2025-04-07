@@ -619,7 +619,7 @@ export default {
             this.labels = [];
         },
         resetFilteringTab() {
-            this.$refs.filteringTab.resetFilters();
+            Events.$emit('reset-filtering-tab');
         }
     },
     watch: {
