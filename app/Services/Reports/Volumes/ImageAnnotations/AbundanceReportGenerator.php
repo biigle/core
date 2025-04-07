@@ -304,11 +304,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         // Add unused (empty) labels again
         if ($this->shouldUseAllLabels() || $this->shouldSeparateUsers()) {
             $usedParentLabelIds = $usedParentLabels->pluck('id');
-            $unusedLabels = $originalLabels
-                ->when($this->isRestrictedToLabels(), fn ($c) => $c
-                    ->filter(fn ($l) => in_array($l->id, $this->getOnlyLabels())))
-                ->filter(callback: fn ($l) => is_null($l->parent_id) && !$usedParentLabelIds->contains($l->id));
-            $labels = $usedParentLabels->merge($unusedLabels);
+            $emptyLabels = $originalLabels
+                ->when($this->isRestrictedToLabels(), fn($l) => $l
+                    ->whereIn('id', $this->getOnlyLabels()))
+                ->filter(callback: fn($l) =>
+                    is_null($l->parent_id) && !$usedParentLabelIds->contains($l->id));
+            $labels = $usedParentLabels->merge($emptyLabels);
         } else {
             $labels = $usedParentLabels;
         }
