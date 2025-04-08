@@ -101,20 +101,6 @@
                             Annotations that are outside of the export area will be discarded for this report.
                         </div>
                     </div>
-                    <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
-                        <div class="checkbox">
-                            <label v-if="options.aggregate_child_labels" class="text-muted">
-                                <input type="checkbox" v-model="options.all_labels" :disabled="options.aggregate_child_labels"> Include all volume labels
-                            </label>
-                            <label v-else>
-                                <input type="checkbox" v-model="options.all_labels" :disabled="options.aggregate_child_labels"> Include all volume labels
-                            </label>
-                        </div>
-                        <div v-if="errors.all_labels" v-cloak class="help-block" v-text="getError('all_labels')"></div>
-                        <div v-else class="help-block">
-                            Include all labels that can be used in a volume.
-                        </div>
-                    </div>
                 @endif
                 <div v-cloak v-if="hasOption('newest_label')" class="form-group" :class="{'has-error': errors.newest_label}">
                     <div class="checkbox">
@@ -159,6 +145,9 @@
                     <div class="help-block" v-if="errors.separate_users" v-cloak v-text="getError('separate_users')"></div>
                     <div v-if="!errors.separate_label_trees && !errors.separate_users" class="help-block">
                         Split the report to separate files/sheets for label trees or users.
+                        <div v-if="wantsCombination('ImageAnnotations', 'Abundance') && options.separate_users">
+                            It includes all labels that can be used in a volume.
+                        </div>
                     </div>
                 </div>
                 <div v-cloak v-if="hasOption('strip_ifdo')" class="form-group" :class="{'has-error': errors.strip_ifdo}">
@@ -173,6 +162,22 @@
                     </div>
                 </div>
                 @include('partials.restrictLabels')
+                @if ($volume->isImageVolume())
+                <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
+                    <div class="checkbox">
+                        <label v-if="disableAllLabelsOption" class="text-muted">
+                            <input type="checkbox" v-model="options.all_labels" :disabled="disableAllLabelsOption"> Include all volume labels
+                        </label>
+                        <label v-else>
+                            <input type="checkbox" v-model="options.all_labels" :disabled="disableAllLabelsOption"> Include all volume labels
+                        </label>
+                    </div>
+                    <div v-if="errors.all_labels" v-cloak class="help-block" v-text="getError('all_labels')"></div>
+                    <div v-else class="help-block">
+                        Include all labels that can be used in a volume.
+                    </div>
+                </div>
+                @endif
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.
                 </div>
