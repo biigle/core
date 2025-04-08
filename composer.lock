@@ -895,12 +895,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "f233d5cc9a2590b215890a8412710e04d171573d"
+                "reference": "464cdca771ba3362f8366406cf5c000d3f590e48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/f233d5cc9a2590b215890a8412710e04d171573d",
-                "reference": "f233d5cc9a2590b215890a8412710e04d171573d",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/464cdca771ba3362f8366406cf5c000d3f590e48",
+                "reference": "464cdca771ba3362f8366406cf5c000d3f590e48",
                 "shasum": ""
             },
             "require": {
@@ -932,7 +932,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2025-04-08T14:36:29+00:00"
+            "time": "2025-04-08T14:39:09+00:00"
         },
         {
             "name": "biigle/metadata-coco",
