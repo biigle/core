@@ -983,7 +983,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateUsers' => true,
@@ -1168,6 +1168,255 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $generator = new AbundanceReportGenerator([
             'allLabels' => true
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportAllLabelsRestrictToAnnotationSession()
+    {
+        $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
+
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $l1 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $l2 = LabelTest::create(['label_tree_id' => $lt->id]);
+        // Empty label should be included in report
+        $l3 = LabelTest::create(['label_tree_id' => $lt->id]);
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+        // Empty images should be included in the report
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume,
+        ]);
+
+        $user = UserTest::create();
+        $session->users()->attach($user);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $i1->id,
+                'created_at' => '2016-10-04',
+            ])->id,
+            'label_id' => $l1->id,
+            'user_id' => $user->id
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $i2->id,
+                'created_at' => '2016-10-05',
+            ])->id,
+            'label_id' => $l2->id,
+            'user_id' => $user->id
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                'image_filename',
+                $l1->name,
+                $l2->name,
+                $l3->name,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['a.jpg', 0, 0, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['b.jpg', 0, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['c.jpg', 0, 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'allLabels' => true,
+            'annotationSession' => $session->id
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportAllLabelsNewestLabels()
+    {
+        $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
+
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $l1 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $l2 = LabelTest::create(['label_tree_id' => $lt->id]);
+        // Empty label should be included
+        $l3 = LabelTest::create(['label_tree_id' => $lt->id]);
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+        // Empty images should be included in report
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
+        $a = ImageAnnotationTest::create(['image_id' => $i1->id]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'label_id' => $l1->id,
+            'created_at' => '2016-10-05 09:15:00'
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'label_id' => $l1->id,
+            'created_at' => '2016-10-05 09:16:00'
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $l2->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                'image_filename',
+                $l1->name,
+                $l2->name,
+                $l3->name,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['a.jpg', 1, 0, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['b.jpg', 0, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['c.jpg', 0, 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'allLabels' => true,
+            'newestLabel' => true
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportAllLabelsRestrictToLabels()
+    {
+        $volume = VolumeTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($volume);
+
+        $lt = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+
+        $l1 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $l2 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $l3 = LabelTest::create(['label_tree_id' => $lt->id]);
+        // Empty label should be included
+        $l4 = LabelTest::create(['label_tree_id' => $lt->id]);
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+        // Empty images should be included in report
+        $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $l1->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $l2->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i2->id])->id,
+            'label_id' => $l3->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                'image_filename',
+                $l1->name,
+                $l2->name,
+                $l3->name,
+                $l4->name,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['a.jpg', 1, 0, 0, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['b.jpg', 0, 0, 1, 0]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['c.jpg', 0, 0, 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'allLabels' => true,
+            'onlyLabels' => [$l1->id, $l3->id, $l4->id]
         ]);
         $generator->setSource($volume);
         $mock = Mockery::mock();
