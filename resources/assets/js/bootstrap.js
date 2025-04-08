@@ -12,7 +12,7 @@ configureCompat({
     COMPONENT_V_MODEL: false,
     RENDER_FUNCTION: false,
     ATTR_FALSE_VALUE: false,
-    // MODE: 3,
+    MODE: 3,
 });
 
 const httpRootElement = document.querySelector('meta[name="http-root"]');
