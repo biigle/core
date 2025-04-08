@@ -922,6 +922,81 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsersAggregateLabelsRestrictToEmptyChildLabels()
+    {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume);
+
+        $lt = LabelTreeTest::create();
+        $lt2 = LabelTreeTest::create();
+        $lt->projects()->attach($project);
+        $lt2->projects()->attach($project);
+
+        $u = UserTest::create();
+        $u2 = UserTest::create();
+
+        $i1 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        // Empty images should be included in the report
+        $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
+
+        // Use only child label
+        $emptyLabel = LabelTest::create(['label_tree_id' => $lt->id]);
+        $emptyLabelChild = LabelTest::create([
+            'parent_id' => $emptyLabel->id,
+            'label_tree_id' => $emptyLabel->label_tree_id,
+        ]);
+
+        // Aggregate labels
+        $emptyLabel2 = LabelTest::create(['label_tree_id' => $lt->id]);
+        $emptyLabelChild2 = LabelTest::create([
+            'parent_id' => $emptyLabel2->id,
+            'label_tree_id' => $emptyLabel2->label_tree_id,
+        ]);
+
+        $root = LabelTest::create(['label_tree_id' => $lt2->id]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create(['image_id' => $i1->id])->id,
+            'label_id' => $root->id,
+            'user_id' => $u->id,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with("{$u->firstname} {$u->lastname}");
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image_filename', $emptyLabelChild->name, $emptyLabel2->name, $root->name]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i1->filename, 0, 0, 1]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$i2->filename, 0, 0, 0]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn() => $mock);
+
+        $generator = new AbundanceReportGenerator([
+            'separateUsers' => true,
+            'aggregateChildLabels' => true,
+            'onlyLabels' => [$emptyLabelChild->id, $emptyLabel2->id, $emptyLabelChild2->id, $root->id]
+        ]);
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
     public function testGenerateReportSeparateLabelTreesAllLabels()
     {
         $project = ProjectTest::create();
