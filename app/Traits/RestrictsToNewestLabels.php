@@ -50,7 +50,7 @@ trait RestrictsToNewestLabels
                 $join
                     ->on("{$table}.id", '=', 'latest_labels.id')
                     // Add empty images again
-                    ->when($keepEmptyImgs, fn($query) => $query->orWhereNull("{$table}.annotation_id"));
+                    ->when($keepEmptyImgs, fn ($query) => $query->orWhereNull("{$table}.annotation_id"));
             });
     }
 }

@@ -2,13 +2,12 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
-use DB;
-use Biigle\User;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelTree;
-use Illuminate\Support\Facades\Log;
 use Biigle\Services\Reports\CsvFile;
+use Biigle\User;
+use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -55,7 +54,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
             } else {
                 $rows = $rows->groupBy('label_tree_id');
-                $treeIds = $rows->keys()->reject(fn($k) => !$k);
+                $treeIds = $rows->keys()->reject(fn ($k) => !$k);
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 foreach ($trees as $id => $name) {
                     $labelIds = $rows->get($id)->pluck('label_id')->unique();
@@ -67,7 +66,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
             $labels = $this->getVolumeLabels();
-            $userIds = $rows->keys()->reject(fn($k) => !$k);
+            $userIds = $rows->keys()->reject(fn ($k) => !$k);
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
@@ -88,7 +87,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
             }
         } else {
-            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+            $allLabelIds = $rows->pluck('label_id')->reject(fn ($k) => !$k);
             $labels = $this->shouldUseAllLabels() ? $this->getVolumeLabels() : Label::whereIn('id', $allLabelIds)->get();
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
         }
@@ -155,7 +154,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             // Start join with 'Label' to set labels and annotations on null if not present or selected
             return Label::join('image_annotation_labels', function ($join) {
                 $join->on('labels.id', '=', 'image_annotation_labels.label_id')
-                    ->when($this->isRestrictedToLabels(), fn($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
+                    ->when($this->isRestrictedToLabels(), fn ($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
             })
                 ->join('image_annotations', function ($join) {
                     $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
@@ -306,14 +305,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         if ($this->shouldSeparateUsers()) {
             $emptyLabels = $originalLabels
                 // Get all empty labels
-                ->filter(fn($labels) => !$labels->isUsed())
-                ->when($this->isRestrictedToLabels(), fn($labels) =>
+                ->filter(fn ($labels) => !$labels->isUsed())
+                ->when($this->isRestrictedToLabels(), fn ($labels) =>
                     $labels->whereIn('id', $this->getOnlyLabels()));
 
             // Aggregate empty child labels
-            $emptyLabels = $emptyLabels->filter(function ($label) use ($emptyLabels) {
-                return $emptyLabels->where('id', $label->parent_id)->isEmpty();
-            });
+            $emptyLabels = $emptyLabels->filter(fn ($label) => $emptyLabels->where('id', $label->parent_id)->isEmpty());
             $labels = $usedParentLabels->merge($emptyLabels);
         } else {
             $labels = $usedParentLabels;
