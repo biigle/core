@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import Events from '@/core/events.js';
 import Image from './imageGridImage.vue';
 import Keyboard from '@/core/keyboard.js';
 import Progress from './imageGridProgress.vue';
@@ -239,6 +240,10 @@ export default {
         pinnedImage() {
             this.jumpToStart();
         },
+        canScroll() {
+            // The scroll bar reduces the element size so it has to be updated.
+            this.$nextTick(this.updateDimensions);
+        },
     },
     created() {
         Keyboard.on('ArrowUp', this.reverseRow, 0, this.listenerSet);
@@ -258,6 +263,9 @@ export default {
     mounted() {
         // Only call updateDimensions when the element actually exists.
         window.addEventListener('resize', this.updateDimensions);
+        // The image grid is often used with a sidebar so we implement support directly
+        // here.
+        Events.on('sidebar.toggle', () => this.$nextTick(this.updateDimensions));
         this.$nextTick(this.updateDimensions);
         this.$watch('canScroll', this.updateDimensions);
     },

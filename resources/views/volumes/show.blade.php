@@ -42,7 +42,7 @@
 
 @section('content')
 <div id="volume-container" class="sidebar-container">
-    <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
+    <sidebar direction="left" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
         @can ('update', $volume)
             <sidebar-tab name="edit" icon="pencil-alt" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
@@ -84,7 +84,6 @@
         </div>
         <image-grid
             empty-url="{{ asset(config('thumbnails.empty_url')) }}"
-            ref="imageGrid"
             :selectable="imageLabelMode"
             :images="filesToShow"
             :initial-offset="initialOffset"
