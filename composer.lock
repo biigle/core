@@ -1089,12 +1089,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/newsletter.git",
-                "reference": "eeeb1fa87f807b52fc3110d87af5513fea7a9e70"
+                "reference": "97a0f08e43a2da77210b46310f0746550c4c3fed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/newsletter/zipball/eeeb1fa87f807b52fc3110d87af5513fea7a9e70",
-                "reference": "eeeb1fa87f807b52fc3110d87af5513fea7a9e70",
+                "url": "https://api.github.com/repos/biigle/newsletter/zipball/97a0f08e43a2da77210b46310f0746550c4c3fed",
+                "reference": "97a0f08e43a2da77210b46310f0746550c4c3fed",
                 "shasum": ""
             },
             "require": {
@@ -1127,7 +1127,7 @@
                 "issues": "https://github.com/biigle/newsletter/issues",
                 "source": "https://github.com/biigle/newsletter"
             },
-            "time": "2024-06-19T14:04:50+00:00"
+            "time": "2025-03-21T12:34:55+00:00"
         },
         {
             "name": "biigle/user-disks",
