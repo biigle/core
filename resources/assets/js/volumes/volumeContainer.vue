@@ -136,9 +136,6 @@ export default {
         },
     },
     methods: {
-        handleSidebarToggle() {
-            this.$nextTick(() => this.$refs.imageGrid.updateDimensions());
-        },
         handleSidebarOpen(tab) {
             this.imageLabelMode = tab === 'labels';
         },
