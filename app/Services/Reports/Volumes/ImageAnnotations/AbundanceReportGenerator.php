@@ -301,10 +301,10 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $presentLabels = $presentLabels->unique()->flip();
         $usedParentLabels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
 
-        // Add and aggregate unused (empty) labels
+        // All labels are also used here, but because the option was not explicitly set, it doesn't enforce to show all labels.
         if ($this->shouldSeparateUsers()) {
+            // Get unused (empty) labels
             $emptyLabels = $originalLabels
-                // Get all empty labels
                 ->filter(fn ($labels) => !$labels->isUsed())
                 ->when($this->isRestrictedToLabels(), fn ($labels) =>
                     $labels->whereIn('id', $this->getOnlyLabels()));
