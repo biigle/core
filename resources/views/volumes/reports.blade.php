@@ -103,7 +103,10 @@
                     </div>
                     <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
                         <div class="checkbox">
-                            <label>
+                            <label v-if="options.aggregate_child_labels" class="text-muted">
+                                <input type="checkbox" v-model="options.all_labels" :disabled="options.aggregate_child_labels"> Include all volume labels
+                            </label>
+                            <label v-else>
                                 <input type="checkbox" v-model="options.all_labels" :disabled="options.aggregate_child_labels"> Include all volume labels
                             </label>
                         </div>
