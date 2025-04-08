@@ -2,12 +2,13 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use DB;
+use Biigle\User;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelTree;
+use Illuminate\Support\Facades\Log;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\User;
-use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -301,14 +302,18 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $presentLabels = $presentLabels->unique()->flip();
         $usedParentLabels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
 
-        // Add unused (empty) labels again
-        if ($this->shouldUseAllLabels() || $this->shouldSeparateUsers()) {
-            $usedParentLabelIds = $usedParentLabels->pluck('id');
+        // Add and aggregate unused (empty) labels
+        if ($this->shouldSeparateUsers()) {
             $emptyLabels = $originalLabels
-                ->when($this->isRestrictedToLabels(), fn($l) => $l
-                    ->whereIn('id', $this->getOnlyLabels()))
-                ->filter(callback: fn($l) =>
-                    is_null($l->parent_id) && !$usedParentLabelIds->contains($l->id));
+                // Get all empty labels
+                ->filter(fn($labels) => !$labels->isUsed())
+                ->when($this->isRestrictedToLabels(), fn($labels) =>
+                    $labels->whereIn('id', $this->getOnlyLabels()));
+
+            // Aggregate empty child labels
+            $emptyLabels = $emptyLabels->filter(function ($label) use ($emptyLabels) {
+                return $emptyLabels->where('id', $label->parent_id)->isEmpty();
+            });
             $labels = $usedParentLabels->merge($emptyLabels);
         } else {
             $labels = $usedParentLabels;
