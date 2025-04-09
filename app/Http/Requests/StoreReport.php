@@ -57,6 +57,11 @@ class StoreReport extends FormRequest
                 $validator->errors()->add('all_labels', "The 'all labels' and 'aggregate child labels' option cannot be selected at the same time.");
             }
 
+            $onlyLabels = boolval($this->input('only_labels', []));
+            if ($allLabels && !empty($onlyLabels)) {
+                $validator->errors()->add('all_labels', "The 'all labels' and 'restrict to labels' option cannot be selected at the same time.");
+            }
+
             if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
                 $validator->errors()->add('separate_label_trees', 'Only one of separate_label_trees or separate_users may be specified.');
             }
