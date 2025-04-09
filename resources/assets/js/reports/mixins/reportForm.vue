@@ -97,7 +97,7 @@ export default {
             return options;
         },
         disableAllLabelsOption() {
-            return this.options.aggregate_child_labels || this.options.separate_users;
+            return this.options.aggregate_child_labels || this.options.separate_users || this.hasOnlyLabels;
         }
     },
     methods: {
