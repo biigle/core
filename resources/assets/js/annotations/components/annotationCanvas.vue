@@ -12,6 +12,8 @@ import Events from '../../core/events';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '../../core/keyboard';
+import LabelbotPopup from './labelbotPopup';
+import LabelbotIndicator from './labelbotIndicator.vue';
 import LabelIndicator from './labelIndicator';
 import Lawnmower from './annotationCanvas/lawnmower';
 import LineString from '@biigle/ol/geom/LineString';
@@ -22,6 +24,7 @@ import Minimap from './minimap';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition';
 import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
+import Overlay from '@biigle/ol/Overlay';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
@@ -47,9 +50,6 @@ import {getCenter} from '@biigle/ol/extent';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 import { isInvalidShape } from '../utils';
-import LabelbotPopup from './labelbotPopup';
-import Overlay from '@biigle/ol/Overlay';
-import LabelbotIndicator from './labelbotIndicator.vue';
 
 /**
  * The annotator canvas
@@ -149,10 +149,6 @@ export default {
         labelbotState: {
             type: String,
             default: 'initializing',
-        },
-        labelbotIsBusy: {
-            type: Boolean,
-            default: false,
         },
         labelbotOverlays: {
             type: Array,
@@ -576,8 +572,6 @@ export default {
                 shape: geometry.getType(),
                 points: this.getPoints(geometry),
             }, removeCallback);
-
-
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
@@ -708,11 +702,34 @@ export default {
             this.labelbotOverlays.forEach((labelbotOverlay, id) => {
                 labelbotOverlay.overlay = new Overlay({
                     element: document.getElementById(`labelbot-popup-${id}`),
-                    positioning: 'center-right',
+                    positioning: 'top-center',
                 });
+                // Add it to the map
                 this.map.addOverlay(labelbotOverlay.overlay);
-                labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb;
+                // Assign functions
+                labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb.bind(this);
+                labelbotOverlay.drawPopupLineFeature = this.drawLabelbotPopupLineFeature.bind(this);
+                labelbotOverlay.removePopupLineFeature = this.removeLabelbotPopupLineFeature.bind(this);
             });
+        },
+        drawLabelbotPopupLineFeature(path, color) {
+            const labelbotPopupLineFeature = new Feature(new LineString(path));
+            labelbotPopupLineFeature.setStyle(Styles.labelbotPopupLineStyle(color));
+
+            // Add the feature in next tick otherwise it will not be rendered
+            this.$nextTick(() => {
+                this.annotationSource.addFeature(labelbotPopupLineFeature);
+            });
+
+            // We return the feature to save it for later removal from annotation source
+            return labelbotPopupLineFeature;
+        },
+        removeLabelbotPopupLineFeature(labelbotPopupLineFeature) {
+            try {
+                this.annotationSource.removeFeature(labelbotPopupLineFeature);
+            } catch(e) {
+                // Ignore it
+            }
         },
         updateLabelbotLabel(label) {
             this.$emit('update-labelbot-label', label);
@@ -837,8 +854,8 @@ export default {
         canDelete() {
             this.updateDeleteInteractions();
         },
-        labelbotIsBusy(labelbotIsBusy) {
-            if (labelbotIsBusy) {
+        labelbotState(labelbotState) {
+            if (labelbotState === 'busy') {
                 this.resetInteractionMode();
             }
         },
@@ -883,7 +900,7 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
-
+        // Init labelBOT's overlays after the labelbot components are mounted
         this.initLabelbotOverlays();
     },
 };

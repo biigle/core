@@ -8,12 +8,12 @@ export default {
         return {
             model: null,
             labelbotIsOn: false,
-            labelbotIsBusy: false, // true if max number of requests is reached.
             labelbotState: 'initializing',
             labelbotOverlays: [],
+            lineFeatureLength: 75, // in px
             // Cache api
-            cacheName: 'labelbot-model-cache',
-            modelCacheKey: '/cached-labelbot-model.onnx',
+            cacheName: 'labelbot',
+            modelCacheKey: '/cached-labelbot-onnx-model',
         };
     },
     methods: {
@@ -90,34 +90,77 @@ export default {
             })
             .catch(handleErrorResponse);
         },
-        updateLabelbotState(state) {
-            this.labelbotState = state;
-        },
-        setLabelbotLabels(annotation) {
-            for (const labelbotOverlay of this.labelbotOverlays) {
-                if (labelbotOverlay.available) {
-                    labelbotOverlay.available = false;
-                    labelbotOverlay.labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
-                    labelbotOverlay.annotation = annotation;
+        calculateOverlayPosition(annotationPoints) {
+            const offset = this.lineFeatureLength / 10;
 
-                    // calculate position
-                    const convertedPoints = labelbotOverlay.convertPointsToOl(annotation.points);
-                    const position = [convertedPoints[0] - 40, convertedPoints[1]];
-                    labelbotOverlay.overlay.setPosition(position);
-                    break;
+            let startPoint;
+            // Needed for polygon shapes
+            let extraXOffset = annotationPoints[0];
+
+            if (annotationPoints.length === 2) {
+                // Point
+                startPoint = annotationPoints;
+            } else if (annotationPoints.length === 3) {
+                // Circle
+                const [x, y, r] = annotationPoints;
+                startPoint = [x + r, y];
+                extraXOffset = x + r;
+            } else {
+                // Polygon: convert flat array to [x, y] pairs
+                const pointPairs = [];
+                for (let i = 0; i < annotationPoints.length; i += 2) {
+                    pointPairs.push([annotationPoints[i], annotationPoints[i + 1]]);
+                }
+
+                // Sort by X descending
+                pointPairs.sort((a, b) => b[0] - a[0]);
+                const [p1, p2] = pointPairs.length >= 2 ? pointPairs.slice(0, 2) : [pointPairs[0], pointPairs[0]];
+
+                // Midpoint for path start
+                startPoint = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+                // Farthest-right point
+                extraXOffset = p1[0]; 
+            }
+
+            // Positions
+            const overlayPosition = [startPoint[0] + this.lineFeatureLength, startPoint[1]];
+            const annotationOffset = [extraXOffset + 2 * offset, startPoint[1] + offset];
+            const overlayOffset = [overlayPosition[0], overlayPosition[1] + offset];
+
+            const path = [startPoint, annotationOffset, overlayOffset, overlayPosition];
+
+            return { overlayPosition, path };
+        },
+        showLabelbotPopup(annotation) {
+            if (this.labelbotIsOn)  {
+                for (const labelbotOverlay of this.labelbotOverlays) {
+                    if (labelbotOverlay.available) {
+                        labelbotOverlay.available = false;
+                        labelbotOverlay.labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
+                        labelbotOverlay.annotation = annotation;
+
+                        // Convert annotation points and calculate start/end points
+                        const convertedPoints = labelbotOverlay.convertPointsToOl(annotation.points);
+                        const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
+
+                        // Draw line feature and set overlay position
+                        labelbotOverlay.popupLineFeature = labelbotOverlay.drawPopupLineFeature(path, annotation.labels[0].label.color);
+                        labelbotOverlay.overlay.setPosition(overlayPosition);
+                        break;
+                    }
                 }
             }
-            this.labelbotIsBusy = this.labelbotOverlays.every(overlay => !overlay.available)
-
-            return annotation;
+            // Update State
+            this.labelbotState = this.labelbotOverlays.every(overlay => !overlay.available) ? 'busy' : 'ready';
         },
         updateLabelbotLabel(label) {
             this.handleSwapLabel(this.labelbotOverlays[label.popupKey].annotation, label.label)
         },
         deleteLabelbotLabels(popupKey) {
+            this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
             this.labelbotOverlays[popupKey].labels = [];
-            this.labelbotIsBusy = false;
+            this.labelbotState = 'ready';
         },
     },
     created() {
@@ -129,7 +172,11 @@ export default {
             overlay: null,
             labels: [],
             annotation: null,
+            popupLineFeature: null,
+            // functions
             convertPointsToOl: null,
+            drawPopupLineFeature: null,
+            removePopupLineFeature: null,
         }));
     },
 };

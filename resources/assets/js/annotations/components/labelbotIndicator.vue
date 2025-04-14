@@ -24,8 +24,11 @@ export default {
                 case 'computing':
                     style = { backgroundColor: '#21dae6' };
                     break;
-                default:
+                case 'busy': // busy if max number of requests is reached
                     style = { backgroundColor: 'gray' };
+                    break;
+                default:
+                    style = { backgroundColor: 'red' };
             }
             return style;
         }

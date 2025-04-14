@@ -88,7 +88,6 @@
             :user-id="userId"
             :labelbot-is-on="labelbotIsOn"
             :labelbot-state="labelbotState"
-            :labelbot-is-busy="labelbotIsBusy"
             :labelbot-overlays="labelbotOverlays"
             v-on:update-labelbot-label="updateLabelbotLabel"
             v-on:delete-labelbot-labels="deleteLabelbotLabels"

@@ -8,6 +8,7 @@ import ColorAdjustmentTab from './components/colorAdjustmentTab';
 import Events from '../core/events';
 import ImageLabelTab from './components/imageLabelTab';
 import ImagesStore from './stores/images';
+import Labelbot from './mixins/labelbot.vue';
 import LabelFilter from './models/LabelAnnotationFilter';
 import LabelsTab from './components/labelsTab';
 import Loader from '../core/mixins/loader';
@@ -25,7 +26,6 @@ import {debounce} from './../core/utils';
 import {handleErrorResponse} from '../core/messages/store';
 import {urlParams as UrlParams} from '../core/utils';
 import Keyboard from '../core/keyboard';
-import Labelbot from './mixins/labelbot.vue';
 
 /**
  * View model for the annotator container
@@ -467,7 +467,7 @@ export default {
                 // LabelBOT
                 if (!this.selectedLabel && this.labelbotIsOn) {
 
-                    this.updateLabelbotState('computing')
+                    this.labelbotState = 'computing';
                     
                     promise = this.generateFeatureVector(annotation.points)
                     .then((featureVector) => {
@@ -483,11 +483,13 @@ export default {
                 annotation.confidence = 1;
                 promise.then(() => {
                     return AnnotationsStore.create(this.imageId, annotation)
-                    .then(this.setLabelbotLabels)
+                    .then((createdAnnotation) => {
+                        if (this.labelbotIsOn) {
+                            this.showLabelbotPopup(createdAnnotation);
+                        }
+                        return createdAnnotation;
+                    })
                     .then(this.setLastCreatedAnnotation)
-                })
-                .then(() => {
-                    this.updateLabelbotState('ready');
                 })
                 .catch(handleErrorResponse)
                 // Remove the temporary annotation if saving succeeded or failed.
@@ -748,8 +750,8 @@ export default {
         image(image) {
             this.crossOriginError = image?.crossOrigin;
         },
-        labelbotIsBusy(labelbotIsBusy) {
-            if (labelbotIsBusy) {
+        labelbotState(labelbotState) {
+            if (labelbotState === 'busy') {
                 Messages.info("The maximum number of LabelBOT's requests is reached!")
             }
         }
