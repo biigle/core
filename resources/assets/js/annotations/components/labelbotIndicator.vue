@@ -16,7 +16,7 @@ export default {
             let style = {};
             switch (this.labelbotState) {
                 case 'ready':
-                    style = { backgroundColor: '#219b19', animation: 'none' };
+                    style = { backgroundColor: '#219b19'};
                     break;
                 case 'initializing':
                     style = { backgroundColor: 'yellow' };

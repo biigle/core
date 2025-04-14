@@ -421,46 +421,6 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
         },
-        getBoundingBox(points) {
-            let minX = this.image.width;
-            let minY = this.image.height;
-            let maxX = 0;
-            let maxY = 0;
-            // Point
-            if (points.length === 2) {
-                // TODO: maybe use SAM or PTP module to convert point to shape
-                const tempRadius = 60;
-                const [x, y] = points;
-                minX = Math.max(0, x - tempRadius);
-                minY = Math.max(0, y - tempRadius);
-                maxX = Math.min(this.image.width, x + tempRadius);
-                maxY = Math.min(this.image.height, y + tempRadius);
-            } else if (points.length === 3) { // Circle
-                const [centerX, centerY, radius] = points;
-                minX = Math.max(0, centerX - radius);
-                minY = Math.max(0, centerY - radius);
-                maxX = Math.min(this.image.width, centerX + radius);
-                maxY = Math.min(this.image.height, centerY + radius);
-            } else {
-                for (let i = 0; i < points.length; i += 2) {
-                    const x = points[i];
-                    const y = points[i + 1];
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                }
-                // Ensure the bounding box is within the image dimensions
-                minX = Math.max(0, minX);
-                minY = Math.max(0, minY);
-                maxX = Math.min(this.image.width, maxX);
-                maxY = Math.min(this.image.height, maxY);
-            }
-
-            const width = maxX - minX;
-            const height = maxY - minY;
-            return [minX, minY, width, height];
-        },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {
                 let promise;

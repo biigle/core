@@ -70,7 +70,7 @@ export default {
     },
     methods: {
         draw(name) {
-            if (this['isDrawing' + name] || (this.labelbotIsOn && this.labelbotIsBusy)) {
+            if (this['isDrawing' + name] || (this.labelbotIsOn && this.labelbotState === 'busy')) {
                 this.resetInteractionMode();
             } else if (!this.hasSelectedLabel && !this.labelbotIsOn && this.canAdd) {
                 this.requireSelectedLabel();
