@@ -165,12 +165,12 @@ export default {
         },
         highlightSettingsTab() {
             return this.annotationOpacity === 0;
-        }
-    },
-    methods: {
+        },
         supportsColorAdjustment() {
             return ImagesStore.supportsColorAdjustment;
         },
+    },
+    methods: {
         getImageAndAnnotationsPromises(id) {
             return [
                 ImagesStore.fetchAndDrawImage(id),
@@ -547,9 +547,11 @@ export default {
         },
         handleOpenedTab(name) {
             Settings.set('openTab', name);
+            this.openTab = name;
         },
         handleClosedTab() {
             Settings.delete('openTab');
+            this.openTab = '';
         },
         createSampledAnnotation() {
             this.$refs.canvas.createSampledAnnotation();
@@ -566,7 +568,7 @@ export default {
         },
         handleRequiresSelectedLabel() {
             Messages.info('Please select a label first.');
-            this.$refs.sidebar.handleOpenTab('labels');
+            this.openSidebarLabels();
         },
         maybeShowTilingInProgressMessage: function() {
             if (this.image.tilingInProgress) {
@@ -603,7 +605,7 @@ export default {
             this.handleSelectAnnotation(lastAnnotation);
         },
         openSidebarLabels() {
-            this.$refs.sidebar.handleOpenTab('labels');
+            this.openTab = 'labels';
         },
     },
     watch: {
@@ -674,6 +676,11 @@ export default {
         image(image) {
             this.crossOriginError = image?.crossOrigin;
         },
+        supportsColorAdjustment(value) {
+            if (!value && this.openTab === 'color-adjustment') {
+                this.openTab = '';
+            }
+        },
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
@@ -734,7 +741,7 @@ export default {
             let openTab = Settings.get('openTab');
             if (openTab === 'color-adjustment') {
                 Events.once('images.change', () => {
-                    if (this.supportsColorAdjustment()) {
+                    if (this.supportsColorAdjustment) {
                         this.openTab = openTab;
                     }
                 });

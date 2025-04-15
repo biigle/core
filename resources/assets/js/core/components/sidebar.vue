@@ -121,7 +121,13 @@ export default {
     },
     watch: {
         openTab(tab) {
-            this.handleOpenTab(tab);
+            if (tab) {
+                if (!this.open || tab !== this.lastOpenedTab) {
+                    this.handleOpenTab(tab);
+                }
+            } else if (this.lastOpenedTab) {
+                this.handleCloseTab(this.lastOpenedTab);
+            }
         },
     },
     created() {
