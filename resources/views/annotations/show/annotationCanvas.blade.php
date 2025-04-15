@@ -59,7 +59,7 @@
                 <control-button icon="fa-ruler" title="Measure a line string  𝗦𝗵𝗶𝗳𝘁+𝗙" :active="isMeasuring" v-on:click="toggleMeasuring"></control-button>
             </div>
     </div>
-    <div v-for="(overlay, key) in labelbotOverlays" v-show="!overlay.available" :key="key" :id="'labelbot-popup-' + key">
+    <div v-for="(overlay, key) in labelbotOverlays" v-show="!overlay.available" :key="key" :ref="'labelbot-popup-' + key" @click="handleLabelbotPopupClick(key)">
         <labelbot-popup :popup-key="key" :labelbot-labels="overlay.labels" @update-labelbot-label="updateLabelbotLabel" @delete-labelbot-labels="deleteLabelbotLabels"></labelbot-popup>
     </div>
 </div>

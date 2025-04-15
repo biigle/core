@@ -178,22 +178,20 @@ export default {
             return { overlayPosition, path };
         },
         showLabelbotPopup(annotation) {
-            if (this.labelbotIsOn)  {
-                for (const labelbotOverlay of this.labelbotOverlays) {
-                    if (labelbotOverlay.available) {
-                        labelbotOverlay.available = false;
-                        labelbotOverlay.labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
-                        labelbotOverlay.annotation = annotation;
+            for (const labelbotOverlay of this.labelbotOverlays) {
+                if (labelbotOverlay.available) {
+                    labelbotOverlay.available = false;
+                    labelbotOverlay.labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
+                    labelbotOverlay.annotation = annotation;
 
-                        // Convert annotation points and calculate start/end points
-                        const convertedPoints = labelbotOverlay.convertPointsToOl(annotation.points);
-                        const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
+                    // Convert annotation points and calculate start/end points
+                    const convertedPoints = labelbotOverlay.convertPointsToOl(annotation.points);
+                    const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
 
-                        // Draw line feature and set overlay position
-                        labelbotOverlay.popupLineFeature = labelbotOverlay.drawPopupLineFeature(path, annotation.labels[0].label.color);
-                        labelbotOverlay.overlay.setPosition(overlayPosition);
-                        break;
-                    }
+                    // Draw line feature and set overlay position
+                    labelbotOverlay.popupLineFeature = labelbotOverlay.drawPopupLineFeature(path, annotation.labels[0].label.color);
+                    labelbotOverlay.overlay.setPosition(overlayPosition);
+                    break;
                 }
             }
             // Update State

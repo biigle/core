@@ -16,7 +16,7 @@
       </div>
     </li>
     <li class="labelbot-labels-label">
-      <typeahead ref="typeahead" :items="labels" more-info="tree.versionedName" @focus="resetProgressBarWidth" @select="selectLabel" placeholder="Find label"></typeahead>
+      <typeahead ref="typeahead" :items="labels" more-info="tree.versionedName" @focus="handleTypeaheadFocus" @select="selectLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
 </template>
@@ -84,9 +84,10 @@ export default {
       this.closeLabelBOTPopup();
     },
     closeLabelBOTPopup() {
+      this.$refs.typeahead.clear();
       this.$emit('delete-labelbot-labels', this.popupKey);
     },
-    resetProgressBarWidth() {
+    handleTypeaheadFocus() {
       this.progressBarWidth = -1;
     },
   },

@@ -699,14 +699,17 @@ export default {
             }
         },
         initLabelbotOverlays() {
-            this.labelbotOverlays.forEach((labelbotOverlay, id) => {
+            this.labelbotOverlays.forEach((labelbotOverlay, key) => {
+                const popup = this.$refs['labelbot-popup-' + key]?.[0];
+                if (!popup) return;
                 labelbotOverlay.overlay = new Overlay({
-                    element: document.getElementById(`labelbot-popup-${id}`),
+                    element: popup,
                     positioning: 'top-center',
+                    insertFirst: false, // last added overlay appears on top
                 });
                 // Add it to the map
                 this.map.addOverlay(labelbotOverlay.overlay);
-                // Assign functions
+                // Attach methods
                 labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb.bind(this);
                 labelbotOverlay.drawPopupLineFeature = this.drawLabelbotPopupLineFeature.bind(this);
                 labelbotOverlay.removePopupLineFeature = this.removeLabelbotPopupLineFeature.bind(this);
@@ -736,6 +739,22 @@ export default {
         },
         deleteLabelbotLabels(popupKey) {
             this.$emit('delete-labelbot-labels', popupKey);
+        },
+        handleLabelbotPopupClick(popupKey) {
+            const currentPopup = this.$refs['labelbot-popup-' + popupKey]?.[0];
+            const currentContainer = currentPopup?.closest('.ol-overlay-container');
+            if (!currentContainer) return;
+            // Changing the popup element's style won't affect overlay stacking,
+            // so we update the overlay container's z-index directly.
+            currentContainer.style.zIndex = 100;
+
+            this.labelbotOverlays.forEach((_, overlayKey) => {
+                if (overlayKey !== popupKey) {
+                    const popup = this.$refs['labelbot-popup-' + overlayKey]?.[0];
+                    const overlayContainer = popup?.closest('.ol-overlay-container');
+                    if (overlayContainer) overlayContainer.style.zIndex = '';
+                }
+            });
         },
     },
     watch: {
