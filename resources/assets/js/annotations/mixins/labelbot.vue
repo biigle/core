@@ -14,9 +14,9 @@ export default {
             labelbotIsOn: false,
             labelbotState: 'initializing',
             labelbotOverlays: [],
-            lineFeatureLength: 75, // in px
+            labelbotLineFeatureLength: 75, // in px
             // Cache api
-            cacheName: 'labelbot',
+            labelbotCacheName: 'labelbot',
             modelCacheKey: '/cached-labelbot-onnx-model',
         };
     },
@@ -24,8 +24,8 @@ export default {
         initLabelbotModel() {
             this.labelbotState = 'initializing';
 
-            caches.open(this.cacheName).then((cache) => {
-                cache.match(this.modelCacheKey).then((cachedResponse) => {
+            caches.open(this.labelbotCacheName).then((cache) => {
+                cache.match(this.labelbotModelCacheKey).then((cachedResponse) => {
                     // Model is cached
                     if (cachedResponse) {
                         cachedResponse.blob().then((modelBlob) => {
@@ -37,7 +37,7 @@ export default {
                         .then((response) => response.blob())
                         .then((blob) => {
                             // Cache the model before loading it
-                            cache.put(this.modelCacheKey, new Response(blob));
+                            cache.put(this.labelbotModelCacheKey, new Response(blob));
                             const modelUrl = URL.createObjectURL(blob);
                             this.loadLabelbotModel(modelUrl);
                         })
@@ -137,7 +137,7 @@ export default {
             .catch(handleErrorResponse);
         },
         calculateOverlayPosition(annotationPoints) {
-            const offset = this.lineFeatureLength / 10;
+            const offset = this.labelbotLineFeatureLength / 10;
 
             let startPoint;
             // Needed for polygon shapes
@@ -157,19 +157,26 @@ export default {
                 for (let i = 0; i < annotationPoints.length; i += 2) {
                     pointPairs.push([annotationPoints[i], annotationPoints[i + 1]]);
                 }
+                // TODO: Fix start point for Line shape
+                let lineAnnotation = pointPairs[0] !== pointPairs.at(-1) && annotationPoints.length !== 8; // not rectangle
 
                 // Sort by X descending
                 pointPairs.sort((a, b) => b[0] - a[0]);
                 const [p1, p2] = pointPairs.length >= 2 ? pointPairs.slice(0, 2) : [pointPairs[0], pointPairs[0]];
 
-                // Midpoint for path start
-                startPoint = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+                if (lineAnnotation) {
+                    startPoint = p1;
+                } else {
+                    // Midpoint for path start
+                    startPoint = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+                }
+
                 // Farthest-right point
                 extraXOffset = p1[0]; 
             }
 
             // Positions
-            const overlayPosition = [startPoint[0] + this.lineFeatureLength, startPoint[1]];
+            const overlayPosition = [startPoint[0] + this.labelbotLineFeatureLength, startPoint[1]];
             const annotationOffset = [extraXOffset + 2 * offset, startPoint[1] + offset];
             const overlayOffset = [overlayPosition[0], overlayPosition[1] + offset];
 
