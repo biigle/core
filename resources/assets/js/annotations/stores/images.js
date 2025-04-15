@@ -1,5 +1,6 @@
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
+import {ref} from 'vue';
 
 export class CrossOriginError extends Error {}
 
@@ -20,7 +21,7 @@ class Images {
         this.cache = {};
         this.cachedIds = [];
         this._maxCacheSize = 2;
-        this.supportsColorAdjustment = false;
+        this._supportsColorAdjustment = ref(false);
         this.currentlyDrawnImage = null;
         this.colorAdjustment = {
             brightnessContrast: [0, 0],
@@ -63,6 +64,14 @@ class Images {
             let id = this.cachedIds.shift();
             delete this.cache[id];
         }
+    }
+
+    get supportsColorAdjustment() {
+        return this._supportsColorAdjustment.value;
+    }
+
+    set supportsColorAdjustment(value) {
+        this._supportsColorAdjustment.value = value;
     }
 
     initialize() {
