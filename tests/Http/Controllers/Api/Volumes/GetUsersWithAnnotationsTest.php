@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Projects;
+namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Biigle\MediaType;
@@ -13,7 +13,7 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 
-class GetUsersWithAnnotationsVolumeTest extends ApiTestCase
+class GetUsersWithAnnotationsTest extends ApiTestCase
 {
     public function testGetUsersWithAnnotations()
     {
@@ -45,14 +45,19 @@ class GetUsersWithAnnotationsVolumeTest extends ApiTestCase
         ]);
 
         $this->beGlobalGuest();
-        $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')->assertStatus(403);
+        $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')
+            ->assertStatus(403);
 
         $this->beEditor();
 
         $expected = [['user_id' => $this->user()->id, 'name' => "{$this->user()->firstname} {$this->user()->lastname}"]];
-        $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')->assertStatus(200)->assertExactJson($expected);
+        $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')
+            ->assertStatus(200)
+            ->assertExactJson($expected);
 
         $expected = [['user_id' => $user2->id, 'name' => "{$user2->firstname} {$user2->lastname}"]];
-        $this->get('api/v1/volumes/'.$videoVolume->id.'/users-with-annotations')->assertStatus(200)->assertExactJson($expected);
+        $this->get('api/v1/volumes/'.$videoVolume->id.'/users-with-annotations')
+            ->assertStatus(200)
+            ->assertExactJson($expected);
     }
 }

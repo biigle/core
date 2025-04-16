@@ -13,7 +13,7 @@ use Biigle\Tests\VolumeTest;
 use Biigle\Tests\UserTest;
 use Biigle\MediaType;
 
-class GetUsersWithAnnotationsProjectTest extends ApiTestCase
+class GetUsersWithAnnotationsTest extends ApiTestCase
 {
     public function testGetUsersWithAnnotations(): void
     {
@@ -23,7 +23,11 @@ class GetUsersWithAnnotationsProjectTest extends ApiTestCase
         $user2 = UserTest::create();
         $user3 = UserTest::create();
 
-        $image = ImageTest::create(['volume_id' => $this->volume(['media_type_id' => MediaType::imageId()])->id]);
+        $image = ImageTest::create(
+            ['volume_id' => $this->volume(
+                ['media_type_id' => MediaType::imageId()]
+            )->id]
+        );
         $imageAnnotation = ImageAnnotationTest::create(['image_id' => $image->id]);
 
         $imageAnnotationLabel = ImageAnnotationLabelTest::create([
@@ -45,14 +49,17 @@ class GetUsersWithAnnotationsProjectTest extends ApiTestCase
         ]);
 
         $this->beGlobalGuest();
-        $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')->assertStatus(403);
+        $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')
+            ->assertStatus(403);
 
         $this->beEditor();
 
         $expected = [
+            ['user_id' => $user2->id, 'name' => "{$user2->firstname} {$user2->lastname}"],
             ['user_id' => $this->user()->id, 'name' => "{$this->user()->firstname} {$this->user()->lastname}"],
-            ['user_id' => $user2->id, 'name' => "{$user2->firstname} {$user2->lastname}"]
         ];
-        $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')->assertStatus(200)->assertExactJson($expected);
+        $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')
+            ->assertStatus(200)
+            ->assertExactJson($expected);
     }
 }

@@ -8,7 +8,7 @@ use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
-class GetUsersWithAnnotationsVolume extends Controller
+class GetUsersWithAnnotations extends Controller
 {
     /**
      * Get users with at least one annotation in the volume
@@ -45,7 +45,6 @@ class GetUsersWithAnnotationsVolume extends Controller
         return $usersWithAnnotations
             ->distinct('user_id')
             ->selectRaw("user_id, CONCAT(users.firstname, ' ', users.lastname) as name")
-            ->orderBy('user_id')
             ->get();
     }
 };
