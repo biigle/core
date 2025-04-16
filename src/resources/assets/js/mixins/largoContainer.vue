@@ -245,21 +245,13 @@ export default {
 
             if (selectedFilters.length > 0) {
 
-                let filtersCacheKey = JSON.stringify({...selectedFilters, label: this.selectedLabel.id, union: union});
+                let filtersCacheKey = JSON.stringify({...selectedFilters, label: label.id, union: union});
 
                 if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-                    filterPromise = this.loadFilters(label, selectedFilters, union)
-                        .then(
-                            (response) => this.gotAnnotations(label, response),
-                            handleErrorResponse
-                        )
-                        .then(a => a.map(ann => [ann.id, true]))
-                        .then(a => new Map(a))
-                        .then(a => Vue.set(this.filtersCache, filtersCacheKey, a));
+                    filterPromise = this.loadFilters(label, selectedFilters, union, filtersCacheKey)
                 }
-            } else {
-                filterPromise = Vue.Promise.resolve();
             }
+
             Vue.Promise.all([promise1, promise2, filterPromise]).finally(this.finishLoading);
         },
         gotAnnotations(label, response) {
@@ -303,20 +295,20 @@ export default {
 
             if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
                 this.startLoading();
-                this.loadFilters(label, filters, union)
-                    .then(
-                        (response) => this.gotAnnotations(label, response),
-                        handleErrorResponse
-                    )
-                    .then(a => a.map(ann => [ann.id, true]))
-                    .then(a => new Map(a))
-                    .then(a => Vue.set(this.filtersCache, filtersCacheKey, a))
+                this.loadFilters(label, filters, union, filtersCacheKey)
                     .finally(this.finishLoading);
             }
         },
-        loadFilters(label, filters, union) {
+        loadFilters(label, filters, union, filtersCacheKey) {
             let requestParams = this.compileFilters(filters, union);
-            return this.queryAnnotations(label, requestParams);
+            return this.queryAnnotations(label, requestParams)
+                .then(
+                    (response) => this.gotAnnotations(label, response),
+                    handleErrorResponse
+                )
+                .then(a => a.map(ann => [ann.id, true]))
+                .then(a => new Map(a))
+                .then(a => Vue.set(this.filtersCache, filtersCacheKey, a));
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
