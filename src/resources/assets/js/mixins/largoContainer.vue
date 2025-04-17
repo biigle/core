@@ -288,11 +288,11 @@ export default {
         handleSelectedFilters() {
             let filters = this.activeFilters;
             let union = this.union;
-            if (!this.selectedLabel) {
+            let label = this.selectedLabel;
+
+            if (!label) {
                 return [];
             }
-
-            let label = this.selectedLabel;
 
             let filtersCacheKey = JSON.stringify({...filters, label: label.id, union: union});
 
@@ -653,10 +653,10 @@ export default {
                 oldLabel.selected = false;
             }
         },
-        union(union) {
+        union() {
             this.handleSelectedFilters();
         },
-        activeFilters(filters) {
+        activeFilters() {
             this.handleSelectedFilters();
         }
     },
