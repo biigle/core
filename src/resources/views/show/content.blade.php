@@ -69,7 +69,15 @@
             ></sorting-tab>
     </sidebar-tab>
     <sidebar-tab :highlight="hasActiveFilters" :disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter">
-            <filtering-tab v-on:handle-selected-filters="handleSelectedFilters" ref="filteringTab"></filtering-tab>
+            <filtering-tab
+                v-on:handle-selected-filters="handleSelectedFilters"
+                v-on:reset-filters="resetFilteringTab"
+                v-on:add-filter="addNewFilter"
+                v-on:set-union-logic="setUnionLogic"
+                v-on:remove-filter="removeFilter"
+                :active-filters="activeFilters"
+                :union="union"
+                ></filtering-tab>
     </sidebar-tab>
     <sidebar-tab name="settings" icon="cog" title="Settings">
         <settings-tab

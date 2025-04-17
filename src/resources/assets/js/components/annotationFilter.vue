@@ -91,6 +91,12 @@ import ProjectsApi from "../api/projects";
 import VolumesApi from "../api/volumes";
 
 export default {
+    props: {
+        union: {
+            type: Boolean,
+            required: true,
+        }
+    },
     data() {
         //TODO: add more filters here. See https://github.com/biigle/largo/issues/66
         let availableShapes = biigle.$require("largo.availableShapes");
@@ -107,7 +113,6 @@ export default {
             selectedFilter: "Shape",
             selectedFilterValue: null,
             negate: false,
-            union: false
         };
     },
 
@@ -119,12 +124,10 @@ export default {
 
     methods: {
         activateAndOperator() {
-            this.union = false;
-            this.$emit("set-union-logic", 0);
+            this.$emit("set-union-logic", false);
         },
         activateOrOperator() {
-            this.union = true;
-            this.$emit("set-union-logic", 1);
+            this.$emit("set-union-logic", true);
         },
         reset() {
             this.$emit("reset-filters");

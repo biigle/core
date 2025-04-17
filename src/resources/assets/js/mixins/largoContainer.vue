@@ -55,9 +55,8 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
-            selectedFilters: [],
-            hasActiveFilters: false,
-            union: 0,
+            activeFilters: [],
+            union: false,
             labels: [],
             filtersCache: {},
             fetchedLabelCount: false,
@@ -88,7 +87,11 @@ export default {
 
             if (this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
                 let annotations = this.annotationsCache[this.selectedLabel.id];
-                let filtersCacheKey = JSON.stringify({...this.selectedFilters, label: this.selectedLabel.id, union: this.union});
+                let filtersCacheKey = JSON.stringify({
+                    ...this.activeFilters,
+                    label: this.selectedLabel.id,
+                    union: this.union
+                });
                 if (this.hasActiveFilters && this.filtersCache.hasOwnProperty(filtersCacheKey)) {
                     annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].get(annotation.id));
                 }
@@ -194,6 +197,9 @@ export default {
         },
         pinnedImageInAnnotations() {
             return this.annotations.includes(this.pinnedImage);
+        },
+        hasActiveFilters() {
+            return this.activeFilters.length > 0
         }
     },
     methods: {
@@ -208,7 +214,7 @@ export default {
                     parameters[filter.filter].push(filter.value);
                 }
             )
-            parameters['union'] = union;
+            parameters['union'] = union ? 1 : 0;
             return parameters;
         },
         getAnnotations(label) {
@@ -218,7 +224,7 @@ export default {
 
             //store in variables to avoid race conditions
             let union = this.union;
-            let selectedFilters = this.selectedFilters;
+            let activeFilters = this.activeFilters;
 
             if (!this.annotationsCache.hasOwnProperty(label.id)) {
                 Vue.set(this.annotationsCache, label.id, []);
@@ -243,12 +249,12 @@ export default {
                 promise2 = Vue.Promise.resolve();
             }
 
-            if (selectedFilters.length > 0) {
+            if (activeFilters.length > 0) {
 
-                let filtersCacheKey = JSON.stringify({...selectedFilters, label: label.id, union: union});
+                let filtersCacheKey = JSON.stringify({...activeFilters, label: label.id, union: union});
 
                 if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-                    filterPromise = this.loadFilters(label, selectedFilters, union, filtersCacheKey)
+                    filterPromise = this.loadFilters(label, activeFilters, union, filtersCacheKey)
                 }
             }
 
@@ -276,15 +282,12 @@ export default {
 
             return annotations
         },
-        handleSelectedFilters(filters, union) {
-            union = union ? 1 : 0;
-            this.union = union;
-            if (Object.keys(filters).length > 0) {
-                this.hasActiveFilters = true;
-            } else {
-                this.hasActiveFilters = false;
-            }
-            this.selectedFilters = filters;
+        removeFilter(key) {
+            this.activeFilters.splice(key, 1);
+        },
+        handleSelectedFilters() {
+            let filters = this.activeFilters;
+            let union = this.union;
             if (!this.selectedLabel) {
                 return [];
             }
@@ -611,7 +614,24 @@ export default {
             this.labels = [];
         },
         resetFilteringTab() {
-            Events.$emit('reset-filtering-tab');
+            this.activeFilters = [];
+        },
+        addNewFilter(filter) {
+            if (this.activeFilters.length > 0) {
+                if (
+                    this.activeFilters.some(
+                        (f) =>
+                            f.filter === filter.filter &&
+                            f.value === filter.value
+                    )
+                ) {
+                    return;
+                }
+            }
+            this.activeFilters.push(filter);
+        },
+        setUnionLogic(union) {
+            this.union = union;
         }
     },
     watch: {
@@ -633,6 +653,12 @@ export default {
                 oldLabel.selected = false;
             }
         },
+        union(union) {
+            this.handleSelectedFilters();
+        },
+        activeFilters(filters) {
+            this.handleSelectedFilters();
+        }
     },
     created() {
         this.user = biigle.$require('largo.user');

@@ -2,9 +2,10 @@
     <div class="filtering-tab">
         <form class="form clearfix" v-on:submit.prevent>
             <annotation-filter
-                @reset-filters="resetFilters"
-                @add-filter="addNewFilter"
-                @set-union-logic="setUnionLogic"
+                :union="union"
+                @add-filter="$emit('add-filter', $event)"
+                @set-union-logic="$emit('set-union-logic', $event)"
+                @reset-filters="$emit('reset-filters')"
             >
             </annotation-filter>
         </form>
@@ -22,7 +23,7 @@
                     @click="removeFilter(k)"
                     type="button"
                     class="close"
-                    title="Remove this rule"
+                    title="Remove this filter"
                 >
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -32,62 +33,30 @@
 </template>
 <script>
 import AnnotationFilter from "../components/annotationFilter.vue";
-import {Events} from '../import';
 
 export default {
     components: {
         AnnotationFilter
+    },
+    props: {
+        activeFilters: {
+            type: Array,
+            required: true,
+        },
+        union: {
+            type: Boolean,
+            required: true,
+        }
     },
     computed: {
         logicString() {
             return this.union ? "or" : "and";
         }
     },
-    data() {
-        return {
-            activeFilters: [],
-            union: false
-        };
-    },
     methods: {
-        resetFilters() {
-            this.activeFilters = [];
-            this.filterAnnotations();
-        },
         removeFilter(key) {
-            this.activeFilters.splice(key, 1);
-            this.filterAnnotations();
+            this.$emit('remove-filter', key);
         },
-        setUnionLogic(union) {
-            this.union = union;
-            this.filterAnnotations();
-        },
-        addNewFilter(filter) {
-            if (this.activeFilters.length > 0) {
-                if (
-                    this.activeFilters.some(
-                        (f) =>
-                            f.filter === filter.filter &&
-                            f.value === filter.value
-                    )
-                ) {
-                    return;
-                }
-            }
-            this.activeFilters.push(filter);
-            this.filterAnnotations();
-        },
-
-        filterAnnotations() {
-            this.$emit(
-                "handle-selected-filters",
-                this.activeFilters,
-                this.union
-            );
-        }
     },
-    created() {
-        Events.$on('reset-filtering-tab', this.resetFilters)
-    }
 };
 </script>
