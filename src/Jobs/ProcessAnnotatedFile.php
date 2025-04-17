@@ -116,16 +116,19 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             // written by another worker. This worker can process other jobs in the
             // meantime.
             // See: https://github.com/laravel/ideas/issues/735
+            $class = get_class($this->file);
+            Log::debug("Redispatching annotated {$class} {$this->file->id}.", ['exception' => $e]);
             $this->redispatch();
         } catch (Exception $e) {
+            $class = get_class($this->file);
             if ($this->shouldRetryAfterException($e)) {
+                $attempts = $this->attempts();
+                Log::debug("Backoff annotated {$class} {$this->file->id} ({$attempts} attempts): {$e->getMessage()}", ['exception' => $e]);
                 // Exponential backoff for retry after 10 and then 20 minutes.
-                $this->release($this->attempts() * 600);
+                $this->release($attempts * 600);
             } elseif ($this->shouldGiveUpAfterException($e)) {
-                $class = get_class($this->file);
                 Log::warning("Could not process annotated {$class} {$this->file->id}: {$e->getMessage()}", ['exception' => $e]);
             } else {
-                $class = get_class($this->file);
                 throw new ProcessAnnotatedFileException("Could not process annotated {$class} {$this->file->id}.", previous: $e);
             }
         }
