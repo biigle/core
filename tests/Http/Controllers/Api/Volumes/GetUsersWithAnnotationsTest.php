@@ -50,12 +50,18 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
 
         $this->beEditor();
 
-        $expected = [['user_id' => $this->user()->id, 'name' => "{$this->user()->firstname} {$this->user()->lastname}"]];
+        $expected = [[
+            'user_id' => $this->user()->id,
+            'name' => "{$this->user()->firstname} {$this->user()->lastname}"
+        ]];
         $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')
             ->assertStatus(200)
             ->assertExactJson($expected);
 
-        $expected = [['user_id' => $user2->id, 'name' => "{$user2->firstname} {$user2->lastname}"]];
+        $expected = [[
+            'user_id' => $user2->id,
+            'name' => "{$user2->firstname} {$user2->lastname}"
+        ]];
         $this->get('api/v1/volumes/'.$videoVolume->id.'/users-with-annotations')
             ->assertStatus(200)
             ->assertExactJson($expected);
