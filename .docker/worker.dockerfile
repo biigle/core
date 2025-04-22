@@ -76,12 +76,13 @@ RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         python3-pip \
+    && pip3 install --no-cache-dir --break-system-packages --upgrade pip \
     && pip3 install --no-cache-dir --break-system-packages \
         PyExcelerate==0.6.7 \
         Pillow==10.2.0 \
-    && pip3 install --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
-        torch==2.2.* \
-        torchvision==0.17.* \
+    && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
+        torch==2.6.* \
+        torchvision==0.21.* \
     && apt-get purge -y \
         python3-pip \
     && apt-get -y autoremove \
