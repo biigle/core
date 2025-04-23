@@ -8,13 +8,10 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         ffmpeg \
         python3 \
-        python3-numpy \
         python3-opencv \
-        python3-scipy \
         python3-sklearn \
         python3-matplotlib \
         python3-shapely \
-        python3-pandas \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
@@ -80,6 +77,8 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && pip3 install --no-cache-dir --break-system-packages \
         PyExcelerate==0.6.7 \
         Pillow==10.2.0 \
+        pandas==2.2.* \
+        scipy==1.13.* \
     && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
         torch==2.6.* \
         torchvision==0.21.* \
