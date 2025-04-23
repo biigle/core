@@ -214,9 +214,14 @@ export default {
             this.labelbotState = 'ready';
         },
     },
+    watch: {
+        labelbotIsOn() {
+            if (this.labelbotIsOn && !this.labelbotModel) {
+                this.initLabelbotModel();
+            }
+        }
+    },
     created() {
-        this.initLabelbotModel();
-
         const maxNRequests = biigle.$require('labelbot.m');
         this.labelbotOverlays = Array.from({ length: maxNRequests }, () => ({
             available: true,
