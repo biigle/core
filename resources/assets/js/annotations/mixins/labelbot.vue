@@ -25,15 +25,15 @@ export default {
             this.labelbotState = 'initializing';
 
             caches.open(this.labelbotCacheName).then((cache) => {
-                cache.match(this.labelbotModelCacheKey).then((cachedResponse) => {
+                return cache.match(this.labelbotModelCacheKey).then((cachedResponse) => {
                     // Model is cached
                     if (cachedResponse) {
-                        cachedResponse.blob().then((modelBlob) => {
+                        return cachedResponse.blob().then((modelBlob) => {
                             const modelUrl = URL.createObjectURL(modelBlob);
                             this.loadLabelbotModel(modelUrl);
-                        });
+                        })
                     } else {
-                        LabelbotApi.fetch()
+                        return LabelbotApi.fetch()
                         .then((response) => response.blob())
                         .then((blob) => {
                             // Cache the model before loading it
@@ -44,7 +44,10 @@ export default {
                     }
                 });
             })
-            .catch(handleErrorResponse);
+            .catch((error) => {
+                this.labelbotIsOn = false;
+                handleErrorResponse(error);
+            });
         },
         loadLabelbotModel(modelUrl) {
             // Load the onnx model with webgpu first 
