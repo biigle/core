@@ -1,22 +1,22 @@
 <template>
   <ul class="labelbot-labels">
-    <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index">
-      <div v-if="index === 0" class="labelbot-labels-label__nameProgress" @click="selectLabel(label)">
+    <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index" @mouseover="handleLabelbotFocus" @click="selectLabelbotLabel(label)">
+      <div v-if="index === 0" class="labelbot-labels-label__nameProgress">
         <!-- Progress bar -->
-          <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelBOTPopup()"></div>
+          <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelbotPopup"></div>
         <!-- Label name -->
         <div class="labelbot-labels-label__nameProgressColor">
           <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
           <span>{{ label.name }}</span>
         </div> 
       </div>
-      <div v-else class="labelbot-labels-label__name" @click="selectLabel(label)">
+      <div v-else class="labelbot-labels-label__name">
         <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
         <span>{{ label.name }}</span>
       </div>
     </li>
     <li class="labelbot-labels-label">
-      <typeahead ref="typeahead" :items="labels" more-info="tree.versionedName" @focus="handleTypeaheadFocus" @select="selectLabel" placeholder="Find label"></typeahead>
+      <typeahead ref="typeahead" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
 </template>
@@ -76,18 +76,18 @@ export default {
     },
   },
   methods: {
-    selectLabel(label) {
+    selectLabelbotLabel(label) {
       // Top 1 label is already attached/selected
       if (this.selectedLabel.id !== label.id) {
         this.$emit('update-labelbot-label', {"label": label, "popupKey" : this.popupKey});
       }
-      this.closeLabelBOTPopup();
+      this.closeLabelbotPopup();
     },
-    closeLabelBOTPopup() {
+    closeLabelbotPopup() {
       this.$refs.typeahead.clear();
       this.$emit('delete-labelbot-labels', this.popupKey);
     },
-    handleTypeaheadFocus() {
+    handleLabelbotFocus() {
       this.progressBarWidth = -1;
     },
   },
