@@ -16,7 +16,7 @@
       </div>
     </li>
     <li class="labelbot-labels-label">
-      <typeahead ref="typeahead" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
+      <typeahead ref="typeahead" :style="{ width: '100%' }" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
 </template>
