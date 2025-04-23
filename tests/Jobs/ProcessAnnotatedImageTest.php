@@ -433,6 +433,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk = Storage::fake('test');
         Bus::fake();
         FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
+        Log::shouldReceive('debug')->once();
 
         $annotation = ImageAnnotationTest::create();
         $job = new ProcessAnnotatedImage($annotation->image);

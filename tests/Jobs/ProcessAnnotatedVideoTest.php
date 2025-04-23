@@ -476,6 +476,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $disk = Storage::fake('test');
         Bus::fake();
         FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
+        Log::shouldReceive('debug')->once();
 
         $annotation = VideoAnnotationTest::create();
         $job = new ProcessAnnotatedVideo($annotation->video);
