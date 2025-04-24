@@ -666,7 +666,9 @@ export default {
             this.handleSelectedFilters();
         },
         activeFilters() {
-            this.handleSelectedFilters();
+            if (this.isInDismissStep) {
+                this.handleSelectedFilters();
+            }
         }
     },
     created() {
