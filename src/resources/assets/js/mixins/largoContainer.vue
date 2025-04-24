@@ -92,8 +92,13 @@ export default {
                     label: this.selectedLabel.id,
                     union: this.union
                 });
-                if (this.hasActiveFilters && this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-                    annotations = annotations.filter(annotation => this.filtersCache[filtersCacheKey].get(annotation.id));
+                if (this.hasActiveFilters) {
+                    if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
+                        return [];
+                    }
+                    annotations = annotations.filter(
+                        annotation => this.filtersCache[filtersCacheKey].get(annotation.id)
+                    );
                 }
 
                 return annotations;
@@ -254,6 +259,10 @@ export default {
                 let filtersCacheKey = JSON.stringify({...activeFilters, label: label.id, union: union});
 
                 if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
+                    if (!this.loading) {
+                        // Not setting up loading here can cause flickering images.
+                        this.startLoading();
+                    }
                     filterPromise = this.loadFilters(label, activeFilters, union, filtersCacheKey);
                 }
             }
