@@ -70,7 +70,6 @@
     </sidebar-tab>
     <sidebar-tab :highlight="hasActiveFilters" :disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter">
             <filtering-tab
-                v-on:handle-selected-filters="handleSelectedFilters"
                 v-on:reset-filters="resetFilteringTab"
                 v-on:add-filter="addNewFilter"
                 v-on:set-union-logic="setUnionLogic"
