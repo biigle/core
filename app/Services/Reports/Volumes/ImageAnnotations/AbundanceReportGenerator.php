@@ -65,14 +65,19 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $labels = $this->getVolumeLabels();
-            $userIds = $rows->keys()->reject(fn ($k) => !$k);
+            $userIds = $rows->keys()->reject(fn($k) => !$k);
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
+            if ($this->shouldUseAllLabels()) {
+                $labels = $this->getVolumeLabels();
+            }
 
             foreach ($users as $id => $name) {
                 $rowGroup = $rows->get($id);
+                if (!$this->shouldUseAllLabels()) {
+                    $labels = Label::whereIn('id', $rowGroup->pluck('label_id'))->get();
+                }
                 $userFilenames = $rowGroup->pluck('filename')->unique();
                 $missingFiles = $allFilenames->diff($userFilenames);
                 // Include empty images again, as they were removed during grouping
