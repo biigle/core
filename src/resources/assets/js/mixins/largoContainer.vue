@@ -254,7 +254,7 @@ export default {
                 let filtersCacheKey = JSON.stringify({...activeFilters, label: label.id, union: union});
 
                 if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
-                    filterPromise = this.loadFilters(label, activeFilters, union, filtersCacheKey)
+                    filterPromise = this.loadFilters(label, activeFilters, union, filtersCacheKey);
                 }
             }
 
