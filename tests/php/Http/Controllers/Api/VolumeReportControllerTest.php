@@ -434,4 +434,19 @@ class VolumeReportControllerTest extends ApiTestCase
             return true;
         });
     }
+
+    public function testStoreOptionsAllLabelsRestrictToNewestLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'newest_label' => true,
+        ])->assertUnprocessable();
+
+        Queue::assertNotPushed(GenerateReportJob::class);
+    }
 }
