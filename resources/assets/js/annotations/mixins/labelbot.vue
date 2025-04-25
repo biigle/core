@@ -123,10 +123,15 @@ export default {
             const size = this.labelbotModelInputSize * this.labelbotModelInputSize;
             const annotationData = this.tempLabelbotCanvas.getContext('2d').getImageData(0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize).data;
             const annotationDataArray = new Float32Array(size * 3);
-            for (let i = 0, offset = 0; i < size; i++, offset += 4) {
-                annotationDataArray[i] = annotationData[offset] / 255.0;
-                annotationDataArray[size + i] = annotationData[offset + 1] / 255.0;
-                annotationDataArray[2 * size + i] = annotationData[offset + 2] / 255.0;
+
+            // Image normalization
+            const mean = [0.485, 0.456, 0.406];
+            const std = [0.229, 0.224, 0.225];
+
+            for (let i = 0; i < size; i++) {
+                annotationDataArray[i] = ((annotationData[i * 4] / 255.0) - mean[0]) / std[0]; // R
+                annotationDataArray[size + i] = ((annotationData[i * 4 + 1] / 255.0) - mean[1]) / std[1];  // G
+                annotationDataArray[2 * size + i] = ((annotationData[i * 4 + 2] / 255.0) - mean[2]) / std[2];  // B
             }
 
             // Convert the annotation data to tensor
