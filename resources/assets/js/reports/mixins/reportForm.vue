@@ -97,7 +97,7 @@ export default {
             return options;
         },
         disableAllLabelsOption() {
-            return this.options.aggregate_child_labels || this.options.separate_users || this.hasOnlyLabels;
+            return this.options.aggregate_child_labels || this.hasOnlyLabels || this.options.newest_label;
         }
     },
     methods: {
@@ -172,7 +172,6 @@ export default {
         'options.separate_users'(separate) {
             if (separate) {
                 this.options.separate_label_trees = false;
-                this.options.all_labels = false;
             }
         },
     },

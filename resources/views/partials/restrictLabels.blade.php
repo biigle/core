@@ -1,6 +1,9 @@
 <div class="form-group" :class="{'has-error': errors.only_labels}">
     <div class="checkbox">
-        <label>
+        <label v-if="options.all_labels" class="text-muted">
+            <input type="checkbox" v-model="hasOnlyLabels" :disabled="options.all_labels"> Restrict to labels <span v-show="hasOnlyLabels" v-cloak>(<span v-text="selectedLabelsCount"></span> labels selected)</span>
+        </label>
+        <label v-else>
             <input type="checkbox" v-model="hasOnlyLabels" :disabled="options.all_labels"> Restrict to labels <span v-show="hasOnlyLabels" v-cloak>(<span v-text="selectedLabelsCount"></span> labels selected)</span>
         </label>
     </div>

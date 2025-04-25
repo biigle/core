@@ -104,8 +104,11 @@
                 @endif
                 <div v-cloak v-if="hasOption('newest_label')" class="form-group" :class="{'has-error': errors.newest_label}">
                     <div class="checkbox">
-                        <label>
-                            <input type="checkbox" v-model="options.newest_label"> Restrict to newest label
+                        <label v-if="options.all_labels" class="text-muted">
+                            <input type="checkbox" v-model="options.newest_label" :disabled="options.all_labels"> Restrict to newest label
+                        </label>
+                        <label v-else>
+                            <input type="checkbox" v-model="options.newest_label" :disabled="options.all_labels"> Restrict to newest label
                         </label>
                     </div>
                     <div v-if="errors.newest_label" v-cloak class="help-block" v-text="getError('newest_label')"></div>
@@ -115,7 +118,10 @@
                 </div>
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
                     <div class="checkbox">
-                        <label>
+                        <label v-if="options.all_labels" class="text-muted">
+                            <input type="checkbox" v-model="options.aggregate_child_labels" :disabled="options.all_labels"> Aggregate child labels
+                        </label>
+                        <label v-else>
                             <input type="checkbox" v-model="options.aggregate_child_labels" :disabled="options.all_labels"> Aggregate child labels
                         </label>
                     </div>
@@ -145,9 +151,6 @@
                     <div class="help-block" v-if="errors.separate_users" v-cloak v-text="getError('separate_users')"></div>
                     <div v-if="!errors.separate_label_trees && !errors.separate_users" class="help-block">
                         Split the report to separate files/sheets for label trees or users.
-                        <div v-if="wantsCombination('ImageAnnotations', 'Abundance') && options.separate_users">
-                            It includes all labels that can be used in a volume.
-                        </div>
                     </div>
                 </div>
                 <div v-cloak v-if="hasOption('strip_ifdo')" class="form-group" :class="{'has-error': errors.strip_ifdo}">
