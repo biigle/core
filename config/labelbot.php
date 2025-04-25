@@ -53,15 +53,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | URL of the hosted ONNX model file for LabelBOT.
+    | If you're hosting your own ONNX model externally, ensure that CORS is properly configured
+    | on the server to allow cross-origin requests from your frontend.
     */
     'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', 'http://host.docker.internal:8000/assets/dinov2_vits14.onnx'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | LabelBOT ONNX Model Chunk Size
-    |--------------------------------------------------------------------------
-    |
-    | The chunk size for streaming the ONNX model file.
-    */
-    'onnx_chunk_size' => 8192,
 ];

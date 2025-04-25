@@ -479,5 +479,3 @@ $router->get('reject-user-registration/{id}', [
     'as' => 'reject-registration',
     'uses' => 'UserRegistrationController@reject',
 ]);
-
-$router->get('labelbot-onnx-model', 'LabelbotOnnxModelController@stream');

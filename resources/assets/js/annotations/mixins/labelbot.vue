@@ -1,11 +1,11 @@
 <script>
 import {handleErrorResponse} from '../../core/messages/store';
 import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
-import LabelbotApi from '../api/labelbot';
 
 /**
  * A Mixin for LabelBOT
  */
+
 export default {
     data() {
         return {
@@ -21,33 +21,29 @@ export default {
         };
     },
     methods: {
-        initLabelbotModel() {
+        async initLabelbotModel() {
             this.labelbotState = 'initializing';
+            const modelUrl = biigle.$require('labelbot.onnxUrl');
 
-            caches.open(this.labelbotCacheName).then((cache) => {
-                return cache.match(this.labelbotModelCacheKey).then((cachedResponse) => {
-                    // Model is cached
-                    if (cachedResponse) {
-                        return cachedResponse.blob().then((modelBlob) => {
-                            const modelUrl = URL.createObjectURL(modelBlob);
-                            this.loadLabelbotModel(modelUrl);
-                        })
-                    } else {
-                        return LabelbotApi.fetch()
-                        .then((response) => response.blob())
-                        .then((blob) => {
-                            // Cache the model before loading it
-                            cache.put(this.labelbotModelCacheKey, new Response(blob));
-                            const modelUrl = URL.createObjectURL(blob);
-                            this.loadLabelbotModel(modelUrl);
-                        })
-                    }
-                });
-            })
-            .catch((error) => {
+            try {
+                const cache = await caches.open(this.labelbotCacheName);
+                const cachedResponse = await cache.match(this.labelbotModelCacheKey);
+
+                const modelBlob = cachedResponse
+                    ? await cachedResponse.blob()
+                    : await (async () => {
+                        const networkResponse = await fetch(modelUrl);
+                        // Cache the model before loading it
+                        cache.put(this.labelbotModelCacheKey, networkResponse.clone());
+                        return await networkResponse.blob();
+                    })();
+
+                const blobUrl = URL.createObjectURL(modelBlob);
+                this.loadLabelbotModel(blobUrl);
+            } catch (error) {
                 this.labelbotIsOn = false;
                 handleErrorResponse(error);
-            });
+            }
         },
         loadLabelbotModel(modelUrl) {
             // Load the onnx model with webgpu first 
@@ -63,7 +59,10 @@ export default {
                     this.labelbotModel = model;
                     this.labelbotState = 'ready';
                 })
-                .catch(handleErrorResponse)
+                .catch((error) => {
+                    this.labelbotIsOn = false
+                    handleErrorResponse(error);
+                })
             })
         },
         getBoundingBox(points) {
