@@ -3,19 +3,20 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
-use Biigle\Services\Reports\CsvFile;
-use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
-use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\LabelTreeTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\VolumeTest;
 use Mockery;
 use TestCase;
+use Biigle\Shape;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\VolumeTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Services\Reports\CsvFile;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
 
 class AbundanceReportGeneratorTest extends TestCase
 {
@@ -2041,4 +2042,84 @@ class AbundanceReportGeneratorTest extends TestCase
         $this->assertNull($results[1]->id);
         $this->assertNull($results[2]->id);
     }
+
+    public function testInitQueryRestrictToExportAreaQuery()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $image2 = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '2.jpg',
+        ]);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+            ]),
+        ];
+
+        array_map(function ($a) {
+            ImageAnnotationLabelTest::create(['annotation_id' => $a->id]);
+        }, $annotations);
+
+        $inside = [$annotations[0]->id, $annotations[1]->id, $annotations[4]->id];
+        $outside = [$annotations[2]->id, $annotations[3]->id, $annotations[5]->id];
+
+        $generator = new AbundanceReportGenerator([
+            'exportArea' => true,
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotations.id as annotation_id'])->get();
+        $ids = $res->reject(fn($entry) => is_null($entry->annotation_id))->pluck('annotation_id')->toArray();
+        $ids = array_map('intval', $ids);
+
+        sort($inside);
+        sort($ids);
+
+        $emptyImage = $res->filter(fn($entry) => is_null($entry->annotation_id));
+        $this->assertTrue($emptyImage->isNotEmpty());
+        $this->assertSame([$image2->id], $emptyImage->pluck('id')->toArray());
+        $this->assertSame($inside, $ids);
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
+
 }
