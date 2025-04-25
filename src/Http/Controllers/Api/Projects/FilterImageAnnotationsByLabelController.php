@@ -4,11 +4,13 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
+use Biigle\Modules\Largo\Traits\CompileFilters;
 use Biigle\Project;
 use Illuminate\Http\Request;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
+    use CompileFilters;
     /**
      * Show all image annotations of the project that have a specific label attached.
      *
@@ -16,8 +18,11 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiGroup Projects
      * @apiName ShowProjectsImageAnnotationsFilterLabels
      * @apiParam {Number} pid The project ID
-     * @apiParam {Number} lit The Label ID
+     * @apiParam {Number} lid The Label ID
      * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
+     * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
+     * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
+     * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs.
      *
@@ -30,8 +35,23 @@ class FilterImageAnnotationsByLabelController extends Controller
     {
         $project = Project::findOrFail($pid);
         $this->authorize('access', $project);
-        $this->validate($request, ['take' => 'integer']);
+
+        $this->validate($request, [
+            'take' => 'integer',
+            'shape_id' => 'array',
+            'shape_id.*' => 'integer',
+            'user_id' => 'array',
+            'user_id.*' => 'integer',
+            'union' => 'boolean',
+        ]);
+
         $take = $request->input('take');
+        $filters = [
+            'shape_id' => $request->input('shape_id'),
+            'user_id' => $request->input('user_id'),
+        ];
+        $filters = array_filter($filters);
+        $union = $request->input('union', false);
 
         return ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
@@ -40,10 +60,11 @@ class FilterImageAnnotationsByLabelController extends Controller
                     ->from('project_volume')
                     ->where('project_id', $pid);
             })
-            ->where('image_annotation_labels.label_id', $lid)
             ->when(!is_null($take), function ($query) use ($take) {
                 return $query->take($take);
             })
+            ->where('image_annotation_labels.label_id', $lid)
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')

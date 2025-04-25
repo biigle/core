@@ -132,6 +132,23 @@
             </li>
         </ul>
 
+
+        <h4>Filtering</h4>
+
+        <p>
+            Largo offers a filtering functionality, which allows the user to navigate the existing annotations easily based on their characteristics. Filter rules can be combined in different ways, namely:
+        </p>
+        <ul>
+            <li>Whether the annotation's property 'is' or 'is not' the desired value.</li>
+            <li>Whether the annotations should have all of the desired characteristics (<i>'And'</i>) or at least one of this characteristics (<i>'Or'</i>).</li>
+        </ul>
+        <p>
+            These filters are available:
+        </p>
+        <ul>
+            <li><b>Shape</b>: the shape of the annotation.</li>
+            <li><b>User</b>: which user has created the annotation.</li>
+        </ul>
         <h4>Settings</h4>
 
         <p>

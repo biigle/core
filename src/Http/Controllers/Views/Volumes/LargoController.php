@@ -4,11 +4,12 @@ namespace Biigle\Modules\Largo\Http\Controllers\Views\Volumes;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Role;
+use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Storage;
 
 class LargoController extends Controller
@@ -23,6 +24,7 @@ class LargoController extends Controller
     public function index(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
+
         if (!$request->user()->can('sudo')) {
             $this->authorize('edit-in', $volume);
         }
@@ -53,12 +55,20 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
+        $shapes = Shape::pluck('name', 'id');
+
+        if (!$volume->isVideoVolume()) {
+            $wholeframeId = Shape::wholeFrameId();
+            unset($shapes[$wholeframeId]);
+        }
+
         return view('largo::show', [
             'volume' => $volume,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
             'target' => $volume,
             'patchUrlTemplate' => $patchUrlTemplate,
+            'shapes' => $shapes,
         ]);
     }
 }
