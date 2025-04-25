@@ -39,6 +39,10 @@ export default Resource('api/v1/volumes{/id}/largo', {}, {
         method: 'GET',
         url: 'api/v1/volumes{/id}/annotations/sort/similarity',
     },
+    getUsersWithAnnotations: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/users-with-annotations',
+    },
     fetchVolumeAnnotationLabelCount: {
         method: 'GET',
         url: 'api/v1/volume{/id}/label-count',

@@ -3,6 +3,7 @@ import DismissImageGrid from '../components/dismissImageGrid.vue';
 import RelabelImageGrid from '../components/relabelImageGrid.vue';
 import SettingsTab from '../components/settingsTab.vue';
 import SortingTab from '../components/sortingTab.vue';
+import FilteringTab from '../components/filteringTab.vue';
 import {Echo} from '../import.js';
 import {Events} from '../import.js';
 import {handleErrorResponse} from '../import.js';
@@ -30,6 +31,7 @@ export default {
         relabelImageGrid: RelabelImageGrid,
         settingsTab: SettingsTab,
         sortingTab: SortingTab,
+        filteringTab: FilteringTab,
         labelList: LabelList,
     },
     data() {
@@ -53,7 +55,10 @@ export default {
             needsSimilarityReference: false,
             similarityReference: null,
             pinnedImage: null,
+            activeFilters: [],
+            union: false,
             labels: [],
+            filtersCache: {},
             fetchedLabelCount: false,
         };
     },
@@ -76,8 +81,27 @@ export default {
             return this.step === 1;
         },
         annotations() {
-            if (this.selectedLabel && this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
-                return this.annotationsCache[this.selectedLabel.id];
+            if (!this.selectedLabel || this.loading) {
+                return [];
+            }
+
+            if (this.annotationsCache.hasOwnProperty(this.selectedLabel.id)) {
+                let annotations = this.annotationsCache[this.selectedLabel.id];
+                let filtersCacheKey = JSON.stringify({
+                    ...this.activeFilters,
+                    label: this.selectedLabel.id,
+                    union: this.union
+                });
+                if (this.hasActiveFilters) {
+                    if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
+                        return [];
+                    }
+                    annotations = annotations.filter(
+                        annotation => this.filtersCache[filtersCacheKey].get(annotation.id)
+                    );
+                }
+
+                return annotations;
             }
 
             return [];
@@ -99,8 +123,9 @@ export default {
                     // 'v' to avoid duplicate IDs whe sorting both types of annotations.
                     map[a.type === VIDEO_ANNOTATION ? ('v' + a.id) : ('i' + a.id)] = a;
                 });
-
-                annotations = this.sortingSequence.map(id => map[id]);
+                annotations = this.sortingSequence
+                   .map(id => map[id])
+                   .filter(id => id !== undefined);
             }
 
             if (this.sortingDirection === SORT_DIRECTION.ASCENDING) {
@@ -111,6 +136,7 @@ export default {
         },
         allAnnotations() {
             let annotations = [];
+
             for (let id in this.annotationsCache) {
                 if (!this.annotationsCache.hasOwnProperty(id)) continue;
                 // This MUST use concat() because for lots of annotations, solutions
@@ -179,18 +205,47 @@ export default {
                 })
             });
             return index;
+        },
+        pinnedImageInAnnotations() {
+            return this.annotations.includes(this.pinnedImage);
+        },
+        hasActiveFilters() {
+            return this.activeFilters.length > 0
         }
     },
     methods: {
+        compileFilters(filters, union) {
+            let parameters = [];
+
+            filters.forEach(
+                (filter) => {
+                    if (!parameters[filter.filter]) {
+                        parameters[filter.filter] = [];
+                    }
+                    parameters[filter.filter].push(filter.value);
+                }
+            )
+            parameters['union'] = union ? 1 : 0;
+            return parameters;
+        },
         getAnnotations(label) {
             let promise1;
             let promise2;
+            let filterPromise;
+
+            //store in variables to avoid race conditions
+            let union = this.union;
+            let activeFilters = this.activeFilters;
 
             if (!this.annotationsCache.hasOwnProperty(label.id)) {
                 this.annotationsCache[label.id] = [];
                 this.startLoading();
                 promise1 = this.queryAnnotations(label)
-                    .then((response) => this.gotAnnotations(label, response), handleErrorResponse)
+                    .then(
+                        (response) => this.gotAnnotations(label, response),
+                        handleErrorResponse
+                    )
+                    .then(a => this.annotationsCache[label.id] = a)
             } else {
                 promise1 = Promise.resolve();
             }
@@ -205,9 +260,23 @@ export default {
                 promise2 = Promise.resolve();
             }
 
-            Promise.all([promise1, promise2]).finally(this.finishLoading);
+            if (activeFilters.length > 0) {
+
+                let filtersCacheKey = JSON.stringify({...activeFilters, label: label.id, union: union});
+
+                if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
+                    if (!this.loading) {
+                        // Not setting up loading here can cause flickering images.
+                        this.startLoading();
+                    }
+                    filterPromise = this.loadFilters(label, activeFilters, union, filtersCacheKey);
+                }
+            }
+
+            Promise.all([promise1, promise2, filterPromise]).finally(this.finishLoading);
         },
         gotAnnotations(label, response) {
+
             let imageAnnotations = response[0].data;
             let videoAnnotations = response[1].data;
 
@@ -222,10 +291,42 @@ export default {
             if (videoAnnotations) {
                 annotations = annotations.concat(this.initAnnotations(label, videoAnnotations, VIDEO_ANNOTATION));
             }
+
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
 
-            this.annotationsCache[label.id] = annotations;
+            return annotations
+        },
+        removeFilter(key) {
+            this.activeFilters.splice(key, 1);
+        },
+        handleSelectedFilters() {
+            let filters = this.activeFilters;
+            let union = this.union;
+            let label = this.selectedLabel;
+
+            if (!label) {
+                return [];
+            }
+
+            let filtersCacheKey = JSON.stringify({...filters, label: label.id, union: union});
+
+            if (!this.filtersCache.hasOwnProperty(filtersCacheKey)) {
+                this.startLoading();
+                this.loadFilters(label, filters, union, filtersCacheKey)
+                    .finally(this.finishLoading);
+            }
+        },
+        loadFilters(label, filters, union, filtersCacheKey) {
+            let requestParams = this.compileFilters(filters, union);
+            return this.queryAnnotations(label, requestParams)
+                .then(
+                    (response) => this.gotAnnotations(label, response),
+                    handleErrorResponse
+                )
+                .then(a => a.map(ann => [ann.id, true]))
+                .then(a => new Map(a))
+                .then(a => this.filtersCache[filtersCacheKey] = a);
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
@@ -266,6 +367,7 @@ export default {
         goToRelabel() {
             this.step = 1;
             this.lastSelectedImage = null;
+            this.resetFilteringTab();
         },
         goToDismiss() {
             this.step = 0;
@@ -293,7 +395,7 @@ export default {
         },
         save() {
             if (this.loading) {
-                return
+                return;
             }
 
             if (this.toDeleteCount > 0) {
@@ -525,6 +627,26 @@ export default {
         resetLabelCount() {
             this.fetchedLabelCount = false;
             this.labels = [];
+        },
+        resetFilteringTab() {
+            this.activeFilters = [];
+        },
+        addNewFilter(filter) {
+            if (this.activeFilters.length > 0) {
+                if (
+                    this.activeFilters.some(
+                        (f) =>
+                            f.filter === filter.filter &&
+                            f.value === filter.value
+                    )
+                ) {
+                    return;
+                }
+            }
+            this.activeFilters.push(filter);
+        },
+        setUnionLogic(union) {
+            this.union = union;
         }
     },
     watch: {
@@ -545,6 +667,17 @@ export default {
             if (oldLabel?.selected) {
                 oldLabel.selected = false;
             }
+        },
+        union() {
+            this.handleSelectedFilters();
+        },
+        activeFilters: {
+            deep: true,
+            handler() {
+                if (this.isInDismissStep) {
+                    this.handleSelectedFilters();
+                }
+            },
         },
     },
     created() {

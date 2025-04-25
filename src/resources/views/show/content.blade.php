@@ -9,7 +9,7 @@
         :height="{{config('thumbnails.height')}}"
         :selectable="true"
         :pinnable="imagesPinnable"
-        :pinned-image="pinnedImage"
+        :pinned-image="pinnedImageInAnnotations ? pinnedImage : null"
         v-on:select="handleSelectedImageDismiss"
         v-on:pin="handlePinImage"
         ></dismiss-image-grid>
@@ -23,7 +23,7 @@
         :selectable="true"
         v-on:select="handleSelectedImageRelabel"
         ></relabel-image-grid>
-    <div class="largo-images__alerts" :class="{block: loading}">
+    <div class="largo-images__alerts"  :class="{block: loading}">
         <div v-cloak v-if="loading">
             <loader :active="true" :fancy="true"></loader>
         </div>
@@ -31,7 +31,7 @@
             Please choose a label in the sidebar.
         </div>
         <div v-cloak v-if="isInDismissStep && hasNoAnnotations" class="text-info">
-            There are no annotations with the label <strong v-text="selectedLabel.name"></strong>.
+            There are no annotations with the label <strong v-text="selectedLabel.name"></strong><span v-if="hasActiveFilters"> and the selected filters</span>.
         </div>
     </div>
 </div>
@@ -67,6 +67,16 @@
             v-on:init-similarity="handleInitSimilaritySort"
             v-on:cancel-similarity="handleCancelSimilaritySort"
             ></sorting-tab>
+    </sidebar-tab>
+    <sidebar-tab :highlight="hasActiveFilters" :disabled="isInRelabelStep" name="filtering" icon="exchange-alt fa-filter fa-solid" title="Filter">
+            <filtering-tab
+                v-on:reset-filters="resetFilteringTab"
+                v-on:add-filter="addNewFilter"
+                v-on:set-union-logic="setUnionLogic"
+                v-on:remove-filter="removeFilter"
+                :active-filters="activeFilters"
+                :union="union"
+                ></filtering-tab>
     </sidebar-tab>
     <sidebar-tab name="settings" icon="cog" title="Settings">
         <settings-tab

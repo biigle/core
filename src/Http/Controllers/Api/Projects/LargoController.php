@@ -3,16 +3,10 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\ImageAnnotation;
 use Biigle\Label;
-use Biigle\MediaType;
 use Biigle\Modules\Largo\Http\Requests\StoreProjectLargoSession;
 use Biigle\Modules\Largo\Jobs\ApplyLargoSession;
-use Biigle\Modules\Largo\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Project;
-use DB;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 
 class LargoController extends Controller

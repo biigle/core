@@ -15,15 +15,16 @@ export default {
         };
     },
     methods: {
-        queryAnnotations(label) {
+        queryAnnotations(label, filters = []) {
             let imagePromise;
             let videoPromise;
+            let params = { ...filters, id: this.volumeId, label_id: label.id };
             if (this.mediaType === 'image') {
-                imagePromise = VolumesApi.queryImageAnnotations({id: this.volumeId, label_id: label.id});
+                imagePromise = VolumesApi.queryImageAnnotations(params);
                 videoPromise = Promise.resolve([]);
             } else {
                 imagePromise = Promise.resolve([]);
-                videoPromise = VolumesApi.queryVideoAnnotations({id: this.volumeId, label_id: label.id});
+                videoPromise = VolumesApi.queryVideoAnnotations(params);
             }
 
             return Promise.all([imagePromise, videoPromise]);
@@ -54,6 +55,7 @@ export default {
             return VolumesApi.fetchVolumeAnnotationLabelCount({ id: this.volumeId });
         }
     },
+
     created() {
         this.volumeId = biigle.$require('largo.volumeId');
         this.labelTrees = biigle.$require('largo.labelTrees');

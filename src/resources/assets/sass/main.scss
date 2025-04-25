@@ -105,13 +105,17 @@
         image-orientation: none;
 
         &:not(:last-child) {
-            margin-right: .5em;
+            margin-right: 0.5em;
         }
     }
 
     .alert {
         margin-bottom: 0;
     }
+}
+
+.largo-filter-select {
+    width: 50%;
 }
 
 .annotations-tab--largo {
@@ -181,3 +185,4 @@
         padding-bottom: 1em;
     }
 }
+

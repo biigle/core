@@ -53,6 +53,10 @@ $router->group([
         'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
     ]);
 
+    $router->get('projects/{pid}/users-with-annotations', [
+        'uses' => 'Projects\GetUsersWithAnnotations@index',
+    ]);
+
     $router->get('projects/{id}/label-count', [
         'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
     ]);
@@ -71,6 +75,10 @@ $router->group([
 
     $router->get('volumes/{id}/image-annotations/filter/label/{id2}', [
         'uses' => 'Volumes\FilterImageAnnotationsByLabelController@index',
+    ]);
+
+    $router->get('volumes/{vid}/users-with-annotations', [
+        'uses' => 'Volumes\GetUsersWithAnnotations@index',
     ]);
 
     $router->post('volumes/{id}/largo', [
