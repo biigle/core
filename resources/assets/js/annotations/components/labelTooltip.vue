@@ -19,9 +19,6 @@ import AnnotationTooltip from '../mixins/annotationTooltip.vue';
  * @type {Object}
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     extends: AnnotationTooltip,
     computed: {
         annotationLabels() {

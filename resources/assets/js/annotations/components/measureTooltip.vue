@@ -19,9 +19,6 @@ import LineString from '@biigle/ol/geom/LineString';
  * @type {Object}
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     extends: AnnotationTooltip,
     mixins: [MeasureComponent],
     data() {

@@ -7,9 +7,6 @@ import {handleErrorResponse} from '@/core/messages/store.js';
  * View model for the volume sorting tab
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     template: '#sorting-tab-template',
     emits: ['update'],
     mixins: [LoaderMixin],

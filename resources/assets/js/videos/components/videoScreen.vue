@@ -360,9 +360,6 @@ import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {markRaw} from 'vue';
 
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     emits: [
         'moveend',
         'next',

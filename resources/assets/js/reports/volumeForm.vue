@@ -6,9 +6,6 @@ import VolumesApi from './api/volumeReports.js';
  * The form for requesting a volume report
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     extends: Form,
     methods: {
         submit() {

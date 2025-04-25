@@ -13,11 +13,9 @@ export default defineConfig({
         viteStaticCopy({
             targets: [
                 {
-                    // TODO: Replace with proper Vue 3 after migration.
-                    // When updated, also update in resources/views/app.blade.php!
                     src: [
-                        'node_modules/@vue/compat/dist/vue.esm-browser.js',
-                        'node_modules/@vue/compat/dist/vue.esm-browser.prod.js',
+                        'node_modules/vue/dist/vue.esm-browser.js',
+                        'node_modules/vue/dist/vue.esm-browser.prod.js',
                     ],
                     dest: '',
                 },

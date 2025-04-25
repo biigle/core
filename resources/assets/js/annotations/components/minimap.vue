@@ -21,9 +21,6 @@ import {getCenter} from '@biigle/ol/extent';
  * @type {Object}
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     props: {
         extent: {
             type: Array,

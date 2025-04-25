@@ -10,9 +10,6 @@ import {handleErrorResponse} from '@/core/messages/store.js';
  * View model for the volume filter tab
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     template: "#filter-tab-template",
     emits: [
         'disable-filenames',

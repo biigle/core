@@ -1,19 +1,4 @@
-import { configureCompat } from 'vue'
 import { Http } from 'vue-resource';
-
-// TODO: Remove this when migration is complete.
-configureCompat({
-    FILTERS: false,
-    GLOBAL_MOUNT: false,
-    GLOBAL_EXTEND: false,
-    // GLOBAL_PROTOTYPE: false,
-    // CONFIG_WHITESPACE: false,
-    TRANSITION_GROUP_ROOT: false,
-    COMPONENT_V_MODEL: false,
-    RENDER_FUNCTION: false,
-    ATTR_FALSE_VALUE: false,
-    MODE: 3,
-});
 
 const httpRootElement = document.querySelector('meta[name="http-root"]');
 

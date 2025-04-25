@@ -6,9 +6,6 @@ import ProjectsApi from './api/projectReports.js';
  * The form for requesting a project report
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     extends: Form,
     data() {
         return {
