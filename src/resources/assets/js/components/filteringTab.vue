@@ -23,7 +23,7 @@
                     @click="removeFilter(k)"
                     type="button"
                     class="close"
-                    title="Remove this filter"
+                    title="Remove this filter rule"
                 >
                     <span aria-hidden="true">&times;</span>
                 </button>
