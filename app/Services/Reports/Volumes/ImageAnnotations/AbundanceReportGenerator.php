@@ -155,7 +155,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     protected function getImageAnnotationLabelQuery()
     {
         // Filter records here to keep images with no selected annotation labels or without any annotation labels
-        if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels()) {
+        if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels() || $this->isRestrictedToExportArea()) {
             // Start join with 'Label' to set labels and annotations on null if not present or selected
             return Label::join('image_annotation_labels', function ($join) {
                 $join->on('labels.id', '=', 'image_annotation_labels.label_id')
@@ -166,7 +166,8 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                         ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery']);
                 })
                 ->rightJoin('images', function ($join) {
-                    $join->on('image_annotations.image_id', '=', 'images.id');
+                    $join->on('image_annotations.image_id', '=', 'images.id')
+                        ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
                 })
                 ->distinct();
         }
