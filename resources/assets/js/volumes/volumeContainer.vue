@@ -31,9 +31,6 @@ export let plugins = {};
  * forEach method or set local variables wherever we can.
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     mixins: [LoaderMixin],
     components: {
         sidebar: Sidebar,

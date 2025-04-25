@@ -55,9 +55,6 @@ import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
  * @type {Object}
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     template: '#annotation-canvas-template',
     emits: [
         'moveend',

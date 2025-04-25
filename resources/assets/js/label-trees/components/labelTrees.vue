@@ -67,9 +67,6 @@ import {MAX_FAVOURITES} from '../constants.js';
  * @type {Object}
  */
 export default {
-    compatConfig: {
-        WATCH_ARRAY: false,
-    },
     emits: [
         'add-favourite',
         'clear',
