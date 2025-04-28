@@ -49,7 +49,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 $allLabels = $allLabels->groupBy('label_tree_id');
             } else {
-                $treeIds = $rows->keys()->reject(fn($k) => !$k);
+                $treeIds = $rows->keys()->reject(fn ($k) => !$k);
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
             }
 
@@ -65,7 +65,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $userIds = $rows->keys()->reject(fn($k) => !$k);
+            $userIds = $rows->keys()->reject(fn ($k) => !$k);
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');

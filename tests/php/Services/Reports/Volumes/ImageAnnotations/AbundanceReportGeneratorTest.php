@@ -3,20 +3,20 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
-use Mockery;
-use TestCase;
-use Biigle\Shape;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\LabelTreeTest;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
+use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Services\Reports\Volumes\ImageAnnotations\AbundanceReportGenerator;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
+use Mockery;
+use TestCase;
 
 class AbundanceReportGeneratorTest extends TestCase
 {
@@ -379,7 +379,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateUsers' => true,
@@ -461,7 +461,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateUsers' => true,
@@ -905,7 +905,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateUsers' => true,
@@ -1035,7 +1035,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->twice();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'separateUsers' => true,
@@ -2126,7 +2126,6 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($volume);
 
-
         $res = $generator->initQuery(['images.id', 'image_annotations.id as annotation_id'])->get();
         $ids = $res->pluck('annotation_id')->toArray();
         $ids = array_map('intval', $ids);
@@ -2249,6 +2248,7 @@ class AbundanceReportGeneratorTest extends TestCase
             $this->assertNotContains($id, $ids);
         }
     }
+
     public function testInitQueryRestrictToExportAreaQueryAnnotationSessionRestrictToLabels()
     {
         $volume = VolumeTest::create();
