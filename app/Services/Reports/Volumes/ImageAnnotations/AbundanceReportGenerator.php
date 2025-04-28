@@ -43,6 +43,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
+            $allLabels = null;
             if ($this->shouldUseAllLabels()) {
                 $allLabels = $this->getVolumeLabels();
                 $treeIds = $allLabels->pluck('label_tree_id');
@@ -69,6 +70,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
+            $labels = null;
             if ($this->shouldUseAllLabels()) {
                 $labels = $this->getVolumeLabels();
             }
