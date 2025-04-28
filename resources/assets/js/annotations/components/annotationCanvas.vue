@@ -12,6 +12,8 @@ import Events from '../../core/events';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '../../core/keyboard';
+import LabelbotPopup from './labelbotPopup';
+import LabelbotIndicator from './labelbotIndicator.vue';
 import LabelIndicator from './labelIndicator';
 import Lawnmower from './annotationCanvas/lawnmower';
 import LineString from '@biigle/ol/geom/LineString';
@@ -22,6 +24,7 @@ import Minimap from './minimap';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition';
 import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
+import Overlay from '@biigle/ol/Overlay';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
@@ -73,6 +76,8 @@ export default {
         minimap: Minimap,
         labelIndicator: LabelIndicator,
         controlButton: ControlButton,
+        labelbotPopup: LabelbotPopup,
+        labelbotIndicator: LabelbotIndicator
     },
     props: {
         canAdd: {
@@ -136,6 +141,20 @@ export default {
         userId: {
             type: Number,
             required: true,
+        },
+        labelbotIsOn: {
+            type: Boolean,
+            default: false,
+        },
+        labelbotState: {
+            type: String,
+            default: 'initializing',
+        },
+        labelbotOverlays: {
+            type: Array,
+            default() {
+                return [];
+            },
         },
     },
     data() {
@@ -290,7 +309,7 @@ export default {
                 updateWhileInteracting: true,
                 style: Styles.features,
             });
-
+            
             this.selectInteraction = new SelectInteraction({
                 // Use click instead of default singleclick because the latter is
                 // delayed 250ms to ensure the event is no doubleclick. But we want
@@ -513,7 +532,7 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (!this.hasSelectedLabel) {
+            if (!this.hasSelectedLabel && !this.labelbotIsOn) {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
@@ -535,7 +554,8 @@ export default {
                 PolygonValidator.simplifyPolygon(e.feature);
             }
 
-            e.feature.set('color', this.selectedLabel.color);
+            // If LabelBOT is on then selectedLabel is null
+            e.feature.set('color', this.selectedLabel ? this.selectedLabel.color : null);
 
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
@@ -552,7 +572,6 @@ export default {
                 shape: geometry.getType(),
                 points: this.getPoints(geometry),
             }, removeCallback);
-
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
@@ -565,9 +584,9 @@ export default {
             }
         },
         createPointAnnotationAt(x, y) {
-            if (this.hasSelectedLabel) {
+            if (this.hasSelectedLabel || this.labelbotIsOn) {
                 let feature = new Feature(new Point([x, y]));
-                // Simulare a feature created event so we can reuse the apropriate
+                // Simulate a feature created event so we can reuse the appropriate
                 // function.
                 this.annotationSource.addFeature(feature);
                 this.handleNewFeature({feature: feature});
@@ -678,6 +697,64 @@ export default {
                 Keyboard.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
+        },
+        initLabelbotOverlays() {
+            this.labelbotOverlays.forEach((labelbotOverlay, key) => {
+                const popup = this.$refs['labelbot-popup-' + key]?.[0];
+                if (!popup) return;
+                labelbotOverlay.overlay = new Overlay({
+                    element: popup,
+                    positioning: 'top-center',
+                    insertFirst: false, // last added overlay appears on top
+                });
+                // Add it to the map
+                this.map.addOverlay(labelbotOverlay.overlay);
+                // Attach methods
+                labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb.bind(this);
+                labelbotOverlay.drawPopupLineFeature = this.drawLabelbotPopupLineFeature.bind(this);
+                labelbotOverlay.removePopupLineFeature = this.removeLabelbotPopupLineFeature.bind(this);
+            });
+        },
+        drawLabelbotPopupLineFeature(path, color) {
+            const labelbotPopupLineFeature = new Feature(new LineString(path));
+            labelbotPopupLineFeature.setStyle(Styles.labelbotPopupLineStyle(color));
+
+            // Add the feature in next tick otherwise it will not be rendered
+            this.$nextTick(() => {
+                this.annotationSource.addFeature(labelbotPopupLineFeature);
+            });
+
+            // We return the feature to save it for later removal from annotation source
+            return labelbotPopupLineFeature;
+        },
+        removeLabelbotPopupLineFeature(labelbotPopupLineFeature) {
+            try {
+                this.annotationSource.removeFeature(labelbotPopupLineFeature);
+            } catch(e) {
+                // Ignore it
+            }
+        },
+        updateLabelbotLabel(label) {
+            this.$emit('update-labelbot-label', label);
+        },
+        deleteLabelbotLabels(popupKey) {
+            this.$emit('delete-labelbot-labels', popupKey);
+        },
+        handleLabelbotPopupClick(popupKey) {
+            const currentPopup = this.$refs['labelbot-popup-' + popupKey]?.[0];
+            const currentContainer = currentPopup?.closest('.ol-overlay-container');
+            if (!currentContainer) return;
+            // Changing the popup element's style won't affect overlay stacking,
+            // so we update the overlay container's z-index directly.
+            currentContainer.style.zIndex = 100;
+
+            this.labelbotOverlays.forEach((_, overlayKey) => {
+                if (overlayKey !== popupKey) {
+                    const popup = this.$refs['labelbot-popup-' + overlayKey]?.[0];
+                    const overlayContainer = popup?.closest('.ol-overlay-container');
+                    if (overlayContainer) overlayContainer.style.zIndex = '';
+                }
+            });
         },
     },
     watch: {
@@ -796,6 +873,11 @@ export default {
         canDelete() {
             this.updateDeleteInteractions();
         },
+        labelbotState(labelbotState) {
+            if (labelbotState === 'busy') {
+                this.resetInteractionMode();
+            }
+        },
     },
     created() {
         this.declareNonReactiveProperties();
@@ -837,6 +919,8 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
+        // Init labelBOT's overlays after the labelbot components are mounted
+        this.initLabelbotOverlays();
     },
 };
 </script>

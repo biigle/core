@@ -8,6 +8,7 @@ import ColorAdjustmentTab from './components/colorAdjustmentTab';
 import Events from '../core/events';
 import ImageLabelTab from './components/imageLabelTab';
 import ImagesStore from './stores/images';
+import Labelbot from './mixins/labelbot.vue';
 import LabelFilter from './models/LabelAnnotationFilter';
 import LabelsTab from './components/labelsTab';
 import Loader from '../core/mixins/loader';
@@ -31,7 +32,7 @@ import Keyboard from '../core/keyboard';
  */
 
 export default {
-    mixins: [Loader],
+    mixins: [Loader, Labelbot],
     components: {
         sidebar: Sidebar,
         sidebarTab: SidebarTab,
@@ -87,7 +88,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
-            imageFilenames: {}
+            imageFilenames: {},
         };
     },
     computed: {
@@ -375,7 +376,14 @@ export default {
             if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
                 this.lastCreatedAnnotation = null;
             }
-
+            if (this.labelbotIsOn) {
+                this.labelbotOverlays.map((overlay, idx) => {
+                    if (overlay.annotation?.id === annotation.id && !overlay.available) {
+                        this.deleteLabelbotLabels(idx)
+                        return;
+                    }
+                })
+            }
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
             Vue.set(annotation, 'markedForDeletion', true);
@@ -415,14 +423,37 @@ export default {
         },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {
-                annotation.label_id = this.selectedLabel.id;
+                let promise;
+                // LabelBOT
+                if (!this.selectedLabel && this.labelbotIsOn) {
+
+                    this.labelbotState = 'computing';
+                    
+                    promise = this.generateFeatureVector(annotation.points)
+                    .then((featureVector) => {
+                        // Assign feature vector to the annotation
+                        annotation.feature_vector = featureVector;
+                    })
+                    .catch(handleErrorResponse);
+                } else {
+                    promise = Vue.Promise.resolve()
+                    annotation.label_id = this.selectedLabel.id;
+                }
                 // TODO: confidence control
                 annotation.confidence = 1;
-                AnnotationsStore.create(this.imageId, annotation)
+                promise.then(() => {
+                    return AnnotationsStore.create(this.imageId, annotation)
+                    .then((createdAnnotation) => {
+                        if (this.labelbotIsOn) {
+                            this.showLabelbotPopup(createdAnnotation);
+                        }
+                        return createdAnnotation;
+                    })
                     .then(this.setLastCreatedAnnotation)
-                    .catch(handleErrorResponse)
-                    // Remove the temporary annotation if saving succeeded or failed.
-                    .finally(removeCallback);
+                })
+                .catch(handleErrorResponse)
+                // Remove the temporary annotation if saving succeeded or failed.
+                .finally(removeCallback);
             }
         },
         handleAttachLabel(annotation, label) {
@@ -537,6 +568,8 @@ export default {
                 case 'minimap':
                     this.showMinimap = value;
                     break;
+                case 'labelbot':
+                    this.labelbotIsOn = value;
             }
         },
         handleAnnotationModeChange(mode, data) {
@@ -677,6 +710,11 @@ export default {
         image(image) {
             this.crossOriginError = image?.crossOrigin;
         },
+        labelbotState(labelbotState) {
+            if (labelbotState === 'busy') {
+                Messages.info("The maximum number of LabelBOT's requests is reached!")
+            }
+        }
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');

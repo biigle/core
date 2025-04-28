@@ -172,4 +172,23 @@ export default {
             }),
         }),
     ],
-};
+    labelbotPopupLineStyle(color) {
+        return [
+            new Style({
+                stroke: new Stroke({
+                    color: 'white',
+                    width: 5,
+                }),
+                zIndex: -1
+            }),
+            new Style({
+                stroke: new Stroke({
+                    color: '#' + color,
+                    width: 3,
+                    lineDash: [5],
+                }),
+                zIndex: -1
+            }),
+        ]
+    }
+}

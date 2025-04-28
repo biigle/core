@@ -53,7 +53,7 @@ export default {
         toggleMagicWandInteraction(isMagicWanding) {
             if (!isMagicWanding) {
                 magicWandInteraction.setActive(false);
-            } else if (this.hasSelectedLabel) {
+            } else if (this.hasSelectedLabel || (this.labelbotIsOn && this.labelbotState !== 'busy')) {
                 magicWandInteraction.setActive(true);
             } else {
                 this.requireSelectedLabel();
