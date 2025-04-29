@@ -33,7 +33,7 @@ class VideoAnnotation extends Annotation
     /**
      * The video, this annotation belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Video, VideoAnnotation>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Video, $this>
      */
     public function video()
     {

@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for project invitations.
  *
@@ -7,7 +9,7 @@
  * Delete an invitations.
  * resource.delete({id: invitationId}).then(...);
  */
-export default Vue.resource('api/v1/projects{/id}/invitations', {}, {
+export default Resource('api/v1/projects{/id}/invitations', {}, {
     delete: {
         method: 'DELETE',
         url: 'api/v1/project-invitations{/id}',

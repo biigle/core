@@ -53,9 +53,14 @@ class VolumeFiles implements Rule
      * @param int $typeId Media type ID
      * @param int $sampleCount
      */
-    public function __construct($url, $typeId, $sampleCount = 5)
+    public function __construct(string $url, int $typeId, int $sampleCount = 5)
     {
         $this->message = 'The volume images are invalid.';
+        // Remove trailing slash from URL because on some systems a double slash in the
+        // URL can cause a "not found" error.
+        if (!str_ends_with($url, '://')) {
+            $url = rtrim($url, '/');
+        }
         $this->url = $url;
         $this->typeId = $typeId;
         $this->sampleCount = $sampleCount;

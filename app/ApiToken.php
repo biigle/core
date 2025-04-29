@@ -21,7 +21,7 @@ class ApiToken extends Model
     /**
      * The user, this token belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, ApiToken>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function owner()
     {

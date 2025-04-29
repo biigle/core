@@ -35,9 +35,10 @@ class Kernel extends ConsoleKernel
                 }
             })
             ->name('generate-federated-search-index')
-            // The requests to retrieve the federated search index are sent hourly at 05.
-            // This should not collide with this job to generate the index.
-            ->hourlyAt(35)
+            // The requests to retrieve the federated search index are sent daily at
+            // 03:05. This should not collide with this job to generate the index.
+            ->dailyAt('01:35')
+            ->withoutOverlapping()
             ->onOneServer();
 
         $schedule
@@ -46,10 +47,15 @@ class Kernel extends ConsoleKernel
                     ->eachById([UpdateFederatedSearchIndex::class, 'dispatch']);
             })
             ->name('update-federated-search-index')
-            // The jobs to generate the federated search index are run hourly at 35.
+            // The jobs to generate the federated search index are run daily at 01:35.
             // This should not collide with this job to request the index from another
             // instance.
-            ->hourlyAt(05)
+            ->dailyAt('03:05')
+            ->withoutOverlapping()
+            ->onOneServer();
+
+        $schedule->command('sync:prune')
+            ->daily()
             ->onOneServer();
 
         // Insert scheduled tasks here.

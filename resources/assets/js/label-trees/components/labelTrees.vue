@@ -1,20 +1,65 @@
 <template>
     <div class="label-trees">
-        <div v-if="typeahead || clearable" class="label-trees__head">
-            <button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
-            <typeahead v-if="typeahead" :items="labels" more-info="tree.versionedName" @select="handleSelect" placeholder="Find label"></typeahead>
+        <div
+            v-if="typeahead || clearable"
+            class="label-trees__head"
+            >
+            <button
+                v-if="clearable"
+                @click="clear"
+                class="btn btn-default"
+                title="Clear selected labels"
+                type="button"
+                >
+                <span class="fa fa-times fa-fw" aria-hidden="true"></span>
+            </button>
+            <typeahead
+                ref="typeaheadInput"
+                v-if="typeahead"
+                more-info="tree.versionedName"
+                placeholder="Find label"
+                :items="labels"
+                @select="handleSelect"
+                ></typeahead>
         </div>
         <div class="label-trees__body">
-            <label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :showFavouriteShortcuts="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>
-            <label-tree v-for="tree in trees" :key="tree.id" :name="tree.versionedName" :labels="tree.labels" :multiselect="multiselect" :allow-select-siblings="allowSelectSiblings" :allow-select-children="allowSelectChildren" :show-favourites="showFavourites" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>
+            <label-tree
+                v-if="hasFavourites"
+                name="Favourites"
+                :labels="favourites"
+                :show-favourites="showFavourites"
+                :flat="true"
+                :showFavouriteShortcuts="true"
+                :collapsible="collapsible"
+                @select="handleSelect"
+                @deselect="handleDeselect"
+                @remove-favourite="handleRemoveFavourite"
+                ></label-tree>
+            <label-tree
+                v-for="tree in trees"
+                :key="tree.id"
+                :name="tree.versionedName"
+                :labels="tree.labels"
+                :multiselect="multiselect"
+                :allow-select-siblings="allowSelectSiblings"
+                :allow-select-children="allowSelectChildren"
+                :show-favourites="showFavourites"
+                :collapsible="collapsible"
+                @select="handleSelect"
+                @deselect="handleDeselect"
+                @add-favourite="handleAddFavourite"
+                @remove-favourite="handleRemoveFavourite"
+                ></label-tree>
         </div>
     </div>
 </template>
 
 <script>
-import Keyboard from '../../core/keyboard';
-import LabelTree from './labelTree';
-import Typeahead from './labelTypeahead';
+import Keyboard from '@/core/keyboard.js';
+import LabelTree from './labelTree.vue';
+import mitt from 'mitt';
+import Typeahead from './labelTypeahead.vue';
+import {MAX_FAVOURITES} from '../constants.js';
 
 /**
  * A component that displays a list of label trees.
@@ -22,6 +67,13 @@ import Typeahead from './labelTypeahead';
  * @type {Object}
  */
 export default {
+    emits: [
+        'add-favourite',
+        'clear',
+        'deselect',
+        'remove-favourite',
+        'select',
+    ],
     components: {
         typeahead: Typeahead,
         labelTree: LabelTree,
@@ -73,6 +125,10 @@ export default {
             type: String,
             default: 'default',
         },
+        focusInput:{
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         localeCompareSupportsLocales() {
@@ -110,7 +166,7 @@ export default {
             return this.favourites.map((label) => label.id);
         },
         canHaveMoreFavourites() {
-            return this.favourites.length < 10;
+            return this.favourites.length < MAX_FAVOURITES;
         },
         hasFavourites() {
             return this.favourites.length > 0;
@@ -139,23 +195,28 @@ export default {
         handleSelect(label, e) {
             if (label) {
                 this.$emit('select', label, e);
+                this.events.emit('select', {label, e});
             }
         },
         handleDeselect(label, e) {
             this.$emit('deselect', label, e);
+            this.events.emit('deselect', {label, e});
         },
         clear() {
             this.$emit('clear');
+            this.events.emit('clear');
         },
         handleAddFavourite(label) {
             if (this.canHaveMoreFavourites) {
                 this.$emit('add-favourite', label);
+                this.events.emit('add-favourite', label);
                 this.favourites.push(label);
                 this.updateFavouriteStorage();
             }
         },
         handleRemoveFavourite(label) {
             this.$emit('remove-favourite', label);
+            this.events.emit('remove-favourite', label);
             let index = this.favourites.indexOf(label);
             if (index !== -1) {
                 this.favourites.splice(index, 1);
@@ -174,10 +235,14 @@ export default {
                 this.handleSelect(this.favourites[index]);
             }
         },
+        on(key, fn) {
+            this.events.on(key, fn);
+        },
     },
     watch: {
         trees: {
             immediate: true,
+            deep: true,
             handler(trees) {
                 trees.forEach(function (tree) {
                     if (tree.version) {
@@ -192,6 +257,15 @@ export default {
                 });
             },
         },
+        focusInput() {
+            if (this.focusInput) {
+                this.$refs.typeaheadInput.$el.querySelector('input').focus();
+            }
+        }
+
+    },
+    created() {
+        this.events = mitt();
     },
     mounted() {
         if (this.showFavourites) {

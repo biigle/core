@@ -16,7 +16,7 @@
             </div>
         @endif
         @if ($user)
-            <div class="navbar-right">
+            <div id="navbar-right" class="navbar-right">
                 <ul class="nav navbar-nav">
                     @can('sudo')
                         <li class="sudo-mode-indicator" title="You are in Super User Mode">

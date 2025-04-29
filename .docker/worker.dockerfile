@@ -8,13 +8,6 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         ffmpeg \
         python3 \
-        python3-numpy \
-        python3-opencv \
-        python3-scipy \
-        python3-sklearn \
-        python3-matplotlib \
-        python3-shapely \
-        python3-pandas \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
@@ -73,20 +66,23 @@ RUN LC_ALL=C.UTF-8 apt-get update \
 # Unset proxy configuration again.
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 
+COPY .docker/requirements.txt /tmp/requirements.txt
+
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         python3-pip \
-    && pip3 install --no-cache-dir --break-system-packages \
-        PyExcelerate==0.6.7 \
-        Pillow==10.2.0 \
-    && pip3 install --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
-        torch==2.2.* \
-        torchvision==0.17.* \
+    && pip3 install --no-cache-dir --break-system-packages --upgrade pip \
+    # Install torch first to get the CPU nversion. It is also present in
+    # requirements.txt but this is only for automatic vulnerability checks.
+    && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
+        torch==2.6.* \
+        torchvision==0.21.* \
+    && pip3 install --no-cache-dir --break-system-packages -r /tmp/requirements.txt \
     && apt-get purge -y \
         python3-pip \
     && apt-get -y autoremove \
     && apt-get clean \
-    && rm -r /var/lib/apt/lists/*
+    && rm -r /var/lib/apt/lists/* /tmp/requirements.txt
 
 WORKDIR /var/www
 

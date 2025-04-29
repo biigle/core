@@ -15,7 +15,7 @@ class ImageLabel extends VolumeFileLabel
     /**
      * The image, this image label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Image, ImageLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Image, $this>
      */
     public function image()
     {

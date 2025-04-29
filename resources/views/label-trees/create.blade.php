@@ -7,6 +7,9 @@
     <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
         <h2>
             <span class="pull-right">
+                @unless($project || $upstreamLabelTree)
+                    <a href="{{route('label-tree-import-index')}}" class="btn btn-default" title="Import a downloaded label tree"><i class="fa fa-upload"></i> Import</a>
+                @endunless
                 @mixin('newLabelTreeButtons')
             </span>
             @if ($project)

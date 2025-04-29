@@ -1,7 +1,7 @@
 @extends('projects.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     @can('update', $project)
         biigle.$declare('projects.canEdit', true);
     @else
@@ -30,7 +30,7 @@
                 @can('update', $project)
                     <loader :active="loading"></loader>
                     <a href="{{route('label-trees-create', ['project' => $project->id])}}" class="btn btn-default" title="Create a new label tree and attach it to this project" >Create Label Tree</a>
-                    <typeahead :items="attachableLabelTrees" placeholder="Attach label tree" :disabled="loading" v-on:select="attachTree" :clear-on-select="true" more-info="description" title="Attach a label tree" v-on:focus="fetchAvailableLabelTrees"></typeahead>
+                    <typeahead :scrollable="true" :items="attachableLabelTrees" :disabled="loading" placeholder="Attach label tree" v-on:select="attachTree" :clear-on-select="true" more-info="description" title="Attach a label tree" v-on:fetch="fetchAvailableLabelTrees"></typeahead>
                 @else
                     <span class="text-muted">Project admins can add and remove label trees.</span>
                 @endcan

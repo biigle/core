@@ -5,6 +5,7 @@ namespace Biigle\Observers;
 use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
 use Biigle\Events\VideosDeleted;
+use Biigle\Report;
 use Biigle\Volume;
 use Exception;
 
@@ -51,5 +52,19 @@ class VolumeObserver
         $volume->deleteMetadata(true);
 
         return true;
+    }
+
+    /**
+     * Update the source name of reports when the source is deleted.
+     *
+     * @param \Biigle\Volume $volume
+     */
+    public function deleted($volume)
+    {
+        Report::where('source_id', '=', $volume->id)
+            ->where('source_type', '=', Volume::class)
+            ->update([
+                'source_name' => $volume->name,
+            ]);
     }
 }

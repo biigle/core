@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $annotation_id
  * @property int $user_id
  * @property int $label_id
+ * @property \Carbon\Carbon $created_at
  */
 abstract class AnnotationLabel extends Model
 {

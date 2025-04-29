@@ -53,7 +53,7 @@ class User extends Authenticatable
     /**
      * The projects, this user is a member of.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project, $this>
      */
     public function projects()
     {
@@ -63,7 +63,7 @@ class User extends Authenticatable
     /**
      * The label trees, this user is a member of.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<LabelTree, $this>
      */
     public function labelTrees()
     {
@@ -73,7 +73,7 @@ class User extends Authenticatable
     /**
      * The global role of this user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, $this>
      */
     public function role()
     {
@@ -83,7 +83,7 @@ class User extends Authenticatable
     /**
      * Api tokens of this user.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ApiToken>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<ApiToken, $this>
      */
     public function apiTokens()
     {
@@ -93,7 +93,7 @@ class User extends Authenticatable
     /**
      * The federated search models that the user can access
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<FederatedSearchModel>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<FederatedSearchModel, $this>
      */
     public function federatedSearchModels()
     {

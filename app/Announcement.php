@@ -42,6 +42,10 @@ class Announcement extends Model
      */
     protected static function booted()
     {
+        static::created(function ($announcement) {
+            Cache::forget(self::CACHE_KEY);
+        });
+
         static::deleted(function ($announcement) {
             Cache::forget(self::CACHE_KEY);
         });
@@ -54,14 +58,8 @@ class Announcement extends Model
      */
     public static function getActive()
     {
-        return Cache::get(self::CACHE_KEY, function () {
-            $announcement = self::active()->first();
-            if ($announcement) {
-                Cache::put(self::CACHE_KEY, $announcement, $announcement->show_until);
-            }
-
-            return $announcement;
-        });
+        // Store false if no announcement exists because null can't be stored.
+        return Cache::rememberForever(self::CACHE_KEY, fn () => self::active()->first() ?: false) ?: null;
     }
 
     /**

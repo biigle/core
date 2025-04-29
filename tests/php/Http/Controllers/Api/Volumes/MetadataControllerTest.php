@@ -57,31 +57,39 @@ class MetadataControllerTest extends ApiTestCase
         $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
         $this->beEditor();
         // no permissions
-        $this->postJson("/api/v1/volumes/{$id}/metadata", [
-            'file' => $csv,
-            'parser' => ImageCsvParser::class,
-        ])
+        $this
+            ->postJson("/api/v1/volumes/{$id}/metadata", [
+                'file' => $csv,
+                'parser' => ImageCsvParser::class,
+            ])
             ->assertStatus(403);
 
         $this->beAdmin();
         // file required
-        $this->postJson("/api/v1/volumes/{$id}/metadata", [
-            'parser' => ImageCsvParser::class,
-        ])
+        $this
+            ->postJson("/api/v1/volumes/{$id}/metadata", [
+                'parser' => ImageCsvParser::class,
+            ])
             ->assertStatus(422);
 
         // parser required
-        $this->postJson("/api/v1/volumes/{$id}/metadata", [
-            'file' => $csv,
-        ])
+        $this
+            ->postJson("/api/v1/volumes/{$id}/metadata", [
+                'file' => $csv,
+            ])
             ->assertStatus(422);
 
 
-        $this->postJson("/api/v1/volumes/{$id}/metadata", [
-            'file' => $csv,
-            'parser' => ImageCsvParser::class,
-        ])
-            ->assertStatus(200);
+        $this
+            ->postJson("/api/v1/volumes/{$id}/metadata", [
+                'file' => $csv,
+                'parser' => ImageCsvParser::class,
+            ])
+            ->assertStatus(200)
+            ->assertJson([
+                'has_annotations' => false,
+                'has_file_labels' => false,
+            ]);
 
         $this->assertSame(ImageCsvParser::class, $this->volume()->fresh()->metadata_parser);
 
@@ -126,11 +134,16 @@ class MetadataControllerTest extends ApiTestCase
         $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata.csv", 'metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
-        $this->postJson("/api/v1/volumes/{$id}/metadata", [
-            'file' => $csv,
-            'parser' => VideoCsvParser::class,
-        ])
-            ->assertSuccessful();
+        $this
+            ->postJson("/api/v1/volumes/{$id}/metadata", [
+                'file' => $csv,
+                'parser' => VideoCsvParser::class,
+            ])
+            ->assertSuccessful()
+            ->assertJson([
+                'has_annotations' => false,
+                'has_file_labels' => false,
+            ]);
 
         $this->assertSame(VideoCsvParser::class, $this->volume()->fresh()->metadata_parser);
 
@@ -148,10 +161,11 @@ class MetadataControllerTest extends ApiTestCase
         $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata-strange-encoding.csv", 'metadata.csv', 'text/csv', null, true);
 
         $this->beAdmin();
-        $this->postJson("/api/v1/volumes/{$id}/metadata", [
-            'file' => $csv,
-            'parser' => ImageCsvParser::class,
-        ])
+        $this
+            ->postJson("/api/v1/volumes/{$id}/metadata", [
+                'file' => $csv,
+                'parser' => ImageCsvParser::class,
+            ])
             ->assertStatus(422);
     }
 

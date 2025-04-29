@@ -59,13 +59,13 @@ class ProjectLabelTreeController extends Controller
     }
 
     /**
-     * Display all label trees that can be used by the specified project.
+     * Display label trees that match the given name and can be used by the specified project.
      *
-     * @api {get} projects/:id/label-trees/available Get all available label trees
+     * @api {get} projects/:id/label-trees/available/:name Get matching label trees
      * @apiGroup Projects
      * @apiName IndexProjectAvailableLabelTrees
      * @apiPermission projectMember
-     * @apiDescription This endpoint lists all label trees that _can be_ used by the project (do not confuse this with the "used label trees" endpoint).
+     * @apiDescription This endpoint lists all matching label trees that _can be_ used by the project (do not confuse this with the "used label trees" endpoint).
      *
      * @apiParam {Number} id The project ID.
      *
@@ -86,19 +86,22 @@ class ProjectLabelTreeController extends Controller
      * ]
      *
      * @param int $id Project ID
+     * @param string $name Labeltree name
      * @return array<int, LabelTree>
      */
-    public function available($id)
+    public function available($id, $name)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
         $public = LabelTree::publicTrees()
             ->select('id', 'name', 'description', 'version_id')
+            ->where('name', 'ilike', "%{$name}%")
             ->with('version')
             ->get();
         $authorized = $project->authorizedLabelTrees()
             ->select('id', 'name', 'description', 'version_id')
+            ->where('name', 'ilike', "%{$name}%")
             ->with('version')
             ->get();
 

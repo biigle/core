@@ -1,7 +1,17 @@
+<template>
+<button
+    class="btn btn-default"
+    title="Get a screenshot of the visible area 𝗣"
+    @click="capture"
+    >
+    <span class="fa fa-camera" aria-hidden="true"></span>
+    Capture screenshot
+</button>
+</template>
 <script>
-import Events from '../../core/events';
-import Messages from '../../core/messages/store';
-import Keyboard from '../../core/keyboard';
+import Events from '@/core/events.js';
+import Messages from '@/core/messages/store.js';
+import Keyboard from '@/core/keyboard.js';
 
 /**
  * A button that produces a screenshot of the map
@@ -9,16 +19,29 @@ import Keyboard from '../../core/keyboard';
  * @type {Object}
  */
 export default {
+    props: {
+        filenames: {
+            type: Array,
+            default: () => [],
+        },
+        currentId: {
+            type: Number,
+            default: -1,
+        },
+        ids: {
+            type: Array,
+            default: () => []
+        }
+    },
     data() {
         return {
-            filenames: {},
-            currentId: null,
-        };
+            filesObj: {}
+        }
     },
     computed: {
         filename() {
             if (this.currentId) {
-                let name = this.filenames[this.currentId].split('.');
+                let name = this.filesObj[this.currentId].split('.');
                 if (name.length > 1) {
                     name[name.length - 1] = 'png';
                 }
@@ -87,7 +110,7 @@ export default {
             try {
                 canvas = this.trimCanvas(canvas);
             } catch (error) {
-                return Vue.Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+                return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
 
             let type = 'image/png';
@@ -101,11 +124,11 @@ export default {
                     arr[i] = binStr.charCodeAt(i);
                 }
 
-                return new Vue.Promise(function (resolve) {
+                return new Promise(function (resolve) {
                     resolve(new Blob([arr], {type: type}));
                 });
             } else {
-                return new Vue.Promise(function (resolve) {
+                return new Promise(function (resolve) {
                     canvas.toBlob(resolve, type);
                 });
             }
@@ -145,21 +168,14 @@ export default {
         setMap(map) {
             this.map = map;
         },
-        updateCurrentId(id) {
-            this.currentId = id;
-        },
     },
     created() {
-        let ids = biigle.$require('annotations.imagesIds');
-        let filenames = {};
-        biigle.$require('annotations.imagesFilenames').forEach((filename, index) => {
-            filenames[ids[index]] = filename;
+        this.filenames.forEach((filename, index) => {
+            this.filesObj[this.ids[index]] = filename;
         });
-        this.filenames = filenames;
-        this.currentId = biigle.$require('annotations.imageId');
-        Events.$on('images.change', this.updateCurrentId);
-        Events.$on('annotations.map.init', this.setMap);
         Keyboard.on('p', this.capture);
+        Events.on('videos.map.init', this.setMap);
+        Events.on('annotations.map.init', this.setMap);
     },
 };
 </script>

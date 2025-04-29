@@ -13,7 +13,9 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Cache;
 use Carbon\Carbon;
+use Illuminate\Testing\TestResponse;
 use Queue;
+use Symfony\Component\HttpFoundation\Response;
 
 class VideoAnnotationControllerTest extends ApiTestCase
 {
@@ -54,10 +56,22 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ->assertStatus(403);
 
         $this->beGuest();
-        $this
+        $response = $this
             ->getJson("/api/v1/videos/{$this->video->id}/annotations")
-            ->assertStatus(200)
-            ->assertJsonFragment(['frames' => [1.0]])
+            ->assertStatus(200);
+
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+        $response = new TestResponse(
+            new Response(
+                $content,
+                $response->baseResponse->getStatusCode(),
+                $response->baseResponse->headers->all()
+            )
+        );
+
+        $response->assertJsonFragment(['frames' => [1.0]])
             ->assertJsonFragment(['points' => [[10, 20]]])
             ->assertJsonFragment(['color' => 'bada55'])
             ->assertJsonFragment(['name' => 'My label']);
@@ -96,19 +110,43 @@ class VideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this
-            ->get("/api/v1/videos/{$this->video->id}/annotations")
-            ->assertStatus(200)
-            ->assertJsonFragment(['points' => [[10, 20]]])
+        $response = $this
+            ->getJson("/api/v1/videos/{$this->video->id}/annotations")
+            ->assertStatus(200);
+
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+        $response = new TestResponse(
+            new Response(
+                $content,
+                $response->baseResponse->getStatusCode(),
+                $response->baseResponse->headers->all()
+            )
+        );
+
+        $response->assertJsonFragment(['points' => [[10, 20]]])
             ->assertJsonFragment(['points' => [[20, 30]]]);
 
         $session->users()->attach($this->editor());
         Cache::flush();
 
-        $this
-            ->get("/api/v1/videos/{$this->video->id}/annotations")
-            ->assertStatus(200)
-            ->assertJsonMissing(['points' => [[10, 20]]])
+        $response = $this
+            ->getJson("/api/v1/videos/{$this->video->id}/annotations")
+            ->assertStatus(200);
+
+        ob_start();
+        $response->sendContent();
+        $content = ob_get_clean();
+        $response = new TestResponse(
+            new Response(
+                $content,
+                $response->baseResponse->getStatusCode(),
+                $response->baseResponse->headers->all()
+            )
+        );
+
+        $response->assertJsonMissing(['points' => [[10, 20]]])
             ->assertJsonFragment(['points' => [[20, 30]]]);
     }
 
@@ -313,6 +351,19 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [null],
+                'frames' => [0.0],
+            ])
+            ->assertStatus(422);
+    }
+
+    public function testStoreValidatePointsArray2()
+    {
+        $this->beEditor();
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[[10, 11]]],
                 'frames' => [0.0],
             ])
             ->assertStatus(422);

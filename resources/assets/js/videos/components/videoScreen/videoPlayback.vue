@@ -1,7 +1,7 @@
 <script>
-import CanvasSource from '../../../annotations/ol/source/Canvas';
+import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '../../../core/keyboard';
+import Keyboard from '@/core/keyboard.js';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
 
@@ -11,6 +11,10 @@ import View from '@biigle/ol/View';
  * @type {Object}
  */
 export default {
+    emits: [
+        'seek',
+        'start-seeking',
+    ],
     data() {
         return {
             playing: false,
@@ -22,6 +26,7 @@ export default {
             minResolution: 0.01,
             // parameter tracking seeking state specific for frame jump, needed because looking for seeking directly leads to error
             seekingFrame: this.seeking,
+            supportsVideoFrameCallback: false,
         };
     },
     methods: {
@@ -68,6 +73,7 @@ export default {
             }));
 
             this.map.getView().fit(this.extent);
+            this.updateMapReadyRevision();
         },
         renderVideo(force) {
             // Drop animation frame if the time has not changed.
@@ -78,15 +84,27 @@ export default {
             }
         },
         startRenderLoop() {
-            let render = () => {
-                this.renderVideo();
-                this.animationFrameId = window.requestAnimationFrame(render);
-            };
+            let render;
+            if (this.supportsVideoFrameCallback) {
+                render = () => {
+                    this.renderVideo();
+                    this.animationFrameId = this.video.requestVideoFrameCallback(render);
+                };
+            } else {
+                render = () => {
+                    this.renderVideo();
+                    this.animationFrameId = window.requestAnimationFrame(render);
+                };
+            }
             render();
             this.map.render();
         },
         stopRenderLoop() {
-            window.cancelAnimationFrame(this.animationFrameId);
+            if (this.supportsVideoFrameCallback) {
+                this.video.cancelVideoFrameCallback(this.animationFrameId);
+            } else {
+                window.cancelAnimationFrame(this.animationFrameId);
+            }
             this.animationFrameId = null;
         },
         setPlaying() {
@@ -121,8 +139,8 @@ export default {
         pause() {
             this.video.pause();
         },
-        emitMapReady() {
-            this.$emit('map-ready', this.map);
+        updateMapReadyRevision() {
+            this.mapReadyRevision += 1;
         },
         attachUpdateVideoLayerListener() {
             // Update the layer (dimensions) if a new video is loaded.
@@ -147,7 +165,7 @@ export default {
             this.seekingFrame = false;
         },
         frameInfoCallback() {
-            let promise = new Vue.Promise((resolve) => {
+            let promise = new Promise((resolve) => {
                 this.video.requestVideoFrameCallback((now, metadata) => {
                     resolve(metadata);
                 })
@@ -233,15 +251,19 @@ export default {
         this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
 
-        let mapPromise = new Vue.Promise((resolve) => {
-            this.$once('map-created', resolve);
+        let mapPromise = new Promise((resolve) => {
+            this.$watch('map', {
+                once: true,
+                handler(map) {
+                    resolve(map);
+                },
+            });
         });
-        let metadataPromise = new Vue.Promise((resolve) => {
+        let metadataPromise = new Promise((resolve) => {
             this.video.addEventListener('loadedmetadata', resolve);
         });
-        Vue.Promise.all([mapPromise, metadataPromise])
+        Promise.all([mapPromise, metadataPromise])
             .then(this.updateVideoLayer)
-            .then(this.emitMapReady)
             .then(this.attachUpdateVideoLayerListener);
 
         Keyboard.on(' ', this.togglePlaying);
@@ -251,6 +273,10 @@ export default {
                 this.videoLayer.setVisible(!hasError);
             }
         });
+
+        if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+            this.supportsVideoFrameCallback = true;
+        }
     },
 };
 </script>

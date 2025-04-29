@@ -57,35 +57,25 @@ class Label extends Model
      */
     public function scopeUsed($query)
     {
-        return $query->where(function ($query) {
-            return $query
-                ->whereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('image_annotation_labels')
-                        ->whereRaw('labels.id = image_annotation_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('image_labels')
-                        ->whereRaw('labels.id = image_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('video_annotation_labels')
-                        ->whereRaw('labels.id = video_annotation_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('video_labels')
-                        ->whereRaw('labels.id = video_labels.label_id');
-                });
-        });
+        return $query->where(fn ($query) => $query
+            ->whereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('image_annotation_labels')
+                ->whereRaw('labels.id = image_annotation_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('image_labels')
+                ->whereRaw('labels.id = image_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('video_annotation_labels')
+                ->whereRaw('labels.id = video_annotation_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('video_labels')
+                ->whereRaw('labels.id = video_labels.label_id')));
     }
 
     /**
      * The parent label if the labels are ordered in a tree-like structure.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, Label>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
      */
     public function parent()
     {
@@ -95,7 +85,7 @@ class Label extends Model
     /**
      * The label tree this label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, Label>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTree, $this>
      */
     public function tree()
     {
@@ -106,7 +96,7 @@ class Label extends Model
      * The child labels of this label if they are ordered in a tree-like
      * structue.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label, $this>
      */
     public function children()
     {

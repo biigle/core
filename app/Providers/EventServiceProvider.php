@@ -29,10 +29,12 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
-        \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
         \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
+        \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
+        \Biigle\Report::observe(new \Biigle\Observers\ReportObserver);
+        \Biigle\User::observe(new \Biigle\Observers\UserObserver);
         \Biigle\Video::observe(new \Biigle\Observers\VideoObserver);
+        \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
     }
 
     /**

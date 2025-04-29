@@ -580,10 +580,13 @@ class VolumeTest extends ModelTestCase
         $disk = Storage::fake('metadata');
         $disk->put($this->model->id.'.csv', 'abc');
         $this->model->metadata_file_path = $this->model->id.'.csv';
+        $this->model->metadata_parser = 'myparser';
         $this->model->save();
         $this->model->deleteMetadata();
         $disk->assertMissing($this->model->id.'.csv');
-        $this->assertNull($this->model->fresh()->metadata_file_path);
+        $this->model->refresh();
+        $this->assertNull($this->model->metadata_file_path);
+        $this->assertNull($this->model->metadata_parser);
     }
 
     public function testGetMetadata()
@@ -596,5 +599,42 @@ class VolumeTest extends ModelTestCase
         $metadata = $this->model->getMetadata();
         $fileMeta = $metadata->getFile('1.jpg');
         $this->assertSame(2.5, $fileMeta->area);
+    }
+
+    public function testExportArea()
+    {
+        $this->model->exportArea = [10, 20, 30, 40];
+        $this->model->save();
+
+        $expect = [10, 20, 30, 40];
+        $this->assertEquals($expect, $this->model->fresh()->exportArea);
+
+        $this->model->exportArea = null;
+        $this->model->save();
+        $this->assertNull($this->model->fresh()->exportArea);
+    }
+
+    public function testExportAreaNotThere()
+    {
+        $this->model->attrs = ['something' => 'else'];
+        $this->assertNull($this->model->exportArea);
+    }
+
+    public function testExportAreaTooShort()
+    {
+        $this->expectException(\Exception::class);
+        $this->model->exportArea = [10];
+    }
+
+    public function testExportInvalidType()
+    {
+        $this->expectException(\TypeError::class);
+        $this->model->exportArea = 'abc';
+    }
+
+    public function testExportAreaNoInteger()
+    {
+        $this->expectException(\Exception::class);
+        $this->model->exportArea = ['10', 20, 30, 40];
     }
 }

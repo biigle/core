@@ -3,7 +3,7 @@
 @section('title', 'Start creating a new volume')
 
 @push('scripts')
-   <script type="text/javascript">
+   <script type="module">
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.parsers', {!! $parsers !!});
    </script>
@@ -46,7 +46,7 @@
                 <p class="text-center">
                     <dropdown tag="span">
                         <button class="btn btn-default btn-lg dropdown-toggle" :class="fileButtonClass" type="button"><i class="fa fa-file-alt"></i> Select a file <span class="caret"></span></button>
-                        <template slot="dropdown">
+                        <template #dropdown>
                             <li v-for="parser in availableParsers">
                                 <a href="#" v-on:click.prevent="selectFile(parser)" v-text="parser.name"></a>
                             </li>
@@ -70,8 +70,8 @@
         </fieldset>
         <div class="form-group">
              <input type="hidden" name="_token" value="{{ csrf_token() }}">
-             <a href="{{ route('project', $project->id) }}" class="btn btn-default" :disabled="loading">Cancel</a>
-             <input type="submit" class="btn btn-success pull-right" value="Continue" :disabled="loading" title="Proceed to enter the volume details">
+             <a href="{{ route('project', $project->id) }}" class="btn btn-default" :disabled="loading || null">Cancel</a>
+             <input type="submit" class="btn btn-success pull-right" value="Continue" :disabled="loading || null" title="Proceed to enter the volume details">
          </div>
       </form>
     </div>

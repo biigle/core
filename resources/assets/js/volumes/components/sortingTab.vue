@@ -1,12 +1,14 @@
 <script>
-import LoaderMixin from '../../core/mixins/loader';
-import SorterStore from '../stores/sorters';
-import {handleErrorResponse} from '../../core/messages/store';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import SorterStore from '../stores/sorters.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * View model for the volume sorting tab
  */
 export default {
+    template: '#sorting-tab-template',
+    emits: ['update'],
     mixins: [LoaderMixin],
     props: {
         volumeId: {
@@ -109,18 +111,20 @@ export default {
         },
     },
     watch: {
-        sequence() {
-            this.$emit('update', this.sequence, this.isActive);
-        },
-        privateSequence() {
-            if (this.activeSorter === this.defaultSorter.id) {
-                localStorage.removeItem(this.sorterStorageKey);
-            } else {
-                localStorage.setItem(this.sorterStorageKey, JSON.stringify({
-                    id: this.activeSorter,
-                    sequence: this.privateSequence,
-                }));
-            }
+        privateSequence: {
+            deep: true,
+            handler() {
+                if (this.activeSorter === this.defaultSorter.id) {
+                    localStorage.removeItem(this.sorterStorageKey);
+                } else {
+                    localStorage.setItem(this.sorterStorageKey, JSON.stringify({
+                        id: this.activeSorter,
+                        sequence: this.privateSequence,
+                    }));
+                }
+
+                this.$emit('update', this.sequence, this.isActive);
+            },
         },
         direction() {
             if (this.direction) {
@@ -128,6 +132,8 @@ export default {
             } else {
                 localStorage.setItem(this.directionStorageKey, this.direction);
             }
+
+            this.$emit('update', this.sequence, this.isActive);
         },
     },
     created() {

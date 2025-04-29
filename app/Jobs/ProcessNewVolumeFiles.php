@@ -56,14 +56,15 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $query = $this->volume->files()
-            ->when($this->only, fn ($query) => $query->whereIn('id', $this->only));
-
         if ($this->volume->isImageVolume()) {
-            $query->eachById([ProcessNewImage::class, 'dispatch']);
+            $this->volume->images()
+                ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
+                ->eachById([ProcessNewImage::class, 'dispatch']);
         } else {
             $queue = config('videos.process_new_video_queue');
-            $query->eachById(fn (Video $v) => ProcessNewVideo::dispatch($v)->onQueue($queue));
+            $this->volume->videos()
+                ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
+                ->eachById(fn (Video $v) => ProcessNewVideo::dispatch($v)->onQueue($queue));
         }
     }
 }

@@ -1,5 +1,5 @@
 <script>
-import snapInteraction from '../../../annotations/snapInteraction.vue';
+import snapInteraction from '@/annotations/ol/snapInteraction.js';
 
 export default {
     mixins: [snapInteraction],

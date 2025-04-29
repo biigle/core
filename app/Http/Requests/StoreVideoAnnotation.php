@@ -41,6 +41,8 @@ class StoreVideoAnnotation extends FormRequest
                 'required_unless:shape_id,'.Shape::wholeFrameId(),
                 'array',
             ],
+            'points.*' => 'array',
+            'points.*.*' => 'numeric',
             'frames' => 'required|array',
             'frames.*' => 'required|numeric|min:0|max:'.$this->video->duration,
             'track' => 'filled|boolean',
@@ -67,18 +69,13 @@ class StoreVideoAnnotation extends FormRequest
                 $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
             }
 
-            $points = $this->input('points', []);
-            $allArrays = array_reduce($points, fn ($c, $i) => $c && is_array($i), true);
-
-            if (!$allArrays) {
-                $validator->errors()->add('points', 'The points must be an array of arrays.');
-            }
 
             if ($this->shouldTrack()) {
                 if ($frameCount !== 1) {
                     $validator->errors()->add('id', 'Only single frame annotations can be tracked.');
                 }
 
+                $points = $this->input('points', []);
                 if (count($points) !== 1) {
                     $validator->errors()->add('id', 'Only single frame annotations can be tracked.');
                 }

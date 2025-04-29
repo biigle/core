@@ -1,15 +1,21 @@
 <script>
-import FiltersStore from '../stores/filters';
-import LoaderMixin from '../../core/mixins/loader';
-import PowerToggle from '../../core/components/powerToggle';
-import {capitalize} from '../../core/utils';
-import {handleErrorResponse} from '../../core/messages/store';
+import FiltersStore from '../stores/filters.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import {capitalize} from '@/core/utils.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 
 /**
  * View model for the volume filter tab
  */
 export default {
+    template: "#filter-tab-template",
+    emits: [
+        'disable-filenames',
+        'enable-filenames',
+        'update',
+    ],
     mixins: [LoaderMixin],
     components: {
         powerToggle: PowerToggle,
@@ -249,8 +255,11 @@ export default {
         },
     },
     watch: {
-        sequence() {
-            this.emitUpdate();
+        sequence: {
+            deep: true,
+            handler() {
+                this.emitUpdate();
+            },
         },
         mode() {
             this.emitUpdate();
@@ -269,6 +278,7 @@ export default {
             }
         },
         rules: {
+            deep: true,
             handler() {
                 if (this.rules.length > 0) {
                     localStorage.setItem(
@@ -279,7 +289,6 @@ export default {
                     localStorage.removeItem(this.rulesStorageKey);
                 }
             },
-            deep: true,
         },
     },
     created() {

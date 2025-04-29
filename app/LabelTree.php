@@ -145,7 +145,7 @@ class LabelTree extends Model
     /**
      * The version of this label tree (if it is a version of a master label tree).
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTreeVersion, LabelTree>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<LabelTreeVersion, $this>
      */
     public function version()
     {
@@ -155,7 +155,7 @@ class LabelTree extends Model
     /**
      * The versions of this (master) label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<LabelTreeVersion>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<LabelTreeVersion, $this>
      */
     public function versions()
     {
@@ -165,7 +165,7 @@ class LabelTree extends Model
     /**
      * The visibility of the label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Visibility, LabelTree>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Visibility, $this>
      */
     public function visibility()
     {
@@ -175,7 +175,7 @@ class LabelTree extends Model
     /**
      * The members of this label tree. Every member has a tree-specific role.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function members()
     {
@@ -187,7 +187,7 @@ class LabelTree extends Model
     /**
      * The labels that belong to this tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Label, $this>
      */
     public function labels()
     {
@@ -265,7 +265,7 @@ class LabelTree extends Model
     /**
      * The projects that are using this label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project, $this>
      */
     public function projects()
     {
@@ -275,7 +275,7 @@ class LabelTree extends Model
     /**
      * The projects that are authorized to use this private label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Project, $this>
      */
     public function authorizedProjects()
     {

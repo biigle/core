@@ -41,23 +41,83 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     public function testAvailable()
     {
         $p = $this->project();
-        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
-        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+
+        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Test']);
+        
+        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Test']);
         $authorized->authorizedProjects()->attach($p->id);
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
+        $authorized2 = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Tree']);
+        $authorized2->authorizedProjects()->attach($p->id);
+        
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'Test']);
         $version = LabelTreeVersionTest::create();
         $public->version_id = $version->id;
         $public->save();
+        $public2 = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'Tree']);
+        $version2 = LabelTreeVersionTest::create();
+        $public2->version_id = $version2->id;
+        $public2->save();
 
-        $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees/available");
+        $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees/available/test");
 
         $this->beUser();
-        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available");
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available/test");
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available");
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available/test");
         $response->assertStatus(200);
+        $this->assertCount(2, $response->decodeResponseJson());
+        $response->assertJsonFragment([[
+            'id' => $authorized->id,
+            'name' => $authorized->name,
+            'description' => $authorized->description,
+            'version' => null,
+        ]]);
+        $response->assertJsonFragment([[
+            'id' => $public->id,
+            'name' => $public->name,
+            'description' => $public->description,
+            'version' => $version->toArray(),
+        ]]);
+        $response->assertJsonMissing([[
+            'id' => $private->id,
+            'name' => $private->name,
+            'description' => $private->description,
+            'version' => null,
+        ]]);
+    }
+
+    public function testAvailableFuzzySearch()
+    {
+        $p = $this->project();
+
+        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'My Test']);
+        
+        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'My Test']);
+        $authorized->authorizedProjects()->attach($p->id);
+        $authorized2 = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Tree']);
+        $authorized2->authorizedProjects()->attach($p->id);
+        
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'My Test']);
+        $version = LabelTreeVersionTest::create();
+        $public->version_id = $version->id;
+        $public->save();
+        $public2 = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'Tree']);
+        $version2 = LabelTreeVersionTest::create();
+        $public2->version_id = $version2->id;
+        $public2->save();
+
+        $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees/available/test");
+
+        $this->beUser();
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available/test");
+        $response->assertStatus(403);
+
+        $this->beGuest();
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available/test");
+        $response->assertStatus(200);
+        $this->assertCount(2, $response->decodeResponseJson());
         $response->assertJsonFragment([[
             'id' => $authorized->id,
             'name' => $authorized->name,

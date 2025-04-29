@@ -3,7 +3,7 @@
 @section('title', 'Finish creating a new volume')
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.name', '{!! $oldName !!}');
         biigle.$declare('volumes.url', '{!! $oldUrl !!}');
         biigle.$declare('volumes.handle', `{!! $oldHandle !!}`);
@@ -36,7 +36,7 @@
                 <legend class="clearfix">
                     Choose a file source
                     <span class="text-muted pull-right">
-                        <span v-text="fileCountText">0</span> files
+                        <span v-if="false">0</span><span v-text="fileCountText"></span> files
                     </span>
                 </legend>
                  <div class="form-group">
@@ -67,7 +67,7 @@
                                     <button class="btn btn-default dropdown-toggle" v-bind:class="diskButtonClass" type="button" title="Select a storage disk" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
                                         <i class="fa fa-database"></i> Storage disk <span class="caret"></span>
                                     </button>
-                                    <template slot="dropdown">
+                                    <template #dropdown>
                                         @foreach ($disks as $id => $name)
                                             <li>
                                                  <a title="Choose files from the '{{$name}}' storage disk" href="#" v-on:click.prevent="selectStorageDisk('{{$id}}')">{{$name}}</a>
@@ -243,10 +243,10 @@
             <div class="form-group">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="_method" value="PUT">
-                <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading" title="Discard data and return to the previous step">Cancel</button>
+                <button type="submit" form="cancel-pending-volume" class="btn btn-default" :disabled="loading || null" title="Discard data and return to the previous step">Cancel</button>
                 <button v-if="!initialized" type="button" class="btn btn-success pull-right" disabled>Create</button>
-                <input v-cloak v-if="importAnnotations || importFileLabels" type="submit" class="btn btn-success pull-right" value="Create and continue" :disabled="cannotSubmit" title="Create the volume and continue to import more metadata">
-                <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit" title="Create the volume">
+                <input v-cloak v-if="importAnnotations || importFileLabels" type="submit" class="btn btn-success pull-right" value="Create and continue" :disabled="cannotSubmit || null" title="Create the volume and continue to import more metadata">
+                <input v-cloak v-else type="submit" class="btn btn-success pull-right" value="Create" :disabled="cannotSubmit || null" title="Create the volume">
             </div>
         </form>
         <form id="cancel-pending-volume" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}") }}" v-on:submit="startLoading">

@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import { MAX_FAVOURITES } from '../constants';
+
 /**
  * A component that displays a single label of a label tree.
  *
@@ -41,6 +43,14 @@
  */
 export default {
     name: 'label-tree-label',
+    emits: [
+        'add-favourite',
+        'delete',
+        'deselect',
+        'remove-favourite',
+        'save',
+        'select',
+    ],
     data() {
         return {
             hover: false,
@@ -125,8 +135,8 @@ export default {
         showEditButton() {
             return this.editable && this.hover && !this.editing;
         },
-        actualPosition(){
-            return this.position + 1
+        actualPosition() {
+            return (this.position + 1) % MAX_FAVOURITES;
         }
     },
     methods: {

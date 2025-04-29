@@ -7,13 +7,13 @@ import Modify from '@biigle/ol/interaction/Modify';
 import Polygon from '@biigle/ol/geom/Polygon';
 import {always} from '@biigle/ol/events/condition';
 import {createEditingStyle} from '@biigle/ol/style/Style';
-import {difference} from '../geom/flat/difference';
+import {difference} from '../geom/flat/difference.js';
 import {fromCircle} from '@biigle/ol/geom/Polygon';
-import {getNewSketchPointRadius, getNewSketchPointRadiusByPressure} from './PolygonBrush';
+import {getNewSketchPointRadius, getNewSketchPointRadiusByPressure} from './PolygonBrush.js';
 import {ModifyEvent} from '@biigle/ol/interaction/Modify';
 import {polygon as turfPolygon} from '@turf/helpers';
 import {shiftKeyOnly} from '@biigle/ol/events/condition';
-import {union} from '../geom/flat/union';
+import {union} from '../geom/flat/union.js';
 
 export const ModifyEventType = {
   MODIFYSTART: 'modifystart',

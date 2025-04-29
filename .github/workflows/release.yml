@@ -48,8 +48,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=biigle-docker
+          cache-to: type=gha,mode=max,scope=biigle-docker
 
   build-and-push-worker:
     runs-on: ubuntu-latest
@@ -86,8 +86,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=biigle-docker
+          cache-to: type=gha,mode=max,scope=biigle-docker
 
   build-and-push-web:
     runs-on: ubuntu-latest
@@ -124,5 +124,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=biigle-docker
+          cache-to: type=gha,mode=max,scope=biigle-docker

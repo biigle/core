@@ -69,6 +69,13 @@ class Video extends VolumeFile
     const ERROR_TOO_LARGE = 5;
 
     /**
+     * Error if moov atom is not located at beginning.
+     *
+     * @var int
+     */
+    const ERROR_INVALID_MOOV_POS = 6;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
@@ -108,7 +115,7 @@ class Video extends VolumeFile
     /**
      * The annotations that belong to this video.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoAnnotation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoAnnotation, $this>
      */
     public function annotations()
     {
@@ -191,7 +198,7 @@ class Video extends VolumeFile
     /**
      * The labels, this video got attached by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<VideoLabel, $this>
      */
     public function labels()
     {

@@ -31,7 +31,7 @@ class ImageAnnotationLabel extends AnnotationLabel
     /**
      * The annotation, this annotation label belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<ImageAnnotation, ImageAnnotationLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<ImageAnnotation, $this>
      */
     public function annotation()
     {

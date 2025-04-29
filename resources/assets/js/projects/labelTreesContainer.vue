@@ -1,10 +1,10 @@
 <script>
-import Events from '../core/events';
-import LabelTreeList from './components/labelTreeList';
-import LoaderMixin from '../core/mixins/loader';
-import ProjectsApi from '../core/api/projects';
-import Typeahead from '../core/components/typeahead';
-import {handleErrorResponse} from '../core/messages/store';
+import Events from '@/core/events.js';
+import LabelTreeList from './components/labelTreeList.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import ProjectsApi from '@/core/api/projects.js';
+import Typeahead from '@/core/components/typeahead.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],
@@ -19,11 +19,12 @@ export default {
             labelTrees: [],
             fetchedAvailableLabelTrees: false,
             availableLabelTrees: [],
+            oldTreeName: "",
         };
     },
     computed: {
         hasLabelTrees() {
-            return this.labelTrees.length > 0;
+            return this.labelTreesCount > 0;
         },
         labelTreeIds() {
             return this.labelTrees.map((tree) => tree.id);
@@ -33,15 +34,21 @@ export default {
                 (tree) => this.labelTreeIds.indexOf(tree.id) === -1
             );
         },
+        labelTreesCount() {
+            return this.labelTrees.length;
+        },
     },
     methods: {
-        fetchAvailableLabelTrees() {
-            if (!this.fetchedAvailableLabelTrees) {
+        fetchAvailableLabelTrees(treeName) {
+            if (this.oldTreeName.trim() != treeName.trim()) {
                 this.fetchedAvailableLabelTrees = true;
                 this.startLoading();
-                ProjectsApi.queryAvailableLabelTrees({id: this.project.id})
+                ProjectsApi.queryAvailableLabelTrees({ id: this.project.id, name: treeName })
                     .then(this.availableLabelTreesFetched, handleErrorResponse)
-                    .finally(this.finishLoading);
+                    .finally(() => {
+                        this.finishLoading();
+                        this.oldTreeName = treeName;
+                    });
             }
         },
         availableLabelTreesFetched(response) {
@@ -87,8 +94,8 @@ export default {
         },
     },
     watch: {
-        labelTrees(labelTrees) {
-            Events.$emit('project.label-trees.count', labelTrees.length)
+        labelTreesCount(count) {
+            Events.emit('project.label-trees.count', count);
         },
     },
     created() {
