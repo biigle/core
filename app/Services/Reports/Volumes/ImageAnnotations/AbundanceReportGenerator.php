@@ -240,7 +240,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         // Add all possible labels because the parent to which the child labels should
         // be aggregated may not have "own" annotations. Unused labels are filtered
         // later.
-        $originalLabels = $labels;
         $addLabels = Label::whereIn('label_tree_id', $labels->pluck('label_tree_id')->unique())
             ->whereNotIn('id', $labels->pluck('id'))
             ->when($this->isRestrictedToLabels(), function ($query) {
@@ -305,22 +304,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
         // Remove all labels that did not occur (as parent) in the rows.
         $presentLabels = $presentLabels->unique()->flip();
-        $usedParentLabels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
-
-        // All labels are also used here, but because the option was not explicitly set, it doesn't enforce to show all labels.
-        if ($this->shouldSeparateUsers()) {
-            // Get unused (empty) labels
-            $emptyLabels = $originalLabels
-                ->filter(fn ($labels) => !$labels->isUsed())
-                ->when($this->isRestrictedToLabels(), fn ($labels) =>
-                    $labels->whereIn('id', $this->getOnlyLabels()));
-
-            // Aggregate empty child labels
-            $emptyLabels = $emptyLabels->filter(fn ($label) => $emptyLabels->where('id', $label->parent_id)->isEmpty());
-            $labels = $usedParentLabels->merge($emptyLabels);
-        } else {
-            $labels = $usedParentLabels;
-        }
+        $labels = $labels->filter(fn ($label) => $presentLabels->has($label->id));
 
         return [$rows, $labels];
     }
