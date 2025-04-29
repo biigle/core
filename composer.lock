@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aad32bf72d42be6ef45c524edb3f8c86",
+    "content-hash": "eefb86d3af8ab77c61207dac322b8d91",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -213,18 +213,19 @@
         },
         {
             "name": "biigle/ananas",
-            "version": "dev-vue3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ananas.git",
-                "reference": "2ee4d6746b237cb48d25e9ae6866bdd041a9e6a5"
+                "reference": "121188f9a07a439bdeacf744de1974fc662aabb6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ananas/zipball/2ee4d6746b237cb48d25e9ae6866bdd041a9e6a5",
-                "reference": "2ee4d6746b237cb48d25e9ae6866bdd041a9e6a5",
+                "url": "https://api.github.com/repos/biigle/ananas/zipball/121188f9a07a439bdeacf744de1974fc662aabb6",
+                "reference": "121188f9a07a439bdeacf744de1974fc662aabb6",
                 "shasum": ""
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -251,7 +252,7 @@
                 "issues": "https://github.com/biigle/ananas/issues",
                 "source": "https://github.com/biigle/ananas"
             },
-            "time": "2025-03-28T14:53:26+00:00"
+            "time": "2025-04-29T07:38:42+00:00"
         },
         {
             "name": "biigle/auth-lslogin",
@@ -362,18 +363,19 @@
         },
         {
             "name": "biigle/color-sort",
-            "version": "dev-vue3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/color-sort.git",
-                "reference": "b4c649b4ed749971b244c2d2fc7a113d9f4ba61a"
+                "reference": "4baa0dd26f1a29cb26fb1da93754b2c26dc6df79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/color-sort/zipball/b4c649b4ed749971b244c2d2fc7a113d9f4ba61a",
-                "reference": "b4c649b4ed749971b244c2d2fc7a113d9f4ba61a",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/4baa0dd26f1a29cb26fb1da93754b2c26dc6df79",
+                "reference": "4baa0dd26f1a29cb26fb1da93754b2c26dc6df79",
                 "shasum": ""
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -400,7 +402,7 @@
                 "issues": "https://github.com/biigle/color-sort/issues",
                 "source": "https://github.com/biigle/color-sort"
             },
-            "time": "2025-04-07T09:19:35+00:00"
+            "time": "2025-04-29T07:37:18+00:00"
         },
         {
             "name": "biigle/demo",
@@ -497,18 +499,19 @@
         },
         {
             "name": "biigle/geo",
-            "version": "dev-vue3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/geo.git",
-                "reference": "9770272b4323f9f747421df8a02418c6a2e3dcdd"
+                "reference": "74e01924bfb2f9428815a1ce98b83cc02b242b27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/geo/zipball/9770272b4323f9f747421df8a02418c6a2e3dcdd",
-                "reference": "9770272b4323f9f747421df8a02418c6a2e3dcdd",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/74e01924bfb2f9428815a1ce98b83cc02b242b27",
+                "reference": "74e01924bfb2f9428815a1ce98b83cc02b242b27",
                 "shasum": ""
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -535,7 +538,7 @@
                 "issues": "https://github.com/biigle/geo/issues",
                 "source": "https://github.com/biigle/geo"
             },
-            "time": "2025-04-04T13:58:48+00:00"
+            "time": "2025-04-29T07:39:47+00:00"
         },
         {
             "name": "biigle/ifdo",
@@ -753,16 +756,16 @@
         },
         {
             "name": "biigle/largo",
-            "version": "dev-vue3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "483bad9714ca222c0efab994b7bb984958fcefa2"
+                "reference": "339b5ad4080e28016a672a7bc66932757ce5d0a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/483bad9714ca222c0efab994b7bb984958fcefa2",
-                "reference": "483bad9714ca222c0efab994b7bb984958fcefa2",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/339b5ad4080e28016a672a7bc66932757ce5d0a2",
+                "reference": "339b5ad4080e28016a672a7bc66932757ce5d0a2",
                 "shasum": ""
             },
             "require": {
@@ -770,6 +773,7 @@
                 "meyfa/php-svg": "^0.14.6",
                 "php-ffmpeg/php-ffmpeg": "^0.14 || ^0.19 || ^1.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -796,22 +800,23 @@
                 "issues": "https://github.com/biigle/largo/issues",
                 "source": "https://github.com/biigle/largo"
             },
-            "time": "2025-03-21T15:11:12+00:00"
+            "time": "2025-04-29T07:37:36+00:00"
         },
         {
             "name": "biigle/laserpoints",
-            "version": "dev-vue3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laserpoints.git",
-                "reference": "631cba8a08a3a3b239a44588c29bd98d4d4410d3"
+                "reference": "fbbb6b2144e6adf28b045ca9986d9a3f2e40495c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/631cba8a08a3a3b239a44588c29bd98d4d4410d3",
-                "reference": "631cba8a08a3a3b239a44588c29bd98d4d4410d3",
+                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/fbbb6b2144e6adf28b045ca9986d9a3f2e40495c",
+                "reference": "fbbb6b2144e6adf28b045ca9986d9a3f2e40495c",
                 "shasum": ""
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -838,22 +843,23 @@
                 "issues": "https://github.com/biigle/laserpoints/issues",
                 "source": "https://github.com/biigle/laserpoints"
             },
-            "time": "2025-04-04T12:34:05+00:00"
+            "time": "2025-04-29T07:36:38+00:00"
         },
         {
             "name": "biigle/magic-sam",
-            "version": "dev-vue3",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/magic-sam.git",
-                "reference": "c94522e15db55fc54de7b2a6d61fc61835db67dc"
+                "reference": "ca40b278ababef21d89cf9d185c201cd8d7dc954"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/magic-sam/zipball/c94522e15db55fc54de7b2a6d61fc61835db67dc",
-                "reference": "c94522e15db55fc54de7b2a6d61fc61835db67dc",
+                "url": "https://api.github.com/repos/biigle/magic-sam/zipball/ca40b278ababef21d89cf9d185c201cd8d7dc954",
+                "reference": "ca40b278ababef21d89cf9d185c201cd8d7dc954",
                 "shasum": ""
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -887,25 +893,26 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2025-03-28T14:20:47+00:00"
+            "time": "2025-04-29T07:36:32+00:00"
         },
         {
             "name": "biigle/maia",
-            "version": "dev-vue3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "464cdca771ba3362f8366406cf5c000d3f590e48"
+                "reference": "dd13d0d08bd414cb47ab650283be4edd452f608d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/464cdca771ba3362f8366406cf5c000d3f590e48",
-                "reference": "464cdca771ba3362f8366406cf5c000d3f590e48",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/dd13d0d08bd414cb47ab650283be4edd452f608d",
+                "reference": "dd13d0d08bd414cb47ab650283be4edd452f608d",
                 "shasum": ""
             },
             "require": {
-                "biigle/largo": "^2.25 || dev-master || dev-vue3"
+                "biigle/largo": "^2.25 || dev-master"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -932,7 +939,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2025-04-08T14:39:09+00:00"
+            "time": "2025-04-29T07:41:23+00:00"
         },
         {
             "name": "biigle/metadata-coco",
@@ -1043,18 +1050,19 @@
         },
         {
             "name": "biigle/module",
-            "version": "dev-vue3",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/module.git",
-                "reference": "0c5bb2617467606e8a4c8c401f148f688a122950"
+                "reference": "2902eb7bf19e1658a903ff2721d4d5f34994d6b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/module/zipball/0c5bb2617467606e8a4c8c401f148f688a122950",
-                "reference": "0c5bb2617467606e8a4c8c401f148f688a122950",
+                "url": "https://api.github.com/repos/biigle/module/zipball/2902eb7bf19e1658a903ff2721d4d5f34994d6b0",
+                "reference": "2902eb7bf19e1658a903ff2721d4d5f34994d6b0",
                 "shasum": ""
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -1081,7 +1089,7 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2025-03-21T15:11:41+00:00"
+            "time": "2025-04-29T07:37:58+00:00"
         },
         {
             "name": "biigle/newsletter",
@@ -1131,22 +1139,23 @@
         },
         {
             "name": "biigle/user-disks",
-            "version": "dev-vue3",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/user-disks.git",
-                "reference": "de2330d71f73ff0d84968cd079f60bd71193e6c6"
+                "reference": "36ec710ffc1346e7f424cb77c017309dd2bf1175"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/user-disks/zipball/de2330d71f73ff0d84968cd079f60bd71193e6c6",
-                "reference": "de2330d71f73ff0d84968cd079f60bd71193e6c6",
+                "url": "https://api.github.com/repos/biigle/user-disks/zipball/36ec710ffc1346e7f424cb77c017309dd2bf1175",
+                "reference": "36ec710ffc1346e7f424cb77c017309dd2bf1175",
                 "shasum": ""
             },
             "require": {
                 "league/flysystem-aws-s3-v3": "^3.12",
                 "league/flysystem-read-only": "^3.3"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -1180,25 +1189,26 @@
                 "issues": "https://github.com/biigle/user-disks/issues",
                 "source": "https://github.com/biigle/user-disks"
             },
-            "time": "2025-03-25T14:13:59+00:00"
+            "time": "2025-04-29T07:37:53+00:00"
         },
         {
             "name": "biigle/user-storage",
-            "version": "dev-vue3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/user-storage.git",
-                "reference": "8eba84eb859717e803be496d38c462aeb45d93e3"
+                "reference": "af7d4e791d63082c89e8b4952cce0668c0b2e0b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/user-storage/zipball/8eba84eb859717e803be496d38c462aeb45d93e3",
-                "reference": "8eba84eb859717e803be496d38c462aeb45d93e3",
+                "url": "https://api.github.com/repos/biigle/user-storage/zipball/af7d4e791d63082c89e8b4952cce0668c0b2e0b9",
+                "reference": "af7d4e791d63082c89e8b4952cce0668c0b2e0b9",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/psr7": "^2.6"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -1228,7 +1238,7 @@
                 "issues": "https://github.com/biigle/user-storage/issues",
                 "source": "https://github.com/biigle/user-storage"
             },
-            "time": "2025-03-25T14:05:28+00:00"
+            "time": "2025-04-29T07:37:44+00:00"
         },
         {
             "name": "brick/math",
