@@ -1,17 +1,15 @@
-# This file is just used to get security alerts from GitHub. Make sure the versions match
-# in worker.dockerfile.
 numpy==2.1.*
-opencv-contrib-python-headless==4.8.1.78
+opencv-contrib-python-headless==4.11.0.*
 scipy==1.13.*
-scikit-learn==1.2.*
-matplotlib==3.6.*
+scikit-learn==1.4.*
+matplotlib==3.8.*
 PyExcelerate==0.6.7
 Pillow==10.3.0
-Shapely==1.8.1
+Shapely==2.0.*
+pandas==2.2.*
 # Torch is included in the gpu-worker Docker image.
 #torch==2.6.*
 #torchvision==0.21.*
-pandas==1.5.3
 
 # Special gpu-worker requirements.
 mmcv==2.1.*
