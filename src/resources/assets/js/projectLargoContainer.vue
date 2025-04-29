@@ -1,7 +1,7 @@
 <script>
-import LargoContainer from './mixins/largoContainer';
-import ProjectsApi from './api/projects';
-import {IMAGE_ANNOTATION} from './constants';
+import LargoContainer from './mixins/largoContainer.vue';
+import ProjectsApi from './api/projects.js';
+import {IMAGE_ANNOTATION} from './constants.js';
 
 /**
  * View model for the main Largo container (for projects)
@@ -16,12 +16,11 @@ export default {
     },
     methods: {
         queryAnnotations(label, filters = []) {
-
             let params = { ...filters, id: this.projectId, label_id: label.id };
-
             let imagePromise = ProjectsApi.queryImageAnnotations(params);
             let videoPromise = ProjectsApi.queryVideoAnnotations(params);
-            return Vue.Promise.all([imagePromise, videoPromise]);
+
+            return Promise.all([imagePromise, videoPromise]);
         },
         performSave(payload) {
             return ProjectsApi.save({id: this.projectId}, payload);

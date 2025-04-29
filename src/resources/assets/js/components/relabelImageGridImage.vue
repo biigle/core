@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import AnnotationPatch from '../mixins/annotationPatch';
-import {ImageGridImage} from '../import';
+import AnnotationPatch from '../mixins/annotationPatch.vue';
+import {ImageGridImage} from '../import.js';
 
 /**
  * A variant of the image grid image used for the relabel step of Largo

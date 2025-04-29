@@ -1,7 +1,7 @@
 <script>
-import ImageGrid from './components/catalogImageGrid';
-import LabelsApi from './api/labels';
-import LargoContainer from './mixins/largoContainer';
+import ImageGrid from './components/catalogImageGrid.vue';
+import LabelsApi from './api/labels.js';
+import LargoContainer from './mixins/largoContainer.vue';
 
 /**
  * View model for the annotation catalog
@@ -21,7 +21,7 @@ export default {
             let imagePromise = LabelsApi.queryImageAnnotations({id: label.id});
             let videoPromise = LabelsApi.queryVideoAnnotations({id: label.id});
 
-            return Vue.Promise.all([imagePromise, videoPromise]);
+            return Promise.all([imagePromise, videoPromise]);
         },
         showOutlines() {
             this.showAnnotationOutlines = true;

@@ -13,11 +13,14 @@
 </template>
 
 <script>
-import Settings from '../stores/settings';
-import {PowerToggle} from '../import';
-import { Keyboard } from '../import';
+import Settings from '../stores/settings.js';
+import {PowerToggle} from '../import.js';
+import { Keyboard } from '../import.js';
 
 export default {
+    emits: [
+        'change-outlines',
+    ],
     components: {
         PowerToggle
     },

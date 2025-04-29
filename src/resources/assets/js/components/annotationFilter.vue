@@ -74,7 +74,7 @@
             <div class="form-group filter-select largo-filter-select">
                 <button
                     type="button"
-                    :disabled="!selectedFilterValue"
+                    :disabled="!selectedFilterValue || null"
                     class="btn btn-default btn-block"
                     title="Add the selected filter rule"
                     @click="addFilter"
@@ -91,6 +91,11 @@ import ProjectsApi from "../api/projects";
 import VolumesApi from "../api/volumes";
 
 export default {
+    emits: [
+        'set-union-logic',
+        'reset-filters',
+        'add-filter',
+    ],
     props: {
         union: {
             type: Boolean,

@@ -1,21 +1,21 @@
 <script>
-import DismissImageGrid from '../components/dismissImageGrid';
-import RelabelImageGrid from '../components/relabelImageGrid';
-import SettingsTab from '../components/settingsTab';
-import SortingTab from '../components/sortingTab';
-import FilteringTab from '../components/filteringTab';
-import {Echo} from '../import';
-import {Events} from '../import';
-import {handleErrorResponse} from '../import';
-import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants';
-import {LabelTrees} from '../import';
-import {LoaderMixin} from '../import';
-import {Messages} from '../import';
-import {PowerToggle} from '../import';
-import {SidebarTab} from '../import';
-import {Sidebar} from '../import';
+import DismissImageGrid from '../components/dismissImageGrid.vue';
+import RelabelImageGrid from '../components/relabelImageGrid.vue';
+import SettingsTab from '../components/settingsTab.vue';
+import SortingTab from '../components/sortingTab.vue';
+import FilteringTab from '../components/filteringTab.vue';
+import {Echo} from '../import.js';
+import {Events} from '../import.js';
+import {handleErrorResponse} from '../import.js';
+import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants.js';
+import {LabelTrees} from '../import.js';
+import {LoaderMixin} from '../import.js';
+import {Messages} from '../import.js';
+import {PowerToggle} from '../import.js';
+import {SidebarTab} from '../import.js';
+import {Sidebar} from '../import.js';
 import LabelList from '../components/labelList.vue';
-import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab';
+import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab.vue';
 
 /**
  * Mixin for largo view models
@@ -106,6 +106,9 @@ export default {
 
             return [];
         },
+        annotationsCount() {
+            return this.annotations.length;
+        },
         sortedAnnotations() {
             let annotations = this.annotations;
 
@@ -148,6 +151,9 @@ export default {
         },
         dismissedAnnotations() {
             return this.allAnnotations.filter(item => item.dismissed);
+        },
+        dismissedAnnotationsCount() {
+            return this.dismissedAnnotations.length;
         },
         annotationsWithNewLabel() {
             return this.dismissedAnnotations.filter(item => !!item.newLabel);
@@ -232,16 +238,16 @@ export default {
             let activeFilters = this.activeFilters;
 
             if (!this.annotationsCache.hasOwnProperty(label.id)) {
-                Vue.set(this.annotationsCache, label.id, []);
+                this.annotationsCache[label.id] = [];
                 this.startLoading();
                 promise1 = this.queryAnnotations(label)
                     .then(
                         (response) => this.gotAnnotations(label, response),
                         handleErrorResponse
                     )
-                    .then(a => Vue.set(this.annotationsCache, label.id, a))
+                    .then(a => this.annotationsCache[label.id] = a)
             } else {
-                promise1 = Vue.Promise.resolve();
+                promise1 = Promise.resolve();
             }
 
             if (this.sortingKey === SORT_KEY.SIMILARITY) {
@@ -251,7 +257,7 @@ export default {
                 // Reload sequence for new label.
                 promise2 = this.updateSortKey(this.sortingKey);
             } else {
-                promise2 = Vue.Promise.resolve();
+                promise2 = Promise.resolve();
             }
 
             if (activeFilters.length > 0) {
@@ -267,7 +273,7 @@ export default {
                 }
             }
 
-            Vue.Promise.all([promise1, promise2, filterPromise]).finally(this.finishLoading);
+            Promise.all([promise1, promise2, filterPromise]).finally(this.finishLoading);
         },
         gotAnnotations(label, response) {
 
@@ -320,7 +326,7 @@ export default {
                 )
                 .then(a => a.map(ann => [ann.id, true]))
                 .then(a => new Map(a))
-                .then(a => Vue.set(this.filtersCache, filtersCacheKey, a));
+                .then(a => this.filtersCache[filtersCacheKey] = a);
         },
         initAnnotations(label, annotations, type) {
             return Object.keys(annotations)
@@ -519,12 +525,12 @@ export default {
         fetchSortingSequence(key, labelId) {
             const sequence = this.sortingSequenceCache?.[labelId]?.[key];
             if (sequence) {
-                return Vue.Promise.resolve(sequence);
+                return Promise.resolve(sequence);
             }
 
             let promise;
             if (!this.selectedLabel) {
-                promise = Vue.Promise.resolve([]);
+                promise = Promise.resolve([]);
             } else if (key === SORT_KEY.OUTLIER) {
                 promise = this.querySortByOutlier(labelId)
                     .then(response => response.body);
@@ -533,14 +539,14 @@ export default {
                 return this.querySortBySimilarity(labelId, this.similarityReference)
                     .then(response => response.body);
             } else {
-                promise = Vue.Promise.resolve([]);
+                promise = Promise.resolve([]);
             }
 
             return promise.then(ids => this.putSortingSequenceToCache(key, labelId, ids));
         },
         putSortingSequenceToCache(key, labelId, sequence) {
             if (!this.sortingSequenceCache[labelId]) {
-                Vue.set(this.sortingSequenceCache, labelId, {});
+                this.sortingSequenceCache[labelId] = {};
             }
 
             this.sortingSequenceCache[labelId][key] = sequence;
@@ -644,14 +650,14 @@ export default {
         }
     },
     watch: {
-        annotations(annotations) {
-            Events.$emit('annotations-count', annotations.length);
+        annotationsCount(count) {
+            Events.emit('annotations-count', count);
         },
-        dismissedAnnotations(annotations) {
-            Events.$emit('dismissed-annotations-count', annotations.length);
+        dismissedAnnotationsCount(count) {
+            Events.emit('dismissed-annotations-count', count);
         },
         step(step) {
-            Events.$emit('step', step);
+            Events.emit('step', step);
         },
         selectedLabel(_, oldLabel) {
             if (this.isInDismissStep) {
@@ -665,11 +671,14 @@ export default {
         union() {
             this.handleSelectedFilters();
         },
-        activeFilters() {
-            if (this.isInDismissStep) {
-                this.handleSelectedFilters();
-            }
-        }
+        activeFilters: {
+            deep: true,
+            handler() {
+                if (this.isInDismissStep) {
+                    this.handleSelectedFilters();
+                }
+            },
+        },
     },
     created() {
         this.user = biigle.$require('largo.user');

@@ -1,3 +1,5 @@
+import {Resource} from '../import.js';
+
 /**
  * Resource for Largo operations on volumes.
  *
@@ -15,10 +17,8 @@
  * Get example annotations for a specific label (other than queryAnnotations this may
  * return examples from other labels as well):
  * resource.queryExampleAnnotations({id: 1, label_id: 124}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/volumes{/id}/largo', {}, {
+export default Resource('api/v1/volumes{/id}/largo', {}, {
     queryImageAnnotations: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/image-annotations/filter/label{/label_id}',

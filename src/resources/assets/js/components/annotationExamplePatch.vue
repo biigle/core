@@ -1,6 +1,9 @@
+<template>
+    <img class="largo-example-annotation" :src="src" :title="title" @error="showEmptyImage">
+</template>
 <script>
-import AnnotationPatch from '../mixins/annotationPatch';
-import {IMAGE_ANNOTATION} from '../constants';
+import AnnotationPatch from '../mixins/annotationPatch.vue';
+import {IMAGE_ANNOTATION} from '../constants.js';
 
 /**
  * An example annotation patch image.

@@ -35,6 +35,7 @@
 import AnnotationFilter from "../components/annotationFilter.vue";
 
 export default {
+    emits: ['remove-filter'],
     components: {
         AnnotationFilter
     },

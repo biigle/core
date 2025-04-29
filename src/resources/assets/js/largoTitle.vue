@@ -1,5 +1,5 @@
 <script>
-import {Events} from './import';
+import {Events} from './import.js';
 
 /**
  * The dynamic part of the Largo breadcrumbs in the navbar
@@ -39,9 +39,9 @@ export default {
         },
     },
     created() {
-        Events.$on('annotations-count', this.updateCount);
-        Events.$on('dismissed-annotations-count', this.updateDismissedCount);
-        Events.$on('step', this.updateStep);
+        Events.on('annotations-count', this.updateCount);
+        Events.on('dismissed-annotations-count', this.updateDismissedCount);
+        Events.on('step', this.updateStep);
     },
 };
 </script>

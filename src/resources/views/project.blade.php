@@ -3,8 +3,8 @@
 @section('title', $project->name)
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
-    <script type="text/javascript">
+    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}
+    <script type="module">
         biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.projectId', {!! $project->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
@@ -16,12 +16,12 @@
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/largo/styles/main.css') }}" rel="stylesheet">
+    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/sass/main.scss'], 'vendor/largo')}}
 @endpush
 
 @section('navbar')
 <div class="navbar-text navbar-largo-breadcrumbs">
-    <a href="{{route('project', $project->id)}}" class="navbar-link" title="Show project {{$project->name}}">{{$project->name}}</a> / <span id="largo-title">Largo / <strong v-if="isInDismissStep">dismiss existing annotations</strong><strong v-cloak v-else>relabel dismissed annotations</strong> <small>(<span v-text="shownCount">0</span>&nbsp;annotations)</small></span>
+    <a href="{{route('project', $project->id)}}" class="navbar-link" title="Show project {{$project->name}}">{{$project->name}}</a> / <span id="largo-title">Largo / <strong v-if="isInDismissStep">dismiss existing annotations</strong><strong v-cloak v-else>relabel dismissed annotations</strong> <small>(<span v-if="false">0</span><span v-text="shownCount"></span>&nbsp;annotations)</small></span>
 </div>
 @endsection
 

@@ -1,6 +1,20 @@
+<template>
+    <div class="sidebar-tab__section">
+        <power-button
+            :active="isShown"
+            title-off="Show example annotations"
+            title-on="Hide example annotations"
+            @on="show"
+            @off="hide"
+            >
+                Example Annotations
+            </power-button>
+    </div>
+</template>
+
 <script>
-import {Events} from '../import';
-import {PowerToggle} from '../import';
+import {Events} from '../import.js';
+import {PowerToggle} from '../import.js';
 
 /**
  * The plugin component to change the settings whether to show the example annotations.
@@ -34,7 +48,7 @@ export default {
     },
     watch: {
         isShown(shown) {
-            Events.$emit('settings.exampleAnnotations', shown);
+            Events.emit('settings.exampleAnnotations', shown);
         },
     },
     created() {

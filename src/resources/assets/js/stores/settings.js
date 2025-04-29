@@ -1,4 +1,4 @@
-import {Settings} from '../import';
+import {Settings} from '../import.js';
 
 /**
  * Store for largo settings
@@ -9,8 +9,6 @@ let defaults = {
 };
 
 export default new Settings({
-    data: {
-        storageKey: 'biigle.largo.settings',
-        defaults: defaults,
-    },
+    storageKey: 'biigle.largo.settings',
+    defaults: defaults,
 });

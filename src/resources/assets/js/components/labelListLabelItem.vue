@@ -11,6 +11,10 @@
 <script>
 
 export default {
+    emits: [
+        'select',
+        'deselect',
+    ],
     props: {
         label: {
             type: Object,
