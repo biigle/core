@@ -1,11 +1,11 @@
 <script>
-import AddMemberForm from '../projects/components/addMemberForm';
-import Events from '../core/events';
-import LabelTreesApi from '../core/api/labelTree';
-import LoaderMixin from '../core/mixins/loader';
-import MemberList from '../projects/components/memberList';
-import Popover from 'uiv/dist/Popover';
-import {handleErrorResponse} from '../core/messages/store';
+import AddMemberForm from '@/projects/components/addMemberForm.vue';
+import Events from '@/core/events.js';
+import LabelTreesApi from '@/core/api/labelTree.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import MemberList from '@/projects/components/memberList.vue';
+import {Popover} from 'uiv';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The panel for editing the members of a label tree
@@ -29,7 +29,10 @@ export default {
     },
     computed: {
         hasMembers() {
-            return this.members.length !== 0;
+            return this.membersCount !== 0;
+        },
+        membersCount() {
+            return this.members.length;
         },
     },
     methods: {
@@ -72,8 +75,8 @@ export default {
         },
     },
     watch: {
-        members(members) {
-            Events.$emit('label-trees.members.count', members.length)
+        membersCount(count) {
+            Events.emit('label-trees.members.count', count);
         },
     },
     created() {

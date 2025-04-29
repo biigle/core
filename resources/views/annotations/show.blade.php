@@ -4,7 +4,7 @@
 @section('title', "Annotate {$image->filename}")
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     @can('add-annotation', $image)
         biigle.$declare('annotations.labelTrees', {!! $labelTrees !!});
     @endcan
@@ -97,9 +97,7 @@
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
             ref="canvas"
-            inline-template>
-            @include('annotations.show.annotationCanvas')
-        </annotation-canvas>
+            ></annotation-canvas>
     </div>
     <sidebar
         ref="sidebar"
@@ -107,7 +105,8 @@
         :toggle-on-keyboard="true"
         v-on:open="handleOpenedTab"
         v-on:close="handleClosedTab"
-        v-cloak>
+        v-cloak
+        >
         @include('annotations.show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations.show.tabs.labels')
@@ -118,4 +117,8 @@
         @include('annotations.show.tabs.settings')
     </sidebar>
 </div>
+
+<script type="text/html" id="annotation-canvas-template">
+    @include('annotations.show.annotationCanvas')
+</script>
 @endsection

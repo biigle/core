@@ -25,6 +25,11 @@
 
 <script>
 export default {
+    emits: [
+        'detach',
+        'focus',
+        'select',
+    ],
     props: {
         annotation: {
             type: Object,

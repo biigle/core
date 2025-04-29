@@ -1,7 +1,17 @@
+<template>
+<button
+    class="btn btn-default"
+    title="Get a screenshot of the visible area 𝗣"
+    @click="capture"
+    >
+    <span class="fa fa-camera" aria-hidden="true"></span>
+    Capture screenshot
+</button>
+</template>
 <script>
-import Events from '../../core/events';
-import Messages from '../../core/messages/store';
-import Keyboard from '../../core/keyboard';
+import Events from '@/core/events.js';
+import Messages from '@/core/messages/store.js';
+import Keyboard from '@/core/keyboard.js';
 
 /**
  * A button that produces a screenshot of the map
@@ -100,7 +110,7 @@ export default {
             try {
                 canvas = this.trimCanvas(canvas);
             } catch (error) {
-                return Vue.Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+                return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
 
             let type = 'image/png';
@@ -114,11 +124,11 @@ export default {
                     arr[i] = binStr.charCodeAt(i);
                 }
 
-                return new Vue.Promise(function (resolve) {
+                return new Promise(function (resolve) {
                     resolve(new Blob([arr], {type: type}));
                 });
             } else {
-                return new Vue.Promise(function (resolve) {
+                return new Promise(function (resolve) {
                     canvas.toBlob(resolve, type);
                 });
             }
@@ -163,9 +173,9 @@ export default {
         this.filenames.forEach((filename, index) => {
             this.filesObj[this.ids[index]] = filename;
         });
-        
         Keyboard.on('p', this.capture);
-        Events.$on(['annotations.map.init', 'videos.map.init'], this.setMap);
+        Events.on('videos.map.init', this.setMap);
+        Events.on('annotations.map.init', this.setMap);
     },
 };
 </script>

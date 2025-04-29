@@ -1,9 +1,18 @@
 <template>
     <span class="power-toggle">
-        <button type="button" class="btn btn-default" :class="objectClass" @click="handleClick" :title="currentTitle" :disabled="disabled">
+        <button
+            type="button"
+            class="btn btn-default"
+            :class="objectClass"
+            :title="currentTitle"
+            :disabled="disabled || null"
+            @click="handleClick"
+            >
             <i class="fa fa-fw" :class="iconClass"></i>
         </button>
-        <span v-if="label" class="power-toggle__label" v-text="label"></span>
+        <span v-if="$slots.default" class="power-toggle__label">
+            <slot></slot>
+        </span>
     </span>
 </template>
 
@@ -14,6 +23,10 @@
  * @type {Object}
  */
 export default {
+    emits: [
+        'off',
+        'on',
+    ],
     props: {
         active: {
             type: Boolean,
@@ -51,9 +64,6 @@ export default {
             }
 
             return this.titleOff || this.title;
-        },
-        label() {
-            return this.$slots.default ? this.$slots.default[0].text : '';
         },
         objectClass() {
             let obj = {active: this.active};

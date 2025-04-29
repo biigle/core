@@ -43,6 +43,14 @@ import { MAX_FAVOURITES } from '../constants';
  */
 export default {
     name: 'label-tree-label',
+    emits: [
+        'add-favourite',
+        'delete',
+        'deselect',
+        'remove-favourite',
+        'save',
+        'select',
+    ],
     data() {
         return {
             hover: false,

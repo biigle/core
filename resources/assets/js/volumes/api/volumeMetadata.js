@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for uploading volume image metadata as CSV.
  *
@@ -7,4 +9,4 @@
  *
  * resource.save({id: volumeId}, data).then(...);
  */
-export default Vue.resource('api/v1/volumes{/id}/metadata');
+export default Resource('api/v1/volumes{/id}/metadata');

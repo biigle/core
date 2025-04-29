@@ -9,6 +9,7 @@
  * @type {Object}
  */
 export default {
+    emits: ['select'],
     props: {
         activeSorter: {
             type: String,
@@ -27,7 +28,7 @@ export default {
     },
     methods: {
         getSequence() {
-            return new Vue.Promise.resolve([]);
+            return Promise.resolve([]);
         },
         handleClick() {
             if (!this.active) {

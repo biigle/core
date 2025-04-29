@@ -1,12 +1,12 @@
 <script>
-import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '../../../core/keyboard';
-import Styles from '../../stores/styles';
-import { never } from '@biigle/ol/events/condition';
-import { penXorShift, penOrShift } from '../../ol/events/condition.js';
-import snapInteraction from '../../snapInteraction.vue';
-import { Point } from '@biigle/ol/geom';
 import * as preventDoubleclick from '../../../prevent-doubleclick';
+import DrawInteraction from '@biigle/ol/interaction/Draw';
+import Keyboard from '@/core/keyboard.js';
+import snapInteraction from '@/annotations/ol/snapInteraction.js';
+import Styles from '@/annotations/stores/styles.js';
+import { never } from '@biigle/ol/events/condition';
+import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
+import { Point } from '@biigle/ol/geom';
 
 
 /**

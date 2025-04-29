@@ -11,7 +11,8 @@
 </template>
 
 <script>
-import Loader from '../../core/components/loader';
+import Loader from '@/core/components/loader.vue';
+import videoTime from '@/videos/filters/videoTime';
 
 export default {
     props: {
@@ -29,7 +30,7 @@ export default {
     },
     computed: {
         currentTimeText() {
-            return Vue.filter('videoTime')(this.currentTime);
+            return videoTime(this.currentTime);
         },
     },
 };

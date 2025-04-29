@@ -1,19 +1,16 @@
 <template>
-    <v-chart class="chart grid-col-span-3" :option="option"></v-chart>
+    <span ref="root" class="chart grid-col-span-3"></span>
 </template>
 
 <script>
-import * as echarts from 'echarts/core';
+import { use, init } from 'echarts/core';
 import { SankeyChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
+import { SVGRenderer } from 'echarts/renderers';
 import { TitleComponent, TooltipComponent } from 'echarts/components';
-import VChart, { THEME_KEY } from "vue-echarts";
 import { IDToColor } from "./IDToColor";
+import { markRaw } from "vue";
 
 export default {
-    components: {
-        VChart
-    },
     props: {
         volumeAnnotations: {
             required: true,
@@ -28,8 +25,10 @@ export default {
             type: String,
         },
     },
-    provide: {
-        [THEME_KEY]: "dark"
+    data() {
+        return {
+            chart: null,
+        };
     },
     computed: {
         data() {
@@ -118,13 +117,24 @@ export default {
             };
         },
     },
+    watch: {
+        option() {
+            if (this.chart) {
+                this.chart.setOption(this.option);
+            }
+        },
+    },
     beforeCreate() {
-        echarts.use([
+        use([
             SankeyChart,
-            CanvasRenderer,
+            SVGRenderer,
             TitleComponent,
             TooltipComponent,
         ]);
+    },
+    mounted() {
+        this.chart = markRaw(init(this.$refs.root, 'dark', { renderer: 'svg' }));
+        this.chart.setOption(this.option);
     },
 }
 </script>

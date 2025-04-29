@@ -10,6 +10,10 @@
 
 <script>
 export default {
+    emits: [
+        'enter',
+        'remove'
+    ],
     props: {
         tree: {
             type: Object,

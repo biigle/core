@@ -21,13 +21,13 @@
 </template>
 
 <script>
-import Image from './imageGridImage';
-import ImageLabelsApi from '../api/imageLabels';
-import VideoLabelsApi from '../api/videoLabels';
-import LabelList from './fileLabelList';
-import LoaderMixin from '../../core/mixins/loader';
-import PreviewThumbnail from '../../projects/components/previewThumbnail';
-import {handleErrorResponse} from '../../core/messages/store';
+import Image from './imageGridImage.vue';
+import ImageLabelsApi from '../api/imageLabels.js';
+import VideoLabelsApi from '../api/videoLabels.js';
+import LabelList from './fileLabelList.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import PreviewThumbnail from '../../projects/components/previewThumbnail.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * A variant of the image grid image used to display volume images
