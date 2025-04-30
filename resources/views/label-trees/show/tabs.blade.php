@@ -10,5 +10,9 @@
             <a href="{{route('label-tree-members', $tree->id)}}" title="Show the members that belong to this label tree"><i class="fa fa-users"></i> Members <span class="badge" id="label-trees-members-count">{{$tree->members()->count()}}</span></a>
         </li>
     @endcan
+    <li role="presentation">
+        <a href="{{route('annotation-catalog', $tree->id)}}" title="Browse all annotations with labels of this label tree"><i class="fa fa-book"></i> Annotation catalog</a>
+    </li>
+
     @mixin('labelTreesShowTabs')
 </ul>

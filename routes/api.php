@@ -109,6 +109,14 @@ $router->resource('labels', 'LabelController', [
     'parameters' => ['labels' => 'id'],
 ]);
 
+$router->get('labels/{id}/image-annotations', [
+    'uses' => 'Labels\ImageAnnotationsController@index',
+]);
+
+$router->get('labels/{id}/video-annotations', [
+    'uses' => 'Labels\VideoAnnotationsController@index',
+]);
+
 $router->get('label-sources/{id}/find', 'LabelSourceController@find');
 
 $router->resource('label-trees', 'LabelTreeController', [
@@ -247,6 +255,34 @@ $router->get(
     'project-invitations/{id}/qr',
     'ProjectInvitationController@showQrCode'
 );
+
+$router->get('projects/{id}/annotations/sort/outliers/{id2}', [
+    'uses' => 'Projects\SortAnnotationsByOutliersController@index',
+]);
+
+$router->get('projects/{id}/annotations/sort/similarity', [
+    'uses' => 'Projects\SortAnnotationsBySimilarityController@index',
+]);
+
+$router->get('projects/{id}/image-annotations/filter/label/{id2}', [
+    'uses' => 'Projects\FilterImageAnnotationsByLabelController@index',
+]);
+
+$router->post('projects/{id}/largo', [
+    'uses' => 'Projects\LargoController@save',
+]);
+
+$router->get('projects/{id}/video-annotations/filter/label/{id2}', [
+    'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
+]);
+
+$router->get('projects/{pid}/users-with-annotations', [
+    'uses' => 'Projects\GetUsersWithAnnotations@index',
+]);
+
+$router->get('projects/{id}/label-count', [
+    'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
+]);
 
 $router->get('public-export/label-trees/{id}', [
     'as' => 'get-public-label-tree-export',
@@ -433,6 +469,38 @@ $router->group([
 
     $router->get('{id}/statistics', [
         'uses' => 'StatisticsController@index',
+    ]);
+
+    $router->get('{id}/annotations/sort/outliers/{id2}', [
+        'uses' => 'SortAnnotationsByOutliersController@index',
+    ]);
+
+    $router->get('{id}/annotations/sort/similarity', [
+        'uses' => 'SortAnnotationsBySimilarityController@index',
+    ]);
+
+    $router->get('{id}/image-annotations/examples/{id2}', [
+        'uses' => 'ImageAnnotationExamplesController@index',
+    ]);
+
+    $router->get('{id}/image-annotations/filter/label/{id2}', [
+        'uses' => 'FilterImageAnnotationsByLabelController@index',
+    ]);
+
+    $router->get('{vid}/users-with-annotations', [
+        'uses' => 'GetUsersWithAnnotations@index',
+    ]);
+
+    $router->post('{id}/largo', [
+        'uses' => 'LargoController@save',
+    ]);
+
+    $router->get('{id}/video-annotations/filter/label/{id2}', [
+        'uses' => 'FilterVideoAnnotationsByLabelController@index',
+    ]);
+
+    $router->get('{id}/label-count', [
+        'uses' => 'VolumeAnnotationLabels@getVolumeAnnotationLabels'
     ]);
 });
 

@@ -3,8 +3,8 @@
 namespace Biigle\Jobs;
 
 use Biigle\Image;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
+use Biigle\Jobs\ProcessAnnotatedImage;
+use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\Video;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;

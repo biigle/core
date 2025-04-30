@@ -45,6 +45,6 @@ export default Resource('api/v1/volumes{/id}/largo', {}, {
     },
     fetchVolumeAnnotationLabelCount: {
         method: 'GET',
-        url: 'api/v1/volume{/id}/label-count',
+        url: 'api/v1/volumes{/id}/label-count',
     },
 });

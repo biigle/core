@@ -62,6 +62,10 @@
 
         <export-area :settings="settings"></export-area>
 
+        @can ('edit-in', $volume)
+            <component :is="plugins.exampleAnnotations" :settings="settings"></component>
+        @endcan
+
         @mixin('annotationsSettingsTab')
     </div>
 </script>
