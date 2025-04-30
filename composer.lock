@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b55d0bbec70a0595987d588a9c040c62",
+    "content-hash": "6f9deab6685714faf2c57f776705ec94",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -171,16 +171,16 @@
         },
         {
             "name": "biigle/largo",
-            "version": "v2.37.1",
+            "version": "v2.39.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/largo.git",
-                "reference": "efab001365ea4bad0471f3be974beead6e655863"
+                "reference": "339b5ad4080e28016a672a7bc66932757ce5d0a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/efab001365ea4bad0471f3be974beead6e655863",
-                "reference": "efab001365ea4bad0471f3be974beead6e655863",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/339b5ad4080e28016a672a7bc66932757ce5d0a2",
+                "reference": "339b5ad4080e28016a672a7bc66932757ce5d0a2",
                 "shasum": ""
             },
             "require": {
@@ -214,7 +214,7 @@
                 "issues": "https://github.com/biigle/largo/issues",
                 "source": "https://github.com/biigle/largo"
             },
-            "time": "2025-04-17T07:42:43+00:00"
+            "time": "2025-04-29T07:37:36+00:00"
         },
         {
             "name": "biigle/metadata-ifdo",
