@@ -2,7 +2,6 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
-use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
@@ -39,12 +38,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
+        $query = $this->query();
         // Use only annotated images here. Empty images are processed later.
-        $rows = $this->query()->whereNotNull('label_id')->get();
+        $rows = $query->clone()->whereNotNull('label_id')->get();
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
             $allLabels = null;
-            $emptyImagesQuery = $this->query()->whereNull('label_id');
+            // Images that have no annotations
+            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
 
             if ($this->shouldUseAllLabels()) {
                 $allLabels = $this->getVolumeLabels();
@@ -65,38 +66,35 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels, $emptyImagesQuery);
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
             $users = User::whereIn('id', $rows->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
             $labels = null;
-            $emptyImagesQuery = $this->query()->whereNull('label_id');
+            // Images that have no annotations
+            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
 
             if ($this->shouldUseAllLabels()) {
                 $labels = $this->getVolumeLabels();
             }
 
             foreach ($users as $id => $name) {
+                // Images that have no annotations from the current user
+                $usedImageFilenames = $rows->get($id)->pluck('filename')->unique();
+                $usersEmptyImagesQuery = $query->clone()->select('filename')->whereNotIn('filename', $usedImageFilenames);
+                $emptyImagesQuery->union($usersEmptyImagesQuery);
+
                 $rowGroup = $rows->get($id);
+
                 if (!$this->shouldUseAllLabels()) {
                     $labels = Label::whereIn('id', $rowGroup->pluck('label_id'))->get();
                 }
-                $userFilenames = $rowGroup->pluck('filename')->unique();
-                $missingFiles = $allFilenames->diff($userFilenames);
-                // Include empty images again, as they were removed during grouping
-                foreach ($missingFiles as $f) {
-                    $rowGroup->add((object) [
-                        'filename' => $f,
-                        'count' => 0,
-                        'label_id' => null,
-                        'user_id' => $id
-                    ]);
-                }
+
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQuery);
             }
         } else {
-            $emptyImagesQuery = $this->query()->whereNull('label_id');
+            // Images that have no annotations
+            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
             $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
             $labels = $this->shouldUseAllLabels() ? $this->getVolumeLabels() : Label::whereIn('id', $allLabelIds)->get();
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels, $emptyImagesQuery);
