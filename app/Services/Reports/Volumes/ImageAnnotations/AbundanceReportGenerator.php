@@ -39,19 +39,20 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
-
+        // Use only annotated images here. Empty images are processed later.
+        $rows = $this->query()->whereNotNull('label_id')->get();
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
             $allLabels = null;
+            $emptyImagesQuery = $this->query()->whereNull('label_id');
+
             if ($this->shouldUseAllLabels()) {
                 $allLabels = $this->getVolumeLabels();
                 $treeIds = $allLabels->pluck('label_tree_id');
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 $allLabels = $allLabels->groupBy('label_tree_id');
             } else {
-                $treeIds = $rows->keys()->reject(fn ($k) => !$k);
-                $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+                $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
             }
 
             foreach ($trees as $id => $name) {
@@ -61,16 +62,17 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     $labelIds = $rows->get($id)->pluck('label_id')->unique();
                     $labels = Label::whereIn('id', $labelIds)->get();
                 }
-                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels);
+                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels, $emptyImagesQuery);
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $allFilenames = $rows->pluck('filename')->unique();
             $rows = $rows->groupBy('user_id');
-            $userIds = $rows->keys()->reject(fn ($k) => !$k);
-            $users = User::whereIn('id', $userIds)
+            $users = User::whereIn('id', $rows->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
             $labels = null;
+            $emptyImagesQuery = $this->query()->whereNull('label_id');
+
             if ($this->shouldUseAllLabels()) {
                 $labels = $this->getVolumeLabels();
             }
@@ -91,12 +93,13 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                         'user_id' => $id
                     ]);
                 }
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQuery);
             }
         } else {
-            $allLabelIds = $rows->pluck('label_id')->reject(fn ($k) => !$k);
+            $emptyImagesQuery = $this->query()->whereNull('label_id');
+            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
             $labels = $this->shouldUseAllLabels() ? $this->getVolumeLabels() : Label::whereIn('id', $allLabelIds)->get();
-            $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
+            $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels, $emptyImagesQuery);
         }
 
         $this->executeScript('csvs_to_xlsx', $path);
@@ -186,7 +189,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      *
      * @return CsvFile
      */
-    protected function createCsv($rows, $title, $labels)
+    protected function createCsv($rows, $title, $labels, $emptyImagesQuery)
     {
         $rows = $rows
             ->groupBy('filename')
@@ -217,9 +220,19 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     $row[] = 0;
                 }
             }
-
             $csv->putCsv($row);
         }
+
+        $labelsCount = $labels->count();
+        $emptyImagesQuery->orderBy('filename')->chunk(1000, function ($images) use ($labelsCount, $csv) {
+            foreach ($images as $image) {
+                $row = [$image->filename];
+                for ($i = 0; $i < $labelsCount; $i++) {
+                    $row[] = 0;
+                }
+                $csv->putCsv($row);
+            }
+        });
 
         $csv->close();
 
