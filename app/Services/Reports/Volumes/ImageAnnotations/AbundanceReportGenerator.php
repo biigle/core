@@ -41,7 +41,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $query = $this->query();
         // Use only annotated images here. Empty images are processed later.
         $rows = $query->clone()->whereNotNull('label_id')->get();
-        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
+        if ($this->shouldSeparateLabelTrees()) {
             $rows = $rows->groupBy('label_tree_id');
             $allLabels = null;
             // Images that have no annotations
@@ -65,7 +65,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
                 $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels, $emptyImagesQuery);
             }
-        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
+        } elseif ($this->shouldSeparateUsers()) {
             $rows = $rows->groupBy('user_id');
             $users = User::whereIn('id', $rows->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
