@@ -140,7 +140,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator;
         $generator->setSource($i1->volume);
@@ -201,7 +201,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $mock->shouldReceive('close')
             ->once();
 
-        App::singleton(CsvFile::class, fn() => $mock);
+        App::singleton(CsvFile::class, fn () => $mock);
 
         $generator = new AbundanceReportGenerator([
             'allLabels' => true
@@ -212,7 +212,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
     }
-
 
     public function testGenerateReportSeparateLabelTrees()
     {

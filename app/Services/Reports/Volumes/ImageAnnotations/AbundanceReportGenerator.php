@@ -95,7 +95,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         } else {
             // Images that have no annotations
             $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
-            $allLabelIds = $rows->pluck('label_id')->reject(fn($k) => !$k);
+            $allLabelIds = $rows->pluck('label_id')->reject(fn ($k) => !$k);
             $labels = $this->shouldUseAllLabels() ? $this->getVolumeLabels() : Label::whereIn('id', $allLabelIds)->get();
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels, $emptyImagesQuery);
         }
