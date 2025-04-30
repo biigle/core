@@ -1,32 +1,16 @@
-name: Lint
+name: Lint PHP
 
 on:
   push:
     branches:
       - master
+    paths:
+      - '**.php'
   pull_request:
+    paths:
+      - '**.php'
 
 jobs:
-  lint-js:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-
-    - name: Set registry authentication token
-      run: echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" >> .npmrc
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Run ESLint
-      run: npm run lint
-
   lint-php:
 
     runs-on: ubuntu-latest
