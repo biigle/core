@@ -189,9 +189,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     protected function createCsv($rows, $title, $labels, $emptyImagesQuery)
     {
-        $rows = $rows
-            ->groupBy('filename')
-            ->sortBy(fn ($annotation, $file) => $file, SORT_NATURAL);
+        $rows = $rows->groupBy('filename');
 
         if ($this->shouldAggregateChildLabels()) {
             [$rows, $labels] = $this->aggregateChildLabels($rows, $labels);
