@@ -44,7 +44,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         if ($this->shouldSeparateLabelTrees()) {
             $rows = $rows->groupBy('label_tree_id');
             $allLabels = null;
-            // Images that have no annotations
+            // Get query for images that have no annotations
             $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
 
             if ($this->shouldUseAllLabels()) {
@@ -71,7 +71,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
             $labels = null;
-            // Images that have no annotations
+            // Get query for images that have no annotations
             $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
 
             if ($this->shouldUseAllLabels()) {
@@ -79,9 +79,9 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             }
 
             foreach ($users as $id => $name) {
-                // Images that have no annotations from the current user
                 $usedImageFilenames = $rows->get($id)->pluck('filename')->unique();
                 $usersEmptyImagesQuery = $query->clone()->select('filename')->whereNotIn('filename', $usedImageFilenames);
+                // Add query to process unannotated images (by current user) in chunks later
                 $emptyImagesQuery->union($usersEmptyImagesQuery);
 
                 $rowGroup = $rows->get($id);
@@ -93,7 +93,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQuery);
             }
         } else {
-            // Images that have no annotations
+            // Get query for images that have no annotations
             $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
             $allLabelIds = $rows->pluck('label_id')->reject(fn ($k) => !$k);
             $labels = $this->shouldUseAllLabels() ? $this->getVolumeLabels() : Label::whereIn('id', $allLabelIds)->get();
