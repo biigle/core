@@ -204,6 +204,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         foreach ($labels as $label) {
             $columns[] = $label->name;
         }
+
         $csv->putCsv($columns);
 
         foreach ($rows as $filename => $annotations) {
