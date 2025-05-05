@@ -104,10 +104,7 @@
                 @endif
                 <div v-cloak v-if="hasOption('newest_label')" class="form-group" :class="{'has-error': errors.newest_label}">
                     <div class="checkbox">
-                        <label v-if="options.all_labels" class="text-muted">
-                            <input type="checkbox" v-model="options.newest_label" :disabled="options.all_labels"> Restrict to newest label
-                        </label>
-                        <label v-else>
+                        <label :class="{'text-muted': options.all_labels}">
                             <input type="checkbox" v-model="options.newest_label" :disabled="options.all_labels"> Restrict to newest label
                         </label>
                     </div>
@@ -118,10 +115,7 @@
                 </div>
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
                     <div class="checkbox">
-                        <label v-if="options.all_labels" class="text-muted">
-                            <input type="checkbox" v-model="options.aggregate_child_labels" :disabled="options.all_labels"> Aggregate child labels
-                        </label>
-                        <label v-else>
+                        <label :class="{'text-muted': options.all_labels}">
                             <input type="checkbox" v-model="options.aggregate_child_labels" :disabled="options.all_labels"> Aggregate child labels
                         </label>
                     </div>
@@ -168,10 +162,7 @@
                 @if ($volume->isImageVolume())
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
                     <div class="checkbox">
-                        <label v-if="disableAllLabelsOption" class="text-muted">
-                            <input type="checkbox" v-model="options.all_labels" :disabled="disableAllLabelsOption"> Include all volume labels
-                        </label>
-                        <label v-else>
+                        <label :class="{'text-muted': disableAllLabelsOption}">
                             <input type="checkbox" v-model="options.all_labels" :disabled="disableAllLabelsOption"> Include all volume labels
                         </label>
                     </div>
