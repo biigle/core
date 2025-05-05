@@ -104,6 +104,7 @@
                     <div v-else class="help-block">
                         Only the newest label of each annotation will be included in the report.
                     </div>
+                </div>
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
                     <div class="checkbox">
                         <label :class="{'text-muted': options.all_labels}">
