@@ -11,6 +11,10 @@ trait RestrictsToNewestLabels
      * Callback to be used in a `when` query statement that restricts the results to the
      * newest annotation labels of each annotation.
      *
+     * @param $query The query that needs restrictions
+     * @param $volume The volume that is used, among other things, to apply restrictions
+     * @param $keepEmptyImgs Boolean indicating whether empty images should be retained
+     *
      * @return \Illuminate\Contracts\Database\Query\Builder
      */
     public function restrictToNewestLabelQuery($query, Volume $volume, $keepEmptyImgs = false)
