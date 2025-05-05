@@ -184,6 +184,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
      * @param \Illuminate\Support\Collection $labels
+     * @param \Illuminate\Database\Query\Builder $emptyImagesQuery The query for images without annotations
      *
      * @return CsvFile
      */
@@ -204,7 +205,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         foreach ($labels as $label) {
             $columns[] = $label->name;
         }
-
         $csv->putCsv($columns);
 
         foreach ($rows as $filename => $annotations) {
@@ -217,6 +217,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     $row[] = 0;
                 }
             }
+
             $csv->putCsv($row);
         }
 
