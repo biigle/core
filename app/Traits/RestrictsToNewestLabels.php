@@ -12,7 +12,7 @@ trait RestrictsToNewestLabels
      * newest annotation labels of each annotation.
      *
      * @param $query The query that needs restrictions
-     * @param $volume The volume that is used, among other things, to apply restrictions
+     * @param $volume The volume that contains the annotations
      * @param $keepEmptyImgs Boolean indicating whether empty images should be retained
      *
      * @return \Illuminate\Contracts\Database\Query\Builder
@@ -51,8 +51,7 @@ trait RestrictsToNewestLabels
 
         return $query
             ->joinSub($subquery, 'latest_labels', function ($join) use ($table, $keepEmptyImgs) {
-                $join
-                    ->on("{$table}.id", '=', 'latest_labels.id')
+                $join->on("{$table}.id", '=', 'latest_labels.id')
                     // Add empty images again
                     ->when($keepEmptyImgs, fn ($query) => $query->orWhereNull("{$table}.annotation_id"));
             });
