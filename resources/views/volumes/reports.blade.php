@@ -159,7 +159,6 @@
                     </div>
                 </div>
                 @include('partials.restrictLabels')
-                @if ($volume->isImageVolume())
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
                     <div class="checkbox">
                         <label :class="{'text-muted': disableAllLabelsOption}">
@@ -171,7 +170,6 @@
                         Include all labels that can be used in a volume.
                     </div>
                 </div>
-                @endif
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.
                 </div>
