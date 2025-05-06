@@ -967,4 +967,624 @@ class AnnotationReportGeneratorTest extends TestCase
         $this->assertEquals($al2->user_id, $results[0]->user_id);
         $this->assertEquals($al4->user_id, $results[1]->user_id);
     }
+
+    public function testRestrictToExportAreaQueryAnnotationSession()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume,
+        ]);
+
+        $user = UserTest::create();
+        $session->users()->attach($user);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            // created before annotation session started
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-04',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+        ];
+
+        array_map(function ($a) use ($user) {
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+                'user_id' => $user->id,
+            ]);
+        }, $annotations);
+
+        $inside = [$annotations[0]->id, $annotations[4]->id];
+        $outside = [$annotations[1]->id, $annotations[2]->id, $annotations[3]->id, $annotations[5]->id];
+
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+            'annotationSession' => $session->id
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotations.id as annotation_id'])->get();
+        $ids = $res->pluck('annotation_id')->toArray();
+        $ids = array_map('intval', $ids);
+
+        sort($inside);
+        sort($ids);
+
+        $this->assertSame($inside, $ids);
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
+
+    public function testRestrictToExportAreaQueryAnnotationSessionRestrictToNewestLabels()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume,
+        ]);
+
+        $user = UserTest::create();
+        $session->users()->attach($user);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            // created before annotation session started
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-04',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+        ];
+
+        $labels = array_map(function ($a) use ($user) {
+            return ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+                'user_id' => $user->id,
+            ]);
+        }, $annotations);
+
+        $newestLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotations[0]->id,
+            'user_id' => $user->id,
+            'created_at' => '2025-10-5',
+        ]);
+
+        $inside = [$newestLabel->label_id, $labels[4]->label_id];
+        $outside = [$labels[0]->label_id, $labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
+
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+            'annotationSession' => $session->id,
+            'newestLabel' => true
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
+        $ids = $res->pluck('label_id')->toArray();
+        $ids = array_map('intval', $ids);
+
+        sort($inside);
+        sort($ids);
+
+        $this->assertSame($inside, $ids);
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
+
+    public function testRestrictToExportAreaQueryAnnotationSessionRestrictToLabels()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume,
+        ]);
+
+        $user = UserTest::create();
+        $session->users()->attach($user);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            // created before annotation session started
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-04',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+        ];
+
+        $labels = array_map(function ($a) use ($user) {
+            return ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+                'user_id' => $user->id,
+            ]);
+        }, $annotations);
+
+        $inside = [$labels[0]->label_id, $labels[4]->label_id];
+        $outside = [$labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
+
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+            'annotationSession' => $session->id,
+            'onlyLabels' => [$labels[0]->label_id, $labels[1]->label_id, $labels[4]->label_id]
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
+        $ids = $res->pluck('label_id')->toArray();
+        $ids = array_map('intval', $ids);
+
+        sort($inside);
+        sort($ids);
+
+        $this->assertSame($inside, $ids);
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
+
+    public function testRestrictToExportAreaQueryRestrictToNewestLabels()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+            ]),
+        ];
+
+        $labels = array_map(function ($a) {
+            return ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+            ]);
+        }, $annotations);
+
+        $newestLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotations[0]->id,
+            'created_at' => '2025-10-5',
+        ]);
+
+
+        $inside = [$newestLabel->label_id, $labels[1]->label_id, $labels[4]->label_id];
+        $outside = [$labels[0]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
+
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+            'newestLabel' => true
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
+        $ids = $res->pluck('label_id')->toArray();
+        $ids = array_map('intval', $ids);
+
+        sort($inside);
+        sort($ids);
+
+        $this->assertSame($inside, $ids);
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
+
+    public function testRestrictToExportAreaQueryRestrictToNewestLabelsRestrictToLabels()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+            ]),
+        ];
+
+        $labels = array_map(function ($a) {
+            return ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+            ]);
+        }, $annotations);
+
+        $newestLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotations[0]->id,
+            'created_at' => '2025-10-5',
+        ]);
+
+        $inside = [$newestLabel->label_id, $labels[1]->label_id];
+        $outside = [$labels[0]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[4]->label_id, $labels[5]->label_id];
+
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+            'newestLabel' => true,
+            'onlyLabels' => [$newestLabel->label_id, $labels[1]->label_id]
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
+        $ids = $res->pluck('label_id')->toArray();
+        $ids = array_map('intval', $ids);
+        
+
+        sort($inside);
+        sort($ids);
+
+        $this->assertSame($inside, $ids);
+
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
+
+    public function testRestrictToExportAreaQueryRestrictToLabels()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+            ]),
+        ];
+
+        $labels = array_map(function ($a) {
+            return ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+            ]);
+        }, $annotations);
+
+        $inside = [$labels[1]->label_id, $labels[4]->label_id];
+        $outside = [$labels[0]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
+
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+            'onlyLabels' => [$labels[1]->label_id, $labels[4]->label_id]
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
+        $ids = $res->pluck('label_id')->toArray();
+        $ids = array_map('intval', $ids);
+        
+
+        sort($inside);
+        sort($ids);
+
+        $this->assertSame($inside, $ids);
+
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
+
+    public function testRestrictToExportAreaQueryAnnotationSessionRestrictToNewestLabelsRestrictToLabels()
+    {
+        $volume = VolumeTest::create();
+
+        $volume->exportArea = [100, 100, 200, 200];
+        $volume->save();
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => '1.jpg',
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+            'volume_id' => $volume,
+        ]);
+
+        $user = UserTest::create();
+        $session->users()->attach($user);
+
+        $annotations = [
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [150, 150],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            // created before annotation session started
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 150, 150, 90, 90],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-04',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::pointId(),
+                'points' => [50, 50],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::polygonId(),
+                'points' => [50, 50, 10, 10, 25, 25],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [150, 150, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+            ImageAnnotationTest::create([
+                'shape_id' => Shape::circleId(),
+                'points' => [50, 50, 10],
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05',
+            ]),
+        ];
+
+        $labels = array_map(function ($a) use ($user) {
+            return ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+                'user_id' => $user->id
+            ]);
+        }, $annotations);
+
+        $newestLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotations[0]->id,
+            'created_at' => '2025-10-5',
+            'user_id' => $user->id
+        ]);
+        
+
+        $inside = [$newestLabel->label_id, $labels[4]->label_id];
+        $outside = [$labels[0]->label_id, $labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
+
+        $generator = new AnnotationReportGenerator([
+            'exportArea' => true,
+            'annotationSession' => $session->id,
+            'onlyLabels' => [$labels[0]->label_id, $newestLabel->label_id, $labels[1]->label_id, $labels[4]->label_id],
+            'newestLabel' => true
+        ]);
+        $generator->setSource($volume);
+
+        $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
+        $ids = $res->pluck('label_id')->toArray();
+        $ids = array_map('intval', $ids);
+        
+        sort($inside);
+        sort($ids);
+
+        $this->assertSame($inside, $ids);
+
+
+        foreach ($outside as $id) {
+            $this->assertNotContains($id, $ids);
+        }
+    }
 }
