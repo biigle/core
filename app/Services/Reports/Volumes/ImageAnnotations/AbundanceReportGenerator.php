@@ -39,7 +39,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     public function generateReport($path)
     {
         $query = $this->query();
-        // Use only annotated images here. Empty images are processed later.
+        // Separate the annotated images from the empty ones, since only the annotated images could require additional processing.
         $rows = $query->clone()->whereNotNull('label_id')->get();
         if ($this->shouldSeparateLabelTrees()) {
             $rows = $rows->groupBy('label_tree_id');
@@ -138,6 +138,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $query = $this->getImageAnnotationLabelQuery()
             ->where('images.volume_id', $this->source->id)
+            // Add this label filter here, since it won’t delete any annotations
             ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
             ->addSelect($columns);
 
