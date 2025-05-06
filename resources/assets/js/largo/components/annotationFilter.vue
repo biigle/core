@@ -86,9 +86,9 @@
     </div>
 </template>
 <script>
-import { Messages } from "../import";
-import ProjectsApi from "../api/projects";
-import VolumesApi from "../api/volumes";
+import ProjectsApi from "../api/projects.js";
+import VolumesApi from "../api/volumes.js";
+import { handleErrorResponse } from "@/core/messages/store.js";
 
 export default {
     emits: [
@@ -165,7 +165,7 @@ export default {
                             (this.filterValues.User[user.user_id] =
                                 user.name)
                     ),
-                Messages.handleErrorResponse
+                handleErrorResponse
             );
         },
         addFilter() {
@@ -201,7 +201,7 @@ export default {
                 filter: this.filterToKeyMapping[this.selectedFilter],
                 value: selectedFilterValue[1]
             };
-            this.$emit("add-filter", filterToAdd);
+            this.$emit('add-filter', filterToAdd);
         }
     }
 };

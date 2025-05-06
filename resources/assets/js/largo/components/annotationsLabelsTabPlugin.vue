@@ -31,8 +31,8 @@
 <script>
 import AnnotationPatch from'./annotationExamplePatch.vue';
 import VolumesApi from '../api/volumes.js';
-import {Events} from '../import.js';
-import {LoaderMixin} from '../import.js';
+import Events from '@/core/events.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
 
 /**
  * The plugin component to show example annotation patches in the labels tab of the

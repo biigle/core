@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import {Events} from '../import.js';
-import {PowerToggle} from '../import.js';
+import Events from '@/core/events.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
 
 /**
  * The plugin component to change the settings whether to show the example annotations.

@@ -13,9 +13,9 @@
 </template>
 
 <script>
+import Keyboard from '@/core/keyboard.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
 import Settings from '../stores/settings.js';
-import {PowerToggle} from '../import.js';
-import { Keyboard } from '../import.js';
 
 export default {
     emits: [

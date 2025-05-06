@@ -11,7 +11,7 @@
 <script>
 import AnnotationPatch from '../mixins/annotationPatch.vue';
 import {IMAGE_ANNOTATION} from '../constants.js';
-import {ImageGridImage} from '../import.js';
+import ImageGridImage from '@/volumes/components/imageGridImage.vue';
 
 /**
  * A variant of the image grid image used for the annotation catalog

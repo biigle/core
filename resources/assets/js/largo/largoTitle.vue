@@ -1,5 +1,5 @@
 <script>
-import {Events} from './import.js';
+import Events from '@/core/events.js';
 
 /**
  * The dynamic part of the Largo breadcrumbs in the navbar

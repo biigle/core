@@ -3,18 +3,12 @@
 @section('title', $tree->name)
 
 @push('scripts')
-{{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}
 <script type="module">
     biigle.$declare('annotationCatalog.labelTree', {!! $tree !!});
     biigle.$declare('annotationCatalog.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
     biigle.$declare('annotationCatalog.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
     biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
 </script>
-@endpush
-
-
-@push('styles')
-{{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/sass/main.scss'], 'vendor/largo')}}
 @endpush
 
 @section('navbar')

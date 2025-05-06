@@ -1,5 +1,5 @@
 <script>
-import {ImageGrid} from '../import.js';
+import ImageGrid from '@/volumes/components/imageGrid.vue';
 import Image from './dismissImageGridImage.vue';
 
 /**

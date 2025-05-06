@@ -19,7 +19,7 @@
 
 <script>
 import AnnotationPatch from '../mixins/annotationPatch.vue';
-import {ImageGridImage} from '../import.js';
+import ImageGridImage from '@/volumes/components/imageGridImage.vue';
 
 /**
  * A variant of the image grid image used for the relabel step of Largo

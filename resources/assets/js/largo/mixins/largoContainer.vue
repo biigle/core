@@ -1,20 +1,20 @@
 <script>
 import DismissImageGrid from '../components/dismissImageGrid.vue';
+import Echo from '@/core/echo.js';
+import Events from '@/core/events.js';
+import FilteringTab from '../components/filteringTab.vue';
+import LabelList from '../components/labelList.vue';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
 import RelabelImageGrid from '../components/relabelImageGrid.vue';
 import SettingsTab from '../components/settingsTab.vue';
+import Sidebar from '@/core/components/sidebar.vue';
+import SidebarTab from '@/core/components/sidebarTab.vue';
 import SortingTab from '../components/sortingTab.vue';
-import FilteringTab from '../components/filteringTab.vue';
-import {Echo} from '../import.js';
-import {Events} from '../import.js';
-import {handleErrorResponse} from '../import.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants.js';
-import {LabelTrees} from '../import.js';
-import {LoaderMixin} from '../import.js';
-import {Messages} from '../import.js';
-import {PowerToggle} from '../import.js';
-import {SidebarTab} from '../import.js';
-import {Sidebar} from '../import.js';
-import LabelList from '../components/labelList.vue';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab.vue';
 
 /**
@@ -513,8 +513,8 @@ export default {
         },
         initializeEcho() {
             Echo.getInstance().private(`user-${this.user.id}`)
-                .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionSaved', this.handleSessionSaved)
-                .listen('.Biigle\\Modules\\Largo\\Events\\LargoSessionFailed', this.handleSessionFailed);
+                .listen('.Biigle\\Events\\LargoSessionSaved', this.handleSessionSaved)
+                .listen('.Biigle\\Events\\LargoSessionFailed', this.handleSessionFailed);
         },
         updateShowOutlines(show) {
             this.showAnnotationOutlines = show;

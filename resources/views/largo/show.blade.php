@@ -3,7 +3,6 @@
 @section('title', $volume->name)
 
 @push('scripts')
-    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/js/main.js'], 'vendor/largo')}}
     <script type="module">
         biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
@@ -14,10 +13,6 @@
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
         biigle.$declare('largo.availableShapes', {!! $shapes !!})
     </script>
-@endpush
-
-@push('styles')
-    {{vite_hot(base_path('vendor/biigle/largo/hot'), ['src/resources/assets/sass/main.scss'], 'vendor/largo')}}
 @endpush
 
 @section('navbar')

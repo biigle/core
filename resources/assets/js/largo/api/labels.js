@@ -1,4 +1,4 @@
-import {Resource} from '../import.js';
+import {Resource} from 'vue-resource';
 
 /**
  * Resource for Largo operations on labels.
