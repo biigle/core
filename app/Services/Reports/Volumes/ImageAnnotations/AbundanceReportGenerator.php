@@ -71,14 +71,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
             $labels = null;
-            // Get query for images that have no annotations
-            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
 
             if ($this->shouldUseAllLabels()) {
                 $labels = $this->getVolumeLabels();
             }
 
             foreach ($users as $id => $name) {
+                // Get query for images that have no annotations
+                $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
                 $usedImageFilenames = $rows->get($id)->pluck('filename')->unique();
                 $usersEmptyImagesQuery = $query->clone()->select('filename')->whereNotIn('filename', $usedImageFilenames);
                 // Add query to process unannotated images (by current user) in chunks later
