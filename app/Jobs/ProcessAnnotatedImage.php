@@ -4,10 +4,7 @@ namespace Biigle\Jobs;
 
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
-use Biigle\Shape;
 use Biigle\VolumeFile;
-use Exception;
-use FileCache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;

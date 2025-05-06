@@ -31,9 +31,7 @@ class ImageAnnotationsController extends Controller
         return ImageAnnotation::visibleFor($request->user())
             ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->withLabel($label)
-            ->when($request->filled('take'), function ($query) use ($request) {
-                return $query->take($request->input('take'));
-            })
+            ->when($request->filled('take'), fn ($query) => $query->take($request->input('take')))
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')

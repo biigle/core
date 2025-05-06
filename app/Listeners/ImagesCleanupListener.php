@@ -3,7 +3,6 @@
 namespace Biigle\Listeners;
 
 use Biigle\Events\ImagesDeleted;
-use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
 

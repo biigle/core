@@ -2,23 +2,23 @@
 
 namespace Biigle\Http\Controllers\Api\Projects;
 
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
 use Biigle\Project;
 use Illuminate\Support\Facades\DB;
-use Biigle\Http\Controllers\Api\Controller;
 
 class ProjectAnnotationLabels extends Controller
 {
     /**
      * Get all image labels and annotation count for a given project
-     * 
+     *
      * @api {get} projects/:pid/label-count Get annotation labels with a annotation count
      * @apiGroup Projects
      * @apiName test
      * @apiParam {Number} id The Project ID
      * @apiPermission projectMember
      * @apiDescription Returns a collection of annotation labels and their counts in the project
-     * 
+     *
      * @apiSuccessExample {json} Success response:
      * [{"id":1,
      * "name":"a",

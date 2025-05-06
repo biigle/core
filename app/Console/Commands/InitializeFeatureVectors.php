@@ -3,8 +3,8 @@
 namespace Biigle\Console\Commands;
 
 use Biigle\ImageAnnotation;
-use Biigle\MediaType;
 use Biigle\Jobs\InitializeFeatureVectorChunk;
+use Biigle\MediaType;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Carbon\Carbon;

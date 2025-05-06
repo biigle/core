@@ -4,13 +4,14 @@ namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
-use Biigle\Traits\CompileFilters;
 use Biigle\Project;
+use Biigle\Traits\CompileFilters;
 use Illuminate\Http\Request;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
     use CompileFilters;
+
     /**
      * Show all image annotations of the project that have a specific label attached.
      *
@@ -60,9 +61,7 @@ class FilterImageAnnotationsByLabelController extends Controller
                     ->from('project_volume')
                     ->where('project_id', $pid);
             })
-            ->when(!is_null($take), function ($query) use ($take) {
-                return $query->take($take);
-            })
+            ->when(!is_null($take), fn ($query) => $query->take($take))
             ->where('image_annotation_labels.label_id', $lid)
             ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
             ->select('images.uuid', 'image_annotations.id')

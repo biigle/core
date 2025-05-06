@@ -10,7 +10,6 @@ use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoAnnotationLabelFeatureVector;
-use Biigle\Volume;
 use Bus;
 use Storage;
 use TestCase;
@@ -104,13 +103,9 @@ class GenerateMissingTest extends TestCase
 
         Bus::fake();
         $this->artisan('largo:generate-missing');
-        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a1, $a2) {
-            return $a1->image_id === $job->file->id && [$a1->id, $a2->id] === $job->only;
-        });
+        Bus::assertDispatched(ProcessAnnotatedImage::class, fn ($job) => $a1->image_id === $job->file->id && [$a1->id, $a2->id] === $job->only);
 
-        Bus::assertDispatched(ProcessAnnotatedImage::class, function ($job) use ($a3) {
-            return $a3->image_id === $job->file->id && [$a3->id] === $job->only;
-        });
+        Bus::assertDispatched(ProcessAnnotatedImage::class, fn ($job) => $a3->image_id === $job->file->id && [$a3->id] === $job->only);
     }
 
     public function testHandleDryRun()

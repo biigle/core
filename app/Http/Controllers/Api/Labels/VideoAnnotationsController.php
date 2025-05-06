@@ -31,9 +31,7 @@ class VideoAnnotationsController extends Controller
         return VideoAnnotation::visibleFor($request->user())
             ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
             ->withLabel($label)
-            ->when($request->filled('take'), function ($query) use ($request) {
-                return $query->take($request->input('take'));
-            })
+            ->when($request->filled('take'), fn ($query) => $query->take($request->input('take')))
             ->select('videos.uuid', 'video_annotations.id')
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')

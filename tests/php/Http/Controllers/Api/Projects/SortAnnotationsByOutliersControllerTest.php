@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
-use Biigle\MediaType;
-use Biigle\Volume;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\MediaType;
 use Biigle\VideoAnnotationLabelFeatureVector;
+use Biigle\Volume;
 
 class SortAnnotationsByOutliersControllerTest extends ApiTestCase
 {

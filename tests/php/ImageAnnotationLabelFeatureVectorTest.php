@@ -2,12 +2,11 @@
 
 namespace Biigle\Largo;
 
-use Biigle\ImageAnnotationLabel;
 use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
+use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\ImageAnnotationLabelFeatureVector;
-use Biigle\Volume;
 use Illuminate\Database\QueryException;
 use TestCase;
 

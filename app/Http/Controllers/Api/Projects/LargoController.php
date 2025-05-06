@@ -3,9 +3,9 @@
 namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Label;
 use Biigle\Http\Requests\StoreProjectLargoSession;
 use Biigle\Jobs\ApplyLargoSession;
+use Biigle\Label;
 use Biigle\Project;
 use Ramsey\Uuid\Uuid;
 

@@ -4,7 +4,6 @@ namespace Biigle\Tests\Jobs;
 
 use Biigle\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Tests\ImageAnnotationTest;
-use File;
 use Queue;
 use Storage;
 use TestCase;

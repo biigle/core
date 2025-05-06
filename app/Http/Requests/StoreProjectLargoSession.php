@@ -75,9 +75,7 @@ class StoreProjectLargoSession extends StoreLargoSession
 
             $this->volumes = $imageVolumes->concat($videoVolumes);
 
-            $inProgress = $this->volumes->contains(function ($volume) {
-                return is_array($volume->attrs) && array_key_exists('largo_job_id', $volume->attrs);
-            });
+            $inProgress = $this->volumes->contains(fn ($volume) => is_array($volume->attrs) && array_key_exists('largo_job_id', $volume->attrs));
 
             if ($inProgress) {
                 $validator->errors()->add('id', 'A Largo session is currently being saved, please try again in a few minutes.');
@@ -120,9 +118,9 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedImageVolumes($annotations)
     {
-        $chunkedAnnotations = array_chunk($annotations,config('biigle.db_param_limit'));
+        $chunkedAnnotations = array_chunk($annotations, config('biigle.db_param_limit'));
         $volumeIdsArray = [];
-        foreach($chunkedAnnotations as $chunkedAnnotation){
+        foreach ($chunkedAnnotations as $chunkedAnnotation) {
             $chunkVolumeId = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
                 ->whereIn('image_annotations.id', $chunkedAnnotation)
                 ->distinct()
@@ -143,9 +141,9 @@ class StoreProjectLargoSession extends StoreLargoSession
      */
     protected function getAffectedVideoVolumes($annotations)
     {
-        $chunkedAnnotations = array_chunk($annotations,config('biigle.db_param_limit'));
+        $chunkedAnnotations = array_chunk($annotations, config('biigle.db_param_limit'));
         $volumeIdsArray = [];
-        foreach($chunkedAnnotations as $chunkedAnnotation){
+        foreach ($chunkedAnnotations as $chunkedAnnotation) {
             $chunkVolumeId = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
                 ->whereIn('video_annotations.id', $chunkedAnnotation)
                 ->distinct()

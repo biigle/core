@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Jobs\CopyImageAnnotationFeatureVector;
-use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\ImageAnnotationLabel;
+use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\Jobs\CopyImageAnnotationFeatureVector;
 use TestCase;
 
 class CopyImageAnnotationFeatureVectorTest extends TestCase

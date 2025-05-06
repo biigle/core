@@ -2,8 +2,8 @@
 
 namespace Biigle\Jobs;
 
-use Illuminate\Database\Eloquent\Builder;
 use Biigle\VideoAnnotationLabelFeatureVector;
+use Illuminate\Database\Eloquent\Builder;
 
 class CopyVideoAnnotationFeatureVector extends CopyAnnotationFeatureVector
 {
@@ -14,7 +14,6 @@ class CopyVideoAnnotationFeatureVector extends CopyAnnotationFeatureVector
     {
         return VideoAnnotationLabelFeatureVector::where('annotation_id', $this->annotationLabel->annotation_id);
     }
-
 
     /**
      * {@inheritdoc}

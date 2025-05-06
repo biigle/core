@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Process;
 use SplFileObject;
 
-
 abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 {
     /**
@@ -25,8 +24,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         int $pointPadding = 112,
         int $boxPadding = 0,
         int $minSize = 32
-    ): array
-    {
+    ): array {
         $box = match ($shape->id) {
             Shape::pointId() => $this->getPointBoundingBox($points, $pointPadding),
             Shape::circleId() => $this->getCircleBoundingBox($points),

@@ -9,8 +9,8 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;
-use TestCase;
 use Queue;
+use TestCase;
 
 class VideosCleanupListenerTest extends TestCase
 {

@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\MediaType;
 use Biigle\VideoAnnotationLabelFeatureVector;
 
 class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
@@ -46,28 +46,23 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
         // Label ID does not fit to annotation ID.
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l4->label_id,
-                'annotation_id' => $l1->annotation_id,
-            ])
-            ->assertStatus(302);
+            'label_id' => $l4->label_id,
+            'annotation_id' => $l1->annotation_id,
+        ])->assertStatus(302);
 
         // Annotation does not belong to volume.
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l5->label_id,
-                'annotation_id' => $l5->annotation_id,
-            ])
-            ->assertStatus(302);
+            'label_id' => $l5->label_id,
+            'annotation_id' => $l5->annotation_id,
+        ])->assertStatus(302);
 
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l1->label_id,
-                'annotation_id' => $l1->annotation_id,
-            ])
-            ->assertStatus(200)
-            ->assertExactJson([
-                $l2->annotation_id,
-                $l3->annotation_id,
-            ]);
-
+            'label_id' => $l1->label_id,
+            'annotation_id' => $l1->annotation_id,
+        ])->assertStatus(200)->assertExactJson([
+            $l2->annotation_id,
+            $l3->annotation_id,
+        ]);
     }
 
     public function testIndexDuplicateImage()
@@ -89,11 +84,9 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l1->label_id,
-                'annotation_id' => $l1->annotation_id,
-            ])
-            ->assertStatus(200)
-            ->assertExactJson([$l3->annotation_id]);
+            'label_id' => $l1->label_id,
+            'annotation_id' => $l1->annotation_id,
+        ])->assertStatus(200)->assertExactJson([$l3->annotation_id]);
     }
 
     public function testIndexVideo()
@@ -133,27 +126,23 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
         // Label ID does not fit to annotation ID.
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l4->label_id,
-                'annotation_id' => $l1->annotation_id,
-            ])
-            ->assertStatus(302);
+            'label_id' => $l4->label_id,
+            'annotation_id' => $l1->annotation_id,
+        ])->assertStatus(302);
 
         // Annotation does not belong to volume.
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l5->label_id,
-                'annotation_id' => $l5->annotation_id,
-            ])
-            ->assertStatus(302);
+            'label_id' => $l5->label_id,
+            'annotation_id' => $l5->annotation_id,
+        ])->assertStatus(302);
 
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l1->label_id,
-                'annotation_id' => $l1->annotation_id,
-            ])
-            ->assertStatus(200)
-            ->assertExactJson([
-                $l2->annotation_id,
-                $l3->annotation_id,
-            ]);
+            'label_id' => $l1->label_id,
+            'annotation_id' => $l1->annotation_id,
+        ])->assertStatus(200)->assertExactJson([
+            $l2->annotation_id,
+            $l3->annotation_id,
+        ]);
     }
 
     public function testIndexDuplicateVideo()
@@ -175,10 +164,8 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->call('GET', "/api/v1/volumes/{$id}/annotations/sort/similarity", [
-                'label_id' => $l1->label_id,
-                'annotation_id' => $l1->annotation_id,
-            ])
-            ->assertStatus(200)
-            ->assertExactJson([$l3->annotation_id]);
+            'label_id' => $l1->label_id,
+            'annotation_id' => $l1->annotation_id,
+        ])->assertStatus(200)->assertExactJson([$l3->annotation_id]);
     }
 }

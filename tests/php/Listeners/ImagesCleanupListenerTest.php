@@ -9,8 +9,8 @@ use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;
-use TestCase;
 use Queue;
+use TestCase;
 
 class ImagesCleanupListenerTest extends TestCase
 {

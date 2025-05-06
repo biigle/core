@@ -18,7 +18,6 @@ abstract class CopyAnnotationFeatureVector extends Job
      */
     protected $deleteWhenMissingModels = true;
 
-
     /**
      * Copy the feature vector of the annotation associated with the annotation label
      * to create a new feature vector for the annotation label.

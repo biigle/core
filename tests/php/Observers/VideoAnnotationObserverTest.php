@@ -5,8 +5,8 @@ namespace Biigle\Tests\Observers;
 use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\Tests\VideoAnnotationTest;
-use TestCase;
 use Queue;
+use TestCase;
 
 class VideoAnnotationObserverTest extends TestCase
 {

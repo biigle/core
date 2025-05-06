@@ -5,9 +5,9 @@ namespace Biigle\Jobs;
 use Biigle\Annotation;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
-use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabelFeatureVector;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -21,8 +21,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
     public function __construct(
         public array $imageAnnotationIds,
         public array $videoAnnotationIds
-    )
-    {
+    ) {
         //
     }
 
@@ -40,7 +39,8 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
             ->keyBy('id');
 
         // Chunk to avoid maximum insert parameter limit.
-        $this->getInsertData($models)->chunk(10000)->each(fn ($chunk) =>
+        $this->getInsertData($models)->chunk(10000)->each(
+            fn ($chunk) =>
             ImageAnnotationLabelFeatureVector::insert($chunk->toArray())
         );
 
@@ -56,7 +56,8 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
             ->keyBy('id');
 
         // Chunk to avoid maximum insert parameter limit.
-        $this->getInsertData($models)->chunk(10000)->each(fn ($chunk) =>
+        $this->getInsertData($models)->chunk(10000)->each(
+            fn ($chunk) =>
             VideoAnnotationLabelFeatureVector::insert($chunk->toArray())
         );
     }

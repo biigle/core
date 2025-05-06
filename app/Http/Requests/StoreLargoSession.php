@@ -112,13 +112,13 @@ class StoreLargoSession extends FormRequest
      */
     protected function imageAnotationsBelongToVolumes($annotations, $volumes)
     {
-        $chunkedAnnotations = array_chunk($annotations,config('biigle.db_param_limit') - count($volumes)); 
-        foreach($chunkedAnnotations as $chunkedAnnotation){
+        $chunkedAnnotations = array_chunk($annotations, config('biigle.db_param_limit') - count($volumes));
+        foreach ($chunkedAnnotations as $chunkedAnnotation) {
             $queryReturn = ImageAnnotation::join('images', 'image_annotations.image_id', '=', 'images.id')
                 ->whereIn('image_annotations.id', $chunkedAnnotation)
                 ->whereNotIn('images.volume_id', $volumes)
                 ->exists();
-            if ($queryReturn){
+            if ($queryReturn) {
                 return false;
             }
         }
@@ -136,13 +136,13 @@ class StoreLargoSession extends FormRequest
      */
     protected function videoAnotationsBelongToVolumes($annotations, $volumes)
     {
-        $chunkedAnnotations = array_chunk($annotations,config('biigle.db_param_limit') - count($volumes));
-        foreach($chunkedAnnotations as $chunkedAnnotation){
+        $chunkedAnnotations = array_chunk($annotations, config('biigle.db_param_limit') - count($volumes));
+        foreach ($chunkedAnnotations as $chunkedAnnotation) {
             $queryReturn = VideoAnnotation::join('videos', 'video_annotations.video_id', '=', 'videos.id')
                 ->whereIn('video_annotations.id', $chunkedAnnotation)
                 ->whereNotIn('videos.volume_id', $volumes)
                 ->exists();
-            if ($queryReturn){
+            if ($queryReturn) {
                 return false;
             }
         }

@@ -2,12 +2,11 @@
 
 namespace Biigle\Tests;
 
-use Biigle\VideoAnnotationLabel;
-use Biigle\VideoAnnotation;
 use Biigle\Label;
 use Biigle\LabelTree;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Biigle\VideoAnnotationLabelFeatureVector;
-use Biigle\Volume;
 use Illuminate\Database\QueryException;
 use TestCase;
 

@@ -3,11 +3,9 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Annotation;
-use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
-use Biigle\VideoAnnotationLabelFeatureVector;
-use Biigle\VideoAnnotation;
 use Biigle\Project;
+use Biigle\VideoAnnotationLabelFeatureVector;
 use Illuminate\Foundation\Http\FormRequest;
 
 class IndexProjectAnnotationsSimilarity extends FormRequest

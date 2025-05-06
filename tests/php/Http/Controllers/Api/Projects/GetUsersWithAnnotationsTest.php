@@ -3,15 +3,15 @@
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Tests\UserTest;
-use Biigle\MediaType;
 
 class GetUsersWithAnnotationsTest extends ApiTestCase
 {
@@ -61,9 +61,7 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
         $response = $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')
             ->assertStatus(200);
         $json = $response->json();
-        usort($json, function($a, $b) {
-            return $a['user_id'] <=> $b['user_id'];
-        });
+        usort($json, fn ($a, $b) => $a['user_id'] <=> $b['user_id']);
         $this->assertEquals($json, $expected);
     }
 }

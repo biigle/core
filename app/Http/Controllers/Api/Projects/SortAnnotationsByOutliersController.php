@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api\Projects;
 
-use DB;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
+use DB;
 
 class SortAnnotationsByOutliersController extends Controller
 {

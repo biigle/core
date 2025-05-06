@@ -5,7 +5,6 @@ namespace Biigle\Jobs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Queue;
-use Storage;
 
 abstract class RemoveAnnotationPatches extends Job implements ShouldQueue
 {

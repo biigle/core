@@ -4,14 +4,14 @@ namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
 use Biigle\MediaType;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\ImageAnnotationLabelTest;
-use Biigle\Tests\VideoAnnotationLabelTest;
 
 class ProjectAnnotationLabelsTest extends ApiTestCase
 {

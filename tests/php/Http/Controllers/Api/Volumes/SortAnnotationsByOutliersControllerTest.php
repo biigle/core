@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\MediaType;
 use Biigle\VideoAnnotationLabelFeatureVector;
 
 class SortAnnotationsByOutliersControllerTest extends ApiTestCase

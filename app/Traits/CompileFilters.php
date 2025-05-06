@@ -16,13 +16,9 @@ trait CompileFilters
         if ($union) {
             $query->where(function ($q) use ($filters) {
                 foreach ($filters as $filterName => $filterValues) {
-                    $toInclude = array_filter($filterValues, function($num) {
-                        return $num > 0;
-                    });
+                    $toInclude = array_filter($filterValues, fn ($num) => $num > 0);
 
-                    $toExclude = array_map('abs', array_filter($filterValues, function($num) {
-                        return $num < 0;
-                    }));
+                    $toExclude = array_map('abs', array_filter($filterValues, fn ($num) => $num < 0));
 
                     foreach ($toInclude as $valueToInclude) {
                         $q->orWhere($filterName, $valueToInclude);

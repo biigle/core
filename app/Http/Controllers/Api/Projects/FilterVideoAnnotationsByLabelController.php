@@ -3,14 +3,15 @@
 namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Traits\CompileFilters;
 use Biigle\Project;
+use Biigle\Traits\CompileFilters;
 use Biigle\VideoAnnotation;
 use Illuminate\Http\Request;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
     use CompileFilters;
+
     /**
      * Show all video annotations of the project that have a specific label attached.
      *
@@ -62,9 +63,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
             })
             ->where('video_annotation_labels.label_id', $lid)
             ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
-            ->when(!is_null($take), function ($query) use ($take) {
-                return $query->take($take);
-            })
+            ->when(!is_null($take), fn ($query) => $query->take($take))
             ->select('videos.uuid', 'video_annotations.id')
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')

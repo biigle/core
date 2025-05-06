@@ -2,15 +2,14 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Jobs\ProcessAnnotatedVideo;
-use Biigle\Exceptions\ProcessAnnotatedFileException;
-use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Video as VideoModel;
-use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
 use Exception;
 use FFMpeg\Media\Video;
@@ -639,7 +638,8 @@ class ProcessAnnotatedVideoTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedVideoStub($annotation->video,
+        $job = new ProcessAnnotatedVideoStub(
+            $annotation->video,
             skipFeatureVectors: true,
             skipSvgs: true
         );
@@ -663,7 +663,8 @@ class ProcessAnnotatedVideoTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedVideoStub($annotation->video,
+        $job = new ProcessAnnotatedVideoStub(
+            $annotation->video,
             skipPatches: true,
             skipSvgs: true
         );
@@ -688,7 +689,8 @@ class ProcessAnnotatedVideoTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedVideoStub($annotation->video,
+        $job = new ProcessAnnotatedVideoStub(
+            $annotation->video,
             skipFeatureVectors: true,
             skipPatches: true
         );
@@ -785,7 +787,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             // This is a real-world example where someone managed to create a zero-sized
             // rectangle.
-            'points' => [[844.69,1028.44,844.69,1028.44,844.69,1028.44,844.69,1028.44]],
+            'points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]],
             'frames' => [0],
             'shape_id' => Shape::rectangleId(),
         ]);

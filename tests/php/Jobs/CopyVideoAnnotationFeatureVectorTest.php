@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Jobs;
 
 use Biigle\Jobs\CopyVideoAnnotationFeatureVector;
-use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VideoAnnotationLabel;
+use Biigle\VideoAnnotationLabelFeatureVector;
 use TestCase;
 
 class CopyVideoAnnotationFeatureVectorTest extends TestCase

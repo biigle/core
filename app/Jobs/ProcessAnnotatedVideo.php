@@ -2,8 +2,8 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Exception\RuntimeException;
@@ -78,10 +78,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 
             if (!$this->skipFeatureVectors) {
                 $annotationFrames = $annotations->mapWithKeys(
-                        fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"] ?? null]
-                    )
-                    ->filter()
-                    ->toArray();
+                    fn ($a) => [$a->id => $frameFiles["{$a->frames[0]}"] ?? null]
+                )->filter()->toArray();
 
                 $this->generateFeatureVectors($annotations, $annotationFrames);
             }
@@ -162,6 +160,6 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         return VideoAnnotation::where('video_id', $file->id)->when(
             !empty($this->only),
             fn ($q) => $q->whereIn('id', $this->only)
-        );;
+        );
     }
 }

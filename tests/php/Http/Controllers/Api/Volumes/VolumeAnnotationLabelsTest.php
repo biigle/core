@@ -3,16 +3,16 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Carbon\Carbon;
 use Biigle\MediaType;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\LabelTest;
-use Biigle\Tests\VideoTest;
-use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
+use Carbon\Carbon;
 
 class VolumeAnnotationLabelsTest extends ApiTestCase
 {
@@ -285,16 +285,16 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
         $session->save();
 
         $this->getJson("/api/v1/volumes/{$id}/label-count")
-        ->assertStatus(200)
-        ->assertExactJson([
-            [
-                "id" => $l2->id,
-                "color" => $l2->color,
-                "name" => $l2->name,
-                "label_tree_id" => $l2->label_tree_id,
-                "count" => 1
-            ],
-        ]);
+            ->assertStatus(200)
+            ->assertExactJson([
+                [
+                    "id" => $l2->id,
+                    "color" => $l2->color,
+                    "name" => $l2->name,
+                    "label_tree_id" => $l2->label_tree_id,
+                    "count" => 1
+                ],
+            ]);
     }
 
     public function testGetVideoVolumeAnnotationLabelsAnnotationSession()
@@ -402,16 +402,16 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
         $session->save();
 
         $this->getJson("/api/v1/volumes/{$id}/label-count")
-        ->assertStatus(200)
-        ->assertExactJson([
-            [
-                "id" => $l2->id,
-                "color" => $l2->color,
-                "name" => $l2->name,
-                "label_tree_id" => $l2->label_tree_id,
-                "count" => 1
-            ],
-        ]);
+            ->assertStatus(200)
+            ->assertExactJson([
+                [
+                    "id" => $l2->id,
+                    "color" => $l2->color,
+                    "name" => $l2->name,
+                    "label_tree_id" => $l2->label_tree_id,
+                    "count" => 1
+                ],
+            ]);
     }
 
     public function testGetImageVolumeAnnotationLabelsAnnotationSessionEdgeCaseHideOther()

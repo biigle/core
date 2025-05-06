@@ -2,8 +2,8 @@
 
 namespace Biigle\Jobs;
 
-use Illuminate\Database\Eloquent\Builder;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Illuminate\Database\Eloquent\Builder;
 
 class CopyImageAnnotationFeatureVector extends CopyAnnotationFeatureVector
 {
@@ -14,7 +14,6 @@ class CopyImageAnnotationFeatureVector extends CopyAnnotationFeatureVector
     {
         return ImageAnnotationLabelFeatureVector::where('annotation_id', $this->annotationLabel->annotation_id);
     }
-
 
     /**
      * {@inheritdoc}

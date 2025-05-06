@@ -2,16 +2,11 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\ImageAnnotation;
-use Biigle\ImageAnnotationLabel;
-use Biigle\Jobs\Job;
-use Biigle\Label;
 use Biigle\Events\LargoSessionFailed;
 use Biigle\Events\LargoSessionSaved;
-use Biigle\Jobs\CopyImageAnnotationFeatureVector;
-use Biigle\Jobs\CopyVideoAnnotationFeatureVector;
-use Biigle\Jobs\RemoveImageAnnotationPatches;
-use Biigle\Jobs\RemoveVideoAnnotationPatches;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
+use Biigle\Label;
 use Biigle\User;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
@@ -226,9 +221,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
 
             // Remove all annotations from the dismissed array that should be ignored.
             // Use outermost array_filter to remove now empty elements.
-            $dismissed = array_filter(array_map(function ($ids) use ($ignoreAnnotations) {
-                return array_diff($ids, $ignoreAnnotations);
-            }, $dismissed));
+            $dismissed = array_filter(array_map(fn ($ids) => array_diff($ids, $ignoreAnnotations), $dismissed));
         }
 
         return [$dismissed, $changed];
@@ -249,10 +242,14 @@ class ApplyLargoSession extends Job implements ShouldQueue
                     }
                 }
 
-                $dismissed[$labelId] = array_filter($annotationIds,
-                        fn ($x) => !in_array($x, $toIgnore));
-                $changed[$labelId] = array_filter($changed[$labelId],
-                        fn ($x) => !in_array($x, $toIgnore));
+                $dismissed[$labelId] = array_filter(
+                    $annotationIds,
+                    fn ($x) => !in_array($x, $toIgnore)
+                );
+                $changed[$labelId] = array_filter(
+                    $changed[$labelId],
+                    fn ($x) => !in_array($x, $toIgnore)
+                );
             }
         }
 
@@ -275,9 +272,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
     {
         foreach ($dismissed as $labelId => $annotationIds) {
             $labelModel::whereIn('annotation_id', $annotationIds)
-                ->when(!$force, function ($query) use ($user) {
-                    return $query->where('user_id', $user->id);
-                })
+                ->when(!$force, fn ($query) => $query->where('user_id', $user->id))
                 ->where('label_id', $labelId)
                 ->delete();
         }

@@ -3,9 +3,9 @@
 namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\IndexVolumeAnnotationsSimilarity;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\VideoAnnotationLabelFeatureVector;
-use Biigle\Http\Requests\IndexVolumeAnnotationsSimilarity;
 
 class SortAnnotationsBySimilarityController extends Controller
 {

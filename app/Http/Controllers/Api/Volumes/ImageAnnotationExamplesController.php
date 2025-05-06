@@ -44,10 +44,7 @@ class ImageAnnotationExamplesController extends Controller
             ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->where('images.volume_id', $vid)
             ->where('labels.label_tree_id', $label->label_tree_id)
-            ->where(function ($query) use ($label) {
-                return $query->where('labels.parent_id', $label->parent_id)
-                    ->orWhere('labels.id', $label->parent_id);
-            })
+            ->where(fn ($query) => $query->where('labels.parent_id', $label->parent_id)->orWhere('labels.id', $label->parent_id))
             ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id');
 
         if ($session) {
@@ -88,10 +85,7 @@ class ImageAnnotationExamplesController extends Controller
             ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->where('images.volume_id', $vid)
             ->where('image_annotation_labels.label_id', $closestLabel->id)
-            ->when(!is_null($take), function ($query) use ($take) {
-                return $query->orderBy('image_annotations.created_at', 'desc')
-                    ->take($take);
-            })
+            ->when(!is_null($take), fn ($query) => $query->orderBy('image_annotations.created_at', 'desc')->take($take))
             ->pluck('images.uuid', 'image_annotations.id');
 
         return [

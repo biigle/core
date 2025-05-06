@@ -5,9 +5,9 @@ namespace Biigle\Tests\Http\Controllers\Api\Projects;
 use ApiTestCase;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ShapeTest;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\ShapeTest;
+use Biigle\Tests\UserTest;
 
 class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 {

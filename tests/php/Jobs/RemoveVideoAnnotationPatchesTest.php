@@ -4,7 +4,6 @@ namespace Biigle\Tests\Jobs;
 
 use Biigle\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\Tests\VideoAnnotationTest;
-use File;
 use Queue;
 use Storage;
 use TestCase;

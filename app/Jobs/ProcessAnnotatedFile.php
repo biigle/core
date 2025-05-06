@@ -3,17 +3,15 @@
 namespace Biigle\Jobs;
 
 use Biigle\Contracts\Annotation;
+use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Exception;
 use FileCache;
-use Biigle\Exceptions\ProcessAnnotatedFileException;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
@@ -68,8 +66,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         public bool $skipFeatureVectors = false,
         public bool $skipSvgs = false,
         public ?string $targetDisk = null
-    )
-    {
+    ) {
         $this->targetDisk = $targetDisk ?: config('largo.patch_storage_disk');
     }
 
@@ -85,7 +82,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $prefix = fragment_uuid_path($annotation->getFile()->uuid);
         $format = $format ?: config('largo.patch_format');
 
-        return match($annotation::class) {
+        return match ($annotation::class) {
             // Add "v-" to make absolutely sure that no collisions (same UUID, same ID)
             // occur because patches are stored on the same disk.
             VideoAnnotation::class => "{$prefix}/v-{$annotation->id}.{$format}",
@@ -497,7 +494,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $assigned = [];
 
         // Sort x values in ascending order
-        usort($tuples, fn($a, $b) => $a[0] <=> $b[0]);
+        usort($tuples, fn ($a, $b) => $a[0] <=> $b[0]);
 
         // Note: y-axis is inverted
         if ($shape->id === Shape::rectangleId()) {
@@ -505,7 +502,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             $assigned['UL'] = $tuples[0][1] < $tuples[1][1] ? $tuples[0] : $tuples[1];
             $assigned['LR'] = $tuples[2][1] > $tuples[3][1] ? $tuples[2] : $tuples[3];
             $assigned['UR'] = $tuples[2][1] < $tuples[3][1] ? $tuples[2] : $tuples[3];
-        } else if ($shape->id === Shape::ellipseId()) {
+        } elseif ($shape->id === Shape::ellipseId()) {
             $assigned['L'] = $tuples[0];
             $assigned['R'] = end($tuples);
             $assigned['U'] = $tuples[1][1] < $tuples[2][1] ? $tuples[1] : $tuples[2];
@@ -521,15 +518,12 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     protected function redispatch(): void
     {
         static::dispatch(
-                $this->file,
-                $this->only,
-                $this->skipPatches,
-                $this->skipFeatureVectors,
-                $this->skipSvgs,
-                $this->targetDisk
-            )
-            ->onConnection($this->connection)
-            ->onQueue($this->queue)
-            ->delay(60);
+            $this->file,
+            $this->only,
+            $this->skipPatches,
+            $this->skipFeatureVectors,
+            $this->skipSvgs,
+            $this->targetDisk
+        )->onConnection($this->connection)->onQueue($this->queue)->delay(60);
     }
 }

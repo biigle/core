@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Label;
 use Biigle\LabelTree;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

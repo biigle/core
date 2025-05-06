@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Image;
-use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ProcessAnnotatedImage;
 use Biigle\Shape;
@@ -14,7 +14,6 @@ use Bus;
 use Exception;
 use File;
 use FileCache;
-use Jcupitt\Vips\Image as VipsImage;
 use Log;
 use Mockery;
 use Storage;
@@ -561,7 +560,8 @@ class ProcessAnnotatedImageTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedImageStub($annotation->image,
+        $job = new ProcessAnnotatedImageStub(
+            $annotation->image,
             skipFeatureVectors: true,
             skipSvgs: true
         );
@@ -583,7 +583,8 @@ class ProcessAnnotatedImageTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedImageStub($annotation->image,
+        $job = new ProcessAnnotatedImageStub(
+            $annotation->image,
             skipPatches: true,
             skipSvgs: true
         );
@@ -606,7 +607,8 @@ class ProcessAnnotatedImageTest extends TestCase
             'shape_id' => Shape::pointId(),
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedImageStub($annotation->image,
+        $job = new ProcessAnnotatedImageStub(
+            $annotation->image,
             skipFeatureVectors: true,
             skipPatches: true
         );
@@ -698,7 +700,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $annotation = ImageAnnotationTest::create([
             // This is a real-world example where someone managed to create a zero-sized
             // rectangle.
-            'points' => [844.69,1028.44,844.69,1028.44,844.69,1028.44,844.69,1028.44],
+            'points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44],
             'shape_id' => Shape::rectangleId(),
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
@@ -735,7 +737,8 @@ class ProcessAnnotatedImageTest extends TestCase
             'image_id' => $image->id,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedImageStub($image,
+        $job = new ProcessAnnotatedImageStub(
+            $image,
             skipPatches: true,
             skipSvgs: true
         );
@@ -779,7 +782,8 @@ class ProcessAnnotatedImageTest extends TestCase
             'image_id' => $image->id,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
-        $job = new ProcessAnnotatedImageStub($image,
+        $job = new ProcessAnnotatedImageStub(
+            $image,
             skipPatches: true,
             skipSvgs: true
         );

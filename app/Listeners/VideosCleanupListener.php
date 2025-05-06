@@ -4,7 +4,6 @@ namespace Biigle\Listeners;
 
 use Biigle\Events\VideosDeleted;
 use Biigle\Jobs\RemoveVideoAnnotationPatches;
-use Biigle\Video;
 use Biigle\VideoAnnotation;
 
 class VideosCleanupListener

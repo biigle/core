@@ -3,13 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
-use Biigle\MediaType;
 use Biigle\ImageAnnotation;
-use Biigle\VideoAnnotation;
-use Biigle\Label;
 use Biigle\Jobs\ApplyLargoSession;
-use Biigle\Jobs\RemoveImageAnnotationPatches;
-use Biigle\Jobs\RemoveVideoAnnotationPatches;
+use Biigle\Label;
+use Biigle\MediaType;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -17,6 +14,7 @@ use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\VideoAnnotation;
 use Queue;
 
 class LargoControllerTest extends ApiTestCase
@@ -74,27 +72,26 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                ],
-                'changed_image_annotations' => [
-                    $this->labelRoot()->id => [$other->id],
-                ],
-            ])
-            // other does not belong to the same project
-            ->assertStatus(422);
+            'dismissed_image_annotations' => [
+            ],
+            'changed_image_annotations' => [
+                $this->labelRoot()->id => [$other->id],
+            ],
+        // other does not belong to the same project
+        ])->assertStatus(422);
+
 
         $otherLabel = ImageAnnotationLabelTest::create();
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                ],
-                'changed_image_annotations' => [
-                    $otherLabel->label_id => [$this->imageAnnotation->id],
-                ],
-            ])
-            // a label in 'changed_image_annotations' does not belong to a label tree available for the project
-            ->assertStatus(422);
+            'dismissed_image_annotations' => [
+            ],
+            'changed_image_annotations' => [
+                $otherLabel->label_id => [$this->imageAnnotation->id],
+            ],
+        // a label in 'changed_image_annotations' does not belong to a label tree available for the project
+        ])->assertStatus(422);
     }
 
     public function testErrorsVideoAnnotations()
@@ -112,27 +109,25 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                ],
-                'changed_video_annotations' => [
-                    $this->labelRoot()->id => [$other->id],
-                ],
-            ])
-            // other does not belong to the same project
-            ->assertStatus(422);
+            'dismissed_video_annotations' => [
+            ],
+            'changed_video_annotations' => [
+                $this->labelRoot()->id => [$other->id],
+            ],
+        // other does not belong to the same project
+        ])->assertStatus(422);
 
         $otherLabel = VideoAnnotationLabelTest::create();
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                ],
-                'changed_video_annotations' => [
-                    $otherLabel->label_id => [$this->videoAnnotation->id],
-                ],
-            ])
-            // a label in 'changed_image_annotations' does not belong to a label tree available for the project
-            ->assertStatus(422);
+            'dismissed_video_annotations' => [
+            ],
+            'changed_video_annotations' => [
+                $otherLabel->label_id => [$this->videoAnnotation->id],
+            ],
+        // a label in 'changed_image_annotations' does not belong to a label tree available for the project
+        ])->assertStatus(422);
     }
 
     public function testQueueImageAnnotations()
@@ -163,12 +158,11 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [],
-            ])
-            ->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -176,12 +170,11 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [],
-            ])
-            ->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -191,13 +184,12 @@ class LargoControllerTest extends ApiTestCase
         $this->imageAnnotationLabel->save();
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [],
-                'force' => true,
-            ])
-            ->assertStatus(403);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [],
+            'force' => true,
+        ])->assertStatus(403);
         Queue::assertNotPushed(ApplyLargoSession::class);
     }
 
@@ -207,13 +199,12 @@ class LargoControllerTest extends ApiTestCase
         $this->videoAnnotationLabel->save();
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [],
-                'force' => true,
-            ])
-            ->assertStatus(403);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [],
+            'force' => true,
+        ])->assertStatus(403);
         Queue::assertNotPushed(ApplyLargoSession::class);
     }
 
@@ -221,13 +212,12 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [],
-                'force' => true,
-            ])
-            ->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [],
+            'force' => true,
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -235,13 +225,12 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [],
-                'force' => true,
-            ])
-            ->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [],
+            'force' => true,
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -249,14 +238,13 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [
-                    $this->labelRoot()->id => [$this->imageAnnotation->id],
-                ],
-            ])
-            ->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [
+                $this->labelRoot()->id => [$this->imageAnnotation->id],
+            ],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -264,14 +252,13 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [
-                    $this->labelRoot()->id => [$this->videoAnnotation->id],
-                ],
-            ])
-            ->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [
+                $this->labelRoot()->id => [$this->videoAnnotation->id],
+            ],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -279,14 +266,13 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beAdmin();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [
-                    $this->labelRoot()->id => [$this->imageAnnotation->id],
-                ],
-            ])
-            ->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [
+                $this->labelRoot()->id => [$this->imageAnnotation->id],
+            ],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -294,14 +280,13 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beAdmin();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [
-                    $this->labelRoot()->id => [$this->videoAnnotation->id],
-                ],
-            ])
-            ->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [
+                $this->labelRoot()->id => [$this->videoAnnotation->id],
+            ],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -309,15 +294,14 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [
-                    $this->labelRoot()->id => [$this->imageAnnotation->id],
-                ],
-                'force' => true,
-            ])
-            ->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [
+                $this->labelRoot()->id => [$this->imageAnnotation->id],
+            ],
+            'force' => true,
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -325,15 +309,14 @@ class LargoControllerTest extends ApiTestCase
     {
         $this->beExpert();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [
-                    $this->labelRoot()->id => [$this->videoAnnotation->id],
-                ],
-                'force' => true,
-            ])
-            ->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [
+                $this->labelRoot()->id => [$this->videoAnnotation->id],
+            ],
+            'force' => true,
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -346,16 +329,15 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                    $label2->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [
-                    $this->labelRoot()->id => [$this->imageAnnotation->id],
-                    $this->labelChild()->id => [$this->imageAnnotation->id],
-                ],
-            ])
-            ->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                $label2->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [
+                $this->labelRoot()->id => [$this->imageAnnotation->id],
+                $this->labelChild()->id => [$this->imageAnnotation->id],
+            ],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -368,16 +350,15 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                    $label2->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [
-                    $this->labelRoot()->id => [$this->videoAnnotation->id],
-                    $this->labelChild()->id => [$this->videoAnnotation->id],
-                ],
-            ])
-            ->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+                $label2->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [
+                $this->labelRoot()->id => [$this->videoAnnotation->id],
+                $this->labelChild()->id => [$this->videoAnnotation->id],
+            ],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
@@ -387,11 +368,11 @@ class LargoControllerTest extends ApiTestCase
         $this->project()->addVolumeId($volume2->id);
         $this->beEditor();
         $response = $this->post("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [],
-            ])->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [],
+        ])->assertStatus(200);
 
         $attrs = $this->imageVolume->fresh()->attrs;
         $this->assertNotNull($attrs);
@@ -406,11 +387,11 @@ class LargoControllerTest extends ApiTestCase
         $this->project()->addVolumeId($volume2->id);
         $this->beEditor();
         $response = $this->post("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [],
-            ])->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [],
+        ])->assertStatus(200);
 
         $attrs = $this->videoVolume->fresh()->attrs;
         $this->assertNotNull($attrs);
@@ -426,11 +407,11 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
-                ],
-                'changed_image_annotations' => [],
-            ])->assertStatus(422);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'changed_image_annotations' => [],
+        ])->assertStatus(422);
     }
 
     public function testStoreJobStillRunningVideoAnnotations()
@@ -440,24 +421,26 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
-                ],
-                'changed_video_annotations' => [],
-            ])->assertStatus(422);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => [$this->videoAnnotation->id],
+            ],
+            'changed_video_annotations' => [],
+        ])->assertStatus(422);
     }
 
     public function testChunkingImgProject()
     {
         config(['biigle.db_param_limit' => 2]);
-        $image = ImageTest::create(['volume_id' => $this->imageVolume->id,
-                                    'filename' => "testImage"]);
+        $image = ImageTest::create([
+            'volume_id' => $this->imageVolume->id,
+            'filename' => "testImage",
+        ]);
 
         $imageAnnotations = ImageAnnotation::factory()->count(5)->create(['image_id' => $image->id]);
-        $label = Label::factory()->create(); 
+        $label = Label::factory()->create();
 
 
-        $imageAnnotations->each(fn($imageAnnotation) =>
+        $imageAnnotations->each(fn ($imageAnnotation) =>
             ImageAnnotationLabelTest::create([
                 'annotation_id' => $imageAnnotation->id,
                 'user_id' => $this->editor()->id,
@@ -467,25 +450,26 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_image_annotations' => [
-                    $this->imageAnnotationLabel->label_id => $imageAnnotations->pluck('id'), 
-                ],
-                'changed_image_annotations' => [],
-            ])
-            ->assertStatus(200);
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => $imageAnnotations->pluck('id'),
+            ],
+            'changed_image_annotations' => [],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
 
     public function testChunkingVidProject()
     {
         config(['biigle.db_param_limit' => 2]);
-        $video = VideoTest::create(['volume_id' => $this->videoVolume->id,
-                                    'filename' => "testVideo"]);
+        $video = VideoTest::create([
+            'volume_id' => $this->videoVolume->id,
+            'filename' => "testVideo",
+        ]);
         $videoAnnotations = VideoAnnotation::factory()->count(5)->create(['video_id' => $video->id]);
 
-        $label = Label::factory()->create(); 
+        $label = Label::factory()->create();
 
-        $videoAnnotations->each(fn($videoAnnotation) =>
+        $videoAnnotations->each(fn ($videoAnnotation) =>
             VideoAnnotationLabelTest::create([
                 'annotation_id' => $videoAnnotation->id,
                 'user_id' => $this->editor()->id,
@@ -495,13 +479,11 @@ class LargoControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
-                'dismissed_video_annotations' => [
-                    $this->videoAnnotationLabel->label_id => $videoAnnotations->pluck('id'), 
-                ],
-                'changed_video_annotations' => [],
-            ])
-            ->assertStatus(200);
+            'dismissed_video_annotations' => [
+                $this->videoAnnotationLabel->label_id => $videoAnnotations->pluck('id'),
+            ],
+            'changed_video_annotations' => [],
+        ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
-
 }

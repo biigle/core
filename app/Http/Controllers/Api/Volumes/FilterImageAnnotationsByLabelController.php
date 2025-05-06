@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 class FilterImageAnnotationsByLabelController extends Controller
 {
     use CompileFilters;
+
     /**
      * Show all image annotations of the volume that have a specific label attached.
      *
@@ -65,9 +66,7 @@ class FilterImageAnnotationsByLabelController extends Controller
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->where('images.volume_id', $vid)
             ->where('image_annotation_labels.label_id', $lid)
-            ->when(!is_null($take), function ($query) use ($take) {
-                return $query->take($take);
-            })
+            ->when(!is_null($take), fn ($query) => $query->take($take))
             ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {

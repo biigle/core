@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -39,80 +38,80 @@ return new class extends Migration
          */
 
         Schema::create('image_annotation_label_feature_vectors', function (Blueprint $table) {
-                $table->unsignedBigInteger('id');
-                $table->foreign('id')
-                    ->references('id')
-                    ->on('image_annotation_labels')
-                    ->onDelete('cascade');
+            $table->unsignedBigInteger('id');
+            $table->foreign('id')
+                ->references('id')
+                ->on('image_annotation_labels')
+                ->onDelete('cascade');
 
-                $table->foreignId('annotation_id')
-                    ->constrained(table: 'image_annotations')
-                    ->onDelete('cascade');
+            $table->foreignId('annotation_id')
+                ->constrained(table: 'image_annotations')
+                ->onDelete('cascade');
 
-                $table->foreignId('label_id')
-                    ->constrained()
-                    ->onDelete('restrict');
+            $table->foreignId('label_id')
+                ->constrained()
+                ->onDelete('restrict');
 
-                // This is added to be used by LabelBOT in the future.
-                // We still have to think of an efficient indexing strategy so indexes
-                // are added later.
-                $table->foreignId('label_tree_id')
-                    ->constrained()
-                    ->onDelete('restrict');
+            // This is added to be used by LabelBOT in the future.
+            // We still have to think of an efficient indexing strategy so indexes
+            // are added later.
+            $table->foreignId('label_tree_id')
+                ->constrained()
+                ->onDelete('restrict');
 
-                $table->foreignId('volume_id')
-                    ->constrained()
-                    ->onDelete('cascade');
+            $table->foreignId('volume_id')
+                ->constrained()
+                ->onDelete('cascade');
 
-                $table->vector('vector', 384);
+            $table->vector('vector', 384);
 
-                // For Largo queries.
-                $table->index(['label_id', 'volume_id']);
+            // For Largo queries.
+            $table->index(['label_id', 'volume_id']);
 
-                // For create/update/delete(cascade) queries.
-                $table->index('annotation_id');
+            // For create/update/delete(cascade) queries.
+            $table->index('annotation_id');
 
-                // Ensure consistency and speed up updateOrCreate queries.
-                $table->primary('id');
-            });
+            // Ensure consistency and speed up updateOrCreate queries.
+            $table->primary('id');
+        });
 
         Schema::create('video_annotation_label_feature_vectors', function (Blueprint $table) {
-                $table->unsignedBigInteger('id');
-                $table->foreign('id')
-                    ->references('id')
-                    ->on('video_annotation_labels')
-                    ->onDelete('cascade');
+            $table->unsignedBigInteger('id');
+            $table->foreign('id')
+                ->references('id')
+                ->on('video_annotation_labels')
+                ->onDelete('cascade');
 
-                $table->foreignId('annotation_id')
-                    ->constrained(table: 'video_annotations')
-                    ->onDelete('cascade');
+            $table->foreignId('annotation_id')
+                ->constrained(table: 'video_annotations')
+                ->onDelete('cascade');
 
-                $table->foreignId('label_id')
-                    ->constrained()
-                    ->onDelete('restrict');
+            $table->foreignId('label_id')
+                ->constrained()
+                ->onDelete('restrict');
 
-                // This is added to be used by LabelBOT in the future.
-                // We still have to think of an efficient indexing strategy so indexes
-                // are added later.
-                $table->foreignId('label_tree_id')
-                    ->constrained()
-                    ->onDelete('restrict');
+            // This is added to be used by LabelBOT in the future.
+            // We still have to think of an efficient indexing strategy so indexes
+            // are added later.
+            $table->foreignId('label_tree_id')
+                ->constrained()
+                ->onDelete('restrict');
 
-                $table->foreignId('volume_id')
-                    ->constrained()
-                    ->onDelete('cascade');
+            $table->foreignId('volume_id')
+                ->constrained()
+                ->onDelete('cascade');
 
-                $table->vector('vector', 384);
+            $table->vector('vector', 384);
 
-                // For Largo queries.
-                $table->index(['label_id', 'volume_id']);
+            // For Largo queries.
+            $table->index(['label_id', 'volume_id']);
 
-                // For create/update/delete(cascade) queries.
-                $table->index('annotation_id');
+            // For create/update/delete(cascade) queries.
+            $table->index('annotation_id');
 
-                // Ensure consistency and speed up updateOrCreate queries.
-                $table->primary('id');
-            });
+            // Ensure consistency and speed up updateOrCreate queries.
+            $table->primary('id');
+        });
     }
 
     /**

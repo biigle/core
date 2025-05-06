@@ -3,10 +3,8 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Annotation;
-use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\VideoAnnotationLabelFeatureVector;
-use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 

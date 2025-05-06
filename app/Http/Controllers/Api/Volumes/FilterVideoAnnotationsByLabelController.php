@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class FilterVideoAnnotationsByLabelController extends Controller
 {
     use CompileFilters;
+
     /**
      * Show all video annotations of the volume that have a specific label attached.
      *
@@ -71,9 +72,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
                     $query->where('video_annotation_labels.user_id', $request->user()->id);
                 }
             })
-            ->when(!is_null($take), function ($query) use ($take) {
-                return $query->take($take);
-            })
+            ->when(!is_null($take), fn ($query) => $query->take($take))
             ->select('videos.uuid', 'video_annotations.id')
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')

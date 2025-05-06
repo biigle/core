@@ -2,7 +2,6 @@
 
 namespace Biigle\Console\Commands;
 
-use Biigle\Annotation;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\Jobs\ProcessAnnotatedFile;
@@ -12,7 +11,6 @@ use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Storage;
@@ -242,24 +240,26 @@ class GenerateMissing extends Command
     protected function dispatcheProcessJob(VolumeFile $file, Collection $ids)
     {
         if ($file instanceof Image) {
-            $ids->chunk(1000)->each(fn ($chunk) =>
-                ProcessAnnotatedImage::dispatch($file,
-                        only: $chunk->toArray(),
-                        skipPatches: $this->skipPatches,
-                        skipFeatureVectors: $this->skipVectors,
-                        skipSvgs: $this->skipSvgs
-                    )
-                    ->onQueue($this->queue)
+            $ids->chunk(1000)->each(
+                fn ($chunk) =>
+                ProcessAnnotatedImage::dispatch(
+                    $file,
+                    only: $chunk->toArray(),
+                    skipPatches: $this->skipPatches,
+                    skipFeatureVectors: $this->skipVectors,
+                    skipSvgs: $this->skipSvgs
+                )->onQueue($this->queue)
             );
         } else {
-            $ids->chunk(1000)->each(fn ($chunk) =>
-                ProcessAnnotatedVideo::dispatch($file,
-                        only: $chunk->toArray(),
-                        skipPatches: $this->skipPatches,
-                        skipFeatureVectors: $this->skipVectors,
-                        skipSvgs: $this->skipSvgs
-                    )
-                    ->onQueue($this->queue)
+            $ids->chunk(1000)->each(
+                fn ($chunk) =>
+                ProcessAnnotatedVideo::dispatch(
+                    $file,
+                    only: $chunk->toArray(),
+                    skipPatches: $this->skipPatches,
+                    skipFeatureVectors: $this->skipVectors,
+                    skipSvgs: $this->skipSvgs
+                )->onQueue($this->queue)
             );
         }
     }

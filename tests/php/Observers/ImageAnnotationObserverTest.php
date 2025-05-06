@@ -5,8 +5,8 @@ namespace Biigle\Tests\Observers;
 use Biigle\Jobs\ProcessAnnotatedImage;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Tests\ImageAnnotationTest;
-use TestCase;
 use Queue;
+use TestCase;
 
 class ImageAnnotationObserverTest extends TestCase
 {

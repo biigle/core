@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api\Volumes;
 
-use Biigle\Volume;
+use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
 use Biigle\VideoAnnotation;
+use Biigle\Volume;
 use Illuminate\Http\Request;
-use Biigle\Http\Controllers\Api\Controller;
 
 class VolumeAnnotationLabels extends Controller
 {
