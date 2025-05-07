@@ -1,5 +1,5 @@
 <template>
-<div v-if="isShown" class="largo-example-annotations">
+<div v-if="label" class="largo-example-annotations">
     <p v-if="loading" class="text-muted">
         Loading example annotations...
     </p>
@@ -71,13 +71,9 @@ export default {
             exampleLabel: null,
             exampleAnnotations: [],
             cache: {},
-            shown: true,
         };
     },
     computed: {
-        isShown() {
-            return this.shown && this.label !== null;
-        },
         hasExamples() {
             return this.exampleLabel && this.exampleAnnotations && Object.keys(this.exampleAnnotations).length > 0;
         },
@@ -109,14 +105,11 @@ export default {
                 this.exampleLabel = args[0].label;
             }
         },
-        updateShown(shown) {
-            this.shown = shown;
-        },
         updateExampleAnnotations() {
             this.exampleAnnotations = [];
 
             // Note that this includes the check for label !== null.
-            if (this.isShown) {
+            if (this.label) {
                 this.startLoading();
 
                 if (!this.cache.hasOwnProperty(this.label.id)) {
@@ -138,12 +131,9 @@ export default {
         label() {
             this.updateExampleAnnotations();
         },
-        shown() {
-            this.updateExampleAnnotations();
-        },
     },
     created() {
-        Events.on('settings.exampleAnnotations', this.updateShown);
+        this.updateExampleAnnotations();
     },
 };
 </script>

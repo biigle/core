@@ -1,5 +1,3 @@
-import './annotationsLabelsTabPlugins.js';
-import './annotationsSettingsTabPlugins.js';
 import './export.js';
 import AnnotationCatalogContainer from './annotationCatalogContainer.vue';
 import LargoContainer from './largoContainer.vue';

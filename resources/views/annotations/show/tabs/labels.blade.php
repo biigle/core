@@ -1,5 +1,10 @@
 <sidebar-tab name="labels" icon="tags" title="Label trees">
-    <labels-tab v-on:select="handleSelectedLabel" v-on:open="openSidebarLabels" v-cloak></labels-tab>
+    <labels-tab
+        :show-example-annotations="showExampleAnnotations"
+        v-on:select="handleSelectedLabel"
+        v-on:open="openSidebarLabels"
+        v-cloak
+        ></labels-tab>
 </sidebar-tab>
 
 @push('scripts')
@@ -9,13 +14,13 @@
             <label-trees :trees="labelTrees" :show-favourites="true" :focus-input="focusInputFindlabel" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </div>
         <div class="labels-tab__plugins">
-            <component
-                :is="plugins.exampleAnnotations"
+            <example-annotations
+                v-if="showExampleAnnotations"
                 :volume-id="{!! $volume->id !!}"
                 :label="selectedLabel"
                 empty-src="{{ asset(config('thumbnails.empty_url')) }}"
                 url-template="{{Storage::disk(config('largo.patch_storage_disk'))->url(':prefix/:id.'.config('largo.patch_format'))}}"
-                ></component>
+                ></example-annotations>
 
             @mixin('annotationsLabelsTab')
         </div>
