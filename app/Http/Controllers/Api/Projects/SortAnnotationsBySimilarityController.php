@@ -22,6 +22,7 @@ class SortAnnotationsBySimilarityController extends Controller
      * @apiDescription Returns a list of image/video annotation IDs with the most similar first (without the reference annotation ID). Image annotation IDs are prefixed with `i` (e.g. `i123`) and video annotation IDs are prefixed with `v` (e.g. `v456`).
      *
      * @param  IndexProjectAnnotationsSimilarity  $request
+     * @return array
      */
     public function index(IndexProjectAnnotationsSimilarity $request)
     {

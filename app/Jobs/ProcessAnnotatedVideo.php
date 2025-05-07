@@ -36,6 +36,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 
     /**
      * Process a chunk of annotations of this job's file.
+     *
+     * @param Collection<int, VideoAnnotation> $annotations
      */
     protected function processAnnotationChunk(Collection $annotations, Video $video): void
     {
@@ -90,6 +92,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 
     /**
      * Create the feature vectors based on the Python script output.
+     *
+     * @param Collection<int, VideoAnnotation> $annotations
      */
     protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
     {
@@ -116,8 +120,6 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      * Get the FFMpeg video instance.
      *
      * @param string $path
-     *
-     * @return Video
      */
     protected function getVideo($path)
     {
@@ -131,7 +133,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      * @param float $time
      * @param int $trySeek
      *
-     * @return \Jcupitt\Vips\Video
+     * @return VipsImage
      */
     protected function getVideoFrame(Video $video, float $time, int $trySeek = 60)
     {
@@ -140,12 +142,13 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         // we try to seek backwards one frame until the buffer is not empty or the number
         // of tries is exceeded.
         do {
+            /** @var string */
             $buffer = $video->frame(TimeCode::fromSeconds($time))
-                ->save(null, false, true);
+                ->save('', false, true);
             $trySeek -= 1;
             // Roughly estimated framerate of 30 fps. With 60 iterations, we seek back up
             // to 2 s by default (this is based on what was required for edge cases in
-            //  1.5 M annotations on 16k videos).
+            //  1.5M annotations on 16k videos).
             $time = max(0, $time - 0.033333333);
         } while (empty($buffer) && $trySeek > 0);
 
@@ -154,6 +157,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 
     /**
      * {@inheritdoc}
+     *
+     * @return Builder<VideoAnnotation>
      */
     protected function getAnnotationQuery(VolumeFile $file): Builder
     {

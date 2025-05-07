@@ -63,6 +63,8 @@ class StoreLargoSession extends FormRequest
         $this->changedImageAnnotations = $this->input('changed_image_annotations', []);
         $this->dismissedVideoAnnotations = $this->input('dismissed_video_annotations', []);
         $this->changedVideoAnnotations = $this->input('changed_video_annotations', []);
+
+        return false;
     }
 
     /**
@@ -122,8 +124,8 @@ class StoreLargoSession extends FormRequest
                 return false;
             }
         }
+
         return true;
-        
     }
 
     /**
@@ -146,6 +148,7 @@ class StoreLargoSession extends FormRequest
                 return false;
             }
         }
+
         return true;
     }
 
@@ -154,7 +157,7 @@ class StoreLargoSession extends FormRequest
      *
      * @param array $changed Array of all changed annotation IDs for each label
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function getRequiredLabelTrees($changed)
     {

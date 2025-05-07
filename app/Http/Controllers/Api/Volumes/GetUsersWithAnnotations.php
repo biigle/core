@@ -22,7 +22,7 @@ class GetUsersWithAnnotations extends Controller
      *
      * @param Request $request
      * @param int $vid Volume ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index(Request $request, $vid)
     {

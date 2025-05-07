@@ -30,7 +30,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @param Request $request
      * @param  int  $vid Volume ID
      * @param int $lid Label ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index(Request $request, $vid, $lid)
     {

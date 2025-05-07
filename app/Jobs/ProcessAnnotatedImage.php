@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Contracts\Annotation;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
@@ -61,6 +62,8 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
 
     /**
      * Create the feature vectors based on the Python script output.
+     *
+     * @param Collection<int, ImageAnnotation> $annotations
      */
     protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
     {
@@ -90,6 +93,7 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     {
         // Tiled images cannot be processed directly. Instead, a crop has to be
         // generated for each annotation.
+        /** @phpstan-ignore property.notFound */
         if (!$this->file->tiled) {
             parent::generateFeatureVectors($annotations, $filePath);
             return;
@@ -177,6 +181,8 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
 
     /**
      * {@inheritdoc}
+     *
+     * @return Builder<ImageAnnotation>
      */
     protected function getAnnotationQuery(VolumeFile $file): Builder
     {

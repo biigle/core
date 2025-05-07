@@ -116,7 +116,7 @@ class StoreVolumeLargoSession extends StoreLargoSession
      *
      * @param Volume $volume
      *
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     protected function getAvailableLabelTrees($volume)
     {

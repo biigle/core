@@ -2,7 +2,7 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\Contracts\Annotation;
+use Biigle\Annotation;
 use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Shape;
@@ -276,7 +276,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * this job. This method either creates new feature vector models or updates the
      * existing ones for the annotations.
      *
-     * @param Collection $annotation
+     * @param Collection $annotations
      * @param array|string $filePath If a string, a file path to the local image to use for feature vector generation. If an array, a map of annotation IDs to a local image file path.
      */
     protected function generateFeatureVectors(Collection $annotations, array|string $filePath): void
@@ -343,18 +343,20 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
     /**
      * Get the query builder for the annotations (maybe filtered by IDs).
+     *
+     * @return Builder<covariant Annotation>
      */
     abstract protected function getAnnotationQuery(VolumeFile $file): Builder;
 
     /**
      * Draw annotation as SVG
      *
-     * @param int $shapeId shape of given annotation
      * @param array $points one dimensional array filled with coordinates of annotation
+     * @param Shape $shape shape of given annotation
      *
      * @return SVGNodeContainer annotation as SVG
      *
-     * **/
+     */
     protected function getSVGAnnotation(array $points, Shape $shape): SVGNodeContainer
     {
         $tuples = [];
@@ -371,6 +373,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             Shape::lineId() => new SVGPolyline($tuples),
             Shape::rectangleId() => $this->getRectangleSvgAnnotation($tuples),
             Shape::ellipseId() => $this->getEllipseSvgAnnotation($tuples),
+            default => null,
         };
 
         if ($shape->id !== Shape::pointId()) {
@@ -484,11 +487,11 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * Determines position of coordinate
      *
      * @param array $tuples coordinates array
-     * @param int $shapeId shapeId of given annotation
+     * @param Shape $shape shapeId of given annotation
      *
      * @return array with coordinates assigned to their position on the plane
      *
-     * **/
+     */
     protected function getOrientedCoordinates(array $tuples, Shape $shape): array
     {
         $assigned = [];

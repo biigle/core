@@ -44,7 +44,7 @@ class LargoController extends Controller
      * }
      *
      * @param StoreVolumeLargoSession $request
-     * @return \Illuminate\Http\Response
+     * @return array|void
      */
     public function save(StoreVolumeLargoSession $request)
     {

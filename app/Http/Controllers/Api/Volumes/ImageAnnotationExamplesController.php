@@ -24,7 +24,7 @@ class ImageAnnotationExamplesController extends Controller
      * @param Request $request
      * @param  int  $vid Volume ID
      * @param int $lid Label ID
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function index(Request $request, $vid, $lid)
     {
@@ -48,7 +48,7 @@ class ImageAnnotationExamplesController extends Controller
             ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id');
 
         if ($session) {
-            with(new ImageAnnotation)->scopeAllowedBySession($query, $session, $user);
+            (new ImageAnnotation)->scopeAllowedBySession($query, $session, $user);
         }
 
         $labelsToCheck = $query->get();

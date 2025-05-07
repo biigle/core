@@ -21,7 +21,7 @@ class SortAnnotationsByOutliersController extends Controller
      *
      * @param  int  $pid Project ID
      * @param int $lid Label ID
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function index($pid, $lid)
     {

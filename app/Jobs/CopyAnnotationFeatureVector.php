@@ -49,6 +49,8 @@ abstract class CopyAnnotationFeatureVector extends Job
 
     /**
      * Get a query for the feature vectors associated with the annotation of this job.
+     *
+     * @return Builder<\Biigle\ImageAnnotationLabelFeatureVector>|Builder<\Biigle\VideoAnnotationLabelFeatureVector>
      */
     abstract protected function getFeatureVectorQuery(): Builder;
 

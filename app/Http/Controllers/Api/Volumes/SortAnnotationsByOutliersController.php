@@ -22,7 +22,7 @@ class SortAnnotationsByOutliersController extends Controller
      *
      * @param  int  $vid Volume ID
      * @param int $lid Label ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index($vid, $lid)
     {

@@ -12,7 +12,7 @@ class AnnotationCatalogController extends Controller
      * Show the annotation catalog of a label tree.
      *
      * @param int $id Label tree ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show($id)
     {

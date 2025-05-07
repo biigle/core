@@ -29,7 +29,7 @@ class LargoController extends Controller
      *
      * @param StoreProjectLargoSession $request
      * @param int $id Project ID
-     * @return \Illuminate\Http\Response
+     * @return array|void
      */
     public function save(StoreProjectLargoSession $request, $id)
     {

@@ -21,7 +21,7 @@ class VideoAnnotationsController extends Controller
      *
      * @param Request $request
      * @param int $id Label ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Support\Collection
      */
     public function index(Request $request, $id)
     {

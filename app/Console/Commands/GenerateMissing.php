@@ -153,6 +153,9 @@ class GenerateMissing extends Command
         $this->handleAnnotations($annotations);
     }
 
+    /**
+     * @param Builder<covariant \Biigle\Annotation> $annotations
+     */
     protected function handleAnnotations(Builder $annotations): void
     {
         $pushToQueue = !$this->option('dry-run');
@@ -167,7 +170,7 @@ class GenerateMissing extends Command
         $currentFile = null;
         $currentAnnotationBatch = collect([]);
 
-        $chunkSize = (int) $this->option('chunk-size', 10000);
+        $chunkSize = intval($this->option('chunk-size')) ?: 10000;
 
         // lazy() is crucial as we can't load all annotations at once!
         // We can't use lazyById because we order by file ID first (to better batch
@@ -187,6 +190,7 @@ class GenerateMissing extends Command
             if ($this->skipVectors) {
                 $needsVector = false;
             } else {
+                /** @phpstan-ignore property.notFound */
                 $needsVector = is_null($annotation->vector_id);
             }
 

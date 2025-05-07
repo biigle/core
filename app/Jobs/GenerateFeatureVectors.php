@@ -240,7 +240,8 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     /**
      * Run the Python command.
      *
-     * @param string $command
+     * @param string $inputPath
+     * @param string $outputPath
      */
     protected function python(string $inputPath, string $outputPath)
     {

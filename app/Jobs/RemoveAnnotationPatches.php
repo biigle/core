@@ -33,7 +33,7 @@ abstract class RemoveAnnotationPatches extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(array $annotationIds, $chunkSize = 100)
+    final public function __construct(array $annotationIds, $chunkSize = 100)
     {
         $this->annotationIds = $annotationIds;
         $this->chunkSize = $chunkSize;

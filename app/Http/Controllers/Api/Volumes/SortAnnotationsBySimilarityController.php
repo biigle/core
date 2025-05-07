@@ -22,6 +22,7 @@ class SortAnnotationsBySimilarityController extends Controller
      * @apiDescription Returns a list of image/video annotation IDs with the most similar first (without the reference annotation ID).
      *
      * @param  IndexVolumeAnnotationsSimilarity  $request
+     * @return \Illuminate\Support\Collection
      */
     public function index(IndexVolumeAnnotationsSimilarity $request)
     {

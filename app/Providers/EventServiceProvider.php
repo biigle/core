@@ -24,9 +24,6 @@ class EventServiceProvider extends ServiceProvider
             \Biigle\Listeners\CleanupVideoThumbnails::class,
             \Biigle\Listeners\VideosCleanupListener::class,
         ],
-        \Biigle\Events\VideosDeleted::class => [
-            \Biigle\Listeners\CleanupVideoThumbnails::class,
-        ],
         \Biigle\Events\AnnotationLabelAttached::class => [
             \Biigle\Listeners\AttachLabelListener::class,
         ],

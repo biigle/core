@@ -18,7 +18,7 @@ class LargoController extends Controller
      *
      * @param Request $request
      * @param int $id Volume ID
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index(Request $request, $id)
     {

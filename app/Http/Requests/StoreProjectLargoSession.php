@@ -81,13 +81,13 @@ class StoreProjectLargoSession extends StoreLargoSession
                 $validator->errors()->add('id', 'A Largo session is currently being saved, please try again in a few minutes.');
             }
 
-            $volumeIds = $this->project->imageVolumes()->pluck('id');
+            $volumeIds = $this->project->imageVolumes()->pluck('id')->toArray();
 
             if (!$this->imageAnotationsBelongToVolumes($affectedImageAnnotations, $volumeIds)) {
                 $validator->errors()->add('id', 'All annotations must belong to the volumes of the project.');
             }
 
-            $volumeIds = $this->project->videoVolumes()->pluck('id');
+            $volumeIds = $this->project->videoVolumes()->pluck('id')->toArray();
 
             if (!$this->videoAnotationsBelongToVolumes($affectedVideoAnnotations, $volumeIds)) {
                 $validator->errors()->add('id', 'All annotations must belong to the volumes of the project.');

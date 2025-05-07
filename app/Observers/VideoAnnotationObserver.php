@@ -13,7 +13,7 @@ class VideoAnnotationObserver extends AnnotationObserver
      */
     protected function getSavedDispatch(Annotation $a)
     {
-        return ProcessAnnotatedVideo::dispatch($a->video, only: [$a->id]);
+        return ProcessAnnotatedVideo::dispatch($a->file, only: [$a->id]);
     }
 
     /**
@@ -22,7 +22,7 @@ class VideoAnnotationObserver extends AnnotationObserver
     protected function getDeletingDispatch(Annotation $annotation)
     {
         return RemoveVideoAnnotationPatches::dispatch([
-            $annotation->id => $annotation->video->uuid,
+            $annotation->id => $annotation->file->uuid,
         ]);
     }
 }

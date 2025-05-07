@@ -13,7 +13,7 @@ class ImageAnnotationObserver extends AnnotationObserver
      */
     protected function getSavedDispatch(Annotation $a)
     {
-        return ProcessAnnotatedImage::dispatch($a->image, only: [$a->id]);
+        return ProcessAnnotatedImage::dispatch($a->file, only: [$a->id]);
     }
 
     /**
@@ -22,7 +22,7 @@ class ImageAnnotationObserver extends AnnotationObserver
     protected function getDeletingDispatch(Annotation $annotation)
     {
         return RemoveImageAnnotationPatches::dispatch([
-            $annotation->id => $annotation->image->uuid,
+            $annotation->id => $annotation->file->uuid,
         ]);
     }
 }
