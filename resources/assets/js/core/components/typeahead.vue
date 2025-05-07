@@ -20,6 +20,7 @@
         :class="{'typeahead-scrollable': scrollable}"
         item-key="name"
         @selected-item-changed="handleArrowKeyScroll"
+        @update:modelValue="handleSelect"
         >
           <template #item="{ items, activeIndex, select, highlight }">
             <component
@@ -132,6 +133,15 @@ export default {
                 this.$refs.dropdown[index].$el.scrollIntoView({block: 'nearest'});
             }
         },
+        handleSelect(value) {
+            if (typeof value === 'object') {
+                this.$emit('input', value);
+                this.$emit('select', value);
+                if (this.clearOnSelect) {
+                    this.clear();
+                }
+            }
+        },
     },
     watch: {
         value(value) {
@@ -153,15 +163,6 @@ export default {
             // Use disabled and nextTick to show dropdown right after loading finished
             if (!this.disabled) {
                 this.$nextTick(() => this.$refs.input.focus())
-            }
-        },
-        internalValue(value) {
-            if (typeof value === 'object') {
-                this.$emit('input', value);
-                this.$emit('select', value);
-                if (this.clearOnSelect) {
-                    this.clear();
-                }
             }
         },
     },
