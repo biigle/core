@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for volumes.
  *
@@ -29,10 +31,8 @@
  *
  * Add files to a volume:
  * resource.saveFiles({id: 1}, {files: '1.jpg, 2.jpg'}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/volumes{/id}', {}, {
+export default Resource('api/v1/volumes{/id}', {}, {
     queryFilesWithFileLabels: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/files/filter/labels',

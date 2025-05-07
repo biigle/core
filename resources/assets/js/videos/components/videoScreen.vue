@@ -5,7 +5,7 @@
             :extent="extent"
             ></minimap>
         <label-tooltip
-            watch="hoverFeatures"
+            :features="hoveredFeatures"
             :show="showLabelTooltip"
             :position="mousePosition"
             ></label-tooltip>
@@ -25,14 +25,14 @@
             <div class="btn-group">
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-backward"
                     :title="jumpBackwardMessage"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-caret-square-left"
                     title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="emitPreviousFrame"
@@ -41,26 +41,26 @@
                     v-if="playing"
                     icon="fa-pause"
                     title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="pause"
                     ></control-button>
                 <control-button
                     v-else
                     icon="fa-play"
                     title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="play"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-caret-square-right"
                     title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="emitNextFrame"
                     ></control-button>
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking"
+                    :disabled="seeking || null"
                     icon="fa-forward"
                     :title="jumpForwardMessage"
                     @click="jumpForward"
@@ -73,8 +73,9 @@
                     :hover="false"
                     :open="isDrawingPoint"
                     :active="isDrawingPoint"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawPoint"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             v-if="singleAnnotation"
@@ -86,8 +87,9 @@
                             v-else
                             icon="fa-check"
                             title="Finish the point annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             v-if="singleAnnotation"
@@ -99,9 +101,10 @@
                             v-else
                             icon="fa-project-diagram"
                             title="Finish and track the point annotation"
-                            v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
                             :loading="disableJobTracking"
+                            @click="finishTrackAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -110,8 +113,9 @@
                     :hover="false"
                     :open="isDrawingRectangle"
                     :active="isDrawingRectangle"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawRectangle"
+                    v-slot="{onActive}"
                     >
                         <control-button
                         v-if="singleAnnotation"
@@ -123,8 +127,9 @@
                             v-else
                             icon="fa-check"
                             title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -133,8 +138,9 @@
                     :hover="false"
                     :open="isDrawingCircle"
                     :active="isDrawingCircle"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawCircle"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             v-if="singleAnnotation"
@@ -146,8 +152,9 @@
                             v-else
                             icon="fa-check"
                             title="Finish the circle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             v-if="singleAnnotation"
@@ -159,9 +166,10 @@
                             v-else
                             icon="fa-project-diagram"
                             title="Finish and track the circle annotation"
-                            v-on:click="finishTrackAnnotation"
-                            :disabled="cantFinishTrackAnnotation || disableJobTracking"
+                            :disabled="(cantFinishTrackAnnotation || disableJobTracking) || null"
                             :loading="disableJobTracking"
+                            @click="finishTrackAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -170,8 +178,9 @@
                     :hover="false"
                     :open="isDrawingLineString"
                     :active="isDrawingLineString"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawLineString"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             v-if="singleAnnotation"
@@ -183,8 +192,9 @@
                             v-else
                             icon="fa-check"
                             title="Finish the line annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -192,8 +202,9 @@
                     :title="(singleAnnotation ? 'Draw a polygon' : 'Start a polygon annotation') + ' 𝗚'"
                     :open="isDrawingPolygon"
                     :active="isDrawingPolygon"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawPolygon"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             v-if="(isDrawingPolygon || isUsingPolygonBrush) && singleAnnotation"
@@ -205,26 +216,30 @@
                             v-else-if="isDrawingPolygon || isUsingPolygonBrush"
                             icon="fa-check"
                             title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-paint-brush"
                             title="Draw a polygon using the brush tool 𝗘"
                             :active="isUsingPolygonBrush"
                             @click="togglePolygonBrush"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-eraser"
                             title="Modify selected polygons using the eraser tool 𝗥"
                             :active="isUsingPolygonEraser"
                             @click="togglePolygonEraser"
+                            @active="onActive"
                             ></control-button>
                         <control-button
                             icon="fa-fill-drip"
                             title="Modify selected polygons using the fill tool 𝗧"
                             :active="isUsingPolygonFill"
                             @click="togglePolygonFill"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
@@ -233,8 +248,9 @@
                     :hover="false"
                     :open="isDrawingWholeFrame"
                     :active="isDrawingWholeFrame"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="drawWholeFrame"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             v-if="singleAnnotation"
@@ -246,8 +262,9 @@
                             v-else
                             icon="fa-check"
                             title="Finish the whole frame annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation"
+                            :disabled="cantFinishDrawAnnotation || null"
                             @click="finishDrawAnnotation"
+                            @active="onActive"
                             ></control-button>
                 </control-button>
             </div>
@@ -257,15 +274,17 @@
                     icon="fa-tag"
                     title="Attach the currently selected label to existing annotations 𝗟"
                     :active="isAttaching"
-                    :disabled="hasNoSelectedLabel || hasError"
+                    :disabled="(hasNoSelectedLabel || hasError) || null"
                     @click="toggleAttaching"
+                    v-slot="{onActive}"
                     >
                         <control-button
                             icon="fa-sync-alt"
                             title="Swap the most recent label of an existing annotation with the currently selected one 𝗦𝗵𝗶𝗳𝘁+𝗟"
                             :active="isSwapping"
-                            :disabled="hasNoSelectedLabel || hasError"
+                            :disabled="(hasNoSelectedLabel || hasError) || null"
                             @click="toggleSwapping"
+                            @active="onActive"
                             ></control-button>
                     </control-button>
                 <control-button
@@ -273,28 +292,28 @@
                     icon="fa-arrows-alt"
                     title="Move selected annotations 𝗠"
                     :active="isTranslating"
-                    :disabled="hasError"
+                    :disabled="hasError || null"
                     @click="toggleTranslating"
                     ></control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-link"
                     title="Link selected annotations"
-                    :disabled="cannotLinkAnnotations || hasError"
+                    :disabled="(cannotLinkAnnotations || hasError) || null"
                     @click="emitLinkAnnotations"
                     ></control-button>
                 <control-button
                     v-if="canModify"
                     icon="fa-unlink"
                     title="Split selected annotation"
-                    :disabled="cannotSplitAnnotation || hasError"
+                    :disabled="(cannotSplitAnnotation || hasError) || null"
                     @click="emitSplitAnnotation"
                     ></control-button>
                 <control-button
                     v-if="canDelete"
                     icon="fa-trash"
                     title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲"
-                    :disabled="hasNoSelectedAnnotations || hasError"
+                    :disabled="(hasNoSelectedAnnotations || hasError) || null"
                     @click="emitDelete"
                     ></control-button>
             </div>
@@ -316,30 +335,38 @@
 </template>
 
 <script>
-import AnnotationPlayback from './videoScreen/annotationPlayback';
+import AnnotationPlayback from './videoScreen/annotationPlayback.vue';
 import Collection from '@biigle/ol/Collection';
-import ControlButton from '../../annotations/components/controlButton';
-import DrawInteractions from './videoScreen/drawInteractions';
-import Indicators from './videoScreen/indicators';
-import Keyboard from '../../core/keyboard';
+import ControlButton from '@/annotations/components/controlButton.vue';
+import DrawInteractions from './videoScreen/drawInteractions.vue';
+import Indicators from './videoScreen/indicators.vue';
+import Keyboard from '@/core/keyboard.js';
 import Map from '@biigle/ol/Map';
-import Minimap from '../../annotations/components/minimap';
-import ModifyInteractions from './videoScreen/modifyInteractions';
-import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions';
+import Minimap from '@/annotations/components/minimap.vue';
+import ModifyInteractions from './videoScreen/modifyInteractions.vue';
+import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
 import SelectInteraction from '@biigle/ol/interaction/Select';
-import Styles from '../../annotations/stores/styles';
-import Tooltips from './videoScreen/tooltips';
+import Styles from '@/annotations/stores/styles.js';
+import Tooltips from './videoScreen/tooltips.vue';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import VideoPlayback from './videoScreen/videoPlayback';
+import VideoPlayback from './videoScreen/videoPlayback.vue';
 import ZoomControl from '@biigle/ol/control/Zoom';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
-import ZoomToNativeControl from '../../annotations/ol/ZoomToNativeControl';
+import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
+import {markRaw} from 'vue';
 
 export default {
+    emits: [
+        'moveend',
+        'next',
+        'previous',
+        'select',
+        'track',
+    ],
     mixins: [
         VideoPlayback,
         AnnotationPlayback,
@@ -457,6 +484,8 @@ export default {
             interactionMode: 'default',
             // Mouse position in OpenLayers coordinates.
             mousePosition: [0, 0],
+            mapReadyRevision: 0,
+            map: null,
         };
     },
     computed: {
@@ -633,41 +662,44 @@ export default {
         }
     },
     watch: {
-        selectedAnnotations(annotations) {
-            // This allows selection of annotations outside OpenLayers and forwards
-            // the state to the SelectInteraction.
-            let source = this.annotationSource;
-            let features = this.selectedFeatures;
-            if (!source || !features) {
-                return;
-            }
-
-            let featureIdMap = {};
-            let annotationIdMap = {};
-            annotations.forEach(a => annotationIdMap[a.id] = true);
-            let toRemove = [];
-
-            features.forEach(f => {
-                const id = f.getId();
-                if (annotationIdMap[id]) {
-                    featureIdMap[id] = true;
-                } else {
-                    toRemove.push(f);
+        selectedAnnotations: {
+            deep: true,
+            handler(annotations) {
+                // This allows selection of annotations outside OpenLayers and forwards
+                // the state to the SelectInteraction.
+                let source = this.annotationSource;
+                let features = this.selectedFeatures;
+                if (!source || !features) {
+                    return;
                 }
-            });
 
-            if (toRemove.length === features.getLength()) {
-                features.clear();
-            } else {
-                toRemove.forEach(f => features.remove(f));
-            }
+                let featureIdMap = {};
+                let annotationIdMap = {};
+                annotations.forEach(a => annotationIdMap[a.id] = true);
+                let toRemove = [];
 
-            annotations
-                .filter(a => !featureIdMap[a.id])
-                .map(a => source.getFeatureById(a.id))
-                // Ignore a==null because the selected annotation may not exist in the
-                // current video frame.
-                .forEach(a => a && features.push(a));
+                features.forEach(f => {
+                    const id = f.getId();
+                    if (annotationIdMap[id]) {
+                        featureIdMap[id] = true;
+                    } else {
+                        toRemove.push(f);
+                    }
+                });
+
+                if (toRemove.length === features.getLength()) {
+                    features.clear();
+                } else {
+                    toRemove.forEach(f => features.remove(f));
+                }
+
+                annotations
+                    .filter(a => !featureIdMap[a.id])
+                    .map(a => source.getFeatureById(a.id))
+                    // Ignore a==null because the selected annotation may not exist in the
+                    // current video frame.
+                    .forEach(a => a && features.push(a));
+            },
         },
         isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
@@ -683,12 +715,17 @@ export default {
         enableJumpByFrame() {
             this.adaptKeyboardShortcuts();
         },
+        mapReadyRevision: {
+            once: true,
+            handler() {
+                this.initLayersAndInteractions(this.map);
+                this.initInitialCenterAndResolution(this.map);
+            },
+        },
     },
     created() {
-        this.$once('map-ready', this.initLayersAndInteractions);
-        this.$once('map-ready', this.initInitialCenterAndResolution);
-        this.map = this.createMap();
-        this.$emit('map-created', this.map);
+        // markRaw is essential here!
+        this.map = markRaw(this.createMap());
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 

@@ -14,7 +14,7 @@ export default {
         if (!instance) {
             const options = {
                 broadcaster: 'pusher',
-                key: process.env.MIX_PUSHER_APP_KEY,
+                key: import.meta.env.VITE_PUSHER_APP_KEY,
                 wsHost: window.location.hostname,
                 wsPort: window.location.port,
                 wssPort: window.location.port,

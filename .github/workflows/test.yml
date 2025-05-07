@@ -4,7 +4,17 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '.docker/**'
+      - 'resources/assets/**'
+      - 'resources/scripts/**'
+      - 'storage/**'
   pull_request:
+    paths-ignore:
+      - '.docker/**'
+      - 'resources/assets/**'
+      - 'resources/scripts/**'
+      - 'storage/**'
 
 jobs:
   test-current:
@@ -83,23 +93,3 @@ jobs:
 
     - name: Run tests
       run: docker compose run --rm -u 1001 worker php -d memory_limit=1G vendor/bin/phpunit --random-order
-
-  test-js-bundle:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
-
-    - name: Set registry authentication token
-      run: echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" >> .npmrc
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-    - name: Install NPM packages
-      run: npm install
-
-    - name: Bundle js
-      run: npm run prod

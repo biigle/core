@@ -2,7 +2,7 @@
 @section('title', "Edit volume {$volume->name}")
 
 @push('scripts')
-    <script type="text/javascript">
+    <script type="module">
         biigle.$declare('volumes.id', {!! $volume->id !!});
         biigle.$declare('volumes.annotationSessions', {!! $annotationSessions !!});
         biigle.$declare('volumes.type', '{!! $type !!}');

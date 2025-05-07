@@ -5,6 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
+use Illuminate\Support\Str;
 
 class ImageLabelControllerTest extends ApiTestCase
 {
@@ -99,6 +100,16 @@ class ImageLabelControllerTest extends ApiTestCase
             'lastname' => $this->admin()->lastname,
             'role_id' => $this->admin()->role_id,
         ]);
+    }
+
+    public function testStoreLabelIdTypeString()
+    {
+        $this->beEditor();
+        $id = $this->image->id;
+        $response = $this->json('POST', "/api/v1/images/{$id}/labels", [
+            'label_id' => Str::random(2)
+        ]);
+        $response->assertStatus(422);
     }
 
     public function testDestroy()

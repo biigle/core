@@ -1,7 +1,7 @@
 @extends('label-trees.versions.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.labels', {!! $labels !!});
     biigle.$declare('labelTrees.canEdit', false);
 </script>

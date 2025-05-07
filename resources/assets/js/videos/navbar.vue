@@ -1,7 +1,7 @@
 <script>
-import Breadcrumb from '../annotations/components/breadcrumb';
-import Events from '../core/events';
-import Settings from './stores/settings';
+import Breadcrumb from '@/annotations/components/breadcrumb.vue';
+import Events from '@/core/events.js';
+import Settings from './stores/settings.js';
 
 export default {
     components: {
@@ -66,7 +66,7 @@ export default {
 
         this.updateShowIndicator(Settings.get('showProgressIndicator'));
         Settings.watch('showProgressIndicator', this.updateShowIndicator);
-        Events.$on('video.id', this.updateCurrentId);
+        Events.on('video.id', this.updateCurrentId);
     },
 };
 </script>

@@ -1,15 +1,17 @@
-import Vue from 'vue';
-import VueResource from 'vue-resource';
+import { Http } from 'vue-resource';
 
-window.Vue = Vue;
-window.Vue.use(VueResource);
+const httpRootElement = document.querySelector('meta[name="http-root"]');
+
+if (httpRootElement) {
+    Http.options.root = httpRootElement.getAttribute('content');
+}
 
 const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
 
 if (csrfTokenElement) {
     const readMethods = ['HEAD', 'GET', 'OPTIONS'];
 
-    Vue.http.interceptors.push(function(request) {
+    Http.interceptors.push(function(request) {
         // Only add the CSRF token for non-read requests. This is important for
         // remote volume locations and CORS, as it would require a special CORS
         // configuration to allow this header.

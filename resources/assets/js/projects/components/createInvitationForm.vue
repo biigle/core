@@ -48,7 +48,7 @@
             class="btn btn-success btn-block"
             type="submit"
             title="Create a new project invitation"
-            :disabled="loading"
+            :disabled="loading || null"
             >
             <loader :active="loading"></loader> Create
         </button>
@@ -56,12 +56,13 @@
 </template>
 
 <script>
-import DatepickerDropdown from '../../uiv/datepickerDropdown';
+import DatepickerDropdown from '../../uiv/datepickerDropdown.vue';
 import InvitationApi from '../api/projectInvitations.js';
-import LoaderMixin from '../../core/mixins/loader';
-import {handleErrorResponse} from '../../core/messages/store';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 export default {
+    emits: ['created'],
     mixins: [LoaderMixin],
     props: {
         project: {

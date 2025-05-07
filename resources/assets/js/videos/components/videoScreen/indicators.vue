@@ -1,6 +1,6 @@
 <script>
-import MousePositionIndicator from '../../../annotations/components/mousePositionIndicator';
-import {throttle} from '../../../core/utils';
+import MousePositionIndicator from '@/annotations/components/mousePositionIndicator.vue';
+import {throttle} from '@/core/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the indicators.
@@ -24,8 +24,11 @@ export default {
         },
     },
     watch: {
-        mousePosition() {
-            throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
+        mousePosition: {
+            deep: true,
+            handler() {
+                throttle(this.updateMousePositionImageCoordinates, 100, 'videos.update-mouse-position-ic');
+            },
         },
     },
 };

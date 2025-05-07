@@ -6,7 +6,7 @@
             <button type="button" class="btn btn-default dropdown-toggle"><i class="fa fa-calendar"></i></button>
         </div>
     </div>
-    <template slot="dropdown">
+    <template #dropdown>
         <li>
             <date-picker
                 v-model="internalValue"
@@ -22,16 +22,16 @@
 </template>
 
 <script>
-import DatePicker from 'uiv/dist/DatePicker';
-import Dropdown from 'uiv/dist/Dropdown';
+import {DatePicker, Dropdown} from 'uiv';
 
 export default {
+    emits: ['update:modelValue'],
     props: {
         placeholder: {
             type: String,
             default: '',
         },
-        value: {
+        modelValue: {
             type: String,
             default: '',
         },
@@ -59,14 +59,14 @@ export default {
     },
     watch: {
         internalValue(value) {
-            this.$emit('input', value);
+            this.$emit('update:modelValue', value);
         },
-        value(value) {
+        modelValue(value) {
             this.internalValue = value;
         },
     },
     created() {
-        this.internalValue = this.value;
+        this.internalValue = this.modelValue;
     },
 };
 </script>

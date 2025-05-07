@@ -3,7 +3,7 @@
 @section('title', "Reports for {$volume->name}")
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('reports.volumeId', {!! $volume->id !!});
     biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
     biigle.$declare('reports.labelTrees', {!! $labelTrees !!});
@@ -62,7 +62,7 @@
                 <div class="form-group" :class="{'has-error': errors.id}">
                     <div v-if="hasAvailableVariants">
                         <label for="report-variant">Report variant</label>
-                        <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="onlyOneAvailableVariant">
+                        <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="onlyOneAvailableVariant || null">
                             <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
                         </select>
                     </div>
@@ -175,7 +175,7 @@
                 </div>
                 <div class="form-group">
                     <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="btn btn-default">back</a>
-                    <button class="btn btn-success pull-right" type="submit" :disabled="loading">Request this report</button>
+                    <button class="btn btn-success pull-right" type="submit" :disabled="loading || null">Request this report</button>
                 </div>
             </form>
             <p class="text-muted">

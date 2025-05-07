@@ -9,8 +9,10 @@
         @else
             <img src="{{ asset(config('thumbnails.empty_url')) }}">
         @endif
-        <figcaption slot="caption">
-            {{ $item->name }}
-        </figcaption>
+        <template #caption>
+            <figcaption>
+                {{ $item->name }}
+            </figcaption>
+        </template>
     </preview-thumbnail>
 </a>

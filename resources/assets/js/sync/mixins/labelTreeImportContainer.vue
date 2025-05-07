@@ -117,22 +117,22 @@ export default {
         },
         chooseImportParent(label) {
             if (this.hasLabelConflictingParent(label)) {
-                Vue.set(label, 'conflicting_parent_resolution', 'import');
+                label.conflicting_parent_resolution = 'import';
             }
         },
         chooseImportName(label) {
             if (this.hasLabelConflictingName(label)) {
-                Vue.set(label, 'conflicting_name_resolution', 'import');
+                label.conflicting_name_resolution = 'import';
             }
         },
         chooseExistingParent(label) {
             if (this.hasLabelConflictingParent(label)) {
-                Vue.set(label, 'conflicting_parent_resolution', 'existing');
+                label.conflicting_parent_resolution = 'existing';
             }
         },
         chooseExistingName(label) {
             if (this.hasLabelConflictingName(label)) {
-                Vue.set(label, 'conflicting_name_resolution', 'existing');
+                label.conflicting_name_resolution = 'existing';
             }
         },
     },

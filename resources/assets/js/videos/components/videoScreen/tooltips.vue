@@ -1,5 +1,6 @@
 <script>
-import LabelTooltip from '../../../annotations/components/labelTooltip';
+import LabelTooltip from '@/annotations/components/labelTooltip.vue';
+import {markRaw} from 'vue';
 
 /**
  * Mixin for the videoScreen component that contains logic for the tooltips.
@@ -14,6 +15,7 @@ export default {
         return {
             // Used to determine when to notify watchers for hovered annotations.
             hoveredFeaturesHash: '',
+            hoveredFeatures: [],
         };
     },
     computed: {
@@ -31,12 +33,15 @@ export default {
 
             if (this.hoveredFeaturesHash !== hash) {
                 this.hoveredFeaturesHash = hash;
-                this.$emit('hoverFeatures', features);
+                // Explixitly mark as raw so the OpenLayers map will not accidentally be
+                // made reactive.
+                // See: https://github.com/biigle/annotations/issues/108
+                this.hoveredFeatures = markRaw(features);
             }
         },
         resetHoveredAnnotations() {
             this.hoveredFeaturesHash = '';
-            this.$emit('hoverFeatures', []);
+            this.hoveredFeatures = [];
         },
         updateTooltipEventListeners() {
             if (this.showTooltip) {
@@ -51,9 +56,12 @@ export default {
         showTooltip() {
             this.updateTooltipEventListeners();
         },
-    },
-    created() {
-        this.$once('map-created', this.updateTooltipEventListeners);
+        map: {
+            once: true,
+            handler() {
+                this.updateTooltipEventListeners(this.map);
+            },
+        },
     },
 };
 </script>

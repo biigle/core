@@ -1769,4 +1769,5 @@ var Texture = (function() {
 
 return exports;
 })();
-module.exports = fx;
+
+export default fx;

@@ -2,7 +2,7 @@
 @section('title', $project->name)
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('projects.project', {!!$project!!});
     biigle.$declare('projects.userId', {!! $user->id !!});
     biigle.$declare('projects.redirectUrl', '{{route('home')}}');
