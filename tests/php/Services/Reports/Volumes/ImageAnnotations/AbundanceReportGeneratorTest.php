@@ -457,6 +457,7 @@ class AbundanceReportGeneratorTest extends TestCase
     public function testGenerateReportAggregateChildLabels()
     {
         $volume = VolumeTest::create();
+
         $root = LabelTest::create();
         $child = LabelTest::create([
             'parent_id' => $root->id,
@@ -944,7 +945,6 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock = Mockery::mock();
 
-        // Create csv only for one user, as other user's annotation were not selected
         $mock->shouldReceive('put')
             ->once()
             ->with("{$u->firstname} {$u->lastname}");
