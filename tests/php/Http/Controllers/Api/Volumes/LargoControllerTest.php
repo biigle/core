@@ -71,26 +71,30 @@ class LargoControllerTest extends ApiTestCase
         $other = ImageAnnotationTest::create();
 
         $this->beEditor();
-        $this->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
-            'dismissed_image_annotations' => [
-            ],
-            'changed_image_annotations' => [
-                $this->labelRoot()->id => [$other->id],
-            ],
-        // other does not belong to the same volume
-        ])->assertStatus(422);
+        $this
+            ->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
+                'dismissed_image_annotations' => [
+                ],
+                'changed_image_annotations' => [
+                    $this->labelRoot()->id => [$other->id],
+                ],
+            ])
+            // other does not belong to the same volume
+            ->assertStatus(422);
 
         $otherLabel = ImageAnnotationLabelTest::create();
 
         $this->beEditor();
-        $this->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
-            'dismissed_image_annotations' => [
-            ],
-            'changed_image_annotations' => [
-                $otherLabel->label_id => [$this->imageAnnotation->id],
-            ],
-        // a label in 'changed_image_annotations' does not belong to a label tree available for the volume
-        ])->assertStatus(422);
+        $this
+            ->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
+                'dismissed_image_annotations' => [
+                ],
+                'changed_image_annotations' => [
+                    $otherLabel->label_id => [$this->imageAnnotation->id],
+                ],
+            ])
+            // a label in 'changed_image_annotations' does not belong to a label tree available for the volume
+            ->assertStatus(422);
     }
 
     public function testErrorsVideoAnnotations()
@@ -107,26 +111,30 @@ class LargoControllerTest extends ApiTestCase
         $other = VideoAnnotationTest::create();
 
         $this->beEditor();
-        $this->postJson("/api/v1/volumes/{$this->videoVolume->id}/largo", [
-            'dismissed_video_annotations' => [
-            ],
-            'changed_video_annotations' => [
-                $this->labelRoot()->id => [$other->id],
-            ],
-        // other does not belong to the same volume
-        ])->assertStatus(422);
+        $this
+            ->postJson("/api/v1/volumes/{$this->videoVolume->id}/largo", [
+                'dismissed_video_annotations' => [
+                ],
+                'changed_video_annotations' => [
+                    $this->labelRoot()->id => [$other->id],
+                ],
+            ])
+            // other does not belong to the same volume
+            ->assertStatus(422);
 
         $otherLabel = VideoAnnotationLabelTest::create();
 
         $this->beEditor();
-        $this->postJson("/api/v1/volumes/{$this->videoVolume->id}/largo", [
-            'dismissed_video_annotations' => [
-            ],
-            'changed_video_annotations' => [
-                $otherLabel->label_id => [$this->videoAnnotation->id],
-            ],
-        // a label in 'changed_image_annotations' does not belong to a label tree available for the volume
-        ])->assertStatus(422);
+        $this
+            ->postJson("/api/v1/volumes/{$this->videoVolume->id}/largo", [
+                'dismissed_video_annotations' => [
+                ],
+                'changed_video_annotations' => [
+                    $otherLabel->label_id => [$this->videoAnnotation->id],
+                ],
+            ])
+            // a label in 'changed_image_annotations' does not belong to a label tree available for the volume
+            ->assertStatus(422);
     }
 
     public function testQueueImageAnnotations()
