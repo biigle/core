@@ -31,7 +31,6 @@
 <script>
 import AnnotationPatch from'./annotationExamplePatch.vue';
 import VolumesApi from '../api/volumes.js';
-import Events from '@/core/events.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 
 /**
