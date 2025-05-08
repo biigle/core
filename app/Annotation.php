@@ -209,4 +209,12 @@ abstract class Annotation extends Model implements AnnotationContract
     {
         return $this->file;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
 }
