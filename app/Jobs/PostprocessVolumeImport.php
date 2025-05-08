@@ -47,24 +47,20 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
         // generated (mostly) before the annotation thumbnails.
         $delay = now()->addSeconds(30);
 
-        if (class_exists(ProcessAnnotatedImage::class)) {
-            Image::whereIn('images.volume_id', $this->ids)
-                ->whereHas('annotations')
-                ->eachById(function ($image) use ($delay) {
-                    ProcessAnnotatedImage::dispatch($image)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                }, 1000);
-        }
+        Image::whereIn('images.volume_id', $this->ids)
+            ->whereHas('annotations')
+            ->eachById(function ($image) use ($delay) {
+                ProcessAnnotatedImage::dispatch($image)
+                    ->delay($delay)
+                    ->onQueue(config('largo.generate_annotation_patch_queue'));
+            }, 1000);
 
-        if (class_exists(ProcessAnnotatedVideo::class)) {
-            Video::whereIn('videos.volume_id', $this->ids)
-                ->whereHas('annotations')
-                ->eachById(function ($video) use ($delay) {
-                    ProcessAnnotatedVideo::dispatch($video)
-                        ->delay($delay)
-                        ->onQueue(config('largo.generate_annotation_patch_queue'));
-                }, 1000);
-        }
+        Video::whereIn('videos.volume_id', $this->ids)
+            ->whereHas('annotations')
+            ->eachById(function ($video) use ($delay) {
+                ProcessAnnotatedVideo::dispatch($video)
+                    ->delay($delay)
+                    ->onQueue(config('largo.generate_annotation_patch_queue'));
+            }, 1000);
     }
 }
