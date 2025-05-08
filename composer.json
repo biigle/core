@@ -59,6 +59,7 @@
         "ramsey/uuid": "^4.0"
     },
     "require-dev": {
+        "brianium/paratest": "^7.4",
         "fakerphp/faker": "^1.23",
         "filp/whoops": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.0",
@@ -110,10 +111,13 @@
             "@php artisan vendor:publish --ansi --tag=public"
         ],
         "test": [
-            "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order"
+            "docker compose run --rm worker php vendor/bin/phpunit --colors=always --random-order"
         ],
         "testf": [
-            "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"
+            "docker compose run --rm worker php vendor/bin/phpunit --colors=always --filter"
+        ],
+        "testp": [
+            "docker compose restart database_testing && docker compose run --rm worker php artisan test --parallel"
         ],
         "fix": [
             "@php vendor/bin/php-cs-fixer fix --config='.php-cs-fixer.php'"
