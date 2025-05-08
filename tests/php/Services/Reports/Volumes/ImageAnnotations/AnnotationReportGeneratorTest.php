@@ -1120,12 +1120,10 @@ class AnnotationReportGeneratorTest extends TestCase
             ]),
         ];
 
-        $labels = array_map(function ($a) use ($user) {
-            return ImageAnnotationLabelTest::create([
-                'annotation_id' => $a->id,
-                'user_id' => $user->id,
-            ]);
-        }, $annotations);
+        $labels = array_map(fn ($a) => ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $user->id,
+        ]), $annotations);
 
         $newestLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotations[0]->id,
@@ -1218,12 +1216,10 @@ class AnnotationReportGeneratorTest extends TestCase
             ]),
         ];
 
-        $labels = array_map(function ($a) use ($user) {
-            return ImageAnnotationLabelTest::create([
-                'annotation_id' => $a->id,
-                'user_id' => $user->id,
-            ]);
-        }, $annotations);
+        $labels = array_map(fn ($a) => ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $user->id,
+        ]), $annotations);
 
         $inside = [$labels[0]->label_id, $labels[4]->label_id];
         $outside = [$labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
@@ -1294,11 +1290,9 @@ class AnnotationReportGeneratorTest extends TestCase
             ]),
         ];
 
-        $labels = array_map(function ($a) {
-            return ImageAnnotationLabelTest::create([
-                'annotation_id' => $a->id,
-            ]);
-        }, $annotations);
+        $labels = array_map(fn ($a) => ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]), $annotations);
 
         $newestLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotations[0]->id,
@@ -1374,11 +1368,9 @@ class AnnotationReportGeneratorTest extends TestCase
             ]),
         ];
 
-        $labels = array_map(function ($a) {
-            return ImageAnnotationLabelTest::create([
-                'annotation_id' => $a->id,
-            ]);
-        }, $annotations);
+        $labels = array_map(fn ($a) => ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]), $annotations);
 
         $newestLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotations[0]->id,
@@ -1456,11 +1448,9 @@ class AnnotationReportGeneratorTest extends TestCase
             ]),
         ];
 
-        $labels = array_map(function ($a) {
-            return ImageAnnotationLabelTest::create([
-                'annotation_id' => $a->id,
-            ]);
-        }, $annotations);
+        $labels = array_map(fn ($a) => ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]), $annotations);
 
         $inside = [$labels[1]->label_id, $labels[4]->label_id];
         $outside = [$labels[0]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
@@ -1548,12 +1538,10 @@ class AnnotationReportGeneratorTest extends TestCase
             ]),
         ];
 
-        $labels = array_map(function ($a) use ($user) {
-            return ImageAnnotationLabelTest::create([
-                'annotation_id' => $a->id,
-                'user_id' => $user->id
-            ]);
-        }, $annotations);
+        $labels = array_map(fn ($a) => ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $user->id
+        ]), $annotations);
 
         $newestLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotations[0]->id,
