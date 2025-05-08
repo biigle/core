@@ -30,4 +30,9 @@ interface Annotation
      * @return VolumeFIle
      */
     public function getFile(): VolumeFile;
+
+    /**
+     * Get the ID of the annotation.
+     */
+    public function getId(): int;
 }

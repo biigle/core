@@ -3,6 +3,7 @@
 namespace Biigle\Jobs;
 
 use Biigle\Annotation;
+use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Shape;
@@ -72,12 +73,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
     /**
      * Assemble the target path for an annotation patch.
-     *
-     * @param Annotation $annotation
-     *
-     * @return string
      */
-    public static function getTargetPath(Annotation $annotation, ?string $format = null): string
+    public static function getTargetPath(AnnotationContract $annotation, ?string $format = null): string
     {
         $prefix = fragment_uuid_path($annotation->getFile()->uuid);
         $format = $format ?: config('largo.patch_format');
@@ -85,10 +82,10 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         return match ($annotation::class) {
             // Add "v-" to make absolutely sure that no collisions (same UUID, same ID)
             // occur because patches are stored on the same disk.
-            VideoAnnotation::class => "{$prefix}/v-{$annotation->id}.{$format}",
+            VideoAnnotation::class => "{$prefix}/v-{$annotation->getId()}.{$format}",
             // This is the old patch storage scheme, so we don't add "i-" for backwards
             // compatibility.
-            default => "{$prefix}/{$annotation->id}.{$format}",
+            default => "{$prefix}/{$annotation->getId()}.{$format}",
         };
     }
 
