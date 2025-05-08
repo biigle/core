@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6f9deab6685714faf2c57f776705ec94",
+    "content-hash": "2bcf474c20ece42ca76bd4e0ad135901",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -168,53 +168,6 @@
                 "source": "https://github.com/biigle/laravel-file-cache/tree/v5.0.1"
             },
             "time": "2025-04-23T07:40:08+00:00"
-        },
-        {
-            "name": "biigle/largo",
-            "version": "v2.39.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/largo.git",
-                "reference": "339b5ad4080e28016a672a7bc66932757ce5d0a2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/339b5ad4080e28016a672a7bc66932757ce5d0a2",
-                "reference": "339b5ad4080e28016a672a7bc66932757ce5d0a2",
-                "shasum": ""
-            },
-            "require": {
-                "jcupitt/vips": "^1.0 || ^2.0",
-                "meyfa/php-svg": "^0.14.6",
-                "php-ffmpeg/php-ffmpeg": "^0.14 || ^0.19 || ^1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Largo\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to review image annotations in a regular grid.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "support": {
-                "issues": "https://github.com/biigle/largo/issues",
-                "source": "https://github.com/biigle/largo"
-            },
-            "time": "2025-04-29T07:37:36+00:00"
         },
         {
             "name": "biigle/metadata-ifdo",

@@ -57,6 +57,7 @@ export default {
                 'measureTooltip',
                 'minimap',
                 'progressIndicator',
+                'exampleAnnotations',
             ],
             annotationOpacity: 1.0,
             cachedImagesCount: 1,
@@ -67,6 +68,7 @@ export default {
             measureTooltip: false,
             minimap: true,
             progressIndicator: true,
+            exampleAnnotations: true,
         };
     },
     computed: {
@@ -132,6 +134,12 @@ export default {
                 this.annotationOpacity = 1;
             }
         },
+        showExampleAnnotations() {
+            this.exampleAnnotations = true;
+        },
+        hideExampleAnnotations() {
+            this.exampleAnnotations = false;
+        },
     },
     watch: {
         annotationOpacity(opacity) {
@@ -171,6 +179,10 @@ export default {
         progressIndicator(show) {
             this.$emit('change', 'progressIndicator', show);
             this.settings.set('progressIndicator', show);
+        },
+        exampleAnnotations(show) {
+            this.$emit('change', 'exampleAnnotations', show);
+            this.settings.set('exampleAnnotations', show);
         },
     },
     created() {

@@ -95,10 +95,10 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * Scope a query to only include annotations allowed by the session for the user.
      *
-     * @param \Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Contracts\Database\Query\Builder $query
      * @param AnnotationSession $session
      * @param User $user The user to whom the restrictions should apply ('own' user)
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Contracts\Database\Query\Builder
      */
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {

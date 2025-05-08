@@ -168,8 +168,6 @@ return [
         Biigle\Providers\EventServiceProvider::class,
         Biigle\Providers\RouteServiceProvider::class,
 
-        Biigle\Modules\Largo\LargoServiceProvider::class,
-
         // Insert Biigle module service providers here.
 
     ])->toArray(),
