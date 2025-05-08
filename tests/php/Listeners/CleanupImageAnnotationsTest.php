@@ -4,7 +4,7 @@ namespace Biigle\Tests\Listeners;
 
 use Biigle\Events\ImagesDeleted;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
-use Biigle\Listeners\ImagesCleanupListener;
+use Biigle\Listeners\CleanupImageAnnotations;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Faker\Factory as Faker;
@@ -12,24 +12,24 @@ use Illuminate\Database\QueryException;
 use Queue;
 use TestCase;
 
-class ImagesCleanupListenerTest extends TestCase
+class CleanupImageAnnotationsTest extends TestCase
 {
     public function testHandleEmpty()
     {
-        with(new ImagesCleanupListener)->handle(new ImagesDeleted([]));
+        with(new CleanupImageAnnotations)->handle(new ImagesDeleted([]));
         Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
     public function testHandleMalformed()
     {
         $this->expectException(QueryException::class);
-        with(new ImagesCleanupListener)->handle(new ImagesDeleted('abc'));
+        with(new CleanupImageAnnotations)->handle(new ImagesDeleted('abc'));
     }
 
     public function testNotThere()
     {
         $faker = Faker::create();
-        with(new ImagesCleanupListener)->handle(new ImagesDeleted([$faker->uuid()]));
+        with(new CleanupImageAnnotations)->handle(new ImagesDeleted([$faker->uuid()]));
         Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
     }
 
@@ -40,7 +40,7 @@ class ImagesCleanupListenerTest extends TestCase
         $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
         $a2 = ImageAnnotationTest::create(['image_id' => $image2->id]);
 
-        with(new ImagesCleanupListener)->handle(new ImagesDeleted([$image->uuid, $image2->uuid]));
+        with(new CleanupImageAnnotations)->handle(new ImagesDeleted([$image->uuid, $image2->uuid]));
 
         $expect = [
             $a->id => $image->uuid,
@@ -61,7 +61,7 @@ class ImagesCleanupListenerTest extends TestCase
         $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
         $a2 = ImageAnnotationTest::create(['image_id' => $image2->id]);
 
-        with(new ImagesCleanupListener)->handle(new ImagesDeleted([$image->uuid]));
+        with(new CleanupImageAnnotations)->handle(new ImagesDeleted([$image->uuid]));
 
         $expect = [
             $a->id => $image->uuid,

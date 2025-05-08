@@ -15,19 +15,19 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         \Biigle\Events\ImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageThumbnails::class,
-            \Biigle\Listeners\ImagesCleanupListener::class,
+            \Biigle\Listeners\CleanupImageAnnotations::class,
         ],
         \Biigle\Events\TiledImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageTiles::class,
         ],
         \Biigle\Events\VideosDeleted::class => [
             \Biigle\Listeners\CleanupVideoThumbnails::class,
-            \Biigle\Listeners\VideosCleanupListener::class,
+            \Biigle\Listeners\CleanupVideoAnnotations::class,
         ],
         \Biigle\Events\AnnotationLabelAttached::class => [
             \Biigle\Listeners\AttachLabelListener::class,
         ],
-        'volume.cloned' => [
+        \Biigle\Events\VolumeCloned::class => [
             \Biigle\Listeners\VolumeClonedListener::class,
         ],
     ];

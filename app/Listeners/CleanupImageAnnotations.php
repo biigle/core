@@ -6,7 +6,7 @@ use Biigle\Events\ImagesDeleted;
 use Biigle\ImageAnnotation;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
 
-class ImagesCleanupListener
+class CleanupImageAnnotations
 {
     /**
      * Handle the event.

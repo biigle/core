@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Listeners;
 
+use Biigle\Events\VolumeCloned;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
@@ -36,7 +37,7 @@ class VolumeClonedListenerTest extends TestCase
         ImageAnnotationLabel::factory()->create(['annotation_id' => $oldAnnotation->id]);
 
         Queue::fake();
-        event('volume.cloned', $volume);
+        VolumeCloned::dispatch($volume);
 
         Queue::assertPushed(ProcessAnnotatedImage::class);
     }
@@ -59,7 +60,7 @@ class VolumeClonedListenerTest extends TestCase
         VideoAnnotationLabel::factory()->create(['annotation_id' => $oldAnnotation->id]);
 
         Queue::fake();
-        event('volume.cloned', $volume);
+        VolumeCloned::dispatch($volume);
 
         Queue::assertPushed(ProcessAnnotatedVideo::class);
     }

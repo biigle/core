@@ -4,7 +4,7 @@ namespace Biigle\Tests\Listeners;
 
 use Biigle\Events\VideosDeleted;
 use Biigle\Jobs\RemoveVideoAnnotationPatches;
-use Biigle\Listeners\VideosCleanupListener;
+use Biigle\Listeners\CleanupVideoAnnotations;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Faker\Factory as Faker;
@@ -12,24 +12,24 @@ use Illuminate\Database\QueryException;
 use Queue;
 use TestCase;
 
-class VideosCleanupListenerTest extends TestCase
+class CleanupVideoAnnotationsTest extends TestCase
 {
     public function testHandleEmpty()
     {
-        with(new VideosCleanupListener)->handle(new VideosDeleted([]));
+        with(new CleanupVideoAnnotations)->handle(new VideosDeleted([]));
         Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
     public function testHandleMalformed()
     {
         $this->expectException(QueryException::class);
-        with(new VideosCleanupListener)->handle(new VideosDeleted('abc'));
+        with(new CleanupVideoAnnotations)->handle(new VideosDeleted('abc'));
     }
 
     public function testNotThere()
     {
         $faker = Faker::create();
-        with(new VideosCleanupListener)->handle(new VideosDeleted([$faker->uuid()]));
+        with(new CleanupVideoAnnotations)->handle(new VideosDeleted([$faker->uuid()]));
         Queue::assertNotPushed(RemoveVideoAnnotationPatches::class);
     }
 
@@ -40,7 +40,7 @@ class VideosCleanupListenerTest extends TestCase
         $video2 = VideoTest::create(['volume_id' => $video->volume_id, 'filename' => 'b']);
         $a2 = VideoAnnotationTest::create(['video_id' => $video2->id]);
 
-        with(new VideosCleanupListener)->handle(new VideosDeleted([$video->uuid, $video2->uuid]));
+        with(new CleanupVideoAnnotations)->handle(new VideosDeleted([$video->uuid, $video2->uuid]));
 
         $expect = [
             $a->id => $video->uuid,
@@ -61,7 +61,7 @@ class VideosCleanupListenerTest extends TestCase
         $video2 = VideoTest::create(['volume_id' => $video->volume_id, 'filename' => 'b']);
         $a2 = VideoAnnotationTest::create(['video_id' => $video2->id]);
 
-        with(new VideosCleanupListener)->handle(new VideosDeleted([$video->uuid]));
+        with(new CleanupVideoAnnotations)->handle(new VideosDeleted([$video->uuid]));
 
         $expect = [
             $a->id => $video->uuid,

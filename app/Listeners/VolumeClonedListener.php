@@ -2,19 +2,19 @@
 
 namespace Biigle\Listeners;
 
+use Biigle\Events\VolumeCloned;
 use Biigle\Jobs\ProcessAnnotatedImage;
 use Biigle\Jobs\ProcessAnnotatedVideo;
-use Biigle\Volume;
 
 class VolumeClonedListener
 {
-    public function handle(Volume $volume): void
+    public function handle(VolumeCloned $event): void
     {
         // Give the ProcessNewVolumeFiles job (from CloneImagesorVideos) a head start so
         // the file thumbnails are generated (mostly) before the annotation thumbnails.
         $delay = now()->addSeconds(30);
 
-        $volume->images()
+        $event->volume->images()
             ->whereHas('annotations')
             ->eachById(function ($image) use ($delay) {
                 ProcessAnnotatedImage::dispatch($image)
@@ -22,7 +22,7 @@ class VolumeClonedListener
                     ->onQueue(config('largo.generate_annotation_patch_queue'));
             });
 
-        $volume->videos()
+        $event->volume->videos()
             ->whereHas('annotations')
             ->eachById(function ($video) use ($delay) {
                 ProcessAnnotatedVideo::dispatch($video)

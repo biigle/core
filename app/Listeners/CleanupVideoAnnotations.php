@@ -6,7 +6,7 @@ use Biigle\Events\VideosDeleted;
 use Biigle\Jobs\RemoveVideoAnnotationPatches;
 use Biigle\VideoAnnotation;
 
-class VideosCleanupListener
+class CleanupVideoAnnotations
 {
     /**
      * Handle the event.
