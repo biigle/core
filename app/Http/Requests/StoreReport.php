@@ -24,6 +24,7 @@ class StoreReport extends FormRequest
             'aggregate_child_labels' => "nullable|boolean",
             'disable_notifications' => "nullable|boolean",
             'strip_ifdo' => "nullable|boolean",
+            'all_labels' => 'nullable|boolean'
         ];
     }
 
@@ -47,8 +48,27 @@ class StoreReport extends FormRequest
                 $validator->errors()->add('aggregate_child_labels', 'Child labels can only be aggregated for basic, extended and abundance image annotation reports.');
             }
 
+            $allLabels = boolval($this->input('all_labels', false));
+            if ($allLabels && !$this->isAllowedForAllLabels()) {
+                $validator->errors()->add('all_labels', "The 'all labels' option is only supported for image annotation abundance reports.");
+            }
+
+            if ($aggregate && $allLabels) {
+                $validator->errors()->add('all_labels', "The 'all labels' and 'aggregate child labels' option cannot be selected at the same time.");
+            }
+
+            $onlyLabels = boolval($this->input('only_labels', []));
+            if ($allLabels && !empty($onlyLabels)) {
+                $validator->errors()->add('all_labels', "The 'all labels' and 'restrict to labels' option cannot be selected at the same time.");
+            }
+
             if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
                 $validator->errors()->add('separate_label_trees', 'Only one of separate_label_trees or separate_users may be specified.');
+            }
+
+            $newestLabels = boolval($this->input('newest_label', false));
+            if ($newestLabels && $allLabels) {
+                $validator->errors()->add('all_labels', "The 'all labels' and 'restrict to newest labels' option cannot be selected at the same time.");
             }
         });
     }
@@ -65,6 +85,7 @@ class StoreReport extends FormRequest
             'separateUsers' => boolval($this->input('separate_users', false)),
             'newestLabel' => boolval($this->input('newest_label', false)),
             'onlyLabels' => $this->input('only_labels', []),
+            'allLabels' => $this->input('all_labels', false)
         ];
 
         if ($this->isAllowedForExportArea()) {
@@ -127,6 +148,18 @@ class StoreReport extends FormRequest
      * @return boolean
      */
     protected function isAllowedForAggregateChildLabels()
+    {
+        return $this->isType([
+            ReportType::imageAnnotationsAbundanceId(),
+        ]);
+    }
+
+    /**
+     * Check if all_labels may be configured for the requested report type.
+     *
+     * @return boolean
+     */
+    protected function isAllowedForAllLabels()
     {
         return $this->isType([
             ReportType::imageAnnotationsAbundanceId(),

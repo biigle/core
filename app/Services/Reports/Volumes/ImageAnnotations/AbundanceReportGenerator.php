@@ -38,31 +38,66 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
-
-        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
+        $query = $this->query();
+        // Separate the annotated images from the empty ones, since only the annotated images could require additional processing.
+        $rows = $query->clone()->whereNotNull('label_id')->get();
+        if ($this->shouldSeparateLabelTrees()) {
             $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+            $allLabels = null;
+            // Get query for images that have no annotations
+            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
+
+            if ($this->shouldUseAllLabels()) {
+                $allLabels = $this->getVolumeLabels();
+                $treeIds = $allLabels->pluck('label_tree_id');
+                $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+                $allLabels = $allLabels->groupBy('label_tree_id');
+            } else {
+                $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+            }
 
             foreach ($trees as $id => $name) {
-                $rowGroup = $rows->get($id);
-                $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                if ($this->shouldUseAllLabels()) {
+                    $labels = $allLabels->get($id);
+                } else {
+                    $labelIds = $rows->get($id)->pluck('label_id')->unique();
+                    $labels = Label::whereIn('id', $labelIds)->get();
+                }
+                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels, $emptyImagesQuery);
             }
-        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
+        } elseif ($this->shouldSeparateUsers()) {
             $rows = $rows->groupBy('user_id');
             $users = User::whereIn('id', $rows->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
+            $labels = null;
+
+            if ($this->shouldUseAllLabels()) {
+                $labels = $this->getVolumeLabels();
+            }
 
             foreach ($users as $id => $name) {
+                // Get query for images that have no annotations
+                $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
+                $usedImageFilenames = $rows->get($id)->pluck('filename')->unique();
+                $usersEmptyImagesQuery = $query->clone()->select('filename')->whereNotIn('filename', $usedImageFilenames);
+                // Add query to process unannotated images (by current user) in chunks later
+                $emptyImagesQuery->union($usersEmptyImagesQuery);
+
                 $rowGroup = $rows->get($id);
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+
+                if (!$this->shouldUseAllLabels()) {
+                    $labels = Label::whereIn('id', $rowGroup->pluck('label_id'))->get();
+                }
+
+                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQuery);
             }
         } else {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
-            $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
+            // Get query for images that have no annotations
+            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
+            $allLabelIds = $rows->pluck('label_id')->reject(fn ($k) => !$k);
+            $labels = $this->shouldUseAllLabels() ? $this->getVolumeLabels() : Label::whereIn('id', $allLabelIds)->get();
+            $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels, $emptyImagesQuery);
         }
 
         $this->executeScript('csvs_to_xlsx', $path);
@@ -92,15 +127,69 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     }
 
     /**
+     * Assembles the part of the DB query that is used for the abundance report.
+     * Overrides AnnotationReportGenerator's initQuery() because it requires a special query
+     * where images without (selected) annotation labels are kept after filtering.
+     *
+     * @param mixed $columns The columns to select
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function initQuery($columns = [])
+    {
+        $query = $this->getImageAnnotationLabelQuery()
+            ->where('images.volume_id', $this->source->id)
+            // Add this label filter here, since it won’t delete any annotations
+            ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
+            ->addSelect($columns);
+
+        if ($this->shouldSeparateLabelTrees()) {
+            $query->addSelect('labels.label_tree_id');
+        } elseif ($this->shouldSeparateUsers()) {
+            $query->addSelect('image_annotation_labels.user_id');
+        }
+
+        return $query;
+    }
+
+    /**
+     * Construct a join query for (filtered) images, image annotations, image annotation labels, and labels
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|\Biigle\Label
+     */
+    protected function getImageAnnotationLabelQuery()
+    {
+        // Filter records here to keep images with no selected annotation labels or without any annotation labels
+        if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels() || $this->isRestrictedToExportArea()) {
+            return Label::join('image_annotation_labels', function ($join) {
+                // Use advanced joins to set labels and annotations on null if not present or not selected
+                $join->on('labels.id', '=', 'image_annotation_labels.label_id')
+                    ->when($this->isRestrictedToLabels(), fn ($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
+            })
+                ->join('image_annotations', function ($join) {
+                    $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+                        ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+                        ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
+                })
+                ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
+                ->distinct();
+        }
+
+        return Label::join('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
+            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id');
+    }
+
+    /**
      * Create a CSV file for a single sheet of the spreadsheet of this report.
      *
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
      * @param \Illuminate\Support\Collection $labels
+     * @param \Illuminate\Database\Query\Builder $emptyImagesQuery The query for images without annotations
      *
      * @return CsvFile
      */
-    protected function createCsv($rows, $title, $labels)
+    protected function createCsv($rows, $title, $labels, $emptyImagesQuery)
     {
         $rows = $rows->groupBy('filename');
 
@@ -132,6 +221,17 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
             $csv->putCsv($row);
         }
+
+        $labelsCount = $labels->count();
+        $emptyImagesQuery->orderBy('filename')->chunk(1000, function ($images) use ($labelsCount, $csv) {
+            foreach ($images as $image) {
+                $row = [$image->filename];
+                for ($i = 0; $i < $labelsCount; $i++) {
+                    $row[] = 0;
+                }
+                $csv->putCsv($row);
+            }
+        });
 
         $csv->close();
 
