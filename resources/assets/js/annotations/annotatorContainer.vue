@@ -83,6 +83,7 @@ export default {
             showMeasureTooltip: false,
             showMinimap: true,
             showScaleLine: false,
+            showExampleAnnotations: true,
             imagesArea: null,
             openTab: null,
             userUpdatedVolareResolution: false,
@@ -537,6 +538,9 @@ export default {
                     break;
                 case 'minimap':
                     this.showMinimap = value;
+                    break;
+                case 'exampleAnnotations':
+                    this.showExampleAnnotations = value;
                     break;
             }
         },

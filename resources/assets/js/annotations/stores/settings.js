@@ -17,6 +17,7 @@ let defaults = {
     measureTooltip: false,
     minimap: true,
     progressIndicator: true,
+    exampleAnnotations: true,
     // Annotation modes tab.
     randomSamplingNumber: 9,
     regularSamplingRows: 3,

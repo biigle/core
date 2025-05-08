@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eefb86d3af8ab77c61207dac322b8d91",
+    "content-hash": "64b6cb556ef9636d2e08e0a22816596c",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.343.5",
+            "version": "3.343.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "69b4b232072c4eb01f6701ba3f137728dc8c7aa8"
+                "reference": "3746aca8cbed5f46beba850e0a480ef58e71b197"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/69b4b232072c4eb01f6701ba3f137728dc8c7aa8",
-                "reference": "69b4b232072c4eb01f6701ba3f137728dc8c7aa8",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3746aca8cbed5f46beba850e0a480ef58e71b197",
+                "reference": "3746aca8cbed5f46beba850e0a480ef58e71b197",
                 "shasum": ""
             },
             "require": {
@@ -153,9 +153,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.343.5"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.343.6"
             },
-            "time": "2025-05-06T18:08:44+00:00"
+            "time": "2025-05-07T18:10:08+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -755,54 +755,6 @@
             "time": "2024-09-02T14:57:33+00:00"
         },
         {
-            "name": "biigle/largo",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biigle/largo.git",
-                "reference": "722c1b5a9f7455cc1388caa427045997fcfe937d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/biigle/largo/zipball/722c1b5a9f7455cc1388caa427045997fcfe937d",
-                "reference": "722c1b5a9f7455cc1388caa427045997fcfe937d",
-                "shasum": ""
-            },
-            "require": {
-                "jcupitt/vips": "^1.0 || ^2.0",
-                "meyfa/php-svg": "^0.14.6",
-                "php-ffmpeg/php-ffmpeg": "^0.14 || ^0.19 || ^1.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Largo\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Martin Zurowietz",
-                    "email": "martin@cebitec.uni-bielefeld.de"
-                }
-            ],
-            "description": "BIIGLE module to review image annotations in a regular grid.",
-            "homepage": "https://biigle.de",
-            "keywords": [
-                "biigle",
-                "biigle-module"
-            ],
-            "support": {
-                "issues": "https://github.com/biigle/largo/issues",
-                "source": "https://github.com/biigle/largo"
-            },
-            "time": "2025-05-05T08:39:29+00:00"
-        },
-        {
             "name": "biigle/laserpoints",
             "version": "dev-master",
             "source": {
@@ -851,12 +803,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/magic-sam.git",
-                "reference": "df65e175d9fa25f1cfbd1f6515ee8b64aa1ab077"
+                "reference": "5d47bc4271025ed67f15ab8480b2e47016408644"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/magic-sam/zipball/df65e175d9fa25f1cfbd1f6515ee8b64aa1ab077",
-                "reference": "df65e175d9fa25f1cfbd1f6515ee8b64aa1ab077",
+                "url": "https://api.github.com/repos/biigle/magic-sam/zipball/5d47bc4271025ed67f15ab8480b2e47016408644",
+                "reference": "5d47bc4271025ed67f15ab8480b2e47016408644",
                 "shasum": ""
             },
             "default-branch": true,
@@ -893,7 +845,7 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2025-05-05T08:38:37+00:00"
+            "time": "2025-05-07T12:10:20+00:00"
         },
         {
             "name": "biigle/maia",
@@ -901,16 +853,13 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "3911e881cf8874e0e54c5c3b4294066b72c0b5cb"
+                "reference": "1376176cf463aa223dec381b2cda9deb48e3bccf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/3911e881cf8874e0e54c5c3b4294066b72c0b5cb",
-                "reference": "3911e881cf8874e0e54c5c3b4294066b72c0b5cb",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/1376176cf463aa223dec381b2cda9deb48e3bccf",
+                "reference": "1376176cf463aa223dec381b2cda9deb48e3bccf",
                 "shasum": ""
-            },
-            "require": {
-                "biigle/largo": "^2.25 || dev-master"
             },
             "default-branch": true,
             "type": "library",
@@ -939,7 +888,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2025-05-05T08:39:02+00:00"
+            "time": "2025-05-08T08:16:31+00:00"
         },
         {
             "name": "biigle/metadata-coco",
@@ -997,7 +946,7 @@
         },
         {
             "name": "biigle/metadata-ifdo",
-            "version": "dev-main",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/metadata-ifdo.git",
@@ -1012,7 +961,6 @@
             "require": {
                 "biigle/ifdo": "^0.4 || ^1.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -12394,12 +12342,10 @@
         "biigle/denbi-service": 20,
         "biigle/geo": 20,
         "biigle/kpis": 20,
-        "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/magic-sam": 20,
         "biigle/maia": 20,
         "biigle/metadata-coco": 20,
-        "biigle/metadata-ifdo": 20,
         "biigle/module": 20,
         "biigle/newsletter": 20,
         "biigle/user-disks": 20,

@@ -58,6 +58,10 @@
             @include('volumes.show.sorting')
         </sidebar-tab>
         <sidebar-tab name="reports" icon="file" title="Request reports for this volume" href="{{route('volume-reports', $volume->id)}}"></sidebar-tab>
+        @canany (['edit-in', 'sudo'], $volume)
+            <sidebar-tab name="largo" icon="check-square" title="Perform Largo re-evaluation of annotations for this volume" href="{{ route('largo', $volume->id) }}"></sidebar-tab>
+        @endcanany
+
         @mixin('volumesSidebar')
     </sidebar>
     <div class="sidebar-container__content">

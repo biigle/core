@@ -62,6 +62,20 @@
 
         <export-area :settings="settings"></export-area>
 
+        @can ('edit-in', $volume)
+            <div class="sidebar-tab__section">
+                <power-toggle
+                    :active="exampleAnnotations"
+                    title-off="Show example annotations"
+                    title-on="Hide example annotations"
+                    @on="showExampleAnnotations"
+                    @off="hideExampleAnnotations"
+                    >
+                        Example Annotations
+                    </power-toggle>
+            </div>
+        @endcan
+
         @mixin('annotationsSettingsTab')
     </div>
 </script>
