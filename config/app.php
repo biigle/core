@@ -171,7 +171,6 @@ return [
         // Insert Biigle module service providers here.
         Biigle\Modules\ColorSort\ColorSortServiceProvider::class,
         Biigle\Modules\Geo\GeoServiceProvider::class,
-        Biigle\Modules\Largo\LargoServiceProvider::class,
         Biigle\Modules\Laserpoints\LaserpointsServiceProvider::class,
         Biigle\Modules\Ananas\AnanasServiceProvider::class,
         Biigle\Modules\Demo\DemoServiceProvider::class,
