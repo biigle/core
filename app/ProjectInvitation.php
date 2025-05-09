@@ -29,7 +29,7 @@ class ProjectInvitation extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'expires_at' => 'datetime',
+        'expires_at' => "datetime:c",
         'add_to_sessions' => 'bool',
     ];
 
@@ -45,7 +45,7 @@ class ProjectInvitation extends Model
     /**
      * The project to which this invitation belongs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, ProjectInvitation>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, $this>
      */
     public function project()
     {

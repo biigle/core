@@ -96,6 +96,10 @@
                     <td>Select tool to attach labels to existing annotations</td>
                 </tr>
                 <tr>
+                    <td><kbd>o</kbd></td>
+                    <td>Toggle the annotation opactiy between 0.0 and 1.0</td>
+                </tr>
+                <tr>
                     <td><kbd>Shift</kbd>+<kbd>l</kbd></td>
                     <td>Select tool to swap labels of existing annotations</td>
                 </tr>
@@ -114,6 +118,17 @@
                 <tr>
                     <td><kbd>Esc</kbd></td>
                     <td>Cancel current action<br><small>e.g. drawing or moving an annotation</small></td>
+                </tr>
+                <tr>
+                    <td><kbd>c</kbd></td>
+                    <td>Select last created annotation</td>
+                </tr>
+                 <tr>
+                    <td><kbd>p</kbd></td>
+                    <td>Capture a screenshot</td>
+                <tr>
+                    <td><kbd>Ctrl</kbd>+<kbd>k</kbd></td>
+                    <td>Open label trees sidebar and focus the find label input field</td>
                 </tr>
             </tbody>
         </table>

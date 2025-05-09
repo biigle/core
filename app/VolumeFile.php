@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $volume_id
  * @property string $filename
+ * @property string $uuid
  */
 abstract class VolumeFile extends Model implements FileContract
 {
@@ -158,14 +159,14 @@ abstract class VolumeFile extends Model implements FileContract
     /**
      * The labels, this volume file got attached by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFileLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant VolumeFileLabel, $this>
      */
     abstract public function labels();
 
     /**
      * The annotations that belong to this file.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant Annotation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant Annotation, $this>
      */
     abstract public function annotations();
 }

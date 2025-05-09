@@ -1,0 +1,5 @@
+.request-labels-well {
+    // Set absolute height so the flex positioning and scroll of the label trees
+    // component works (fixed search field and scrollable label trees list).
+    height: 500px;
+}

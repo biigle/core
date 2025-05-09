@@ -50,6 +50,10 @@ $router->resource('api-tokens', 'ApiTokenController', [
     'parameters' => ['api-tokens' => 'id'],
 ]);
 
+$router->get('export/users', 'Export\UserExportController@show');
+$router->get('export/label-trees', 'Export\LabelTreeExportController@show');
+$router->get('export/volumes', 'Export\VolumeExportController@show');
+
 $router->resource('federated-search-instances', 'FederatedSearchInstanceController', [
     'only' => ['store', 'update', 'destroy'],
     'parameters' => ['federated-search-instances' => 'id'],
@@ -96,9 +100,21 @@ $router->resource('image-labels', 'ImageLabelController', [
     'parameters' => ['image-labels' => 'id'],
 ]);
 
+$router->resource('import', 'Import\ImportController', [
+    'only' => ['store', 'update', 'destroy'],
+]);
+
 $router->resource('labels', 'LabelController', [
     'only' => ['update', 'destroy'],
     'parameters' => ['labels' => 'id'],
+]);
+
+$router->get('labels/{id}/image-annotations', [
+    'uses' => 'Labels\ImageAnnotationsController@index',
+]);
+
+$router->get('labels/{id}/video-annotations', [
+    'uses' => 'Labels\VideoAnnotationsController@index',
 ]);
 
 $router->get('label-sources/{id}/find', 'LabelSourceController@find');
@@ -138,6 +154,10 @@ $router->resource('label-tree-versions', 'LabelTreeVersionController', [
     'parameters' => ['label-tree-versions' => 'id'],
 ]);
 
+$router->post('label-trees/import', [
+    'uses' => 'Import\PublicLabelTreeImportController@store',
+]);
+
 $router->resource('media-types', 'MediaTypeController', [
     'only' => ['index', 'show'],
     'parameters' => ['media-types' => 'id'],
@@ -165,7 +185,7 @@ $router->resource('projects', 'ProjectController', [
     'parameters' => ['projects' => 'id'],
 ]);
 
-$router->get('projects/{id}/attachable-volumes', 'ProjectsAttachableVolumesController@index');
+$router->get('projects/{id}/attachable-volumes/{name}', 'ProjectsAttachableVolumesController@index');
 
 $router->resource('projects.invitations', 'ProjectInvitationController', [
     'only' => ['store'],
@@ -173,7 +193,7 @@ $router->resource('projects.invitations', 'ProjectInvitationController', [
 ]);
 
 $router->get(
-    'projects/{id}/label-trees/available',
+    'projects/{id}/label-trees/available/{name}',
     'ProjectLabelTreeController@available'
 );
 $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
@@ -219,6 +239,10 @@ $router->resource('projects.users', 'ProjectUserController', [
     'parameters' => ['projects' => 'id', 'users' => 'id2'],
 ]);
 
+$router->post('projects/{id}/reports', [
+    'uses' => 'ProjectReportController@store',
+]);
+
 $router->resource('project-invitations', 'ProjectInvitationController', [
     'only' => ['destroy'],
     'parameters' => ['project-invitations' => 'id'],
@@ -231,6 +255,49 @@ $router->get(
     'project-invitations/{id}/qr',
     'ProjectInvitationController@showQrCode'
 );
+
+$router->get('projects/{id}/annotations/sort/outliers/{id2}', [
+    'uses' => 'Projects\SortAnnotationsByOutliersController@index',
+]);
+
+$router->get('projects/{id}/annotations/sort/similarity', [
+    'uses' => 'Projects\SortAnnotationsBySimilarityController@index',
+]);
+
+$router->get('projects/{id}/image-annotations/filter/label/{id2}', [
+    'uses' => 'Projects\FilterImageAnnotationsByLabelController@index',
+]);
+
+$router->post('projects/{id}/largo', [
+    'uses' => 'Projects\LargoController@save',
+]);
+
+$router->get('projects/{id}/video-annotations/filter/label/{id2}', [
+    'uses' => 'Projects\FilterVideoAnnotationsByLabelController@index',
+]);
+
+$router->get('projects/{pid}/users-with-annotations', [
+    'uses' => 'Projects\GetUsersWithAnnotations@index',
+]);
+
+$router->get('projects/{id}/label-count', [
+    'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
+]);
+
+$router->get('public-export/label-trees/{id}', [
+    'as' => 'get-public-label-tree-export',
+    'uses' => 'Export\PublicLabelTreeExportController@show',
+]);
+
+
+$router->resource('reports', 'ReportsController', [
+    'only' => ['show', 'destroy'],
+    'parameters' => ['reports' => 'id'],
+    'names' => [
+        'show' => 'show-reports',
+        'destroy' => 'destroy-reports',
+    ],
+]);
 
 $router->resource('roles', 'RoleController', [
     'only' => ['index', 'show'],
@@ -317,6 +384,14 @@ $router->resource('volumes.files', 'VolumeFileController', [
     'parameters' => ['volumes' => 'id'],
 ]);
 
+$router->post(
+    'volumes/{id}/pending-volumes', 'PendingVolumeController@storeVolume'
+);
+
+$router->post('volumes/{id}/reports', [
+    'uses' => 'VolumeReportController@store',
+]);
+
 $router->group([
     'prefix' => 'volumes',
     'namespace' => 'Volumes',
@@ -326,6 +401,18 @@ $router->group([
         $router->get('images/{disk}', 'BrowserController@indexImages');
         $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
+
+    $router->get('{id}/export-area', [
+        'uses' => 'ExportAreaController@show',
+    ]);
+
+    $router->post('{id}/export-area', [
+        'uses' => 'ExportAreaController@store',
+    ]);
+
+    $router->delete('{id}/export-area', [
+        'uses' => 'ExportAreaController@destroy',
+    ]);
 
     $router->get('{id}/files/filter/labels', [
         'uses' => 'Filters\AnyFileLabelController@index',
@@ -382,6 +469,38 @@ $router->group([
 
     $router->get('{id}/statistics', [
         'uses' => 'StatisticsController@index',
+    ]);
+
+    $router->get('{id}/annotations/sort/outliers/{id2}', [
+        'uses' => 'SortAnnotationsByOutliersController@index',
+    ]);
+
+    $router->get('{id}/annotations/sort/similarity', [
+        'uses' => 'SortAnnotationsBySimilarityController@index',
+    ]);
+
+    $router->get('{id}/image-annotations/examples/{id2}', [
+        'uses' => 'ImageAnnotationExamplesController@index',
+    ]);
+
+    $router->get('{id}/image-annotations/filter/label/{id2}', [
+        'uses' => 'FilterImageAnnotationsByLabelController@index',
+    ]);
+
+    $router->get('{vid}/users-with-annotations', [
+        'uses' => 'GetUsersWithAnnotations@index',
+    ]);
+
+    $router->post('{id}/largo', [
+        'uses' => 'LargoController@save',
+    ]);
+
+    $router->get('{id}/video-annotations/filter/label/{id2}', [
+        'uses' => 'FilterVideoAnnotationsByLabelController@index',
+    ]);
+
+    $router->get('{id}/label-count', [
+        'uses' => 'VolumeAnnotationLabels@getVolumeAnnotationLabels'
     ]);
 });
 

@@ -32,6 +32,10 @@
             The label trees tab shows all label trees that are available for the image. Here you can find and choose the labels you want to attach to new or existing annotations. Use the search field at the top to quickly find labels of deeply nested label trees. Mark up to ten labels as favorites to quickly select them with the <kbd>0</kbd>-<kbd>9</kbd> keys of your keyboard. To select a label as favorite, click the <i class="fa fa-star"></i> icon next to the label in the label tree. Now it will appear in the "Favorites" label tree at the top and can be selected with a shortcut key. Click the <i class="fa fa-star"></i> icon of a favorite label again to remove it from the favorites.
         </p>
 
+        <p>
+            If there already are some annotations with the selected label in the same volume, example annotation patches will be displayed at the bottom of this tab. Use these patches as a reference to decide if the label is actually the one you are looking for. You can disable the example annotations in the <a href="#settings-tab">settings tab</a>.
+        </p>
+
         @mixin('annotationsManualSidebarLabelTrees')
 
         <h3><a name="annotation-modes-tab"></a> <i class="fa fa-th"></i> Annotation Modes</h3>
@@ -84,7 +88,7 @@
                 Color adjustment is unavailable for remote images without <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a> and images that are too large to be handled by the graphics processing unit of your machine (<span id="texture-size-remark">your machine can handle images up to <span id="texture-size"></span> px</span>).
             </div>
         </div>
-        <script type="text/javascript">
+        <script type="module">
             try {
                 var gl = document.createElement('canvas').getContext('webgl');
                 var size = gl.getParameter(gl.MAX_TEXTURE_SIZE);
@@ -150,6 +154,17 @@
                 Only one of the label or measure tooltips can be activated at the same time.
             </div>
         </div>
+
+        <h4><a name="export-area"></a>Export Area</h4>
+
+        <p>
+            The export area can be used to restrict generated reports to a specific area of the images of a volume. Click <i class="fa fa-pencil-alt"></i> edit to draw or edit the export area. The area can be drawn similar to a <a href="{{route('manual-tutorials', ['annotations', 'creating-annotations'])}}#rectangle">rectangle annotation</a> and will be permanently displayed on all images of the volume. If a report is set to be restricted to the export area, only image annotations inside this area will be considered. Delete the export area with the <i class="fa fa-trash"></i> delete button. Set the export area opacity to 0 to hide it.
+        </p>
+
+        <p>
+            The example annotations switch allows you to enable or disable the example annotation patches that are displayed in the <i class="fa fa-tags"></i> label trees tab.
+        </p>
+
 
         @mixin('annotationsManualSidebarSettings')
     </div>

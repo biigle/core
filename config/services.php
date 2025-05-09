@@ -30,6 +30,12 @@ return [
        'redirect' => '/auth/lslogin/callback',
     ],
 
+    'nfdilogin' => [
+       'client_id' => env('NFDILOGIN_CLIENT_ID'),
+       'client_secret' => env('NFDILOGIN_CLIENT_SECRET'),
+       'redirect' => '/auth/iam4nfdi/callback',
+   ],
+
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],

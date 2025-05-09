@@ -136,6 +136,8 @@ export default {
                 fill: defaultCircleFill,
                 stroke: editingCircleStroke,
             }),
+            // Also for hit detection (see above) in some scenarios (e.g. biigle/maia).
+            fill: transparentFill,
         }),
         new Style({
             stroke: editingStroke,

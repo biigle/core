@@ -21,8 +21,10 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
+        "ext-zip": "*",
         "biigle/ananas": "dev-master",
         "biigle/auth-lslogin": "dev-master",
+        "biigle/auth-nfdi": "dev-main",
         "biigle/color-sort": "dev-master",
         "biigle/demo": "dev-master",
         "biigle/denbi-service": "dev-master",
@@ -30,17 +32,14 @@
         "biigle/kpis": "dev-main",
         "biigle/laravel-file-cache": "^5.0",
         "biigle/laravel-queue-alert": "^2.0",
-        "biigle/largo": "dev-master",
         "biigle/laserpoints": "dev-master",
-        "biigle/magic-sam": "^1.0",
+        "biigle/magic-sam": "dev-main",
         "biigle/maia": "dev-master",
         "biigle/metadata-coco": "dev-main",
         "biigle/metadata-ifdo": "dev-main",
         "biigle/module": "dev-main",
         "biigle/newsletter": "dev-master",
         "biigle/ptp": "dev-main",
-        "biigle/reports": "dev-master",
-        "biigle/sync": "dev-master",
         "biigle/user-disks": "dev-main",
         "biigle/user-storage": "dev-master",
         "duncan3dc/bom-string": "^1.1",
@@ -52,6 +51,7 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.0",
         "league/flysystem-aws-s3-v3": "^3.12",
+        "meyfa/php-svg": "^0.14.7",
         "msurguy/honeypot": "^1.0",
         "pgvector/pgvector": "^0.1.4",
         "php-ffmpeg/php-ffmpeg": "^1.0",
@@ -59,6 +59,7 @@
         "ramsey/uuid": "^4.0"
     },
     "require-dev": {
+        "brianium/paratest": "^7.4",
         "fakerphp/faker": "^1.23",
         "filp/whoops": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.0",
@@ -110,10 +111,13 @@
             "@php artisan vendor:publish --ansi --tag=public"
         ],
         "test": [
-            "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order"
+            "docker compose run --rm worker php vendor/bin/phpunit --colors=always --random-order"
         ],
         "testf": [
-            "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"
+            "docker compose run --rm worker php vendor/bin/phpunit --colors=always --filter"
+        ],
+        "testp": [
+            "docker compose restart database_testing && docker compose run --rm worker php artisan test --parallel"
         ],
         "fix": [
             "@php vendor/bin/php-cs-fixer fix --config='.php-cs-fixer.php'"

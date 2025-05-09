@@ -33,6 +33,19 @@ class FilenameController extends Controller
         // Escape trailing backslashes, else there would be an error with ilike.
         $pattern = preg_replace('/\\\\$/', '\\\\\\\\', $pattern);
 
+        $files = explode(',', $pattern);
+        if (count($files) > 1) {
+            $files = collect($files)->map(
+                function ($f) {
+                    $filename = trim($f);
+                    return strlen($filename) > 0 ? $filename : null;
+                }
+            )->whereNotNull();
+
+            return $files->chunk(1000)->flatMap(fn ($chunk)
+                => $volume->files()->whereIn('filename', $chunk)->pluck('id'));
+        }
+
         return $volume->files()
             ->where('filename', 'ilike', str_replace('*', '%', $pattern))
             ->pluck('id');

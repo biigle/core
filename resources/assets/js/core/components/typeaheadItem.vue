@@ -1,7 +1,7 @@
 <template>
 <li>
-    <a href="#" @click.prevent="props.select(item)">
-        <span v-html="props.highlight(item)"></span>
+    <a href="#" @click.prevent="select(item)">
+        <span class="typeahead-item-name" v-html="highlightHtml" :title="item.name"></span>
         <span v-if="info">
             <br><small class="typeahead-item-info" v-text="info" :title="info"></small>
         </span>
@@ -12,8 +12,12 @@
 <script>
 export default {
     props: {
-        props: {
-            type: Object,
+        select: {
+            type: Function,
+            required: true,
+        },
+        highlightHtml: {
+            type: String,
             required: true,
         },
         item: {
@@ -36,7 +40,7 @@ export default {
             return keys.reduce(function (i, key) {
                 return i ? i[key] : i;
             }, this.item);
-        }
+        },
     },
 };
 </script>

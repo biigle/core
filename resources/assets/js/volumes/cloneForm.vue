@@ -1,11 +1,11 @@
 <script>
-import LoaderMixin from '../core/mixins/loader';
-import Typeahead from "../core/components/typeahead";
-import FileItem from "./components/filePanelItem";
-import {handleErrorResponse} from "../core/messages/store";
-import VolumeApi from '../volumes/api/volumes'
-import LabelTrees from "../label-trees/components/labelTrees";
-import {urlParams as UrlParams} from '../core/utils';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Typeahead from '@/core/components/typeahead.vue';
+import FileItem from './components/filePanelItem.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
+import VolumeApi from '@/volumes/api/volumes.js'
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 /**
  * View model for the create volume form.
@@ -52,13 +52,21 @@ export default {
             return this.flatLabels(this.fileLabelTrees).filter(label => label.selected)
         },
         selectedFileLabelIds() {
+            if (!this.filterFileLabels) {
+                return [];
+            }
+
             return this.selectedFileLabels.map(label => label.id);
         },
         selectedAnnotationLabels() {
             return this.flatLabels(this.annotationLabelTrees).filter((label) => label.selected);
 
         },
-        selectedAnnotationLabelIds(){
+        selectedAnnotationLabelIds() {
+            if (!this.filterAnnotations) {
+                return [];
+            }
+
             return this.selectedAnnotationLabels.map((label) => label.id);
         },
         selectedFileLabelsCount() {

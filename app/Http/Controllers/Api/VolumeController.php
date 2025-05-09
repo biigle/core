@@ -52,10 +52,13 @@ class VolumeController extends Controller
 
         return Volume::accessibleBy($user)
             ->with(['projects' => function ($query) use ($user) {
-                $query->when(!$user->can('sudo'), function ($query) use ($user) {
-                    return $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
-                        ->where('project_user.user_id', $user->id);
-                })
+                $query
+                    ->when(
+                        !$user->can('sudo'),
+                        fn ($query) =>
+                            $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                                ->where('project_user.user_id', $user->id)
+                    )
                     ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
@@ -190,6 +193,7 @@ class VolumeController extends Controller
 
             $copy = $volume->replicate();
             $copy->name = $request->input('name', $volume->name);
+            $copy->creator_id = $request->user()->id;
             $copy->creating_async = true;
             $copy->save();
             if ($volume->hasMetadata()) {

@@ -7,3 +7,6 @@ import './projects/main';
 import './volumes/main';
 import './annotations/main';
 import './videos/main';
+import './sync/main';
+import './reports/main';
+import './largo/main';

@@ -114,9 +114,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [20, 30, 40]));
         $this->assertFalse($annotations->contains('labels', [$al11->toArray()]));
@@ -169,9 +169,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [[20, 30, 40]]));
         $this->assertFalse($annotations->contains('labels', [$al11->toArray()]));
@@ -212,9 +212,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [20, 30, 40]));
         $this->assertFalse($annotations->contains('labels', [$al1->toArray()]));
@@ -252,9 +252,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [[20, 30, 40]]));
         $this->assertFalse($annotations->contains('labels', [$al1->toArray()]));
@@ -292,9 +292,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
         $this->assertTrue($annotations->contains('labels', [$al1->toArray()]));
@@ -332,9 +332,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
         $this->assertTrue($annotations->contains('labels', [$al1->toArray()]));
@@ -371,9 +371,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($image, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
         $this->assertTrue($annotations->contains('labels', [
@@ -412,9 +412,9 @@ class AnnotationSessionTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $annotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(collect($yieldAnnotations())->toArray());
 
         $this->assertTrue($annotations->contains('points', [[40, 50, 60]]));
         $this->assertTrue($annotations->contains('labels', [

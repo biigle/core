@@ -22,16 +22,13 @@
 @endsection
 
 @section('content')
-<div
-    id="video-container"
-    class="video-container sidebar-container"
-    v-bind:class="classObject"
-    >
+<div id="video-container" class="video-container sidebar-container">
     <div
         class="sidebar-container__content"
         v-on:mousemove="updateTimelineHeight"
         v-on:mouseleave="finishUpdateTimelineHeight"
         v-on:mouseup="finishUpdateTimelineHeight"
+        v-bind:class="classObject"
         >
         @include('videos.show.content')
     </div>
@@ -55,7 +52,7 @@
 </div>
 @endsection
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('videos.volumeId', {{$volume->id}});
     biigle.$declare('videos.id', {{$video->id}});
     biigle.$declare('videos.errors', {!!$errors!!});
@@ -63,7 +60,8 @@
     @can('addAnnotation', $video)
         biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
     @endcan
-    biigle.$declare('videos.shapes', {!! $shapes !!});
+    biigle.$declare('annotations.shapes', {!! $shapes !!});
+    biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('videos.isEditor', @can('add-annotation', $video) true @else false @endcan);
     biigle.$declare('videos.videoIds', {!! $videos->keys() !!});
     biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});

@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Carbon\Carbon;
 use DB;
+use Generator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -41,7 +42,7 @@ class AnnotationSession extends Model
     /**
      * The volume, this annotation session belongs to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Volume, AnnotationSession>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Volume, $this>
      */
     public function volume()
     {
@@ -51,7 +52,7 @@ class AnnotationSession extends Model
     /**
      * The users, this annotation session is restricted to.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function users()
     {
@@ -64,10 +65,11 @@ class AnnotationSession extends Model
      *
      * @param VolumeFile $file The file to get the annotations from
      * @param User $user The user to whom the restrictions should apply ('own' user)
+     * @param array $load Models that should also be loaded
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Generator
      */
-    public function getVolumeFileAnnotations(VolumeFile $file, User $user)
+    public function getVolumeFileAnnotations(VolumeFile $file, User $user, array $load = [])
     {
         $annotationClass = $file->annotations()->getRelated();
         $query = $annotationClass::allowedBySession($this, $user)
@@ -105,7 +107,14 @@ class AnnotationSession extends Model
             $query->with('labels');
         }
 
-        return $query->get();
+        // Prevent exceeding memory limit by using generator
+        $yieldAnnotations = function () use ($query, $load): Generator {
+            foreach ($query->with($load)->lazy() as $annotation) {
+                yield $annotation;
+            }
+        };
+
+        return $yieldAnnotations;
     }
 
     /**

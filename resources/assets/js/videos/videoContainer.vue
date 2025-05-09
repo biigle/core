@@ -1,25 +1,24 @@
 <script>
-import Annotation from './models/Annotation';
-import AnnotationsTab from './components/viaAnnotationsTab';
-import Echo from '../core/echo';
-import Events from '../core/events';
-import LabelAnnotationFilter from '../annotations/models/LabelAnnotationFilter';
-import LabelTrees from '../label-trees/components/labelTrees';
-import LoaderMixin from '../core/mixins/loader';
-import Messages from '../core/messages/store';
-import Settings from './stores/settings';
-import SettingsTab from './components/settingsTab';
-import ShapeAnnotationFilter from '../annotations/models/ShapeAnnotationFilter';
-import Sidebar from '../core/components/sidebar';
-import SidebarTab from '../core/components/sidebarTab';
-import UserAnnotationFilter from '../annotations/models/UserAnnotationFilter';
-import VideoAnnotationApi from './api/videoAnnotations';
-import VideoApi from './api/videos';
-import VideoLabelsTab from './components/videoLabelsTab';
-import VideoScreen from './components/videoScreen';
-import VideoTimeline from './components/videoTimeline';
-import {handleErrorResponse} from '../core/messages/store';
-import {urlParams as UrlParams} from '../core/utils';
+import Annotation from './models/Annotation.vue';
+import AnnotationsTab from './components/viaAnnotationsTab.vue';
+import Echo from '@/core/echo.js';
+import Events from '@/core/events.js';
+import Keyboard from '@/core/keyboard.js';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.js';
+import Settings from './stores/settings.js';
+import SettingsTab from './components/settingsTab.vue';
+import Sidebar from '@/core/components/sidebar.vue';
+import SidebarTab from '@/core/components/sidebarTab.vue';
+import VideoAnnotationApi from './api/videoAnnotations.js';
+import VideoApi from './api/videos.js';
+import VideoLabelsTab from './components/videoLabelsTab.vue';
+import VideoScreen from './components/videoScreen.vue';
+import VideoTimeline from './components/videoTimeline.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
+import {markRaw} from 'vue';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
@@ -72,6 +71,7 @@ export default {
                 showThumbnailPreview: true,
                 enableJumpByFrame: false,
                 muteVideo: true,
+                singleAnnotation: false,
             },
             openTab: '',
             urlParams: {
@@ -84,7 +84,6 @@ export default {
             initialMapCenter: [0, 0],
             initialMapResolution: 0,
             initialFocussedAnnotation: 0,
-            annotationFilters: [],
             activeAnnotationFilter: null,
             resizingTimeline: false,
             timelineOffsetReference: 0,
@@ -98,6 +97,12 @@ export default {
             swappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
+            hasCrossOriginError: false,
+            videoFilenames: null,
+            focusInputFindlabel: false,
+            corsRequestBreaksVideo: false,
+            attemptWithCors: false,
+            invalidMoovAtomPosition: false,
         };
     },
     computed: {
@@ -173,11 +178,16 @@ export default {
         },
         reachedTrackedAnnotationLimit() {
             return this.disableJobTracking;
+        },
+        annotationsAreHidden() {
+            return this.settings.annotationOpacity === 0;
         }
     },
     methods: {
         prepareAnnotation(annotation) {
-            return new Annotation({data: annotation});
+            // Use annotations as raw (non-reactive) objects for performance reasons.
+            // Reactive properties are selectively set in the Annotation class.
+            return markRaw(new Annotation(annotation));
         },
         setAnnotations(args) {
             this.annotations = args[0].body.map(this.prepareAnnotation);
@@ -190,14 +200,14 @@ export default {
         },
         seek(time, force) {
             if (this.seeking) {
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
             if (this.video.currentTime === time && force !== true) {
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
-            let promise = new Vue.Promise((resolve, reject) => {
+            let promise = new Promise((resolve, reject) => {
                 this.video.addEventListener('seeked', resolve);
                 this.video.addEventListener('error', reject);
             });
@@ -213,11 +223,11 @@ export default {
             if (this.attachingLabel) {
                 this.attachAnnotationLabel(annotation);
 
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             } else if (this.swappingLabel) {
                 this.swapAnnotationLabel(annotation);
 
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
             if (shift) {
@@ -244,7 +254,7 @@ export default {
                 return this.seek(time);
             }
 
-            return Vue.Promise.resolve();
+            return Promise.resolve();
         },
         deselectAnnotation(annotation) {
             if (annotation) {
@@ -267,7 +277,7 @@ export default {
                     pending: true,
                 });
 
-                this.pendingAnnotation = new Annotation({data});
+                this.pendingAnnotation = markRaw(new Annotation(data));
             } else {
                 this.pendingAnnotation = null;
             }
@@ -408,7 +418,7 @@ export default {
         maybeInitCurrentTime() {
             // Ignore initial time if an initial annotation is selected.
             if (this.initialCurrentTime === 0 || this.selectedAnnotations.length > 0) {
-                return Vue.Promise.resolve();
+                return Promise.resolve();
             }
 
             return this.seek(this.initialCurrentTime);
@@ -422,7 +432,7 @@ export default {
                 }
             }
 
-            return Vue.Promise.resolve();
+            return Promise.resolve();
         },
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
@@ -441,10 +451,9 @@ export default {
             }
         },
         attachAnnotationLabel(annotation) {
-            let promise = annotation.attachAnnotationLabel(this.selectedLabel);
-            promise.catch(handleErrorResponse);
-
-            return promise;
+            annotation
+                .attachAnnotationLabel(this.selectedLabel)
+                .catch(handleErrorResponse);
         },
         swapAnnotationLabel(annotation) {
             let lastLabel = annotation.labels
@@ -452,7 +461,9 @@ export default {
                 .sort((a, b) => a.id - b.id)
                 .pop();
 
-            this.attachAnnotationLabel(annotation)
+            // Can't use attachAnnotationLabel() because detachAnnotationLabel() should
+            // not be called on error.
+            annotation.attachAnnotationLabel(this.selectedLabel)
                 .then(() => {
                     if (lastLabel) {
                         this.detachAnnotationLabel(annotation, lastLabel);
@@ -462,22 +473,6 @@ export default {
         },
         refreshSingleAnnotation(annotation) {
             this.$refs.videoScreen.refreshSingleAnnotation(annotation);
-        },
-        initAnnotationFilters() {
-            let reverseShapes = {};
-            for (let name in this.shapes) {
-                reverseShapes[this.shapes[name]] = name;
-            }
-
-            this.annotationFilters = [
-                new LabelAnnotationFilter({data: {annotations: this.annotations}}),
-                new UserAnnotationFilter({data: {annotations: this.annotations}}),
-                new ShapeAnnotationFilter({data: {shapes: reverseShapes}}),
-            ];
-        },
-        updateAnnotationFilters() {
-            this.annotationFilters[0].annotations = this.annotations;
-            this.annotationFilters[1].annotations = this.annotations;
         },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
@@ -490,7 +485,7 @@ export default {
         },
         handleRequiresSelectedLabel() {
             Messages.info('Please select a label first.');
-            this.$refs.sidebar.$emit('open', 'labels');
+            this.$refs.sidebar.handleOpenTab('labels');
         },
         startUpdateTimelineHeight(e) {
             e.preventDefault();
@@ -531,6 +526,8 @@ export default {
                 throw new VideoMalformedError();
             } else if (video.error === this.errors['too-large']) {
                 throw new VideoTooLargeError();
+            } else if (video.error === this.errors['moov-atom']) {
+                this.invalidMoovAtomPosition = true;
             } else if (video.size === null) {
                 throw new VideoNotProcessedError();
             }
@@ -549,29 +546,57 @@ export default {
             }
         },
         fetchVideoContent(video) {
-            let videoPromise = new Vue.Promise((resolve) => {
-                this.video.addEventListener('canplay', resolve);
+            let videoPromise = new Promise((resolve) => {
+                this.video.addEventListener('canplay', resolve, { once: true });
+                this.video.addEventListener('error', (e) => {
+                    this.corsRequestBreaksVideo = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED;
+                    resolve();
+                }, { once: true });
             });
-            let annotationPromise = VideoAnnotationApi.query({id: video.id});
-            let promise = Vue.Promise.all([annotationPromise, videoPromise])
-                .then(this.setAnnotations)
-                .then(this.updateAnnotationFilters)
-                .then(this.maybeFocusInitialAnnotation)
-                .then(this.maybeInitCurrentTime);
 
+            videoPromise.finally(() => { this.attemptWithCors = false });
+
+            // Try requesting video by using CORS
+            this.video.setAttribute('crossOrigin', '');
+            this.attemptWithCors = true;
             this.video.src = this.videoFileUri.replace(':id', video.id);
 
-            return promise;
+            return videoPromise;
+        },
+        fetchAnnotations(videoPromise) {
+            let annotationPromise = VideoAnnotationApi.query({ id: this.videoId });
+            return Promise.all([annotationPromise, videoPromise])
+                .then(this.setAnnotations)
+                .then(this.maybeFocusInitialAnnotation)
+                .then(this.maybeInitCurrentTime);
+        },
+        maybeFetchVideoWithoutCors(promise) {
+            if (!this.corsRequestBreaksVideo) {
+                return promise;
+            }
+
+            let videoPromise = new Promise((resolve) => {
+                this.video.addEventListener('canplay', resolve, { once: true });
+            });
+
+            // Request video without CORS to allow video playback again
+            this.video.removeAttribute('crossOrigin');
+            this.video.src = this.videoFileUri.replace(':id', this.videoId);
+
+            return videoPromise;
         },
         loadVideo(id) {
             this.videoId = id;
-            Events.$emit('video.id', id);
+            Events.emit('video.id', id);
             UrlParams.setSlug(id, -2);
             this.startLoading();
 
             let promise = VideoApi.get({id})
                 .then(this.handleVideoInformationResponse)
                 .then(this.fetchVideoContent)
+                .then(this.maybeFetchVideoWithoutCors)
+                .then(this.fetchAnnotations)
+                .then(this.checkCORSProperty)
                 .catch(this.handleVideoError)
                 .finally(() => {
                     this.finishLoading();
@@ -580,6 +605,16 @@ export default {
                 });
 
             return promise;
+        },
+        checkCORSProperty() {
+            let testCanvas = document.createElement('canvas');
+            let ctx = testCanvas.getContext('2d');
+            ctx.drawImage(this.video, 0, 0);
+            try {
+                ctx.getImageData(0, 0, 1, 1);
+            } catch (e) {
+                this.hasCrossOriginError = true;
+            }
         },
         showPreviousVideo() {
             this.reset();
@@ -673,6 +708,23 @@ export default {
             }
             Messages.danger(`Invalid shape. ${shape} needs ${count} different points.`);
         },
+        selectLastAnnotation() {
+            let lastAnnotation = this.annotations.reduce((lastAnnotated, a) => a.id > lastAnnotated.id ? a : lastAnnotated, { id: 0 });
+            this.selectAnnotations([lastAnnotation], this.selectedAnnotations, lastAnnotation.startFrame);
+        },
+        openSidebarLabels() {
+            this.$refs.sidebar.handleOpenTab('labels');
+            this.setFocusInputFindLabel()
+        },
+        setFocusInputFindLabel() {
+            this.focusInputFindlabel = false;
+            this.$nextTick(() => {
+                this.focusInputFindlabel = true;
+            });
+        },
+        dismissMoovAtomError() {
+            this.invalidMoovAtomPosition = false;
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -689,7 +741,7 @@ export default {
         },
     },
     created() {
-        let shapes = biigle.$require('videos.shapes');
+        let shapes = biigle.$require('annotations.shapes');
         let map = {};
         Object.keys(shapes).forEach((id) => {
             map[shapes[id]] = parseInt(id);
@@ -704,12 +756,16 @@ export default {
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
+        this.videoFilenames = biigle.$require('videos.videoFilenames');
 
-        this.initAnnotationFilters();
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
-        this.video.addEventListener('error', function (e) {
+        this.video.addEventListener('error', (e) => {
+            if (this.attemptWithCors) {
+                return;
+            }
+
             if (e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
                 if (e.target.error.message.startsWith('404') || e.target.error.message.startsWith('403')) {
                     Messages.danger('Unable to access the video file.');
@@ -724,6 +780,8 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
         }
@@ -735,6 +793,9 @@ export default {
         if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
             this.supportsJumpByFrame = true;
         }
+
+        Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
+
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before
@@ -745,6 +806,8 @@ export default {
         if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
+
+        Events.emit('videos.map.init', this.$refs.videoScreen.map);
     },
 };
 </script>

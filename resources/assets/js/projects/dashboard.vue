@@ -1,5 +1,5 @@
 <script>
-import PreviewThumbnail from './components/previewThumbnail';
+import PreviewThumbnail from './components/previewThumbnail.vue';
 
 /**
  * The (favourite) project list on the dashboard.

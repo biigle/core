@@ -5,19 +5,21 @@
         >
             <select
                 class="form-control"
-                v-model="chosenFilterIndex"
+                v-model="chosenFilterName"
                 >
                     <option
-                        v-for="(filter, index) in annotationFilters"
-                        :value="index"
-                        v-text="filter.name"
+                        v-for="(filter, name) in annotationFilters"
+                        :value="name"
+                        v-text="name"
                         ></option>
             </select>
 
-            <span
-                v-show="chosenFilter"
-                ref="filterElement"
-                ></span>
+            <component
+                :is="chosenFilter"
+                :annotations="annotations"
+                @select="emitSelectFilter"
+                @unselect="emitUnselectFilter"
+                ></component>
             <input
                 v-show="!chosenFilter"
                 class="form-control"
@@ -30,7 +32,7 @@
                 class="btn btn-default"
                 title="Clear annotation filter"
                 :class="clearButtonClass"
-                :disabled="!hasActiveFilter"
+                :disabled="!hasActiveFilter || null"
                 @click.prevent="emitUnselectFilter"
                 >
                     <i class="fa fa-times"></i>
@@ -39,13 +41,20 @@
 </template>
 
 <script>
+import LabelFilter from './filters/labelAnnotationFilter.vue';
+import SessionFilter from './filters/sessionAnnotationFilter.vue';
+import ShapeFilter from './filters/shapeAnnotationFilter.vue';
+import UserFilter from './filters/userAnnotationFilter.vue';
+
 export default {
+    emits: [
+        'select',
+        'unselect',
+    ],
     props: {
-        annotationFilters: {
+        annotations: {
             type: Array,
-            default() {
-                return [];
-            },
+            required: true,
         },
         hasActiveFilter: {
             type: Boolean,
@@ -54,7 +63,7 @@ export default {
     },
     data() {
         return {
-            chosenFilterIndex: null,
+            chosenFilterName: null,
         };
     },
     computed: {
@@ -62,7 +71,7 @@ export default {
             return this.annotationFilters.length > 0;
         },
         chosenFilter() {
-            return this.annotationFilters[this.chosenFilterIndex];
+            return this.annotationFilters[this.chosenFilterName];
         },
         clearButtonClass() {
             return {
@@ -78,19 +87,15 @@ export default {
             this.$emit('unselect');
         },
     },
-    watch: {
-        chosenFilter(filter, oldFilter) {
-            if (oldFilter) {
-                this.$refs.filterElement.removeChild(oldFilter.$el);
-                oldFilter.$off('select', this.emitSelectFilter);
-                oldFilter.$off('unselect', this.emitUnselectFilter);
-            }
-
-            this.$refs.filterElement.appendChild(filter.$el);
-            filter.$on('select', this.emitSelectFilter);
-            filter.$on('unselect', this.emitUnselectFilter);
-        },
-    },
+    created() {
+        // Component objects should not be made reactive.
+        this.annotationFilters = {
+            label: LabelFilter,
+            user: UserFilter,
+            shape: ShapeFilter,
+            session: SessionFilter,
+        };
+    }
 };
 </script>
 

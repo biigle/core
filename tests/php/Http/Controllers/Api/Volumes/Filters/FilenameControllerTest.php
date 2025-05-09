@@ -67,7 +67,7 @@ class FilenameControllerTest extends ApiTestCase
             'filename' => 'abcde.jpg',
         ]);
         $this->beGuest();
-        $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*cde*\\")
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*cde*%5C")
             ->assertExactJson([]);
         $response->assertStatus(200);
     }
@@ -112,6 +112,57 @@ class FilenameControllerTest extends ApiTestCase
 
         $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/***.mp4")
             ->assertSimilarJson([$video->id, $video2->id, $video3->id]);
+        $response->assertStatus(200);
+    }
+
+    public function testIndexCommaSeparatedImageFilenames()
+    {
+        $img = $this->volume()->id;
+
+        $image = ImageTest::create([
+            'volume_id' => $img,
+            'filename' => 'a.jpg',
+        ]);
+        $image2 = ImageTest::create([
+            'volume_id' => $img,
+            'filename' => 'b.jpg',
+        ]);
+
+        $this->beGuest();
+        $response = $this->json('GET', "/api/v1/volumes/{$img}/files/filter/filename/a.jpg")
+            ->assertExactJson([$image->id]);
+        $response->assertStatus(200);
+
+        $response = $this->json('GET', "/api/v1/volumes/{$img}/files/filter/filename/a.jpg%2Cb.jpg")
+            ->assertExactJson([$image->id, $image2->id]);
+        $response->assertStatus(200);
+
+        $response = $this->json('GET', "/api/v1/volumes/{$img}/files/filter/filename/%2C%2C%20%20a.jpg%2Cb.jpg%20")
+            ->assertExactJson([$image->id, $image2->id]);
+        $response->assertStatus(200);
+    }
+
+    public function testIndexCommaSeparatedVideoFilenames()
+    {
+        $vid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+
+        $video = VideoTest::create([
+            'volume_id' => $vid,
+            'filename' => 'a.mp4',
+        ]);
+        $video2 = VideoTest::create([
+            'volume_id' => $vid,
+            'filename' => 'b.mp4',
+        ]);
+
+        $this->beGuest();
+
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/a.mp4%2Cb.mp4")
+            ->assertExactJson([$video->id, $video2->id]);
+        $response->assertStatus(200);
+
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/%2C%2C%20%20a.mp4%2Cb.mp4%20")
+            ->assertExactJson([$video->id, $video2->id]);
         $response->assertStatus(200);
     }
 }

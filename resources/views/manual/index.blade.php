@@ -57,6 +57,20 @@
             <p>
                 View and resolve differences between label trees.
             </p>
+            <h4>
+                <a href="{{route('manual-tutorials', ['label-trees', 'download-import'])}}">Download and import</a>
+            </h4>
+            <p>
+                Learn more on how you can download a label tree and use it elsewhere.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['largo', 'annotation-catalog'])}}">Annotation Catalog</a>
+            </h4>
+            <p>
+                The annotation catalog shows you all annotations with a certain label.
+            </p>
+
             @mixin('labelTreesManual')
 
             <h3>Volumes</h3>
@@ -227,7 +241,45 @@
                 Advanced configuration of the video annotation tool.
             </p>
 
+            <h4>
+                <a href="{{route('manual-tutorials', ['videos', 'fix-video-encoding'])}}">Fix video encoding</a>
+            </h4>
 
+            <p>
+                Fix errors in video files that can cause problems in BIIGLE.
+            </p>
+
+            <h3>
+                <a href="{{route('manual-tutorials', ['largo', 'largo'])}}">Largo</a>
+            </h3>
+            <p>
+                The Label Review Grid Overview and what you can do with it.
+            </p>
+
+            <h3>Reports</h3>
+            <h4>
+                <a href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}">Reports schema</a>
+            </h4>
+
+            <p>
+                A description of the file formats of the different available reports.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['reports', 'image-location-reports'])}}">Image location reports</a>
+            </h4>
+
+            <p>
+                A detailed description of image location reports with a short introduction to QGIS.
+            </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['reports', 'annotation-location-reports'])}}">Annotation location reports</a>
+            </h4>
+
+            <p>
+                A detailed description of the annotation position estimation of the annotation location report.
+            </p>
 
             @mixin('manualTutorial')
 

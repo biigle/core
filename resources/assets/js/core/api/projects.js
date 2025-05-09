@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for projects.
  *
@@ -52,10 +54,8 @@
  *
  * Detach a label tree from a project:
  * resource.detachLabelTree({id: 1, label_tree_id: 31}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/projects{/id}', {}, {
+export default Resource('api/v1/projects{/id}', {}, {
     queryVolumes: {
         method: 'GET',
         url: 'api/v1/projects{/id}/volumes',
@@ -86,7 +86,7 @@ export default Vue.resource('api/v1/projects{/id}', {}, {
     },
     queryAvailableLabelTrees: {
         method: 'GET',
-        url: 'api/v1/projects{/id}/label-trees/available',
+        url: 'api/v1/projects{/id}/label-trees/available{/name}',
     },
     attachLabelTree: {
         method: 'POST',

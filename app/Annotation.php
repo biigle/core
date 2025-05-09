@@ -95,10 +95,10 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * Scope a query to only include annotations allowed by the session for the user.
      *
-     * @param \Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Contracts\Database\Query\Builder $query
      * @param AnnotationSession $session
      * @param User $user The user to whom the restrictions should apply ('own' user)
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Contracts\Database\Query\Builder
      */
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {
@@ -165,7 +165,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The labels, this annotation got assigned by the users.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant AnnotationLabel>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<covariant AnnotationLabel, $this>
      */
     abstract public function labels();
 
@@ -179,7 +179,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The shape of this annotation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, Annotation>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
      */
     public function shape()
     {
@@ -208,5 +208,13 @@ abstract class Annotation extends Model implements AnnotationContract
     public function getFile(): VolumeFile
     {
         return $this->file;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 }

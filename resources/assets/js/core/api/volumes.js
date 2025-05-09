@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for volumes.
  *
@@ -11,7 +13,5 @@
  *
  * Update a volume:
  * resource.update({id: 1}, {name: 'New Name'}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/volumes{/id}');
+export default Resource('api/v1/volumes{/id}');

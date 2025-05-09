@@ -143,6 +143,18 @@ return [
             'url' => env('APP_URL').'/storage/magic-sam',
             'visibility' => 'public',
         ],
+
+        'reports' => [
+            'driver' => 'local',
+            'root' => storage_path('reports'),
+        ],
+
+        'largo' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/largo-patches'),
+            'url' => env('APP_URL').'/storage/largo-patches',
+            'visibility' => 'public',
+        ],
     ],
 
     /*

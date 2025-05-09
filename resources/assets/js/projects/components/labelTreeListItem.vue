@@ -1,5 +1,5 @@
 <template>
-    <li class="list-group-item" @mouseenter="emitEnter">
+    <li class="list-group-item limit-text" @mouseenter="emitEnter">
         <h4 class="list-group-item-heading">
             <button v-if="editable" v-show="editing" type="button" class="btn btn-default btn-sm pull-right" title="Detach this label tree" @click="emitRemove"><i class="fa fa-trash"></i></button>
             <a :href="url" v-text="tree.name"></a>
@@ -10,6 +10,10 @@
 
 <script>
 export default {
+    emits: [
+        'enter',
+        'remove'
+    ],
     props: {
         tree: {
             type: Object,

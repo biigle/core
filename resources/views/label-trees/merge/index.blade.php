@@ -3,7 +3,7 @@
 @section('title', "Merge a label tree into '{$tree->name}'")
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.mergeCandidates', {!! $mergeCandidates !!});
     biigle.$declare('labelTrees.mergeUrlTemplate', '{!! route('label-trees-merge', [$tree->id, ':id']) !!}');
 </script>
@@ -22,7 +22,7 @@
         </div>
         <div class="pull-right">
             <a href="{{ route('label-trees', $tree->id) }}" class="btn btn-default">Cancel</a>
-            <a v-bind:href="continueUrl" v-bind:disabled="cannotContinue" class="btn btn-success">Continue</a>
+            <a v-bind:href="continueUrl" v-bind:disabled="cannotContinue || null" class="btn btn-success">Continue</a>
         </div>
     </div>
 </div>

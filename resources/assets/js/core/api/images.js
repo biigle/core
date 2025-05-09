@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for images.
  *
@@ -25,10 +27,8 @@
  *
  * Delete an image:
  * resource.delete({id: 1}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/images{/id}', {}, {
+export default Resource('api/v1/images{/id}', {}, {
     getFile: {
         method: 'GET',
         url: 'api/v1/images{/id}/file',

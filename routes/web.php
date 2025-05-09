@@ -109,6 +109,21 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'IndexController@get',
         ]);
 
+        $router->get('export', [
+            'as' => 'admin-export',
+            'uses' => 'ExportController@index',
+        ]);
+
+        $router->get('import', [
+            'as' => 'admin-import',
+            'uses' => 'ImportController@index',
+        ]);
+
+        $router->get('import/{token}', [
+            'as' => 'admin-import-show',
+            'uses' => 'ImportController@show',
+        ]);
+
         $router->get('users', [
             'as' => 'admin-users',
             'uses' => 'UsersController@get',
@@ -179,9 +194,19 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'LabelTreesController@create',
         ]);
 
+        $router->get('import', [
+            'as' => 'label-tree-import-index',
+            'uses' => 'PublicImportController@index',
+        ]);
+
         $router->get('{id}', [
             'as'   => 'label-trees',
             'uses' => 'LabelTreesController@show',
+        ]);
+
+        $router->get('{id}/catalog', [
+            'as'   => 'annotation-catalog',
+            'uses' => 'AnnotationCatalogController@show',
         ]);
 
         $router->get('{id}/projects', [
@@ -245,6 +270,16 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'project-charts',
             'uses' => 'ProjectStatisticsController@show',
         ]);
+
+        $router->get('{id}/reports', [
+            'uses' => 'ProjectReportsController@show',
+            'as' => 'project-reports',
+        ]);
+
+        $router->get('{id}/largo', [
+            'as'   => 'projectsLargo',
+            'uses' => 'LargoController@index',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {
@@ -299,6 +334,16 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'clone-volume',
             'uses' => 'VolumeCloneController@clone'
         ]);
+
+        $router->get('{id}/reports', [
+            'uses' => 'VolumeReportsController@show',
+            'as' => 'volume-reports',
+        ]);
+
+        $router->get('{id}/largo', [
+            'as'   => 'largo',
+            'uses' => 'LargoController@index',
+        ]);
     });
 
     $router->get('images/{id}', [
@@ -323,9 +368,14 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         $router->redirect('annotations/{id}', '/image-annotations/{id}');
     });
 
+    $router->get('videos/{id}', [
+        'as'   => 'video',
+        'uses' => 'Volumes\VideoController@index',
+    ]);
+
     $router->group(['namespace' => 'Videos'], function ($router) {
         $router->get('videos/{id}/annotations', [
-            'as' => 'video',
+            'as' => 'video-annotate',
             'uses' => 'VideoController@show',
         ]);
 
@@ -333,9 +383,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'show-video-annotation',
             'uses' => 'VideoAnnotationController@show',
         ]);
-
-        // Legacy support.
-        $router->redirect('videos/{id}', '/videos/{id}/annotations');
     });
 
 });

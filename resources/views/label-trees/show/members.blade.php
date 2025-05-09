@@ -1,7 +1,7 @@
 @extends('label-trees.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('labelTrees.members', {!! $members !!});
     biigle.$declare('labelTrees.roles', {!! $roles !!});
     biigle.$declare('labelTrees.defaultRole', {!! Biigle\Role::editor() !!});
@@ -34,7 +34,7 @@
                 <button id="member-btn" class="btn btn-default" title="Add a new member to the label tree"><i class="fa fa-user-plus"></i> Add member</button>
             </span>
             <popover target="#member-btn" placement="left"  v-model="memberPopoverOpen">
-                <template slot="popover">
+                <template #popover>
                     <add-member-form
                         :members="members"
                         :roles="roles"

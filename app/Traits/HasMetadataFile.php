@@ -68,8 +68,13 @@ trait HasMetadataFile
     {
         if ($this->hasMetadata()) {
             Storage::disk($this->getMetadataFileDisk())->delete($this->metadata_file_path);
+            $disk = $this->getMetadataFileDisk();
+            Cache::store('array')->forget("metadata-{$disk}-{$this->metadata_file_path}");
             if (!$noUpdate) {
-                $this->update(['metadata_file_path' => null]);
+                $this->update([
+                    'metadata_file_path' => null,
+                    'metadata_parser' => null,
+                ]);
             }
         }
     }

@@ -15,12 +15,20 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         \Biigle\Events\ImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageThumbnails::class,
+            \Biigle\Listeners\CleanupImageAnnotations::class,
         ],
         \Biigle\Events\TiledImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageTiles::class,
         ],
         \Biigle\Events\VideosDeleted::class => [
             \Biigle\Listeners\CleanupVideoThumbnails::class,
+            \Biigle\Listeners\CleanupVideoAnnotations::class,
+        ],
+        \Biigle\Events\AnnotationLabelAttached::class => [
+            \Biigle\Listeners\AttachLabelListener::class,
+        ],
+        \Biigle\Events\VolumeCloned::class => [
+            \Biigle\Listeners\VolumeClonedListener::class,
         ],
     ];
 
@@ -29,10 +37,14 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
-        \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
         \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
+        \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
+        \Biigle\Report::observe(new \Biigle\Observers\ReportObserver);
+        \Biigle\User::observe(new \Biigle\Observers\UserObserver);
         \Biigle\Video::observe(new \Biigle\Observers\VideoObserver);
+        \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
+        \Biigle\ImageAnnotation::observe(new \Biigle\Observers\ImageAnnotationObserver);
+        \Biigle\VideoAnnotation::observe(new \Biigle\Observers\VideoAnnotationObserver);
     }
 
     /**

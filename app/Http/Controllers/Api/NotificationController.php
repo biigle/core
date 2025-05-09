@@ -24,6 +24,7 @@ class NotificationController extends Controller
      */
     public function update(Request $request, $id)
     {
+        /** @var \Illuminate\Notifications\DatabaseNotification|null $notification */
         $notification = $request->user()->unreadNotifications()->find($id);
         if (is_null($notification)) {
             abort(Response::HTTP_NOT_FOUND);
