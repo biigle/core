@@ -159,24 +159,18 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     protected function getImageAnnotationLabelQuery()
     {
         // Filter records here to keep images with no selected annotation labels or without any annotation labels
-        if ($this->isRestrictedToAnnotationSession() || $this->isRestrictedToLabels() || $this->isRestrictedToExportArea()) {
-            return Label::join('image_annotation_labels', function ($join) {
-                // Use advanced joins to set labels and annotations on null if not present or not selected
-                $join->on('labels.id', '=', 'image_annotation_labels.label_id')
-                    ->when($this->isRestrictedToLabels(), fn ($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
+        return Label::join('image_annotation_labels', function ($join) {
+            // Use advanced joins to set labels and annotations on null if not present or not selected
+            $join->on('labels.id', '=', 'image_annotation_labels.label_id')
+                ->when($this->isRestrictedToLabels(), fn($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
+        })
+            ->join('image_annotations', function ($join) {
+                $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+                    ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+                    ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
             })
-                ->join('image_annotations', function ($join) {
-                    $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-                        ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
-                        ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
-                })
-                ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
-                ->distinct();
-        }
-
-        return Label::join('image_annotation_labels', 'labels.id', '=', 'image_annotation_labels.label_id')
-            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
-            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id');
+            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
+            ->distinct();
     }
 
     /**
