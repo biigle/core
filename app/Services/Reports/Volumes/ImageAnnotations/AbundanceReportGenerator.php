@@ -40,9 +40,9 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $query = $this->query();
         // Separate the annotated images from the empty ones, since only the annotated images could require additional processing.
-        $rows = $query->clone()->whereNotNull('label_id')->get();
+        $annotatedImagesQuery = $query->clone()->whereNotNull('label_id')->get();
         if ($this->shouldSeparateLabelTrees()) {
-            $rows = $rows->groupBy('label_tree_id');
+            $annotatedImagesQuery = $annotatedImagesQuery->groupBy('label_tree_id');
             $allLabels = null;
             // Get query for images that have no annotations
             $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
@@ -53,21 +53,21 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
                 $allLabels = $allLabels->groupBy('label_tree_id');
             } else {
-                $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+                $trees = LabelTree::whereIn('id', $annotatedImagesQuery->keys())->pluck('name', 'id');
             }
 
             foreach ($trees as $id => $name) {
                 if ($this->shouldUseAllLabels()) {
                     $labels = $allLabels->get($id);
                 } else {
-                    $labelIds = $rows->get($id)->pluck('label_id')->unique();
+                    $labelIds = $annotatedImagesQuery->get($id)->pluck('label_id')->unique();
                     $labels = Label::whereIn('id', $labelIds)->get();
                 }
-                $this->tmpFiles[] = $this->createCsv($rows->flatten(), $name, $labels, $emptyImagesQuery);
+                $this->tmpFiles[] = $this->createCsv($annotatedImagesQuery->flatten(), $name, $labels, $emptyImagesQuery);
             }
         } elseif ($this->shouldSeparateUsers()) {
-            $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            $annotatedImagesQuery = $annotatedImagesQuery->groupBy('user_id');
+            $users = User::whereIn('id', $annotatedImagesQuery->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
             $labels = null;
@@ -79,12 +79,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             foreach ($users as $id => $name) {
                 // Get query for images that have no annotations
                 $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
-                $usedImageFilenames = $rows->get($id)->pluck('filename')->unique();
+                $usedImageFilenames = $annotatedImagesQuery->get($id)->pluck('filename')->unique();
                 $usersEmptyImagesQuery = $query->clone()->select('filename')->whereNotIn('filename', $usedImageFilenames);
                 // Add query to process unannotated images (by current user) in chunks later
                 $emptyImagesQuery->union($usersEmptyImagesQuery);
 
-                $rowGroup = $rows->get($id);
+                $rowGroup = $annotatedImagesQuery->get($id);
 
                 if (!$this->shouldUseAllLabels()) {
                     $labels = Label::whereIn('id', $rowGroup->pluck('label_id'))->get();
@@ -95,9 +95,9 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         } else {
             // Get query for images that have no annotations
             $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
-            $allLabelIds = $rows->pluck('label_id')->reject(fn ($k) => !$k);
+            $allLabelIds = $annotatedImagesQuery->pluck('label_id')->reject(fn ($k) => !$k);
             $labels = $this->shouldUseAllLabels() ? $this->getVolumeLabels() : Label::whereIn('id', $allLabelIds)->get();
-            $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels, $emptyImagesQuery);
+            $this->tmpFiles[] = $this->createCsv($annotatedImagesQuery, $this->source->name, $labels, $emptyImagesQuery);
         }
 
         $this->executeScript('csvs_to_xlsx', $path);
