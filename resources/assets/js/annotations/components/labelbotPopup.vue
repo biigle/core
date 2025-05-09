@@ -5,24 +5,25 @@
         <!-- Progress bar -->
           <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelbotPopup"></div>
         <!-- Label name -->
-        <div class="labelbot-labels-label__nameProgressColor">
+        <div class="labelbot-labels-label__nameProgressColor" :class="{ 'labelbot-labels-label__highlightedProgress': index === highlightedLabel && isFocused}">
           <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
           <span>{{ label.name }}</span>
         </div> 
       </div>
-      <div v-else class="labelbot-labels-label__name">
+      <div v-else class="labelbot-labels-label__name" :class="{ 'labelbot-labels-label__highlighted': index === highlightedLabel && isFocused}">
         <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
         <span>{{ label.name }}</span>
       </div>
     </li>
     <li class="labelbot-labels-label">
-      <typeahead ref="typeahead" :style="{ width: '100%' }" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
+      <typeahead :key="popupKey" ref="typeahead" :style="{ width: '100%' }" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
 </template>
 
 <script>
 import Typeahead from '../../label-trees/components/labelTypeahead.vue';
+import Keyboard from '../../core/keyboard';
 
 export default {
   components: {
@@ -36,13 +37,18 @@ export default {
     popupKey: {
       type: Number,
       required: true,
-    }
+    },
+    focusedPopupKey: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
       progressBarWidth: -1,
       selectedLabel: null,
       trees: [],
+      highlightedLabel: -1,
     };
   },
   computed: {
@@ -65,6 +71,9 @@ export default {
 
         return labels;
     },
+    isFocused() {
+      return this.popupKey === this.focusedPopupKey;
+    }
   },
   watch: {
     labelbotLabels() {
@@ -85,14 +94,64 @@ export default {
     },
     closeLabelbotPopup() {
       this.$refs.typeahead.clear();
+      this.highlightedLabel = -1;
       this.$emit('delete-labelbot-labels', this.popupKey);
     },
     handleLabelbotFocus() {
       this.progressBarWidth = -1;
+      this.$emit('change-labelbot-focused-popup', this.popupKey);
     },
+    labelClose() {
+      if (this.focusedPopupKey === this.popupKey) {
+        this.$refs.typeahead.clear();
+        this.highlightedLabel = -1;
+        this.$emit('delete-labelbot-labels', this.popupKey);
+      }
+    },
+    labelUp() {
+      this.$nextTick(() => {
+        if (this.highlightedLabel > 0 && this.isFocused) {
+          this.progressBarWidth = -1;
+          this.highlightedLabel--;
+        }
+      })
+    },
+    labelDown() {
+      this.$nextTick(() => {
+        if (this.highlightedLabel < this.labelbotLabels.length && this.isFocused) {
+          this.progressBarWidth = -1;
+          this.highlightedLabel++;
+        }
+
+        if (this.highlightedLabel === this.labelbotLabels.length && this.isFocused) {
+          this.$refs.typeahead.$refs.input.focus();
+        }
+      });
+    },
+    labelEnter() {
+      this.$nextTick(() => {
+        if (this.highlightedLabel < this.labelbotLabels.length && this.highlightedLabel > 0 && this.isFocused) {
+          this.highlightedLabel = -1;
+          this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel]);
+        }
+      });
+    },
+    deleteLabelAnnotation() {
+      if (this.isFocused) {
+        this.$refs.typeahead.clear();
+        this.highlightedLabel = -1;
+        this.$emit('delete-labelbot-labels-annotation', this.popupKey);
+      }
+    }
   },
   created() {
     this.trees = biigle.$require('annotations.labelTrees');
+
+    Keyboard.on('Escape', this.labelClose, 0, this.listenerSet);
+    Keyboard.on('arrowup', this.labelUp, 0, this.listenerSet);
+    Keyboard.on('arrowdown', this.labelDown, 0, this.listenerSet);
+    Keyboard.on('Enter', this.labelEnter, 0, this.listenerSet);
+    Keyboard.on('delete', this.deleteLabelAnnotation, 0, this.listenerSet);
   },
 };
 </script>

@@ -156,6 +156,10 @@ export default {
                 return [];
             },
         },
+        focusedPopupKey: {
+            type: Number,
+            default: 0,
+        },
     },
     data() {
         return {
@@ -740,7 +744,8 @@ export default {
         deleteLabelbotLabels(popupKey) {
             this.$emit('delete-labelbot-labels', popupKey);
         },
-        handleLabelbotPopupClick(popupKey) {
+        handleLabelbotPopupFocused(popupKey) {
+            this.$emit('change-labelbot-focused-popup', popupKey);
             const currentPopup = this.$refs['labelbot-popup-' + popupKey]?.[0];
             const currentContainer = currentPopup?.closest('.ol-overlay-container');
             if (!currentContainer) return;
@@ -756,6 +761,9 @@ export default {
                 }
             });
         },
+        handleDeleteLabelbotLabelsAnnotation(popupKey) {
+            this.$emit('delete-labelbot-labels-annotation', popupKey);
+        }
     },
     watch: {
         image(image, oldImage) {

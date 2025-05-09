@@ -58,4 +58,29 @@
             border-radius: $input-border-radius;
         }
     }
+
+    .labelbot-labels-label__highlighted {
+        position: relative;
+        padding: $padding-large-vertical 27px;
+        margin-bottom: 4px;
+        border: 1px solid $input-border;
+        border-radius: $input-border-radius;
+        word-wrap: break-word;
+
+        color: white;
+        cursor: pointer;
+        background-color: $gray-lighter;
+    }
+    .labelbot-labels-label__highlightedProgress {
+        position: relative;
+        padding: $padding-large-vertical 27px;
+        margin-bottom: 4px;
+        border: 1px solid $input-border;
+        border-radius: $input-border-radius;
+        word-wrap: break-word;
+
+        color: white;
+        cursor: pointer;
+        background-color: #219b19;;
+    }
 }

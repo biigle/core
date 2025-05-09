@@ -45,7 +45,7 @@ return [
     | Path to the ONNX file for the DINOv2 ViT-S/14 (384) model, used to generate
     | the feature vector for LabelBOT vector search.
     */
-    'onnx_file' => env('LABELBOT_ONNX_MODEL_FILE', 'assets/dinov2_vits14.onnx'),
+    'onnx_file' => env('LABELBOT_ONNX_MODEL_FILE', 'dinov2_vits14.onnx'),
 
     /*
     |--------------------------------------------------------------------------

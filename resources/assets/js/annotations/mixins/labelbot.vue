@@ -15,6 +15,8 @@ export default {
             labelbotState: 'initializing',
             labelbotOverlays: [],
             labelbotLineFeatureLength: 75, // in px
+            focusedPopupKey: -1,
+            labelbotOverlaysTimeline: [],
             // Cache api
             labelbotCacheName: 'labelbot',
             modelCacheKey: '/cached-labelbot-onnx-model',
@@ -192,19 +194,24 @@ export default {
             return { overlayPosition, path };
         },
         showLabelbotPopup(annotation) {
-            for (const labelbotOverlay of this.labelbotOverlays) {
-                if (labelbotOverlay.available) {
-                    labelbotOverlay.available = false;
-                    labelbotOverlay.labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
-                    labelbotOverlay.annotation = annotation;
+            for (let popupKey = 0; popupKey < this.labelbotOverlays.length; popupKey++) {
+                if (this.labelbotOverlays[popupKey].available) {
+                    this.labelbotOverlays[popupKey].available = false;
+                    this.labelbotOverlays[popupKey].labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
+                    this.labelbotOverlays[popupKey].annotation = annotation;
 
                     // Convert annotation points and calculate start/end points
-                    const convertedPoints = labelbotOverlay.convertPointsToOl(annotation.points);
+                    const convertedPoints = this.labelbotOverlays[popupKey].convertPointsToOl(annotation.points);
                     const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
 
                     // Draw line feature and set overlay position
-                    labelbotOverlay.popupLineFeature = labelbotOverlay.drawPopupLineFeature(path, annotation.labels[0].label.color);
-                    labelbotOverlay.overlay.setPosition(overlayPosition);
+                    this.labelbotOverlays[popupKey].popupLineFeature = this.labelbotOverlays[popupKey].drawPopupLineFeature(path, annotation.labels[0].label.color);
+                    this.labelbotOverlays[popupKey].overlay.setPosition(overlayPosition);
+
+                    // Set the popup as focused
+                    this.focusedPopupKey = popupKey;
+
+                    this.labelbotOverlaysTimeline.push(popupKey)
                     break;
                 }
             }
@@ -218,8 +225,22 @@ export default {
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
             this.labelbotOverlays[popupKey].labels = [];
+            this.labelbotOverlays[popupKey].annotation = null;
             this.labelbotState = 'ready';
+
+            // Set focused pop key to the next most recent
+            this.labelbotOverlaysTimeline.splice(this.labelbotOverlaysTimeline.indexOf(popupKey), 1);
+            this.focusedPopupKey = this.labelbotOverlaysTimeline[this.labelbotOverlaysTimeline.length - 1];
         },
+        changeLabelbotFocusedPopup(popupKey) {
+            this.focusedPopupKey = popupKey;
+        },
+        deleteLabelbotLabelsAnnotation(popupKey) {
+            if (this.labelbotOverlays[popupKey].annotation) {
+                this.handleDeleteAnnotation(this.labelbotOverlays[popupKey].annotation);
+            }
+            
+        }
     },
     watch: {
         labelbotIsOn() {
