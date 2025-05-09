@@ -389,7 +389,7 @@ class VolumeReportControllerTest extends ApiTestCase
             'all_labels' => true,
             'aggregate_child_labels' => true,
         ])->assertUnprocessable()
-            ->assertJsonValidationErrors(['all_labels']);
+            ->assertJsonValidationErrors(['aggregate_child_labels']);
 
         Queue::assertNotPushed(GenerateReportJob::class);
     }
@@ -406,7 +406,7 @@ class VolumeReportControllerTest extends ApiTestCase
             'all_labels' => true,
             'only_labels' => [$lId],
         ])->assertUnprocessable()
-            ->assertJsonValidationErrors(['all_labels']);
+            ->assertJsonValidationErrors(['only_labels']);
 
         Queue::assertNotPushed(GenerateReportJob::class);
     }
@@ -449,7 +449,7 @@ class VolumeReportControllerTest extends ApiTestCase
             'all_labels' => true,
             'newest_label' => true,
         ])->assertUnprocessable()
-            ->assertJsonValidationErrors(['all_labels']);
+            ->assertJsonValidationErrors(['newest_label']);
 
         Queue::assertNotPushed(GenerateReportJob::class);
     }
