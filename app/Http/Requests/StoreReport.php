@@ -18,10 +18,10 @@ class StoreReport extends FormRequest
             'separate_label_trees' => 'nullable|boolean',
             'separate_users' => 'nullable|boolean',
             'export_area' => 'nullable|boolean',
-            'newest_label' => 'nullable|boolean',
-            'only_labels' => 'nullable|array',
+            'newest_label' => 'nullable|boolean|prohibited_if:all_labels,true',
+            'only_labels' => 'nullable|array|prohibited_if:all_labels,true',
             'only_labels.*' => 'integer|exists:labels,id',
-            'aggregate_child_labels' => "nullable|boolean",
+            'aggregate_child_labels' => "nullable|boolean|prohibited_if:all_labels,true",
             'disable_notifications' => "nullable|boolean",
             'strip_ifdo' => "nullable|boolean",
             'all_labels' => 'nullable|boolean'
@@ -53,22 +53,8 @@ class StoreReport extends FormRequest
                 $validator->errors()->add('all_labels', "The 'all labels' option is only supported for image annotation abundance reports.");
             }
 
-            if ($aggregate && $allLabels) {
-                $validator->errors()->add('all_labels', "The 'all labels' and 'aggregate child labels' option cannot be selected at the same time.");
-            }
-
-            $onlyLabels = boolval($this->input('only_labels', []));
-            if ($allLabels && !empty($onlyLabels)) {
-                $validator->errors()->add('all_labels', "The 'all labels' and 'restrict to labels' option cannot be selected at the same time.");
-            }
-
             if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
                 $validator->errors()->add('separate_label_trees', 'Only one of separate_label_trees or separate_users may be specified.');
-            }
-
-            $newestLabels = boolval($this->input('newest_label', false));
-            if ($newestLabels && $allLabels) {
-                $validator->errors()->add('all_labels', "The 'all labels' and 'restrict to newest labels' option cannot be selected at the same time.");
             }
         });
     }
