@@ -643,21 +643,33 @@ export default {
             this.resetInteractionMode();
         },
         adaptKeyboardShortcuts() {
-            if(this.enableJumpByFrame) {
+            if (this.enableJumpByFrame) {
                 Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+                if (this.showPrevNext) {
+                    Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                    Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                }
+                else {
+                    Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                    Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                }
             }
             else {
                 Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                if (this.showPrevNext) {
+                    Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+                    Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                }
+                else {
+                    Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
+                    Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                }
             }
         }
     },
