@@ -24,7 +24,6 @@
         "ext-zip": "*",
         "biigle/laravel-file-cache": "^5.0",
         "biigle/metadata-ifdo": "^1.0",
-        "biigle/largo": "^2.39",
         "duncan3dc/bom-string": "^1.1",
         "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.2",
@@ -33,6 +32,7 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.0",
+        "meyfa/php-svg": "^0.14.7",
         "msurguy/honeypot": "^1.0",
         "pgvector/pgvector": "^0.1.4",
         "php-ffmpeg/php-ffmpeg": "^1.0",
@@ -40,6 +40,7 @@
         "ramsey/uuid": "^4.0"
     },
     "require-dev": {
+        "brianium/paratest": "^7.4",
         "fakerphp/faker": "^1.23",
         "filp/whoops": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.0",
@@ -91,10 +92,13 @@
             "@php artisan vendor:publish --ansi --tag=public"
         ],
         "test": [
-            "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --random-order"
+            "docker compose run --rm worker php vendor/bin/phpunit --colors=always --random-order"
         ],
         "testf": [
-            "docker compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"
+            "docker compose run --rm worker php vendor/bin/phpunit --colors=always --filter"
+        ],
+        "testp": [
+            "docker compose restart database_testing && docker compose run --rm worker php artisan test --parallel"
         ],
         "fix": [
             "@php vendor/bin/php-cs-fixer fix --config='.php-cs-fixer.php'"

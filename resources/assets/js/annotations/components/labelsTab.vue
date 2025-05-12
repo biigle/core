@@ -1,6 +1,7 @@
 <script>
-import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -24,6 +25,7 @@ export default {
     ],
     components: {
         labelTrees: LabelTrees,
+        exampleAnnotations: ExampleAnnotations,
     },
     data() {
         return {
@@ -36,7 +38,11 @@ export default {
         focusInput:{
             type: Boolean,
             default: false,
-        }
+        },
+        showExampleAnnotations: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         plugins() {

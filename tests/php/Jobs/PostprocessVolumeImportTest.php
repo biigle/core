@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Jobs;
 
 use Biigle\Jobs\PostprocessVolumeImport;
+use Biigle\Jobs\ProcessAnnotatedImage;
+use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedImage;
-use Biigle\Modules\Largo\Jobs\ProcessAnnotatedVideo;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoAnnotationTest;
