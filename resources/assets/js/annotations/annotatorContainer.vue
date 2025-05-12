@@ -438,7 +438,7 @@ export default {
                     })
                     .catch(handleErrorResponse);
                 } else {
-                    promise = Vue.Promise.resolve()
+                    promise = Promise.resolve()
                     annotation.label_id = this.selectedLabel.id;
                 }
                 // TODO: confidence control
