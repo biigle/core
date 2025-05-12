@@ -69,6 +69,10 @@ export default {
         'new',
         'delete',
         'requires-selected-label',
+        'change-labelbot-focused-popup',
+        'update-labelbot-label',
+        'delete-labelbot-labels',
+        'delete-labelbot-labels-annotation',
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.

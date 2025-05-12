@@ -3,7 +3,9 @@
         :show-example-annotations="showExampleAnnotations"
         v-on:select="handleSelectedLabel"
         v-on:open="openSidebarLabels"
-        v-on:change="handleSettingsChange" :labelbot-is-on="labelbotIsOn" v-cloak
+        v-on:change-labelbot-toggle="changeLabelbotToggle" 
+        :labelbot-is-on="labelbotIsOn" 
+        v-cloak
         ></labels-tab>
 </sidebar-tab>
 
