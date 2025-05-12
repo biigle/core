@@ -211,15 +211,13 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         }
 
         $labelsCount = $labels->count();
-        $emptyImagesQuery->orderBy('filename')->chunk(1000, function ($images) use ($labelsCount, $csv) {
-            foreach ($images as $image) {
-                $row = [$image->filename];
-                for ($i = 0; $i < $labelsCount; $i++) {
-                    $row[] = 0;
-                }
-                $csv->putCsv($row);
+        foreach ($emptyImagesQuery->orderBy('filename')->lazy() as $image) {
+            $row = [$image->filename];
+            for ($i = 0; $i < $labelsCount; $i++) {
+                $row[] = 0;
             }
-        });
+            $csv->putCsv($row);
+        }
 
         $csv->close();
 
