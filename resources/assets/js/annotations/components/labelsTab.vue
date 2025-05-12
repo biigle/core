@@ -24,6 +24,7 @@ export default {
     emits: [
         'open',
         'select',
+        'change-labelbot-toggle'
     ],
     components: {
         labelTrees: LabelTrees,
@@ -77,10 +78,10 @@ export default {
                 this.handleDeselectedLabel();
             }
 
-            this.$emit('change', 'labelbot', true);
+            this.$emit('change-labelbot-toggle', true);
         },
         handleLabelbotOff() {
-            this.$emit('change', 'labelbot', false);
+            this.$emit('change-labelbot-toggle', false);
         },
         setFocusInputFindLabel() {
             this.$emit('open', 'labels');

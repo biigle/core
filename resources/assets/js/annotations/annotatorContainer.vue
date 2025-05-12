@@ -573,8 +573,6 @@ export default {
                 case 'exampleAnnotations':
                     this.showExampleAnnotations = value;
                     break;
-                case 'labelbot':
-                    this.labelbotIsOn = value;
             }
         },
         handleAnnotationModeChange(mode, data) {

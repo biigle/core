@@ -52,6 +52,15 @@ export default {
     };
   },
   computed: {
+    localeCompareSupportsLocales() {
+      try {
+        'foo'.localeCompare('bar', 'i');
+      } catch (e) {
+          return e.name === 'RangeError';
+      }
+
+      return false;
+    },
     labels() {
         let labels = [];
         this.trees.forEach(function (tree) {
@@ -102,11 +111,12 @@ export default {
       this.$emit('change-labelbot-focused-popup', this.popupKey);
     },
     labelClose() {
-      if (this.focusedPopupKey === this.popupKey) {
-        this.$refs.typeahead.clear();
-        this.highlightedLabel = -1;
-        this.$emit('delete-labelbot-labels', this.popupKey);
-      }
+      this.$nextTick(() => {
+        if (this.isFocused) {
+          this.highlightedLabel = -1;
+          this.$emit('delete-labelbot-labels', this.popupKey);
+        }
+      });
     },
     labelUp() {
       this.$nextTick(() => {
@@ -131,17 +141,19 @@ export default {
     labelEnter() {
       this.$nextTick(() => {
         if (this.highlightedLabel < this.labelbotLabels.length && this.highlightedLabel > 0 && this.isFocused) {
-          this.highlightedLabel = -1;
           this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel]);
+          this.highlightedLabel = -1;
         }
       });
     },
     deleteLabelAnnotation() {
-      if (this.isFocused) {
-        this.$refs.typeahead.clear();
-        this.highlightedLabel = -1;
-        this.$emit('delete-labelbot-labels-annotation', this.popupKey);
-      }
+      this.$nextTick(() => {
+        if (this.isFocused) {
+          this.$refs.typeahead.clear();
+          this.highlightedLabel = -1;
+          this.$emit('delete-labelbot-labels-annotation', this.popupKey);
+        }
+      });
     }
   },
   created() {

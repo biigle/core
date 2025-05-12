@@ -221,6 +221,9 @@ export default {
         updateLabelbotLabel(label) {
             this.handleSwapLabel(this.labelbotOverlays[label.popupKey].annotation, label.label)
         },
+        changeLabelbotToggle(isOn) {
+            this.labelbotIsOn = isOn;
+        },
         deleteLabelbotLabels(popupKey) {
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
