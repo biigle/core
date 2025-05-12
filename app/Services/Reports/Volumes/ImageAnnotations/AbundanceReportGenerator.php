@@ -155,13 +155,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         return Label::join('image_annotation_labels', function ($join) {
             // Use advanced joins to set labels and annotations on null if not present or not selected
             $join->on('labels.id', '=', 'image_annotation_labels.label_id')
-                ->when($this->isRestrictedToLabels(), fn($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
+                ->when($this->isRestrictedToLabels(), fn ($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
         })
             ->join('image_annotations', function ($join) {
                 $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
                     ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
                     ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
             })
+            // Use rightJoin because query needs to start with Label due information order i.e. annotation labels need to present before annotations
             ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
             ->distinct();
     }
