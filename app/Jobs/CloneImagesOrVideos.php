@@ -2,7 +2,7 @@
 
 namespace Biigle\Jobs;
 
-use \Illuminate\Contracts\Queue\ShouldQueue;
+use Biigle\Events\VolumeCloned;
 use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
@@ -14,6 +14,7 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\Volume;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -151,7 +152,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
             $copy->save();
 
-            event('volume.cloned', $copy);
+            VolumeCloned::dispatch($copy);
         });
 
     }

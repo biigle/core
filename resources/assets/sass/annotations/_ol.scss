@@ -20,6 +20,10 @@ $ol-control-color: rgb(0, 60, 136);
     }
 }
 
+.ol-touch .ol-control.zoom-to-native {
+    top: 8.8em;
+}
+
 .ol-control {
     --ol-subtle-background-color: rgba(255, 255, 255, 0.4);
     padding: 2px;

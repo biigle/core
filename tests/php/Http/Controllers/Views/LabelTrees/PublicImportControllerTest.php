@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Http\Controllers\Views;
+namespace Biigle\Tests\Http\Controllers\Views\LabelTrees;
 
 use ApiTestCase;
 

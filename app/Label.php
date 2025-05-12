@@ -57,29 +57,19 @@ class Label extends Model
      */
     public function scopeUsed($query)
     {
-        return $query->where(function ($query) {
-            return $query
-                ->whereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('image_annotation_labels')
-                        ->whereRaw('labels.id = image_annotation_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('image_labels')
-                        ->whereRaw('labels.id = image_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('video_annotation_labels')
-                        ->whereRaw('labels.id = video_annotation_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('video_labels')
-                        ->whereRaw('labels.id = video_labels.label_id');
-                });
-        });
+        return $query->where(fn ($query) => $query
+            ->whereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('image_annotation_labels')
+                ->whereRaw('labels.id = image_annotation_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('image_labels')
+                ->whereRaw('labels.id = image_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('video_annotation_labels')
+                ->whereRaw('labels.id = video_annotation_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('video_labels')
+                ->whereRaw('labels.id = video_labels.label_id')));
     }
 
     /**

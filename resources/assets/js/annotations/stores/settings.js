@@ -1,4 +1,4 @@
-import Settings from '../../core/models/Settings';
+import Settings from '@/core/models/Settings.js';
 
 /**
  * Store for annotator settings
@@ -17,6 +17,7 @@ let defaults = {
     measureTooltip: false,
     minimap: true,
     progressIndicator: true,
+    exampleAnnotations: true,
     // Annotation modes tab.
     randomSamplingNumber: 9,
     regularSamplingRows: 3,
@@ -24,9 +25,7 @@ let defaults = {
 };
 
 export default new Settings({
-    data: {
-        urlParams: Object.keys(defaults),
-        storageKey: 'biigle.annotations.settings',
-        defaults: defaults,
-    },
+    urlParams: Object.keys(defaults),
+    storageKey: 'biigle.annotations.settings',
+    defaults: defaults,
 });

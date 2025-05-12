@@ -1,8 +1,8 @@
 <script>
-import LabelTreeDiff from './components/labelTreeDiff';
-import LoaderMixin from '../core/mixins/loader';
-import MergeLabelTreesApi from './api/mergeLabelTrees';
-import {handleErrorResponse} from '../core/messages/store';
+import LabelTreeDiff from './components/labelTreeDiff.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import MergeLabelTreesApi from './api/mergeLabelTrees.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
  * The merge label trees tool.

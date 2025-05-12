@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import AnnotationTooltip from '../mixins/annotationTooltip';
-import MeasureComponent from '../mixins/measureComponent';
+import AnnotationTooltip from '../mixins/annotationTooltip.vue';
+import MeasureComponent from '../mixins/measureComponent.vue';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Circle from '@biigle/ol/geom/Circle';
 import LineString from '@biigle/ol/geom/LineString';
@@ -19,10 +19,8 @@ import LineString from '@biigle/ol/geom/LineString';
  * @type {Object}
  */
 export default {
-    mixins: [
-        AnnotationTooltip,
-        MeasureComponent,
-    ],
+    extends: AnnotationTooltip,
+    mixins: [MeasureComponent],
     data() {
         return {
             measuredGeometries: [],
@@ -111,15 +109,10 @@ export default {
         },
     },
     watch: {
-        show(show) {
-            // Do NOT pass the features as prop of this component because this would make
-            // them reactive. As the features store a reference back to the map,
-            // EVERYTHING would be made reactive.
-            // See: https://github.com/biigle/annotations/issues/108
-            if (show) {
-                this.$parent.$on(this.watch, this.updateGeometries);
-            } else {
-                this.$parent.$off(this.watch, this.updateGeometries);
+        // This is a shallow array watcher on purpose.
+        features(features) {
+            if (this.show) {
+                this.updateGeometries(features);
             }
         },
     }

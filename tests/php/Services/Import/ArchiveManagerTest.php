@@ -175,7 +175,7 @@ class ArchiveManagerTest extends TestCase
 
         $manager = new ArchiveManager;
         $token = $manager->store($file);
-        $path = storage_path("framework/testing/disks/test/{$token}");
+        $path = Storage::disk('test')->path($token);
 
         $manager->prune();
         $this->assertTrue($manager->has($token));

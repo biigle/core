@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for requesting reports for projects
  *
@@ -12,4 +14,4 @@
  * }).then(...)
  *
  */
-export default Vue.resource('/api/v1/projects{/id}/reports');
+export default Resource('/api/v1/projects{/id}/reports');

@@ -1,10 +1,12 @@
 <script>
-import PowerToggle from '../../core/components/powerToggle';
-import Settings from '../stores/settings';
-import ScreenshotButton from '../../annotations/components/screenshotButton.vue';
-import Keyboard from '../../core/keyboard';
+import Keyboard from '@/core/keyboard.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
+import Settings from '../stores/settings.js';
 
 export default {
+    template: '#settings-tab-template',
+    emits: ['update'],
     components: {
         powerToggle: PowerToggle,
         screenshotButton: ScreenshotButton
@@ -48,6 +50,7 @@ export default {
                 'enableJumpByFrame',
                 'jumpStep',
                 'muteVideo',
+                'singleAnnotation',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -60,6 +63,7 @@ export default {
             showThumbnailPreview: true,
             enableJumpByFrame: false,
             muteVideo: true,
+            singleAnnotation: false,
         };
     },
     computed: {
@@ -109,6 +113,12 @@ export default {
         },
         handleUnmuteVideo() {
             this.muteVideo = false;
+        },
+        handleSingleAnnotation() {
+            this.singleAnnotation = true;
+        },
+        handleDisableSingleAnnotation() {
+            this.singleAnnotation = false;
         },
         toggleAnnotationOpacity() {
             if (this.annotationOpacity > 0) {
@@ -169,6 +179,10 @@ export default {
         muteVideo(show) {
             this.$emit('update', 'muteVideo', show);
             Settings.set('muteVideo', show);
+        },
+        singleAnnotation(show) {
+            this.$emit('update', 'singleAnnotation', show);
+            Settings.set('singleAnnotation', show);
         },
     },
     created() {

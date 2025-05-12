@@ -18,6 +18,7 @@ data_csvs = sys.argv[3:]
 def TitleSlide(text):
     fig = plt.figure(figsize=(10, 4))
     plt.subplot2grid((3, 3), (0, 0), colspan=3)
+    plt.axis('off')
     mid = plt.subplot2grid((3, 3), (0, 0), colspan=3)
     mid.axis('off')
     btleft = plt.subplot2grid((3, 3), (2, 0))
@@ -53,7 +54,7 @@ for path in data_csvs:
     # '#'-characters to prepend to the hex color codes
     hashes = np.full(rows.shape[0], '#', dtype=str)
 
-    ax.bar(ind, counts, width, color=np.char.add(hashes, rows[:, 1]), log=counts.max() > 100)
+    ax.bar(ind, counts, width, color=np.char.add(hashes, rows[:, 1]), log=counts.max() > 100, align='edge', edgecolor='000')
 
     ax.set_xticks(ind + width / 2)
     labels = [label for label in rows[:, 0]]

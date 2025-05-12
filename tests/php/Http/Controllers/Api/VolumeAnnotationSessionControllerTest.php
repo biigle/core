@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\MediaType;
 use Biigle\Tests\AnnotationSessionTest;
 use Carbon\Carbon;
 
@@ -90,14 +91,6 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
-        ]);
-        // users is required
-        $response->assertStatus(422);
-
-        $response = $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
-            'name' => 'my session',
-            'starts_at' => '2016-09-05',
-            'ends_at' => '2016-09-06',
             'users' => [-1],
         ]);
         // user does not exist
@@ -145,5 +138,79 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
 
         $this->assertTrue(Carbon::parse('2016-09-19T22:00:00.000Z')->eq($session->starts_at));
         $this->assertTrue(Carbon::parse('2016-09-20T22:00:00.000Z')->eq($session->ends_at));
+    }
+
+    public function testSessionWithoutImageVolumeUser()
+    {
+        $id = $this->volume()->id;
+        $this->beAdmin();
+
+        // Users field must be present
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ])->assertUnprocessable();
+
+        // Users field must be an array
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => null,
+        ])->assertUnprocessable();
+
+        $response = $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => [],
+        ]);
+        $response->assertSuccessful();
+        $this->assertSame(1, $this->volume()->annotationSessions()->count());
+
+        $session = $this->volume()->annotationSessions()
+            ->with('users')
+            ->orderBy('id', 'desc')
+            ->first();
+        $this->assertFalse($session->users()->exists());
+        $response->assertExactJson($session->toArray());
+    }
+
+    public function testSessionWithoutVideoVolumeUser()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $this->beAdmin();
+
+        // Users field must be present
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ])->assertUnprocessable();
+
+        // Users field must be an array
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => null,
+        ])->assertUnprocessable();
+
+        $response = $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => [],
+        ]);
+        $response->assertSuccessful();
+        $this->assertSame(1, $this->volume()->annotationSessions()->count());
+
+        $session = $this->volume()->annotationSessions()
+            ->with('users')
+            ->orderBy('id', 'desc')
+            ->first();
+        $this->assertFalse($session->users()->exists());
+        $response->assertExactJson($session->toArray());
     }
 }

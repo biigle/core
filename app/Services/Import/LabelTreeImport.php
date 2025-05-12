@@ -256,16 +256,14 @@ class LabelTreeImport extends Import
             ->whereNotIn('id', $trees->pluck('id'));
 
         return $trees->concat($masterTrees)
-            ->map(function ($tree) use ($now) {
-                return [
-                    'name' => $tree['name'],
-                    'description' => $tree['description'],
-                    'uuid' => $tree['uuid'],
-                    'visibility_id' => Visibility::privateId(),
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
-            });
+            ->map(fn ($tree) => [
+                'name' => $tree['name'],
+                'description' => $tree['description'],
+                'uuid' => $tree['uuid'],
+                'visibility_id' => Visibility::privateId(),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
     }
 
     /**
@@ -354,13 +352,11 @@ class LabelTreeImport extends Import
             })
             ->collapse()
             ->filter(fn ($user) => array_key_exists($user['id'], $userIdMap))
-            ->map(function ($member) use ($labelTreeIdMap, $userIdMap) {
-                return [
-                    'user_id' => $userIdMap[$member['id']],
-                    'label_tree_id' => $labelTreeIdMap[$member['label_tree_id']],
-                    'role_id' => $member['role_id'],
-                ];
-            });
+            ->map(fn ($member) => [
+                'user_id' => $userIdMap[$member['id']],
+                'label_tree_id' => $labelTreeIdMap[$member['label_tree_id']],
+                'role_id' => $member['role_id'],
+            ]);
 
         DB::table('label_tree_user')->insert($insertMembers->toArray());
     }
@@ -402,14 +398,12 @@ class LabelTreeImport extends Import
      */
     protected function insertLabels($labels, $labelTreeIdMap)
     {
-        $labels = $labels->map(function ($label) use ($labelTreeIdMap) {
-            return [
-                'name' => $label['name'],
-                'color' => $label['color'],
-                'label_tree_id' => $labelTreeIdMap[$label['label_tree_id']],
-                'uuid' => $label['uuid'],
-            ];
-        });
+        $labels = $labels->map(fn ($label) => [
+            'name' => $label['name'],
+            'color' => $label['color'],
+            'label_tree_id' => $labelTreeIdMap[$label['label_tree_id']],
+            'uuid' => $label['uuid'],
+        ]);
 
         Label::insert($labels->toArray());
 
@@ -442,12 +436,10 @@ class LabelTreeImport extends Import
     protected function updateInsertedLabelParentIds($labels, $labelIdMap)
     {
         $labels
-            ->reject(function ($label) use ($labelIdMap) {
-                return is_null($label['parent_id']) ||
+            ->reject(fn ($label) => is_null($label['parent_id']) ||
                     // This might be the case if a user selectively imports a child label
                     // but not its parent.
-                    !array_key_exists($label['parent_id'], $labelIdMap);
-            })
+                    !array_key_exists($label['parent_id'], $labelIdMap))
             ->each(function ($label) use ($labelIdMap) {
                 Label::where('id', $labelIdMap[$label['id']])
                     ->update(['parent_id' => $labelIdMap[$label['parent_id']]]);

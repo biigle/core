@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $volume_id
  * @property string $filename
+ * @property string $uuid
  */
 abstract class VolumeFile extends Model implements FileContract
 {

@@ -42,9 +42,10 @@
 </template>
 
 <script>
-import Image from './imageGridImage';
-import Keyboard from '../../core/keyboard';
-import Progress from './imageGridProgress';
+import Events from '@/core/events.js';
+import Image from './imageGridImage.vue';
+import Keyboard from '@/core/keyboard.js';
+import Progress from './imageGridProgress.vue';
 
 /**
  * A component that displays a grid of lots of images for Largo
@@ -52,6 +53,11 @@ import Progress from './imageGridProgress';
  * @type {Object}
  */
 export default {
+    emits: [
+        'pin',
+        'scroll',
+        'select',
+    ],
     data() {
         return {
             clientWidth: 0,
@@ -234,6 +240,10 @@ export default {
         pinnedImage() {
             this.jumpToStart();
         },
+        canScroll() {
+            // The scroll bar reduces the element size so it has to be updated.
+            this.$nextTick(this.updateDimensions);
+        },
     },
     created() {
         Keyboard.on('ArrowUp', this.reverseRow, 0, this.listenerSet);
@@ -253,7 +263,9 @@ export default {
     mounted() {
         // Only call updateDimensions when the element actually exists.
         window.addEventListener('resize', this.updateDimensions);
-        this.$on('resize', this.updateDimensions);
+        // The image grid is often used with a sidebar so we implement support directly
+        // here.
+        Events.on('sidebar.toggle', () => this.$nextTick(this.updateDimensions));
         this.$nextTick(this.updateDimensions);
         this.$watch('canScroll', this.updateDimensions);
     },

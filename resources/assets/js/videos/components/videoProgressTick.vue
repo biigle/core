@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import videoTime from '@/videos/filters/videoTime';
+
 export default {
     props: {
         time: {
@@ -17,7 +19,7 @@ export default {
             return `left: ${offset}px`;
         },
         text() {
-            return Vue.filter('videoTime')(this.time);
+            return videoTime(this.time);
         },
     },
 };

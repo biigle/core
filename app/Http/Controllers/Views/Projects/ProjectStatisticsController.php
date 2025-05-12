@@ -38,18 +38,14 @@ class ProjectStatisticsController extends Controller
             ->get();
 
 
-        $totalImages = Image::whereIn('images.volume_id', function ($query) use ($project) {
-            return $query->select('volume_id')
-                ->from('project_volume')
-                ->where('project_id', $project->id);
-        })->count();
+        $totalImages = Image::whereIn('images.volume_id', fn ($query) => $query->select('volume_id')
+            ->from('project_volume')
+            ->where('project_id', $project->id))->count();
         $imageVolumeStatistics = $this->getVolumeStatistics($project, 'image');
 
-        $totalVideos = Video::whereIn('videos.volume_id', function ($query) use ($project) {
-            return $query->select('volume_id')
-                ->from('project_volume')
-                ->where('project_id', $project->id);
-        })->count();
+        $totalVideos = Video::whereIn('videos.volume_id', fn ($query) => $query->select('volume_id')
+            ->from('project_volume')
+            ->where('project_id', $project->id))->count();
         $videoVolumeStatistics = $this->getVolumeStatistics($project, 'video');
 
         $volumeNames = $project->volumes()
@@ -101,11 +97,9 @@ class ProjectStatisticsController extends Controller
         $baseQuery = DB::table("{$type}_annotations")
             ->join("{$type}_annotation_labels", "{$type}_annotation_labels.annotation_id", '=', "{$type}_annotations.id")
             ->join("{$type}s", "{$type}s.id", '=', "{$type}_annotations.{$type}_id")
-            ->whereIn("{$type}s.volume_id", function ($query) use ($project) {
-                return $query->select('volume_id')
-                    ->from('project_volume')
-                    ->where('project_id', $project->id);
-            });
+            ->whereIn("{$type}s.volume_id", fn ($query) => $query->select('volume_id')
+                ->from('project_volume')
+                ->where('project_id', $project->id));
 
         $annotatedFiles = $baseQuery->clone()->count(DB::raw("DISTINCT {$type}s.id"));
 

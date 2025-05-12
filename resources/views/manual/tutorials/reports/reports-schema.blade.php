@@ -142,8 +142,8 @@
         <p>
             Example plot:
             <figure>
-                <a href="{{asset('vendor/reports/images/demo_basic_plot.png')}}">
-                    <img src="{{asset('vendor/reports/images/demo_basic_plot.png')}}" style="max-width: 100%;">
+                <a href="{{asset('assets/images/manual/reports/demo_basic_plot.png')}}">
+                    <img src="{{asset('assets/images/manual/reports/demo_basic_plot.png')}}" style="max-width: 100%;">
                 </a>
             </figure>
         </p>

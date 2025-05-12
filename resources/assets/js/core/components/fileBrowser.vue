@@ -23,9 +23,18 @@
 </template>
 
 <script>
-import Directory from './fileBrowserDirectory';
+import Directory from './fileBrowserDirectory.vue';
 
 export default {
+    emits: [
+        'load',
+        'remove-directory',
+        'remove-file',
+        'select',
+        'select-file',
+        'unselect',
+        'unselect-file',
+    ],
     components: {
         directory: Directory,
     },

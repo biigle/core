@@ -60,15 +60,13 @@ class ProjectPolicy extends CachedPolicy
      */
     public function editIn(User $user, Project $project)
     {
-        return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
-            return $this->getBaseQuery($user, $project)
-                ->whereIn('project_role_id', [
-                    Role::editorId(),
-                    Role::expertId(),
-                    Role::adminId(),
-                ])
-                ->exists();
-        });
+        return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", fn () => $this->getBaseQuery($user, $project)
+            ->whereIn('project_role_id', [
+                Role::editorId(),
+                Role::expertId(),
+                Role::adminId(),
+            ])
+            ->exists());
     }
 
     /**
@@ -80,11 +78,9 @@ class ProjectPolicy extends CachedPolicy
      */
     public function forceEditIn(User $user, Project $project)
     {
-        return $this->remember("project-can-force-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
-            return $this->getBaseQuery($user, $project)
-                ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
-                ->exists();
-        });
+        return $this->remember("project-can-force-edit-in-{$user->id}-{$project->id}", fn () => $this->getBaseQuery($user, $project)
+            ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
+            ->exists());
     }
 
     /**
@@ -121,11 +117,9 @@ class ProjectPolicy extends CachedPolicy
      */
     public function update(User $user, Project $project)
     {
-        return $this->remember("project-can-update-{$user->id}-{$project->id}", function () use ($user, $project) {
-            return $this->getBaseQuery($user, $project)
-                ->where('project_role_id', Role::adminId())
-                ->exists();
-        });
+        return $this->remember("project-can-update-{$user->id}-{$project->id}", fn () => $this->getBaseQuery($user, $project)
+            ->where('project_role_id', Role::adminId())
+            ->exists());
     }
 
     /**

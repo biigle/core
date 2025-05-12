@@ -168,9 +168,15 @@ return [
         Biigle\Providers\EventServiceProvider::class,
         Biigle\Providers\RouteServiceProvider::class,
 
-        Biigle\Modules\Largo\LargoServiceProvider::class,
-
         // Insert Biigle module service providers here.
+        Biigle\Modules\ColorSort\ColorSortServiceProvider::class,
+        Biigle\Modules\Geo\GeoServiceProvider::class,
+        Biigle\Modules\Laserpoints\LaserpointsServiceProvider::class,
+        Biigle\Modules\Ananas\AnanasServiceProvider::class,
+        Biigle\Modules\Demo\DemoServiceProvider::class,
+        Biigle\Modules\Maia\MaiaServiceProvider::class,
+        Biigle\Modules\UserStorage\UserStorageServiceProvider::class,
+        Biigle\Modules\Newsletter\NewsletterServiceProvider::class,
 
     ])->toArray(),
 

@@ -178,12 +178,10 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         // Annotation position relative to the image center. Also, change the y axis from
         // going top down to going bottom up. This is required for the correct rotation
         // and shift calculation below.
-        $pointsOffsetInPx = array_map(function ($point) use ($item, $imageCenter) {
-            return [
-                $point[0] - $imageCenter[0],
-                ($item->height - $point[1]) - $imageCenter[1],
-            ];
-        }, $points);
+        $pointsOffsetInPx = array_map(fn ($point) => [
+            $point[0] - $imageCenter[0],
+            ($item->height - $point[1]) - $imageCenter[1],
+        ], $points);
 
         // Now rotate the annotation position around the image center according to the
         // yaw. This assumes that 0° yaw is north and 90° yaw is east.
@@ -196,12 +194,10 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         // We don't need to shift the rotated coordinates back by adding $imageCenter,
         // as we assume that latitude and longitude describe the image center point and
         // not [0, 0], so the center is the "origin" here.
-        $rotatedOffsetInPx = array_map(function ($point) use ($angle) {
-            return [
-                $point[0] * cos($angle) - $point[1] * sin($angle),
-                $point[0] * sin($angle) + $point[1] * cos($angle),
-            ];
-        }, $pointsOffsetInPx);
+        $rotatedOffsetInPx = array_map(fn ($point) => [
+            $point[0] * cos($angle) - $point[1] * sin($angle),
+            $point[0] * sin($angle) + $point[1] * cos($angle),
+        ], $pointsOffsetInPx);
 
         // Then convert the pixel offset to meters.
 
@@ -222,23 +218,19 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         // The ratio of meter per pixel.
         $scalingFactor = $imageWidthInM / $item->width;
 
-        $rotatedOffsetInM = array_map(function ($point) use ($scalingFactor) {
-            return [
-                $point[0] * $scalingFactor,
-                $point[1] * $scalingFactor,
-            ];
-        }, $rotatedOffsetInPx);
+        $rotatedOffsetInM = array_map(fn ($point) => [
+            $point[0] * $scalingFactor,
+            $point[1] * $scalingFactor,
+        ], $rotatedOffsetInPx);
 
         // Finally, shift the image coordinates by the offset in meters to estimate the
         // annotation position.
         // See: https://gis.stackexchange.com/a/2980/50820
 
-        $rotatedOffsetInRadians = array_map(function ($point) use ($item) {
-            return [
-                $point[0] / (self::EARTH_RADIUS * cos(M_PI * $item->lat / 180)),
-                $point[1] / self::EARTH_RADIUS,
-            ];
-        }, $rotatedOffsetInM);
+        $rotatedOffsetInRadians = array_map(fn ($point) => [
+            $point[0] / (self::EARTH_RADIUS * cos(M_PI * $item->lat / 180)),
+            $point[1] / self::EARTH_RADIUS,
+        ], $rotatedOffsetInM);
 
         $coordinates = array_map(function ($point) use ($item) {
             // Shifted image center position.

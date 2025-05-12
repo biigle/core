@@ -48,9 +48,11 @@ class AuthServiceProvider extends ServiceProvider
                 return true;
             }
 
-            if ($user->role_id === Role::adminId()) {
+            if ($user->can('sudo')) {
                 return in_array($disk, config('volumes.admin_storage_disks'));
-            } elseif ($user->role_id === Role::editorId()) {
+            } elseif ($user->role_id === Role::editorId() || $user->role_id === Role::adminId()) {
+                // Also check admin role because admins could have disabled their sudo
+                // mode.
                 return in_array($disk, config('volumes.editor_storage_disks'));
             }
 

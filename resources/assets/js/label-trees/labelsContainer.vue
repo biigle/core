@@ -1,19 +1,23 @@
 <script>
-import Events from '../core/events';
-import LabelsApi from '../core/api/labels';
-import LabelTree from './components/labelTree';
-import LoaderMixin from '../core/mixins/loader';
-import ManualLabelForm from './components/manualLabelForm';
-import WormsLabelForm from './components/wormsLabelForm';
-import {handleErrorResponse} from '../core/messages/store';
-import {randomColor} from './utils';
-import Tabs from 'uiv/dist/Tabs';
-import Tab from 'uiv/dist/Tab';
+import Events from '@/core/events.js';
+import LabelsApi from '@/core/api/labels.js';
+import LabelTree from './components/labelTree.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import ManualLabelForm from './components/manualLabelForm.vue';
+import WormsLabelForm from './components/wormsLabelForm.vue';
+import {handleErrorResponse} from '@/core/messages/store.js';
+import {randomColor} from './utils.js';
+import {Tabs, Tab} from 'uiv';
 
 /**
  * The panel for editing the labels of a label tree
  */
 export default {
+    emits: [
+        'clear',
+        'deselect',
+        'select',
+    ],
     mixins: [
         LoaderMixin,
     ],
@@ -37,6 +41,9 @@ export default {
     computed: {
         editable() {
             return !this.loading && this.canEdit;
+        },
+        labelCount() {
+            return this.labels.length;
         },
     },
     methods: {
@@ -75,17 +82,17 @@ export default {
             // by components in view mixins on this page.
             if (!label) {
                 this.$emit('clear');
-                Events.$emit('selectLabel', null);
+                Events.emit('selectLabel', null);
             } else {
                 this.selectedColor = '#' + label.color;
                 this.$emit('select', label);
-                Events.$emit('selectLabel', label);
+                Events.emit('selectLabel', label);
             }
         },
         deselectLabel(label) {
             this.selectedLabel = null;
             this.$emit('deselect', label);
-            Events.$emit('selectLabel', null);
+            Events.emit('selectLabel', null);
         },
         selectColor(color) {
             this.selectedColor = color;
@@ -94,8 +101,8 @@ export default {
             this.selectedName = name;
         },
         insertLabel(label) {
-            Vue.set(label, 'open', false);
-            Vue.set(label, 'selected', false);
+            label.open = false;
+            label.selected = false;
             let name = label.name.toLowerCase();
             // add the label to the array so the labels remain sorted by their name
             for (let i = 0, length = this.labels.length; i < length; i++) {
@@ -125,8 +132,8 @@ export default {
         },
     },
     watch: {
-        labels(labels) {
-            Events.$emit('label-trees.labels.count', labels.length)
+        labelCount(count) {
+            Events.emit('label-trees.labels.count', count);
         },
     },
     created() {

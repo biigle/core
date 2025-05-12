@@ -2,7 +2,7 @@
     <span id="annotation-session-indicator">
         <button id="asi-button" class="btn btn-info btn-xs" title="Active annotation session '<?php echo e($session->name); ?>'"><span class="fa fa-clock" aria-hidden="true" ></span></button>
         <popover title="Title" target="#asi-button" v-cloak>
-            <template slot="popover">
+            <template #popover>
                 <div>
                     <strong>{{$session->name}}</strong><br>
                     <span class="text-muted">(ends at <span v-text="date('{!!$session->ends_at_iso8601!!}')"></span>)</span><br>
@@ -21,7 +21,7 @@
     </span>
 
     @push('scripts')
-        <script type="text/javascript">
+        <script type="module">
             biigle.$mount('annotation-session-indicator', {
                 components: {popover: biigle.$require('uiv.popover')},
                 methods: {

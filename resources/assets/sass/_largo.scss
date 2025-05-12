@@ -1,0 +1,186 @@
+.navbar-text.navbar-largo-breadcrumbs {
+    &, a {
+        color: $text-color;
+    }
+}
+
+.largo-images__alerts {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    transition: .25s background-color ease;
+    z-index: 2;
+
+    &.block {
+        pointer-events: auto;
+        background-color: rgba(0, 0, 0, .5);
+    }
+}
+
+.sidebar__tab--open.largo-tab {
+    display: flex !important;
+    flex-direction: column;
+
+    .largo-tab__button {
+        padding-bottom: $padding-large-vertical;
+    }
+
+    .largo-tab__label-trees {
+        flex: 1;
+        overflow: auto;
+    }
+}
+
+.image-grid__image--largo {
+    .outlines {
+        position: absolute;
+        /*  2px is the figure padding  */
+        top: 2px;
+        left: 2px;
+        pointer-events: none;
+        width: calc(100% - 4px);
+        height: calc(100% - 4px);
+    }
+
+    .image-buttons-bottom {
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+    }
+}
+
+.image-grid__image--catalog {
+    > a {
+        width: 100%;
+    }
+    @extend .image-grid__image--largo
+}
+
+.image-grid__image--relabel {
+    .new-label {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: .5em;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .new-label__name {
+        padding-right: 16px;
+    }
+
+    .new-label__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
+}
+
+.largo-example-annotations {
+    .largo-example-annotations__images {
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-right: -1em;
+    }
+
+    .largo-example-annotation {
+        height: 125px;
+        width: auto;
+        image-orientation: none;
+
+        &:not(:last-child) {
+            margin-right: 0.5em;
+        }
+    }
+
+    .alert {
+        margin-bottom: 0;
+    }
+}
+
+.largo-filter-select {
+    width: 50%;
+}
+
+.annotations-tab--largo {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    overflow: none;
+}
+
+.annotations-tab__header--largo {
+    padding: 1em;
+    width: 100%;
+}
+
+.annotations-tab__list--largo {
+    // Positioning is required for the automatic scrolling to selected annotations.
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    margin: 0;
+}
+
+.annotations-tab-item--largo {
+    // must not be position:relative because .annotation-list-item calculates the
+    // offsetTop property relative to .annotations-tab!
+    user-select: none;
+    padding: 0 1em;
+    border-bottom: 1px solid #353535;
+
+    &:first-child {
+        border-top: 1px solid #353535;
+    }
+
+    &.selected {
+        .annotations-tab-item__title--largo {
+            font-weight: bold;
+        }
+    }
+
+    &.selected .annotations-tab-item__title--largo,
+    .annotations-tab-item__title--largo:hover {
+        color: white;
+
+        .badge {
+            background-color: white;
+            color: $body-bg;
+        }
+    }
+
+    .annotations-tab-item__title--largo {
+        position: relative;
+        padding: 1em 0 1em 1.25em;
+        cursor: pointer;
+    }
+
+    .annotations-tab-item__color--largo {
+        position: absolute;
+        left: 0;
+        top: 1.2em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .annotations-tab-item__list--largo {
+        padding-bottom: 1em;
+    }
+}
+

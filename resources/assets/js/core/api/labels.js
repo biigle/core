@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for labels.
  *
@@ -20,10 +22,8 @@
  * Delete a label:
  *
  * resource.delete({id: labelId}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/labels{/id}', {}, {
+export default Resource('api/v1/labels{/id}', {}, {
     save: {
         method: 'POST',
         url: 'api/v1/label-trees{/label_tree_id}/labels',

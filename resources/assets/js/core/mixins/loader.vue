@@ -1,8 +1,8 @@
 <script>
-import LoaderComponent from '../components/loader';
-import LoaderBlockComponent from '../components/loaderBlock';
-import MessageCurtainComponent from '../components/messageCurtain';
-import Messages from './../messages/store';
+import LoaderComponent from '../components/loader.vue';
+import LoaderBlockComponent from '../components/loaderBlock.vue';
+import MessageCurtainComponent from '../components/messageCurtain.vue';
+import {handleErrorResponse} from '../messages/store.js';
 
 /**
  * A mixin for view models that have a loading state
@@ -10,6 +10,7 @@ import Messages from './../messages/store';
  * @type {Object}
  */
 export default {
+    emits: ['loading'],
     components: {
         loader: LoaderComponent,
         loaderBlock: LoaderBlockComponent,
@@ -40,7 +41,7 @@ export default {
             }
         },
         handleErrorResponse(response) {
-            return Messages.handleErrorResponse(response);
+            return handleErrorResponse(response);
         },
     },
 };

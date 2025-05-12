@@ -1,6 +1,6 @@
 <script>
-import Dropdown from 'uiv/dist/Dropdown';
-import LoaderMixin from '../core/mixins/loader';
+import {Dropdown} from 'uiv';
+import LoaderMixin from '@/core/mixins/loader.vue';
 
 export const MEDIA_TYPE = {
     IMAGE: 'image',

@@ -84,13 +84,11 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
 
         $ifdo = $this->getIfdo($this->source)->getJsonData();
 
-        $creators = array_map(function ($user) {
-            return [
-                'id' => $user->uuid,
-                'name' => "{$user->firstname} {$user->lastname}",
-                'uuid' => $user->uuid,
-            ];
-        }, $this->imageAnnotationCreators);
+        $creators = array_map(fn ($user) => [
+            'id' => $user->uuid,
+            'name' => "{$user->firstname} {$user->lastname}",
+            'uuid' => $user->uuid,
+        ], $this->imageAnnotationCreators);
 
         if ($this->options->get('stripIfdo', false)) {
             unset($ifdo['image-set-header']['image-annotation-creators'], $ifdo['image-set-header']['image-annotation-labels']);

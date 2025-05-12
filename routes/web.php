@@ -204,6 +204,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'LabelTreesController@show',
         ]);
 
+        $router->get('{id}/catalog', [
+            'as'   => 'annotation-catalog',
+            'uses' => 'AnnotationCatalogController@show',
+        ]);
+
         $router->get('{id}/projects', [
             'as'   => 'label-tree-projects',
             'uses' => 'LabelTreeProjectsController@show',
@@ -270,6 +275,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'ProjectReportsController@show',
             'as' => 'project-reports',
         ]);
+
+        $router->get('{id}/largo', [
+            'as'   => 'projectsLargo',
+            'uses' => 'LargoController@index',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {
@@ -328,6 +338,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         $router->get('{id}/reports', [
             'uses' => 'VolumeReportsController@show',
             'as' => 'volume-reports',
+        ]);
+
+        $router->get('{id}/largo', [
+            'as'   => 'largo',
+            'uses' => 'LargoController@index',
         ]);
     });
 

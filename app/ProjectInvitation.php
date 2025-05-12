@@ -29,7 +29,7 @@ class ProjectInvitation extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'expires_at' => 'datetime',
+        'expires_at' => "datetime:c",
         'add_to_sessions' => 'bool',
     ];
 

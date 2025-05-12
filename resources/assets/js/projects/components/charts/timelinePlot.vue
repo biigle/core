@@ -1,10 +1,9 @@
 <template>
-    <v-chart class="chart grid-col-span-3" :option="option" :update-options="updateOptions"
-        @updateAxisPointer="handleUpdate"></v-chart>
+    <span ref="root" class="chart grid-col-span-3"></span>
 </template>
 
 <script>
-import * as echarts from 'echarts/core';
+import { use, init } from 'echarts/core';
 import {
     DatasetComponent,
     TooltipComponent,
@@ -15,8 +14,8 @@ import {
 import { LineChart, PieChart } from 'echarts/charts';
 import { LabelLayout } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
-import VChart, { THEME_KEY } from "vue-echarts";
 import { IDToColor } from "./IDToColor";
+import { markRaw } from "vue";
 
 export default {
     props: {
@@ -28,22 +27,10 @@ export default {
             required: true,
             type: String,
         },
-        volumeType: {
-            required: false,
-            type: String,
-        },
-    },
-    components: {
-        VChart
-    },
-    provide: {
-        [THEME_KEY]: "dark"
     },
     data() {
         return {
-            updateOptions: {
-                notMerge: true,
-            },
+            chart: null,
             pieObj: {
                 type: 'pie',
                 radius: '30%',
@@ -80,6 +67,10 @@ export default {
             this.pieObj.label.formatter = '{b}: {@[' + dimension + ']} ({d}%)';
             this.pieObj.encode.value = dimension;
             this.pieObj.encode.tooltip = dimension;
+
+            if (this.chart) {
+                this.chart.setOption(this.option);
+            }
         },
         extractYearMonth() {
             // helper-function to get all X-Axis data (yearsmonth)
@@ -89,27 +80,24 @@ export default {
             // sort the yearmonths entries
             xAxis = xAxis.sort();
 
-            // filter duplicated yearsmonth
-            xAxis = [...new Set(xAxis)];
-            
-            // fill in the missing yearmonths
-            for (let i = 0; i < xAxis.length - 1; i++) {
-                let currentYearMonth = xAxis[i];
-                let nextYearMonth = xAxis[i + 1];
-                let currentDate = new Date(currentYearMonth);
-                let nextDate = new Date(nextYearMonth);
-                while (currentDate.getMonth() < nextDate.getMonth() - 1 || currentDate.getFullYear() < nextDate.getFullYear()) {
-                    currentDate.setMonth(currentDate.getMonth() + 1);
-                    let year = currentDate.getFullYear();
-                    let month = currentDate.getMonth() + 1;
-                    let yearMonth = year + '-' + (month < 10 ? '0' + month : month);
-                    xAxis.splice(i + 1, 0, yearMonth);
-                    i++;
-                }
+            //generate dates for xAxis
+            let currentDate = new Date(xAxis[0]);
+            let lastDate = new Date(xAxis[xAxis.length - 1]);
+            let xAxisFin = [];
+
+            while (currentDate.getTime() < lastDate.getTime()) {
+                let year = currentDate.getFullYear();
+                let month = currentDate.getMonth() + 1;
+                let yearMonth = year + '-' + month.toString().padStart(2, '0');
+
+                xAxisFin.push(yearMonth);
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+            if (!xAxisFin.includes(xAxis[xAxis.length - 1])) {
+                xAxisFin.push(xAxis[xAxis.length - 1]);
             }
 
-            // sort the years (increasing)
-            return xAxis;
+            return xAxisFin;
         },
     },
     computed: {
@@ -261,8 +249,15 @@ export default {
             }
         }
     },
+    watch: {
+        option() {
+            if (this.chart) {
+                this.chart.setOption(this.option);
+            }
+        },
+    },
     beforeCreate() {
-        echarts.use([
+        use([
             DatasetComponent,
             TooltipComponent,
             GridComponent,
@@ -273,6 +268,11 @@ export default {
             LabelLayout,
             TitleComponent,
         ]);
+    },
+    mounted() {
+        this.chart = markRaw(init(this.$refs.root, 'dark', { renderer: 'svg' }));
+        this.chart.setOption(this.option);
+        this.chart.on('updateAxisPointer', this.handleUpdate);
     },
 };
 </script>

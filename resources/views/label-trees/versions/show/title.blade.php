@@ -3,7 +3,7 @@
         @include('label-trees.versions.show.version-button')
         <dropdown menu-right>
             <button class="btn btn-default dropdown-toggle"><i class="fa fa-cog"></i> <span class="caret"></span></button>
-            <template slot="dropdown">
+            <template #dropdown>
                 <li>
                     <a href="{{route('label-trees-create', ['upstream_label_tree' => $tree->id])}}" title="Create a fork of this label tree" >Fork</a>
                 </li>
