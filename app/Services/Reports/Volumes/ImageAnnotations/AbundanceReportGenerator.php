@@ -77,13 +77,8 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             }
 
             foreach ($users as $id => $name) {
-                // Get query for images that have no annotations
-                $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
-                $usedImageFilenames = $annotatedImagesQuery->get($id)->pluck('filename')->unique();
-                $usersEmptyImagesQuery = $query->clone()->select('filename')->whereNotIn('filename', $usedImageFilenames);
-                // Add query to process unannotated images (by current user) in chunks later
-                $emptyImagesQuery->union($usersEmptyImagesQuery);
-
+                $usedImageIds = $annotatedImagesQuery->get($id)->pluck('image_id')->unique();
+                $emptyImagesQuery = $this->source->images()->select('filename')->whereNotIn('id', $usedImageIds);
                 $rowGroup = $annotatedImagesQuery->get($id);
 
                 if (!$this->shouldUseAllLabels()) {
@@ -112,14 +107,15 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $query = $this->initQuery()
             ->orderBy('images.filename')
-            ->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
+            ->selectRaw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count')
             ->groupBy('image_annotation_labels.label_id', 'images.id');
 
         if ($this->shouldSeparateLabelTrees()) {
             $query->addSelect('labels.label_tree_id')
-                ->groupBy('image_annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
+                ->groupBy('image_annotation_labels.label_id', 'labels.label_tree_id');
         } elseif ($this->shouldSeparateUsers()) {
             $query->addSelect('image_annotation_labels.user_id')
+                ->addSelect('images.id as image_id')
                 ->groupBy('image_annotation_labels.label_id', 'images.id', 'image_annotation_labels.user_id');
         }
 
@@ -141,12 +137,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             // Add this label filter here, since it won’t delete any annotations
             ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
             ->addSelect($columns);
-
-        if ($this->shouldSeparateLabelTrees()) {
-            $query->addSelect('labels.label_tree_id');
-        } elseif ($this->shouldSeparateUsers()) {
-            $query->addSelect('image_annotation_labels.user_id');
-        }
 
         return $query;
     }
