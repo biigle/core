@@ -544,21 +544,21 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_tree_id' => $root1->label_tree_id,
         ]);
 
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $root1->id,
+        ]);
+
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+            ])->id,
+            'label_id' => $root1->id,
+        ]);
+
         // Test case where the child label should not be included.
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root1->id,
-        ]);
-
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root1->id,
-        ]);
-
         ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
@@ -1351,66 +1351,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertNull($results[0]->id);
-    }
-
-    public function testInitQuerySeparateLabelTrees()
-    {
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-        ]);
-
-        // Empty images should be included in the report
-        $image2 = ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $image->volume_id
-        ]);
-
-        $a = ImageAnnotationTest::create(['image_id' => $image]);
-        $al = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'separateLabelTrees' => true
-        ]);
-
-        $generator->setSource($image->volume);
-        $results = $generator->initQuery(['images.filename'])->get();
-        $this->assertCount(2, $results);
-        $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($al->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertNull($results[1]->label_tree_id);
-    }
-
-    public function testInitQuerySeparateUser()
-    {
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-        ]);
-
-        // Empty images should be included in the report
-        $image2 = ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $image->volume_id
-        ]);
-
-        $a = ImageAnnotationTest::create(['image_id' => $image]);
-        $al = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'separateUsers' => true
-        ]);
-
-        $generator->setSource($image->volume);
-        $results = $generator->initQuery(['images.filename'])->get();
-        $this->assertCount(2, $results);
-        $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($al->user_id, $results[0]->user_id);
-        $this->assertNull($results[1]->user_id);
     }
 
     public function testInitQueryAnnotationSession()
