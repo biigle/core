@@ -165,12 +165,16 @@ class Images {
         // on each switch (unless color adjustment is active).
         let canvas = document.createElement('canvas');
 
+        // Another Canvas for LabelBOT to ignore color adjustments.
+        let labelbotCanvas = document.createElement('canvas');
+
         let imageWrapper = {
             id: id,
             source: img,
             width: 0,
             height: 0,
             canvas: canvas,
+            labelbotCanvas: labelbotCanvas,
             crossOrigin: false,
         };
 
@@ -205,6 +209,11 @@ class Images {
                 imageWrapper.canvas._dirty = false;
                 document.body.removeChild(img);
                 document.body.removeChild(imageWrapper.canvas);
+                
+                // Draw the image to the labelBOT canvas
+                imageWrapper.labelbotCanvas.width = img.width;
+                imageWrapper.labelbotCanvas.height = img.height;
+                imageWrapper.labelbotCanvas.getContext('2d').drawImage(img, 0, 0);
 
                 resolve(imageWrapper);
             };

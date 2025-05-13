@@ -129,6 +129,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        labelbotIsOn: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         labelMap() {
@@ -179,6 +183,13 @@ export default {
         hasNoLabels() {
             return this.rootLabels.length === 0;
         },
+    },
+    watch: {
+        labelbotIsOn() {
+            if (this.labelbotIsOn) {
+                this.clearSelectedLabels();
+            }
+        }
     },
     methods: {
         hasLabel(id) {

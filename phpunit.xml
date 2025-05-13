@@ -31,5 +31,9 @@
         <env name="DB_DATABASE" value="biigle"/>
         <env name="DB_USERNAME" value="biigle"/>
         <env name="DB_PASSWORD" value="secret"/>
+        <env name="LARGO_PATCH_STORAGE_DISK" value="largo"/>
+        <env name="REPORTS_STORAGE_DISK" value="reports"/>
+        <env name="MAIA_TRAINING_PROPOSAL_STORAGE_DISK" value="maia-tp"/>
+        <env name="MAIA_ANNOTATION_CANDIDATE_STORAGE_DISK" value="maia-ac"/>
     </php>
 </phpunit>

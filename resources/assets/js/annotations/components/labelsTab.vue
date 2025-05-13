@@ -2,6 +2,8 @@
 import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import powerToggle from '../../core/components/powerToggle.vue';
+import Messages from '../../core/messages/store';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -22,10 +24,12 @@ export default {
     emits: [
         'open',
         'select',
+        'change-labelbot-toggle'
     ],
     components: {
         labelTrees: LabelTrees,
         exampleAnnotations: ExampleAnnotations,
+        powerToggle: powerToggle,
     },
     data() {
         return {
@@ -43,6 +47,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        labelbotIsOn: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         plugins() {
@@ -51,12 +59,33 @@ export default {
     },
     methods: {
         handleSelectedLabel(label) {
+            // Turn off LabelBOT if its on
+            if (this.labelbotIsOn) {
+                this.handleLabelbotOff();
+            }
+
             this.selectedLabel = label;
             this.$emit('select', label);
         },
         handleDeselectedLabel() {
             this.selectedLabel = null;
             this.$emit('select', null);
+        },
+        handleLabelbotOn() {
+            if (this.labelTrees.every(tree => tree.labels.length === 0)) {
+                Messages.info("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
+                return;
+            }
+
+            // Deselect the selected label when LabelBOT is on
+            if (this.selectedLabel) {
+                this.handleDeselectedLabel();
+            }
+
+            this.$emit('change-labelbot-toggle', true);
+        },
+        handleLabelbotOff() {
+            this.$emit('change-labelbot-toggle', false);
         },
         setFocusInputFindLabel() {
             this.$emit('open', 'labels');

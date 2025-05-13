@@ -31,7 +31,7 @@
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
-                @select="handleSelect"
+                :labelbotIsOn="labelbotIsOn" @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
                 ></label-tree>
@@ -45,7 +45,7 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
-                @select="handleSelect"
+                :labelbotIsOn="labelbotIsOn" @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
@@ -126,6 +126,10 @@ export default {
             default: 'default',
         },
         focusInput:{
+            type: Boolean,
+            default: false,
+        },
+        labelbotIsOn: {
             type: Boolean,
             default: false,
         }
