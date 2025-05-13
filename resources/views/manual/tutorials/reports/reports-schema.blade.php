@@ -71,7 +71,7 @@
         </p>
 
         <p>
-            If "all labels" was enabled for this report, all labels available in the volume will be included in the report.
+            If "all labels" was enabled for this report, all labels available to the volume will be included in the report.
         </p>
 
         <h4><a name="annotation-location-report"></a>AnnotationLocation</h4>
