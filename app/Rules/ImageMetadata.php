@@ -114,6 +114,7 @@ class ImageMetadata implements Rule
         }
 
         foreach (self::NUMERIC_FIELDS as $key => $text) {
+            /** @phpstan-ignore booleanNot.alwaysFalse */
             if (!is_null($file->$key) && !is_numeric($file->$key)) {
                 $this->message = "'{$file->$key}' is no valid {$text} for file {$file->name}.";
 

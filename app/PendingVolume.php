@@ -14,7 +14,7 @@ class PendingVolume extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'media_type_id',
@@ -35,7 +35,7 @@ class PendingVolume extends Model
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'metadata_file_path',

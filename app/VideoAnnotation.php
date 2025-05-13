@@ -9,7 +9,7 @@ class VideoAnnotation extends Annotation
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'video_id',

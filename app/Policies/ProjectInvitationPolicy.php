@@ -17,7 +17,7 @@ class ProjectInvitationPolicy extends CachedPolicy
      *
      * @param User $user
      * @param string $ability
-     * @return bool|null
+     * @return bool|void
      */
     public function before($user, $ability)
     {

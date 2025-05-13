@@ -115,7 +115,7 @@ class VolumeController extends Controller
      * Updates the attributes of the specified volume.
      *
      * @param UpdateVolume $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      * @api {put} volumes/:id Update a volume
      * @apiGroup Volumes
      * @apiName UpdateVolumes

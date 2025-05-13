@@ -11,7 +11,7 @@ class ApiGuard extends TokenGuard
     /**
      * Get the currently authenticated user.
      *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     * @return \Illuminate\Contracts\Auth\Authenticatable|void
      */
     public function user()
     {
