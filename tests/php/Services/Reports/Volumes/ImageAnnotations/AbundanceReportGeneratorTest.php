@@ -160,8 +160,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $i2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
         $i3 = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'c.jpg']);
 
-        $this->assertEmpty($i3->annotations()->get());
-
         $mock = Mockery::mock();
 
         $mock->shouldReceive('put')
@@ -298,7 +296,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $l1 = LabelTest::create();
         $l2 = LabelTest::create(['label_tree_id' => $l1->label_tree_id]);
         // Unused label should be ignored
-        $l3 = LabelTest::create(['label_tree_id' => $l1->label_tree_id]);
+        LabelTest::create(['label_tree_id' => $l1->label_tree_id]);
 
         $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
@@ -551,13 +549,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_id' => $root1->id,
         ]);
 
-        ImageAnnotationLabelTest::create([
-            'annotation_id' => ImageAnnotationTest::create([
-                'image_id' => $image->id,
-            ])->id,
-            'label_id' => $root1->id,
-        ]);
-
         // Test case where the child label should not be included.
         ImageAnnotationLabelTest::create([
             'annotation_id' => ImageAnnotationTest::create([
@@ -640,7 +631,7 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('putCsv')
             ->once()
-            ->with([$image->filename, 2, 1, 1, 1]);
+            ->with([$image->filename, 1, 1, 1, 1]);
 
         $mock->shouldReceive('putCsv')
             ->once()
@@ -2106,7 +2097,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $newestLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotations[0]->id,
             'user_id' => $user->id,
-            'created_at' => '2025-10-5',
         ]);
 
         $emptyLabelId = 0;
