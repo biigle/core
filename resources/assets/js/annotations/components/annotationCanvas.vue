@@ -784,7 +784,7 @@ export default {
         },
         handleDeleteLabelbotLabelsAnnotation(popupKey) {
             this.$emit('delete-labelbot-labels-annotation', popupKey);
-        }
+        },
     },
     watch: {
         image(image, oldImage) {

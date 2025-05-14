@@ -197,13 +197,19 @@
         </div>
     </div>
     <div v-for="(overlay, key) in labelbotOverlays" v-show="!overlay.available" :key="key" :ref="'labelbot-popup-' + key">
+        <div class="labelbot-overlay-grap-area"
+            :style="{'cursor': 'grab'}"
+            :key="key"
+            ><div class="labelbot-overlay-grap-area-notch" :key="key"></div>
+        </div>
         <labelbot-popup 
-        :popup-key="key" 
-        :focused-popup-key="focusedPopupKey" 
-        :labelbot-labels="overlay.labels" 
-        @update-labelbot-label="updateLabelbotLabel" 
-        @delete-labelbot-labels="deleteLabelbotLabels" 
-        @change-labelbot-focused-popup="handleLabelbotPopupFocused" 
-        @delete-labelbot-labels-annotation="handleDeleteLabelbotLabelsAnnotation"></labelbot-popup>
+            :popup-key="key" 
+            :focused-popup-key="focusedPopupKey" 
+            :labelbot-labels="overlay.labels" 
+            @update-labelbot-label="updateLabelbotLabel" 
+            @delete-labelbot-labels="deleteLabelbotLabels" 
+            @change-labelbot-focused-popup="handleLabelbotPopupFocused" 
+            @delete-labelbot-labels-annotation="handleDeleteLabelbotLabelsAnnotation"
+            ></labelbot-popup>
     </div>
 </div>

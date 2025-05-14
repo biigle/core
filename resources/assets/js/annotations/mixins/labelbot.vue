@@ -14,7 +14,7 @@ export default {
             labelbotIsOn: false,
             labelbotState: 'initializing',
             labelbotOverlays: [],
-            labelbotLineFeatureLength: 75, // in px
+            labelbotLineFeatureLength: 100, // in px
             focusedPopupKey: -1,
             labelbotOverlaysTimeline: [],
             // Cache api

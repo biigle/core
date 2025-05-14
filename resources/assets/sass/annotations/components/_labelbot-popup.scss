@@ -4,7 +4,7 @@
     display: block;
     padding: $padding-large-vertical;
     border: 1px solid $input-border;
-    border-radius: $input-border-radius;
+    border-radius:  0 0 $input-border-radius $input-border-radius;
     margin: 0;
     background-color: #333333;
 }
@@ -83,4 +83,36 @@
         cursor: pointer;
         background-color: #219b19;;
     }
+}
+
+.labelbot-overlay-grap-area {
+    height: 20px;
+    background-color: #111;
+    border: 1px solid $input-border;
+    border-radius: $input-border-radius $input-border-radius 0 0;
+}
+
+.labelbot-overlay-grap-area-notch {
+    position: absolute;
+    width: 3em;
+    height: 0.4em;
+    left: 50%;
+    top: -5px;
+    transform: translateX(-50%);
+    background-color: #111;
+    border-top: 1px solid $input-border;
+    border-right: 1px solid $input-border;
+    border-left: 1px solid $input-border;
+    border-radius: $input-border-radius $input-border-radius 0 0;
+}
+
+.labelbot-overlay-grap-area::after {
+    content: "⋮⋮⋮";
+    letter-spacing: 0.2rem;
+    font-size: 15px;
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    top: 8px;
 }
