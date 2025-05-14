@@ -34,14 +34,13 @@ class VolumeController extends Controller
 
         $mediaType = old('media_type', 'image');
 
-        $parsers = collect(ParserFactory::$parsers);
-        foreach ($parsers as $type => $p) {
-            $parsers[$type] = array_map(fn ($class) => [
+        $parsers = collect(ParserFactory::$parsers)->map(function ($p) {
+            return array_map(fn ($class) => [
                 'parserClass' => $class,
-                'name' => $class::getName(),
-                'mimeTypes' => $class::getKnownMimeTypes(),
+                'name' => (string) $class::getName(),
+                'mimeTypes' => (array) $class::getKnownMimeTypes(),
             ], $p);
-        }
+        });
 
         return view('volumes.create.step1', [
             'project' => $project,
@@ -110,8 +109,8 @@ class VolumeController extends Controller
         $parsers = collect(ParserFactory::$parsers[$type] ?? [])
             ->map(fn ($class) => [
                 'parserClass' => $class,
-                'name' => $class::getName(),
-                'mimeTypes' => $class::getKnownMimeTypes(),
+                'name' => (string) $class::getName(),
+                'mimeTypes' => (array) $class::getKnownMimeTypes(),
             ]);
 
         return view('volumes.edit', [
