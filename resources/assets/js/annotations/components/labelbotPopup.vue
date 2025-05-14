@@ -16,7 +16,7 @@
       </div>
     </li>
     <li class="labelbot-labels-label">
-      <typeahead :key="popupKey" ref="typeahead" :style="{ width: '100%' }" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
+      <typeahead :key="popupKey" ref="popupTypeahead" :style="{ width: '100%' }" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
 </template>
@@ -102,7 +102,7 @@ export default {
       this.closeLabelbotPopup();
     },
     closeLabelbotPopup() {
-      this.$refs.typeahead.clear();
+      this.$refs.popupTypeahead?.clear();
       this.highlightedLabel = -1;
       this.$emit('delete-labelbot-labels', this.popupKey);
     },
@@ -134,22 +134,21 @@ export default {
         }
 
         if (this.highlightedLabel === this.labelbotLabels.length && this.isFocused) {
-          this.$refs.typeahead.$refs.input.focus();
+          this.$refs.popupTypeahead.$refs.input.focus();
         }
       });
     },
     labelEnter() {
       this.$nextTick(() => {
-        if (this.highlightedLabel < this.labelbotLabels.length && this.highlightedLabel > 0 && this.isFocused) {
+        if (this.highlightedLabel < this.labelbotLabels.length && this.highlightedLabel > -1 && this.isFocused) {
           this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel]);
-          this.highlightedLabel = -1;
         }
       });
     },
     deleteLabelAnnotation() {
       this.$nextTick(() => {
         if (this.isFocused) {
-          this.$refs.typeahead.clear();
+          this.$refs.popupTypeahead?.clear();
           this.highlightedLabel = -1;
           this.$emit('delete-labelbot-labels-annotation', this.popupKey);
         }
