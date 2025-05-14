@@ -6,6 +6,8 @@ use Biigle\Services\Reports\ReportGenerator;
 use File;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use ReflectionClass;
 use SplFileInfo;
 use Storage;
@@ -37,9 +39,9 @@ class Report extends Model
     /**
      * The user that requested the report.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo<User, $this>
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(\Biigle\User::class);
     }
@@ -47,22 +49,22 @@ class Report extends Model
     /**
      * Type of the report.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo<ReportType, $this>
      */
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(ReportType::class);
     }
 
     /**
-     * Source of the report (\Biigle\Volume or \Biigle\Project).
+     * Source of the report.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Project|Volume, $this>
+     * @return MorphTo<Project|Volume, $this>
      */
     public function source()
     {
         /**
-         * @var \Illuminate\Database\Eloquent\Relations\MorphTo<Project|Volume, $this>
+         * @var MorphTo<Project|Volume, $this>
          */
         return $this->morphTo();
     }

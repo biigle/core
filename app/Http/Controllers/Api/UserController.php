@@ -204,7 +204,7 @@ class UserController extends Controller
      * auth_password: 'password123'
      *
      * @param UpdateUser $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function update(UpdateUser $request)
     {
@@ -265,7 +265,7 @@ class UserController extends Controller
      * super_user_mode: 0
      *
      * @param UpdateOwnUser $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function updateOwn(UpdateOwnUser $request)
     {
@@ -375,7 +375,7 @@ class UserController extends Controller
      * @apiParam {Number} id The user ID.
      *
      * @param DestroyUser $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy(DestroyUser $request)
     {
@@ -404,7 +404,7 @@ class UserController extends Controller
      * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
      *
      * @param DestroyOwnUser $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroyOwn(DestroyOwnUser $request)
     {

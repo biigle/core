@@ -121,7 +121,7 @@ class ProjectController extends Controller
      * @apiParam (Attributes that can be updated) {String} description Description of the project.
      *
      * @param UpdateProject $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function update(UpdateProject $request)
     {
@@ -153,7 +153,7 @@ class ProjectController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy(Request $request, $id)
     {

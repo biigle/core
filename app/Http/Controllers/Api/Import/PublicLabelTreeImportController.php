@@ -39,6 +39,7 @@ class PublicLabelTreeImportController extends Controller
             try {
                 /** @var PublicLabelTreeImport */
                 $import = $manager->get($token);
+                /** @phpstan-ignore instanceof.alwaysTrue */
                 if (!($import instanceof PublicLabelTreeImport)) {
                     throw ValidationException::withMessages(['archive' => ['The file is not an exported label tree.']]);
                 }

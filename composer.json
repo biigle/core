@@ -29,7 +29,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "jcupitt/vips": "^2.4",
         "jmikola/geojson": "^1.0",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^12.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.0",
         "meyfa/php-svg": "^0.14.7",
@@ -44,10 +44,10 @@
         "fakerphp/faker": "^1.23",
         "filp/whoops": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.0",
-        "larastan/larastan": "^2.0",
+        "larastan/larastan": "^3.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^11.0"
     },
     "autoload": {
         "psr-4": {
