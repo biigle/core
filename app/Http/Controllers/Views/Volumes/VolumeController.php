@@ -34,13 +34,11 @@ class VolumeController extends Controller
 
         $mediaType = old('media_type', 'image');
 
-        $parsers = collect(ParserFactory::$parsers)->map(function ($p) {
-            return array_map(fn ($class) => [
-                'parserClass' => $class,
-                'name' => (string) $class::getName(),
-                'mimeTypes' => (array) $class::getKnownMimeTypes(),
-            ], $p);
-        });
+        $parsers = collect(ParserFactory::$parsers)->map(fn ($p) => array_map(fn ($class) => [
+            'parserClass' => $class,
+            'name' => (string) $class::getName(),
+            'mimeTypes' => (array) $class::getKnownMimeTypes(),
+        ], $p));
 
         return view('volumes.create.step1', [
             'project' => $project,
