@@ -1,6 +1,6 @@
-# PHP 8.2.21
+# PHP 8.2.28
 # FROM php:8.2
-FROM php@sha256:a61daae986bdf9bbeff9a514e3598a4f72bb2e3d01a0b3d0eff960bbfe85acdf
+FROM php@sha256:ed4385b854a7ef4aeee1108c75333443d64c937faaf7c7d28bf63a436df06428
 LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
 LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
@@ -50,7 +50,7 @@ RUN LC_ALL=C.UTF-8 apt-get update \
 # Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
 
-ARG PHPREDIS_VERSION=6.0.2
+ARG PHPREDIS_VERSION=6.2.0
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \
