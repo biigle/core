@@ -41,8 +41,8 @@ class VideoAnnotation extends Annotation
         parent::validate();
 
         foreach ($this->frames as $frame) {
-            /** @phpstan-ignore booleanAnd.alwaysFalse */
-            if (!is_float($frame) && !is_int($frame)) {
+            /** @phpstan-ignore function.alreadyNarrowedType */
+            if (!is_numeric($frame)) {
                 throw new Exception("Video annotation frames must be numbers, got '{$frame}'.");
             }
         }

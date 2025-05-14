@@ -108,7 +108,7 @@ class ApiTokenController extends Controller
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy(Request $request, $id)
     {

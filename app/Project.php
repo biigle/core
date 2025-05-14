@@ -15,7 +15,7 @@ class Project extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'pivot',

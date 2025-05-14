@@ -15,7 +15,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -28,7 +28,7 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'local_token',

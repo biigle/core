@@ -87,14 +87,9 @@ class File
 
     /**
      * Add content to the file.
-     *
-     * @param string $content File content
-     * @return int
      */
-    public function put($content)
+    public function put(string $content): int
     {
-        if (is_string($content)) {
-            return fwrite($this->handle, $content."\n");
-        }
+        return fwrite($this->handle, $content."\n");
     }
 }

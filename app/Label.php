@@ -24,7 +24,7 @@ class Label extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'uuid',
@@ -105,10 +105,8 @@ class Label extends Model
 
     /**
      * Remove the optional '#' from a hexadecimal color.
-     *
-     * @param string $value The color
      */
-    public function setColorAttribute($value)
+    public function setColorAttribute(?string $value)
     {
         if (is_string($value) && $value[0] === '#') {
             $value = substr($value, 1);

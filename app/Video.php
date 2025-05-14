@@ -78,7 +78,7 @@ class Video extends VolumeFile
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'filename',
@@ -106,7 +106,7 @@ class Video extends VolumeFile
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'attrs',
