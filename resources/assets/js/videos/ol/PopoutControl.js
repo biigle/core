@@ -4,7 +4,7 @@ class PopoutControl extends Control {
     constructor() {
         let button = document.createElement('button');
         button.innerHTML = '\uf31e'; // FontAwesome expand-arrows-alt
-        button.title = 'Move the video to a popup window';
+        button.title = 'Move the video to a separate window';
 
         button.addEventListener('click', () => {
             this.dispatchEvent({type: 'click'});
