@@ -67,7 +67,6 @@
     biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});
     biigle.$declare('videos.user', {!! $user !!});
     biigle.$declare('videos.isAdmin', @can('update', $volume) true @else false @endcan);
-    biigle.$declare('videos.fileUuids', {!! $fileIds !!});
     biigle.$declare('videos.thumbUri', '{{ $thumbUriTemplate }}');
     biigle.$declare('videos.spritesThumbnailsPerSprite', {!! $spritesThumbnailsPerSprite !!});
     biigle.$declare('videos.spritesThumbnailInterval', {!! $spritesThumbnailInterval !!});

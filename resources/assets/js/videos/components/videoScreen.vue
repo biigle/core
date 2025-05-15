@@ -354,6 +354,7 @@ import VideoPlayback from './videoScreen/videoPlayback.vue';
 import ZoomControl from '@biigle/ol/control/Zoom';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
+import PopoutControl from '../ol/PopoutControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
@@ -366,6 +367,7 @@ export default {
         'previous',
         'select',
         'track',
+        'popout',
     ],
     mixins: [
         VideoPlayback,
@@ -552,6 +554,10 @@ export default {
 
             map.addControl(control);
 
+            control =  new PopoutControl();
+            control.on('click', this.handlePopout);
+            map.addControl(control);
+
             return map;
         },
         initLayersAndInteractions(map) {
@@ -659,7 +665,10 @@ export default {
                 Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
-        }
+        },
+        handlePopout() {
+            this.$emit('popout');
+        },
     },
     watch: {
         selectedAnnotations: {
@@ -733,6 +742,8 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
+
+        console.log(this.video instanceof HTMLVideoElement);
     },
     mounted() {
         this.map.setTarget(this.$el);

@@ -71,8 +71,6 @@ class VideoController extends Controller
             'moov-atom' => VIDEO::ERROR_INVALID_MOOV_POS,
         ]);
 
-        $fileIds = $volume->orderedFiles()->pluck('uuid', 'id');
-
         $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
 
         $spritesThumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
@@ -91,7 +89,6 @@ class VideoController extends Controller
                 'labelTrees',
                 'annotationSessions',
                 'errors',
-                'fileIds',
                 'thumbUriTemplate',
                 'spritesThumbnailsPerSprite',
                 'spritesThumbnailInterval',
@@ -99,5 +96,32 @@ class VideoController extends Controller
                 'spritesMinThumbnails',
             )
         );
+    }
+
+    /**
+     * Show the popup window of the video annotation tool.
+     *
+     * @param int $id Video ID
+     */
+    public function showPopup($id)
+    {
+        $video = Video::findOrFail($id);
+        $this->authorize('access', $video);
+
+        $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
+
+        $spritesThumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
+        $spritesThumbnailInterval = config('videos.sprites_thumbnail_interval');
+        $spritesMaxThumbnails = config('videos.sprites_max_thumbnails');
+        $spritesMinThumbnails = config('videos.thumbnail_count');
+
+        return view('videos.show.popup', compact(
+            'video',
+            'thumbUriTemplate',
+            'spritesThumbnailsPerSprite',
+            'spritesThumbnailInterval',
+            'spritesMaxThumbnails',
+            'spritesMinThumbnails',
+        ));
     }
 }

@@ -15,7 +15,7 @@
                         :hoverTime="hoverTime"
                         :clientMouseX="clientMouseX"
                         :scrollstripTop="scrollstripTop"
-                        :videoId="videoId"
+                        :videoUuid="videoUuid"
                         :showThumbnails="showThumbnailPreview"
                         v-if="finishedInitalizingData"
                         v-show="canShowThumb"
@@ -27,7 +27,7 @@
                         @mousemove="handleVideoProgressMousemove"
                         @mouseout="hideThumbnailPreview"
                         ></video-progress>
-                    <div class="annotation-tracks-wrapper">
+                    <div v-if="!collapsed" class="annotation-tracks-wrapper">
                         <annotation-tracks
                             ref="annotationTracks"
                             :tracks="tracks"
@@ -54,8 +54,16 @@
                         v-show="showHoverTime"
                         ></span>
             </div>
-            <div class="overflow-shadow overflow-shadow--left" v-show="hasOverflowLeft"></div>
-            <div class="overflow-shadow overflow-shadow--right" v-show="hasOverflowRight"></div>
+            <div
+                v-if="!collapsed"
+                v-show="hasOverflowLeft"
+                class="overflow-shadow overflow-shadow--left"
+                ></div>
+            <div
+                v-if="!collapsed"
+                v-show="hasOverflowRight"
+                class="overflow-shadow overflow-shadow--right"
+                ></div>
     </div>
 </template>
 
@@ -102,13 +110,21 @@ export default {
             type: Boolean,
             default: true
         },
-        videoId: {
-            type: Number,
+        videoUuid: {
+            type: String,
             required: true
         },
         hasError: {
             type: Boolean,
             default: false
+        },
+        collapsed: {
+            type: Boolean,
+            default: false,
+        },
+        fullHeight: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -195,6 +211,10 @@ export default {
             this.$emit('scroll-y', scrollTop);
         },
         handleWheel(e) {
+            if (this.collapsed) {
+                return;
+            }
+
             if (e.shiftKey) {
                 if (e.deltaY !== 0) {
                     this.updateZoom(e);

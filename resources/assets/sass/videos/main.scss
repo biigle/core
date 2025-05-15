@@ -17,6 +17,11 @@
         height: 35%;
         max-height: 50%;
         min-height: 36px;
+
+        &.full-height {
+            height: 100%;
+            max-height: 100%;
+        }
     }
 
     .error-message {
@@ -54,3 +59,4 @@
 @import 'components/annotationSegment';
 @import 'components/annotationKeyframe';
 @import 'components/thumbnail';
+@import 'ol';

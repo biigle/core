@@ -259,12 +259,32 @@ export default {
                 },
             });
         });
-        let metadataPromise = new Promise((resolve) => {
-            this.video.addEventListener('loadedmetadata', resolve);
-        });
+
+        let metadataPromise;
+        // If the video screen is shown in the popup and the video is already loaded.
+        if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+            metadataPromise = Promise.resolve();
+        } else {
+            metadataPromise = new Promise((resolve) => {
+                this.video.addEventListener('loadedmetadata', resolve);
+            });
+        }
+
+
         Promise.all([mapPromise, metadataPromise])
             .then(this.updateVideoLayer)
-            .then(this.attachUpdateVideoLayerListener);
+            .then(this.attachUpdateVideoLayerListener)
+            .then(() => {
+                // If the video screen is shown in the popup and the video is already
+                // loaded.
+                if (this.video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+                    this.renderVideo();
+
+                    if (!this.video.paused) {
+                        this.setPlaying();
+                    }
+                }
+            });
 
         Keyboard.on(' ', this.togglePlaying);
 

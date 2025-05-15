@@ -31,8 +31,8 @@ export default {
             type: Number,
             required: true,
         },
-        videoId: {
-            type: Number,
+        videoUuid: {
+            type: String,
             required: true,
         },
         showThumbnails: {
@@ -235,10 +235,8 @@ export default {
             }
         },
         setSpritesFolderpath() {
-            let fileUuids = biigle.$require('videos.fileUuids');
             let thumbUri = biigle.$require('videos.thumbUri');
-            let fileUuid = fileUuids[this.videoId];
-            this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(fileUuid) + '/').replace('.jpg', '');
+            this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(this.videoUuid) + '/').replace('.jpg', '');
         },
         viewHoverTimeBar() {            
             // Update hover time canvas width if thumbnail canvas width is larger
@@ -310,7 +308,6 @@ export default {
     created() {
         this.setSpritesFolderpath();
         this.updateThumbnailInterval();
-        this.thumbnailSizes = biigle.$require('videos.thumbnailSizes');
         this.thumbnailsPerSprite = biigle.$require('videos.spritesThumbnailsPerSprite');
 
         this.sprite.onload = () => {

@@ -50,6 +50,7 @@ export default {
             videoId: null,
             videoDuration: 0,
             videoIds: [],
+            videoUuid: '',
             videoFileUri: '',
             shapes: [],
             canEdit: false,
@@ -103,6 +104,8 @@ export default {
             corsRequestBreaksVideo: false,
             attemptWithCors: false,
             invalidMoovAtomPosition: false,
+            hasVideoPopout: false,
+            isVideoPopout: false,
         };
     },
     computed: {
@@ -371,7 +374,9 @@ export default {
             Settings.delete('openTab');
         },
         handleToggledTab() {
-            this.$refs.videoScreen.updateSize();
+            if (this.$refs.videoScreen) {
+                this.$refs.videoScreen.updateSize();
+            }
         },
         removeAnnotation(annotation) {
             let index = this.annotations.indexOf(annotation);
@@ -534,6 +539,7 @@ export default {
 
             this.error = null;
             this.videoDuration = video.duration;
+            this.videoUuid = video.uuid;
 
             return video;
         },
@@ -724,6 +730,31 @@ export default {
         },
         dismissMoovAtomError() {
             this.invalidMoovAtomPosition = false;
+        },
+        handleVideoPopout() {
+            if (!this.hasVideoPopout) {
+                window.$videoContainer = this;
+                const popup = window.open('popup', '_blank', 'popup=true');
+                if (popup) {
+                    this.hasVideoPopout = true;
+                    popup.addEventListener('beforeunload', () => {
+                        // This event could also happen if the popup is reloaded, which
+                        // would break the connection to the opener. So we close the
+                        // popup here for good to make sure.
+                        popup.close();
+                        this.hasVideoPopout = false;
+                        delete window.$videoContainer;
+                    });
+                } else {
+                    delete window.$videoContainer;
+                }
+
+                window.addEventListener('beforeunload', () => {
+                    if (!popup?.closed) {
+                        popup.close();
+                    }
+                });
+            }
         },
     },
     watch: {

@@ -33,6 +33,7 @@
 </message-curtain>
 <video-screen
       ref="videoScreen"
+      v-if="isVideoPopout || !hasVideoPopout"
       :annotations="filteredAnnotations"
       :annotation-opacity="settings.annotationOpacity"
       :autoplay-draw="settings.autoplayDraw"
@@ -74,6 +75,7 @@
       v-on:seek="seek"
       v-on:start-seeking="startSeeking"
       v-on:is-invalid-shape="handleInvalidShape"
+      v-on:popout="handleVideoPopout"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"
@@ -83,8 +85,10 @@
       :height-offset="timelineHeightOffset"
       :pending-annotation="pendingAnnotation"
       :show-thumbnail-preview="settings.showThumbnailPreview"
-      :video-id="videoId"
+      :video-uuid="videoUuid"
       :has-error="hasError"
+      :collapsed="isVideoPopout"
+      :full-height="!isVideoPopout && hasVideoPopout"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"
