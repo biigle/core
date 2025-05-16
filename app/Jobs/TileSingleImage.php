@@ -2,18 +2,22 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\Image;
-use Exception;
 use File;
+use Exception;
 use FileCache;
+use Biigle\Image;
 use FilesystemIterator;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use GuzzleHttp\Promise\Each;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use Illuminate\Support\Facades\Log;
+use Jcupitt\Vips\Image as VipsImage;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use Jcupitt\Vips\Image as VipsImage;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
+use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Filesystem\AwsS3V3Adapter;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class TileSingleImage extends Job implements ShouldQueue
 {
@@ -63,7 +67,12 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
-            $this->uploadToStorage();
+            $adapter = Storage::disk(config('image.tiles.disk'))->getAdapter();
+            if ($adapter instanceof AwsS3V3Adapter) {
+                $this->uploadToS3Storage();
+            } else {
+                $this->uploadToStorage();
+            }
             $this->image->tilingInProgress = false;
             $this->image->save();
         } finally {
@@ -104,6 +113,78 @@ class TileSingleImage extends Job implements ShouldQueue
             $disk->deleteDirectory($fragment);
             throw $e;
         }
+    }
+
+    /**
+     * Upload the tiles from temporary local storage to the tiles storage disk.
+     */
+    public function uploadToS3Storage()
+    {
+        $iterator = $this->getIterator($this->tempPath);
+        $disk = Storage::disk(config('image.tiles.disk'));
+        $fragment = fragment_uuid_path($this->image->uuid);
+        
+        try {
+            $client = $this->getClient($disk);
+            $bucket = $this->getBucket($disk);
+
+            // Logic about your requests and how to execute them
+            $uploads = function($files) use ($client, $bucket, $fragment) {
+                foreach ($files as $file) {
+                    yield $client->putObjectAsync([
+                        'Bucket'        => $bucket,
+                        'Key'           => $fragment. "/" . basename($file),
+                        'SourceFile'    => $file,
+                    ]);
+                }
+            };
+            
+            $failedUploads = [];
+            $filenames = $this->getIterator($this->tempPath);
+
+            $onFullfill = function ($res, $index) use ($filenames) {
+                $filenames->next();
+            };
+            $onReject = function ($reason, $index) use ($failedUploads, $filenames) {
+                array_push($failedUploads, $filenames->current());
+                Log::info($failedUploads);
+            };
+
+            $retry = 1;
+            $files = $uploads($iterator);
+
+            do {
+                // $failedUploads = [];
+                $this->sendRequests($files, $onFullfill, $onReject);
+                $files = $failedUploads;
+                Log::info([$failedUploads, $retry]);
+
+                $retry -= 1;
+            } while (!empty($failedUploads) && $retry > 0);
+            
+
+        } catch (Exception $e) {
+            $disk->deleteDirectory($fragment);
+            throw $e;
+        }
+    }
+
+    protected function sendRequests($files, $onFullfill, $onReject) {
+        $concurrency = config('image.tiles.nbr_concurrent_requests');
+        Each::ofLimit(
+            $files,
+            $concurrency,
+            $onFullfill,
+            $onReject
+        )->wait();
+    }
+
+    protected function getClient($disk){
+        return $disk->getClient();
+    }
+
+    protected function getBucket($disk){
+        return $disk->getClient()->getConfig('bucket');
     }
 
     /**
