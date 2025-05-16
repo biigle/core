@@ -2,13 +2,23 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Jobs\TileSingleImage;
-use Biigle\Tests\ImageTest;
 use File;
-use Jcupitt\Vips\Image;
 use Mockery;
 use Storage;
 use TestCase;
+use Aws\Result;
+use ArrayObject;
+use Aws\Command;
+use Aws\MockHandler;
+use Aws\S3\S3Client;
+use Jcupitt\Vips\Image;
+use Aws\CommandInterface;
+use Biigle\Tests\ImageTest;
+use GuzzleHttp\Psr7\Response;
+use Aws\Exception\AwsException;
+use Biigle\Jobs\TileSingleImage;
+use Aws\S3\Exception\S3Exception;
+use Illuminate\Support\Facades\Log;
 
 class TileSingleImageTest extends TestCase
 {
@@ -50,6 +60,43 @@ class TileSingleImageTest extends TestCase
         }
     }
 
+    public function testUploadToS3Storage()
+    {
+        config(['image.tiles.nbr_concurrent_requests' => 2]);
+
+        $mock = new MockHandler();
+        $mock->append(
+            new Result(),
+            new Result(),
+            // new Result(),
+            new S3Exception("test", new Command("mockCommand"), [
+                'code' => 'mockCode',
+                'response' => new Response(400)
+            ])
+        );
+
+        $client = new S3Client([
+            'region' => 'test',
+            'handler' => $mock,
+            'credentials' => [
+            'key' => 'fake-key',
+            'secret' => 'fake-secret',
+            ],
+        ]);
+
+        $files = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
+
+        $image = ImageTest::create();
+        $job = new TileSingleImageStub($image);
+        $job->client = $client;
+        $job->files = $files;
+        $job->useParentGetIterator = false;
+
+        $job->uploadToS3Storage();
+
+        // $this->assertEquals($files, $job->uploadedFiles);
+    }
+
     public function testQueue()
     {
         config(['image.tiles.queue' => 'myqueue']);
@@ -61,8 +108,47 @@ class TileSingleImageTest extends TestCase
 
 class TileSingleImageStub extends TileSingleImage
 {
+    public $mock;
+    public $client;
+
+    public $useParentGetIterator = true;
+
+    public $files = [];
+
+    public $uploadedFiles = [];
+
     protected function getVipsImage($path)
     {
         return $this->mock;
     }
+
+    protected function getClient($disk) {
+        return $this->client;
+    }
+
+    protected function getBucket($disk) {
+        return "test-bucket";
+    }
+
+    protected function getIterator($path){
+        if ($this->useParentGetIterator){
+            return parent::getIterator($path);
+        }
+
+        $files = [];
+        foreach($this->files as $file){
+            $files[] = "tests/files/{$file}";
+        }
+
+        return (new ArrayObject($files))->getIterator();
+    }
+
+    protected function sendRequests($files, $onFullfill, $onReject){
+        $onFullfill2 = function($res, $index) use ($onFullfill) {
+            $onFullfill($res, $index);
+            $this->uploadedFiles[$index] = basename($res->get('ObjectURL'));
+        };
+        parent::sendRequests($files, $onFullfill2, $onReject);
+    }
+
 }
