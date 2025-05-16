@@ -284,4 +284,14 @@ class ReportGenerator
     {
         return !empty($this->getOnlyLabels());
     }
+
+    /**
+     * Should this report show all labels?
+     *
+     * @return bool
+     */
+    protected function shouldUseAllLabels()
+    {
+        return $this->options->get('allLabels', false);
+    }
 }

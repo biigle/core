@@ -18,12 +18,13 @@ class StoreReport extends FormRequest
             'separate_label_trees' => 'nullable|boolean',
             'separate_users' => 'nullable|boolean',
             'export_area' => 'nullable|boolean',
-            'newest_label' => 'nullable|boolean',
-            'only_labels' => 'nullable|array',
+            'newest_label' => 'nullable|boolean|prohibited_if:all_labels,true',
+            'only_labels' => 'nullable|array|prohibited_if:all_labels,true',
             'only_labels.*' => 'integer|exists:labels,id',
-            'aggregate_child_labels' => "nullable|boolean",
+            'aggregate_child_labels' => "nullable|boolean|prohibited_if:all_labels,true",
             'disable_notifications' => "nullable|boolean",
             'strip_ifdo' => "nullable|boolean",
+            'all_labels' => 'nullable|boolean'
         ];
     }
 
@@ -47,6 +48,11 @@ class StoreReport extends FormRequest
                 $validator->errors()->add('aggregate_child_labels', 'Child labels can only be aggregated for basic, extended and abundance image annotation reports.');
             }
 
+            $allLabels = boolval($this->input('all_labels', false));
+            if ($allLabels && !$this->isAllowedForAllLabels()) {
+                $validator->errors()->add('all_labels', "The 'all labels' option is only supported for image annotation abundance reports.");
+            }
+
             if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
                 $validator->errors()->add('separate_label_trees', 'Only one of separate_label_trees or separate_users may be specified.');
             }
@@ -65,6 +71,7 @@ class StoreReport extends FormRequest
             'separateUsers' => boolval($this->input('separate_users', false)),
             'newestLabel' => boolval($this->input('newest_label', false)),
             'onlyLabels' => $this->input('only_labels', []),
+            'allLabels' => $this->input('all_labels', false)
         ];
 
         if ($this->isAllowedForExportArea()) {
@@ -127,6 +134,18 @@ class StoreReport extends FormRequest
      * @return boolean
      */
     protected function isAllowedForAggregateChildLabels()
+    {
+        return $this->isType([
+            ReportType::imageAnnotationsAbundanceId(),
+        ]);
+    }
+
+    /**
+     * Check if all_labels may be configured for the requested report type.
+     *
+     * @return boolean
+     */
+    protected function isAllowedForAllLabels()
     {
         return $this->isType([
             ReportType::imageAnnotationsAbundanceId(),

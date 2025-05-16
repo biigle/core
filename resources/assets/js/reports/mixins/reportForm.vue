@@ -29,6 +29,7 @@ export default {
                 separate_users: false,
                 only_labels: [],
                 aggregate_child_labels: false,
+                all_labels: false
             },
         };
     },
@@ -95,6 +96,9 @@ export default {
 
             return options;
         },
+        disableAllLabelsOption() {
+            return this.options.aggregate_child_labels || this.hasOnlyLabels || this.options.newest_label;
+        }
     },
     methods: {
         request(id, resource) {
