@@ -42,7 +42,7 @@ class Volume extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -57,7 +57,7 @@ class Volume extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'pivot',
@@ -101,13 +101,11 @@ class Volume extends Model
             return $query;
         }
 
-        return $query->whereIn('id', function ($query) use ($user) {
-            return $query->select('project_volume.volume_id')
-                ->from('project_volume')
-                ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
-                ->where('project_user.user_id', $user->id)
-                ->distinct();
-        });
+        return $query->whereIn('id', fn ($query) => $query->select('project_volume.volume_id')
+            ->from('project_volume')
+            ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
+            ->where('project_user.user_id', $user->id)
+            ->distinct());
     }
 
     /**
@@ -388,10 +386,8 @@ class Volume extends Model
 
     /**
      * Set the url attribute of this volume.
-     *
-     * @param string $value
      */
-    public function setUrlAttribute($value)
+    public function setUrlAttribute(?string $value)
     {
         // Do not trim the slashes defining the protocol/storage disk.
         if (is_string($value) && !str_ends_with($value, '://')) {

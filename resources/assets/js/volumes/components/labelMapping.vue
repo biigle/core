@@ -14,9 +14,13 @@
 </template>
 
 <script>
-import Item from './labelMappingItem';
+import Item from './labelMappingItem.vue';
 
 export default {
+    emits: [
+        'create',
+        'select',
+    ],
     components: {
         item: Item,
     },

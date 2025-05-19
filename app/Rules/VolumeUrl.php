@@ -138,7 +138,16 @@ class VolumeUrl implements Rule
             return false;
         }
 
-        if (empty($disk->files($url[1])) && empty($disk->directories($url[1]))) {
+        // Access the adapter directly to check for contents without loading the full
+        // file/directory listing.
+        $iterable = $disk->getAdapter()->listContents($url[1], false);
+        $hasContent = false;
+        foreach ($iterable as $item) {
+            $hasContent = true;
+            break;
+        }
+
+        if (!$hasContent) {
             $this->message = "Unable to access '{$url[1]}'. Does it exist and you have access permissions?";
 
             return false;

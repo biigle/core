@@ -50,7 +50,7 @@ class LabelTreeUserController extends Controller
      * @apiParam (Attributes that can be updated) {Number} role_id New role of the member (admin or editor)
      *
      * @param UpdateLabelTreeUser $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function update(UpdateLabelTreeUser $request)
     {
@@ -77,7 +77,7 @@ class LabelTreeUserController extends Controller
      * @apiParam {Number} uid User ID of the member.
      *
      * @param DestroyLabelTreeUser $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy(DestroyLabelTreeUser $request)
     {

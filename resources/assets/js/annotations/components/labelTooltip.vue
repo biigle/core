@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import AnnotationTooltip from '../mixins/annotationTooltip';
+import AnnotationTooltip from '../mixins/annotationTooltip.vue';
 
 /**
  * Tooltip showing labels of the hovered annotations.
@@ -19,7 +19,7 @@ import AnnotationTooltip from '../mixins/annotationTooltip';
  * @type {Object}
  */
 export default {
-    mixins: [AnnotationTooltip],
+    extends: AnnotationTooltip,
     computed: {
         annotationLabels() {
             return this.annotations.map(function (annotation) {

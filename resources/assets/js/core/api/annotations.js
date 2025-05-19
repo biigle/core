@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for annotations.
  *
@@ -15,10 +17,8 @@
  * Detach a label from an annotation:
  * resource.detachLabel({annotation_label_id: id}).then(...);
  * Note that the annotation label ID is required for this and not the annotation ID!
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/annotations{/id}', {}, {
+export default Resource('api/v1/annotations{/id}', {}, {
     attachLabel: {
         method: 'POST',
         url: 'api/v1/annotations{/id}/labels',

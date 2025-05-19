@@ -62,7 +62,7 @@ class ProjectInvitationController extends Controller
      * @param JoinProjectInvitation $request
      * @param int $id
      *
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function join(JoinProjectInvitation $request, $id)
     {

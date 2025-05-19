@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\LabelTree;
 use Biigle\Role;
 use Biigle\Services\Import\ArchiveManager;
+use Biigle\Services\Import\PublicLabelTreeImport;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -36,8 +37,13 @@ class PublicLabelTreeImportController extends Controller
             $token = $manager->store($request->file('archive'));
 
             try {
-                /** @var \Biigle\Services\Import\PublicLabelTreeImport */
+                /** @var PublicLabelTreeImport */
                 $import = $manager->get($token);
+                /** @phpstan-ignore instanceof.alwaysTrue */
+                if (!($import instanceof PublicLabelTreeImport)) {
+                    throw ValidationException::withMessages(['archive' => ['The file is not an exported label tree.']]);
+                }
+
                 if ($import->treeExists()) {
                     throw new Exception('The label tree already exists.');
                 }

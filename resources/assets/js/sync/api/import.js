@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for imports.
  *
@@ -8,7 +10,5 @@
  *
  * Delete an import:
  * resource.delete({token: '123abc'}).then(...);
- *
- * @type {Vue.resource}
  */
-export default Vue.resource('api/v1/import{/token}');
+export default Resource('api/v1/import{/token}');

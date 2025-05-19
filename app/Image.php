@@ -16,7 +16,7 @@ class Image extends VolumeFile
     /**
      * Allowed image MIME types.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     const MIMES = [
         'image/jpeg',
@@ -28,7 +28,7 @@ class Image extends VolumeFile
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'filename',
@@ -44,7 +44,7 @@ class Image extends VolumeFile
     /**
      * The attributes hidden in the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'labels',

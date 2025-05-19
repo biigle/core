@@ -1,4 +1,4 @@
-import Settings from '../../core/models/Settings';
+import Settings from '@/core/models/Settings.js';
 
 let defaults = {
     annotationOpacity: 1,
@@ -11,12 +11,11 @@ let defaults = {
     enableJumpByFrame: false,
     jumpStep: 5.0,
     muteVideo: true,
+    singleAnnotation: false,
 };
 
 export default new Settings({
-    data: {
-        urlParams: Object.keys(defaults),
-        storageKey: 'biigle.videos.settings',
-        defaults: defaults,
-    },
+    urlParams: Object.keys(defaults),
+    storageKey: 'biigle.videos.settings',
+    defaults: defaults,
 });

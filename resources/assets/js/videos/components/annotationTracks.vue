@@ -20,9 +20,17 @@
 </template>
 
 <script>
-import AnnotationTrack from './annotationTrack';
+import AnnotationTrack from './annotationTrack.vue';
 
 export default {
+    emits: [
+        'deselect',
+        'drag-x',
+        'overflow-bottom',
+        'overflow-top',
+        'scroll-y',
+        'select',
+    ],
     components: {
         annotationTrack: AnnotationTrack,
     },
@@ -58,6 +66,9 @@ export default {
             let breakpoint = this.scrollHeight - this.clientHeight - 1;
 
             return breakpoint > 0 && this.scrollTop < breakpoint;
+        },
+        trackCount() {
+            return this.tracks.length;
         },
     },
     methods: {
@@ -104,7 +115,7 @@ export default {
         },
     },
     watch: {
-        tracks() {
+        trackCount() {
             this.$nextTick(this.updateScrollHeight);
         },
         hasOverflowTop(has) {

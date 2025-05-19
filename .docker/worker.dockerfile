@@ -1,6 +1,6 @@
-# PHP 8.2.21
+# PHP 8.2.28
 # FROM php:8.2
-FROM php@sha256:a61daae986bdf9bbeff9a514e3598a4f72bb2e3d01a0b3d0eff960bbfe85acdf
+FROM php@sha256:ed4385b854a7ef4aeee1108c75333443d64c937faaf7c7d28bf63a436df06428
 LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
 LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
@@ -8,13 +8,6 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         ffmpeg \
         python3 \
-        python3-numpy \
-        python3-opencv \
-        python3-scipy \
-        python3-sklearn \
-        python3-matplotlib \
-        python3-shapely \
-        python3-pandas \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/*
@@ -57,7 +50,7 @@ RUN LC_ALL=C.UTF-8 apt-get update \
 # Configure proxy if there is any. See: https://stackoverflow.com/a/2266500/1796523
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy $HTTP_PROXY
 
-ARG PHPREDIS_VERSION=6.0.2
+ARG PHPREDIS_VERSION=6.2.0
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \
@@ -73,20 +66,23 @@ RUN LC_ALL=C.UTF-8 apt-get update \
 # Unset proxy configuration again.
 RUN [ -z "$HTTP_PROXY" ] || pear config-set http_proxy ""
 
+COPY .docker/requirements.txt /tmp/requirements.txt
+
 RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         python3-pip \
-    && pip3 install --no-cache-dir --break-system-packages \
-        PyExcelerate==0.6.7 \
-        Pillow==10.2.0 \
-    && pip3 install --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
-        torch==2.2.* \
-        torchvision==0.17.* \
+    && pip3 install --no-cache-dir --break-system-packages --upgrade pip \
+    # Install torch first to get the CPU nversion. It is also present in
+    # requirements.txt but this is only for automatic vulnerability checks.
+    && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
+        torch==2.6.* \
+        torchvision==0.21.* \
+    && pip3 install --no-cache-dir --break-system-packages -r /tmp/requirements.txt \
     && apt-get purge -y \
         python3-pip \
     && apt-get -y autoremove \
     && apt-get clean \
-    && rm -r /var/lib/apt/lists/*
+    && rm -r /var/lib/apt/lists/* /tmp/requirements.txt
 
 WORKDIR /var/www
 

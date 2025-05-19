@@ -1,6 +1,6 @@
 <script>
-import EntityChooser from '../components/entityChooser';
-import LoaderMixin from '../../core/mixins/loader';
+import EntityChooser from '../components/entityChooser.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
 
 /**
  * A mixin for the import view models

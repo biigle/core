@@ -1,10 +1,10 @@
-<li id="top-menu" is="dropdown" ref="dropdown" tag="li">
+<li is="vue:dropdown" ref="dropdown" tag="li">
     <a href="#" onclick="event.preventDefault()" class="dropdown-toggle navbar-btn-link" role="button" aria-haspopup="true" aria-expanded="false" title="Main menu">
         <span class="btn btn-default">
             <i class="fa fa-bars"></i> <span class="caret"></span>
         </span>
     </a>
-    <template slot="dropdown">
+    <template #dropdown>
         <li class="dropdown-header">
             Signed in as <strong>{{ $user->firstname }} {{ $user->lastname }}</strong>
         </li>
@@ -17,6 +17,9 @@
         </li>
         <li>
             <a href="{{route('search', ['t' => 'label-trees'])}}" title="Label trees">Label trees</a>
+        </li>
+        <li>
+            <a href="{{route('search', ['t' => 'reports'])}}" title="Reports">Reports</a>
         </li>
         @mixin('navbarMenuItem')
         @can('sudo')

@@ -1,64 +1,12 @@
 <script>
-import NotificationsApi from './../api/notifications';
-import Store from './store';
-import Messages from './../messages/store';
-
-/**
- * The notification list.
- *
- * Displays all InAppNotifications of the user in a list.
- */
-
-let notification = {
-    props: ['item', 'removeItem'],
-    data() {
-        return {
-            isLoading: false
-        };
-    },
-    computed: {
-        classObject() {
-            if (this.item.data.type) {
-                return `panel-${this.item.data.type}`;
-            }
-
-            return 'panel-default';
-        },
-        isUnread() {
-            return this.item.read_at === null;
-        }
-    },
-    methods: {
-        markRead() {
-            this.isLoading = true;
-            return NotificationsApi.markRead({id: this.item.id}, {})
-                .then(() => {
-                    this.item.read_at = new Date();
-                    if (this.removeItem) {
-                        Store.remove(this.item.id);
-                    }
-                })
-                .catch(Messages.handleErrorResponse)
-                .finally(() => {
-                    this.isLoading = false;
-                });
-        },
-        markReadAndOpenLink() {
-            let link = this.item.data.actionLink;
-            if (this.item.read_at) {
-                window.location = link;
-            } else {
-                this.markRead().finally(function () {
-                    window.location = link;
-                });
-            }
-        },
-    },
-};
+import NotificationsApi from '../api/notifications.js';
+import Store from './store.js';
+import Messages from '../messages/store.js';
+import Notification from './notification.vue';
 
 export default {
     components: {
-        notification: notification
+        notification: Notification
     },
     data() {
         return {
@@ -79,19 +27,20 @@ export default {
             this.isLoading = true;
             return NotificationsApi.markReadAll({}, {})
                 .then(() => {
-                    this.notifications.map(item => {
-                        item.read_at = new Date();
-                        Store.remove(item.id);
-                    });
+                    this.notifications.map(item => this.handleRead(item));
+                    Store.clear();
                 })
                 .catch(Messages.handleErrorResponse)
                 .finally(() => {
                     this.isLoading = false;
                 });
-        }
+        },
+        handleRead(notification) {
+            notification.read_at = new Date();
+        },
     },
     created() {
-        Store.initialize();
+        Store.initialize(biigle.$require('initialNotifications'));
         this.notifications = Store.all;
     },
 };

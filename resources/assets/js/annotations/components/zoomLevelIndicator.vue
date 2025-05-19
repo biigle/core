@@ -1,3 +1,10 @@
+<template>
+<div
+    class="zoom-level-indicator"
+    title="Zoom level of the viewport"
+    v-text="zoomLevelText"
+    ></div>
+</template>
 <script>
 /**
  * The zoom level indicator of the canvas element

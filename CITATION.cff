@@ -1,0 +1,43 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: BIIGLE
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Martin
+    family-names: Zurowietz
+    email: m.zurowietz@uni-bielefeld.de
+    affiliation: 'Biodata Mining Group, Bielefeld University'
+    orcid: 'https://orcid.org/0000-0002-7122-2343'
+  - given-names: Daniel
+    family-names: Langenkämper
+    email: dlangenk@cebitec.uni-bielefeld.de
+    affiliation: 'Biodata Mining Group, Bielefeld University'
+    orcid: 'https://orcid.org/0000-0003-1857-5040'
+  - given-names: Tim W.
+    family-names: Nattkemper
+    email: tim.nattkemper@uni-bielefeld.de
+    affiliation: 'Biodata Mining Group, Bielefeld University'
+    orcid: 'https://orcid.org/0000-0002-7986-1158'
+identifiers:
+  - type: doi
+    value: 10.3389/fmars.2017.00083
+    description: Original paper describing version 2.0 of the software.
+  - type: doi
+    value: 10.5281/zenodo.5905318
+    description: Zenodo archive of the application core.
+repository-code: 'https://github.com/biigle/core'
+url: 'https://biigle.de'
+repository: 'https://github.com/biigle'
+abstract: >-
+  BIIGLE is a web service for the efficient and rapid
+  annotation of still images and videos.
+keywords:
+  - image-annotation
+  - video-annotation
+  - image-analysis
+license: GPL-3.0

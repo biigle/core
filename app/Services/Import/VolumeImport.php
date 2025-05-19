@@ -464,11 +464,12 @@ class VolumeImport extends Import
             })
             ->map(function ($volume) {
                 // Save volumes only after all of them have validated their URLs.
-                /** @phpstan-ignore-next-line */
+                /** @phpstan-ignore property.notFound */
                 $oldId = $volume->old_id;
+                /** @phpstan-ignore property.notFound */
                 unset($volume->old_id);
                 $volume->save();
-                /** @phpstan-ignore-next-line */
+                /** @phpstan-ignore property.notFound */
                 $volume->old_id = $oldId;
 
                 return $volume;
@@ -550,13 +551,11 @@ class VolumeImport extends Import
             return $file;
         }, $files);
 
-        $toInsert = array_map(function ($file) {
-            return [
-                'filename' => $file['filename'],
-                'volume_id' => $file['volume_id'],
-                'uuid' => $file['uuid'],
-            ];
-        }, $files);
+        $toInsert = array_map(fn ($file) => [
+            'filename' => $file['filename'],
+            'volume_id' => $file['volume_id'],
+            'uuid' => $file['uuid'],
+        ], $files);
 
         $volumeIds = [];
         foreach ($files as $file) {

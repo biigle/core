@@ -1,3 +1,5 @@
+import { Http } from 'vue-resource';
+
 window.addEventListener('load', function () {
     // Call the API endpoint every hour to keep the CSRF token alive. This is done if a
     // user leaves their browser (tab) idle for a long time and then wants to start
@@ -11,7 +13,7 @@ window.addEventListener('load', function () {
             // then started again.
             window.clearInterval(id);
         } else {
-            Vue.http.post('heartbeat')
+            Http.post('heartbeat')
                 .then(function () {
                     time = new Date().getTime();
                 }, function () {

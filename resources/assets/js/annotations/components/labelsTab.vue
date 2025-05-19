@@ -1,6 +1,7 @@
 <script>
-import LabelTrees from '../../label-trees/components/labelTrees';
-import Keyboard from '../../core/keyboard';
+import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
+import Keyboard from '@/core/keyboard.js';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import powerToggle from '../../core/components/powerToggle.vue';
 import Messages from '../../core/messages/store';
 
@@ -19,8 +20,14 @@ export let plugins = {};
  * @type {Object}
  */
 export default {
+    template: '#labels-tab-template',
+    emits: [
+        'open',
+        'select',
+    ],
     components: {
         labelTrees: LabelTrees,
+        exampleAnnotations: ExampleAnnotations,
         powerToggle: powerToggle,
     },
     data() {

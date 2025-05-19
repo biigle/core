@@ -1,9 +1,9 @@
 <script>
-import Keyboard from '../../core/keyboard';
-import PowerToggle from '../../core/components/powerToggle';
-import ScreenshotButton from './screenshotButton';
-import Settings from '../stores/settings';
-import ExportArea from './exportArea';
+import ExportArea from './exportArea.vue';
+import Keyboard from '@/core/keyboard.js';
+import PowerToggle from '@/core/components/powerToggle.vue';
+import ScreenshotButton from './screenshotButton.vue';
+import Settings from '../stores/settings.js';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -20,6 +20,8 @@ export let plugins = {};
  * @type {Object}
  */
 export default {
+    template: '#settings-tab-template',
+    emits: ['change'],
     components: {
         screenshotButton: ScreenshotButton,
         powerToggle: PowerToggle,
@@ -55,6 +57,7 @@ export default {
                 'measureTooltip',
                 'minimap',
                 'progressIndicator',
+                'exampleAnnotations',
             ],
             annotationOpacity: 1.0,
             cachedImagesCount: 1,
@@ -65,6 +68,7 @@ export default {
             measureTooltip: false,
             minimap: true,
             progressIndicator: true,
+            exampleAnnotations: true,
         };
     },
     computed: {
@@ -130,6 +134,12 @@ export default {
                 this.annotationOpacity = 1;
             }
         },
+        showExampleAnnotations() {
+            this.exampleAnnotations = true;
+        },
+        hideExampleAnnotations() {
+            this.exampleAnnotations = false;
+        },
     },
     watch: {
         annotationOpacity(opacity) {
@@ -169,6 +179,10 @@ export default {
         progressIndicator(show) {
             this.$emit('change', 'progressIndicator', show);
             this.settings.set('progressIndicator', show);
+        },
+        exampleAnnotations(show) {
+            this.$emit('change', 'exampleAnnotations', show);
+            this.settings.set('exampleAnnotations', show);
         },
     },
     created() {

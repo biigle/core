@@ -83,13 +83,11 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()
-            ->map(function ($item) {
-                return [
-                    'item' => $item,
-                    'created_at' => $item->created_at,
-                    'include' => 'volumes.dashboardActivityItem',
-                ];
-            })
+            ->map(fn ($item) => [
+                'item' => $item,
+                'created_at' => $item->created_at,
+                'include' => 'volumes.dashboardActivityItem',
+            ])
             ->all();
     }
 
@@ -115,14 +113,12 @@ class DashboardController extends Controller
             ->orderBy('annotation_labels_created_at', 'desc')
             ->limit($limit)
             ->get()
-            ->map(function ($item) {
-                return [
-                    'item' => $item,
-                    /** @phpstan-ignore property.notFound */
-                    'created_at' => $item->annotation_labels_created_at,
-                    'include' => 'annotations.dashboardActivityItem',
-                ];
-            })
+            ->map(fn ($item) => [
+                'item' => $item,
+                /** @phpstan-ignore property.notFound */
+                'created_at' => (string) $item->annotation_labels_created_at,
+                'include' => 'annotations.dashboardActivityItem',
+            ])
             ->all();
     }
 
@@ -148,14 +144,12 @@ class DashboardController extends Controller
             ->orderBy('video_annotation_labels_created_at', 'desc')
             ->limit($limit)
             ->get()
-            ->map(function ($item) {
-                return [
-                    'item' => $item,
-                    /** @phpstan-ignore property.notFound */
-                    'created_at' => $item->video_annotation_labels_created_at,
-                    'include' => 'videos.dashboardActivityItem',
-                ];
-            })
+            ->map(fn ($item) => [
+                'item' => $item,
+                /** @phpstan-ignore property.notFound */
+                'created_at' => (string) $item->video_annotation_labels_created_at,
+                'include' => 'videos.dashboardActivityItem',
+            ])
             ->all();
     }
 
@@ -164,6 +158,7 @@ class DashboardController extends Controller
      */
     protected function indexLandingPage()
     {
+        /** @phpstan-ignore argument.type */
         return view('landing');
     }
 }

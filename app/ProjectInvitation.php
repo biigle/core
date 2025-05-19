@@ -12,7 +12,7 @@ class ProjectInvitation extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'uuid',
@@ -29,14 +29,14 @@ class ProjectInvitation extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'expires_at' => 'datetime',
+        'expires_at' => "datetime:c",
         'add_to_sessions' => 'bool',
     ];
 
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $appends = [
         'expires_at_for_humans',

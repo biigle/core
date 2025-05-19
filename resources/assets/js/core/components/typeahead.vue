@@ -5,13 +5,13 @@
         class="form-control"
         type="text"
         v-model="inputText"
-        :disabled="disabled"
+        :disabled="disabled || null"
         :placeholder="placeholder"
         @focus="emitFocus"
         @blur="emitBlur"
-        @keyup.enter="emitInternalValue"
         >
     <typeahead
+        v-show="showTypeahead"
         v-model="internalValue"
         :target="inputElement"
         :data="items"
@@ -19,20 +19,20 @@
         :limit="itemLimit"
         :class="{'typeahead-scrollable': scrollable}"
         item-key="name"
-        v-show="showTypeahead"
         @selected-item-changed="handleArrowKeyScroll"
+        @update:modelValue="handleSelect"
         >
-        <template slot="item" slot-scope="props">
+          <template #item="{ items, activeIndex, select, highlight }">
             <component
-                ref="dropdown"
                 :is="itemComponent"
-                @click.native="emitInternalValue"
-                v-for="(item, index) in props.items"
+                ref="dropdown"
+                v-for="(item, index) in items"
                 :key="index"
-                :props="props"
+                :class="{active: activeIndex === index}"
                 :item="item"
                 :item-key="moreInfo"
-                :class="{active: props.activeIndex === index}"
+                :select="select"
+                :highlightHtml="highlight(item)"
                 >
             </component>
         </template>
@@ -41,9 +41,9 @@
 </template>
 
 <script>
-import Typeahead from 'uiv/dist/Typeahead';
-import TypeaheadItem from './typeaheadItem';
-import {debounce} from './../utils';
+import TypeaheadItem from './typeaheadItem.vue';
+import {debounce} from '../utils.js';
+import {Typeahead} from 'uiv';
 
 /**
  * A component that displays a typeahead to find items.
@@ -51,6 +51,13 @@ import {debounce} from './../utils';
  * @type {Object}
  */
 export default {
+    emits: [
+        'blur',
+        'fetch',
+        'focus',
+        'input',
+        'select',
+    ],
     components: {
         typeahead: Typeahead,
     },
@@ -108,7 +115,7 @@ export default {
         },
         showTypeahead() {
             return !this.scrollable || this.scrollable && !this.isTyping;
-        }
+        },
     },
     methods: {
         clear() {
@@ -121,18 +128,18 @@ export default {
         emitBlur(e) {
             this.$emit('blur', e);
         },
-        emitInternalValue() {
-            if (typeof this.internalValue === 'object') {
-                this.$emit('input', this.internalValue);
-                this.$emit('select', this.internalValue);
-                if (this.clearOnSelect) {
-                    this.clear();
-                }
-            }
-        },
         handleArrowKeyScroll(index) {
             if (this.scrollable && this.$refs.dropdown[index]) {
                 this.$refs.dropdown[index].$el.scrollIntoView({block: 'nearest'});
+            }
+        },
+        handleSelect(value) {
+            if (typeof value === 'object') {
+                this.$emit('input', value);
+                this.$emit('select', value);
+                if (this.clearOnSelect) {
+                    this.clear();
+                }
             }
         },
     },
@@ -157,7 +164,7 @@ export default {
             if (!this.disabled) {
                 this.$nextTick(() => this.$refs.input.focus())
             }
-        }
+        },
     },
     created() {
         this.internalValue = this.value;

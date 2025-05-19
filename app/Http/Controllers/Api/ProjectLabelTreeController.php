@@ -125,7 +125,7 @@ class ProjectLabelTreeController extends Controller
      * id: 3
      *
      * @param StoreProjectLabelTree $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function store(StoreProjectLabelTree $request)
     {
@@ -150,7 +150,7 @@ class ProjectLabelTreeController extends Controller
      * @param Request $request
      * @param  int  $pid
      * @param  int  $lid
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy(Request $request, $pid, $lid)
     {

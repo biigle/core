@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import Loader from './loader';
-import MessageCurtain from './messageCurtain';
+import Loader from './loader.vue';
+import MessageCurtain from './messageCurtain.vue';
 
 /**
  * A component for a loading spinner element that acts as blocking overlay

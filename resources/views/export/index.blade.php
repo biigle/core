@@ -3,7 +3,7 @@
 @section('title', 'Export')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('sync.mediaTypes', {!! $mediaTypes !!});
     biigle.$declare('sync.exportApiUrl', '{{url('api/v1/export')}}');
     biigle.$declare('sync.allowedExports', {!!json_encode($allowedExports)!!});
@@ -25,7 +25,7 @@
                         An export file contains user password hashes. Make sure no third party can read it!
                     </div>
                 </div>
-                <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenVolumes">Request volume export</a>
+                <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenVolumes || null">Request volume export</a>
             </tab>
         @endif
         @if (in_array('labelTrees', $allowedExports))
@@ -39,7 +39,7 @@
                         An export file contains user password hashes. Make sure no third party can read it!
                     </div>
                 </div>
-                <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenLabelTrees">Request label tree export</a>
+                <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenLabelTrees || null">Request label tree export</a>
             </tab>
         @endif
         @if (in_array('users', $allowedExports))
@@ -53,7 +53,7 @@
                         An export file contains user password hashes. Make sure no third party can read it!
                     </div>
                 </div>
-                <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenUsers">Request user export</a>
+                <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenUsers || null">Request user export</a>
             </tab>
         @endif
     </tabs>

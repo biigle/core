@@ -1,7 +1,7 @@
 @extends('projects.show.base')
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     @can('update', $project)
         biigle.$declare('projects.canEdit', true);
     @else
@@ -19,7 +19,7 @@
                 v-if="hasLabelTrees"
                 :label-trees="labelTrees"
                 :editable="canEdit"
-                base-uri="{{route('label-trees', '')}}"
+                base-uri="{{route('label-trees', '/')}}"
                 v-on:remove="removeTree"
                 >
             </label-tree-list>

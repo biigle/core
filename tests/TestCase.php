@@ -27,6 +27,8 @@ class TestCase extends BaseTestCase
             'driver' => 'local',
             'root' => base_path('tests'),
         ]]);
+
+        $this->withoutVite();
     }
 
     /**

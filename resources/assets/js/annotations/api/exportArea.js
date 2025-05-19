@@ -1,3 +1,5 @@
+import {Resource} from 'vue-resource';
+
 /**
  * Resource for editing the export area of a volume
  *
@@ -13,4 +15,4 @@
  * resource.delete({id: columeId}).then(...);
  *
  */
-export default Vue.resource('/api/v1/volumes{/id}/export-area');
+export default Resource('/api/v1/volumes{/id}/export-area');

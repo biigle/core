@@ -24,7 +24,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'pivot',
@@ -100,10 +100,10 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * Scope a query to only include annotations allowed by the session for the user.
      *
-     * @param \Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Contracts\Database\Query\Builder $query
      * @param AnnotationSession $session
      * @param User $user The user to whom the restrictions should apply ('own' user)
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Contracts\Database\Query\Builder
      */
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {
@@ -213,6 +213,14 @@ abstract class Annotation extends Model implements AnnotationContract
     public function getFile(): VolumeFile
     {
         return $this->file;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     /**

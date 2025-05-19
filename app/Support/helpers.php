@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Vite;
 
 if (!function_exists('cachebust_asset')) {
     /**
@@ -18,6 +19,20 @@ if (!function_exists('cachebust_asset')) {
         }
 
         return asset($path, $secure);
+    }
+}
+
+if (!function_exists('vite_hot')) {
+    /**
+     * A variant of the @vite Blade directive that allows setting the hot path.
+     */
+    function vite_hot(string $hotFile, $entryPoints, $buildDirectory = null)
+    {
+        $oldHotFile = Vite::hotFile();
+        $tags = Vite::useHotFile($hotFile)->__invoke($entryPoints, $buildDirectory);
+        Vite::useHotFile($oldHotFile);
+
+        return $tags;
     }
 }
 

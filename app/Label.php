@@ -24,7 +24,7 @@ class Label extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'uuid',
@@ -57,29 +57,19 @@ class Label extends Model
      */
     public function scopeUsed($query)
     {
-        return $query->where(function ($query) {
-            return $query
-                ->whereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('image_annotation_labels')
-                        ->whereRaw('labels.id = image_annotation_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('image_labels')
-                        ->whereRaw('labels.id = image_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('video_annotation_labels')
-                        ->whereRaw('labels.id = video_annotation_labels.label_id');
-                })
-                ->orWhereExists(function ($query) {
-                    return $query->select(DB::raw(1))
-                        ->from('video_labels')
-                        ->whereRaw('labels.id = video_labels.label_id');
-                });
-        });
+        return $query->where(fn ($query) => $query
+            ->whereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('image_annotation_labels')
+                ->whereRaw('labels.id = image_annotation_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('image_labels')
+                ->whereRaw('labels.id = image_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('video_annotation_labels')
+                ->whereRaw('labels.id = video_annotation_labels.label_id'))
+            ->orWhereExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('video_labels')
+                ->whereRaw('labels.id = video_labels.label_id')));
     }
 
     /**
@@ -115,10 +105,8 @@ class Label extends Model
 
     /**
      * Remove the optional '#' from a hexadecimal color.
-     *
-     * @param string $value The color
      */
-    public function setColorAttribute($value)
+    public function setColorAttribute(?string $value)
     {
         if (is_string($value) && $value[0] === '#') {
             $value = substr($value, 1);

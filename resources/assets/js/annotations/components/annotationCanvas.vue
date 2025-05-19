@@ -1,55 +1,56 @@
 <script>
-import * as PolygonValidator from '../ol/PolygonValidator';
-import AnnotationTooltip from './annotationCanvas/annotationTooltip';
-import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction';
-import CanvasSource from '../ol/source/Canvas';
+import * as PolygonValidator from '../ol/PolygonValidator.js';
+import AnnotationTooltip from './annotationCanvas/annotationTooltip.vue';
+import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction.vue';
+import CanvasSource from '../ol/source/Canvas.js';
 import Circle from '@biigle/ol/geom/Circle';
 import Collection from '@biigle/ol/Collection';
-import ControlButton from './controlButton';
-import DrawInteractions from './annotationCanvas/drawInteractions';
+import ControlButton from './controlButton.vue';
+import DrawInteractions from './annotationCanvas/drawInteractions.vue';
 import Ellipse from '@biigle/ol/geom/Ellipse';
-import Events from '../../core/events';
+import Events from '@/core/events.js';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '../../core/keyboard';
-import LabelbotPopup from './labelbotPopup';
+import Keyboard from '@/core/keyboard.js';
+import LabelbotPopup from './labelbotPopup.vue';
 import LabelbotIndicator from './labelbotIndicator.vue';
-import LabelIndicator from './labelIndicator';
-import Lawnmower from './annotationCanvas/lawnmower';
+import LabelIndicator from './labelIndicator.vue';
+import Lawnmower from './annotationCanvas/lawnmower.vue';
 import LineString from '@biigle/ol/geom/LineString';
-import MagicWandInteraction from './annotationCanvas/magicWandInteraction';
+import MagicWandInteraction from './annotationCanvas/magicWandInteraction.vue';
 import Map from '@biigle/ol/Map';
-import MeasureInteraction from './annotationCanvas/measureInteraction';
-import Minimap from './minimap';
+import MeasureInteraction from './annotationCanvas/measureInteraction.vue';
+import Minimap from './minimap.vue';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
-import MousePosition from './annotationCanvas/mousePosition';
+import MousePosition from './annotationCanvas/mousePosition.vue';
 import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
 import Overlay from '@biigle/ol/Overlay';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
-import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction';
+import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction.vue';
 import Projection from '@biigle/ol/proj/Projection';
 import Rectangle from '@biigle/ol/geom/Rectangle';
-import Sampling from './annotationCanvas/sampling';
-import ScaleLine from './annotationCanvas/scaleLine';
+import Sampling from './annotationCanvas/sampling.vue';
+import ScaleLine from './annotationCanvas/scaleLine.vue';
 import SelectInteraction from '@biigle/ol/interaction/Select';
-import Styles from '../stores/styles';
+import Styles from '../stores/styles.js';
 import TileLayer from '@biigle/ol/layer/Tile';
-import TranslateInteraction from './annotationCanvas/translateInteraction';
+import TranslateInteraction from './annotationCanvas/translateInteraction.vue';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import View from '@biigle/ol/View';
 import ZoomControl from '@biigle/ol/control/Zoom';
 import ZoomifySource from '@biigle/ol/source/Zoomify';
-import ZoomLevel from './annotationCanvas/zoomLevel';
+import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
-import ZoomToNativeControl from '../ol/ZoomToNativeControl';
+import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
+import { isInvalidShape } from '../utils.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction'
 import {getCenter} from '@biigle/ol/extent';
+import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
-import { isInvalidShape } from '../utils';
 
 /**
  * The annotator canvas
@@ -57,6 +58,18 @@ import { isInvalidShape } from '../utils';
  * @type {Object}
  */
 export default {
+    template: '#annotation-canvas-template',
+    emits: [
+        'moveend',
+        'update',
+        'select',
+        'previous',
+        'next',
+        'is-invalid-shape',
+        'new',
+        'delete',
+        'requires-selected-label',
+    ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
         AnnotationTooltip,
@@ -275,6 +288,9 @@ export default {
                 }),
             });
 
+            // Make absolutely sure that this does not become reactive.
+            markRaw(map);
+
             map.addInteraction(new MouseWheelZoom({
                 condition: function (mapBrowserEvent) {
                     // If Shift is pressed, the event should be handled by the parent
@@ -312,6 +328,7 @@ export default {
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
                 style: Styles.features,
+                opacity: this.annotationOpacity,
             });
             
             this.selectInteraction = new SelectInteraction({
@@ -787,39 +804,45 @@ export default {
                 this.handleRegularImage(image, oldImage);
             }
         },
-        annotations(annotations) {
-            this.refreshAnnotationSource(annotations, this.annotationSource);
-            this.resetHoveredAnnotations();
+        annotations: {
+            deep: true,
+            handler(annotations) {
+                this.refreshAnnotationSource(annotations, this.annotationSource);
+                this.resetHoveredAnnotations();
+            },
         },
-        selectedAnnotations(annotations) {
-            // This allows selection of annotations outside OpenLayers and forwards
-            // the state to the SelectInteraction.
-            let features = this.selectedFeatures;
-            let featureIdMap = {};
-            let annotationIdMap = {};
-            annotations.forEach(a => annotationIdMap[a.id] = true);
-            let toRemove = [];
+        selectedAnnotations: {
+            deep: true,
+            handler(annotations) {
+                // This allows selection of annotations outside OpenLayers and forwards
+                // the state to the SelectInteraction.
+                let features = this.selectedFeatures;
+                let featureIdMap = {};
+                let annotationIdMap = {};
+                annotations.forEach(a => annotationIdMap[a.id] = true);
+                let toRemove = [];
 
-            features.forEach(f => {
-                const id = f.getId();
-                if (annotationIdMap[id]) {
-                    featureIdMap[id] = true;
+                features.forEach(f => {
+                    const id = f.getId();
+                    if (annotationIdMap[id]) {
+                        featureIdMap[id] = true;
+                    } else {
+                        toRemove.push(f);
+                    }
+                });
+
+                if (toRemove.length === features.getLength()) {
+                    features.clear();
                 } else {
-                    toRemove.push(f);
+                    toRemove.forEach(f => features.remove(f));
                 }
-            });
 
-            if (toRemove.length === features.getLength()) {
-                features.clear();
-            } else {
-                toRemove.forEach(f => features.remove(f));
-            }
-
-            annotations
-                .filter(a => !featureIdMap[a.id])
-                .forEach(
-                    a => features.push(this.annotationSource.getFeatureById(a.id))
-                );
+                annotations
+                    .filter(a => !featureIdMap[a.id])
+                    .forEach(
+                        a => features.push(this.annotationSource.getFeatureById(a.id))
+                    );
+            },
         },
         extent(extent, oldExtent) {
             // The extent only truly changes if the width and height changed.
@@ -898,7 +921,7 @@ export default {
         this.imageLayer.set('name', 'imageRegular');
         this.tiledImageLayer.set('name', 'imageTile');
 
-        Events.$on('sidebar.toggle', () => {
+        Events.on('sidebar.toggle', () => {
             // This needs to be wrapped in a function so it is called without arguments.
             this.$nextTick(() => {
                 this.map.updateSize();
@@ -927,6 +950,7 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
+        Events.emit('annotations.map.init', this.map);
         // Init labelBOT's overlays after the labelbot components are mounted
         this.initLabelbotOverlays();
     },

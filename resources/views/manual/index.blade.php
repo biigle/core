@@ -63,6 +63,14 @@
             <p>
                 Learn more on how you can download a label tree and use it elsewhere.
             </p>
+
+            <h4>
+                <a href="{{route('manual-tutorials', ['largo', 'annotation-catalog'])}}">Annotation Catalog</a>
+            </h4>
+            <p>
+                The annotation catalog shows you all annotations with a certain label.
+            </p>
+
             @mixin('labelTreesManual')
 
             <h3>Volumes</h3>
@@ -241,6 +249,13 @@
                 Fix errors in video files that can cause problems in BIIGLE.
             </p>
 
+            <h3>
+                <a href="{{route('manual-tutorials', ['largo', 'largo'])}}">Largo</a>
+            </h3>
+            <p>
+                The Label Review Grid Overview and what you can do with it.
+            </p>
+
             <h3>Reports</h3>
             <h4>
                 <a href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}">Reports schema</a>
@@ -265,9 +280,6 @@
             <p>
                 A detailed description of the annotation position estimation of the annotation location report.
             </p>
-
-
-
 
             @mixin('manualTutorial')
 

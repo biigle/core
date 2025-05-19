@@ -1,5 +1,5 @@
 <script>
-import ScaleLineIndicator from '../scaleLineIndicator';
+import ScaleLineIndicator from '../scaleLineIndicator.vue';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the scale line indicator.

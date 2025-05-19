@@ -30,6 +30,7 @@ abstract class Annotation
         $this->setPointsAttribute($points);
 
         array_walk($labels, function ($label) {
+            /** @phpstan-ignore instanceof.alwaysTrue */
             if (!($label instanceof LabelAndUser)) {
                 throw new Exception('Annotation labels must be of class '.LabelAndUser::class);
             }

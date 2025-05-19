@@ -1,17 +1,13 @@
 <script>
+import * as preventDoubleclick from '../../../prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '../../../core/keyboard';
-import Styles from '../../stores/styles';
-import { shiftKeyOnly } from '@biigle/ol/events/condition';
-import snapInteraction from '../../snapInteraction.vue';
+import Keyboard from '@/core/keyboard.js';
+import snapInteraction from '@/annotations/ol/snapInteraction.js';
+import Styles from '@/annotations/stores/styles.js';
+import { never } from '@biigle/ol/events/condition';
+import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 
-
-function computeDistance(point1, point2) {
-    let p1=point1.getCoordinates();
-    let p2=point2.getCoordinates();
-    return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
-}
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the draw interactions.
@@ -20,21 +16,6 @@ function computeDistance(point1, point2) {
  */
 
 let drawInteraction;
-
-const POINT_CLICK_COOLDOWN = 400;
-const POINT_CLICK_DISTANCE = 5;
-
-// Custom OpenLayers freehandCondition that is true if a pen is used for input or
-// if Shift is pressed otherwise.
-let penOrShift = function (mapBrowserEvent) {
-  let pointerEvent = mapBrowserEvent.pointerEvent;
-
-  if (pointerEvent && pointerEvent.pointerType === "pen") {
-    return true;
-  }
-
-  return shiftKeyOnly(mapBrowserEvent);
-};
 
 export default {
     mixins: [snapInteraction],
@@ -107,7 +88,7 @@ export default {
                     source: this.annotationSource,
                     type: mode.slice(4), // remove 'draw' prefix
                     style: Styles.editing,
-                    freehandCondition: penOrShift,
+                    freehandCondition: this.getFreehandCondition(mode),
                     condition: this.updateSnapCoords
                 });
                 this.map.addInteraction(drawInteraction);
@@ -142,8 +123,19 @@ export default {
             }
         },
         isPointDoubleClick(e) {
-            return new Date().getTime() - this.lastDrawnPointTime < POINT_CLICK_COOLDOWN
-                && computeDistance(this.lastDrawnPoint,e.feature.getGeometry()) < POINT_CLICK_DISTANCE;
+            return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
+                && preventDoubleclick.computeDistance(this.lastDrawnPoint,e.feature.getGeometry()) < preventDoubleclick.POINT_CLICK_DISTANCE;
+        },
+        getFreehandCondition(mode) {
+            if (mode === 'drawCircle') {
+                return penOrShift
+            }
+
+            if (mode === 'drawLineString' || mode === 'drawPolygon') {
+                return penXorShift
+            }
+
+            return never;
         },
     },
     watch: {

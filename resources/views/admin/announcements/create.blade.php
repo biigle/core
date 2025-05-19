@@ -57,7 +57,7 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
+<script type="module">
     biigle.$declare('announcement.title', '{!! old('title') !!}')
     biigle.$declare('announcement.showUntil', '{!! old('show_until') !!}')
     biigle.$declare('announcement.body', '{!! old('body') !!}')

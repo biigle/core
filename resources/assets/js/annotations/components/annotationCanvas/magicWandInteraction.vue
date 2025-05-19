@@ -1,7 +1,7 @@
 <script>
-import Keyboard from '../../../core/keyboard';
-import MagicWandInteraction from '../../ol/MagicWandInteraction';
-import Styles from '../../stores/styles';
+import Keyboard from '@/core/keyboard.js';
+import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
+import Styles from '@/annotations/stores/styles.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the magic wand interaction.
