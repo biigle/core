@@ -71,7 +71,7 @@
         </p>
 
         <p>
-            If "all labels" was enabled for this report, all labels available to the volume will be included in the report.
+            If "all labels" was enabled for this report, all labels available to the volume will be included in the report, even if there are no annotations with these labels. This option is incompatible with the "restrict to newest label", "aggregate child labels" and "restrict to labels" options, which cannot be active at the same time.
         </p>
 
         <h4><a name="annotation-location-report"></a>AnnotationLocation</h4>
