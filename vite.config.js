@@ -59,4 +59,7 @@ export default defineConfig({
             external: ['vue'],
         },
     },
+    optimizeDeps: {
+        exclude: ["onnxruntime-web"],
+    },
 });
