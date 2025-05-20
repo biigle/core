@@ -1,19 +1,36 @@
-@keyframes flash {
+@keyframes labelbot-blink {
     0% { opacity: 1; }
     50% { opacity: 0; }
-    100% { opacity: 1; }
 }
 
 .labelbot-indicator-info-box {
     @extend %info-box;
+    border-radius: 50%;
+    padding: 0.25em;
 
     .labelbot-indicator {
         display: block;
-        top: 14px;
-        left: $padding-small-vertical;
         width: 1.5em;
         height: 1.5em;
         border-radius: 50%;
-        animation: flash 2s infinite;
-    }    
+        background-color: $brand-danger;
+
+        &.ready {
+            background-color: $brand-success;
+        }
+
+        &.initializing {
+            background-color: $brand-warning;
+            animation: labelbot-blink 0.5s step-start infinite;
+        }
+
+        &.computing {
+            background-color: $brand-info;
+            animation: labelbot-blink 0.5s step-start infinite;
+        }
+
+        &.busy {
+            background-color: $gray;
+        }
+    }
 }
