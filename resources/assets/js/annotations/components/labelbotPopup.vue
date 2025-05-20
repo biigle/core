@@ -140,8 +140,8 @@ export default {
     },
     labelEnter() {
       this.$nextTick(() => {
-        if (this.highlightedLabel < this.labelbotLabels.length && this.highlightedLabel > -1 && this.isFocused) {
-          this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel]);
+        if (this.highlightedLabel < this.labelbotLabels.length && this.isFocused) {
+          this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel < 0 ? 0 : this.highlightedLabel]);
         }
       });
     },
