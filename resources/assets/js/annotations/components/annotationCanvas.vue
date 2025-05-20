@@ -334,7 +334,7 @@ export default {
                 style: Styles.features,
                 opacity: this.annotationOpacity,
             });
-            
+
             this.selectInteraction = new SelectInteraction({
                 // Use click instead of default singleclick because the latter is
                 // delayed 250ms to ensure the event is no doubleclick. But we want

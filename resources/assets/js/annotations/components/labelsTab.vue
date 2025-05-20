@@ -43,6 +43,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        showExampleAnnotations: {
+            type: Boolean,
+            default: false,
+        },
         labelbotIsOn: {
             type: Boolean,
             default: false,

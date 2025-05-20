@@ -19,7 +19,7 @@ export default {
             labelbotOverlaysTimeline: [],
             // Cache api
             labelbotCacheName: 'labelbot',
-            modelCacheKey: '/cached-labelbot-onnx-model',
+            labelbotModelCacheKey: '/cached-labelbot-onnx-model',
         };
     },
     methods: {
