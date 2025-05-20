@@ -2,21 +2,21 @@
 
 namespace Biigle\Jobs;
 
-use File;
-use Exception;
-use FileCache;
-use Biigle\Image;
 use ArrayIterator;
+use Biigle\Image;
+use Exception;
+use File;
+use FileCache;
 use FilesystemIterator;
 use GuzzleHttp\Promise\Each;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-use Illuminate\Support\Facades\Log;
-use Jcupitt\Vips\Image as VipsImage;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Jcupitt\Vips\Image as VipsImage;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class TileSingleImage extends Job implements ShouldQueue
 {
