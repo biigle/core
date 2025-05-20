@@ -429,32 +429,33 @@ export default {
                 if (!this.selectedLabel && this.labelbotIsOn) {
 
                     this.labelbotState = 'computing';
-                    
+
                     promise = this.generateFeatureVector(annotation.points)
-                    .then((featureVector) => {
-                        // Assign feature vector to the annotation
-                        annotation.feature_vector = featureVector;
-                    })
-                    .catch(handleErrorResponse);
+                        .then((featureVector) => {
+                            // Assign feature vector to the annotation
+                            annotation.feature_vector = featureVector;
+                        })
+                        .catch(handleErrorResponse);
                 } else {
-                    promise = Promise.resolve()
+                    promise = Promise.resolve();
                     annotation.label_id = this.selectedLabel.id;
                 }
                 // TODO: confidence control
                 annotation.confidence = 1;
-                promise.then(() => {
-                    return AnnotationsStore.create(this.imageId, annotation)
-                    .then((createdAnnotation) => {
-                        if (this.labelbotIsOn) {
-                            this.showLabelbotPopup(createdAnnotation);
-                        }
-                        return createdAnnotation;
+
+                promise
+                    .then(() => {
+                        return AnnotationsStore.create(this.imageId, annotation)
+                            .then((createdAnnotation) => {
+                                if (this.labelbotIsOn) {
+                                    this.showLabelbotPopup(createdAnnotation);
+                                }
+                                return createdAnnotation;
+                            })
+                            .then(this.setLastCreatedAnnotation);
                     })
-                    .then(this.setLastCreatedAnnotation)
-                })
-                .catch(handleErrorResponse)
-                // Remove the temporary annotation if saving succeeded or failed.
-                .finally(removeCallback);
+                    .catch(handleErrorResponse)
+                    .finally(removeCallback);
             }
         },
         handleAttachLabel(annotation, label) {
