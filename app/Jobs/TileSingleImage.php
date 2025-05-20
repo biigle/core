@@ -170,7 +170,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Send requests to upload files to S3.
+     * Upload files to S3 bucket.
      *
      * @param \Iterator $files The files to upload.
      * @param callable $onFullfill Callback for successful uploads.
