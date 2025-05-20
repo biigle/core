@@ -122,6 +122,7 @@ class TileSingleImageTest extends TestCase
         $job = new TileSingleImageStub($image);
         $job->client = $client;
         $job->files = $tiles;
+        $job->retry = 1;
         $job->useParentGetIterator = false;
 
         $fails = false;
@@ -132,6 +133,46 @@ class TileSingleImageTest extends TestCase
         }
 
         $this->assertTrue($fails);
+    }
+
+    public function testUploadToS3StorageRetryUpload()
+    {
+        config(['image.tiles.nbr_concurrent_requests' => 2]);
+
+        $mock = new MockHandler();
+        $mock->append(
+            new Result(),
+            new Result(),
+            new S3Exception("test", new Command("mockCommand"), [
+                'code' => 'mockCode',
+                'response' => new Response(400)
+            ]),
+        );
+        $mock->append(
+            new Result(),
+        );
+
+        $client = new S3Client([
+            'region' => 'test',
+            'handler' => $mock,
+            'credentials' => [
+                'key' => 'fake-key',
+                'secret' => 'fake-secret',
+            ],
+        ]);
+
+        // Treat images as tiles for Biigle\Image
+        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
+
+        $image = ImageTest::create();
+        $job = new TileSingleImageStub($image);
+        $job->client = $client;
+        $job->files = $tiles;
+        $job->useParentGetIterator = false;
+
+        $job->uploadToS3Storage();
+
+        $this->assertEquals($tiles, $job->uploadedFiles);
     }
 
     public function testQueue()
@@ -153,6 +194,8 @@ class TileSingleImageStub extends TileSingleImage
     public $files = [];
 
     public $uploadedFiles = [];
+
+    public $retry = 3;
 
     protected function getVipsImage($path)
     {
@@ -187,14 +230,17 @@ class TileSingleImageStub extends TileSingleImage
     {
         $onFullfill2 = function ($res, $index) use ($onFullfill) {
             $onFullfill($res, $index);
-            $this->uploadedFiles[$index] = basename($res->get('ObjectURL'));
+            if ($res instanceof Result && $res->get('ObjectURL')) {
+                $this->uploadedFiles[$index] = basename($res->get('ObjectURL'));
+            } else {
+                $this->uploadedFiles[] = basename($res);
+            }
         };
         parent::sendRequests($files, $onFullfill2, $onReject);
     }
 
     public function uploadToS3Storage($retry = 3)
     {
-        parent::uploadToS3Storage(1);
+        parent::uploadToS3Storage($this->retry);
     }
-
 }
