@@ -12,7 +12,6 @@ use GuzzleHttp\Promise\Each;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image as VipsImage;
 use RecursiveDirectoryIterator;
@@ -67,7 +66,6 @@ class TileSingleImage extends Job implements ShouldQueue
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
             if (config('filesystems.disks.tiles.driver') === 's3') {
-                Log::info("upload to s3");
                 $this->uploadToS3Storage();
             } else {
                 $this->uploadToStorage();
