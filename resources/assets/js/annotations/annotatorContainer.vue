@@ -9,6 +9,7 @@ import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.js';
 import Labelbot from './mixins/labelbot.vue';
+import { LABELBOT_STATES } from './mixins/labelbot.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
@@ -428,7 +429,7 @@ export default {
                 // LabelBOT
                 if (!this.selectedLabel && this.labelbotIsOn) {
 
-                    this.labelbotState = 'computing';
+                    this.labelbotState = LABELBOT_STATES.COMPUTING;
 
                     promise = this.generateFeatureVector(annotation.points)
                         .then((featureVector) => {
@@ -717,7 +718,7 @@ export default {
             }
         },
         labelbotState(labelbotState) {
-            if (labelbotState === 'busy') {
+            if (labelbotState === LABELBOT_STATES.BUSY) {
                 Messages.info("The maximum number of LabelBOT's requests is reached!")
             }
         },

@@ -2,6 +2,14 @@
 import {handleErrorResponse} from '../../core/messages/store';
 import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
 
+
+export const LABELBOT_STATES = {
+    INITIALIZING: 'initializing',
+    COMPUTING: 'computing',
+    READY: 'ready',
+    BUSY: 'busy',
+};
+
 /**
  * A Mixin for LabelBOT
  */
@@ -12,7 +20,7 @@ export default {
             labelbotModel: null,
             labelbotModelInputSize: 224, // DINOv2 image input size
             labelbotIsOn: false,
-            labelbotState: 'initializing',
+            labelbotState: LABELBOT_STATES.INITIALIZING,
             labelbotOverlays: [],
             labelbotLineFeatureLength: 100, // in px
             focusedPopupKey: -1,
@@ -24,7 +32,7 @@ export default {
     },
     methods: {
         async initLabelbotModel() {
-            this.labelbotState = 'initializing';
+            this.labelbotState = LABELBOT_STATES.INITIALIZING;
             const modelUrl = biigle.$require('labelbot.onnxUrl');
 
             try {
@@ -59,24 +67,24 @@ export default {
         loadLabelbotModel(modelUrl) {
             // Load the onnx model with webgpu first 
             InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] })
-            .then((model) => {
-                this.labelbotModel = model;
-                this.warmUpLabelbotModel();
-                this.labelbotState = 'ready';
-            })
-            // If the client does not have one then fallback to wasm
-            .catch(() => {
-                InferenceSession.create(modelUrl, { executionProviders: ['wasm'] })
                 .then((model) => {
                     this.labelbotModel = model;
                     this.warmUpLabelbotModel();
-                    this.labelbotState = 'ready';
+                    this.labelbotState = LABELBOT_STATES.READY;
                 })
-                .catch((error) => {
-                    this.labelbotIsOn = false
-                    handleErrorResponse(error);
+                // If the client does not have one then fallback to wasm
+                .catch(() => {
+                    InferenceSession.create(modelUrl, { executionProviders: ['wasm'] })
+                        .then((model) => {
+                            this.labelbotModel = model;
+                            this.warmUpLabelbotModel();
+                            this.labelbotState = LABELBOT_STATES.READY;
+                        })
+                        .catch((error) => {
+                            this.labelbotIsOn = false
+                            handleErrorResponse(error);
+                        })
                 })
-            })
         },
         getBoundingBox(points) {
             let minX = this.image.width;
@@ -227,7 +235,7 @@ export default {
                 }
             }
             // Update State
-            this.labelbotState = this.labelbotOverlays.every(overlay => !overlay.available) ? 'busy' : 'ready';
+            this.labelbotState = this.labelbotOverlays.every(overlay => !overlay.available) ? LABELBOT_STATES.BUSY : LABELBOT_STATES.READY;
         },
         updateLabelbotLabel(label) {
             this.handleSwapLabel(this.labelbotOverlays[label.popupKey].annotation, label.label)
@@ -240,7 +248,7 @@ export default {
             this.labelbotOverlays[popupKey].available = true;
             this.labelbotOverlays[popupKey].labels = [];
             this.labelbotOverlays[popupKey].annotation = null;
-            this.labelbotState = 'ready';
+            this.labelbotState = LABELBOT_STATES.READY;
 
             // Set focused pop key to the next most recent
             this.labelbotOverlaysTimeline.splice(this.labelbotOverlaysTimeline.indexOf(popupKey), 1);
