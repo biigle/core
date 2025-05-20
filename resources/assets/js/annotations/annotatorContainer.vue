@@ -226,14 +226,7 @@ export default {
                 }
             }
 
-            const nextIndex = this.getNextIndex(this.imageIndex);
-
-            // Remove LabelBOT's popups when switching images
-            if (this.labelbotIsOn && this.imageIndex !== nextIndex) {
-                this.labelbotOverlays.forEach((_, idx) => this.deleteLabelbotLabels(idx));
-            }
-
-            this.imageIndex = nextIndex;
+            this.imageIndex = this.getNextIndex(this.imageIndex);
         },
         handlePrevious() {
             if (this.loading) {
@@ -272,16 +265,9 @@ export default {
                     this.annotationModeCarry = Infinity;
                 }
             }
-            
-            const previousIndex = this.getPreviousIndex(this.imageIndex);
-
-            // Remove LabelBOT's popups when switching images
-            if (this.labelbotIsOn && this.imageIndex !== previousIndex) {
-                this.labelbotOverlays.forEach((_, idx) => this.deleteLabelbotLabels(idx));
-            }
 
             // Show previous image.
-            this.imageIndex = previousIndex;
+            this.imageIndex = this.getPreviousIndex(this.imageIndex);
         },
         maybeUpdateFocussedAnnotation() {
             if (this.isVolareAnnotationMode) {
@@ -732,6 +718,12 @@ export default {
         labelbotState(labelbotState) {
             if (labelbotState === 'busy') {
                 Messages.info("The maximum number of LabelBOT's requests is reached!")
+            }
+        },
+        imageIndex() {
+            // Remove LabelBOT's popups when switching images
+            if (this.labelbotIsOn) {
+                this.labelbotOverlays.forEach((_, idx) => this.deleteLabelbotLabels(idx));
             }
         }
     },
