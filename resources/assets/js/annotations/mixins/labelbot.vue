@@ -47,11 +47,21 @@ export default {
                 handleErrorResponse(error);
             }
         },
+        warmUpLabelbotModel() {
+            if (this.labelbotModel) {
+                // Warm up
+                const size = this.labelbotModelInputSize * this.labelbotModelInputSize;
+                const dummyAnnotationDataArray = new Float32Array(size * 3);
+                const tensor = new Tensor('float32', dummyAnnotationDataArray, [1, 3, this.labelbotModelInputSize, this.labelbotModelInputSize]);
+                this.labelbotModel.run({ input: tensor})
+            }
+        },
         loadLabelbotModel(modelUrl) {
             // Load the onnx model with webgpu first 
             InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] })
             .then((model) => {
                 this.labelbotModel = model;
+                this.warmUpLabelbotModel();
                 this.labelbotState = 'ready';
             })
             // If the client does not have one then fallback to wasm
@@ -59,6 +69,7 @@ export default {
                 InferenceSession.create(modelUrl, { executionProviders: ['wasm'] })
                 .then((model) => {
                     this.labelbotModel = model;
+                    this.warmUpLabelbotModel();
                     this.labelbotState = 'ready';
                 })
                 .catch((error) => {
