@@ -39,22 +39,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Model ONNX file
-    |--------------------------------------------------------------------------
-    |
-    | Path to the ONNX file for the DINOv2 ViT-S/14 (384) model, used to generate
-    | the feature vector for LabelBOT vector search.
-    */
-    'onnx_file' => env('LABELBOT_ONNX_MODEL_FILE', 'dinov2_vits14.onnx'),
-
-    /*
-    |--------------------------------------------------------------------------
     | LabelBOT ONNX Model URL
     |--------------------------------------------------------------------------
     |
     | URL of the hosted ONNX model file for LabelBOT.
-    | If you're hosting your own ONNX model externally, ensure that CORS is properly configured
-    | on the server to allow cross-origin requests from your frontend.
     */
-    'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', 'http://host.docker.internal:8000/assets/dinov2_vits14.onnx'),
+    'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', 'dinov2_vits14.onnx'),
 ];
