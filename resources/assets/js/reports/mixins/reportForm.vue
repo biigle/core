@@ -177,6 +177,9 @@ export default {
                 this.options.separate_label_trees = false;
             }
         },
+        selectedVariant() {
+            this.options.all_labels = false;
+        }
     },
     created() {
         this.reportTypes = biigle.$require('reports.reportTypes');
