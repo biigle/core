@@ -2,6 +2,7 @@
 import * as preventDoubleclick from '../../../prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
+import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
@@ -51,7 +52,7 @@ export default {
     },
     methods: {
         draw(name) {
-            if (this['isDrawing' + name] || (this.labelbotIsOn && this.labelbotState === 'busy')) {
+            if (this['isDrawing' + name] || (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY)) {
                 this.resetInteractionMode();
             } else if (!this.hasSelectedLabel && !this.labelbotIsOn && this.canAdd) {
                 this.requireSelectedLabel();

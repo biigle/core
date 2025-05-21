@@ -14,6 +14,7 @@ import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '@/core/keyboard.js';
 import LabelbotPopup from './labelbotPopup.vue';
 import LabelbotIndicator from './labelbotIndicator.vue';
+import { LABELBOT_STATES } from '../mixins/labelbot.vue';
 import LabelIndicator from './labelIndicator.vue';
 import Lawnmower from './annotationCanvas/lawnmower.vue';
 import LineString from '@biigle/ol/geom/LineString';
@@ -916,7 +917,7 @@ export default {
             }
         },
         labelbotState(labelbotState) {
-            if (labelbotState === 'busy') {
+            if (labelbotState === LABELBOT_STATES.BUSY) {
                 this.resetInteractionMode();
             }
         },

@@ -1,6 +1,7 @@
 <script>
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
+import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
@@ -64,7 +65,7 @@ export default {
         },
         convertMeasurement() {
             if (this.isMeasuring && !this.cantConvertMeasureFeature) {
-                if (!this.hasSelectedLabel && !this.labelbotIsOn || (this.labelbotIsOn && this.labelbotState === 'busy')) {
+                if (!this.hasSelectedLabel && !this.labelbotIsOn || (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY)) {
                     this.requireSelectedLabel(false);
                 } else {
                     this.annotationSource.addFeature(this.measureFeature);

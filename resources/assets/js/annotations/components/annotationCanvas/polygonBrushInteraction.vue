@@ -1,6 +1,7 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
 import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPolygonBrush.js';
+import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
@@ -35,7 +36,7 @@ export default {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
             } else if (this.canAdd) {
-                if ((!this.hasSelectedLabel && !this.labelbotIsOn) || (this.labelbotIsOn && this.labelbotState === 'busy')) {
+                if ((!this.hasSelectedLabel && !this.labelbotIsOn) || (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY)) {
                     this.requireSelectedLabel();
                 } else {
                     this.interactionMode = 'polygonBrush';
