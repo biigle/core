@@ -16,6 +16,7 @@ class TermsController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        /* @phpstan-ignore argument.type */
         return view('terms');
     }
 }

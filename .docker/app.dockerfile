@@ -1,6 +1,6 @@
-# PHP 8.2.21
+# PHP 8.2.28
 #FROM php:8.2-fpm-alpine
-FROM php@sha256:95c34aeeef07aa9774e0b70d5b70065ab0647ece183ebe007c5f2e6b5db16725
+FROM php@sha256:681c369da9d85525ff8ce081456fa79988e5a0e39fc286a1e59e179cbcb2711c
 LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
 LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
@@ -26,7 +26,7 @@ RUN apk add --no-cache \
         soap \
     && apk del --purge .build-deps
 
-ARG PHPREDIS_VERSION=6.0.2
+ARG PHPREDIS_VERSION=6.2.0
 RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/${PHPREDIS_VERSION}.tar.gz \
     && tar -xzf /tmp/redis.tar.gz \
     && rm /tmp/redis.tar.gz \

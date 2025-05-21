@@ -34,20 +34,18 @@ trait HasConstantInstances
      */
     public static function __callStatic($key, $arguments): mixed
     {
-        if (is_array(static::INSTANCES)) {
-            $wantsId = Str::endsWith($key, 'Id');
-            if ($wantsId) {
-                $key = substr($key, 0, -2);
-            }
+        $wantsId = Str::endsWith($key, 'Id');
+        if ($wantsId) {
+            $key = substr($key, 0, -2);
+        }
 
-            if (array_key_exists($key, static::INSTANCES)) {
-                $name = static::INSTANCES[$key];
-                $cacheKey = static::class.'::'.$key;
+        if (array_key_exists($key, static::INSTANCES)) {
+            $name = static::INSTANCES[$key];
+            $cacheKey = static::class.'::'.$key;
 
-                $instance = Cache::rememberForever($cacheKey, fn () => static::whereName($name)->first());
+            $instance = Cache::rememberForever($cacheKey, fn () => static::whereName($name)->first());
 
-                return $wantsId ? $instance->id : $instance;
-            }
+            return $wantsId ? $instance->id : $instance;
         }
 
         return parent::__callStatic($key, $arguments);

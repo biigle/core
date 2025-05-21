@@ -116,7 +116,7 @@ class DashboardController extends Controller
             ->map(fn ($item) => [
                 'item' => $item,
                 /** @phpstan-ignore property.notFound */
-                'created_at' => $item->annotation_labels_created_at,
+                'created_at' => (string) $item->annotation_labels_created_at,
                 'include' => 'annotations.dashboardActivityItem',
             ])
             ->all();
@@ -147,7 +147,7 @@ class DashboardController extends Controller
             ->map(fn ($item) => [
                 'item' => $item,
                 /** @phpstan-ignore property.notFound */
-                'created_at' => $item->video_annotation_labels_created_at,
+                'created_at' => (string) $item->video_annotation_labels_created_at,
                 'include' => 'videos.dashboardActivityItem',
             ])
             ->all();
@@ -158,6 +158,7 @@ class DashboardController extends Controller
      */
     protected function indexLandingPage()
     {
+        /** @phpstan-ignore argument.type */
         return view('landing');
     }
 }
