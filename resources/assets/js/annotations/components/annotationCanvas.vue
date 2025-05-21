@@ -165,7 +165,7 @@ export default {
         },
         labelbotState: {
             type: String,
-            default: 'initializing',
+            required: true,
         },
         labelbotOverlays: {
             type: Array,
@@ -908,6 +908,13 @@ export default {
         canDelete() {
             this.updateDeleteInteractions();
         },
+        labelbotIsOn(labelbotIsOn) {
+            const initialized = this.labelbotOverlays.every(overlayObject => overlayObject.overlay)
+            if (labelbotIsOn && !initialized) {
+                // Init labelBOT's overlays
+                this.initLabelbotOverlays();
+            }
+        },
         labelbotState(labelbotState) {
             if (labelbotState === 'busy') {
                 this.resetInteractionMode();
@@ -955,8 +962,6 @@ export default {
     mounted() {
         this.map.setTarget(this.$el);
         Events.emit('annotations.map.init', this.map);
-        // Init labelBOT's overlays after the labelbot components are mounted
-        this.initLabelbotOverlays();
     },
 };
 </script>
