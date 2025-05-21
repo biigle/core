@@ -36,6 +36,7 @@ export default {
             labelTrees: [],
             selectedLabel: null,
             focusInputFindlabel: false,
+            labelbotIsDisabled: false,
         };
     },
     props: {
@@ -57,6 +58,11 @@ export default {
             return plugins;
         },
     },
+    watch: {
+        labelTrees() {
+            this.labelbotIsDisabled = this.labelTrees.every(tree => tree.labels.length === 0);
+        }
+    },
     methods: {
         handleSelectedLabel(label) {
             // Turn off LabelBOT if its on
@@ -72,11 +78,6 @@ export default {
             this.$emit('select', null);
         },
         handleLabelbotOn() {
-            if (this.labelTrees.every(tree => tree.labels.length === 0)) {
-                Messages.info("LabelBOT can't be activated! There must be at least one label in one of the label trees.");
-                return;
-            }
-
             // Deselect the selected label when LabelBOT is on
             if (this.selectedLabel) {
                 this.handleDeselectedLabel();
