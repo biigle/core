@@ -89,7 +89,10 @@ export default {
         selectedOptions() {
             let options = {};
             this.allowedOptions[this.selectedType].forEach((allowed) => {
-                options[allowed] = this.options[allowed];
+                // Add only options which are true to use prohibited_if rule in form request
+                if (this.options[allowed]) {
+                    options[allowed] = this.options[allowed];
+                }
             });
 
             options.type_id = this.selectedReportTypeId;
