@@ -3,7 +3,6 @@ import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import powerToggle from '../../core/components/powerToggle.vue';
-import Messages from '../../core/messages/store';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via

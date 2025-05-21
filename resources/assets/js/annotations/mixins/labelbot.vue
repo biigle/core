@@ -138,7 +138,7 @@ export default {
             }
             // Clear and draw new region
             this.tempLabelbotCanvas.getContext('2d').clearRect(0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize);
-            this.tempLabelbotCanvas.getContext('2d').drawImage(this.image.labelbotCanvas, x, y, width, height, 0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize);
+            this.tempLabelbotCanvas.getContext('2d').drawImage(this.image.source, x, y, width, height, 0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize);
 
             // Extract image data
             const size = this.labelbotModelInputSize * this.labelbotModelInputSize;
