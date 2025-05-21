@@ -16,7 +16,7 @@
                 <power-toggle :disabled="labelbotIsDisabled" title-disabled="There must be at least one label in one of the label trees" :active="labelbotIsOn" title-off="Activate LabelBOT" title-on="Deactivate LabelBOT" v-on:on="handleLabelbotOn" v-on:off="handleLabelbotOff">LabelBOT</power-toggle>
             </div>
         <div class="labels-tab__trees">
-            <label-trees :trees="labelTrees" :show-favourites="true" :focus-input="focusInputFindlabel" :labelbot-is-on="labelbotIsOn" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
+            <label-trees ref="labelTrees" :trees="labelTrees" :show-favourites="true" :focus-input="focusInputFindlabel" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </div>
         <div class="labels-tab__plugins">
             <example-annotations

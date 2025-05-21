@@ -265,10 +265,10 @@ export default {
         }
     },
     watch: {
-        labelbotIsOn() {
-            if (this.labelbotIsOn && !this.labelbotModel) {
+        labelbotIsOn(labelbotIsOn) {
+            if (labelbotIsOn && !this.labelbotModel) {
                 this.initLabelbotModel();
-            }
+            } 
         }
     },
     created() {

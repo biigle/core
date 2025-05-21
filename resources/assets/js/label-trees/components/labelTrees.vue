@@ -31,7 +31,7 @@
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
-                :labelbotIsOn="labelbotIsOn" @select="handleSelect"
+                @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
                 ></label-tree>
@@ -45,7 +45,7 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
-                :labelbotIsOn="labelbotIsOn" @select="handleSelect"
+                @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
@@ -129,10 +129,6 @@ export default {
             type: Boolean,
             default: false,
         },
-        labelbotIsOn: {
-            type: Boolean,
-            default: false,
-        }
     },
     computed: {
         localeCompareSupportsLocales() {

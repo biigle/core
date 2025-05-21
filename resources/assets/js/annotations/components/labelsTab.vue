@@ -60,7 +60,12 @@ export default {
     watch: {
         labelTrees() {
             this.labelbotIsDisabled = this.labelTrees.every(tree => tree.labels.length === 0);
-        }
+        },
+        labelbotIsOn(labelbotIsOn) {
+            if (labelbotIsOn) {
+                this.$refs.labelTrees.clear();
+            }
+        },
     },
     methods: {
         handleSelectedLabel(label) {
