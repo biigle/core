@@ -391,6 +391,14 @@ class VolumeReportControllerTest extends ApiTestCase
         ])->assertUnprocessable()
             ->assertJsonValidationErrors(['aggregate_child_labels']);
 
+        // aggregate_child_labels option must not be present if all_labels is used
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'aggregate_child_labels' => false,
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['aggregate_child_labels']);
+
         Queue::assertNotPushed(GenerateReportJob::class);
     }
 
@@ -448,6 +456,14 @@ class VolumeReportControllerTest extends ApiTestCase
             'type_id' => $typeId,
             'all_labels' => true,
             'newest_label' => true,
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['newest_label']);
+
+        // newest_label option must not be present if all_labels is used
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'newest_label' => false,
         ])->assertUnprocessable()
             ->assertJsonValidationErrors(['newest_label']);
 
