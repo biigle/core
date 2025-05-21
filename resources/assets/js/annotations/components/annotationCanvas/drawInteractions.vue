@@ -52,7 +52,7 @@ export default {
     },
     methods: {
         draw(name) {
-            if (this['isDrawing' + name] || (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY)) {
+            if (this['isDrawing' + name] || (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY)) { // When LabelBOT is busy (max number of requests is reached) no drawing is allowed until it is ready again or turned off.
                 this.resetInteractionMode();
             } else if (!this.hasSelectedLabel && !this.labelbotIsOn && this.canAdd) {
                 this.requireSelectedLabel();
