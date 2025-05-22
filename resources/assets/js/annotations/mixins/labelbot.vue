@@ -12,6 +12,11 @@ export const LABELBOT_STATES = {
     OFF: 'off'
 };
 
+export const LABELBOT_DISABLED_TITLE =  {
+    NOLABELS: 'There must be at least one label in one of the label trees!',
+    CORSERROR: 'Image loaded without proper CORS configuration!'
+};
+
 /**
  * A Mixin for LabelBOT
  */
@@ -22,6 +27,7 @@ export default {
             labelbotModel: null,
             labelbotModelInputSize: 224, // DINOv2 image input size
             labelbotState: LABELBOT_STATES.OFF,
+            disabledLabelbotStateTitle: '',
             labelbotOverlays: [],
             labelbotLineFeatureLength: 100, // in px
             focusedPopupKey: -1,
@@ -249,6 +255,9 @@ export default {
         updateLabelbotState(labelbotState) {
             this.labelbotState = this.labelbotOverlays.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY ? LABELBOT_STATES.BUSY : labelbotState;
         },
+        updateDisabledLabelbotStateTitle(disabledTitle) {
+            this.disabledLabelbotStateTitle = disabledTitle;
+        },
         deleteLabelbotLabels(popupKey) {
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
@@ -267,7 +276,6 @@ export default {
             if (this.labelbotOverlays[popupKey].annotation) {
                 this.handleDeleteAnnotation(this.labelbotOverlays[popupKey].annotation);
             }
-            
         }
     },
     watch: {

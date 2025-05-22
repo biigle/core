@@ -9,7 +9,7 @@ import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.js';
 import Labelbot from './mixins/labelbot.vue';
-import { LABELBOT_STATES } from './mixins/labelbot.vue';
+import { LABELBOT_STATES, LABELBOT_DISABLED_TITLE } from './mixins/labelbot.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
@@ -662,6 +662,8 @@ export default {
             } catch (e) {
                 if (e instanceof CrossOriginError) {
                     this.crossOriginError = true;
+                    this.updateLabelbotState(LABELBOT_STATES.DISABLED);
+                    this.updateDisabledLabelbotStateTitle(LABELBOT_DISABLED_TITLE.CORSERROR);
                 } else {
                     this.image = null;
                     this.annotations = [];

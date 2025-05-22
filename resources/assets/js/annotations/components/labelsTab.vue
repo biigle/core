@@ -3,7 +3,7 @@ import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import powerToggle from '../../core/components/powerToggle.vue';
-import { LABELBOT_STATES } from '../mixins/labelbot.vue';
+import { LABELBOT_DISABLED_TITLE, LABELBOT_STATES } from '../mixins/labelbot.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -24,7 +24,8 @@ export default {
     emits: [
         'open',
         'select',
-        'update-labelbot-state'
+        'update-labelbot-state',
+        'update-disabled-labelbot-state-title',
     ],
     components: {
         labelTrees: LabelTrees,
@@ -51,6 +52,10 @@ export default {
             type: String,
             required: true,
         },
+        disabledLabelbotStateTitle: {
+            type: String,
+            default: '',
+        },
     },
     computed: {
         plugins() {
@@ -68,6 +73,7 @@ export default {
             const noLabels = this.labelTrees.every(tree => tree.labels.length === 0);
             if (noLabels) {
                 this.$emit('update-labelbot-state', LABELBOT_STATES.DISABLED);
+                this.$emit('update-disabled-labelbot-state-title', LABELBOT_DISABLED_TITLE.NOLABELS);
             }
         },
         labelbotState(labelbotState) {
