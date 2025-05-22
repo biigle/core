@@ -71,7 +71,6 @@ class StoreReport extends FormRequest
             'separateUsers' => boolval($this->input('separate_users', false)),
             'newestLabel' => boolval($this->input('newest_label', false)),
             'onlyLabels' => $this->input('only_labels', []),
-            'allLabels' => $this->input('all_labels', false)
         ];
 
         if ($this->isAllowedForExportArea()) {
@@ -88,6 +87,10 @@ class StoreReport extends FormRequest
 
         if ($this->isAllowedForStripIfdo()) {
             $options['stripIfdo'] = boolval($this->input('strip_ifdo', false));
+        }
+
+        if ($this->isAllowedForAllLabels()) {
+            $options['allLabels'] = boolval($this->input('all_labels', false));
         }
 
         return $options;
