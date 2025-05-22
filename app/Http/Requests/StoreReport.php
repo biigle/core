@@ -40,7 +40,8 @@ class StoreReport extends FormRequest
             $exportArea = boolval($this->input('export_area', false));
 
             if ($exportArea && !$this->isAllowedForExportArea()) {
-                $validator->errors()->add('export_area', 'The export area is only supported for image annotation reports.');
+                $type = explode("\\", ReportType::find($this->input('type_id'))->name)[1];
+                $validator->errors()->add('export_area', "The export area is not supported for {$type} reports.");
             }
 
             $aggregate = boolval($this->input('aggregate_child_labels', false));
