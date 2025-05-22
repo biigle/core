@@ -2,11 +2,13 @@
 
 namespace Biigle\Jobs;
 
+use ArrayIterator;
 use Biigle\Image;
 use Exception;
 use File;
 use FileCache;
 use FilesystemIterator;
+use GuzzleHttp\Promise\Each;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -63,7 +65,11 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
-            $this->uploadToStorage();
+            if (config('filesystems.disks.tiles.driver') === 's3') {
+                $this->uploadToS3Storage();
+            } else {
+                $this->uploadToStorage();
+            }
             $this->image->tilingInProgress = false;
             $this->image->save();
         } finally {
@@ -104,6 +110,106 @@ class TileSingleImage extends Job implements ShouldQueue
             $disk->deleteDirectory($fragment);
             throw $e;
         }
+    }
+
+    /**
+     * Upload the tiles from temporary local storage to the s3 tiles storage disk.
+     *
+     * @param int $retry Number of retries for failed uploads.
+     * @throws Exception
+     *
+     */
+    public function uploadToS3Storage($retry = 3)
+    {
+        $iterator = $this->getIterator($this->tempPath);
+        $disk = Storage::disk(config('image.tiles.disk'));
+
+        $client = $this->getClient($disk);
+        $bucket = $this->getBucket($disk);
+
+        $uploads = function ($files) use ($client, $bucket) {
+            $tmpLength = strlen(config('image.tiles.tmp_dir')) + 1;
+            foreach ($files as $file) {
+                $path = substr($file, $tmpLength);
+                $prefix = $path[0] . $path[1] . '/' . $path[2] . $path[3];
+
+                yield $client->putObjectAsync([
+                    'Bucket' => $bucket,
+                    'Key' => "tiles/{$prefix}/{$path}",
+                    'SourceFile' => $file,
+                ]);
+            }
+        };
+
+        // Keep track of failed uploads
+        $failedUploads = [];
+        $filenames = $this->getIterator($this->tempPath);
+
+        $onFullfill = function ($res, $index) use ($filenames) {
+            $filenames->next();
+        };
+        $onReject = function ($reason, $index) use (&$failedUploads, $filenames) {
+            array_push($failedUploads, $filenames->current());
+        };
+
+        $files = $uploads($iterator);
+
+        while ($retry > 0) {
+            $failedUploads = [];
+            $this->sendRequests($files, $onFullfill, $onReject);
+            $files = new ArrayIterator($failedUploads);
+            $retry -= 1;
+            if (empty($failedUploads)) {
+                break;
+            }
+        }
+
+        if (!empty($failedUploads)) {
+            throw new Exception("Failed to upload tiles for image with id " . $this->image->id);
+        }
+    }
+
+    /**
+     * Upload files to S3 bucket.
+     *
+     * @param \Iterator $files The files to upload.
+     * @param callable $onFullfill Callback for successful uploads.
+     * @param callable $onReject Callback for failed uploads.
+     *
+     */
+    protected function sendRequests($files, $onFullfill, $onReject)
+    {
+        $concurrency = config('image.tiles.nbr_concurrent_requests');
+        Each::ofLimit(
+            $files,
+            $concurrency,
+            $onFullfill,
+            $onReject
+        )->wait();
+    }
+
+    /**
+     * Get the S3 client.
+     *
+     * @param $disk
+     *
+     * @return \Aws\S3\S3Client
+     */
+    protected function getClient($disk)
+    {
+        return $disk->getClient();
+    }
+
+    /**
+     * Get the S3 bucket name.
+     *
+     * @param $disk
+     *
+     * @return string
+     */
+    protected function getBucket($disk)
+    {
+        return config('filesystems.disks.tiles.bucket');
     }
 
     /**
