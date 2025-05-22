@@ -87,7 +87,6 @@
             :show-measure-tooltip="showMeasureTooltip"
             :show-minimap="showMinimap"
             :user-id="userId"
-            :labelbot-is-on="labelbotIsOn"
             :labelbot-state="labelbotState"
             :labelbot-overlays="labelbotOverlays"
             :focused-popup-key="focusedPopupKey"

@@ -378,7 +378,7 @@ export default {
             if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
                 this.lastCreatedAnnotation = null;
             }
-            if (this.labelbotIsOn) {
+            if (this.isLabelbotOn) {
                 this.labelbotOverlays.map((overlay, idx) => {
                     if (overlay.annotation?.id === annotation.id && !overlay.available) {
                         this.deleteLabelbotLabels(idx)
@@ -427,7 +427,7 @@ export default {
             if (this.isEditor) {
                 let promise;
                 // LabelBOT
-                if (!this.selectedLabel && this.labelbotIsOn) {
+                if (!this.selectedLabel && this.isLabelbotOn) {
 
                     this.labelbotState = LABELBOT_STATES.COMPUTING;
 
@@ -448,7 +448,7 @@ export default {
                     .then(() => {
                         return AnnotationsStore.create(this.imageId, annotation)
                             .then((createdAnnotation) => {
-                                if (this.labelbotIsOn) {
+                                if (this.isLabelbotOn) {
                                     this.showLabelbotPopup(createdAnnotation);
                                 }
                                 return createdAnnotation;
@@ -724,7 +724,7 @@ export default {
         },
         imageIndex() {
             // Remove LabelBOT's popups when switching images
-            if (this.labelbotIsOn) {
+            if (this.isLabelbotOn) {
                 this.labelbotOverlays.forEach((_, idx) => this.deleteLabelbotLabels(idx));
             }
         }

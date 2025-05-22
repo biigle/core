@@ -8,6 +8,8 @@ export const LABELBOT_STATES = {
     COMPUTING: 'computing',
     READY: 'ready',
     BUSY: 'busy',
+    DISABLED: 'disabled',
+    OFF: 'off'
 };
 
 /**
@@ -19,8 +21,7 @@ export default {
         return {
             labelbotModel: null,
             labelbotModelInputSize: 224, // DINOv2 image input size
-            labelbotIsOn: false,
-            labelbotState: LABELBOT_STATES.INITIALIZING,
+            labelbotState: LABELBOT_STATES.OFF,
             labelbotOverlays: [],
             labelbotLineFeatureLength: 100, // in px
             focusedPopupKey: -1,
@@ -29,6 +30,11 @@ export default {
             labelbotCacheName: 'labelbot',
             labelbotModelCacheKey: '/cached-labelbot-onnx-model',
         };
+    },
+    computed: {
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
     },
     methods: {
         async initLabelbotModel() {
@@ -51,7 +57,7 @@ export default {
                 const blobUrl = URL.createObjectURL(modelBlob);
                 this.loadLabelbotModel(blobUrl);
             } catch (error) {
-                this.labelbotIsOn = false;
+                this.labelbotState = LABELBOT_STATES.OFF;
                 handleErrorResponse(error);
             }
         },
@@ -81,7 +87,7 @@ export default {
                             this.labelbotState = LABELBOT_STATES.READY;
                         })
                         .catch((error) => {
-                            this.labelbotIsOn = false
+                            this.labelbotState = LABELBOT_STATES.OFF;
                             handleErrorResponse(error);
                         })
                 })
@@ -240,8 +246,8 @@ export default {
         updateLabelbotLabel(label) {
             this.handleSwapLabel(this.labelbotOverlays[label.popupKey].annotation, label.label)
         },
-        changeLabelbotToggle(isOn) {
-            this.labelbotIsOn = isOn;
+        updateLabelbotState(labelbotState) {
+            this.labelbotState = this.labelbotOverlays.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY ? LABELBOT_STATES.BUSY : labelbotState;
         },
         deleteLabelbotLabels(popupKey) {
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
@@ -265,8 +271,8 @@ export default {
         }
     },
     watch: {
-        labelbotIsOn(labelbotIsOn) {
-            if (labelbotIsOn && !this.labelbotModel) {
+        labelbotState() {
+            if (this.isLabelbotOn && !this.labelbotModel) {
                 this.initLabelbotModel();
             } 
         }

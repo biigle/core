@@ -160,10 +160,6 @@ export default {
             type: Number,
             required: true,
         },
-        labelbotIsOn: {
-            type: Boolean,
-            default: false,
-        },
         labelbotState: {
             type: String,
             required: true,
@@ -265,6 +261,9 @@ export default {
                 default:
                     return 'Next image';
             }
+        },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
         },
     },
     methods: {
@@ -558,7 +557,7 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (!this.hasSelectedLabel && !this.labelbotIsOn) {
+            if (!this.hasSelectedLabel && !this.isLabelbotOn) {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
@@ -610,7 +609,7 @@ export default {
             }
         },
         createPointAnnotationAt(x, y) {
-            if (this.hasSelectedLabel || this.labelbotIsOn) {
+            if (this.hasSelectedLabel || this.isLabelbotOn) {
                 let feature = new Feature(new Point([x, y]));
                 // Simulate a feature created event so we can reuse the appropriate
                 // function.
@@ -909,16 +908,12 @@ export default {
         canDelete() {
             this.updateDeleteInteractions();
         },
-        labelbotIsOn(labelbotIsOn) {
-            const initialized = this.labelbotOverlays.every(overlayObject => overlayObject.overlay)
-            if (labelbotIsOn && !initialized) {
-                // Init labelBOT's overlays
-                this.initLabelbotOverlays();
-            }
-        },
         labelbotState(labelbotState) {
             if (labelbotState === LABELBOT_STATES.BUSY) {
                 this.resetInteractionMode();
+            } else if (this.isLabelbotOn && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
+                // Init labelBOT's overlays
+                this.initLabelbotOverlays();
             }
         },
     },

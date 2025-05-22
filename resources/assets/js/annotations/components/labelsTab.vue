@@ -3,6 +3,7 @@ import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import powerToggle from '../../core/components/powerToggle.vue';
+import { LABELBOT_STATES } from '../mixins/labelbot.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -23,7 +24,7 @@ export default {
     emits: [
         'open',
         'select',
-        'change-labelbot-toggle'
+        'update-labelbot-state'
     ],
     components: {
         labelTrees: LabelTrees,
@@ -35,7 +36,6 @@ export default {
             labelTrees: [],
             selectedLabel: null,
             focusInputFindlabel: false,
-            labelbotIsDisabled: false,
         };
     },
     props: {
@@ -47,22 +47,31 @@ export default {
             type: Boolean,
             default: false,
         },
-        labelbotIsOn: {
-            type: Boolean,
-            default: false,
+        labelbotState: {
+            type: String,
+            required: true,
         },
     },
     computed: {
         plugins() {
             return plugins;
         },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
+        isLabelbotDisabled() {
+            return this.labelbotState === LABELBOT_STATES.DISABLED;
+        },
     },
     watch: {
         labelTrees() {
-            this.labelbotIsDisabled = this.labelTrees.every(tree => tree.labels.length === 0);
+            const noLabels = this.labelTrees.every(tree => tree.labels.length === 0);
+            if (noLabels) {
+                this.$emit('update-labelbot-state', LABELBOT_STATES.DISABLED);
+            }
         },
-        labelbotIsOn(labelbotIsOn) {
-            if (labelbotIsOn) {
+        labelbotState(labelbotState) {
+            if (labelbotState !== LABELBOT_STATES.OFF && labelbotState !== LABELBOT_STATES.DISABLED) {
                 this.$refs.labelTrees.clear();
             }
         },
@@ -70,7 +79,7 @@ export default {
     methods: {
         handleSelectedLabel(label) {
             // Turn off LabelBOT if its on
-            if (this.labelbotIsOn) {
+            if (this.isLabelbotOn) {
                 this.handleLabelbotOff();
             }
 
@@ -86,11 +95,10 @@ export default {
             if (this.selectedLabel) {
                 this.handleDeselectedLabel();
             }
-
-            this.$emit('change-labelbot-toggle', true);
+            this.$emit('update-labelbot-state', LABELBOT_STATES.READY);
         },
         handleLabelbotOff() {
-            this.$emit('change-labelbot-toggle', false);
+            this.$emit('update-labelbot-state', LABELBOT_STATES.OFF);
         },
         setFocusInputFindLabel() {
             this.$emit('open', 'labels');

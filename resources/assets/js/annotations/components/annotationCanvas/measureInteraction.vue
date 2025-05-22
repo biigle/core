@@ -30,6 +30,9 @@ export default {
         isMeasuring() {
             return this.interactionMode === 'measure';
         },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
     },
     methods: {
         toggleMeasuring() {
@@ -66,9 +69,9 @@ export default {
         },
         convertMeasurement() {
             if (this.isMeasuring && !this.cantConvertMeasureFeature) {
-                if (!this.hasSelectedLabel && !this.labelbotIsOn) {
+                if (!this.hasSelectedLabel && !this.isLabelbotOn) {
                     this.requireSelectedLabel(false);
-                } else if (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY) {
+                } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
                     Messages.info("The maximum number of LabelBOT's requests is reached!")
                 } else {
                     this.annotationSource.addFeature(this.measureFeature);

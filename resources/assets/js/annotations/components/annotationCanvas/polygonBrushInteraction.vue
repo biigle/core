@@ -30,16 +30,19 @@ export default {
         },
         isNotAPolygonTool() {
             return !(this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill);
-        }
+        },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
     },
     methods: {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
             } else if (this.canAdd) {
-                if ((!this.hasSelectedLabel && !this.labelbotIsOn)) {
+                if ((!this.hasSelectedLabel && !this.isLabelbotOn)) {
                     this.requireSelectedLabel();
-                } else if (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY) {
+                } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
                     Messages.info("The maximum number of LabelBOT's requests is reached!")
                 } else {
                     this.interactionMode = 'polygonBrush';

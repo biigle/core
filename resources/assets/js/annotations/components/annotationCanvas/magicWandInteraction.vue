@@ -20,6 +20,9 @@ export default {
         isMagicWanding() {
             return this.interactionMode === 'magicWand' && !this.crossOrigin;
         },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
     },
     methods: {
         toggleMagicWand() {
@@ -55,9 +58,9 @@ export default {
         toggleMagicWandInteraction(isMagicWanding) {
             if (!isMagicWanding) {
                 magicWandInteraction.setActive(false);
-            } else if (this.hasSelectedLabel || (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.READY)) {
+            } else if (this.hasSelectedLabel || this.labelbotState === LABELBOT_STATES.READY) {
                 magicWandInteraction.setActive(true);
-            } else if (this.labelbotIsOn && this.labelbotState === LABELBOT_STATES.BUSY) {
+            } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
                 Messages.info("The maximum number of LabelBOT's requests is reached!")
             } else {
                 this.requireSelectedLabel();
