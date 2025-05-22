@@ -162,7 +162,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
                     ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
             })
-            // Use rightJoin because query needs to start with Label due information order i.e. annotation labels need to present before annotations
+            // Use rightJoin because query needs to start with Label due information order i.e. annotation labels need to be present before annotations
             ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
             ->distinct();
     }
