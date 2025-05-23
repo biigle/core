@@ -7,6 +7,15 @@
     </div>
     <div class="annotation-canvas__right-indicators">
         <label-indicator v-if="selectedLabel" :label="selectedLabel"></label-indicator>
+        <div 
+            v-show="isLabelbotOn" 
+            class="labelbot-indicator-info-box" 
+            :title="'LabelBOT is ' + labelbotState">
+            <labelbot-indicator 
+                class="labelbot-indicator" 
+                :labelbot-state="labelbotState">
+            </labelbot-indicator>
+        </div>
     </div>
     <label-tooltip
         :show="showLabelTooltip"
@@ -186,5 +195,21 @@
                 v-on:click="toggleMeasuring"
                 ></control-button>
         </div>
+    </div>
+    <div v-for="(overlay, key) in labelbotOverlays" v-show="!overlay.available" :key="key" :ref="'labelbot-popup-' + key">
+        <div class="labelbot-overlay-grap-area"
+            :style="{'cursor': 'grab'}"
+            :key="key"
+            ><div class="labelbot-overlay-grap-area-notch" :key="key"></div>
+        </div>
+        <labelbot-popup 
+            :popup-key="key" 
+            :focused-popup-key="focusedPopupKey" 
+            :labelbot-labels="overlay.labels" 
+            @update-labelbot-label="updateLabelbotLabel" 
+            @delete-labelbot-labels="deleteLabelbotLabels" 
+            @change-labelbot-focused-popup="handleLabelbotPopupFocused" 
+            @delete-labelbot-labels-annotation="handleDeleteLabelbotLabelsAnnotation"
+            ></labelbot-popup>
     </div>
 </div>

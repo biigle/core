@@ -1,6 +1,8 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
+import Messages from '@/core/messages/store.js';
+import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import Styles from '@/annotations/stores/styles.js';
 
 /**
@@ -17,6 +19,9 @@ export default {
         },
         isMagicWanding() {
             return this.interactionMode === 'magicWand' && !this.crossOrigin;
+        },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
         },
     },
     methods: {
@@ -53,8 +58,10 @@ export default {
         toggleMagicWandInteraction(isMagicWanding) {
             if (!isMagicWanding) {
                 magicWandInteraction.setActive(false);
-            } else if (this.hasSelectedLabel) {
+            } else if (this.hasSelectedLabel || this.labelbotState === LABELBOT_STATES.READY) {
                 magicWandInteraction.setActive(true);
+            } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
+                Messages.info("The maximum number of LabelBOT's requests is reached!")
             } else {
                 this.requireSelectedLabel();
             }

@@ -1,6 +1,8 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
+import Messages from '@/core/messages/store.js';
 import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPolygonBrush.js';
+import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
@@ -28,16 +30,23 @@ export default {
         },
         isNotAPolygonTool() {
             return !(this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill);
-        }
+        },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
     },
     methods: {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && this.canAdd) {
-                this.requireSelectedLabel();
             } else if (this.canAdd) {
-                this.interactionMode = 'polygonBrush';
+                if ((!this.hasSelectedLabel && !this.isLabelbotOn)) {
+                    this.requireSelectedLabel();
+                } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
+                    Messages.info("The maximum number of LabelBOT's requests is reached!")
+                } else {
+                    this.interactionMode = 'polygonBrush';
+                }
             }
         },
         togglePolygonEraser() {

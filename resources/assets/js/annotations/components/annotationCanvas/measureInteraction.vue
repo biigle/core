@@ -1,6 +1,8 @@
 <script>
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
+import Messages from '@/core/messages/store.js';
+import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
@@ -27,6 +29,9 @@ export default {
     computed: {
         isMeasuring() {
             return this.interactionMode === 'measure';
+        },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
         },
     },
     methods: {
@@ -64,8 +69,10 @@ export default {
         },
         convertMeasurement() {
             if (this.isMeasuring && !this.cantConvertMeasureFeature) {
-                if (!this.hasSelectedLabel) {
+                if (!this.hasSelectedLabel && !this.isLabelbotOn) {
                     this.requireSelectedLabel(false);
+                } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
+                    Messages.info("The maximum number of LabelBOT's requests is reached!")
                 } else {
                     this.annotationSource.addFeature(this.measureFeature);
                     this.handleNewFeature({feature: this.measureFeature});

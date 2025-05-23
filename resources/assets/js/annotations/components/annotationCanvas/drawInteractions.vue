@@ -2,6 +2,7 @@
 import * as preventDoubleclick from '../../../prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
+import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
@@ -48,12 +49,15 @@ export default {
         isDrawingEllipse() {
             return this.interactionMode === 'drawEllipse';
         },
+        isLabelbotOn() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
     },
     methods: {
         draw(name) {
-            if (this['isDrawing' + name]) {
+            if (this['isDrawing' + name] || this.labelbotState === LABELBOT_STATES.BUSY) { // When LabelBOT is busy (max number of requests is reached) no drawing is allowed until it is ready again or turned off.
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && this.canAdd) {
+            } else if (!this.hasSelectedLabel && !this.isLabelbotOn && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -146,7 +150,6 @@ export default {
         },
         interactionMode(mode) {
             this.maybeUpdateDrawInteractionMode(mode)
-
         },
     },
     created() {
