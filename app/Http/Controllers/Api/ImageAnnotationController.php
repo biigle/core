@@ -241,9 +241,13 @@ class ImageAnnotationController extends Controller
 
             // Perform vector search.
             $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
-            
-            // Set labelId to top 1 label.
-            $labelId = $topNLabels[0];
+
+            if (empty($topNLabels)) {
+                $label = -1;
+            } else {
+                // Set labelId to top 1 label.
+                $labelId = $topNLabels[0];
+            }
         }
 
         $label = Label::findOrFail($labelId);

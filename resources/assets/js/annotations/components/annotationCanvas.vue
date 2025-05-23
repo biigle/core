@@ -909,7 +909,7 @@ export default {
             this.updateDeleteInteractions();
         },
         labelbotState(labelbotState) {
-            if (labelbotState === LABELBOT_STATES.BUSY) {
+            if (!this.isLabelbotOn && !this.selectedLabel || labelbotState === LABELBOT_STATES.BUSY) {
                 this.resetInteractionMode();
             } else if (this.isLabelbotOn && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
                 // Init labelBOT's overlays

@@ -455,7 +455,14 @@ export default {
                             })
                             .then(this.setLastCreatedAnnotation);
                     })
-                    .catch(handleErrorResponse)
+                    .catch((e) => {
+                        if (this.isLabelbotOn) {
+                            this.updateLabelbotState(LABELBOT_STATES.OFF);
+                            Messages.danger("There are no annotations associated with any labels in this project!");
+                        } else {
+                            handleErrorResponse(e);
+                        }
+                    })
                     .finally(removeCallback);
             }
         },
