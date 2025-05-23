@@ -377,4 +377,96 @@ class VolumeReportControllerTest extends ApiTestCase
         ])->assertStatus(201);
         Queue::assertPushed(GenerateReportJob::class);
     }
+
+    public function testStoreOptionsAllLabelsAggregateChildLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'aggregate_child_labels' => true,
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['aggregate_child_labels']);
+
+        // aggregate_child_labels option must not be present if all_labels is used
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'aggregate_child_labels' => false,
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['aggregate_child_labels']);
+
+        Queue::assertNotPushed(GenerateReportJob::class);
+    }
+
+    public function testStoreOptionsAllLabelsRestrictToLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $this->beGuest();
+        $lId = 1;
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'only_labels' => [$lId],
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['only_labels']);
+
+        Queue::assertNotPushed(GenerateReportJob::class);
+    }
+
+    public function testStoreOptionsAllLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::videoAnnotationsCsv();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['all_labels', 'type_id']);
+
+        Queue::assertNotPushed(GenerateReportJob::class);
+
+        $typeId = ReportType::imageAnnotationsAbundanceId();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+        ])->assertSuccessful();
+
+        Queue::assertPushed(function (GenerateReportJob $job) {
+            $this->assertTrue($job->report->options['allLabels']);
+            return true;
+        });
+    }
+
+    public function testStoreOptionsAllLabelsRestrictToNewestLabels()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'newest_label' => true,
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['newest_label']);
+
+        // newest_label option must not be present if all_labels is used
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'all_labels' => true,
+            'newest_label' => false,
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors(['newest_label']);
+
+        Queue::assertNotPushed(GenerateReportJob::class);
+    }
 }

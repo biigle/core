@@ -54,7 +54,7 @@
         <h4><a name="annotation-abundance-report"></a>Abundance</h4>
 
         <p>
-            Similar to the extended report, this report is an XLSX spreadsheet that contains the abundances of each label and image. In this report, there is one row for each image and one column for each label. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user that was used.
+            Similar to the extended report, this report is an XLSX spreadsheet that contains the abundances of each label and image. In this report, there is one row for each image and one column for each used label. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user that was used.
         </p>
         <p>
             For a single worksheet (not separated by label tree or user) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree or user. The second line always contains the column headers. The columns are as follows:
@@ -68,6 +68,10 @@
 
         <p>
             If "aggregate child labels" was enabled for this report, the abundances of all child labels will be added to the abundance of the highest parent label and the child labels will be excluded from the report.
+        </p>
+
+        <p>
+            If "all labels" was enabled for this report, all labels available to the volume will be included in the report, even if there are no annotations with these labels. This option is incompatible with the "restrict to newest label", "aggregate child labels" and "restrict to labels" options, which cannot be active at the same time.
         </p>
 
         <h4><a name="annotation-location-report"></a>AnnotationLocation</h4>
