@@ -211,11 +211,10 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         }
 
         $labelsCount = $labels->count();
+        $zeroEntries = array_fill(0, $labelsCount, 0);
         foreach ($emptyImagesQuery->orderBy('filename')->lazy() as $image) {
             $row = [$image->filename];
-            for ($i = 0; $i < $labelsCount; $i++) {
-                $row[] = 0;
-            }
+            $row = array_merge($row, $zeroEntries);
             $csv->putCsv($row);
         }
 
