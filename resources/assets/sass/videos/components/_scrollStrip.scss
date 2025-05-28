@@ -1,10 +1,16 @@
 .scroll-strip {
     position: relative;
     overflow: hidden;
+    will-change: auto;
 
     .video-progress {
         height: 34px;
         border-bottom: 1px solid $legend-border-color;
+    }
+
+    &.full-height .video-progress {
+        border-bottom: 0;
+        border-top: 1px solid $legend-border-color;
     }
 
     // Use the wrapper so the overflow-shadow (top, bottom) elements do not overflow the
@@ -62,6 +68,20 @@
         }
     }
 
+    &.full-height .time-indicator {
+        &:before {
+            top: auto;
+            bottom: 0;
+        }
+
+        &:after {
+            top: auto;
+            bottom: 3px;
+            border-top-color: transparent;
+            border-bottom-color: #ff0000;
+        }
+    }
+
     .hover-time-indicator {
         position: absolute;
         top: 0;
@@ -71,6 +91,11 @@
         background-color: $text-muted;
         will-change: transform;
         pointer-events: none;
+    }
+
+    &.full-height .hover-time-indicator {
+        top: auto;
+        bottom: 0;
     }
 
     .overflow-shadow {

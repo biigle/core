@@ -1,6 +1,17 @@
 <template>
+    <thumbnail-preview
+        v-if="finishedInitalizingData"
+        v-show="canShowThumb"
+        :duration="duration"
+        :hoverTime="hoverTime"
+        :clientMouseX="clientMouseX"
+        :videoUuid="videoUuid"
+        :showThumbnails="showThumbnailPreview"
+        ></thumbnail-preview>
     <div
+        ref="strip"
         class="scroll-strip"
+        :class="classObject"
         @wheel.stop="handleWheel"
         @mouseleave="handleHideHoverTime"
         >
@@ -10,17 +21,8 @@
                 :style="scrollerStyle"
                 @mousemove="handleUpdateHoverTime"
                 >
-                    <thumbnail-preview
-                        :duration="duration"
-                        :hoverTime="hoverTime"
-                        :clientMouseX="clientMouseX"
-                        :scrollstripTop="scrollstripTop"
-                        :videoUuid="videoUuid"
-                        :showThumbnails="showThumbnailPreview"
-                        v-if="finishedInitalizingData"
-                        v-show="canShowThumb"
-                        ></thumbnail-preview>
                     <video-progress
+                        v-if="!fullHeight"
                         :duration="duration"
                         :element-width="elementWidth"
                         @seek="emitSeek"
@@ -43,6 +45,15 @@
                         <div class="overflow-shadow overflow-shadow--top" v-show="hasOverflowTop"></div>
                         <div class="overflow-shadow overflow-shadow--bottom" v-show="hasOverflowBottom"></div>
                     </div>
+                    <video-progress
+                        ref="progress"
+                        v-if="fullHeight"
+                        :duration="duration"
+                        :element-width="elementWidth"
+                        @seek="emitSeek"
+                        @mousemove="handleVideoProgressMousemove"
+                        @mouseout="hideThumbnailPreview"
+                        ></video-progress>
                     <span
                         class="time-indicator"
                         :class="timeIndicatorClass"
@@ -122,11 +133,8 @@ export default {
             type: Boolean,
             default: false,
         },
-        fullHeight: {
-            type: Boolean,
-            default: false,
-        },
     },
+    inject: ['fullHeight'],
     data() {
         return {
             zoom: 1,
@@ -142,7 +150,6 @@ export default {
             hasOverflowBottom: false,
             // thumbnail preview
             clientMouseX: 0,
-            scrollstripTop: 0,
             canShowThumb: false,
         };
     },
@@ -193,10 +200,15 @@ export default {
         finishedInitalizingData() {
             return !this.hasError && this.duration > 0;
         },
+        classObject() {
+            return {
+                'full-height': this.fullHeight,
+            };
+        },
     },
     methods: {
         updateInitialElementWidth() {
-            this.initialElementWidth = this.$el.clientWidth;
+            this.initialElementWidth = this.$refs.strip.clientWidth;
         },
         emitSeek(time) {
             this.$emit('seek', time);
@@ -228,7 +240,7 @@ export default {
             }
         },
         updateZoom(e) {
-            let xRel = e.clientX - this.$el.getBoundingClientRect().left;
+            let xRel = e.clientX - this.$refs.strip.getBoundingClientRect().left;
             let xAbs = e.clientX - this.$refs.scroller.getBoundingClientRect().left;
             let xPercent = xAbs / this.elementWidth;
 
@@ -273,7 +285,6 @@ export default {
         handleVideoProgressMousemove(clientX) {
             this.canShowThumb = true;
             this.clientMouseX = clientX;
-            this.scrollstripTop = this.$refs.scroller.getBoundingClientRect().top;
         },
         hideThumbnailPreview() {
             this.canShowThumb = false;

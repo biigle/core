@@ -9,3 +9,8 @@
         color: $text-muted;
     }
 }
+
+.video-timeline.full-height .current-time {
+    border-bottom: 0;
+    border-top: 1px solid $legend-border-color;
+}

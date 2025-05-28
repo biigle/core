@@ -27,10 +27,6 @@ export default {
             type: Number,
             required: true,
         },
-        scrollstripTop: {
-            type: Number,
-            required: true,
-        },
         videoUuid: {
             type: String,
             required: true,
@@ -40,6 +36,7 @@ export default {
             default: true,
         }
     },
+    inject: ['fullHeight'],
     data() {
         return {
             thumbnailPreview: null,
@@ -47,7 +44,6 @@ export default {
             sprite: new Image(),
             spriteIdx: 0,
             thumbnailIndex: -1,
-            thumbProgressBarSpace: 10,
             sideButtonsWidth: 52,
             spritesFolderPath: null,
             triedUrls: {},
@@ -80,10 +76,9 @@ export default {
                 this.clientMouseX - width / 2,
                 window.innerWidth - width - this.sideButtonsWidth
             );
-            let top = this.scrollstripTop - this.thumbProgressBarSpace;
+
             return {
                 transform: `translate(${left}px, -100%)`,
-                top: `${top}px`,
             };
         },
         spriteGridInfo() {

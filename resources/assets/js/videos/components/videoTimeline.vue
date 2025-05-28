@@ -7,6 +7,7 @@
             ></div>
         <div class="static-strip">
             <current-time
+                v-if="!fullHeight"
                 :current-time="currentTime"
                 :seeking="seeking"
                 ></current-time>
@@ -16,6 +17,11 @@
                 :tracks="annotationTracks"
                 :scroll-top="scrollTop"
                 ></track-headers>
+            <current-time
+                v-if="fullHeight"
+                :current-time="currentTime"
+                :seeking="seeking"
+                ></current-time>
         </div>
         <scroll-strip
             ref="scrollStrip"
@@ -27,7 +33,6 @@
             :videoUuid="videoUuid"
             :has-error="hasError"
             :collapsed="collapsed"
-            :full-height="fullHeight"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -41,6 +46,7 @@
 import CurrentTime from './currentTime.vue';
 import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
+import { computed } from 'vue'
 
 export default {
     emits: [
@@ -116,6 +122,11 @@ export default {
             duration: 0,
             scrollTop: 0,
             hoverTime: 0,
+        };
+    },
+    provide() {
+        return {
+            fullHeight: computed(() => this.fullHeight),
         };
     },
     computed: {

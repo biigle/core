@@ -1,6 +1,6 @@
 .thumbnail-preview {
-    position: fixed;
-    top: 0;
+    position: absolute;
+    top: -10px;
     left: 0;
     z-index: 1;
     pointer-events: none;
@@ -17,3 +17,6 @@
     }
 }
 
+.video-timeline.full-height .thumbnail-preview {
+    top: calc(100% - 44px);
+}
