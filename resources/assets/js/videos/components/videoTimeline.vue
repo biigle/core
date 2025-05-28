@@ -62,8 +62,14 @@ export default {
             },
         },
         video: {
-            type: HTMLVideoElement,
             required: true,
+            validator(value) {
+                // In case of a popup window, the video may be a HTMLVideoElement of a
+                // different context which would fail a simple "type: HTMLVideoElement"
+                // check. We do the type check here and have a fallback based on the
+                // constructor name for the popup.
+                return value instanceof HTMLVideoElement || value.constructor.name === 'HTMLVideoElement';
+            },
         },
         seeking: {
             type: Boolean,

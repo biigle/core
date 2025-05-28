@@ -14,7 +14,6 @@ const proxy = {
     },
     data() {
         return {
-            proxy: null,
             isVideoPopout: true,
             screenHeightOffset: 0,
             timelineHeightOffset: 0,

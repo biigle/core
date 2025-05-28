@@ -453,8 +453,14 @@ export default {
             default: true,
         },
         video: {
-            type: HTMLVideoElement,
             required: true,
+            validator(value) {
+                // In case of a popup window, the video may be a HTMLVideoElement of a
+                // different context which would fail a simple "type: HTMLVideoElement"
+                // check. We do the type check here and have a fallback based on the
+                // constructor name for the popup.
+                return value instanceof HTMLVideoElement || value.constructor.name === 'HTMLVideoElement';
+            },
         },
         heightOffset: {
             type: Number,
@@ -742,8 +748,6 @@ export default {
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-
-        console.log(this.video instanceof HTMLVideoElement);
     },
     mounted() {
         this.map.setTarget(this.$el);
