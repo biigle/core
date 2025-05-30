@@ -2,17 +2,4 @@
     position: relative;
     border-bottom: 1px solid $legend-border-color;
     padding: 5px 0;
-
-    .annotation-lane {
-        position: relative;
-        height: 20px;
-
-        &:not(:last-child) {
-            margin-bottom: 5px;
-        }
-    }
-
-    .annotation-clip {
-        height: 100%;
-    }
 }
