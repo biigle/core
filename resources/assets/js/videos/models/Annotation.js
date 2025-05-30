@@ -1,4 +1,3 @@
-<script>
 import Messages from '@/core/messages/store.js';
 import VideoAnnotationApi from '../api/videoAnnotations.js';
 import {getRoundToPrecision} from '../utils.js';
@@ -398,5 +397,4 @@ export default class Annotation {
     delete() {
         return VideoAnnotationApi.delete({id: this.id});
     }
-}
-</script>
+};

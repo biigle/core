@@ -1,8 +1,8 @@
 <template>
     <div class="thumbnail-preview" ref="thumbnailPreview" :style="thumbnailStyle">
-        <canvas v-if="showThumbnails" class="thumbnail-canvas" ref="thumbnailCanvas" v-show="hasAnySprite">
+        <canvas v-if="showThumbnails" class="thumbnail-canvas thumbnail-canvas--sprite" ref="thumbnailCanvas" v-show="hasAnySprite">
         </canvas>
-        <canvas class="thumbnail-canvas" ref="hovertimeCanvas">
+        <canvas class="thumbnail-canvas thumbnail-canvas--time" ref="hovertimeCanvas">
         </canvas>
     </div>
 </template>
@@ -63,14 +63,13 @@ export default {
             thumbnailsPerSprite: 25,
             thumbnailInterval: 2.5,
             estimatedThumbnails: 0,
-            fontSize: 14.5,
             hovertimeCanvas: null,
-            hoverTimeBarHeightDefault: 20,
-            hoverTimeBarWidthDefault: 120,
+            hoverTimeBarHeight: 20,
             hoverTimeBarWidth: 120,
             preloadedSprites: {},
             lastSpriteIdx: 0,
             hasAnySprite: false,
+            dpr: window.devicePixelRatio,
         };
     },
     computed: {
@@ -95,12 +94,6 @@ export default {
         },
         hoverTimeText() {
             return videoTime(this.hoverTime);
-        },
-        hoverTimeStyle() {
-            return { 'font': `bold ${this.fontSize}px Sans-Serif`, 'color': '#cccccc' };
-        },
-        fontSizeInPx() {
-            return this.fontSize * 0.75;
         },
     },
     methods: {
@@ -240,19 +233,10 @@ export default {
             let fileUuid = fileUuids[this.videoId];
             this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(fileUuid) + '/').replace('.jpg', '');
         },
-        viewHoverTimeBar() {            
-            // Update hover time canvas width if thumbnail canvas width is larger
-            this.hoverTimeBarWidth = this.showThumbnails && this.canvasWidth > this.hoverTimeBarWidthDefault ? this.canvasWidth : this.hoverTimeBarWidthDefault;
-            this.hovertimeCanvas.width = this.hoverTimeBarWidth;
-
-            // draw the hover time bar
+        viewHoverTimeBar() {
             let ctx = this.hovertimeCanvas.getContext('2d');
-            ctx.clearRect(0, 0, this.hoverTimeBarWidthDefault, this.hoverTimeBarHeightDefault);
-            ctx.font = this.hoverTimeStyle['font'];
-            ctx.fillStyle = this.hoverTimeStyle['color']
-            ctx.textAlign = 'center';
-            let ytext = this.hoverTimeBarHeightDefault - (this.hoverTimeBarHeightDefault - this.fontSizeInPx) / 2
-            ctx.fillText(this.hoverTimeText, this.hoverTimeBarWidth / 2, ytext);
+            ctx.clearRect(0, 0, this.hovertimeCanvas.width, this.hovertimeCanvas.height);
+            ctx.fillText(this.hoverTimeText, this.hovertimeCanvas.width / this.dpr / 2, this.hovertimeCanvas.height / this.dpr / 2 + 1);
         },
         initDimensions() {
             let nbrCols = this.spriteGridInfo[0];
@@ -263,15 +247,16 @@ export default {
             this.canvasHeight = Math.ceil(this.thumbnailHeight / 2);
 
             // If thumbnail is too narrow, enlarge it to 120px so that the hover time fits
-            if (this.canvasWidth < this.hoverTimeBarWidthDefault) {
+            if (this.canvasWidth < this.hoverTimeBarWidth) {
                 let ratio = this.canvasHeight / this.canvasWidth;
-                this.canvasWidth = this.hoverTimeBarWidthDefault
+                this.canvasWidth = this.hoverTimeBarWidth
                 this.canvasHeight = this.canvasWidth * ratio;
             }
 
-            this.hovertimeCanvas.height = this.hoverTimeBarHeightDefault;
-            this.thumbnailCanvas.width = this.canvasWidth;
-            this.thumbnailCanvas.height = this.canvasHeight;
+            this.thumbnailCanvas.width = this.canvasWidth * this.dpr;
+            this.thumbnailCanvas.height = this.canvasHeight * this.dpr;
+            this.thumbnailCanvas.style.width = `${this.canvasWidth}px`;
+            this.thumbnailCanvas.style.height = `${this.canvasHeight}px`;
         },
         finishedLoading(sprite) {
             if (!sprite) {
@@ -334,8 +319,15 @@ export default {
         this.thumbnailPreview = this.$refs.thumbnailPreview;
         this.thumbnailCanvas = this.showThumbnails ? this.$refs.thumbnailCanvas : null;
         this.hovertimeCanvas = this.$refs.hovertimeCanvas;
-        this.hovertimeCanvas.width = this.hoverTimeBarWidthDefault;
-        this.hovertimeCanvas.height = this.hoverTimeBarHeightDefault;
+        this.hovertimeCanvas.width = this.hoverTimeBarWidth * this.dpr;
+        this.hovertimeCanvas.height = this.hoverTimeBarHeight * this.dpr;
+
+        const ctx = this.hovertimeCanvas.getContext('2d');
+        ctx.scale(this.dpr, this.dpr);
+        ctx.font = window.getComputedStyle(this.$el, null).getPropertyValue('font');
+        ctx.fillStyle = window.getComputedStyle(this.$el, null).getPropertyValue('color');
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
 
         this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
 
