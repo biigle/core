@@ -1,7 +1,7 @@
 .scroll-strip {
     position: relative;
     overflow: hidden;
-    will-change: auto;
+    will-change: contents;
 
     .video-progress {
         height: 34px;

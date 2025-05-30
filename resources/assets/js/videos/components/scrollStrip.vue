@@ -208,7 +208,7 @@ export default {
     },
     methods: {
         updateInitialElementWidth() {
-            this.initialElementWidth = this.$refs.strip.clientWidth;
+            this.initialElementWidth = this.$refs?.strip.clientWidth || 0;
         },
         emitSeek(time) {
             this.$emit('seek', time);
