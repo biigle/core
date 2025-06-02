@@ -10,6 +10,7 @@ use FileCache;
 use FilesystemIterator;
 use GuzzleHttp\Promise\Each;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Filesystem\AwsS3V3Adapter;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
@@ -65,10 +66,10 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
-            $tilesDisk = config('image.tiles.disk');
 
-            if (config("filesystems.disks.{$tilesDisk}.driver") === 's3') {
-                $this->uploadToS3Storage();
+            $disk = Storage::disk(config('image.tiles.disk'));
+            if ($disk instanceof AwsS3V3Adapter) {
+                $this->uploadToS3Storage($disk);
             } else {
                 $this->uploadToStorage();
             }
@@ -117,14 +118,14 @@ class TileSingleImage extends Job implements ShouldQueue
     /**
      * Upload the tiles from temporary local storage to the s3 tiles storage disk.
      *
+     * @param AwsS3V3Adapter $disk S3 filesystem adapter
      * @param int $retry Number of retries for failed uploads.
      * @throws Exception
      *
      */
-    public function uploadToS3Storage($retry = 3)
+    public function uploadToS3Storage($disk, $retry = 3)
     {
         $iterator = $this->getIterator($this->tempPath);
-        $disk = Storage::disk(config('image.tiles.disk'));
 
         $client = $disk->getClient();
         $bucket = $disk->getConfig()['bucket'];

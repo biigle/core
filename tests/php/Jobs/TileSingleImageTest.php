@@ -60,7 +60,6 @@ class TileSingleImageTest extends TestCase
     public function testUploadToS3Storage()
     {
         config(['image.tiles.nbr_concurrent_requests' => 2]);
-        config(['filesystems.disks.tiles' => Storage::disk('s3')->getConfig()]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -69,7 +68,7 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $disk = Storage::disk(config('image.tiles.disk'));
+        $disk = Storage::disk('s3');
         $client = $disk->getClient();
         $client->getHandlerList()->setHandler($mock);
 
@@ -81,7 +80,7 @@ class TileSingleImageTest extends TestCase
         $job->files = $tiles;
         $job->useParentGetIterator = false;
 
-        $job->uploadToS3Storage();
+        $job->uploadToS3Storage($disk);
 
         $this->assertEquals($tiles, $job->uploadedFiles);
     }
@@ -89,7 +88,6 @@ class TileSingleImageTest extends TestCase
     public function testUploadToS3StorageThrowException()
     {
         config(['image.tiles.nbr_concurrent_requests' => 2]);
-        config(['filesystems.disks.tiles' => Storage::disk('s3')->getConfig()]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -101,7 +99,7 @@ class TileSingleImageTest extends TestCase
             ]),
         );
 
-        $disk = Storage::disk(config('image.tiles.disk'));
+        $disk = Storage::disk('s3');
         $client = $disk->getClient();
         $client->getHandlerList()->setHandler($mock);
 
@@ -117,7 +115,7 @@ class TileSingleImageTest extends TestCase
 
         $fails = false;
         try {
-            $job->uploadToS3Storage();
+            $job->uploadToS3Storage($disk);
         } catch (Exception $e) {
             $fails = true;
         }
@@ -128,7 +126,6 @@ class TileSingleImageTest extends TestCase
     public function testUploadToS3StorageRetryUpload()
     {
         config(['image.tiles.nbr_concurrent_requests' => 2]);
-        config(['filesystems.disks.tiles' => Storage::disk('s3')->getConfig()]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -140,7 +137,7 @@ class TileSingleImageTest extends TestCase
             ]),
         );
 
-        $disk = Storage::disk(config('image.tiles.disk'));
+        $disk = Storage::disk('s3');
         $client = $disk->getClient();
         $client->getHandlerList()->setHandler($mock);
 
@@ -152,7 +149,7 @@ class TileSingleImageTest extends TestCase
         $job->files = $tiles;
         $job->useParentGetIterator = false;
 
-        $job->uploadToS3Storage();
+        $job->uploadToS3Storage($disk);
 
         $this->assertEquals($tiles, $job->uploadedFiles);
     }
@@ -210,8 +207,8 @@ class TileSingleImageStub extends TileSingleImage
         parent::sendRequests($files, $onFullfill2, $onReject);
     }
 
-    public function uploadToS3Storage($retry = 3)
+    public function uploadToS3Storage($disk, $retry = 3)
     {
-        parent::uploadToS3Storage($this->retry);
+        parent::uploadToS3Storage($disk, $this->retry);
     }
 }
