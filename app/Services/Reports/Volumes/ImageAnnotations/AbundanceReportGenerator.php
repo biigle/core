@@ -210,14 +210,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             $csv->putCsv($row);
         }
 
-        if ($emptyImagesQuery->exists()) {
-            $labelsCount = $labels->count();
-            $zeroEntries = array_fill(0, $labelsCount, 0);
-            foreach ($emptyImagesQuery->orderBy('filename')->lazy() as $image) {
-                $row = [$image->filename];
-                $row = array_merge($row, $zeroEntries);
-                $csv->putCsv($row);
-            }
+        $labelsCount = $labels->count();
+        $zeroEntries = array_fill(0, $labelsCount, 0);
+        foreach ($emptyImagesQuery->orderBy('filename')->lazy() as $image) {
+            $row = [$image->filename];
+            $row = array_merge($row, $zeroEntries);
+            $csv->putCsv($row);
         }
 
         $csv->close();
