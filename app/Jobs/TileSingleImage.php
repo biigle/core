@@ -65,7 +65,9 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
-            if (config('filesystems.disks.tiles.driver') === 's3') {
+            $tilesDisk = config('image.tiles.disk');
+
+            if (config("filesystems.disks.{$tilesDisk}.driver") === 's3') {
                 $this->uploadToS3Storage();
             } else {
                 $this->uploadToStorage();
