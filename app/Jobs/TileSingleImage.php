@@ -124,8 +124,8 @@ class TileSingleImage extends Job implements ShouldQueue
         $iterator = $this->getIterator($this->tempPath);
         $disk = Storage::disk(config('image.tiles.disk'));
 
-        $client = $this->getClient($disk);
-        $bucket = $this->getBucket($disk);
+        $client = $disk->getClient();
+        $bucket = $disk->getConfig()['bucket'];
 
         $uploads = function ($files) use ($client, $bucket) {
             $tmpLength = strlen(config('image.tiles.tmp_dir')) + 1;
@@ -186,30 +186,6 @@ class TileSingleImage extends Job implements ShouldQueue
             $onFullfill,
             $onReject
         )->wait();
-    }
-
-    /**
-     * Get the S3 client.
-     *
-     * @param $disk
-     *
-     * @return \Aws\S3\S3Client
-     */
-    protected function getClient($disk)
-    {
-        return $disk->getClient();
-    }
-
-    /**
-     * Get the S3 bucket name.
-     *
-     * @param $disk
-     *
-     * @return string
-     */
-    protected function getBucket($disk)
-    {
-        return config('filesystems.disks.tiles.bucket');
     }
 
     /**
