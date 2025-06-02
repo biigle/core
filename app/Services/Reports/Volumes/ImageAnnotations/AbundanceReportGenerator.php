@@ -40,11 +40,12 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $query = $this->query();
         // Separate the annotated images from the empty ones, since only the annotated images could require additional processing.
         $annotatedImageRows = $query->clone()->whereNotNull('label_id')->get();
+        // Get query for images that have no annotations
+        $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
+
         if ($this->shouldSeparateLabelTrees()) {
             $annotatedImageRows = $annotatedImageRows->groupBy('label_tree_id');
             $allLabels = null;
-            // Get query for images that have no annotations
-            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
 
             if ($this->shouldUseAllLabels()) {
                 $allLabels = $this->getVolumeLabels();
@@ -87,8 +88,6 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQuery);
             }
         } else {
-            // Get query for images that have no annotations
-            $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
             if ($this->shouldUseAllLabels()) {
                 $labels = $this->getVolumeLabels();
             } else {
