@@ -150,8 +150,9 @@ class TileSingleImage extends Job implements ShouldQueue
         $onFullfill = function ($res, $index) use ($filenames) {
             $filenames->next();
         };
+
         $onReject = function ($reason, $index) use (&$failedUploads, $filenames) {
-            array_push($failedUploads, $filenames->current());
+            $failedUploads[] = $filenames->current();
         };
 
         $files = $uploads($iterator);
