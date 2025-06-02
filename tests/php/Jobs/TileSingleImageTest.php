@@ -7,7 +7,6 @@ use Aws\Command;
 use Aws\MockHandler;
 use Aws\Result;
 use Aws\S3\Exception\S3Exception;
-use Aws\S3\S3Client;
 use Biigle\Jobs\TileSingleImage;
 use Biigle\Tests\ImageTest;
 use Exception;
@@ -61,6 +60,7 @@ class TileSingleImageTest extends TestCase
     public function testUploadToS3Storage()
     {
         config(['image.tiles.nbr_concurrent_requests' => 2]);
+        config(['filesystems.disks.tiles' => Storage::disk('s3')->getConfig()]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -69,21 +69,15 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $client = new S3Client([
-            'region' => 'test',
-            'handler' => $mock,
-            'credentials' => [
-                'key' => 'fake-key',
-                'secret' => 'fake-secret',
-            ],
-        ]);
+        $disk = Storage::disk(config('image.tiles.disk'));
+        $client = $disk->getClient();
+        $client->getHandlerList()->setHandler($mock);
 
         // Treat images as tiles for Biigle\Image
         $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
 
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
-        $job->client = $client;
         $job->files = $tiles;
         $job->useParentGetIterator = false;
 
@@ -95,6 +89,7 @@ class TileSingleImageTest extends TestCase
     public function testUploadToS3StorageThrowException()
     {
         config(['image.tiles.nbr_concurrent_requests' => 2]);
+        config(['filesystems.disks.tiles' => Storage::disk('s3')->getConfig()]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -102,25 +97,20 @@ class TileSingleImageTest extends TestCase
             new Result(),
             new S3Exception("test", new Command("mockCommand"), [
                 'code' => 'mockCode',
-                'response' => new Response(400)
+                'response' => new Response(500)
             ]),
         );
 
-        $client = new S3Client([
-            'region' => 'test',
-            'handler' => $mock,
-            'credentials' => [
-                'key' => 'fake-key',
-                'secret' => 'fake-secret',
-            ],
-        ]);
+        $disk = Storage::disk(config('image.tiles.disk'));
+        $client = $disk->getClient();
+        $client->getHandlerList()->setHandler($mock);
+
 
         // Treat images as tiles for Biigle\Image
         $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
 
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
-        $job->client = $client;
         $job->files = $tiles;
         $job->retry = 1;
         $job->useParentGetIterator = false;
@@ -138,6 +128,7 @@ class TileSingleImageTest extends TestCase
     public function testUploadToS3StorageRetryUpload()
     {
         config(['image.tiles.nbr_concurrent_requests' => 2]);
+        config(['filesystems.disks.tiles' => Storage::disk('s3')->getConfig()]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -145,28 +136,19 @@ class TileSingleImageTest extends TestCase
             new Result(),
             new S3Exception("test", new Command("mockCommand"), [
                 'code' => 'mockCode',
-                'response' => new Response(400)
+                'response' => new Response(500)
             ]),
         );
-        $mock->append(
-            new Result(),
-        );
 
-        $client = new S3Client([
-            'region' => 'test',
-            'handler' => $mock,
-            'credentials' => [
-                'key' => 'fake-key',
-                'secret' => 'fake-secret',
-            ],
-        ]);
+        $disk = Storage::disk(config('image.tiles.disk'));
+        $client = $disk->getClient();
+        $client->getHandlerList()->setHandler($mock);
 
         // Treat images as tiles for Biigle\Image
         $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
 
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
-        $job->client = $client;
         $job->files = $tiles;
         $job->useParentGetIterator = false;
 
@@ -187,7 +169,6 @@ class TileSingleImageTest extends TestCase
 class TileSingleImageStub extends TileSingleImage
 {
     public $mock;
-    public $client;
 
     public $useParentGetIterator = true;
 
@@ -200,16 +181,6 @@ class TileSingleImageStub extends TileSingleImage
     protected function getVipsImage($path)
     {
         return $this->mock;
-    }
-
-    protected function getClient($disk)
-    {
-        return $this->client;
-    }
-
-    protected function getBucket($disk)
-    {
-        return "test-bucket";
     }
 
     protected function getIterator($path)
