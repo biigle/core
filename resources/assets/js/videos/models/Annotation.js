@@ -397,4 +397,4 @@ export default class Annotation {
     delete() {
         return VideoAnnotationApi.delete({id: this.id});
     }
-};
+}
