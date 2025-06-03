@@ -34,6 +34,20 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     use SerializesModels, InteractsWithQueue;
 
     /**
+     * The maximum number of times the job may be redispatched.
+     *
+     * A job is redispatched when another job is currently downloading the same file.
+     * Usually a job should redispatch until the download is finished but sometimes
+     * things go wrong and jobs are redispatched indefinitely. This is a failsafe for
+     * such a scenario.
+     *
+     * The value is 200 because it slightly exceds the default 7200 s timeout of jobs (considering the 60 s redispatch delay).
+     *
+     * @var int
+     */
+    public $maxRedispatchTries = 150;
+
+    /**
      * The number of times the job may be attempted.
      *
      * @var int
@@ -59,6 +73,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * @param bool|boolean $skipSvgs Disable generation of annotation SVGs.
      * @param ?string $targetDisk The storage disk to store annotation patches to (
      * default is the configured `largo.patch_storage_disk`).
+     * @param int $redispatchTries Counter to track the number of attempted redispatches.
      */
     public function __construct(
         public VolumeFile $file,
@@ -66,7 +81,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         public bool $skipPatches = false,
         public bool $skipFeatureVectors = false,
         public bool $skipSvgs = false,
-        public ?string $targetDisk = null
+        public ?string $targetDisk = null,
+        public int $redispatchTries = 0,
     ) {
         $this->targetDisk = $targetDisk ?: config('largo.patch_storage_disk');
     }
@@ -106,13 +122,17 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                 $this->createSvgs();
             }
         } catch (FileLockedException $e) {
-            // Retry this job without increasing the attempts if the file is currently
-            // written by another worker. This worker can process other jobs in the
-            // meantime.
-            // See: https://github.com/laravel/ideas/issues/735
             $class = get_class($this->file);
-            Log::debug("Redispatching annotated {$class} {$this->file->id}.", ['exception' => $e]);
-            $this->redispatch();
+            if ($this->redispatchTries < $this->maxRedispatchTries) {
+                // Retry this job without increasing the attempts if the file is currently
+                // written by another worker. This worker can process other jobs in the
+                // meantime.
+                // See: https://github.com/laravel/ideas/issues/735
+                Log::debug("Redispatching annotated {$class} {$this->file->id}.", ['exception' => $e]);
+                $this->redispatch();
+            } else {
+                throw new ProcessAnnotatedFileException("Giving up redispatching to process annotated {$class} {$this->file->id}.", previous: $e);
+            }
         } catch (Exception $e) {
             $class = get_class($this->file);
             if ($this->shouldRetryAfterException($e)) {
@@ -523,7 +543,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             $this->skipPatches,
             $this->skipFeatureVectors,
             $this->skipSvgs,
-            $this->targetDisk
+            $this->targetDisk,
+            $this->redispatchTries + 1
         )->onConnection($this->connection)->onQueue($this->queue)->delay(60);
     }
 }
