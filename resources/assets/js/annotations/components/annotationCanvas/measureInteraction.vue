@@ -30,9 +30,6 @@ export default {
         isMeasuring() {
             return this.interactionMode === 'measure';
         },
-        isLabelbotOn() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
-        },
     },
     methods: {
         toggleMeasuring() {

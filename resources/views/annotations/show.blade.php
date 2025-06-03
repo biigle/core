@@ -21,7 +21,7 @@
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
     biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});    
     biigle.$declare('labelbot.m', {{ config('labelbot.M') }});
-    biigle.$declare('labelbot.onnxUrl', '{{cachebust_asset(config('labelbot.onnx_url'))}}');
+    biigle.$declare('labelbot.onnxUrl', '{{config('labelbot.onnx_url')}}');
 
 </script>
 @mixin('annotationsScripts')

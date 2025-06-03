@@ -49,9 +49,6 @@ export default {
         isDrawingEllipse() {
             return this.interactionMode === 'drawEllipse';
         },
-        isLabelbotOn() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
-        },
     },
     methods: {
         draw(name) {

@@ -31,9 +31,6 @@ export default {
         isNotAPolygonTool() {
             return !(this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill);
         },
-        isLabelbotOn() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
-        },
     },
     methods: {
         togglePolygonBrush() {

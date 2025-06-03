@@ -79,24 +79,15 @@ export default {
         loadLabelbotModel(modelUrl) {
             // Load the onnx model with webgpu first 
             InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] })
-                .then((model) => {
-                    this.labelbotModel = model;
-                    this.warmUpLabelbotModel();
-                    this.labelbotState = LABELBOT_STATES.READY;
-                })
                 // If the client does not have one then fallback to wasm
-                .catch(() => {
-                    InferenceSession.create(modelUrl, { executionProviders: ['wasm'] })
-                        .then((model) => {
-                            this.labelbotModel = model;
-                            this.warmUpLabelbotModel();
-                            this.labelbotState = LABELBOT_STATES.READY;
-                        })
-                        .catch((error) => {
-                            this.labelbotState = LABELBOT_STATES.OFF;
-                            handleErrorResponse(error);
-                        })
-                })
+                .catch(() => InferenceSession.create(modelUrl, { executionProviders: ['wasm'] }))
+                .then((model) => this.labelbotModel = model)
+                .then(this.warmUpLabelbotModel)
+                .then(() => this.labelbotState = LABELBOT_STATES.READY)
+                .catch((error) => { 
+                    this.labelbotState = LABELBOT_STATES.OFF;
+                    handleErrorResponse(error) 
+                });
         },
         getBoundingBox(points) {
             let minX = this.image.width;

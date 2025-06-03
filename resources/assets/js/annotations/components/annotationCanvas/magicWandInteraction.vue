@@ -20,9 +20,6 @@ export default {
         isMagicWanding() {
             return this.interactionMode === 'magicWand' && !this.crossOrigin;
         },
-        isLabelbotOn() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
-        },
     },
     methods: {
         toggleMagicWand() {

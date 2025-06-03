@@ -44,5 +44,5 @@ return [
     |
     | URL of the hosted ONNX model file for LabelBOT.
     */
-    'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', 'dinov2_vits14.onnx'),
+    'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', '/assets/dinov2_vits14.onnx'),
 ];
