@@ -17,7 +17,7 @@ const LANE_MARGIN_BOTTOM = 5;
             ></annotation-clip>
     </div>*/
 import ZrenderAnnotation from '../models/ZrenderAnnotation.js';
-import {HEIGHT as ANNOTATION_HEIGHT} from '../models/ZrenderAnnotation.js';
+import {KEYFRAME_HEIGHT} from '../models/ZrenderAnnotation.js';
 import {init} from 'zrender';
 
 export default {
@@ -48,7 +48,7 @@ export default {
             return this.lanes.length;
         },
         trackHeight() {
-            return this.lanes.length * (ANNOTATION_HEIGHT + LANE_MARGIN_BOTTOM) - LANE_MARGIN_BOTTOM;
+            return this.lanes.length * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM) - LANE_MARGIN_BOTTOM;
         },
     },
     methods: {
@@ -62,7 +62,7 @@ export default {
             this.lanes.forEach(this.drawLane);
         },
         drawLane(lane, i) {
-            const yOffset = i * (ANNOTATION_HEIGHT + LANE_MARGIN_BOTTOM);
+            const yOffset = i * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM);
             lane.forEach((a) => this.drawAnnotation(a, yOffset));
         },
         drawAnnotation(annotation, yOffset) {
