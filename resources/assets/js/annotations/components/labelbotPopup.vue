@@ -1,6 +1,6 @@
 <template>
   <ul class="labelbot-labels">
-    <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index" @mouseover="handleLabelbotFocus" @click="selectLabelbotLabel(label)">
+    <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index" @mouseover="handleLabelbotFocus(index)" @click="selectLabelbotLabel(label)" tabindex="0" @keydown.tab="labelTabIn">
       <div v-if="index === 0" class="labelbot-labels-label__nameProgress">
         <!-- Progress bar -->
           <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelbotPopup"></div>
@@ -16,7 +16,7 @@
       </div>
     </li>
     <li class="labelbot-labels-label">
-      <typeahead :key="popupKey" ref="popupTypeahead" :style="{ width: '100%' }" :items="labels" more-info="tree.versionedName" @focus="handleLabelbotFocus" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
+      <typeahead :key="popupKey" ref="popupTypeahead" :style="{ width: '100%' }" :items="labels" @focus="handleTypeaheadFocus" more-info="tree.versionedName" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
 </template>
@@ -92,6 +92,11 @@ export default {
         setTimeout(() => this.progressBarWidth = 100, 10);
       }
     },
+    highlightedLabel() {
+      if (this.progressBarWidth > 0) {
+        this.progressBarWidth = -1;
+      }
+    },
   },
   methods: {
     selectLabelbotLabel(label) {
@@ -99,63 +104,70 @@ export default {
       if (this.selectedLabel.id !== label.id) {
         this.$emit('update-labelbot-label', {"label": label, "popupKey" : this.popupKey});
       }
+
       this.closeLabelbotPopup();
     },
     closeLabelbotPopup() {
       this.$refs.popupTypeahead?.clear();
       this.highlightedLabel = -1;
+  
       this.$emit('delete-labelbot-labels', this.popupKey);
     },
-    handleLabelbotFocus() {
-      this.progressBarWidth = -1;
-      this.$emit('change-labelbot-focused-popup', this.popupKey);
+    handleTypeaheadFocus() {
+      this.highlightedLabel = this.labelbotLabels.length;
+
+      if (!this.isFocused) {
+        this.$emit('change-labelbot-focused-popup', this.popupKey);
+      }
+    },
+    handleLabelbotFocus(hoveredLabel) {
+      this.highlightedLabel = hoveredLabel;
+
+      if (!this.isFocused) {
+        this.$emit('change-labelbot-focused-popup', this.popupKey);
+      }
     },
     labelClose() {
       this.$nextTick(() => {
-        if (this.isFocused) {
-          this.highlightedLabel = -1;
-          this.$emit('delete-labelbot-labels', this.popupKey);
-        }
+        if (!this.isFocused) return;
+
+        this.highlightedLabel = -1;
+        this.$emit('delete-labelbot-labels', this.popupKey);
       });
     },
     labelUp() {
       this.$nextTick(() => {
-        if (this.highlightedLabel > 0 && this.isFocused) {
-          this.progressBarWidth = -1;
-          this.highlightedLabel--;
-        }
-      })
+        if (!this.isFocused) return;
+
+        this.highlightedLabel = this.highlightedLabel > 0 ? this.highlightedLabel - 1 : 0;
+      });
     },
     labelDown() {
       this.$nextTick(() => {
-        if (this.highlightedLabel < this.labelbotLabels.length && this.isFocused) {
-          this.progressBarWidth = -1;
-          this.highlightedLabel++;
-        }
+        if (!this.isFocused) return;
 
-        if (this.highlightedLabel === this.labelbotLabels.length && this.isFocused) {
-          this.$refs.popupTypeahead.$refs.input.focus();
-        }
+        this.highlightedLabel = this.highlightedLabel < this.labelbotLabels.length - 1 ? this.highlightedLabel + 1 : this.labelbotLabels.length - 1;
       });
     },
     labelEnter() {
       this.$nextTick(() => {
-        if (this.highlightedLabel < this.labelbotLabels.length && this.isFocused) {
-          this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel < 0 ? 0 : this.highlightedLabel]);
-        }
+        if (!this.isFocused) return;
+        // At the start the highlighted label is -1 so we need to check it before selecting the label.
+        this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel < 0 ? 0 : this.highlightedLabel]);
       });
     },
     deleteLabelAnnotation() {
       this.$nextTick(() => {
-        if (this.isFocused) {
-          this.$refs.popupTypeahead?.clear();
-          this.highlightedLabel = -1;
-          this.$emit('delete-labelbot-labels-annotation', this.popupKey);
-        }
+        if (!this.isFocused) return;
+
+        this.$refs.popupTypeahead?.clear();
+        this.highlightedLabel = -1;
+
+        this.$emit('delete-labelbot-labels-annotation', this.popupKey);
       });
-    }
+    },
   },
-  created() {
+  created() {   
     this.trees = biigle.$require('annotations.labelTrees');
 
     Keyboard.on('Escape', this.labelClose, 0, this.listenerSet);
