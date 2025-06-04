@@ -59,7 +59,7 @@ class TileSingleImageTest extends TestCase
 
     public function testUploadToS3Storage()
     {
-        config(['image.tiles.nbr_concurrent_requests' => 2]);
+        config(['image.tiles.concurrent_requests' => 2]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -87,7 +87,7 @@ class TileSingleImageTest extends TestCase
 
     public function testUploadToS3StorageThrowException()
     {
-        config(['image.tiles.nbr_concurrent_requests' => 2]);
+        config(['image.tiles.concurrent_requests' => 2]);
 
         $mock = new MockHandler();
         $mock->append(
@@ -128,7 +128,7 @@ class TileSingleImageTest extends TestCase
 
     public function testUploadToS3StorageRetryUpload()
     {
-        config(['image.tiles.nbr_concurrent_requests' => 2]);
+        config(['image.tiles.concurrent_requests' => 2]);
 
         $mock = new MockHandler();
         $mock->append(

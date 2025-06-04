@@ -31,9 +31,9 @@ return [
         'queue' => env('IMAGE_TILES_QUEUE', 'default'),
 
         /*
-         | Number of concurrent requests that should be sent when using a s3 disk
+         | Number of concurrent requests that should be sent when using a S3 storage
          */
-        'nbr_concurrent_requests' => env('IMAGE_NBR_CON_REQUESTS', 10),
+        'concurrent_requests' => env('IMAGE_CON_REQUESTS', 10),
     ],
 
 ];

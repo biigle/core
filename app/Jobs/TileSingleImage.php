@@ -158,7 +158,7 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     protected function sendRequests($files, $onFullfill = null, $onReject = null)
     {
-        $concurrency = config('image.tiles.nbr_concurrent_requests');
+        $concurrency = config('image.tiles.concurrent_requests');
         $shouldThrow = false;
 
         // The promise will be rejected once the retry limit is reached
