@@ -54,7 +54,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name] || this.labelbotState === LABELBOT_STATES.BUSY) { // When LabelBOT is busy (max number of requests is reached) no drawing is allowed until it is ready again or turned off.
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && !this.isLabelbotOn && this.canAdd) {
+            } else if (!this.hasSelectedLabel && !this.labelbotIsActive && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;

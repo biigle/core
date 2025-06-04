@@ -37,7 +37,7 @@ export default {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
             } else if (this.canAdd) {
-                if ((!this.hasSelectedLabel && !this.isLabelbotOn)) {
+                if ((!this.hasSelectedLabel && !this.labelbotIsActive)) {
                     this.requireSelectedLabel();
                 } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
                     Messages.info("The maximum number of LabelBOT's requests is reached!")

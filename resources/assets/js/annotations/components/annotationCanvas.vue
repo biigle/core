@@ -262,7 +262,7 @@ export default {
                     return 'Next image';
             }
         },
-        isLabelbotOn() {
+        labelbotIsActive() {
             return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
         },
     },
@@ -557,7 +557,7 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (!this.hasSelectedLabel && !this.isLabelbotOn) {
+            if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
@@ -609,7 +609,7 @@ export default {
             }
         },
         createPointAnnotationAt(x, y) {
-            if (this.hasSelectedLabel || this.isLabelbotOn) {
+            if (this.hasSelectedLabel || this.labelbotIsActive) {
                 let feature = new Feature(new Point([x, y]));
                 // Simulate a feature created event so we can reuse the appropriate
                 // function.
@@ -909,9 +909,9 @@ export default {
             this.updateDeleteInteractions();
         },
         labelbotState(labelbotState) {
-            if (!this.isLabelbotOn && !this.selectedLabel || labelbotState === LABELBOT_STATES.BUSY) {
+            if (!this.labelbotIsActive && !this.selectedLabel || labelbotState === LABELBOT_STATES.BUSY) {
                 this.resetInteractionMode();
-            } else if (this.isLabelbotOn && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
+            } else if (this.labelbotIsActive && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
                 this.initLabelbotOverlays();
             }
         },

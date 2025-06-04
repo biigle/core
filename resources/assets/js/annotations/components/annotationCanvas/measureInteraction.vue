@@ -66,7 +66,7 @@ export default {
         },
         convertMeasurement() {
             if (this.isMeasuring && !this.cantConvertMeasureFeature) {
-                if (!this.hasSelectedLabel && !this.isLabelbotOn) {
+                if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                     this.requireSelectedLabel(false);
                 } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
                     Messages.info("The maximum number of LabelBOT's requests is reached!")
