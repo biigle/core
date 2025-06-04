@@ -92,14 +92,18 @@ class TileSingleImageTest extends TestCase
         $mock = new MockHandler();
         $mock->append(
             new Result(),
-            new Result(),
             new S3Exception("test", new Command("mockCommand"), [
                 'code' => 'mockCode',
                 'response' => new Response(500)
             ]),
+            new Result(),
         );
 
         $disk = Storage::disk('s3');
+        $config = $disk->getConfig();
+        $config['retries'] = 0;
+        config(['filesystems.disks.s3' => $config]);
+
         $client = $disk->getClient();
         $client->getHandlerList()->setHandler($mock);
 
@@ -110,7 +114,6 @@ class TileSingleImageTest extends TestCase
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
         $job->files = $tiles;
-        $job->retry = 1;
         $job->useParentGetIterator = false;
 
         $fails = false;
@@ -137,7 +140,16 @@ class TileSingleImageTest extends TestCase
             ]),
         );
 
+        // Retry
+        $mock->append(
+            new Result(),
+        );
+
         $disk = Storage::disk('s3');
+        $config = $disk->getConfig();
+        $config['retries'] = 1;
+        config(['filesystems.disks.s3' => $config]);
+
         $client = $disk->getClient();
         $client->getHandlerList()->setHandler($mock);
 
@@ -173,8 +185,6 @@ class TileSingleImageStub extends TileSingleImage
 
     public $uploadedFiles = [];
 
-    public $retry = 3;
-
     protected function getVipsImage($path)
     {
         return $this->mock;
@@ -194,21 +204,16 @@ class TileSingleImageStub extends TileSingleImage
         return new ArrayIterator($files);
     }
 
-    protected function sendRequests($files, $onFullfill, $onReject)
+    protected function sendRequests($files, $onFullfill = null, $onReject = null)
     {
-        $onFullfill2 = function ($res, $index) use ($onFullfill) {
-            $onFullfill($res, $index);
-            if ($res instanceof Result && $res->get('ObjectURL')) {
-                $this->uploadedFiles[$index] = basename($res->get('ObjectURL'));
-            } else {
-                $this->uploadedFiles[] = basename($res);
-            }
+        $onFullfill = function ($res, $index) {
+            $this->uploadedFiles[$index] = basename($res->get('ObjectURL'));
         };
-        parent::sendRequests($files, $onFullfill2, $onReject);
+        return parent::sendRequests($files, $onFullfill, $onReject);
     }
 
-    public function uploadToS3Storage($disk, $retry = 3)
+    public function uploadToS3Storage($disk)
     {
-        parent::uploadToS3Storage($disk, $this->retry);
+        parent::uploadToS3Storage($disk);
     }
 }
