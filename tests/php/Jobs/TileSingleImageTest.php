@@ -211,9 +211,4 @@ class TileSingleImageStub extends TileSingleImage
         };
         return parent::sendRequests($files, $onFullfill, $onReject);
     }
-
-    public function uploadToS3Storage($disk)
-    {
-        parent::uploadToS3Storage($disk);
-    }
 }
