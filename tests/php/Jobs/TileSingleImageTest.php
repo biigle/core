@@ -107,7 +107,6 @@ class TileSingleImageTest extends TestCase
         $client = $disk->getClient();
         $client->getHandlerList()->setHandler($mock);
 
-
         // Treat images as tiles for Biigle\Image
         $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
 
