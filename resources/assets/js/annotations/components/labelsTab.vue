@@ -3,7 +3,7 @@ import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import powerToggle from '../../core/components/powerToggle.vue';
-import { LABELBOT_DISABLED_TITLE, LABELBOT_STATES } from '../mixins/labelbot.vue';
+import { LABELBOT_STATES } from '../mixins/labelbot.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -25,7 +25,6 @@ export default {
         'open',
         'select',
         'update-labelbot-state',
-        'update-disabled-labelbot-state-title',
     ],
     components: {
         labelTrees: LabelTrees,
@@ -52,7 +51,7 @@ export default {
             type: String,
             required: true,
         },
-        disabledLabelbotStateTitle: {
+        labelbotToggleTitle: {
             type: String,
             default: '',
         },
@@ -61,23 +60,16 @@ export default {
         plugins() {
             return plugins;
         },
-        isLabelbotOn() {
+        labelbotIsActive() {
             return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
         },
-        isLabelbotDisabled() {
+        labelbotIsDisabled() {
             return this.labelbotState === LABELBOT_STATES.DISABLED;
         },
     },
     watch: {
-        labelTrees() {
-            const noLabels = this.labelTrees.every(tree => tree.labels.length === 0);
-            if (noLabels) {
-                this.$emit('update-labelbot-state', LABELBOT_STATES.DISABLED);
-                this.$emit('update-disabled-labelbot-state-title', LABELBOT_DISABLED_TITLE.NOLABELS);
-            }
-        },
-        labelbotState(labelbotState) {
-            if (labelbotState !== LABELBOT_STATES.OFF && labelbotState !== LABELBOT_STATES.DISABLED) {
+        labelbotState() {
+            if (this.labelbotIsActive) {
                 this.$refs.labelTrees.clear();
             }
         },
@@ -85,7 +77,7 @@ export default {
     methods: {
         handleSelectedLabel(label) {
             // Turn off LabelBOT if its on
-            if (this.isLabelbotOn) {
+            if (this.labelbotIsActive) {
                 this.handleLabelbotOff();
             }
 

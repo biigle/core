@@ -44,10 +44,6 @@ export default {
             type: String,
             default: '',
         },
-        titleDisabled: {
-            type: String,
-            default: '',
-        },
         type: {
             type: String,
             default: 'info',
@@ -65,11 +61,9 @@ export default {
         currentTitle() {
             if (this.active) {
                 return this.titleOn || this.title;
-            } else if (this.disabled) {
-                return this.titleDisabled || this.title;
-            } else {
-                return this.titleOff || this.title;
             }
+
+            return this.titleOff || this.title;
         },
         objectClass() {
             let obj = {active: this.active};

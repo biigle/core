@@ -12,9 +12,12 @@ export const LABELBOT_STATES = {
     OFF: 'off'
 };
 
-export const LABELBOT_DISABLED_TITLE =  {
+export const LABELBOT_TOGGLE_TITLE =  {
     NOLABELS: 'There must be at least one label in one of the label trees!',
-    CORSERROR: 'Image loaded without proper CORS configuration!'
+    CORSERROR: 'Image loaded without proper CORS configuration!',
+    NOANNOTATIONS: 'There are no annotations associated with any labels in this project!',
+    ACTIVATE: 'Activate LabelBOT',
+    DEACTIVATE: 'Deactivate LabelBOT'
 };
 
 /**
@@ -27,7 +30,7 @@ export default {
             labelbotModel: null,
             labelbotModelInputSize: 224, // DINOv2 image input size
             labelbotState: LABELBOT_STATES.OFF,
-            disabledLabelbotStateTitle: '',
+            labelbotToggleTitle: LABELBOT_TOGGLE_TITLE.ACTIVATE,
             labelbotOverlays: [],
             labelbotLineFeatureLength: 100, // in px
             focusedPopupKey: -1,
@@ -38,13 +41,13 @@ export default {
         };
     },
     computed: {
-        isLabelbotOn() {
+        labelbotIsActive() {
             return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
         },
     },
     methods: {
         async initLabelbotModel() {
-            this.labelbotState = LABELBOT_STATES.INITIALIZING;
+            this.updateLabelbotState(LABELBOT_STATES.INITIALIZING, LABELBOT_TOGGLE_TITLE.DEACTIVATE);
             const modelUrl = biigle.$require('labelbot.onnxUrl');
 
             try {
@@ -63,7 +66,7 @@ export default {
                 const blobUrl = URL.createObjectURL(modelBlob);
                 this.loadLabelbotModel(blobUrl);
             } catch (error) {
-                this.labelbotState = LABELBOT_STATES.OFF;
+                this.updateLabelbotState(LABELBOT_STATES.OFF, LABELBOT_TOGGLE_TITLE.ACTIVATE);
                 handleErrorResponse(error);
             }
         },
@@ -83,9 +86,9 @@ export default {
                 .catch(() => InferenceSession.create(modelUrl, { executionProviders: ['wasm'] }))
                 .then((model) => this.labelbotModel = model)
                 .then(this.warmUpLabelbotModel)
-                .then(() => this.labelbotState = LABELBOT_STATES.READY)
+                .then(() => this.updateLabelbotState(LABELBOT_STATES.READY, LABELBOT_TOGGLE_TITLE.DEACTIVATE))
                 .catch((error) => { 
-                    this.labelbotState = LABELBOT_STATES.OFF;
+                    this.updateLabelbotState(LABELBOT_STATES.OFF, LABELBOT_TOGGLE_TITLE.ACTIVATE);
                     handleErrorResponse(error) 
                 });
         },
@@ -230,16 +233,14 @@ export default {
                 }
             }
             // Update State
-            this.labelbotState = this.labelbotOverlays.every(overlay => !overlay.available) ? LABELBOT_STATES.BUSY : LABELBOT_STATES.READY;
+            this.updateLabelbotState(LABELBOT_STATES.READY, LABELBOT_TOGGLE_TITLE.DEACTIVATE);
         },
         updateLabelbotLabel(label) {
             this.handleSwapLabel(this.labelbotOverlays[label.popupKey].annotation, label.label)
         },
-        updateLabelbotState(labelbotState) {
-            this.labelbotState = this.labelbotOverlays.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY ? LABELBOT_STATES.BUSY : labelbotState;
-        },
-        updateDisabledLabelbotStateTitle(disabledTitle) {
-            this.disabledLabelbotStateTitle = disabledTitle;
+        updateLabelbotState(labelbotState, toggleTitle) {
+            this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY ? LABELBOT_STATES.BUSY : labelbotState;
+            this.labelbotToggleTitle = toggleTitle || '';
         },
         deleteLabelbotLabels(popupKey) {
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
@@ -263,9 +264,9 @@ export default {
     },
     watch: {
         labelbotState() {
-            if (this.isLabelbotOn && !this.labelbotModel) {
+            if (this.labelbotIsActive && !this.labelbotModel) {
                 this.initLabelbotModel();
-            } 
+            }
         }
     },
     created() {
@@ -281,6 +282,14 @@ export default {
             drawPopupLineFeature: null,
             removePopupLineFeature: null,
         }));
+
+        // Disable LabelBOT's toggle if label trees are empty or no annotations exist in the project
+        const emptyLabelTrees = biigle.$require('annotations.labelTrees')?.every(tree => tree.labels.length === 0);
+        if (emptyLabelTrees) {
+            this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOLABELS);
+        } else if (this.annotations.length === 0) {
+            this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOANNOTATIONS);
+        }
     },
 };
 </script>

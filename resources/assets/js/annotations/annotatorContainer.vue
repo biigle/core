@@ -9,7 +9,7 @@ import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.js';
 import Labelbot from './mixins/labelbot.vue';
-import { LABELBOT_STATES, LABELBOT_DISABLED_TITLE } from './mixins/labelbot.vue';
+import { LABELBOT_STATES, LABELBOT_TOGGLE_TITLE } from './mixins/labelbot.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
@@ -378,7 +378,7 @@ export default {
             if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
                 this.lastCreatedAnnotation = null;
             }
-            if (this.isLabelbotOn) {
+            if (this.labelbotIsActive) {
                 this.labelbotOverlays.map((overlay, idx) => {
                     if (overlay.annotation?.id === annotation.id && !overlay.available) {
                         this.deleteLabelbotLabels(idx)
@@ -427,7 +427,7 @@ export default {
             if (this.isEditor) {
                 let promise;
                 // LabelBOT
-                if (!this.selectedLabel && this.isLabelbotOn) {
+                if (!this.selectedLabel && this.labelbotIsActive) {
 
                     this.labelbotState = LABELBOT_STATES.COMPUTING;
 
@@ -448,7 +448,7 @@ export default {
                     .then(() => {
                         return AnnotationsStore.create(this.imageId, annotation)
                             .then((createdAnnotation) => {
-                                if (this.isLabelbotOn) {
+                                if (this.labelbotIsActive) {
                                     this.showLabelbotPopup(createdAnnotation);
                                 }
                                 return createdAnnotation;
@@ -456,9 +456,8 @@ export default {
                             .then(this.setLastCreatedAnnotation);
                     })
                     .catch((e) => {
-                        if (this.isLabelbotOn) {
-                            this.updateLabelbotState(LABELBOT_STATES.OFF);
-                            Messages.danger("There are no annotations associated with any labels in this project!");
+                        if (this.labelbotIsActive) {
+                            this.updateLabelbotState(LABELBOT_STATES.OFF, LABELBOT_TOGGLE_TITLE.ACTIVATE);
                         } else {
                             handleErrorResponse(e);
                         }
@@ -669,8 +668,7 @@ export default {
             } catch (e) {
                 if (e instanceof CrossOriginError) {
                     this.crossOriginError = true;
-                    this.updateLabelbotState(LABELBOT_STATES.DISABLED);
-                    this.updateDisabledLabelbotStateTitle(LABELBOT_DISABLED_TITLE.CORSERROR);
+                    this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.CORSERROR);
                 } else {
                     this.image = null;
                     this.annotations = [];
@@ -733,7 +731,7 @@ export default {
         },
         imageIndex() {
             // Remove LabelBOT's popups when switching images
-            if (this.isLabelbotOn) {
+            if (this.labelbotIsActive) {
                 this.labelbotOverlays.forEach((_, idx) => this.deleteLabelbotLabels(idx));
             }
         }
