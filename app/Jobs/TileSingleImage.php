@@ -2,7 +2,6 @@
 
 namespace Biigle\Jobs;
 
-use ArrayIterator;
 use Biigle\Image;
 use Exception;
 use File;
@@ -17,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image as VipsImage;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 
 class TileSingleImage extends Job implements ShouldQueue
 {
@@ -119,11 +119,9 @@ class TileSingleImage extends Job implements ShouldQueue
      * Upload the tiles from temporary local storage to the s3 tiles storage disk.
      *
      * @param AwsS3V3Adapter $disk S3 filesystem adapter
-     * @param int $retry Number of retries for failed uploads.
-     * @throws Exception
      *
      */
-    public function uploadToS3Storage($disk, $retry = 3)
+    public function uploadToS3Storage($disk)
     {
         $iterator = $this->getIterator($this->tempPath);
 
@@ -144,33 +142,9 @@ class TileSingleImage extends Job implements ShouldQueue
             }
         };
 
-        // Keep track of failed uploads
-        $failedUploads = [];
-        $filenames = $this->getIterator($this->tempPath);
-
-        $onFullfill = function ($res, $index) use ($filenames) {
-            $filenames->next();
-        };
-
-        $onReject = function ($reason, $index) use (&$failedUploads, $filenames) {
-            $failedUploads[] = $filenames->current();
-        };
-
         $files = $uploads($iterator);
 
-        while ($retry > 0) {
-            $failedUploads = [];
-            $this->sendRequests($files, $onFullfill, $onReject);
-            $files = new ArrayIterator($failedUploads);
-            $retry -= 1;
-            if (empty($failedUploads)) {
-                break;
-            }
-        }
-
-        if (!empty($failedUploads)) {
-            throw new Exception("Failed to upload tiles for image with id " . $this->image->id);
-        }
+        $this->sendRequests($files);
     }
 
     /**
@@ -179,17 +153,33 @@ class TileSingleImage extends Job implements ShouldQueue
      * @param \Iterator $files The files to upload.
      * @param callable $onFullfill Callback for successful uploads.
      * @param callable $onReject Callback for failed uploads.
+     * @throws Exception If retry limit is reached
      *
      */
-    protected function sendRequests($files, $onFullfill, $onReject)
+    protected function sendRequests($files, $onFullfill = null, $onReject = null)
     {
         $concurrency = config('image.tiles.nbr_concurrent_requests');
+        $shouldThrow = false;
+
+        // The promise will be rejected once the retry limit is reached
+        $failedUploads = function ($reason, $index) use ($onReject, &$shouldThrow) {
+            if ($onReject) {
+                $onReject();
+            }
+            $shouldThrow = true;
+        };
+
         Each::ofLimit(
             $files,
             $concurrency,
             $onFullfill,
-            $onReject
+            $failedUploads
         )->wait();
+
+        if ($shouldThrow) {
+            $id = $this->image->id;
+            throw new UploadException("Failed to upload tiles for image with id {$id}");
+        }
     }
 
     /**
