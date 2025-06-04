@@ -2,4 +2,8 @@
     position: relative;
     border-bottom: 1px solid $legend-border-color;
     padding: 5px 0;
+
+    svg {
+        display: block;
+    }
 }

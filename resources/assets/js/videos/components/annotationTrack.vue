@@ -16,9 +16,9 @@ const LANE_MARGIN_BOTTOM = 5;
             @deselect="emitDeselect"
             ></annotation-clip>
     </div>*/
-import ZrenderAnnotation from '../models/ZrenderAnnotation.js';
-import {KEYFRAME_HEIGHT} from '../models/ZrenderAnnotation.js';
-import {init} from 'zrender';
+import SvgAnnotation from '../models/SvgAnnotation.js';
+import {KEYFRAME_HEIGHT} from '../models/SvgAnnotation.js';
+import { SVG } from '@svgdotjs/svg.js'
 
 export default {
     emits: [
@@ -50,6 +50,9 @@ export default {
         trackHeight() {
             return this.lanes.length * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM) - LANE_MARGIN_BOTTOM;
         },
+        xFactor() {
+            return this.elementWidth / this.duration;
+        },
     },
     methods: {
         emitSelect(annotation, time, shift) {
@@ -63,46 +66,34 @@ export default {
         },
         drawLane(lane, i) {
             const yOffset = i * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM);
-            lane.forEach((a) => this.drawAnnotation(a, yOffset));
+            const g = this.svg.group().attr({transform: `translate(0, ${yOffset})`});
+            lane.forEach((a) => this.drawAnnotation(a, g));
         },
-        drawAnnotation(annotation, yOffset) {
-            const a = new ZrenderAnnotation({
+        drawAnnotation(annotation, group) {
+            const a = new SvgAnnotation({
                 annotation: annotation,
                 label: this.label,
-                zr: this.zr,
-                xFactor: 1 / this.duration * this.elementWidth,
-                yOffset: yOffset,
+                svg: group,
+                xFactor: this.xFactor,
             });
             a.draw();
-            this.zrCache[annotation.id] = a;
-        },
-        updateAnnotation(annotation) {
-            const a = this.zrCache[annotation.id];
-            if (!a) {
-                return;
-            }
-            a.updateXFactor(1 / this.duration * this.elementWidth);
+            this.annotationCache[annotation.id] = a;
         },
     },
     watch: {
         elementWidth(width) {
-            this.zr.resize({width: width});
-            this.lanes.forEach(l => l.forEach(this.updateAnnotation));
+            this.svg.size(Math.round(width), this.trackHeight);
         },
         trackHeight(height) {
-            this.zr.resize({height: height});
+            this.svg.size(this.elementWidth, Math.round(height));
+        },
+        xFactor(factor) {
+            Object.values(this.annotationCache).forEach(a => a.updateXFactor(factor));
         },
     },
     mounted() {
-        this.zr = init(this.$el, {
-            // The canvas renderer performs worse when zooming lots of annotations.
-            // Also it can't handle canvases that are more than 16k px wide (because of
-            // zooming).
-            renderer: 'svg',
-            devicePixelRatio: window.devicePixelRatio,
-            height: this.trackHeight,
-        });
-        this.zrCache = {};
+        this.annotationCache = {};
+        this.svg = SVG().size(this.elementWidth, this.trackHeight).addTo(this.$el);
         this.draw();
     },
 };
