@@ -167,7 +167,7 @@ export default {
             })
             .catch(handleErrorResponse);
         },
-        calculateOverlayPosition(annotationPoints, shape_id) {
+        calculateOverlayPosition(annotationPoints) {
             const offset = this.labelbotLineFeatureLength / 10;
 
             let startPoint;
@@ -188,22 +188,14 @@ export default {
                 for (let i = 0; i < annotationPoints.length; i += 2) {
                     pointPairs.push([annotationPoints[i], annotationPoints[i + 1]]);
                 }
-                // LinString shape id
-                let lineAnnotation = shape_id === 2;
 
                 // Sort by X descending
                 pointPairs.sort((a, b) => b[0] - a[0]);
-                const [p1, p2] = pointPairs.length >= 2 ? pointPairs.slice(0, 2) : [pointPairs[0], pointPairs[0]];
 
-                if (lineAnnotation) {
-                    startPoint = p1;
-                } else {
-                    // Midpoint for path start
-                    startPoint = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
-                }
+                startPoint = pointPairs[0];
 
                 // Farthest-right point
-                extraXOffset = p1[0]; 
+                extraXOffset = startPoint[0]; 
             }
 
             // Positions
@@ -224,7 +216,7 @@ export default {
 
                     // Convert annotation points and calculate start/end points
                     const convertedPoints = this.labelbotOverlays[popupKey].convertPointsToOl(annotation.points);
-                    const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints, annotation.shape_id);
+                    const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
 
                     // Draw line feature and set overlay position
                     this.labelbotOverlays[popupKey].popupLineFeature = this.labelbotOverlays[popupKey].drawPopupLineFeature(path, annotation.labels[0].label.color);
