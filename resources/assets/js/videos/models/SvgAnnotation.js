@@ -9,10 +9,10 @@ const COMPACTNESS = {
     HIGH: Symbol(),
 };
 
-export default class ZrenderAnnotation {
+export default class SvgAnnotation {
     constructor(args) {
         this.annotation = args.annotation;
-        this.color = args.label.color || '000000'; // TODO One annotation can be drawn multiple times with different labels
+        this.color = args.label.color || '000000';
         this.svg = args.svg;
         this.xFactor = args.xFactor;
         this.compactness = this.getCompactness();
@@ -33,7 +33,6 @@ export default class ZrenderAnnotation {
     }
 
     draw() {
-        // TODO use a group for the whole annotation and remove the whole group here
         this.segments.forEach(s => s.remove());
         this.segments = [];
         this.gaps.forEach(g => g.remove());
@@ -78,8 +77,6 @@ export default class ZrenderAnnotation {
     }
 
     drawSegment(segment, singleLast) {
-        // TODO create a group for the annotation and set fill, rx, ry in the group?
-        // Take care of cleaning up the group.
         const frames = segment.frames;
         if (frames.length > 1) {
             const firstFrame = frames[0];
@@ -102,7 +99,6 @@ export default class ZrenderAnnotation {
             this.segments.push(rect);
         }
 
-        // TODO Work with symbols
         frames.forEach((f, i) => this.drawKeyframe(f, singleLast || i > 0 && i === (frames.length - 1)));
     }
 
@@ -114,8 +110,8 @@ export default class ZrenderAnnotation {
             x -= width;
         }
 
-        // Prevent overflow.
-        x = Math.min(x, this.svg.root().width() - width);
+        // Prevent overflow. Subtract 0.5 for hald the stroke width.
+        x = Math.min(x, this.svg.root().width() - width - 0.5);
 
         // Subtract stroke width from height.
         const rect = this.svg.rect(width, KEYFRAME_HEIGHT - 1).attr({
@@ -161,7 +157,8 @@ export default class ZrenderAnnotation {
             if (k.last) {
                 shape.x -= width;
             }
-            shape.x = Math.min(shape.x, svgWidth - width);
+            // Prevent overflow. Subtract 0.5 for hald the stroke width.
+            shape.x = Math.min(shape.x, svgWidth - width - 0.5);
             k.attr(shape);
         });
 
@@ -234,10 +231,8 @@ export default class ZrenderAnnotation {
     generatePattern(color) {
         return this.svg.root().pattern(6, 6, (add) => {
             add.rect(6, 6).fill('#' + this.color);
-            const group = add.group().attr({stroke: color, 'stroke-width': 2, opacity: 0.5});
-            group.line(0, -6, 12, 6);
-            group.line(0, 0, 6, 6);
-            group.line(-6, 0, 6, 12);
+            add.line(-3, 0, 6, 9).attr({stroke: color, 'stroke-width': 2, opacity: 0.5});
+            add.line(-3, -6, 9, 6).attr({stroke: color, 'stroke-width': 2, opacity: 0.5});
         });
     }
 }
