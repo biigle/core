@@ -425,11 +425,15 @@ export default {
         },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {
-                let promise;
-                // LabelBOT
-                if (!this.selectedLabel && this.labelbotIsActive) {
+                // We need this in case LabelBOT was turned off while computing
+                const wasLabelbotActive = this.labelbotIsActive;
+                const currentImageIndex = this.imageIndex;
 
-                    this.updateLabelbotState(LABELBOT_STATES.COMPUTING, LABELBOT_TOGGLE_TITLE.DEACTIVATE);
+                let promise;
+
+                // LabelBOT
+                if (!this.selectedLabel && wasLabelbotActive) {
+                    this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
 
                     promise = this.generateFeatureVector(annotation.points)
                         .then((featureVector) => {
@@ -439,7 +443,7 @@ export default {
                         .catch(handleErrorResponse);
                 } else {
                     promise = Promise.resolve();
-                    annotation.label_id = this.selectedLabel.id;
+                    annotation.label_id = this.selectedLabel?.id;
                 }
                 // TODO: confidence control
                 annotation.confidence = 1;
@@ -448,7 +452,7 @@ export default {
                     .then(() => {
                         return AnnotationsStore.create(this.imageId, annotation)
                             .then((createdAnnotation) => {
-                                if (this.labelbotIsActive) {
+                                if (wasLabelbotActive && currentImageIndex === this.imageIndex) {
                                     this.showLabelbotPopup(createdAnnotation);
                                 }
                                 return createdAnnotation;
@@ -456,11 +460,10 @@ export default {
                             .then(this.setLastCreatedAnnotation);
                     })
                     .catch((e) => {
-                        if (this.labelbotIsActive) {
-                            this.updateLabelbotState(LABELBOT_STATES.OFF, LABELBOT_TOGGLE_TITLE.ACTIVATE);
-                        } else {
-                            handleErrorResponse(e);
+                        if (wasLabelbotActive) {
+                            this.updateLabelbotState(LABELBOT_STATES.OFF);
                         }
+                        handleErrorResponse(e);
                     })
                     .finally(removeCallback);
             }

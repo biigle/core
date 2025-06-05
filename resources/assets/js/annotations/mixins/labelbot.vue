@@ -47,7 +47,7 @@ export default {
     },
     methods: {
         async initLabelbotModel() {
-            this.updateLabelbotState(LABELBOT_STATES.INITIALIZING, LABELBOT_TOGGLE_TITLE.DEACTIVATE);
+            this.updateLabelbotState(LABELBOT_STATES.INITIALIZING);
             const modelUrl = biigle.$require('labelbot.onnxUrl');
 
             try {
@@ -66,7 +66,7 @@ export default {
                 const blobUrl = URL.createObjectURL(modelBlob);
                 this.loadLabelbotModel(blobUrl);
             } catch (error) {
-                this.updateLabelbotState(LABELBOT_STATES.OFF, LABELBOT_TOGGLE_TITLE.ACTIVATE);
+                this.updateLabelbotState(LABELBOT_STATES.OFF);
                 handleErrorResponse(error);
             }
         },
@@ -86,9 +86,9 @@ export default {
                 .catch(() => InferenceSession.create(modelUrl, { executionProviders: ['wasm'] }))
                 .then((model) => this.labelbotModel = model)
                 .then(this.warmUpLabelbotModel)
-                .then(() => this.updateLabelbotState(LABELBOT_STATES.READY, LABELBOT_TOGGLE_TITLE.DEACTIVATE))
+                .then(() => this.updateLabelbotState(LABELBOT_STATES.READY))
                 .catch((error) => { 
-                    this.updateLabelbotState(LABELBOT_STATES.OFF, LABELBOT_TOGGLE_TITLE.ACTIVATE);
+                    this.updateLabelbotState(LABELBOT_STATES.OFF);
                     handleErrorResponse(error) 
                 });
         },
@@ -232,22 +232,43 @@ export default {
                     break;
                 }
             }
-            // Update State
-            this.updateLabelbotState(LABELBOT_STATES.READY, LABELBOT_TOGGLE_TITLE.DEACTIVATE);
+            // Update State if LabelBOT is active
+            if (this.labelbotIsActive) {
+                this.updateLabelbotState(LABELBOT_STATES.READY);
+            }
         },
         updateLabelbotLabel(label) {
             this.handleSwapLabel(this.labelbotOverlays[label.popupKey].annotation, label.label)
         },
-        updateLabelbotState(labelbotState, toggleTitle) {
-            this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY ? LABELBOT_STATES.BUSY : labelbotState;
-            this.labelbotToggleTitle = toggleTitle || '';
+        updateLabelbotState(labelbotState, toggleTitle='') {            
+            this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY 
+                ? LABELBOT_STATES.BUSY 
+                : labelbotState;
+
+            switch (this.labelbotState) {
+                case LABELBOT_STATES.OFF:
+                    this.labelbotToggleTitle = LABELBOT_TOGGLE_TITLE.ACTIVATE;
+                    break;
+                case LABELBOT_STATES.DISABLED:
+                    this.labelbotToggleTitle = toggleTitle || '';
+                    break;
+                default:
+                    this.labelbotToggleTitle = LABELBOT_TOGGLE_TITLE.DEACTIVATE;
+                    break;
+            }
         },
         deleteLabelbotLabels(popupKey) {
+            if (!this.labelbotOverlays[popupKey].overlay) return
+
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
             this.labelbotOverlays[popupKey].labels = [];
             this.labelbotOverlays[popupKey].annotation = null;
-            this.labelbotState = LABELBOT_STATES.READY;
+
+            // Update State if LabelBOT is active
+            if (this.labelbotIsActive) {
+                this.updateLabelbotState(LABELBOT_STATES.READY);
+            }
 
             // Set focused pop key to the next most recent
             this.labelbotOverlaysTimeline.splice(this.labelbotOverlaysTimeline.indexOf(popupKey), 1);
