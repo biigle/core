@@ -7,6 +7,7 @@ use Aws\Command;
 use Aws\MockHandler;
 use Aws\Result;
 use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
 use Biigle\Jobs\TileSingleImage;
 use Biigle\Tests\ImageTest;
 use Composer\InstalledVersions;
@@ -22,6 +23,29 @@ class TileSingleImageTest extends TestCase
 {
 
     public $awsPackage = 'aws/aws-sdk-php';
+
+    public $s3Config = null;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->s3Config = [
+            "driver" => "s3",
+            "key" => "key",
+            "secret" => "secret",
+            "region" => "us-east-1",
+            "bucket" => "bucket",
+            "url" => "https://s3.aws.com/bucket",
+            "endpoint" => "https://s3.aws.com/",
+            "use_path_style_endpoint" => true,
+            "version" => "latest",
+            "credentials" => [
+                "key" => "key",
+                "secret" => "secret",
+            ],
+            'retries' => 3
+        ];
+    }
 
     public function testGenerateTiles()
     {
@@ -76,8 +100,8 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $disk = Storage::disk('s3');
-        $client = $disk->getClient();
+        $disk = Mockery::mock();
+        $client = new S3Client($this->s3Config);
         $client->getHandlerList()->setHandler($mock);
 
         // Treat images as tiles for Biigle\Image
@@ -87,6 +111,7 @@ class TileSingleImageTest extends TestCase
         $job = new TileSingleImageStub($image);
         $job->files = $tiles;
         $job->useParentGetIterator = false;
+        $job->client = $client;
 
         $job->uploadToS3Storage($disk);
 
@@ -111,12 +136,10 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $disk = Storage::disk('s3');
-        $config = $disk->getConfig();
+        $disk = Mockery::mock();
+        $config = [...$this->s3Config];
         $config['retries'] = 0;
-        config(['filesystems.disks.s3' => $config]);
-
-        $client = $disk->getClient();
+        $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
 
         // Treat images as tiles for Biigle\Image
@@ -126,6 +149,7 @@ class TileSingleImageTest extends TestCase
         $job = new TileSingleImageStub($image);
         $job->files = $tiles;
         $job->useParentGetIterator = false;
+        $job->client = $client;
 
         $fails = false;
         try {
@@ -160,12 +184,10 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $disk = Storage::disk('s3');
-        $config = $disk->getConfig();
+        $disk = Mockery::mock();
+        $config = [...$this->s3Config];
         $config['retries'] = 1;
-        config(['filesystems.disks.s3' => $config]);
-
-        $client = $disk->getClient();
+        $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
 
         // Treat images as tiles for Biigle\Image
@@ -175,6 +197,7 @@ class TileSingleImageTest extends TestCase
         $job = new TileSingleImageStub($image);
         $job->files = $tiles;
         $job->useParentGetIterator = false;
+        $job->client = $client;
 
         $job->uploadToS3Storage($disk);
 
@@ -200,9 +223,21 @@ class TileSingleImageStub extends TileSingleImage
 
     public $uploadedFiles = [];
 
+    public $client = null;
+
     protected function getVipsImage($path)
     {
         return $this->mock;
+    }
+
+    protected function getClient($disk)
+    {
+        return $this->client;
+    }
+
+    protected function getBucket($disk)
+    {
+        return 'bucket';
     }
 
     protected function getIterator($path)
