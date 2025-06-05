@@ -134,6 +134,7 @@ class TileSingleImage extends Job implements ShouldQueue
                 $path = substr($file, $tmpLength);
                 $prefix = $path[0] . $path[1] . '/' . $path[2] . $path[3];
 
+                // @phpstan-ignore-next-line
                 yield $client->putObjectAsync([
                     'Bucket' => $bucket,
                     'Key' => "tiles/{$prefix}/{$path}",
