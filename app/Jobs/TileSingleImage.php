@@ -148,6 +148,7 @@ class TileSingleImage extends Job implements ShouldQueue
         $this->sendRequests($files);
     }
 
+    /** @phpstan-ignore-next-line */
     /**
      * Returns client of AwsS3V3Adapter
      *
