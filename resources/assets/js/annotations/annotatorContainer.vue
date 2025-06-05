@@ -429,7 +429,7 @@ export default {
                 // LabelBOT
                 if (!this.selectedLabel && this.labelbotIsActive) {
 
-                    this.labelbotState = LABELBOT_STATES.COMPUTING;
+                    this.updateLabelbotState(LABELBOT_STATES.COMPUTING, LABELBOT_TOGGLE_TITLE.DEACTIVATE);
 
                     promise = this.generateFeatureVector(annotation.points)
                         .then((featureVector) => {

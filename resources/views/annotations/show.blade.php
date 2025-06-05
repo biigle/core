@@ -19,10 +19,10 @@
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
-    biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});    
+    biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});
+    biigle.$declare('annotations.annotationCount', {!! $annotationCount !!});
     biigle.$declare('labelbot.m', {{ config('labelbot.M') }});
     biigle.$declare('labelbot.onnxUrl', '{{config('labelbot.onnx_url')}}');
-
 </script>
 @mixin('annotationsScripts')
 @endpush

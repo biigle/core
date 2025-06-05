@@ -283,11 +283,12 @@ export default {
             removePopupLineFeature: null,
         }));
 
-        // Disable LabelBOT's toggle if label trees are empty or no annotations exist in the project
-        const emptyLabelTrees = biigle.$require('annotations.labelTrees')?.every(tree => tree.labels.length === 0);
+        // Disable LabelBOT if there are no labels in any label tree or no annotations in the project        
+        const emptyLabelTrees = biigle.$require('annotations.labelTrees').every(tree => tree.labels.length === 0);
+        const allAnnotations = biigle.$require('annotations.annotationCount');
         if (emptyLabelTrees) {
             this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOLABELS);
-        } else if (this.annotations.length === 0) {
+        } else if (allAnnotations === 0) {
             this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOANNOTATIONS);
         }
     },
