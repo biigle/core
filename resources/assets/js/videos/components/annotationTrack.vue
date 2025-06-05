@@ -44,8 +44,8 @@ export default {
         },
     },
     computed: {
-        laneCount() {
-            return this.lanes.length;
+        annotationCount() {
+            return this.lanes.reduce((c, l) => c + l.length, 0);
         },
         trackHeight() {
             return this.lanes.length * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM) - LANE_MARGIN_BOTTOM;
@@ -62,22 +62,35 @@ export default {
             this.$emit('deselect', annotation);
         },
         draw() {
+            if (this.laneCache.length > this.lanes.length) {
+                this.laneCache
+                    .splice(this.lanes.length)
+                    .forEach(l => l.remove());
+            }
+
             this.lanes.forEach(this.drawLane);
         },
         drawLane(lane, i) {
-            const yOffset = i * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM);
-            const g = this.svg.group().attr({transform: `translate(0, ${yOffset})`});
+            if (!this.laneCache[i]) {
+                const yOffset = i * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM);
+                this.laneCache[i] = this.svg.group().attr({transform: `translate(0, ${yOffset})`});
+            }
+            const g = this.laneCache[i];
             lane.forEach((a) => this.drawAnnotation(a, g));
         },
         drawAnnotation(annotation, group) {
-            const a = new SvgAnnotation({
-                annotation: annotation,
-                label: this.label,
-                svg: group,
-                xFactor: this.xFactor,
-            });
-            a.draw();
-            this.annotationCache[annotation.id] = a;
+            if (this.annotationCache[annotation.id]) {
+                this.annotationCache[annotation.id].addTo(group);
+            } else {
+                const a = new SvgAnnotation({
+                    annotation: annotation,
+                    label: this.label,
+                    svg: group,
+                    xFactor: this.xFactor,
+                });
+                a.draw();
+                this.annotationCache[annotation.id] = a;
+            }
         },
     },
     watch: {
@@ -90,11 +103,29 @@ export default {
         xFactor(factor) {
             Object.values(this.annotationCache).forEach(a => a.updateXFactor(factor));
         },
+        annotationCount(count, oldCount) {
+            if (count < oldCount) {
+                const annotationMap = {};
+                this.lanes.forEach(l => l.forEach(a => annotationMap[a.id] = true));
+                Object.keys(this.annotationCache)
+                    .filter(k => !annotationMap[k])
+                    .forEach((k) => {
+                        this.annotationCache[k].remove();
+                        delete this.annotationCache[k];
+                    });
+            }
+
+            this.draw();
+        },
+    },
+    created() {
+        this.annotationCache = {};
+        this.laneCache = [];
+        this.svg = SVG().size(this.elementWidth, this.trackHeight);
+        this.draw();
     },
     mounted() {
-        this.annotationCache = {};
-        this.svg = SVG().size(this.elementWidth, this.trackHeight).addTo(this.$el);
-        this.draw();
+        this.svg.addTo(this.$el);
     },
 };
 </script>

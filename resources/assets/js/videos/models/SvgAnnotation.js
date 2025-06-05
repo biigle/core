@@ -32,14 +32,29 @@ export default class SvgAnnotation {
         this.keyframes = [];
     }
 
-    draw() {
+    addTo(svg) {
+        if (this.svg === svg) {
+            return;
+        }
+
+        this.svg = svg;
+        this.segments.forEach(s => s.addTo(this.svg));
+        this.gaps.forEach(g => g.addTo(this.svg));
+        if (this.compactness !== COMPACTNESS.HIGH) {
+            this.keyframes.forEach(k => k.addTo(this.svg));
+        }
+    }
+
+    remove() {
         this.segments.forEach(s => s.remove());
         this.segments = [];
         this.gaps.forEach(g => g.remove());
         this.gaps = [];
         this.keyframes.forEach(k => k.remove());
         this.keyframes = [];
+    }
 
+    draw() {
         // TODO watch annotation frames, pending, selected, tracking and redraw automatically
         const segments = this.getSegments();
         const hasSingleLast = segments.length > 2 &&
