@@ -2,21 +2,21 @@
 
 namespace Biigle\Tests\Jobs;
 
+use ArrayIterator;
+use Aws\Command;
+use Aws\MockHandler;
+use Aws\Result;
+use Aws\S3\Exception\S3Exception;
+use Biigle\Jobs\TileSingleImage;
+use Biigle\Tests\ImageTest;
+use Composer\InstalledVersions;
+use Exception;
 use File;
+use GuzzleHttp\Psr7\Response;
+use Jcupitt\Vips\Image;
 use Mockery;
 use Storage;
 use TestCase;
-use Exception;
-use Aws\Result;
-use Aws\Command;
-use ArrayIterator;
-use Aws\MockHandler;
-use Jcupitt\Vips\Image;
-use Biigle\Tests\ImageTest;
-use GuzzleHttp\Psr7\Response;
-use Composer\InstalledVersions;
-use Biigle\Jobs\TileSingleImage;
-use Aws\S3\Exception\S3Exception;
 
 class TileSingleImageTest extends TestCase
 {
