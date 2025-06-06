@@ -204,6 +204,44 @@ class TileSingleImageTest extends TestCase
         $this->assertEquals($tiles, $job->uploadedFiles);
     }
 
+    public function testUploadToS3StorageThrowNoException()
+    {
+        if (!InstalledVersions::isInstalled($this->awsPackage)) {
+            $this->markTestSkipped();
+        }
+
+        config(['image.tiles.concurrent_requests' => 2]);
+
+        $mock = new MockHandler();
+        $mock->append(
+            new Result(),
+            // Simulate that the file has already been uploaded
+            new S3Exception("test", new Command("mockCommand"), [
+                'code' => 'mockCode',
+                'response' => new Response(412)
+            ]),
+            new Result(),
+        );
+
+        $disk = Mockery::mock();
+        $config = [...$this->s3Config];
+        $client = new S3Client($config);
+        $client->getHandlerList()->setHandler($mock);
+
+        // Treat images as tiles for Biigle\Image
+        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
+
+        $image = ImageTest::create();
+        $job = new TileSingleImageStub($image);
+        $job->files = $tiles;
+        $job->useParentGetIterator = false;
+        $job->client = $client;
+
+        $job->uploadToS3Storage($disk);
+
+        $this->assertEquals(['test-image.jpg', 'exif-test.jpg'], $job->uploadedFiles);
+    }
+
     public function testQueue()
     {
         config(['image.tiles.queue' => 'myqueue']);
@@ -257,7 +295,7 @@ class TileSingleImageStub extends TileSingleImage
     protected function sendRequests($files, $onFullfill = null, $onReject = null)
     {
         $onFullfill = function ($res, $index) {
-            $this->uploadedFiles[$index] = basename($res->get('ObjectURL'));
+            $this->uploadedFiles[] = basename($res->get('ObjectURL'));
         };
         return parent::sendRequests($files, $onFullfill, $onReject);
     }
