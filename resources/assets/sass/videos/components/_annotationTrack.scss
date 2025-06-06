@@ -1,3 +1,13 @@
+@keyframes blink-tracking {
+    50% {
+        fill: transparent;
+    }
+    100% {
+        fill: red;
+    }
+}
+
+
 .annotation-track {
     position: relative;
     border-bottom: 1px solid $legend-border-color;
@@ -13,5 +23,11 @@
 
     .svg-annotation-unselectable {
         pointer-events: none;
+    }
+
+    .svg-annotation-tracking {
+        animation: 1s blink-tracking infinite;
+        stroke-width: 2;
+        fill: red;
     }
 }

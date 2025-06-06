@@ -47,6 +47,9 @@ export default {
         annotationCount() {
             return this.lanes.reduce((c, l) => c + l.length, 0);
         },
+        laneCount() {
+            return this.lanes.length;
+        },
         trackHeight() {
             return this.lanes.length * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM) - LANE_MARGIN_BOTTOM;
         },
@@ -117,6 +120,9 @@ export default {
                     });
             }
 
+            this.draw();
+        },
+        laneCount() {
             this.draw();
         },
     },

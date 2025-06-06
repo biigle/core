@@ -55,6 +55,7 @@ export default class SvgAnnotation {
         this.svg = svg;
         this.segments.forEach(s => s.addTo(this.svg));
         this.gaps.forEach(g => g.addTo(this.svg));
+        this.borders.forEach(g => g.addTo(this.svg));
         if (this.compactness !== COMPACTNESS.HIGH) {
             this.keyframes.forEach(k => k.addTo(this.svg));
         }
@@ -71,11 +72,11 @@ export default class SvgAnnotation {
         this.borders = [];
         this.watchers.forEach(unwatch => unwatch());
         this.watchers = [];
+        this.selectedBorder = undefined;
     }
 
     draw() {
         this.compactness = this.getCompactness();
-        // TODO watch annotation selected and tracking state and redraw automatically
         const segments = this.getSegments();
         const hasSingleLast = segments.length > 2 &&
             segments[segments.length - 1].frames.length === 1 &&
@@ -113,13 +114,31 @@ export default class SvgAnnotation {
             e.stopPropagation();
         }));
 
-        this.watchers.push(watch(this.annotation._frames, () => this.redraw(), {deep: true}));
+        this.watchers.push(watch(this.annotation._frames, this.redraw.bind(this), {deep: true}));
         this.watchers.push(watch(this.annotation._selected, this.updateSelected.bind(this)));
+        this.watchers.push(watch(this.annotation._tracking, this.updateTracking.bind(this)));
+
+        // Update selected border if the annotation is linked, split or keyframes change.
+        if (this.annotation.isSelected) {
+            this.updateSelected(this.annotation.selected);
+        }
     }
 
     redraw() {
         this.remove();
         this.draw();
+    }
+
+    updateTracking(tracking) {
+        if (tracking) {
+            this.keyframes[0]
+                .addClass('svg-annotation-tracking')
+                .add(this.svg.element('title').words('Tracking in progress'));
+        } else {
+            this.keyframes[0]
+                .removeClass('svg-annotation-tracking')
+                .clear();
+        }
     }
 
     updateSelected(selected) {
