@@ -6,6 +6,8 @@ const KEYFRAME_STROKE_WIDTH = 1;
 const KEYFRAME_WIDTH = 9;
 const KEYFRAME_COMPACT_WIDTH = 3;
 
+const SELECTED_COLOR = '#ff5e00';
+
 const BORDER_RADIUS = 3;
 
 const COMPACTNESS = {
@@ -31,12 +33,17 @@ export default class SvgAnnotation {
             this.fill = '#' + this.color;
         }
 
+        this.selectedFill = undefined;
+
         this.segments = [];
         this.gaps = [];
         this.keyframes = [];
         this.borders = [];
 
         this.watchers = [];
+
+        this.onSelect = args.onSelect;
+        this.onDeselect = args.onDeselect;
     }
 
     addTo(svg) {
@@ -91,11 +98,47 @@ export default class SvgAnnotation {
         }
 
         this.watchers.push(watch(this.annotation.frames, () => this.redraw()));
+        this.watchers.push(watch(this.annotation._selected, this.updateSelected.bind(this)));
+        this.keyframes.forEach((k) => {
+            k.on('click', (e) => {
+                e.preventDefault();
+                this.onSelect(this.annotation, k.frame, e.shiftKey);
+                e.stopPropagation();
+            });
+        });
     }
 
     redraw() {
         this.remove();
         this.draw();
+    }
+
+    updateSelected(selected) {
+        if (!this.selectedFill) {
+            if (this.annotation.wholeFrame) {
+                this.selectedFill = this.svg.root().findOne('.selected-pattern') || this.generatePattern('white', SELECTED_COLOR).attr({class: 'selected-pattern'});
+            } else {
+                this.selectedFill = SELECTED_COLOR;
+            }
+        }
+
+        this.keyframes.forEach((k) => {
+            if (k.frame === selected) {
+                k.attr({
+                    fill: this.selectedFill,
+                    'stroke-width': 2,
+                    stroke: 'white',
+                });
+                k.selected = true;
+            } else if (k.selected) {
+                k.attr({
+                    fill: this.fill,
+                    'stroke-width': 1,
+                    stroke: KEYFRAME_STROKE,
+                });
+                delete k.selected;
+            }
+        })
     }
 
     drawBorder(strokeWidth) {
@@ -165,6 +208,8 @@ export default class SvgAnnotation {
     }
 
     drawKeyframe(frame, last) {
+        // TODO fix border display with clip element and double border width.
+        // See: https://stackoverflow.com/a/32162431/1796523
         let width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
         width -= KEYFRAME_STROKE_WIDTH;
         let x = frame * this.xFactor + (KEYFRAME_STROKE_WIDTH / 2);
@@ -183,6 +228,7 @@ export default class SvgAnnotation {
             ry: BORDER_RADIUS,
             fill: this.fill,
             stroke: KEYFRAME_STROKE,
+            class: 'svg-annotation-keyframe',
         });
 
         if (this.compactness === COMPACTNESS.HIGH) {
@@ -221,11 +267,12 @@ export default class SvgAnnotation {
 
     updateKeyframes() {
         const svgWidth = this.svg.root().width();
-        const width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
+        let width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
+        width -= KEYFRAME_STROKE_WIDTH;
         this.keyframes.forEach((k) => {
             const shape = {
                 x: k.frame * this.xFactor + (KEYFRAME_STROKE_WIDTH / 2),
-                width: width - KEYFRAME_STROKE_WIDTH,
+                width: width,
             };
             if (k.last) {
                 shape.x -= width;
@@ -319,11 +366,12 @@ export default class SvgAnnotation {
         return luma < 128;
     }
 
-    generatePattern(color) {
+    generatePattern(strokeColor, backgroundColor) {
+        backgroundColor = backgroundColor || '#' + this.color;
         return this.svg.root().pattern(6, 6, (add) => {
-            add.rect(6, 6).fill('#' + this.color);
-            add.line(-3, 0, 6, 9).attr({stroke: color, 'stroke-width': 2, opacity: 0.5});
-            add.line(-3, -6, 9, 6).attr({stroke: color, 'stroke-width': 2, opacity: 0.5});
+            add.rect(6, 6).fill(backgroundColor);
+            add.line(-3, 0, 6, 9).attr({stroke: strokeColor, 'stroke-width': 2, opacity: 0.5});
+            add.line(-3, -6, 9, 6).attr({stroke: strokeColor, 'stroke-width': 2, opacity: 0.5});
         });
     }
 }

@@ -87,6 +87,8 @@ export default {
                     label: this.label,
                     svg: group,
                     xFactor: this.xFactor,
+                    onSelect: this.emitSelect,
+                    // onDeselect: this.emitDeselect,
                 });
                 a.draw();
                 this.annotationCache[annotation.id] = a;
