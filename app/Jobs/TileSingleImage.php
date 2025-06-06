@@ -134,7 +134,6 @@ class TileSingleImage extends Job implements ShouldQueue
             foreach ($files as $file) {
                 $path = substr($file, $tmpLength);
                 $prefix = $path[0] . $path[1] . '/' . $path[2] . $path[3];
-
                 // @phpstan-ignore-next-line
                 yield $client->putObjectAsync([
                     'Bucket' => $bucket,
@@ -145,12 +144,11 @@ class TileSingleImage extends Job implements ShouldQueue
         };
 
         $files = $uploads($iterator);
-
         $this->sendRequests($files);
     }
 
     /**
-     * Returns client of AwsS3V3Adapter
+     * Returns the S3Client of the s3 storage
      *
      * @param mixed $disk S3 filesystem adapter
      */
@@ -160,7 +158,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Returns s3 bucket name
+     * Returns the s3 bucket name
      *
      * @param mixed $disk S3 filesystem adapter
      * @return string bucket name
