@@ -1,5 +1,5 @@
 <script>
-import Annotation from './models/Annotation.vue';
+import Annotation from './models/Annotation.js';
 import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
