@@ -1,7 +1,12 @@
+import {watch} from 'vue';
+
 export const KEYFRAME_HEIGHT = 20;
 const KEYFRAME_STROKE = 'rgba(255, 255, 255, 0.5)';
+const KEYFRAME_STROKE_WIDTH = 1;
 const KEYFRAME_WIDTH = 9;
 const KEYFRAME_COMPACT_WIDTH = 3;
+
+const BORDER_RADIUS = 3;
 
 const COMPACTNESS = {
     LOW: Symbol(),
@@ -15,7 +20,6 @@ export default class SvgAnnotation {
         this.color = args.label.color || '000000';
         this.svg = args.svg;
         this.xFactor = args.xFactor;
-        this.compactness = this.getCompactness();
 
         if (this.annotation.wholeFrame) {
             if (this.hasDarkColor()) {
@@ -30,6 +34,9 @@ export default class SvgAnnotation {
         this.segments = [];
         this.gaps = [];
         this.keyframes = [];
+        this.borders = [];
+
+        this.watchers = [];
     }
 
     addTo(svg) {
@@ -52,10 +59,15 @@ export default class SvgAnnotation {
         this.gaps = [];
         this.keyframes.forEach(k => k.remove());
         this.keyframes = [];
+        this.borders.forEach(k => k.remove());
+        this.borders = [];
+        this.watchers.forEach(unwatch => unwatch());
+        this.watchers = [];
     }
 
     draw() {
-        // TODO watch annotation frames, pending, selected, tracking and redraw automatically
+        this.compactness = this.getCompactness();
+        // TODO watch annotation selected and tracking state and redraw automatically
         const segments = this.getSegments();
         const hasSingleLast = segments.length > 2 &&
             segments[segments.length - 1].frames.length === 1 &&
@@ -69,6 +81,41 @@ export default class SvgAnnotation {
                 this.drawSegment(s, singleLast);
             }
         });
+
+        if (this.annotation.pending) {
+            const rect = this.drawBorder(2).attr({
+                stroke: 'white',
+                'stroke-dasharray': '6 2',
+            });
+            this.borders.push(rect);
+        }
+
+        this.watchers.push(watch(this.annotation.frames, () => this.redraw()));
+    }
+
+    redraw() {
+        this.remove();
+        this.draw();
+    }
+
+    drawBorder(strokeWidth) {
+        strokeWidth = strokeWidth || 1;
+        const firstFrame = this.annotation.frames[0];
+        const lastFrame = this.annotation.frames[this.annotation.frames.length - 1];
+        const minWidth = this.compactness !== COMPACTNESS.LOW ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
+        let width = Math.max((lastFrame - firstFrame) * this.xFactor, minWidth) - strokeWidth;
+        const rect = this.svg.rect(width, KEYFRAME_HEIGHT - strokeWidth).attr({
+            x: firstFrame * this.xFactor + strokeWidth / 2,
+            y: strokeWidth / 2,
+            rx: BORDER_RADIUS,
+            ry: BORDER_RADIUS,
+            fill: 'transparent',
+            'stroke-width': strokeWidth,
+        });
+        rect.firstFrame = firstFrame;
+        rect.lastFrame = lastFrame;
+
+        return rect;
     }
 
     drawGap(segment) {
@@ -97,13 +144,13 @@ export default class SvgAnnotation {
             const firstFrame = frames[0];
             const lastFrame = frames[frames.length - 1];
 
-            let width = (lastFrame - firstFrame) * this.xFactor;
+            let width = Math.max((lastFrame - firstFrame) * this.xFactor, KEYFRAME_COMPACT_WIDTH);
 
             const rect = this.svg.rect(width, KEYFRAME_HEIGHT).attr({
                 x: firstFrame * this.xFactor,
                 y: 0,
-                rx: 3,
-                ry: 3,
+                rx: BORDER_RADIUS,
+                ry: BORDER_RADIUS,
                 fill: this.fill,
                 opacity: 0.4,
             });
@@ -118,22 +165,22 @@ export default class SvgAnnotation {
     }
 
     drawKeyframe(frame, last) {
-        const width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
-        let x = frame * this.xFactor;
+        let width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
+        width -= KEYFRAME_STROKE_WIDTH;
+        let x = frame * this.xFactor + (KEYFRAME_STROKE_WIDTH / 2);
 
         if (last) {
             x -= width;
         }
 
-        // Prevent overflow. Subtract 0.5 for hald the stroke width.
-        x = Math.min(x, this.svg.root().width() - width - 0.5);
+        // Prevent overflow.
+        x = Math.min(x, this.svg.root().width() - width - (KEYFRAME_STROKE_WIDTH / 2));
 
-        // Subtract stroke width from height.
-        const rect = this.svg.rect(width, KEYFRAME_HEIGHT - 1).attr({
+        const rect = this.svg.rect(width, KEYFRAME_HEIGHT - KEYFRAME_STROKE_WIDTH).attr({
             x: x,
-            y: 0.5, // Add half the stroke width.
-            rx: 3,
-            ry: 3,
+            y: KEYFRAME_STROKE_WIDTH / 2,
+            rx: BORDER_RADIUS,
+            ry: BORDER_RADIUS,
             fill: this.fill,
             stroke: KEYFRAME_STROKE,
         });
@@ -150,6 +197,15 @@ export default class SvgAnnotation {
 
     updateXFactor(xFactor) {
         this.xFactor = xFactor;
+        this.updateCompactness();
+        this.updateKeyframes();
+        this.updateSegments();
+        this.updateGpas();
+        this.updateBorders();
+
+    }
+
+    updateCompactness() {
         const newCompactness = this.getCompactness();
 
         if (newCompactness !== this.compactness) {
@@ -161,31 +217,51 @@ export default class SvgAnnotation {
                 this.keyframes.forEach(f => this.svg.add(f));
             }
         }
+    }
 
+    updateKeyframes() {
         const svgWidth = this.svg.root().width();
         const width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
         this.keyframes.forEach((k) => {
             const shape = {
-                x: k.frame * this.xFactor,
-                width: width,
+                x: k.frame * this.xFactor + (KEYFRAME_STROKE_WIDTH / 2),
+                width: width - KEYFRAME_STROKE_WIDTH,
             };
             if (k.last) {
                 shape.x -= width;
             }
-            // Prevent overflow. Subtract 0.5 for hald the stroke width.
-            shape.x = Math.min(shape.x, svgWidth - width - 0.5);
+            // Prevent overflow.
+            shape.x = Math.min(shape.x, svgWidth - width - (KEYFRAME_STROKE_WIDTH / 2));
             k.attr(shape);
         });
+    }
 
+    updateSegments() {
         this.segments.forEach((s) => s.attr({
             x: s.firstFrame * this.xFactor,
-            width: (s.lastFrame - s.firstFrame) * this.xFactor,
+            width: Math.max((s.lastFrame - s.firstFrame) * this.xFactor, KEYFRAME_COMPACT_WIDTH),
         }));
+    }
 
+    updateGpas() {
         this.gaps.forEach((g) => g.attr({
             x1: g.firstFrame * this.xFactor,
             x2: g.lastFrame * this.xFactor,
         }));
+    }
+
+    updateBorders() {
+        const borderMinWidth = this.compactness !== COMPACTNESS.LOW ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
+        this.borders.forEach((b) => {
+            const strokeWidth = b.attr('stroke-width');
+            b.attr({
+                x: b.firstFrame * this.xFactor + strokeWidth / 2,
+                width: Math.max((b.lastFrame - b.firstFrame) * this.xFactor, borderMinWidth) - strokeWidth,
+            });
+            // Keyframes might be put in front of the border when added for new compactness
+            // so move the border to front here.
+            b.front();
+        });
     }
 
     getSegments() {
