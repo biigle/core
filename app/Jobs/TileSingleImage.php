@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use Aws\S3\S3Client;
 use Biigle\Image;
 use Exception;
 use File;
@@ -148,14 +149,12 @@ class TileSingleImage extends Job implements ShouldQueue
         $this->sendRequests($files);
     }
 
-    // @phpstan-ignore return.type
     /**
      * Returns client of AwsS3V3Adapter
      *
      * @param mixed $disk S3 filesystem adapter
-     * @return \Aws\S3\S3Client
      */
-    protected function getClient($disk)
+    protected function getClient($disk): S3Client // @phpstan-ignore-line
     {
         return $disk->getClient();
     }
