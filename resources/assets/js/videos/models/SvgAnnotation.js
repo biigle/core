@@ -39,6 +39,7 @@ export default class SvgAnnotation {
         this.gaps = [];
         this.keyframes = [];
         this.borders = [];
+        this.selectedBorder = undefined;
 
         this.watchers = [];
 
@@ -90,22 +91,30 @@ export default class SvgAnnotation {
         });
 
         if (this.annotation.pending) {
-            const rect = this.drawBorder(2).attr({
+            this.borders.push(this.drawBorder(2).attr({
                 stroke: 'white',
                 'stroke-dasharray': '6 2',
-            });
-            this.borders.push(rect);
+            }));
         }
 
-        this.watchers.push(watch(this.annotation.frames, () => this.redraw()));
+        this.segments.forEach((s) => s.on('click', (e) => {
+            e.preventDefault();
+            if (this.annotation.isSelected && e.shiftKey) {
+                this.onDeselect(this.annotation);
+            } else {
+                this.onSelect(this.annotation, e.layerX / this.xFactor, e.shiftKey);
+            }
+            e.stopPropagation();
+        }));
+
+        this.keyframes.forEach((k) => k.on('click', (e) => {
+            e.preventDefault();
+            this.onSelect(this.annotation, k.frame, e.shiftKey);
+            e.stopPropagation();
+        }));
+
+        this.watchers.push(watch(this.annotation._frames, () => this.redraw(), {deep: true}));
         this.watchers.push(watch(this.annotation._selected, this.updateSelected.bind(this)));
-        this.keyframes.forEach((k) => {
-            k.on('click', (e) => {
-                e.preventDefault();
-                this.onSelect(this.annotation, k.frame, e.shiftKey);
-                e.stopPropagation();
-            });
-        });
     }
 
     redraw() {
@@ -120,6 +129,17 @@ export default class SvgAnnotation {
             } else {
                 this.selectedFill = SELECTED_COLOR;
             }
+        }
+
+        if (selected === false && this.selectedBorder) {
+            this.selectedBorder.remove();
+            this.borders = this.borders.filter(b => b !== this.selectedBorder);
+            this.selectedBorder = undefined;
+        } else if (!this.selectedBorder) {
+            this.selectedBorder = this.drawBorder(1).attr({
+                stroke: 'white',
+            });
+            this.borders.push(this.selectedBorder);
         }
 
         this.keyframes.forEach((k) => {
@@ -152,7 +172,7 @@ export default class SvgAnnotation {
             y: strokeWidth / 2,
             rx: BORDER_RADIUS,
             ry: BORDER_RADIUS,
-            fill: 'transparent',
+            fill: 'none',
             'stroke-width': strokeWidth,
         });
         rect.firstFrame = firstFrame;
@@ -165,6 +185,19 @@ export default class SvgAnnotation {
         const firstFrame = segment.frames[0];
         const lastFrame = segment.frames[segment.frames.length - 1];
 
+        // This is an invisible "segment" of the pattern to allow click events in this
+        // area, too.
+        const rect = this.svg.rect((lastFrame - firstFrame) * this.xFactor, KEYFRAME_HEIGHT).attr({
+            x: firstFrame * this.xFactor,
+            y: 0,
+            fill: 'transparent',
+            class: 'svg-annotation-selectable',
+        });
+
+        rect.firstFrame = firstFrame;
+        rect.lastFrame = lastFrame;
+        this.segments.push(rect);
+
         const line = this.svg
             .line(firstFrame * this.xFactor, KEYFRAME_HEIGHT / 2, lastFrame * this.xFactor, KEYFRAME_HEIGHT / 2)
             .attr({
@@ -173,6 +206,7 @@ export default class SvgAnnotation {
                 'stroke-dasharray': '0 6',
                 'stroke-dashoffset': '1',
                 'stroke-linecap': 'round',
+                class: 'svg-annotation-unselectable',
             });
 
         line.firstFrame = firstFrame;
@@ -196,6 +230,7 @@ export default class SvgAnnotation {
                 ry: BORDER_RADIUS,
                 fill: this.fill,
                 opacity: 0.4,
+                class: 'svg-annotation-selectable',
             });
 
             rect.firstFrame = firstFrame;
@@ -228,7 +263,7 @@ export default class SvgAnnotation {
             ry: BORDER_RADIUS,
             fill: this.fill,
             stroke: KEYFRAME_STROKE,
-            class: 'svg-annotation-keyframe',
+            class: 'svg-annotation-selectable',
         });
 
         if (this.compactness === COMPACTNESS.HIGH) {

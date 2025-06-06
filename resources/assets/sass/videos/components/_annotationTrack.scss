@@ -7,7 +7,11 @@
         display: block;
     }
 
-    .svg-annotation-keyframe {
+    .svg-annotation-selectable {
         cursor: pointer;
+    }
+
+    .svg-annotation-unselectable {
+        pointer-events: none;
     }
 }
