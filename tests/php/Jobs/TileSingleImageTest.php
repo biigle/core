@@ -230,7 +230,7 @@ class TileSingleImageStub extends TileSingleImage
         return $this->mock;
     }
 
-    protected function getClient($disk)
+    protected function getClient($disk): S3Client
     {
         return $this->client;
     }
