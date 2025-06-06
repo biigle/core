@@ -139,6 +139,12 @@ class TileSingleImage extends Job implements ShouldQueue
                     'Bucket' => $bucket,
                     'Key' => "tiles/{$prefix}/{$path}",
                     'SourceFile' => $file,
+                    // Prevent overriding files that were already uploaded
+                    '@http' => [
+                        'headers' => [
+                            'If-None-Match' => '*'
+                        ]
+                    ]
                 ]);
             }
         };
@@ -187,6 +193,12 @@ class TileSingleImage extends Job implements ShouldQueue
             if ($onReject) {
                 $onReject();
             }
+
+            // Ignore files that were already uploaded
+            if ($reason->getStatusCode() == 412) {
+                return;
+            }
+
             $shouldThrow = true;
         };
 
