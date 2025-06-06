@@ -1,14 +1,11 @@
 import {watch} from 'vue';
 
 export const KEYFRAME_HEIGHT = 20;
-const KEYFRAME_STROKE = 'rgba(255, 255, 255, 0.5)';
 const KEYFRAME_STROKE_WIDTH = 1;
 const KEYFRAME_WIDTH = 9;
 const KEYFRAME_COMPACT_WIDTH = 3;
 
 const SELECTED_COLOR = '#ff5e00';
-
-const BORDER_RADIUS = 3;
 
 const COMPACTNESS = {
     LOW: Symbol(),
@@ -92,10 +89,7 @@ export default class SvgAnnotation {
         });
 
         if (this.annotation.pending) {
-            this.borders.push(this.drawBorder(2).attr({
-                stroke: 'white',
-                'stroke-dasharray': '6 2',
-            }));
+            this.borders.push(this.drawBorder(2).addClass('svg-border--pending'));
         }
 
         this.segments.forEach((s) => s.on('click', (e) => {
@@ -155,27 +149,15 @@ export default class SvgAnnotation {
             this.borders = this.borders.filter(b => b !== this.selectedBorder);
             this.selectedBorder = undefined;
         } else if (!this.selectedBorder) {
-            this.selectedBorder = this.drawBorder(1).attr({
-                stroke: 'white',
-            });
+            this.selectedBorder = this.drawBorder().addClass('svg-border--selected');
             this.borders.push(this.selectedBorder);
         }
 
         this.keyframes.forEach((k) => {
             if (k.frame === selected) {
-                k.attr({
-                    fill: this.selectedFill,
-                    'stroke-width': 2,
-                    stroke: 'white',
-                });
-                k.selected = true;
-            } else if (k.selected) {
-                k.attr({
-                    fill: this.fill,
-                    'stroke-width': 1,
-                    stroke: KEYFRAME_STROKE,
-                });
-                delete k.selected;
+                k.attr({fill: this.selectedFill}).addClass('svg-keyframe--selected');
+            } else if (k.hasClass('svg-keyframe--selected')) {
+                k.attr({fill: this.fill}).removeClass('svg-keyframe--selected');
             }
         })
     }
@@ -189,9 +171,8 @@ export default class SvgAnnotation {
         const rect = this.svg.rect(width, KEYFRAME_HEIGHT - strokeWidth).attr({
             x: firstFrame * this.xFactor + strokeWidth / 2,
             y: strokeWidth / 2,
-            rx: BORDER_RADIUS,
-            ry: BORDER_RADIUS,
-            fill: 'none',
+            class: 'svg-border',
+            // This must not be set with CSS as it is used for redrawing later.
             'stroke-width': strokeWidth,
         });
         rect.firstFrame = firstFrame;
@@ -221,11 +202,7 @@ export default class SvgAnnotation {
             .line(firstFrame * this.xFactor, KEYFRAME_HEIGHT / 2, lastFrame * this.xFactor, KEYFRAME_HEIGHT / 2)
             .attr({
                 stroke: '#' + this.color,
-                'stroke-width': 3,
-                'stroke-dasharray': '0 6',
-                'stroke-dashoffset': '1',
-                'stroke-linecap': 'round',
-                class: 'svg-annotation-unselectable',
+                class: 'svg-gap',
             });
 
         line.firstFrame = firstFrame;
@@ -245,11 +222,8 @@ export default class SvgAnnotation {
             const rect = this.svg.rect(width, KEYFRAME_HEIGHT).attr({
                 x: firstFrame * this.xFactor,
                 y: 0,
-                rx: BORDER_RADIUS,
-                ry: BORDER_RADIUS,
                 fill: this.fill,
-                opacity: 0.4,
-                class: 'svg-annotation-selectable',
+                class: 'svg-annotation-selectable svg-segment',
             });
 
             rect.firstFrame = firstFrame;
@@ -278,11 +252,10 @@ export default class SvgAnnotation {
         const rect = this.svg.rect(width, KEYFRAME_HEIGHT - KEYFRAME_STROKE_WIDTH).attr({
             x: x,
             y: KEYFRAME_STROKE_WIDTH / 2,
-            rx: BORDER_RADIUS,
-            ry: BORDER_RADIUS,
             fill: this.fill,
-            stroke: KEYFRAME_STROKE,
-            class: 'svg-annotation-selectable',
+            class: 'svg-annotation-selectable svg-keyframe',
+            // This must not be set with CSS as it is used to calculate the exact extent.
+            'stroke-width': KEYFRAME_STROKE_WIDTH,
         });
 
         if (this.compactness === COMPACTNESS.HIGH) {

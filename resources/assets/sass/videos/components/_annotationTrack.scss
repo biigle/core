@@ -21,13 +21,50 @@
         cursor: pointer;
     }
 
-    .svg-annotation-unselectable {
-        pointer-events: none;
-    }
-
     .svg-annotation-tracking {
         animation: 1s blink-tracking infinite;
         stroke-width: 2;
         fill: red;
     }
+
+    .svg-border {
+        fill: none;
+        rx: $border-radius-small;
+        ry: $border-radius-small;
+    }
+
+    .svg-border--pending {
+        stroke: white;
+        stroke-dasharray: 6, 2;
+    }
+
+    .svg-border--selected {
+        stroke: white;
+    }
+
+    .svg-keyframe {
+        stroke: rgba(255, 255, 255, 0.5);
+        rx: $border-radius-small;
+        ry: $border-radius-small;
+    }
+
+    .svg-keyframe--selected {
+        stroke-width: 2;
+        stroke: white;
+    }
+
+    .svg-gap {
+        stroke-width: 3;
+        stroke-dasharray: 0, 6;
+        stroke-dsahoffset: 1;
+        stroke-linecap: round;
+        pointer-events: none;
+    }
+
+    .svg-segment {
+        rx: $border-radius-small;
+        ry: $border-radius-small;
+        opacity: 0.4;
+    }
+
 }
