@@ -2,7 +2,6 @@
 import {handleErrorResponse} from '../../core/messages/store';
 import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
 
-
 export const LABELBOT_STATES = {
     INITIALIZING: 'initializing',
     COMPUTING: 'computing',
@@ -232,7 +231,11 @@ export default {
                     break;
                 }
             }
-            // Update State if LabelBOT is active
+            if (annotation.labelBOTLimitReached) {
+                this.updateLabelbotState(LABELBOT_STATES.BUSY);
+                return;
+            }
+
             if (this.labelbotIsActive) {
                 this.updateLabelbotState(LABELBOT_STATES.READY);
             }

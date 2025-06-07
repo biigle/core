@@ -1,8 +1,6 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
-import Messages from '@/core/messages/store.js';
 import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPolygonBrush.js';
-import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
@@ -39,8 +37,6 @@ export default {
             } else if (this.canAdd) {
                 if ((!this.hasSelectedLabel && !this.labelbotIsActive)) {
                     this.requireSelectedLabel();
-                } else if (this.labelbotState === LABELBOT_STATES.BUSY) {
-                    Messages.info("The maximum number of LabelBOT's requests is reached!")
                 } else {
                     this.interactionMode = 'polygonBrush';
                 }

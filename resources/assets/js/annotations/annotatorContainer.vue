@@ -727,11 +727,6 @@ export default {
                 this.openTab = '';
             }
         },
-        labelbotState(labelbotState) {
-            if (labelbotState === LABELBOT_STATES.BUSY) {
-                Messages.info("The maximum number of LabelBOT's requests is reached!")
-            }
-        },
         imageIndex() {
             // Remove LabelBOT's popups when switching images
             if (this.labelbotIsActive) {

@@ -12,6 +12,7 @@ use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Shape;
+use Cache;
 use DB;
 use Exception;
 use Generator;
@@ -19,6 +20,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Pgvector\Laravel\Vector;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class ImageAnnotationController extends Controller
 {
@@ -228,8 +231,21 @@ class ImageAnnotationController extends Controller
 
         $annotation->points = $points;
         $labelId = $request->input('label_id');
+
+        // LabelBOT
         $topNLabels = [];
+        $maxRequests = config('labelbot.M');
+        $cacheKey = "labelbot-requests-{$request->user()->id}";
+        $currentRequests = Cache::get($cacheKey, 0);
+
         if (is_null($labelId) && $request->has('feature_vector')) {
+
+            if ($currentRequests >= $maxRequests) {
+                throw new TooManyRequestsHttpException(message: "You already have {$currentRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
+            }
+
+            Cache::increment($cacheKey);
+
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
 
@@ -238,15 +254,21 @@ class ImageAnnotationController extends Controller
 
             // Convert the feature vector into a Vector object for compatibility with the query.
             $featureVector = new Vector($request->input('feature_vector'));
-
-            // Perform vector search.
-            $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
-
-            if (empty($topNLabels)) {
-                $labelId = -1;
-            } else {
+            try {
+                // Perform vector search.
+                $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
+                if (empty($topNLabels)) {
+                    throw new NotFoundHttpException("LabelBOT couldn't return any suggestions");
+                }
                 // Set labelId to top 1 label.
                 $labelId = $topNLabels[0];
+
+            } finally {
+                // Decrement LabelBOT request count
+                $count = Cache::decrement($cacheKey);
+                if ($count <= 0) {
+                    Cache::forget($cacheKey);
+                }
             }
         }
 
@@ -267,6 +289,8 @@ class ImageAnnotationController extends Controller
 
         // Attach the other two labels if they exist.
         $annotation->labelBOTLabels = Label::whereIn('id', array_slice($topNLabels, 1))->get()->toArray();
+        /** @phpstan-ignore property.notFound */
+        $annotation->labelBOTLimitReached = $currentRequests >= ($maxRequests - 1);
 
         return $annotation;
     }
