@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Views\Annotations;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
+use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
@@ -65,6 +66,17 @@ class AnnotationToolController extends Controller
 
         $tilesUriTemplate = Storage::disk(config('image.tiles.disk'))->url(':uuid/');
 
+        // Get the number of annotations from all volumes
+        // linked to projects the user has access to. This is needed for LabelBOT.
+        $volumeIds = DB::table('project_volume')
+            ->whereIn('project_id', $projectIds)
+            ->pluck('volume_id');
+
+        $annotationCount = ImageAnnotationLabelFeatureVector::select('annotation_id', 'volume_id')
+            ->whereIn('volume_id', $volumeIds)
+            ->distinct('annotation_id')
+            ->count('annotation_id');
+
         return view('annotations.show', [
             'user' => $user,
             'image' => $image,
@@ -74,6 +86,7 @@ class AnnotationToolController extends Controller
             'shapes' => $shapes,
             'annotationSessions' => $annotationSessions,
             'tilesUriTemplate' => $tilesUriTemplate,
+            'annotationCount' => $annotationCount,
         ]);
     }
 }
