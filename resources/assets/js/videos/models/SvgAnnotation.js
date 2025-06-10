@@ -54,7 +54,7 @@ export default class SvgAnnotation {
     draw() {
         this.compactness = this._getCompactness();
         const segments = this._getSegments();
-        const hasSingleLast = segments.length > 2 &&
+        const hasSingleAfterGap = segments.length > 2 &&
             segments[segments.length - 1].frames.length === 1 &&
             segments[segments.length - 2].gap;
 
@@ -62,8 +62,8 @@ export default class SvgAnnotation {
             if (s.gap) {
                 this._drawGap(s);
             } else {
-                const singleLast = hasSingleLast && i === (segments.length - 1)
-                this._drawSegment(s, singleLast);
+                const singleAfterGap = hasSingleAfterGap && i === (segments.length - 1)
+                this._drawSegment(s, singleAfterGap);
             }
         });
 
@@ -289,7 +289,7 @@ export default class SvgAnnotation {
         this.gaps.push(line);
     }
 
-    _drawSegment(segment, singleLast) {
+    _drawSegment(segment, singleAfterGap) {
         const frames = segment.frames;
         if (frames.length > 1) {
             const firstFrame = frames[0];
@@ -312,16 +312,15 @@ export default class SvgAnnotation {
             this.segments.push(rect);
         }
 
-        // TODO make singleLast extra argument and not remove these keyframes in compact display
-        frames.forEach((f, i) => this._drawKeyframe(f, singleLast || i > 0 && i === (frames.length - 1)));
+        frames.forEach((f, i) => this._drawKeyframe(f, i > 0 && i === (frames.length - 1), singleAfterGap));
     }
 
-    _drawKeyframe(frame, last) {
-        let width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
-        let symbol = this.compactness === COMPACTNESS.MEDIUM ? this.keyframeSymbols.compact : this.keyframeSymbols.default;
+    _drawKeyframe(frame, last, singleAfterGap) {
+        let width = this.compactness === COMPACTNESS.LOW ? KEYFRAME_WIDTH : KEYFRAME_COMPACT_WIDTH;
+        let symbol = this.compactness === COMPACTNESS.LOW ? this.keyframeSymbols.default : this.keyframeSymbols.compact;
         let x = frame * this.xFactor;
 
-        if (last) {
+        if (last || singleAfterGap) {
             x -= width;
         }
 
@@ -333,12 +332,13 @@ export default class SvgAnnotation {
             .fill(this.fill)
             .addClass('svg-annotation-selectable svg-keyframe');
 
-        if (this.compactness === COMPACTNESS.HIGH) {
+        if (!singleAfterGap && this.compactness === COMPACTNESS.HIGH) {
             rect.remove();
         }
 
         rect.frame = frame;
         rect.last = last;
+        rect.singleAfterGap = singleAfterGap;
 
         this.keyframes.push(rect);
     }
@@ -350,17 +350,17 @@ export default class SvgAnnotation {
             this.compactness = newCompactness;
 
             if (newCompactness === COMPACTNESS.HIGH) {
-                this.keyframes.forEach(f => f.remove());
+                this.keyframes.filter(k => !k.singleAfterGap).forEach(k => k.remove());
             } else {
-                this.keyframes.forEach(f => this.svg.add(f));
+                this.keyframes.filter(k => !k.singleAfterGap).forEach(k => this.svg.add(k));
             }
         }
     }
 
     _updateKeyframes() {
         const svgWidth = this.svg.root().width();
-        let width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
-        let symbol = this.compactness === COMPACTNESS.MEDIUM ? this.keyframeSymbols.compact : this.keyframeSymbols.default;
+        let width = this.compactness === COMPACTNESS.LOW ? KEYFRAME_WIDTH : KEYFRAME_COMPACT_WIDTH;
+        let symbol = this.compactness === COMPACTNESS.LOW ? this.keyframeSymbols.default : this.keyframeSymbols.compact;
 
         this.keyframes.forEach((k) => {
             const attrs = {
