@@ -357,7 +357,7 @@ export default class SvgAnnotation {
             const attrs = {
                 x: k.frame * this.xFactor,
             };
-            if (k.last) {
+            if (k.last || k.singleAfterGap) {
                 attrs.x -= width;
             }
             // Prevent overflow.
