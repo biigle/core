@@ -126,10 +126,10 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         $iterator = $this->getIterator($this->tempPath);
 
-        $client = $this->getClient($disk);
-        $bucket = $this->getBucket($disk);
+        $uploads = function ($files) use ($disk) {
+            $client = $this->getClient($disk);
+            $bucket = $this->getBucket($disk);
 
-        $uploads = function ($files) use ($client, $bucket) {
             $tiles = config('image.tiles.disk');
             $root = config("filesystems.{$tiles}.disks.root", "");
             $root = strlen($root) > 0 ? $root . "/" : $root;
@@ -215,7 +215,7 @@ class TileSingleImage extends Job implements ShouldQueue
 
         if ($shouldThrow) {
             $id = $this->image->id;
-            throw new UploadException("Failed to upload tiles for image with id {$id}");
+            throw new UploadException("Failed to upload tiles for image with id {$id}.");
         }
     }
 
