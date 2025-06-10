@@ -5,17 +5,6 @@
 <script>
 const LANE_MARGIN_BOTTOM = 5;
 
-/*<div class="annotation-lane">
-        <annotation-clip v-for="annotation in lane"
-            :key="annotation.id"
-            :annotation="annotation"
-            :element-width="elementWidth"
-            :label="label"
-            :duration="duration"
-            @select="emitSelect"
-            @deselect="emitDeselect"
-            ></annotation-clip>
-    </div>*/
 import SvgAnnotation from '../models/SvgAnnotation.js';
 import {KEYFRAME_HEIGHT} from '../models/SvgAnnotation.js';
 import { SVG } from '@svgdotjs/svg.js'

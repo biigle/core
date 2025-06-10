@@ -5,6 +5,8 @@ const KEYFRAME_STROKE_WIDTH = 1;
 const KEYFRAME_WIDTH = 9;
 const KEYFRAME_COMPACT_WIDTH = 3;
 
+const BORDER_RADIUS = 3;
+
 const SELECTED_COLOR = '#ff5e00';
 
 const COMPACTNESS = {
@@ -19,17 +21,11 @@ export default class SvgAnnotation {
         this.color = args.label.color || '000000';
         this.svg = args.svg;
         this.xFactor = args.xFactor;
+        this.onSelect = args.onSelect;
+        this.onDeselect = args.onDeselect;
 
-        if (this.annotation.wholeFrame) {
-            if (this.hasDarkColor()) {
-                this.fill = this.svg.root().findOne('.dark-pattern') || this.generatePattern('white').attr({class: 'dark-pattern'});
-            } else {
-                this.fill = this.svg.root().findOne('.bright-pattern') || this.generatePattern('black').attr({class: 'bright-pattern'});
-            }
-        } else {
-            this.fill = '#' + this.color;
-        }
-
+        this.fill = this._getFill();
+        this.keyframeSymbols = this._getKeyframeSymbols();
         this.selectedFill = undefined;
 
         this.segments = [];
@@ -39,9 +35,6 @@ export default class SvgAnnotation {
         this.selectedBorder = undefined;
 
         this.watchers = [];
-
-        this.onSelect = args.onSelect;
-        this.onDeselect = args.onDeselect;
     }
 
     addTo(svg) {
@@ -58,38 +51,24 @@ export default class SvgAnnotation {
         }
     }
 
-    remove() {
-        this.segments.forEach(s => s.remove());
-        this.segments = [];
-        this.gaps.forEach(g => g.remove());
-        this.gaps = [];
-        this.keyframes.forEach(k => k.remove());
-        this.keyframes = [];
-        this.borders.forEach(k => k.remove());
-        this.borders = [];
-        this.watchers.forEach(unwatch => unwatch());
-        this.watchers = [];
-        this.selectedBorder = undefined;
-    }
-
     draw() {
-        this.compactness = this.getCompactness();
-        const segments = this.getSegments();
+        this.compactness = this._getCompactness();
+        const segments = this._getSegments();
         const hasSingleLast = segments.length > 2 &&
             segments[segments.length - 1].frames.length === 1 &&
             segments[segments.length - 2].gap;
 
         segments.forEach((s, i) => {
             if (s.gap) {
-                this.drawGap(s);
+                this._drawGap(s);
             } else {
                 const singleLast = hasSingleLast && i === (segments.length - 1)
-                this.drawSegment(s, singleLast);
+                this._drawSegment(s, singleLast);
             }
         });
 
         if (this.annotation.pending) {
-            this.borders.push(this.drawBorder(2).addClass('svg-border--pending'));
+            this.borders.push(this._drawBorder(2).addClass('svg-border--pending'));
         }
 
         this.segments.forEach((s) => s.on('click', (e) => {
@@ -108,22 +87,123 @@ export default class SvgAnnotation {
             e.stopPropagation();
         }));
 
-        this.watchers.push(watch(this.annotation._frames, this.redraw.bind(this), {deep: true}));
-        this.watchers.push(watch(this.annotation._selected, this.updateSelected.bind(this)));
-        this.watchers.push(watch(this.annotation._tracking, this.updateTracking.bind(this)));
+        this.watchers.push(watch(this.annotation._frames, this._redraw.bind(this), {deep: true}));
+        this.watchers.push(watch(this.annotation._selected, this._updateSelected.bind(this)));
+        this.watchers.push(watch(this.annotation._tracking, this._updateTracking.bind(this)));
 
         // Update selected border if the annotation is linked, split or keyframes change.
         if (this.annotation.isSelected) {
-            this.updateSelected(this.annotation.selected);
+            this._updateSelected(this.annotation.selected);
         }
     }
 
-    redraw() {
+    updateXFactor(xFactor) {
+        this.xFactor = xFactor;
+        this._updateCompactness();
+        this._updateGaps();
+        this._updateSegments();
+        this._updateKeyframes();
+        this._updateBorders();
+    }
+
+    remove() {
+        this.segments.forEach(s => s.remove());
+        this.segments = [];
+        this.gaps.forEach(g => g.remove());
+        this.gaps = [];
+        this.keyframes.forEach(k => k.remove());
+        this.keyframes = [];
+        this.borders.forEach(k => k.remove());
+        this.borders = [];
+        this.watchers.forEach(unwatch => unwatch());
+        this.watchers = [];
+        this.selectedBorder = undefined;
+    }
+
+    _getFill() {
+        if (this.annotation.wholeFrame) {
+            let fill;
+
+            if (this._hasDarkColor()) {
+                if (!(fill = this.svg.root().remember('dark-pattern'))) {
+                    fill = this._generatePattern('white');
+                    this.svg.root().remember('dark-pattern', fill);
+                }
+            } else {
+                if (!(fill = this.svg.root().remember('bright-pattern'))) {
+                    fill = this._generatePattern('black');
+                    this.svg.root().remember('bright-pattern', fill);
+                }
+            }
+
+            return fill;
+        }
+
+        return '#' + this.color;
+    }
+
+    _getKeyframeSymbols() {
+        let symbols = this.svg.root().remember('keyframe-symbol');
+
+        if (!symbols) {
+            // Draw a rectangle with "inset" border. This is done with the double stroke
+            // width and a clip rectangle.
+            const rect = this.svg.root().defs()
+                .rect(KEYFRAME_WIDTH, KEYFRAME_HEIGHT)
+                .attr({
+                    'stroke-width': KEYFRAME_STROKE_WIDTH * 2,
+                    rx: BORDER_RADIUS,
+                    ry: BORDER_RADIUS,
+                })
+                .clipWith(
+                    this.svg.root().defs()
+                        .rect(KEYFRAME_WIDTH, KEYFRAME_HEIGHT)
+                        .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
+                );
+
+            const rectCompact = this.svg.root().defs()
+                .rect(KEYFRAME_COMPACT_WIDTH, KEYFRAME_HEIGHT)
+                .attr({
+                    'stroke-width': KEYFRAME_STROKE_WIDTH * 2,
+                    rx: BORDER_RADIUS,
+                    ry: BORDER_RADIUS,
+                })
+                .clipWith(
+                    this.svg.root().defs()
+                        .rect(KEYFRAME_COMPACT_WIDTH, KEYFRAME_HEIGHT)
+                        .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
+                );
+
+            symbols = {
+                default: this.svg.root().defs().symbol().add(rect),
+                compact: this.svg.root().defs().symbol().add(rectCompact),
+            };
+            this.svg.root().remember('keyframe-symbol', symbols);
+        }
+
+        return symbols;
+    }
+
+    _getSelectedFill() {
+        if (this.annotation.wholeFrame) {
+            let color = this.svg.root().remember('selected-pattern');
+            if (!color) {
+                color = this._generatePattern('white', SELECTED_COLOR);
+                this.svg.root().remember('selected-pattern', color);
+            }
+
+            return color;
+        }
+
+        return SELECTED_COLOR;
+    }
+
+    _redraw() {
         this.remove();
         this.draw();
     }
 
-    updateTracking(tracking) {
+    _updateTracking(tracking) {
         if (tracking) {
             this.keyframes[0]
                 .addClass('svg-annotation-tracking')
@@ -135,13 +215,9 @@ export default class SvgAnnotation {
         }
     }
 
-    updateSelected(selected) {
+    _updateSelected(selected) {
         if (!this.selectedFill) {
-            if (this.annotation.wholeFrame) {
-                this.selectedFill = this.svg.root().findOne('.selected-pattern') || this.generatePattern('white', SELECTED_COLOR).attr({class: 'selected-pattern'});
-            } else {
-                this.selectedFill = SELECTED_COLOR;
-            }
+            this.selectedFill = this._getSelectedFill();
         }
 
         if (selected === false && this.selectedBorder) {
@@ -149,7 +225,7 @@ export default class SvgAnnotation {
             this.borders = this.borders.filter(b => b !== this.selectedBorder);
             this.selectedBorder = undefined;
         } else if (!this.selectedBorder) {
-            this.selectedBorder = this.drawBorder().addClass('svg-border--selected');
+            this.selectedBorder = this._drawBorder().addClass('svg-border--selected');
             this.borders.push(this.selectedBorder);
         }
 
@@ -162,7 +238,7 @@ export default class SvgAnnotation {
         })
     }
 
-    drawBorder(strokeWidth) {
+    _drawBorder(strokeWidth) {
         strokeWidth = strokeWidth || 1;
         const firstFrame = this.annotation.frames[0];
         const lastFrame = this.annotation.frames[this.annotation.frames.length - 1];
@@ -171,6 +247,8 @@ export default class SvgAnnotation {
         const rect = this.svg.rect(width, KEYFRAME_HEIGHT - strokeWidth).attr({
             x: firstFrame * this.xFactor + strokeWidth / 2,
             y: strokeWidth / 2,
+            rx: BORDER_RADIUS,
+            ry: BORDER_RADIUS,
             class: 'svg-border',
             // This must not be set with CSS as it is used for redrawing later.
             'stroke-width': strokeWidth,
@@ -181,7 +259,7 @@ export default class SvgAnnotation {
         return rect;
     }
 
-    drawGap(segment) {
+    _drawGap(segment) {
         const firstFrame = segment.frames[0];
         const lastFrame = segment.frames[segment.frames.length - 1];
 
@@ -211,7 +289,7 @@ export default class SvgAnnotation {
         this.gaps.push(line);
     }
 
-    drawSegment(segment, singleLast) {
+    _drawSegment(segment, singleLast) {
         const frames = segment.frames;
         if (frames.length > 1) {
             const firstFrame = frames[0];
@@ -223,6 +301,8 @@ export default class SvgAnnotation {
                 x: firstFrame * this.xFactor,
                 y: 0,
                 fill: this.fill,
+                rx: BORDER_RADIUS,
+                ry: BORDER_RADIUS,
                 class: 'svg-annotation-selectable svg-segment',
             });
 
@@ -232,31 +312,26 @@ export default class SvgAnnotation {
             this.segments.push(rect);
         }
 
-        frames.forEach((f, i) => this.drawKeyframe(f, singleLast || i > 0 && i === (frames.length - 1)));
+        // TODO make singleLast extra argument and not remove these keyframes in compact display
+        frames.forEach((f, i) => this._drawKeyframe(f, singleLast || i > 0 && i === (frames.length - 1)));
     }
 
-    drawKeyframe(frame, last) {
-        // TODO fix border display with clip element and double border width.
-        // See: https://stackoverflow.com/a/32162431/1796523
+    _drawKeyframe(frame, last) {
         let width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
-        width -= KEYFRAME_STROKE_WIDTH;
-        let x = frame * this.xFactor + (KEYFRAME_STROKE_WIDTH / 2);
+        let symbol = this.compactness === COMPACTNESS.MEDIUM ? this.keyframeSymbols.compact : this.keyframeSymbols.default;
+        let x = frame * this.xFactor;
 
         if (last) {
             x -= width;
         }
 
         // Prevent overflow.
-        x = Math.min(x, this.svg.root().width() - width - (KEYFRAME_STROKE_WIDTH / 2));
+        x = Math.min(x, this.svg.root().width() - width);
 
-        const rect = this.svg.rect(width, KEYFRAME_HEIGHT - KEYFRAME_STROKE_WIDTH).attr({
-            x: x,
-            y: KEYFRAME_STROKE_WIDTH / 2,
-            fill: this.fill,
-            class: 'svg-annotation-selectable svg-keyframe',
-            // This must not be set with CSS as it is used to calculate the exact extent.
-            'stroke-width': KEYFRAME_STROKE_WIDTH,
-        });
+        const rect = this.svg.use(symbol)
+            .move(x, 0)
+            .fill(this.fill)
+            .addClass('svg-annotation-selectable svg-keyframe');
 
         if (this.compactness === COMPACTNESS.HIGH) {
             rect.remove();
@@ -268,18 +343,8 @@ export default class SvgAnnotation {
         this.keyframes.push(rect);
     }
 
-    updateXFactor(xFactor) {
-        this.xFactor = xFactor;
-        this.updateCompactness();
-        this.updateKeyframes();
-        this.updateSegments();
-        this.updateGpas();
-        this.updateBorders();
-
-    }
-
-    updateCompactness() {
-        const newCompactness = this.getCompactness();
+    _updateCompactness() {
+        const newCompactness = this._getCompactness();
 
         if (newCompactness !== this.compactness) {
             this.compactness = newCompactness;
@@ -292,39 +357,45 @@ export default class SvgAnnotation {
         }
     }
 
-    updateKeyframes() {
+    _updateKeyframes() {
         const svgWidth = this.svg.root().width();
         let width = this.compactness === COMPACTNESS.MEDIUM ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
-        width -= KEYFRAME_STROKE_WIDTH;
+        let symbol = this.compactness === COMPACTNESS.MEDIUM ? this.keyframeSymbols.compact : this.keyframeSymbols.default;
+
         this.keyframes.forEach((k) => {
-            const shape = {
-                x: k.frame * this.xFactor + (KEYFRAME_STROKE_WIDTH / 2),
-                width: width,
+            const attrs = {
+                x: k.frame * this.xFactor,
             };
             if (k.last) {
-                shape.x -= width;
+                attrs.x -= width;
             }
             // Prevent overflow.
-            shape.x = Math.min(shape.x, svgWidth - width - (KEYFRAME_STROKE_WIDTH / 2));
-            k.attr(shape);
+            attrs.x = Math.min(attrs.x, svgWidth - width);
+
+            // Switch to compact keyframes on demand.
+            if (k.attr('href') !== symbol.attr('id')) {
+                attrs.href = '#' + symbol.attr('id');
+            }
+
+            k.attr(attrs);
         });
     }
 
-    updateSegments() {
+    _updateSegments() {
         this.segments.forEach((s) => s.attr({
             x: s.firstFrame * this.xFactor,
             width: Math.max((s.lastFrame - s.firstFrame) * this.xFactor, KEYFRAME_COMPACT_WIDTH),
         }));
     }
 
-    updateGpas() {
+    _updateGaps() {
         this.gaps.forEach((g) => g.attr({
             x1: g.firstFrame * this.xFactor,
             x2: g.lastFrame * this.xFactor,
         }));
     }
 
-    updateBorders() {
+    _updateBorders() {
         const borderMinWidth = this.compactness !== COMPACTNESS.LOW ? KEYFRAME_COMPACT_WIDTH : KEYFRAME_WIDTH;
         this.borders.forEach((b) => {
             const strokeWidth = b.attr('stroke-width');
@@ -338,7 +409,7 @@ export default class SvgAnnotation {
         });
     }
 
-    getSegments() {
+    _getSegments() {
         let frames = [this.annotation.frames.slice()];
         let gaps = [false];
         let i = 0;
@@ -362,7 +433,7 @@ export default class SvgAnnotation {
         });
     }
 
-    getCompactness() {
+    _getCompactness() {
         let minDistance = Infinity;
         for (let i = this.annotation.frames.length - 1; i > 0; i--) {
             if (this.annotation.frames[i] === null || this.annotation.frames[i - 1] === null) {
@@ -373,16 +444,16 @@ export default class SvgAnnotation {
         }
         minDistance *= this.xFactor;
 
-        if (minDistance <= (KEYFRAME_COMPACT_WIDTH * 3)) {
+        if (minDistance <= (KEYFRAME_COMPACT_WIDTH * 2)) {
             return COMPACTNESS.HIGH;
-        } else if (minDistance <= (KEYFRAME_WIDTH * 3)) {
+        } else if (minDistance <= (KEYFRAME_WIDTH * 2)) {
             return COMPACTNESS.MEDIUM;
         }
 
         return COMPACTNESS.LOW;
     }
 
-    hasDarkColor() {
+    _hasDarkColor() {
         // see: https://stackoverflow.com/a/12043228/1796523
         let rgb = parseInt(this.color, 16);
         let r = (rgb >> 16) & 0xff;
@@ -393,7 +464,7 @@ export default class SvgAnnotation {
         return luma < 128;
     }
 
-    generatePattern(strokeColor, backgroundColor) {
+    _generatePattern(strokeColor, backgroundColor) {
         backgroundColor = backgroundColor || '#' + this.color;
         return this.svg.root().pattern(6, 6, (add) => {
             add.rect(6, 6).fill(backgroundColor);
