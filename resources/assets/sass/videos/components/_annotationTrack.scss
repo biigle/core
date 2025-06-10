@@ -21,12 +21,6 @@
         cursor: pointer;
     }
 
-    .svg-annotation-tracking {
-        animation: 1s blink-tracking infinite;
-        stroke-width: 2;
-        fill: red;
-    }
-
     .svg-border {
         fill: none;
     }
@@ -41,11 +35,24 @@
     }
 
     .svg-keyframe {
+        // This is actually twice the displayed stroke width. As the stroke should only
+        // be displayed inside the keyframe element, it is doubled and the outside part is
+        // clipped.
+        stroke-width: 2;
         stroke: rgba(255, 255, 255, 0.5);
     }
 
     .svg-keyframe--selected {
+        // Also double the actual stroke width, see above.
+        stroke-width: 4;
         stroke: white;
+    }
+
+    .svg-keyframe--tracking {
+        animation: 1s blink-tracking infinite;
+        // Also double the actual stroke width, see above.
+        stroke-width: 2;
+        fill: red;
     }
 
     .svg-gap {

@@ -1,7 +1,6 @@
 import {watch} from 'vue';
 
 export const KEYFRAME_HEIGHT = 20;
-const KEYFRAME_STROKE_WIDTH = 1;
 const KEYFRAME_WIDTH = 9;
 const KEYFRAME_COMPACT_WIDTH = 3;
 
@@ -150,11 +149,7 @@ export default class SvgAnnotation {
             // width and a clip rectangle.
             const rect = this.svg.root().defs()
                 .rect(KEYFRAME_WIDTH, KEYFRAME_HEIGHT)
-                .attr({
-                    'stroke-width': KEYFRAME_STROKE_WIDTH * 2,
-                    rx: BORDER_RADIUS,
-                    ry: BORDER_RADIUS,
-                })
+                .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
                 .clipWith(
                     this.svg.root().defs()
                         .rect(KEYFRAME_WIDTH, KEYFRAME_HEIGHT)
@@ -163,11 +158,7 @@ export default class SvgAnnotation {
 
             const rectCompact = this.svg.root().defs()
                 .rect(KEYFRAME_COMPACT_WIDTH, KEYFRAME_HEIGHT)
-                .attr({
-                    'stroke-width': KEYFRAME_STROKE_WIDTH * 2,
-                    rx: BORDER_RADIUS,
-                    ry: BORDER_RADIUS,
-                })
+                .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
                 .clipWith(
                     this.svg.root().defs()
                         .rect(KEYFRAME_COMPACT_WIDTH, KEYFRAME_HEIGHT)
@@ -206,11 +197,11 @@ export default class SvgAnnotation {
     _updateTracking(tracking) {
         if (tracking) {
             this.keyframes[0]
-                .addClass('svg-annotation-tracking')
+                .addClass('svg-keyframe--tracking')
                 .add(this.svg.element('title').words('Tracking in progress'));
         } else {
             this.keyframes[0]
-                .removeClass('svg-annotation-tracking')
+                .removeClass('svg-keyframe--tracking')
                 .clear();
         }
     }
