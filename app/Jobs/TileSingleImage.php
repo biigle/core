@@ -125,16 +125,13 @@ class TileSingleImage extends Job implements ShouldQueue
     public function uploadToS3Storage($disk)
     {
         $iterator = $this->getIterator($this->tempPath);
+        $root = isset($disk->getConfig()['root']) ? $disk->getConfig()['root'] . "/" : "";
 
-        $uploads = function ($files) use ($disk) {
+        $uploads = function ($files) use ($disk, $root) {
             $client = $this->getClient($disk);
             $bucket = $this->getBucket($disk);
-
-            $tiles = config('image.tiles.disk');
-            $root = config("filesystems.{$tiles}.disks.root", "");
-            $root = strlen($root) > 0 ? $root . "/" : $root;
-
             $tmpLength = strlen(config('image.tiles.tmp_dir')) + 1;
+
             foreach ($files as $file) {
                 $path = substr($file, $tmpLength);
                 $prefix = $path[0] . $path[1] . '/' . $path[2] . $path[3] . "/";
@@ -143,7 +140,7 @@ class TileSingleImage extends Job implements ShouldQueue
                     'Bucket' => $bucket,
                     'Key' => "{$root}{$prefix}{$path}",
                     'SourceFile' => $file,
-                    // Prevent overriding files that were already uploaded
+                    // Return with error if file already exist
                     '@http' => [
                         'headers' => [
                             'If-None-Match' => '*'
@@ -153,8 +150,13 @@ class TileSingleImage extends Job implements ShouldQueue
             }
         };
 
-        $files = $uploads($iterator);
-        $this->sendRequests($files);
+        try {
+            $this->sendRequests($uploads($iterator));
+        } catch (Exception $e) {
+            $dir = substr(fragment_uuid_path($this->image->uuid), 0, 3);
+            $disk->deleteDirectory($dir);
+            throw $e;
+        }
     }
 
     /**
@@ -190,20 +192,20 @@ class TileSingleImage extends Job implements ShouldQueue
     protected function sendRequests($files, $onFullfill = null, $onReject = null)
     {
         $concurrency = config('image.tiles.concurrent_requests');
-        $shouldThrow = false;
 
         // The promise will be rejected once the retry limit is reached
-        $failedUploads = function ($reason, $index) use ($onReject, &$shouldThrow) {
+        $failedUploads = function ($reason, $index) use ($onReject, &$success) {
             if ($onReject) {
                 $onReject();
             }
 
-            // Ignore files that were already uploaded
+            $id = $this->image->id;
+
             if ($reason->getStatusCode() == 412) {
-                return;
+                throw new UploadException("Tile already exist for image with id {$id}.");
             }
 
-            $shouldThrow = true;
+            throw new UploadException("Tile upload failed for image with id {$id}.");
         };
 
         Each::ofLimit(
@@ -212,11 +214,6 @@ class TileSingleImage extends Job implements ShouldQueue
             $onFullfill,
             $failedUploads
         )->wait();
-
-        if ($shouldThrow) {
-            $id = $this->image->id;
-            throw new UploadException("Failed to upload tiles for image with id {$id}.");
-        }
     }
 
     /**
