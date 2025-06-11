@@ -2,22 +2,22 @@
 
 namespace Biigle\Tests\Jobs;
 
-use ArrayIterator;
-use Aws\Command;
-use Aws\MockHandler;
-use Aws\Result;
-use Aws\S3\Exception\S3Exception;
-use Aws\S3\S3Client;
-use Biigle\Jobs\TileSingleImage;
-use Biigle\Tests\ImageTest;
-use Composer\InstalledVersions;
-use Exception;
 use File;
-use GuzzleHttp\Psr7\Response;
-use Jcupitt\Vips\Image;
 use Mockery;
 use Storage;
 use TestCase;
+use Aws\Result;
+use Aws\Command;
+use ArrayIterator;
+use Aws\MockHandler;
+use Aws\S3\S3Client;
+use Jcupitt\Vips\Image;
+use Biigle\Tests\ImageTest;
+use GuzzleHttp\Psr7\Response;
+use Composer\InstalledVersions;
+use Biigle\Jobs\TileSingleImage;
+use Aws\S3\Exception\S3Exception;
+use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 
 class TileSingleImageTest extends TestCase
 {
@@ -100,22 +100,26 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $disk = Mockery::mock();
+        $disk = Storage::fake('test-tiles');
         $client = new S3Client($this->s3Config);
         $client->getHandlerList()->setHandler($mock);
 
         // Treat images as tiles for Biigle\Image
-        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
+        $tiles = ['exif-test.jpg', 'test-image.jpg', 'test-image.png'];
 
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
         $job->files = $tiles;
         $job->useParentGetIterator = false;
         $job->client = $client;
+        $job->disk = $disk;
+        $job->image = $image;
 
         $job->uploadToS3Storage($disk);
 
-        $this->assertEquals($tiles, $job->uploadedFiles);
+        $uploadedFiles = array_map(fn($f) => basename($f), $disk->allFiles());
+
+        $this->assertEquals($tiles, $uploadedFiles);
     }
 
     public function testUploadToS3StorageThrowException()
@@ -136,7 +140,7 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $disk = Mockery::mock();
+        $disk = Storage::fake('test-tiles');
         $config = [...$this->s3Config];
         $config['retries'] = 0;
         $client = new S3Client($config);
@@ -150,15 +154,64 @@ class TileSingleImageTest extends TestCase
         $job->files = $tiles;
         $job->useParentGetIterator = false;
         $job->client = $client;
+        $job->disk = $disk;
+        $job->image = $image;
 
         $fails = false;
         try {
             $job->uploadToS3Storage($disk);
-        } catch (Exception $e) {
+        } catch (UploadException $e) {
             $fails = true;
         }
 
         $this->assertTrue($fails);
+        $this->assertFalse($disk->exists(fragment_uuid_path($image->uuid)));
+    }
+
+    public function testUploadToS3StorageTilesExist()
+    {
+        if (!InstalledVersions::isInstalled($this->awsPackage)) {
+            $this->markTestSkipped();
+        }
+
+        config(['image.tiles.concurrent_requests' => 2]);
+
+        $mock = new MockHandler();
+        $mock->append(
+            new Result(),
+            new S3Exception("test", new Command("mockCommand"), [
+                'code' => 'mockCode',
+                'response' => new Response(412)
+            ]),
+            new Result(),
+        );
+
+        $disk = Storage::fake('test-tiles');
+        $config = [...$this->s3Config];
+        $config['retries'] = 0;
+        $client = new S3Client($config);
+        $client->getHandlerList()->setHandler($mock);
+
+        // Treat images as tiles for Biigle\Image
+        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
+
+        $image = ImageTest::create();
+        $job = new TileSingleImageStub($image);
+        $job->files = $tiles;
+        $job->useParentGetIterator = false;
+        $job->client = $client;
+        $job->disk = $disk;
+        $job->image = $image;
+
+        $fails = false;
+        try {
+            $job->uploadToS3Storage($disk);
+        } catch (UploadException $e) {
+            $fails = true;
+        }
+
+        $this->assertTrue($fails);
+        $this->assertFalse($disk->exists(fragment_uuid_path($image->uuid)));
     }
 
     public function testUploadToS3StorageRetryUpload()
@@ -184,63 +237,30 @@ class TileSingleImageTest extends TestCase
             new Result(),
         );
 
-        $disk = Mockery::mock();
+        $disk = Storage::fake('test-tiles');
         $config = [...$this->s3Config];
         $config['retries'] = 1;
         $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
 
         // Treat images as tiles for Biigle\Image
-        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
+        $tiles = ['exif-test.jpg', 'test-image.jpg', 'test-image.png'];
 
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
         $job->files = $tiles;
         $job->useParentGetIterator = false;
         $job->client = $client;
+        $job->disk = $disk;
+        $job->image = $image;
 
         $job->uploadToS3Storage($disk);
 
-        $this->assertEquals($tiles, $job->uploadedFiles);
+        $uploadedFiles = array_map(fn($f) => basename($f), $disk->allFiles());
+
+        $this->assertEquals($tiles, $uploadedFiles);
     }
 
-    public function testUploadToS3StorageThrowNoException()
-    {
-        if (!InstalledVersions::isInstalled($this->awsPackage)) {
-            $this->markTestSkipped();
-        }
-
-        config(['image.tiles.concurrent_requests' => 2]);
-
-        $mock = new MockHandler();
-        $mock->append(
-            new Result(),
-            // Simulate that the file has already been uploaded
-            new S3Exception("test", new Command("mockCommand"), [
-                'code' => 'mockCode',
-                'response' => new Response(412)
-            ]),
-            new Result(),
-        );
-
-        $disk = Mockery::mock();
-        $config = [...$this->s3Config];
-        $client = new S3Client($config);
-        $client->getHandlerList()->setHandler($mock);
-
-        // Treat images as tiles for Biigle\Image
-        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
-
-        $image = ImageTest::create();
-        $job = new TileSingleImageStub($image);
-        $job->files = $tiles;
-        $job->useParentGetIterator = false;
-        $job->client = $client;
-
-        $job->uploadToS3Storage($disk);
-
-        $this->assertEquals(['test-image.jpg', 'exif-test.jpg'], $job->uploadedFiles);
-    }
 
     public function testQueue()
     {
@@ -259,9 +279,11 @@ class TileSingleImageStub extends TileSingleImage
 
     public $files = [];
 
-    public $uploadedFiles = [];
-
     public $client = null;
+
+    public $disk = null;
+
+    public $image = null;
 
     protected function getVipsImage($path)
     {
@@ -295,7 +317,10 @@ class TileSingleImageStub extends TileSingleImage
     protected function sendRequests($files, $onFullfill = null, $onReject = null)
     {
         $onFullfill = function ($res, $index) {
-            $this->uploadedFiles[] = basename($res->get('ObjectURL'));
+            // Simulate uploaded files
+            $fragment = fragment_uuid_path($this->image->uuid);
+            $path = $fragment . "/" . basename($res->get('ObjectURL'));
+            $this->disk->put($path, "test");
         };
         return parent::sendRequests($files, $onFullfill, $onReject);
     }
