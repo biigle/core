@@ -14,6 +14,13 @@ const COMPACTNESS = {
     HIGH: Symbol(),
 };
 
+/**
+ * Why does this class exist? We could do this more elegantly with Vue components!
+ * Explanation: Video annotations in the timeline were implemented as nested Vue components
+ * before. This was very slow, though. This lower-level implementation with SVGs is much
+ * faster. It may also allow future performance optimizations such as only rendering the
+ * content of the visible viewport in the timeline (when it is zoomed in).
+ */
 export default class SvgAnnotation {
     constructor(args) {
         this.annotation = args.annotation;
