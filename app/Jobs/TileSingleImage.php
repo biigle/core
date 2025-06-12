@@ -202,7 +202,7 @@ class TileSingleImage extends Job implements ShouldQueue
             $id = $this->image->id;
 
             if ($reason->getStatusCode() == 412) {
-                throw new UploadException("Tile already exist for image with id {$id}.");
+                throw new UploadException("Tile upload failed because a tile already exist for image with id {$id}.");
             }
 
             throw new UploadException("Tile upload failed for image with id {$id}.");
