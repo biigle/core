@@ -1,18 +1,74 @@
+@keyframes blink-tracking {
+    50% {
+        fill: transparent;
+    }
+    100% {
+        fill: red;
+    }
+}
+
+
 .annotation-track {
     position: relative;
     border-bottom: 1px solid $legend-border-color;
     padding: 5px 0;
 
-    .annotation-lane {
-        position: relative;
-        height: 20px;
-
-        &:not(:last-child) {
-            margin-bottom: 5px;
-        }
+    svg {
+        display: block;
     }
 
-    .annotation-clip {
-        height: 100%;
+    .svg-annotation-selectable {
+        cursor: pointer;
     }
+
+    .svg-border {
+        fill: none;
+    }
+
+    .svg-border--multi-frame {
+        stroke: rgba(255, 255, 255, 0.25);
+    }
+
+    .svg-border--pending {
+        stroke: white;
+        stroke-dasharray: 6, 2;
+    }
+
+    .svg-border--selected {
+        stroke: white;
+    }
+
+    .svg-keyframe {
+        // This is actually twice the displayed stroke width. As the stroke should only
+        // be displayed inside the keyframe element, it is doubled and the outside part is
+        // clipped.
+        stroke-width: 2;
+        stroke: rgba(255, 255, 255, 0.5);
+    }
+
+    .svg-keyframe--selected {
+        // Also double the actual stroke width, see above.
+        stroke-width: 4;
+        stroke: white;
+    }
+
+    .svg-keyframe--tracking {
+        animation: 1s blink-tracking infinite;
+        // Also double the actual stroke width, see above.
+        stroke-width: 2;
+        fill: red;
+    }
+
+    .svg-gap {
+        stroke-width: 3;
+        stroke-dasharray: 0, 6;
+        stroke-dsahoffset: 1;
+        stroke-linecap: round;
+        pointer-events: none;
+    }
+
+    .svg-segment {
+        opacity: 0.4;
+    }
+
 }
