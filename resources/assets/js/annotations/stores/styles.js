@@ -29,7 +29,7 @@ let defaultStrokeOutline = new Stroke({
 
 let selectedStrokeOutline = new Stroke({
     color: colors.white,
-    width: 6,
+    width: 9,
 });
 
 let defaultStroke = new Stroke({
