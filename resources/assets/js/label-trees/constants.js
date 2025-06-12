@@ -1,1 +1,1 @@
-export const MAX_FAVOURITES = 10;
+export const MAX_FAVOURITES = 20;
