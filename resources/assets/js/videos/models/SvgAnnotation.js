@@ -434,13 +434,20 @@ export default class SvgAnnotation {
     }
 
     _getCompactness() {
+        // Get frames once so the getter/proxy is not called so often.
+        const frames = this.annotation.frames;
+
+        if (frames.length <= 1) {
+            return COMPACTNESS.LOW;
+        }
+
         let minDistance = Infinity;
-        for (let i = this.annotation.frames.length - 1; i > 0; i--) {
-            if (this.annotation.frames[i] === null || this.annotation.frames[i - 1] === null) {
+        for (let i = frames.length - 1; i > 0; i--) {
+            if (frames[i] === null || frames[i - 1] === null) {
                 continue;
             }
 
-            minDistance = Math.min(minDistance, this.annotation.frames[i] - this.annotation.frames[i - 1]);
+            minDistance = Math.min(minDistance, frames[i] - frames[i - 1]);
         }
         minDistance *= this.xFactor;
 
