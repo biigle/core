@@ -25,6 +25,10 @@
         fill: none;
     }
 
+    .svg-border--multi-frame {
+        stroke: rgba(255, 255, 255, 0.25);
+    }
+
     .svg-border--pending {
         stroke: white;
         stroke-dasharray: 6, 2;

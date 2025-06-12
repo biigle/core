@@ -31,7 +31,7 @@ export default class SvgAnnotation {
         this.gaps = [];
         this.keyframes = [];
         this.borders = [];
-        this.selectedBorder = undefined;
+        this.annotationBorder = undefined;
 
         this.watchers = [];
     }
@@ -65,6 +65,12 @@ export default class SvgAnnotation {
                 this._drawSegment(s, singleAfterGap);
             }
         });
+
+        if (this.segments.length > 0) {
+            this.annotationBorder = this._drawBorder().addClass('svg-border--multi-frame');
+            this.borders.push(this.annotationBorder);
+            this.segments[this.segments.length - 1].after(this.annotationBorder);
+        }
 
         if (this.annotation.pending) {
             this.borders.push(this._drawBorder(2).addClass('svg-border--pending'));
@@ -116,7 +122,7 @@ export default class SvgAnnotation {
         this.borders = [];
         this.watchers.forEach(unwatch => unwatch());
         this.watchers = [];
-        this.selectedBorder = undefined;
+        this.annotationBorder = undefined;
     }
 
     _getFill() {
@@ -211,13 +217,16 @@ export default class SvgAnnotation {
             this.selectedFill = this._getSelectedFill();
         }
 
-        if (selected === false && this.selectedBorder) {
-            this.selectedBorder.remove();
-            this.borders = this.borders.filter(b => b !== this.selectedBorder);
-            this.selectedBorder = undefined;
-        } else if (!this.selectedBorder) {
-            this.selectedBorder = this._drawBorder().addClass('svg-border--selected');
-            this.borders.push(this.selectedBorder);
+        if (this.annotationBorder) {
+            if (selected === false) {
+                this.annotationBorder.removeClass('svg-border--selected');
+                if (this.segments.length > 0) {
+                    this.segments[this.segments.length - 1].after(this.annotationBorder);
+                }
+            } else {
+                this.annotationBorder.addClass('svg-border--selected');
+                this.annotationBorder.front();
+            }
         }
 
         this.keyframes.forEach((k) => {
