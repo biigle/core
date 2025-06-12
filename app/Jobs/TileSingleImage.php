@@ -97,7 +97,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Upload the tiles from the temporary local storage to the tiles storage.
+     * Upload the tiles from temporary local storage to the tiles storage disk.
      */
     public function uploadToStorage()
     {
