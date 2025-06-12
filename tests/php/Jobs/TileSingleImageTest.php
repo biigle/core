@@ -113,7 +113,6 @@ class TileSingleImageTest extends TestCase
         $job->useParentGetIterator = false;
         $job->client = $client;
         $job->disk = $disk;
-        $job->image = $image;
 
         $job->uploadToS3Storage($disk);
 
@@ -155,7 +154,6 @@ class TileSingleImageTest extends TestCase
         $job->useParentGetIterator = false;
         $job->client = $client;
         $job->disk = $disk;
-        $job->image = $image;
 
         $fails = false;
         try {
@@ -201,7 +199,6 @@ class TileSingleImageTest extends TestCase
         $job->useParentGetIterator = false;
         $job->client = $client;
         $job->disk = $disk;
-        $job->image = $image;
 
         $fails = false;
         try {
@@ -252,7 +249,6 @@ class TileSingleImageTest extends TestCase
         $job->useParentGetIterator = false;
         $job->client = $client;
         $job->disk = $disk;
-        $job->image = $image;
 
         $job->uploadToS3Storage($disk);
 
@@ -281,8 +277,6 @@ class TileSingleImageStub extends TileSingleImage
     public $client = null;
 
     public $disk = null;
-
-    public $image = null;
 
     protected function getVipsImage($path)
     {
