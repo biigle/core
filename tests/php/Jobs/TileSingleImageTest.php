@@ -2,22 +2,22 @@
 
 namespace Biigle\Tests\Jobs;
 
+use ArrayIterator;
+use Aws\Command;
+use Aws\MockHandler;
+use Aws\Result;
+use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
+use Biigle\Jobs\TileSingleImage;
+use Biigle\Tests\ImageTest;
+use Composer\InstalledVersions;
 use File;
+use GuzzleHttp\Psr7\Response;
+use Jcupitt\Vips\Image;
 use Mockery;
 use Storage;
-use TestCase;
-use Aws\Result;
-use Aws\Command;
-use ArrayIterator;
-use Aws\MockHandler;
-use Aws\S3\S3Client;
-use Jcupitt\Vips\Image;
-use Biigle\Tests\ImageTest;
-use GuzzleHttp\Psr7\Response;
-use Composer\InstalledVersions;
-use Biigle\Jobs\TileSingleImage;
-use Aws\S3\Exception\S3Exception;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
+use TestCase;
 
 class TileSingleImageTest extends TestCase
 {
@@ -117,7 +117,7 @@ class TileSingleImageTest extends TestCase
 
         $job->uploadToS3Storage($disk);
 
-        $uploadedFiles = array_map(fn($f) => basename($f), $disk->allFiles());
+        $uploadedFiles = array_map(fn ($f) => basename($f), $disk->allFiles());
 
         $this->assertEquals($tiles, $uploadedFiles);
     }
@@ -256,11 +256,10 @@ class TileSingleImageTest extends TestCase
 
         $job->uploadToS3Storage($disk);
 
-        $uploadedFiles = array_map(fn($f) => basename($f), $disk->allFiles());
+        $uploadedFiles = array_map(fn ($f) => basename($f), $disk->allFiles());
 
         $this->assertEquals($tiles, $uploadedFiles);
     }
-
 
     public function testQueue()
     {
