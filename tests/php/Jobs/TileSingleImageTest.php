@@ -163,7 +163,7 @@ class TileSingleImageTest extends TestCase
         }
 
         $this->assertTrue($fails);
-        $this->assertFalse($disk->exists(fragment_uuid_path($image->uuid)));
+        $this->assertDirectoryDoesNotExist($disk->path(fragment_uuid_path($image->uuid)));
     }
 
     public function testUploadToS3StorageTilesExist()
@@ -208,7 +208,7 @@ class TileSingleImageTest extends TestCase
         }
 
         $this->assertTrue($fails);
-        $this->assertFalse($disk->exists(fragment_uuid_path($image->uuid)));
+        $this->assertDirectoryDoesNotExist($disk->path(fragment_uuid_path($image->uuid)));
     }
 
     public function testUploadToS3StorageRetryUpload()
