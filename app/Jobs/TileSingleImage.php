@@ -194,7 +194,7 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         $concurrency = config('image.tiles.concurrent_requests');
 
-        // The promise is rejected if the retry limit is reached or the error code is not in the 5xx range
+        // The promise is rejected if the retry limit is reached or the error code is considered non-retryable
         $failedUploads = function ($reason, $index) use ($onReject) {
             if ($onReject) {
                 $onReject();
