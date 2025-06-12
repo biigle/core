@@ -177,6 +177,7 @@ class TileSingleImageTest extends TestCase
         $mock = new MockHandler();
         $mock->append(
             new Result(),
+            // Simulate upload attempt when tile already exists
             new S3Exception("test", new Command("mockCommand"), [
                 'code' => 'mockCode',
                 'response' => new Response(412)
@@ -310,7 +311,7 @@ class TileSingleImageStub extends TileSingleImage
     protected function sendRequests($files, $onFullfill = null, $onReject = null)
     {
         $onFullfill = function ($res, $index) {
-            // Simulate uploaded files
+            // Simulate file upload
             $fragment = fragment_uuid_path($this->image->uuid);
             $path = $fragment . "/" . basename($res->get('ObjectURL'));
             $this->disk->put($path, "test");

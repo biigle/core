@@ -97,7 +97,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Upload the tiles from temporary local storage to the tiles storage disk.
+     * Upload the tiles from the temporary local storage to the tiles storage.
      */
     public function uploadToStorage()
     {
@@ -161,7 +161,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Returns the S3Client of the s3 storage
+     * Returns the S3Client of the s3 storage.
      *
      * @param mixed $disk S3 filesystem adapter
      */
@@ -171,7 +171,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Returns the s3 bucket name
+     * Returns the s3 bucket name.
      *
      * @param mixed $disk S3 filesystem adapter
      * @return string bucket name
@@ -182,7 +182,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Upload files to S3 bucket.
+     * Upload files to the S3 storage.
      *
      * @param \Iterator $files The files to upload.
      * @param callable $onFullfill Callback for successful uploads.
@@ -194,7 +194,7 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         $concurrency = config('image.tiles.concurrent_requests');
 
-        // The promise will be rejected once the retry limit is reached
+        // The promise is rejected if the retry limit is reached or the error code is not in the 5xx range
         $failedUploads = function ($reason, $index) use ($onReject) {
             if ($onReject) {
                 $onReject();
