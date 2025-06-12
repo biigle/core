@@ -154,7 +154,7 @@ class TileSingleImage extends Job implements ShouldQueue
         try {
             $this->sendRequests($uploads($iterator));
         } catch (Exception $e) {
-            $dir = substr(fragment_uuid_path($this->image->uuid), 0, 3);
+            $dir = fragment_uuid_path($this->image->uuid);
             $disk->deleteDirectory($dir);
             throw $e;
         }
