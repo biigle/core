@@ -358,9 +358,16 @@ export default class SvgAnnotation {
     }
 
     _updateKeyframes() {
+        if (this.compactness === COMPACTNESS.HIGH) {
+            // No need to update invisible keyframes.
+            return;
+        }
+
         const svgWidth = this.svg.root().width();
         let width = this.compactness === COMPACTNESS.LOW ? KEYFRAME_WIDTH : KEYFRAME_COMPACT_WIDTH;
         let symbol = this.compactness === COMPACTNESS.LOW ? this.keyframeSymbols.default : this.keyframeSymbols.compact;
+        const symbolId = '#' + symbol.attr('id');
+        let switchSymbol = this.keyframes[0].attr('href') !== symbolId;
 
         this.keyframes.forEach((k) => {
             const attrs = {
@@ -372,9 +379,8 @@ export default class SvgAnnotation {
             // Prevent overflow.
             attrs.x = Math.min(attrs.x, svgWidth - width);
 
-            // Switch to compact keyframes on demand.
-            if (k.attr('href') !== symbol.attr('id')) {
-                attrs.href = '#' + symbol.attr('id');
+            if (switchSymbol) {
+                attrs.href = symbolId;
             }
 
             k.attr(attrs);
@@ -434,21 +440,32 @@ export default class SvgAnnotation {
     }
 
     _getCompactness() {
-        // Get frames once so the getter/proxy is not called so often.
-        const frames = this.annotation.frames;
+        // Get frames not through getter to avoid Vue proxy.
+        const frames = this.annotation._frames.value;
 
         if (frames.length <= 1) {
             return COMPACTNESS.LOW;
         }
 
         let minDistance = Infinity;
-        for (let i = frames.length - 1; i > 0; i--) {
-            if (frames[i] === null || frames[i - 1] === null) {
-                continue;
+        // Avoid recomputing if only xFactor changes.
+        if (this._compactnessCache?.frameCount !== frames.length) {
+            for (let i = frames.length - 1; i > 0; i--) {
+                if (frames[i] === null || frames[i - 1] === null) {
+                    continue;
+                }
+
+                minDistance = Math.min(minDistance, frames[i] - frames[i - 1]);
             }
 
-            minDistance = Math.min(minDistance, frames[i] - frames[i - 1]);
+            this._compactnessCache = {
+                frameCount: frames.length,
+                minDistance: minDistance,
+            };
+        } else {
+            minDistance = this._compactnessCache.minDistance;
         }
+
         minDistance *= this.xFactor;
 
         if (minDistance <= (KEYFRAME_COMPACT_WIDTH * 2)) {
