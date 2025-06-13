@@ -435,8 +435,19 @@ export default {
                     // TODO: confidence control
                     confidence: 1,
                 };
+
+                if (this.isVolareAnnotationMode) {
+                    this.$refs.canvas.setEditingStyle(annotation);
+                }
+
                 let promise = AnnotationsStore.attachLabel(annotation, annotationLabel);
-                promise.catch(handleErrorResponse);
+                promise
+                    .catch(handleErrorResponse)
+                    .finally(() => {
+                        if (this.isVolareAnnotationMode) {
+                            this.$refs.canvas.setHighlightStyle(annotation);
+                        }
+                    })
 
                 return promise;
             }
