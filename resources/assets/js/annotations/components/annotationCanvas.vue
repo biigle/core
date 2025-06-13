@@ -696,13 +696,15 @@ export default {
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
         },
-        setHighlightStyle(annotation) {
-            let feature = this.annotationSource.getFeatureById(annotation.id);
-            feature.setStyle(Styles.highlight);
-        },
-        setEditingStyle(annotation) {
-            let feature = this.annotationSource.getFeatureById(annotation.id);
+        blinkAnnotation(annotation) {
+            const feature = this.annotationSource.getFeatureById(annotation.id);
+
             feature.setStyle(Styles.editing);
+
+            setTimeout(() => {
+                // Revert to highlight style after 200 ms
+                feature.setStyle(Styles.highlight);
+            }, 200);
         },
     },
     watch: {
