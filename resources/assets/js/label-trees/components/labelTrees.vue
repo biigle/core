@@ -128,7 +128,7 @@ export default {
         focusInput:{
             type: Boolean,
             default: false,
-        }
+        },
     },
     computed: {
         localeCompareSupportsLocales() {
