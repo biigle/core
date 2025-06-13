@@ -61,7 +61,7 @@ let defaultCircleStroke = new Stroke({
 
 let selectedCircleStroke = new Stroke({
     color: colors.white,
-    width: defaultStrokeWidth,
+    width: 4,
 });
 
 let editingCircleStroke = new Stroke({

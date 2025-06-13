@@ -435,7 +435,6 @@ export default {
                     // TODO: confidence control
                     confidence: 1,
                 };
-
                 let promise = AnnotationsStore.attachLabel(annotation, annotationLabel);
                 promise.catch(handleErrorResponse);
 
