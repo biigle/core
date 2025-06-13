@@ -437,7 +437,7 @@ export default {
                 };
 
                 let promise = AnnotationsStore.attachLabel(annotation, annotationLabel);
-                promise.catch(handleErrorResponse)
+                promise.catch(handleErrorResponse);
 
                 return promise;
             }
