@@ -696,6 +696,14 @@ export default {
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
         },
+        setHighlightStyle(annotation) {
+            let feature = this.annotationSource.getFeatureById(annotation.id);
+            feature.setStyle(Styles.highlight);
+        },
+        setEditingStyle(annotation) {
+            let feature = this.annotationSource.getFeatureById(annotation.id);
+            feature.setStyle(Styles.editing);
+        },
     },
     watch: {
         image(image, oldImage) {
