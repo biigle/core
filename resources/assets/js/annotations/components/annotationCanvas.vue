@@ -466,14 +466,6 @@ export default {
                 });
             }
         },
-        setHighlightStyle(annotation) {
-            let feature = this.annotationSource.getFeatureById(annotation.id);
-            feature.setStyle(Styles.highlight);
-        },
-        setEditingStyle(annotation) {
-            let feature = this.annotationSource.getFeatureById(annotation.id);
-            feature.setStyle(Styles.editing);
-        },
         fitImage() {
             this.map.getView().fit(this.extent, this.map.getSize());
         },
