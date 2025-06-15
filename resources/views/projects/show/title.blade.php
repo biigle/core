@@ -38,7 +38,7 @@
                         <a title="Edit project title and description" v-on:click.prevent="startEditing" href="#">Edit</a>
                     </li>
                     <li :class="disabledClass">
-                        <a title="Delete this project" v-on:click.prevent="deleteProject" href="#">Delete</a>
+                        <a title="Delete this project" v-on:click.prevent="showMessageDeleteProject" href="#">Delete {{$project->name}}</a>
                     </li>
                 @endcan
             </template>
@@ -80,4 +80,46 @@
             @endif
         </h2>
     @endcan
+    <modal
+      v-cloak
+      v-if="showModal"
+      title="Delete the curent project"
+      @close="showModal = false"
+      @confirm="handleConfirm"
+    >
+      <p>something in Modal</p>
+      </modal>
+    <!--
+    <confirmmodal
+                    v-cloak
+                    v-model="showModal" 
+                    title="Delete the curent project"
+                    @close="showModal = false"
+                    @confirm="handleConfirmInput"
+                    >
+                    <div>
+                        <p class="lead">
+                        Type in project you want to delete?
+                        </p>
+                        <input v-model="inputValue" placeholder="Type in project name" />
+                    <ul>
+                        <li v-for="proj in userProject" :key="proj.id" v-text="proj.name"></li>
+                    </ul>
+                    </div>
+                    
+                    
+                    
+</confirmmodal>
+-->
+                <!--need if dele is selected and project contains annotations -> if "warning" would be shown -->
+                <!-- change showModal to something that suits-->
+   <!-- <modal v-model="showModal" title="Show Modal"  @close="isModalVisible = false" @confirm="handleConfirm">
+        <p>Which project do you want to delete?</p>
+        <input v-model="inputValue" placeholder="Type in project name" />
+        <ul>
+            <li v-for="proj in userProject" :key="proj.id" v-text="proj.name"></li>
+        </ul>
+        <button @click="isModalVisible = false">Cancel</button>
+                    <button @click="handleConfirmInput">Confirm</button>
+    </modal> -->
 </div>
