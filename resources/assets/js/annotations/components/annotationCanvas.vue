@@ -702,7 +702,6 @@ export default {
             feature.setStyle(Styles.editing);
 
             setTimeout(() => {
-                // Revert to highlight style after 200 ms
                 feature.setStyle(Styles.highlight);
             }, 200);
         },
