@@ -175,8 +175,9 @@ export default {
             this.currentTime = this.video.currentTime;
         },
         setDuration() {
-            // Use the video duration the from server response, since Firefox's loadedmetadata event
-            // can be fired before the final durationchange event when handeling non-standard fragmented mp4.
+            // Use the video duration the from server response, since Firefox's loadedmetadata event is not reliable.
+            // The loadedmetadata event can be fired before the final durationchange event leading to an invalid or incorrect duration
+            // when requesting remote fragmented .mp4 files.
             this.duration = this.videoDuration;
         },
         emitSeek(time) {
