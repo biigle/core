@@ -282,7 +282,7 @@ export default {
 
             // Set focused pop key to the next most recent
             this.labelbotOverlaysTimeline.splice(this.labelbotOverlaysTimeline.indexOf(popupKey), 1);
-            this.focusedPopupKey = this.labelbotOverlaysTimeline[this.labelbotOverlaysTimeline.length - 1];
+            this.focusedPopupKey = this.labelbotOverlaysTimeline.length > 0 ? this.labelbotOverlaysTimeline[this.labelbotOverlaysTimeline.length - 1] : -1;
         },
         changeLabelbotFocusedPopup(popupKey) {
             this.focusedPopupKey = popupKey;
