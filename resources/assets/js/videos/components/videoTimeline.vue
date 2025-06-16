@@ -59,6 +59,10 @@ export default {
             type: HTMLVideoElement,
             required: true,
         },
+        videoDuration: {
+            type: Number,
+            required: true
+        },
         seeking: {
             type: Boolean,
             default: false,
@@ -171,7 +175,9 @@ export default {
             this.currentTime = this.video.currentTime;
         },
         setDuration() {
-            this.duration = this.video.duration;
+            // Use the video duration the from server response, since Firefox's loadedmetadata event
+            // can be fired before the final durationchange event when handeling non-standard fragmented mp4.
+            this.duration = this.videoDuration;
         },
         emitSeek(time) {
             this.$emit('seek', time);
