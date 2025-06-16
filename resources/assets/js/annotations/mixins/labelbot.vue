@@ -86,9 +86,9 @@ export default {
                 .then((model) => this.labelbotModel = model)
                 .then(this.warmUpLabelbotModel)
                 .then(() => this.updateLabelbotState(LABELBOT_STATES.READY))
-                .catch((error) => { 
+                .catch((error) => {
                     this.updateLabelbotState(LABELBOT_STATES.OFF);
-                    handleErrorResponse(error) 
+                    handleErrorResponse(error);
                 });
         },
         getBoundingBox(points) {
