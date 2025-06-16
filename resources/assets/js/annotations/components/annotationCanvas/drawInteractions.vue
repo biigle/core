@@ -2,7 +2,6 @@
 import * as preventDoubleclick from '../../../prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
-import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
@@ -52,7 +51,7 @@ export default {
     },
     methods: {
         draw(name) {
-            if (this['isDrawing' + name] || this.labelbotState === LABELBOT_STATES.BUSY) { // When LabelBOT is busy (max number of requests is reached) no drawing is allowed until it is ready again or turned off.
+            if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
             } else if (!this.hasSelectedLabel && !this.labelbotIsActive && this.canAdd) {
                 this.requireSelectedLabel();

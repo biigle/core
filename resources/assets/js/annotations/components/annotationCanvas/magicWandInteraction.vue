@@ -1,7 +1,6 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
-import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import Styles from '@/annotations/stores/styles.js';
 
 /**
@@ -54,7 +53,7 @@ export default {
         toggleMagicWandInteraction(isMagicWanding) {
             if (!isMagicWanding) {
                 magicWandInteraction.setActive(false);
-            } else if (this.hasSelectedLabel || this.labelbotState === LABELBOT_STATES.READY) {
+            } else if (this.hasSelectedLabel || this.labelbotIsActive) {
                 magicWandInteraction.setActive(true);
             } else {
                 this.requireSelectedLabel();

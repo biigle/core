@@ -908,8 +908,10 @@ export default {
         canDelete() {
             this.updateDeleteInteractions();
         },
-        labelbotState(labelbotState) {
-            if (!this.labelbotIsActive && !this.selectedLabel || labelbotState === LABELBOT_STATES.BUSY) {
+        labelbotState() {
+            // We should always reset interaction mode when LabelBOT's state is changed to OFF/Disabled
+            // And no Label is selected to avoid empty annotation (blue features).
+            if (!this.labelbotIsActive && !this.selectedLabel) {
                 this.resetInteractionMode();
             } else if (this.labelbotIsActive && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
                 this.initLabelbotOverlays();

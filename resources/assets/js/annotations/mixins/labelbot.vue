@@ -209,31 +209,37 @@ export default {
 
             return { overlayPosition, path };
         },
-        showLabelbotPopup(annotation) {
+        getAvailableLabelbotOverlay() {
             for (let popupKey = 0; popupKey < this.labelbotOverlays.length; popupKey++) {
                 if (this.labelbotOverlays[popupKey].available) {
                     this.labelbotOverlays[popupKey].available = false;
-                    this.labelbotOverlays[popupKey].labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
-                    this.labelbotOverlays[popupKey].annotation = annotation;
-
-                    // Convert annotation points and calculate start/end points
-                    const convertedPoints = this.labelbotOverlays[popupKey].convertPointsToOl(annotation.points);
-                    const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
-
-                    // Draw line feature and set overlay position
-                    this.labelbotOverlays[popupKey].popupLineFeature = this.labelbotOverlays[popupKey].drawPopupLineFeature(path, annotation.labels[0].label.color);
-                    this.labelbotOverlays[popupKey].overlay.setPosition(overlayPosition);
-
-                    // Set the popup as focused
-                    this.focusedPopupKey = popupKey;
-
-                    this.labelbotOverlaysTimeline.push(popupKey)
-                    break;
+                    return popupKey;
                 }
             }
-            if (annotation.labelBOTLimitReached) {
-                this.updateLabelbotState(LABELBOT_STATES.BUSY);
-                return;
+
+            this.updateLabelbotState(LABELBOT_STATES.BUSY);
+
+            return -1;
+        },
+        showLabelbotPopup(annotation, popupKey) {
+            if (this.labelbotOverlays[popupKey]) {
+                this.labelbotOverlays[popupKey].labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
+                this.labelbotOverlays[popupKey].annotation = annotation;
+
+                // Convert annotation points and calculate start/end points
+                const convertedPoints = this.labelbotOverlays[popupKey].convertPointsToOl(annotation.points);
+                const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
+
+                // Draw line feature and set overlay position
+                this.labelbotOverlays[popupKey].popupLineFeature = this.labelbotOverlays[popupKey].drawPopupLineFeature(path, annotation.labels[0].label.color);
+                this.labelbotOverlays[popupKey].overlay.setPosition(overlayPosition);
+
+                // Set the popup as focused
+                this.focusedPopupKey = popupKey;
+
+                this.labelbotOverlaysTimeline.push(popupKey)
+
+                this.labelbotOverlays[popupKey].ready = true;
             }
 
             if (this.labelbotIsActive) {
@@ -245,7 +251,7 @@ export default {
         },
         updateLabelbotState(labelbotState, toggleTitle='') {            
             this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY 
-                ? LABELBOT_STATES.BUSY 
+                ? LABELBOT_STATES.BUSY
                 : labelbotState;
 
             switch (this.labelbotState) {
@@ -265,6 +271,7 @@ export default {
 
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
+            this.labelbotOverlays[popupKey].ready = false;
             this.labelbotOverlays[popupKey].labels = [];
             this.labelbotOverlays[popupKey].annotation = null;
 
@@ -283,6 +290,7 @@ export default {
         deleteLabelbotLabelsAnnotation(popupKey) {
             if (this.labelbotOverlays[popupKey].annotation) {
                 this.handleDeleteAnnotation(this.labelbotOverlays[popupKey].annotation);
+                this.deleteLabelbotLabels(popupKey);
             }
         }
     },
@@ -294,9 +302,10 @@ export default {
         }
     },
     created() {
-        const maxNRequests = biigle.$require('labelbot.m');
+        const maxNRequests = biigle.$require('labelbot.max_requests');
         this.labelbotOverlays = Array.from({ length: maxNRequests }, () => ({
             available: true,
+            ready: false, // true when labels is not empty
             overlay: null,
             labels: [],
             annotation: null,
@@ -309,10 +318,10 @@ export default {
 
         // Disable LabelBOT if there are no labels in any label tree or no annotations in the project        
         const emptyLabelTrees = biigle.$require('annotations.labelTrees').every(tree => tree.labels.length === 0);
-        const allAnnotations = biigle.$require('annotations.annotationCount');
+        const annotationsExist = biigle.$require('annotations.annotationsExist');
         if (emptyLabelTrees) {
             this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOLABELS);
-        } else if (allAnnotations === 0) {
+        } else if (!annotationsExist) {
             this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOANNOTATIONS);
         }
     },

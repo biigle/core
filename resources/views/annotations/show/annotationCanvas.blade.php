@@ -196,7 +196,7 @@
                 ></control-button>
         </div>
     </div>
-    <div v-for="(overlay, key) in labelbotOverlays" v-show="!overlay.available" :key="key" :ref="'labelbot-popup-' + key">
+    <div v-for="(overlay, key) in labelbotOverlays" v-show="overlay.ready" :key="key" :ref="'labelbot-popup-' + key">
         <div class="labelbot-overlay-grap-area"
             :style="{'cursor': 'grab'}"
             :key="key"

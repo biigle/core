@@ -378,14 +378,14 @@ export default {
             if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
                 this.lastCreatedAnnotation = null;
             }
-            if (this.labelbotIsActive) {
-                this.labelbotOverlays.map((overlay, idx) => {
-                    if (overlay.annotation?.id === annotation.id && !overlay.available) {
-                        this.deleteLabelbotLabels(idx)
-                        return;
-                    }
-                })
-            }
+
+            this.labelbotOverlays.map((overlay, idx) => {
+                if (overlay.annotation?.id === annotation.id && !overlay.available) {
+                    this.deleteLabelbotLabels(idx)
+                    return;
+                }
+            })
+            
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
             annotation.markedForDeletion = true;
@@ -425,15 +425,24 @@ export default {
         },
         handleNewAnnotation(annotation, removeCallback) {
             if (this.isEditor) {
+                let promise;
+
                 // We need this in case LabelBOT was turned off while computing
                 const wasLabelbotActive = this.labelbotIsActive;
                 const currentImageIndex = this.imageIndex;
 
-                let promise;
+                let availableOverlayKey = -1;
 
-                // LabelBOT
                 if (!this.selectedLabel && wasLabelbotActive) {
                     this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
+
+                    availableOverlayKey = this.getAvailableLabelbotOverlay();
+
+                    if (availableOverlayKey === -1) {
+                        this.$nextTick(removeCallback);
+                        Messages.danger(`You already have ${this.labelbotOverlays.length} pending LabelBOT requests. Please wait for one to complete before submitting a new one.`)
+                        return;
+                    }
 
                     promise = this.generateFeatureVector(annotation.points)
                         .then((featureVector) => {
@@ -443,7 +452,7 @@ export default {
                         .catch(handleErrorResponse);
                 } else {
                     promise = Promise.resolve();
-                    annotation.label_id = this.selectedLabel?.id;
+                    annotation.label_id = this.selectedLabel.id;
                 }
                 // TODO: confidence control
                 annotation.confidence = 1;
@@ -453,7 +462,7 @@ export default {
                         return AnnotationsStore.create(this.imageId, annotation)
                             .then((createdAnnotation) => {
                                 if (wasLabelbotActive && currentImageIndex === this.imageIndex) {
-                                    this.showLabelbotPopup(createdAnnotation);
+                                    this.showLabelbotPopup(createdAnnotation, availableOverlayKey);
                                 }
                                 return createdAnnotation;
                             })
