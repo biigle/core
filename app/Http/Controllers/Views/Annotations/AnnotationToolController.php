@@ -66,16 +66,14 @@ class AnnotationToolController extends Controller
 
         $tilesUriTemplate = Storage::disk(config('image.tiles.disk'))->url(':uuid/');
 
-        // Get the number of annotations from all volumes
-        // linked to projects the user has access to. This is needed for LabelBOT.
+        // Check whether all volumes linked to projects the user has access to contain annotations.
+        // This is necessary for LabelBOT, so it can be disabled before sending any LabelBOT requests
+        // Because LabelBOT cannot suggest labels if no annotations exist.
         $volumeIds = DB::table('project_volume')
             ->whereIn('project_id', $projectIds)
             ->pluck('volume_id');
 
-        $annotationCount = ImageAnnotationLabelFeatureVector::select('annotation_id', 'volume_id')
-            ->whereIn('volume_id', $volumeIds)
-            ->distinct('annotation_id')
-            ->count('annotation_id');
+        $annotationsExist = ImageAnnotationLabelFeatureVector::whereIn('volume_id', $volumeIds)->exists();
 
         return view('annotations.show', [
             'user' => $user,
@@ -86,7 +84,7 @@ class AnnotationToolController extends Controller
             'shapes' => $shapes,
             'annotationSessions' => $annotationSessions,
             'tilesUriTemplate' => $tilesUriTemplate,
-            'annotationCount' => $annotationCount,
+            'annotationsExist' => $annotationsExist,
         ]);
     }
 }

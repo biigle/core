@@ -35,7 +35,7 @@ return [
     | is resolved by the user, a new request can be made. A higher value means more
     | concurrent searches and increased database workload.
     */
-    'M' => 4,
+    'max_requests' => 5,
 
     /*
     |--------------------------------------------------------------------------
