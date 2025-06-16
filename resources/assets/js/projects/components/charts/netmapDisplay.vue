@@ -187,6 +187,10 @@ export default {
                         links: this.graph.links,
                         categories: this.graph.categories,
                         roam: true,
+                        scaleLimit: {
+                            min: 1,
+                            max: 15,
+                        },
                         label: {
                             show: true,
                             width: 100,

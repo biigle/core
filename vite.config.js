@@ -37,6 +37,20 @@ export default defineConfig({
             },
         }),
     ],
+    css: {
+        preprocessorOptions: {
+            scss: {
+                // Silence deprecations by Boostrap and Fontawesome
+                silenceDeprecations: [
+                    'import',
+                    'mixed-decls',
+                    'color-functions',
+                    'global-builtin',
+                    'slash-div',
+                ],
+            },
+        },
+    },
     resolve: {
         alias: {
             '@': '/resources/assets/js',

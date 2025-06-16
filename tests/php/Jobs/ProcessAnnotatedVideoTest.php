@@ -480,9 +480,18 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create();
         $job = new ProcessAnnotatedVideo($annotation->video);
         $job->handle();
-        Bus::assertDispatched(ProcessAnnotatedVideo::class);
+        Bus::assertDispatched(ProcessAnnotatedVideo::class, fn ($job) => $job->redispatchTries === 1);
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $disk->assertMissing("{$prefix}/v-{$annotation->id}.svg");
+    }
+
+    public function testGiveUpRedispatch()
+    {
+        FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
+        $annotation = VideoAnnotationTest::create();
+        $job = new ProcessAnnotatedVideo($annotation->video, redispatchTries: 150);
+        $this->expectException(ProcessAnnotatedFileException::class);
+        $job->handle();
     }
 
     public function testGenerateFeatureVectorNew()

@@ -723,6 +723,15 @@ export default {
                 Keyboard.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
             }
         },
+        blinkAnnotation(annotation) {
+            const feature = this.annotationSource.getFeatureById(annotation.id);
+
+            feature.setStyle(Styles.editing);
+
+            setTimeout(() => {
+                feature.setStyle(Styles.highlight);
+            }, 200);
+        },
         initLabelbotOverlays() {
             this.labelbotOverlays.forEach((labelbotOverlay, key) => {
                 const popup = this.$refs['labelbot-popup-' + key]?.[0];
