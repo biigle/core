@@ -170,6 +170,8 @@ return [
 
         // Insert Biigle module service providers here.
 
+    ])->replace([
+        Illuminate\Queue\QueueServiceProvider::class => Biigle\Providers\QueueServiceProvider::class,
     ])->toArray(),
 
     /*
