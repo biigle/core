@@ -200,6 +200,7 @@
         <div class="labelbot-overlay-grap-area"
             :style="{'cursor': 'grab'}"
             :key="key"
+            v-on:click="handleLabelbotPopupFocused(key)"
             ><div class="labelbot-overlay-grap-area-notch" :key="key"></div>
         </div>
         <labelbot-popup 

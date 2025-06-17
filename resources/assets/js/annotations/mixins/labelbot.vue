@@ -1,6 +1,7 @@
 <script>
 import {handleErrorResponse} from '../../core/messages/store';
 import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
+import Keyboard from '../../core/keyboard';
 
 export const LABELBOT_STATES = {
     INITIALIZING: 'initializing',
@@ -240,6 +241,8 @@ export default {
                 this.labelbotOverlaysTimeline.push(popupKey)
 
                 this.labelbotOverlays[popupKey].ready = true;
+
+                Keyboard.setActiveSet('labelbot');
             }
 
             if (this.labelbotIsActive) {
@@ -282,7 +285,13 @@ export default {
 
             // Set focused pop key to the next most recent
             this.labelbotOverlaysTimeline.splice(this.labelbotOverlaysTimeline.indexOf(popupKey), 1);
-            this.focusedPopupKey = this.labelbotOverlaysTimeline.length > 0 ? this.labelbotOverlaysTimeline[this.labelbotOverlaysTimeline.length - 1] : -1;
+            if (this.labelbotOverlaysTimeline.length > 0) {
+                this.focusedPopupKey = this.labelbotOverlaysTimeline[this.labelbotOverlaysTimeline.length - 1];
+            } else {
+                this.focusedPopupKey = -1;
+                // If no other popups are open then we reactivate the default listener set.
+                Keyboard.setActiveSet('default');
+            }
         },
         changeLabelbotFocusedPopup(popupKey) {
             this.focusedPopupKey = popupKey;

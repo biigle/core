@@ -1,6 +1,6 @@
 <template>
   <ul class="labelbot-labels">
-    <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index" @mouseover="handleLabelbotFocus(index)" @click="selectLabelbotLabel(label)" tabindex="0" @keydown.tab="labelTabIn">
+    <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index" @mouseover="handleLabelbotFocus(index)" @click="selectLabelbotLabel(label)">
       <div v-if="index === 0" class="labelbot-labels-label__nameProgress">
         <!-- Progress bar -->
           <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelbotPopup"></div>
@@ -8,11 +8,21 @@
         <div class="labelbot-labels-label__nameProgressColor" :class="{ 'labelbot-labels-label__highlightedProgress': index === highlightedLabel && isFocused}">
           <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
           <span>{{ label.name }}</span>
-        </div> 
+          <!-- keyboard icon -->
+          <span class="labelbot-labels-label__keyboard" :class="{ 'labelbot-labels-label__keyboardHighlighted' : index === highlightedLabel && isFocused}">
+            <span class="fa fa-keyboard" aria-hidden="true"></span>
+            <span v-text="index + 1"></span>
+          </span>
+        </div>
       </div>
       <div v-else class="labelbot-labels-label__name" :class="{ 'labelbot-labels-label__highlighted': index === highlightedLabel && isFocused}">
         <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
         <span>{{ label.name }}</span>
+        <!-- keyboard icon -->
+        <span class="labelbot-labels-label__keyboard" :class="{ 'labelbot-labels-label__keyboardHighlighted' : index === highlightedLabel && isFocused}">
+          <span class="fa fa-keyboard" aria-hidden="true"></span>
+          <span v-text="index + 1"></span>
+        </span>
       </div>
     </li>
     <li class="labelbot-labels-label">
@@ -46,9 +56,10 @@ export default {
   data() {
     return {
       progressBarWidth: -1,
+      highlightedLabel: -1,
+      typeaheadFocused: false,
       selectedLabel: null,
       trees: [],
-      highlightedLabel: -1,
     };
   },
   computed: {
@@ -94,7 +105,7 @@ export default {
     },
     highlightedLabel() {
       if (this.progressBarWidth > 0) {
-        this.progressBarWidth = -1;
+        this.progressBarWidth = -1; // setting it to 0 will cause backward transition for the Top 1 Label.
       }
     },
   },
@@ -107,14 +118,19 @@ export default {
 
       this.closeLabelbotPopup();
     },
-    closeLabelbotPopup() {
+    resetPopup() {
       this.$refs.popupTypeahead?.clear();
       this.highlightedLabel = -1;
-  
+      this.typeaheadFocused = false;
+    },
+    closeLabelbotPopup() {
+      this.resetPopup();
+
       this.$emit('delete-labelbot-labels', this.popupKey);
     },
     handleTypeaheadFocus() {
-      this.highlightedLabel = this.labelbotLabels.length;
+      this.highlightedLabel = this.labelbotLabels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
+      this.typeaheadFocused = true;
 
       if (!this.isFocused) {
         this.$emit('change-labelbot-focused-popup', this.popupKey);
@@ -131,8 +147,7 @@ export default {
       this.$nextTick(() => {
         if (!this.isFocused) return;
 
-        this.highlightedLabel = -1;
-        this.$emit('delete-labelbot-labels', this.popupKey);
+        this.closeLabelbotPopup();
       });
     },
     labelUp() {
@@ -151,30 +166,68 @@ export default {
     },
     labelEnter() {
       this.$nextTick(() => {
-        if (!this.isFocused) return;
+        if (!this.isFocused || this.highlightedLabel > this.labelbotLabels.length - 1) return;
+
         // At the start the highlighted label is -1 so we need to check it before selecting the label.
         this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel < 0 ? 0 : this.highlightedLabel]);
+      });
+    },
+    handleTab(e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        this.labelTab();
+      }
+    },
+    labelTab() {
+      this.$nextTick(() => {
+        if (!this.isFocused) return;
+
+        if (!this.typeaheadFocused) {
+          this.$refs.popupTypeahead?.$refs.input.focus();
+          this.highlightedLabel = this.labelbotLabels.length;
+          this.typeaheadFocused = true;
+        } else {
+          this.$refs.popupTypeahead?.$refs.input.blur();
+          this.highlightedLabel = this.labelbotLabels.length - 1;
+          this.typeaheadFocused = false;
+        }
       });
     },
     deleteLabelAnnotation() {
       this.$nextTick(() => {
         if (!this.isFocused) return;
 
-        this.$refs.popupTypeahead?.clear();
-        this.highlightedLabel = -1;
+        this.resetPopup();
 
         this.$emit('delete-labelbot-labels-annotation', this.popupKey);
       });
     },
   },
+  mounted() {
+    // So the user can leave the focused input
+    this.$refs.popupTypeahead?.$refs.input?.addEventListener("keydown", (e) => {
+      this.handleTab(e);  
+    });
+
+    for (let key = 1; key <= 3; key++) {
+      Keyboard.on(`${key}`, () => {
+        this.$nextTick(() => {
+          if (this.labelbotLabels[key - 1] && this.isFocused) {
+            this.selectLabelbotLabel(this.labelbotLabels[key - 1]);
+          }
+        })
+      }, 0, 'labelbot');
+    }
+  },
   created() {   
     this.trees = biigle.$require('annotations.labelTrees');
 
-    Keyboard.on('Escape', this.labelClose, 0, this.listenerSet);
-    Keyboard.on('arrowup', this.labelUp, 0, this.listenerSet);
-    Keyboard.on('arrowdown', this.labelDown, 0, this.listenerSet);
-    Keyboard.on('Enter', this.labelEnter, 0, this.listenerSet);
-    Keyboard.on('delete', this.deleteLabelAnnotation, 0, this.listenerSet);
+    Keyboard.on('Escape', this.labelClose, 0, 'labelbot');
+    Keyboard.on('arrowup', this.labelUp, 0, 'labelbot');
+    Keyboard.on('arrowdown', this.labelDown, 0, 'labelbot');
+    Keyboard.on('Enter', this.labelEnter, 0, 'labelbot');
+    Keyboard.on('delete', this.deleteLabelAnnotation, 0, 'labelbot');
+    Keyboard.on('tab', this.labelTab, 0, 'labelbot');
   },
 };
 </script>
