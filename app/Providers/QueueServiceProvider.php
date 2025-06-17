@@ -5,7 +5,6 @@ namespace Biigle\Providers;
 use Biigle\Support\PatchedQueueWorker;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Queue\QueueServiceProvider as Base;
-use Illuminate\Support\Facades\Facade;
 
 class QueueServiceProvider extends Base
 {
@@ -28,7 +27,9 @@ class QueueServiceProvider extends Base
         $isDownForMaintenance = $worker[chr(0).'*'.chr(0).'isDownForMaintenance'];
         $resetScope = $worker[chr(0).'*'.chr(0).'resetScope'];
 
-        $this->app->singleton('queue.worker', fn ($app) =>
+        $this->app->singleton(
+            'queue.worker',
+            fn ($app) =>
             new PatchedQueueWorker(
                 $app['queue'],
                 $app['events'],
