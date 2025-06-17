@@ -1,3 +1,8 @@
+.labelbot-popup-focused {
+  box-shadow: 0 0 15px 3px $gray-light;
+  transition: box-shadow 0.3s ease
+}
+
 .labelbot-labels {
     list-style-type: none;
     max-width: 300px;
