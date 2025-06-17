@@ -266,6 +266,14 @@ export default {
         }
     },
     watch: {
+        duration() {
+            this.setSpritesFolderpath();
+            this.updateThumbnailInterval();
+
+            this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
+            this.updateSprite();
+            this.viewHoverTimeBar();
+        },
         hoverTime() {
             if (this.hoverTime === 0) {
                 return;

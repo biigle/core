@@ -85,7 +85,7 @@
       :show-thumbnail-preview="settings.showThumbnailPreview"
       :video-id="videoId"
       :has-error="hasError"
-      :video-duration="videoDuration"
+      :duration="videoDuration"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"

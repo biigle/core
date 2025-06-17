@@ -59,9 +59,10 @@ export default {
             type: HTMLVideoElement,
             required: true,
         },
-        videoDuration: {
+        duration: {
             type: Number,
-            required: true
+            required: true,
+            default: 0
         },
         seeking: {
             type: Boolean,
@@ -97,7 +98,6 @@ export default {
             refreshRate: 30,
             refreshLastTime: Date.now(),
             currentTime: 0,
-            duration: 0,
             scrollTop: 0,
             hoverTime: 0,
         };
@@ -174,12 +174,6 @@ export default {
         updateCurrentTime() {
             this.currentTime = this.video.currentTime;
         },
-        setDuration() {
-            // Use the video duration the from server response, since Firefox's loadedmetadata event is not reliable.
-            // The loadedmetadata event can be fired before the final durationchange event leading to an invalid or incorrect duration
-            // when requesting remote fragmented .mp4 files.
-            this.duration = this.videoDuration;
-        },
         emitSeek(time) {
             this.$emit('seek', time);
         },
@@ -242,7 +236,6 @@ export default {
         },
         reset() {
             this.currentTime = 0;
-            this.duration = 0;
             this.scrollTop = 0;
             this.hoverTime = 0;
             this.$refs.scrollStrip.reset();
@@ -257,7 +250,6 @@ export default {
         // this.video.addEventListener('timeupdate', this.updateCurrentTime);
         this.video.addEventListener('play', this.startUpdateLoop);
         this.video.addEventListener('pause', this.stopUpdateLoop);
-        this.video.addEventListener('loadedmetadata', this.setDuration);
         this.video.addEventListener('seeked', this.updateCurrentTime);
     },
 };
