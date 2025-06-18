@@ -308,7 +308,7 @@ class TileSingleImageStub extends TileSingleImage
         return new ArrayIterator($files);
     }
 
-    protected function sendRequests($files, $onFullfill = null, $onReject = null)
+    protected function sendRequests($files, $onFullfill = null)
     {
         $onFullfill = function ($res, $index) {
             // Simulate file upload
@@ -316,6 +316,6 @@ class TileSingleImageStub extends TileSingleImage
             $path = $fragment . "/" . basename($res->get('ObjectURL'));
             $this->disk->put($path, "test");
         };
-        return parent::sendRequests($files, $onFullfill, $onReject);
+        return parent::sendRequests($files, $onFullfill);
     }
 }
