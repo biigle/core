@@ -270,7 +270,7 @@ export default {
             }
         },
         deleteLabelbotLabels(popupKey) {
-            if (!this.labelbotOverlays[popupKey].overlay) return
+            if (!this.labelbotOverlays[popupKey].overlay || !this.labelbotOverlays[popupKey].annotation) return
 
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
