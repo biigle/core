@@ -59,6 +59,11 @@ export default {
             type: HTMLVideoElement,
             required: true,
         },
+        duration: {
+            type: Number,
+            required: true,
+            default: 0
+        },
         seeking: {
             type: Boolean,
             default: false,
@@ -93,7 +98,6 @@ export default {
             refreshRate: 30,
             refreshLastTime: Date.now(),
             currentTime: 0,
-            duration: 0,
             scrollTop: 0,
             hoverTime: 0,
         };
@@ -170,9 +174,6 @@ export default {
         updateCurrentTime() {
             this.currentTime = this.video.currentTime;
         },
-        setDuration() {
-            this.duration = this.video.duration;
-        },
         emitSeek(time) {
             this.$emit('seek', time);
         },
@@ -235,7 +236,6 @@ export default {
         },
         reset() {
             this.currentTime = 0;
-            this.duration = 0;
             this.scrollTop = 0;
             this.hoverTime = 0;
             this.$refs.scrollStrip.reset();
@@ -250,7 +250,6 @@ export default {
         // this.video.addEventListener('timeupdate', this.updateCurrentTime);
         this.video.addEventListener('play', this.startUpdateLoop);
         this.video.addEventListener('pause', this.stopUpdateLoop);
-        this.video.addEventListener('loadedmetadata', this.setDuration);
         this.video.addEventListener('seeked', this.updateCurrentTime);
     },
 };

@@ -266,6 +266,13 @@ export default {
         }
     },
     watch: {
+        duration() {
+            this.setSpritesFolderpath();
+            this.updateThumbnailInterval();
+
+            this.updateSprite();
+            this.viewHoverTimeBar();
+        },
         hoverTime() {
             if (this.hoverTime === 0) {
                 return;
@@ -328,8 +335,6 @@ export default {
         ctx.fillStyle = window.getComputedStyle(this.$el, null).getPropertyValue('color');
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-
-        this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
 
         this.updateSprite();
         this.viewHoverTimeBar();
