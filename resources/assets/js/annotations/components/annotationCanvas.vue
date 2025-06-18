@@ -74,6 +74,9 @@ export default {
         'update-labelbot-label',
         'delete-labelbot-labels',
         'delete-labelbot-labels-annotation',
+        'update-labelbot-popup-line',
+        'grab-labelbot-popup',
+        'release-labelbot-popup',
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
@@ -794,6 +797,18 @@ export default {
         handleDeleteLabelbotLabelsAnnotation(popupKey) {
             this.$emit('delete-labelbot-labels-annotation', popupKey);
         },
+        grabLabelbotPopup(popupKey) {
+            this.$emit('grab-labelbot-popup', popupKey);
+        },
+        releaseLabelbotPopup(popupKey) {
+            this.$emit('release-labelbot-popup', popupKey);
+        },
+        dragLabelbotPopup() {
+            if (!this.labelbotOverlays[this.focusedPopupKey]?.isDragging) return;
+
+            this.labelbotOverlays[this.focusedPopupKey].overlay.setPosition(this.mousePosition);
+            this.$emit('update-labelbot-popup-line', {'popupKey': this.focusedPopupKey, 'mousePosition': this.mousePosition});
+        }
     },
     watch: {
         image(image, oldImage) {

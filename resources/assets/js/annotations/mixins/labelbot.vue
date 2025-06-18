@@ -210,6 +210,60 @@ export default {
 
             return { overlayPosition, path };
         },
+        updateLabelbotPopupLine(newPosition) {
+            const popupKey = newPosition.popupKey;
+            const newMousePosition = newPosition.mousePosition;
+
+            const labelbotOverlay = this.labelbotOverlays[popupKey];
+            if (!labelbotOverlay) return;
+
+            const annotationPoints = labelbotOverlay.convertPointsToOl(labelbotOverlay.annotation.points);
+            const offset =  10;
+            let startPoint;
+
+            if (annotationPoints.length === 2) {
+                startPoint = annotationPoints;
+            } else if (annotationPoints.length === 3) {
+                const [x, y, r] = annotationPoints;
+                const dx = newMousePosition[0] - x;
+                const dy = newMousePosition[1] - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance === 0) {
+                    startPoint = [x + r, y];
+                } else {
+                    const scale = r / distance;
+                    startPoint = [x + dx * scale, y + dy * scale];
+                }
+            } else {
+                const pointPairs = [];
+                for (let i = 0; i < annotationPoints.length; i += 2) {
+                    pointPairs.push([annotationPoints[i], annotationPoints[i + 1]]);
+                }
+
+                // Find the closest point to the mouse
+                let minDistance = Infinity;
+                for (const point of pointPairs) {
+                    const dx = point[0] - newMousePosition[0];
+                    const dy = point[1] - newMousePosition[1];
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        startPoint = point;
+                    }
+                }
+            }
+
+            const overlayOffset = [newMousePosition[0], newMousePosition[1] + offset];
+
+            const path = [startPoint, overlayOffset, newMousePosition];
+
+            if (labelbotOverlay.popupLineFeature) {
+                labelbotOverlay.removePopupLineFeature(labelbotOverlay.popupLineFeature);
+            }
+
+            labelbotOverlay.popupLineFeature = labelbotOverlay.drawPopupLineFeature(path, labelbotOverlay.labels[0].color);
+        },
         getAvailableLabelbotOverlay() {
             for (let popupKey = 0; popupKey < this.labelbotOverlays.length; popupKey++) {
                 if (this.labelbotOverlays[popupKey].available) {
@@ -275,6 +329,7 @@ export default {
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
             this.labelbotOverlays[popupKey].available = true;
             this.labelbotOverlays[popupKey].ready = false;
+            this.labelbotOverlays[popupKey].isDragging = false;
             this.labelbotOverlays[popupKey].labels = [];
             this.labelbotOverlays[popupKey].annotation = null;
 
@@ -296,6 +351,13 @@ export default {
         changeLabelbotFocusedPopup(popupKey) {
             this.focusedPopupKey = popupKey;
         },
+        grabLabelbotPopup(popupKey) {
+            this.labelbotOverlays[popupKey].isDragging = true;
+            this.changeLabelbotFocusedPopup(popupKey);
+        },
+        releaseLabelbotPopup(popupKey) {
+            this.labelbotOverlays[popupKey].isDragging = false;
+        },
         deleteLabelbotLabelsAnnotation(popupKey) {
             if (this.labelbotOverlays[popupKey].annotation) {
                 this.handleDeleteAnnotation(this.labelbotOverlays[popupKey].annotation);
@@ -315,6 +377,7 @@ export default {
         this.labelbotOverlays = Array.from({ length: maxNRequests }, () => ({
             available: true,
             ready: false, // true when labels is not empty
+            isDragging: false,
             overlay: null,
             labels: [],
             annotation: null,
