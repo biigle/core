@@ -2,18 +2,22 @@
 
 namespace Biigle\Jobs;
 
+use Aws\S3\S3Client;
 use Biigle\Image;
 use Exception;
 use File;
 use FileCache;
 use FilesystemIterator;
+use GuzzleHttp\Promise\Each;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Filesystem\AwsS3V3Adapter;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image as VipsImage;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 
 class TileSingleImage extends Job implements ShouldQueue
 {
@@ -63,7 +67,13 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         try {
             FileCache::getOnce($this->image, [$this, 'generateTiles']);
-            $this->uploadToStorage();
+
+            $disk = Storage::disk(config('image.tiles.disk'));
+            if ($disk instanceof AwsS3V3Adapter) {
+                $this->uploadToS3Storage($disk);
+            } else {
+                $this->uploadToStorage();
+            }
             $this->image->tilingInProgress = false;
             $this->image->save();
         } finally {
@@ -104,6 +114,107 @@ class TileSingleImage extends Job implements ShouldQueue
             $disk->deleteDirectory($fragment);
             throw $e;
         }
+    }
+
+    /**
+     * Upload the tiles from temporary local storage to the s3 tiles storage disk.
+     *
+     * @param AwsS3V3Adapter $disk S3 filesystem adapter
+     *
+     */
+    public function uploadToS3Storage($disk)
+    {
+        $iterator = $this->getIterator($this->tempPath);
+        $root = isset($disk->getConfig()['root']) && strlen($disk->getConfig()['root']) ?
+            $disk->getConfig()['root'] . "/" : "";
+
+        $uploads = function ($files) use ($disk, $root) {
+            $client = $this->getClient($disk);
+            $bucket = $this->getBucket($disk);
+            $tmpLength = strlen(config('image.tiles.tmp_dir')) + 1;
+
+            foreach ($files as $file) {
+                $path = substr($file, $tmpLength);
+                $prefix = $path[0] . $path[1] . '/' . $path[2] . $path[3] . "/";
+                // @phpstan-ignore-next-line
+                yield $client->putObjectAsync([
+                    'Bucket' => $bucket,
+                    'Key' => "{$root}{$prefix}{$path}",
+                    'SourceFile' => $file,
+                    // Return with error if file already exist
+                    '@http' => [
+                        'headers' => [
+                            'If-None-Match' => '*'
+                        ]
+                    ]
+                ]);
+            }
+        };
+
+        try {
+            $this->sendRequests($uploads($iterator));
+        } catch (Exception $e) {
+            $dir = fragment_uuid_path($this->image->uuid);
+            $disk->deleteDirectory($dir);
+            throw $e;
+        }
+    }
+
+    /**
+     * Returns the S3Client of the s3 storage.
+     *
+     * @param mixed $disk S3 filesystem adapter
+     */
+    protected function getClient($disk): S3Client // @phpstan-ignore-line
+    {
+        return $disk->getClient();
+    }
+
+    /**
+     * Returns the s3 bucket name.
+     *
+     * @param mixed $disk S3 filesystem adapter
+     * @return string bucket name
+     */
+    protected function getBucket($disk)
+    {
+        return $disk->getConfig()['bucket'];
+    }
+
+    /**
+     * Upload files to the S3 storage.
+     *
+     * @param \Iterator $files The files to upload.
+     * @param callable $onFullfill Callback for successful uploads.
+     * @param callable $onReject Callback for failed uploads.
+     * @throws Exception If retry limit is reached
+     *
+     */
+    protected function sendRequests($files, $onFullfill = null, $onReject = null)
+    {
+        $concurrency = config('image.tiles.concurrent_requests');
+
+        // The promise is rejected if the retry limit is reached or the error code is considered non-retryable
+        $failedUploads = function ($reason, $index) use ($onReject) {
+            if ($onReject) {
+                $onReject();
+            }
+
+            $id = $this->image->id;
+
+            if ($reason->getStatusCode() == 412) {
+                throw new UploadException("Tile upload failed because a tile already exist for image with id {$id}.");
+            }
+
+            throw new UploadException("Tile upload failed for image with id {$id}.");
+        };
+
+        Each::ofLimit(
+            $files,
+            $concurrency,
+            $onFullfill,
+            $failedUploads
+        )->wait();
     }
 
     /**

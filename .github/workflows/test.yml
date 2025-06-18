@@ -38,6 +38,9 @@ jobs:
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
 
+    - name: Install aws dependency
+      run: composer require league/flysystem-aws-s3-v3
+
     - name: Fetch base images
       run: |
         docker pull ghcr.io/biigle/app:latest
