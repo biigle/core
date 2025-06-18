@@ -72,7 +72,7 @@ class TileSingleImage extends Job implements ShouldQueue
             if ($disk instanceof AwsS3V3Adapter) {
                 $this->uploadToS3Storage($disk);
             } else {
-                $this->uploadToStorage();
+                $this->uploadToStorage($disk);
             }
             $this->image->tilingInProgress = false;
             $this->image->save();
@@ -99,12 +99,11 @@ class TileSingleImage extends Job implements ShouldQueue
     /**
      * Upload the tiles from temporary local storage to the tiles storage disk.
      */
-    public function uploadToStorage()
+    public function uploadToStorage($disk)
     {
         // +1 for the connecting slash.
         $prefixLength = strlen($this->tempPath) + 1;
         $iterator = $this->getIterator($this->tempPath);
-        $disk = Storage::disk(config('image.tiles.disk'));
         $fragment = fragment_uuid_path($this->image->uuid);
         try {
             foreach ($iterator as $pathname => $fileInfo) {

@@ -76,8 +76,8 @@ class TileSingleImageTest extends TestCase
         File::put("{$job->tempPath}/test.txt", 'test');
 
         try {
-            Storage::fake('tiles');
-            $job->uploadToStorage();
+            $disk = Storage::fake('tiles');
+            $job->uploadToStorage($disk);
             Storage::disk('tiles')->assertExists($fragment);
             Storage::disk('tiles')->assertExists("{$fragment}/test.txt");
         } finally {
