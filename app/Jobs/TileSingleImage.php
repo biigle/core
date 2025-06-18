@@ -125,8 +125,10 @@ class TileSingleImage extends Job implements ShouldQueue
     public function uploadToS3Storage($disk)
     {
         $iterator = $this->getIterator($this->tempPath);
-        $root = isset($disk->getConfig()['root']) && strlen($disk->getConfig()['root']) ?
-            $disk->getConfig()['root'] . "/" : "";
+        $config = $disk->getConfig();
+        $prefix = "prefix";
+        $root = isset($config[$prefix]) && strlen($config[$prefix]) ?
+            $config[$prefix] . "/" : "";
 
         $uploads = function ($files) use ($disk, $root) {
             $client = $this->getClient($disk);
