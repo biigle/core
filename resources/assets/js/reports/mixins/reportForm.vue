@@ -29,6 +29,7 @@ export default {
                 separate_users: false,
                 only_labels: [],
                 aggregate_child_labels: false,
+                all_labels: false
             },
         };
     },
@@ -88,13 +89,19 @@ export default {
         selectedOptions() {
             let options = {};
             this.allowedOptions[this.selectedType].forEach((allowed) => {
-                options[allowed] = this.options[allowed];
+                // Only use options that are true to apply the prohibited_if rule in form request
+                if (this.options[allowed]) {
+                    options[allowed] = this.options[allowed];
+                }
             });
 
             options.type_id = this.selectedReportTypeId;
 
             return options;
         },
+        disableAllLabelsOption() {
+            return this.options.aggregate_child_labels || this.hasOnlyLabels || this.options.newest_label;
+        }
     },
     methods: {
         request(id, resource) {
@@ -173,6 +180,9 @@ export default {
                 this.options.separate_label_trees = false;
             }
         },
+        selectedVariant() {
+            this.options.all_labels = false;
+        }
     },
     created() {
         this.reportTypes = biigle.$require('reports.reportTypes');

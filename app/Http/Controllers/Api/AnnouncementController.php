@@ -47,7 +47,7 @@ class AnnouncementController extends Controller
      * @apiParam {Number} id The announcement ID.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy($id)
     {

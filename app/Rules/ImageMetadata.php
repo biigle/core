@@ -9,20 +9,6 @@ use Illuminate\Contracts\Validation\Rule;
 class ImageMetadata implements Rule
 {
     /**
-     * All numeric metadata fields (keys) with description (values).
-     *
-     * @var array
-     */
-    const NUMERIC_FIELDS = [
-        'area' => 'area',
-        'distanceToGround' => 'distance to ground',
-        'gpsAltitude' => 'GPS altitude',
-        'lat' => 'latitude',
-        'lng' => 'longitude',
-        'yaw' => 'yaw',
-    ];
-
-    /**
      * The validation error message.
      *
      * @var string
@@ -108,14 +94,6 @@ class ImageMetadata implements Rule
         if (!is_null($file->takenAt)) {
             if (!(strtotime($file->takenAt) > 0)) {
                 $this->message = "'{$file->takenAt}' is no valid date for file {$file->name}.";
-
-                return false;
-            }
-        }
-
-        foreach (self::NUMERIC_FIELDS as $key => $text) {
-            if (!is_null($file->$key) && !is_numeric($file->$key)) {
-                $this->message = "'{$file->$key}' is no valid {$text} for file {$file->name}.";
 
                 return false;
             }

@@ -129,7 +129,7 @@ class ProjectVolumeController extends Controller
             }
 
             // media type shouldn't be returned
-            unset($volume->media_type);
+            $volume->makeHidden('media_type');
 
             return $volume;
         });

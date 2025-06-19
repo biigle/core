@@ -6,7 +6,6 @@ use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\User;
-use DB;
 
 class AbundanceReportGenerator extends AnnotationReportGenerator
 {
@@ -38,31 +37,64 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        $query = $this->query();
+        // Separate the annotated images from the empty ones, since only the annotated images could require additional processing.
+        $annotatedImageRows = $query->clone()->whereNotNull('label_id')->get();
+        // Get query for images that have no annotations
+        $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
 
-        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
-            $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+        if ($this->shouldSeparateLabelTrees()) {
+            $annotatedImageRows = $annotatedImageRows->groupBy('label_tree_id');
+            $allLabels = null;
+
+            if ($this->shouldUseAllLabels()) {
+                $allLabels = $this->getVolumeLabels();
+                $treeIds = $allLabels->pluck('label_tree_id');
+                $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+                $allLabels = $allLabels->groupBy('label_tree_id');
+            } else {
+                $trees = LabelTree::whereIn('id', $annotatedImageRows->keys())->pluck('name', 'id');
+            }
 
             foreach ($trees as $id => $name) {
-                $rowGroup = $rows->get($id);
-                $labels = Label::whereIn('id', $rowGroup->pluck('label_id')->unique())->get();
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                if ($this->shouldUseAllLabels()) {
+                    $labels = $allLabels->get($id);
+                } else {
+                    $labelIds = $annotatedImageRows->get($id)->pluck('label_id')->unique();
+                    $labels = Label::whereIn('id', $labelIds)->get();
+                }
+                $this->tmpFiles[] = $this->createCsv($annotatedImageRows->flatten(), $name, $labels, $emptyImagesQuery);
             }
-        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
-            $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+        } elseif ($this->shouldSeparateUsers()) {
+            $annotatedImageRows = $annotatedImageRows->groupBy('user_id');
+            $users = User::whereIn('id', $annotatedImageRows->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
+            $labels = null;
+
+            if ($this->shouldUseAllLabels()) {
+                $labels = $this->getVolumeLabels();
+            }
 
             foreach ($users as $id => $name) {
-                $rowGroup = $rows->get($id);
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels);
+                $usedImageIds = $annotatedImageRows->get($id)->pluck('image_id')->unique();
+                $emptyImagesQuery = $this->source->images()->select('filename')->whereNotIn('id', $usedImageIds);
+                $rowGroup = $annotatedImageRows->get($id);
+
+                if (!$this->shouldUseAllLabels()) {
+                    $labels = Label::whereIn('id', $rowGroup->pluck('label_id'))->get();
+                }
+
+                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQuery);
             }
         } else {
-            $labels = Label::whereIn('id', $rows->pluck('label_id')->unique())->get();
-            $this->tmpFiles[] = $this->createCsv($rows, $this->source->name, $labels);
+            if ($this->shouldUseAllLabels()) {
+                $labels = $this->getVolumeLabels();
+            } else {
+                $allLabelIds = $annotatedImageRows->pluck('label_id')->filter()->unique();
+                $labels = Label::whereIn('id', $allLabelIds)->get();
+            }
+            $this->tmpFiles[] = $this->createCsv($annotatedImageRows, $this->source->name, $labels, $emptyImagesQuery);
         }
 
         $this->executeScript('csvs_to_xlsx', $path);
@@ -77,18 +109,61 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
     {
         $query = $this->initQuery()
             ->orderBy('images.filename')
-            ->select(DB::raw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count'))
+            ->selectRaw('images.filename, image_annotation_labels.label_id, count(image_annotation_labels.label_id) as count')
             ->groupBy('image_annotation_labels.label_id', 'images.id');
 
         if ($this->shouldSeparateLabelTrees()) {
             $query->addSelect('labels.label_tree_id')
-                ->groupBy('image_annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
+                ->groupBy('image_annotation_labels.label_id', 'labels.label_tree_id');
         } elseif ($this->shouldSeparateUsers()) {
             $query->addSelect('image_annotation_labels.user_id')
+                ->addSelect('images.id as image_id')
                 ->groupBy('image_annotation_labels.label_id', 'images.id', 'image_annotation_labels.user_id');
         }
 
         return $query;
+    }
+
+    /**
+     * Assembles the part of the DB query that is used for the abundance report.
+     * Overrides AnnotationReportGenerator's initQuery() because it requires a special query
+     * where images without (selected) annotation labels are kept after filtering.
+     *
+     * @param mixed $columns The columns to select
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function initQuery($columns = [])
+    {
+        $query = $this->getImageAnnotationLabelQuery()
+            ->where('images.volume_id', $this->source->id)
+            // Add this label filter here, since it won’t delete any annotations
+            ->when($this->isRestrictedToNewestLabel(), fn ($query) => $this->restrictToNewestLabelQuery($query, $this->source, true))
+            ->addSelect($columns);
+
+        return $query;
+    }
+
+    /**
+     * Construct a join query for (filtered) images, image annotations, image annotation labels, and labels
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|\Biigle\Label
+     */
+    protected function getImageAnnotationLabelQuery()
+    {
+        // Filter records here to keep images with no selected annotation labels or without any annotation labels
+        return Label::join('image_annotation_labels', function ($join) {
+            // Use advanced joins to set labels and annotations on null if not present or not selected
+            $join->on('labels.id', '=', 'image_annotation_labels.label_id')
+                ->when($this->isRestrictedToLabels(), fn ($q) => $this->restrictToLabelsQuery($q, 'image_annotation_labels'));
+        })
+            ->join('image_annotations', function ($join) {
+                $join->on('image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+                    ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+                    ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
+            })
+            // Use rightJoin because query needs to start with Label due information order i.e. annotation labels need to be present before annotations
+            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
+            ->distinct();
     }
 
     /**
@@ -97,10 +172,11 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
      * @param \Illuminate\Support\Collection $labels
+     * @param \Illuminate\Database\Query\Builder $emptyImagesQuery The query for images without annotations
      *
      * @return CsvFile
      */
-    protected function createCsv($rows, $title, $labels)
+    protected function createCsv($rows, $title, $labels, $emptyImagesQuery)
     {
         $rows = $rows->groupBy('filename');
 
@@ -130,6 +206,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
             }
 
+            $csv->putCsv($row);
+        }
+
+        $labelsCount = $labels->count();
+        $zeroEntries = array_fill(0, $labelsCount, 0);
+        foreach ($emptyImagesQuery->orderBy('filename')->lazy() as $image) {
+            $row = [$image->filename];
+            $row = array_merge($row, $zeroEntries);
             $csv->putCsv($row);
         }
 

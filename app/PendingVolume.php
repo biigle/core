@@ -14,7 +14,7 @@ class PendingVolume extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'media_type_id',
@@ -35,7 +35,7 @@ class PendingVolume extends Model
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'metadata_file_path',
@@ -72,11 +72,17 @@ class PendingVolume extends Model
         });
     }
 
+    /**
+     * @return BelongsTo<Project, $this>
+     */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
+    /**
+     * @return BelongsTo<Volume, $this>
+     */
     public function volume(): BelongsTo
     {
         return $this->belongsTo(Volume::class);

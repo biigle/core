@@ -10,6 +10,7 @@
 
 .sidebar-container__content {
     flex: 1;
+    min-width: 0; // Don't use more than the available space.
     height: 100%;
     position: relative;
 }

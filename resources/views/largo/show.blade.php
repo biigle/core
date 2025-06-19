@@ -8,8 +8,8 @@
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
         biigle.$declare('largo.mediaType', @if ($volume->isImageVolume()) 'image' @else 'video' @endif);
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
-        biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '') }}/');
-        biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '') }}/');
+        biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '/') }}/');
+        biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '/') }}/');
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
         biigle.$declare('largo.availableShapes', {!! $shapes !!})
     </script>

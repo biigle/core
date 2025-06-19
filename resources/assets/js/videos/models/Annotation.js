@@ -1,4 +1,3 @@
-<script>
 import Messages from '@/core/messages/store.js';
 import VideoAnnotationApi from '../api/videoAnnotations.js';
 import {getRoundToPrecision} from '../utils.js';
@@ -122,7 +121,7 @@ export default class Annotation {
 
     set points(values) {
         this._points = values;
-        this.revision += 1;
+        this._newRevision();
     }
 
     get shape() {
@@ -131,6 +130,10 @@ export default class Annotation {
         }
 
         return SHAPE_CACHE[this.shape_id];
+    }
+
+    _newRevision() {
+        this.revision += 1;
     }
 
     startTracking() {
@@ -335,6 +338,8 @@ export default class Annotation {
             this.points.splice(i + 1, 0, points);
         }
 
+        this._newRevision();
+
         return VideoAnnotationApi.update({id: this.id}, {
             frames: this.frames,
             points: this.points,
@@ -386,6 +391,8 @@ export default class Annotation {
                 this.points.splice(index - 1, 1);
             }
 
+            this._newRevision();
+
             return VideoAnnotationApi.update({id: this.id}, {
                 frames: this.frames,
                 points: this.points
@@ -399,4 +406,3 @@ export default class Annotation {
         return VideoAnnotationApi.delete({id: this.id});
     }
 }
-</script>

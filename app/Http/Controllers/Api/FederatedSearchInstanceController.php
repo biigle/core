@@ -121,7 +121,7 @@ class FederatedSearchInstanceController extends Controller
      * @apiParam {Number} id ID of the instance to disconnect
      *
      * @param int $id
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy($id)
     {

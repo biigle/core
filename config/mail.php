@@ -80,6 +80,7 @@ return [
                 'smtp',
                 'log',
             ],
+            'retry_after' => 60,
         ],
     ],
 

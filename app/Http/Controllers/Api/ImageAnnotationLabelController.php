@@ -73,7 +73,7 @@ class ImageAnnotationLabelController extends Controller
      * ]
      *
      * @param int $id ImageAnnotation ID
-     * @return \Illuminate\Database\Eloquent\Collection<int, ImageAnnotationLabel>
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Biigle\AnnotationLabel>
      */
     public function index($id)
     {
@@ -161,7 +161,7 @@ class ImageAnnotationLabelController extends Controller
      * }
      *
      * @param StoreImageAnnotationLabel $request
-     * @return ImageAnnotationLabel|null
+     * @return ImageAnnotationLabel|void
      */
     public function store(StoreImageAnnotationLabel $request)
     {
