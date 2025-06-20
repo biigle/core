@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Views\Annotations;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
+use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
@@ -65,6 +66,15 @@ class AnnotationToolController extends Controller
 
         $tilesUriTemplate = Storage::disk(config('image.tiles.disk'))->url(':uuid/');
 
+        // Check whether all volumes linked to projects the user has access to contain annotations.
+        // This is necessary for LabelBOT, so it can be disabled before sending any LabelBOT requests
+        // Because LabelBOT cannot suggest labels if no annotations exist.
+        $volumeIds = DB::table('project_volume')
+            ->whereIn('project_id', $projectIds)
+            ->pluck('volume_id');
+
+        $annotationsExist = ImageAnnotationLabelFeatureVector::whereIn('volume_id', $volumeIds)->exists();
+
         return view('annotations.show', [
             'user' => $user,
             'image' => $image,
@@ -74,6 +84,7 @@ class AnnotationToolController extends Controller
             'shapes' => $shapes,
             'annotationSessions' => $annotationSessions,
             'tilesUriTemplate' => $tilesUriTemplate,
+            'annotationsExist' => $annotationsExist,
         ]);
     }
 }
