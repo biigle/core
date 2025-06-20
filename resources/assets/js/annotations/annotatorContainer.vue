@@ -381,7 +381,7 @@ export default {
 
             this.labelbotOverlays.map((overlay, idx) => {
                 if (overlay.annotation?.id === annotation.id && !overlay.available) {
-                    this.deleteLabelbotLabels(idx)
+                    this.closeLabelbotPopup(idx)
                     return;
                 }
             })
@@ -744,7 +744,7 @@ export default {
         imageIndex() {
             // Remove LabelBOT's popups when switching images
             if (this.labelbotIsActive) {
-                this.labelbotOverlays.forEach((_, idx) => this.deleteLabelbotLabels(idx));
+                this.labelbotOverlays.forEach((_, idx) => this.closeLabelbotPopup(idx));
             }
         }
     },

@@ -46,9 +46,9 @@ import Keyboard from '../../core/keyboard';
 
 export default {
   emits: [
-    'update-labelbot-label',
-    'delete-labelbot-labels',
-    'delete-labelbot-labels-annotation',
+    'update',
+    'close',
+    'delete',
   ],
   components: {
     typeahead: Typeahead,
@@ -127,7 +127,7 @@ export default {
     selectLabelbotLabel(label) {
       // Top 1 label is already attached/selected
       if (this.selectedLabel.id !== label.id) {
-        this.$emit('update-labelbot-label', {label: label, popupKey: this.popupKey});
+        this.$emit('update', {label: label, popupKey: this.popupKey});
       }
 
       this.closeLabelbotPopup();
@@ -140,7 +140,7 @@ export default {
     closeLabelbotPopup() {
       this.resetPopup();
 
-      this.$emit('delete-labelbot-labels', this.popupKey);
+      this.$emit('close', this.popupKey);
     },
     handleTypeaheadFocus() {
       this.highlightedLabel = this.labelbotLabels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
@@ -150,33 +150,27 @@ export default {
       this.highlightedLabel = hoveredLabel;
     },
     labelClose() {
-      this.$nextTick(() => {
-        if (!this.isFocused) return;
+      if (!this.isFocused) return;
 
-        this.closeLabelbotPopup();
-      });
+      this.closeLabelbotPopup();
     },
     labelUp() {
-      this.$nextTick(() => {
-        if (!this.isFocused) return;
+      if (!this.isFocused) return;
 
         this.highlightedLabel = this.highlightedLabel > 0 ? this.highlightedLabel - 1 : 0;
-      });
     },
     labelDown() {
-      this.$nextTick(() => {
-        if (!this.isFocused) return;
+      if (!this.isFocused) return;
 
         this.highlightedLabel = this.highlightedLabel < this.labelbotLabels.length - 1 ? this.highlightedLabel + 1 : this.labelbotLabels.length - 1;
-      });
     },
     labelEnter() {
-      this.$nextTick(() => {
-        if (!this.isFocused || this.highlightedLabel > this.labelbotLabels.length - 1) return;
+      if (!this.isFocused || this.highlightedLabel > (this.labelbotLabels.length - 1)) {
+        return;
+      }
 
-        // At the start the highlighted label is -1 so we need to check it before selecting the label.
-        this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel < 0 ? 0 : this.highlightedLabel]);
-      });
+      // At the start the highlighted label is -1 so we need to check it before selecting the label.
+      this.selectLabelbotLabel(this.labelbotLabels[this.highlightedLabel < 0 ? 0 : this.highlightedLabel]);
     },
     handleTab(e) {
       if (e.key === "Tab") {
@@ -185,28 +179,24 @@ export default {
       }
     },
     labelTab() {
-      this.$nextTick(() => {
-        if (!this.isFocused) return;
+      if (!this.isFocused) return;
 
-        if (!this.typeaheadFocused) {
-          this.$refs.popupTypeahead?.$refs.input.focus();
-          this.highlightedLabel = this.labelbotLabels.length;
-          this.typeaheadFocused = true;
-        } else {
-          this.$refs.popupTypeahead?.$refs.input.blur();
-          this.highlightedLabel = this.labelbotLabels.length - 1;
-          this.typeaheadFocused = false;
-        }
-      });
+      if (!this.typeaheadFocused) {
+        this.$refs.popupTypeahead?.$refs.input.focus();
+        this.highlightedLabel = this.labelbotLabels.length;
+        this.typeaheadFocused = true;
+      } else {
+        this.$refs.popupTypeahead?.$refs.input.blur();
+        this.highlightedLabel = this.labelbotLabels.length - 1;
+        this.typeaheadFocused = false;
+      }
     },
     deleteLabelAnnotation() {
-      this.$nextTick(() => {
-        if (!this.isFocused) return;
+      if (!this.isFocused) return;
 
-        this.resetPopup();
+      this.resetPopup();
 
-        this.$emit('delete-labelbot-labels-annotation', this.popupKey);
-      });
+      this.$emit('delete', this.popupKey);
     },
   },
   mounted() {
@@ -217,11 +207,9 @@ export default {
 
     for (let key = 1; key <= 3; key++) {
       Keyboard.on(`${key}`, () => {
-        this.$nextTick(() => {
-          if (this.labelbotLabels[key - 1] && this.isFocused) {
-            this.selectLabelbotLabel(this.labelbotLabels[key - 1]);
-          }
-        })
+        if (this.labelbotLabels[key - 1] && this.isFocused) {
+          this.selectLabelbotLabel(this.labelbotLabels[key - 1]);
+        }
       }, 0, 'labelbot');
     }
   },

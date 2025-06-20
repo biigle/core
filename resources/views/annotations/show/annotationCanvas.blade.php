@@ -218,9 +218,9 @@
             :popup-key="key" 
             :focused-popup-key="focusedPopupKey" 
             :labelbot-labels="overlay.labels" 
-            @update-labelbot-label="updateLabelbotLabel" 
-            @delete-labelbot-labels="deleteLabelbotLabels" 
-            @delete-labelbot-labels-annotation="handleDeleteLabelbotLabelsAnnotation"
+            @update="updateLabelbotLabel"
+            @close="closeLabelbotPopup"
+            @delete="handleDeleteLabelbotLabelsAnnotation"
             ></labelbot-popup>
     </div>
 </div>

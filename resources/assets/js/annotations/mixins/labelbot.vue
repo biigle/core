@@ -323,7 +323,7 @@ export default {
                     break;
             }
         },
-        deleteLabelbotLabels(popupKey) {
+        closeLabelbotPopup(popupKey) {
             if (!this.labelbotOverlays[popupKey].overlay || !this.labelbotOverlays[popupKey].annotation) return
 
             this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
@@ -361,7 +361,7 @@ export default {
         deleteLabelbotLabelsAnnotation(popupKey) {
             if (this.labelbotOverlays[popupKey].annotation) {
                 this.handleDeleteAnnotation(this.labelbotOverlays[popupKey].annotation);
-                this.deleteLabelbotLabels(popupKey);
+                this.closeLabelbotPopup(popupKey);
             }
         }
     },

@@ -72,7 +72,7 @@ export default {
         'requires-selected-label',
         'change-labelbot-focused-popup',
         'update-labelbot-label',
-        'delete-labelbot-labels',
+        'close-labelbot-popup',
         'delete-labelbot-labels-annotation',
         'update-labelbot-popup-line',
         'grab-labelbot-popup',
@@ -774,8 +774,8 @@ export default {
         updateLabelbotLabel(label) {
             this.$emit('update-labelbot-label', label);
         },
-        deleteLabelbotLabels(popupKey) {
-            this.$emit('delete-labelbot-labels', popupKey);
+        closeLabelbotPopup(popupKey) {
+            this.$emit('close-labelbot-popup', popupKey);
         },
         handleLabelbotPopupFocused(popupKey) {
             this.$emit('change-labelbot-focused-popup', popupKey);

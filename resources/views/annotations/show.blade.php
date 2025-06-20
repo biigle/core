@@ -92,7 +92,7 @@
             :focused-popup-key="focusedPopupKey"
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
             v-on:update-labelbot-label="updateLabelbotLabel"
-            v-on:delete-labelbot-labels="deleteLabelbotLabels"
+            v-on:close-labelbot-popup="closeLabelbotPopup"
             v-on:delete-labelbot-labels-annotation="deleteLabelbotLabelsAnnotation"
             v-on:update-labelbot-popup-line="updateLabelbotPopupLine"
             v-on:grab-labelbot-popup="grabLabelbotPopup"
