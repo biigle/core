@@ -1,35 +1,29 @@
 <template>
   <ul class="labelbot-labels">
-    <li class="labelbot-labels-label" v-for="(label, index) in labelbotLabels" :key="index" @mouseover="handleLabelbotFocus(index)" @click="selectLabelbotLabel(label)">
-      <div v-if="index === 0" class="labelbot-labels-label__nameProgress">
-        <!-- Progress bar -->
-          <div v-show="progressBarWidth > -1" class="labelbot-labels-label__progress-bar" :style="{ width: progressBarWidth + '%' }" @transitionend="closeLabelbotPopup"></div>
-        <!-- Label name -->
-        <div class="labelbot-labels-label__nameProgressColor" :class="{ 'labelbot-labels-label__highlightedProgress': index === highlightedLabel && isFocused}">
-          <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
+    <li
+      v-for="(label, index) in labelbotLabels"
+      class="labelbot-label" :class="{ 'labelbot-label--highlighted': index === highlightedLabel}"
+      :key="index"
+      @mouseover="handleLabelbotFocus(index)"
+      @click="selectLabelbotLabel(label)"
+      >
+        <div
+          v-if="index === 0"
+          v-show="progressBarWidth > -1"
+          class="labelbot-label__progress-bar"
+          :style="{ width: progressBarWidth + '%' }"
+          @transitionend="closeLabelbotPopup"
+          ></div>
+        <div class="labelbot-label__name">
+          <span class="labelbot-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
           <span>{{ label.name }}</span>
-          <!-- keyboard icon -->
-          <span class="labelbot-labels-label__keyboard" :class="{ 'labelbot-labels-label__keyboardHighlighted' : index === highlightedLabel && isFocused}">
-            <template v-if="isFocused">
-              <span class="fa fa-keyboard" aria-hidden="true"></span>
-              <span v-text="index + 1"></span>
-            </template>
-          </span>
-        </div>
-      </div>
-      <div v-else class="labelbot-labels-label__name" :class="{ 'labelbot-labels-label__highlighted': index === highlightedLabel && isFocused}">
-        <span class="labelbot-labels-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
-        <span>{{ label.name }}</span>
-        <!-- keyboard icon -->
-        <span class="labelbot-labels-label__keyboard" :class="{ 'labelbot-labels-label__keyboardHighlighted' : index === highlightedLabel && isFocused}">
-          <template v-if="isFocused">
+          <span class="labelbot-label__keyboard">
             <span class="fa fa-keyboard" aria-hidden="true"></span>
             <span v-text="index + 1"></span>
-          </template>
-        </span>
-      </div>
+          </span>
+        </div>
     </li>
-    <li class="labelbot-labels-label">
+    <li>
       <typeahead :key="popupKey" ref="popupTypeahead" :style="{ width: '100%' }" :items="labels" @focus="handleTypeaheadFocus" more-info="tree.versionedName" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
     </li>
   </ul>
@@ -40,6 +34,11 @@ import Typeahead from '../../label-trees/components/labelTypeahead.vue';
 import Keyboard from '../../core/keyboard';
 
 export default {
+  emits: [
+    'update-labelbot-label',
+    'delete-labelbot-labels',
+    'delete-labelbot-labels-annotation',
+  ],
   components: {
     typeahead: Typeahead,
   },
@@ -117,7 +116,7 @@ export default {
     selectLabelbotLabel(label) {
       // Top 1 label is already attached/selected
       if (this.selectedLabel.id !== label.id) {
-        this.$emit('update-labelbot-label', {"label": label, "popupKey" : this.popupKey});
+        this.$emit('update-labelbot-label', {label: label, popupKey: this.popupKey});
       }
 
       this.closeLabelbotPopup();
@@ -135,17 +134,9 @@ export default {
     handleTypeaheadFocus() {
       this.highlightedLabel = this.labelbotLabels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
       this.typeaheadFocused = true;
-
-      if (!this.isFocused) {
-        this.$emit('change-labelbot-focused-popup', this.popupKey);
-      }
     },
     handleLabelbotFocus(hoveredLabel) {
       this.highlightedLabel = hoveredLabel;
-
-      if (!this.isFocused) {
-        this.$emit('change-labelbot-focused-popup', this.popupKey);
-      }
     },
     labelClose() {
       this.$nextTick(() => {
@@ -210,7 +201,7 @@ export default {
   mounted() {
     // So the user can leave the focused input
     this.$refs.popupTypeahead?.$refs.input?.addEventListener("keydown", (e) => {
-      this.handleTab(e);  
+      this.handleTab(e);
     });
 
     for (let key = 1; key <= 3; key++) {
@@ -223,7 +214,7 @@ export default {
       }, 0, 'labelbot');
     }
   },
-  created() {   
+  created() {
     this.trees = biigle.$require('annotations.labelTrees');
 
     Keyboard.on('Escape', this.labelClose, 0, 'labelbot');

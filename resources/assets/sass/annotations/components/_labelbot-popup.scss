@@ -4,21 +4,6 @@
     overflow: hidden;
 }
 
-.labelbot-popup--focused {
-    border-color: $gray-lighter;
-
-    .labelbot-labels-label {
-        .labelbot-labels-label__name {
-            color: inherit;
-        }
-
-        .labelbot-labels-label__nameProgressColor,
-        .labelbot-labels-label__highlighted {
-            color: white;
-        }
-    }
-}
-
 .labelbot-labels {
     list-style-type: none;
     max-width: 300px;
@@ -28,95 +13,47 @@
     background-color: $body-bg;
 }
 
-.labelbot-labels-label {
+.labelbot-label__color {
+    position: absolute;
+    top: 14px;
+    left: $padding-small-horizontal;
+    width: 1em;
+    height: 1em;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.labelbot-label {
     position: relative;
+    margin-bottom: 4px;
+    border: 1px solid $input-border;
+    border-radius: $border-radius-base;
+}
 
-    .labelbot-labels-label__color {
-        position: absolute;
-        top: 14px;
-        left: $padding-small-vertical;
-        width: 1em;
-        height: 1em;
-        border: 2px solid white;
-        border-radius: 50%;
-    }
+.labelbot-label__name {
+    position: relative;
+    // 45px for the keyboard icon, 30px for the color dot.
+    padding: $padding-large-vertical 45px $padding-large-vertical 30px;
+    word-wrap: break-word;
+    color: $text-muted;
+}
 
-    .labelbot-labels-label__name,
-    .labelbot-labels-label__nameProgressColor {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: relative;
-        padding: $padding-large-vertical 5px $padding-large-vertical 27px;
-        margin-bottom: 4px;
-        border: 1px solid $input-border;
-        border-radius: $border-radius-base;
-        word-wrap: break-word;
+.labelbot-label__progress-bar {
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    opacity: 0.5;
+    background-color: $input-border;
+    transition: width 5s linear;
+    border-radius: $border-radius-base;
+}
 
-        &:hover {
-            color: white;
-            cursor: pointer;
-            background-color: $gray-lighter;
-        }
-    }
-
-    .labelbot-labels-label__name,
-    .labelbot-labels-label__nameProgressColor {
-        color: $text-muted;
-    }
-
-    .labelbot-labels-label__nameProgress {
-        position: relative;
-
-        .labelbot-labels-label__progress-bar {
-            position: absolute;
-            height: 100%;
-            opacity: 0.5;
-            background-color: $input-border;
-            transition: width 10s linear;
-            border-radius: $border-radius-base;
-        }
-    }
-
-    .labelbot-labels-label__highlighted {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: relative;
-        padding: $padding-large-vertical 5px $padding-large-vertical 27px;
-        margin-bottom: 4px;
-        border: 1px solid $input-border;
-        border-radius: $border-radius-base;
-        word-wrap: break-word;
-
-        color: white;
-        cursor: pointer;
-        background-color: $gray-lighter;
-    }
-
-    .labelbot-labels-label__highlightedProgress {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: relative;
-        padding: $padding-large-vertical 5px $padding-large-vertical 27px;
-        margin-bottom: 4px;
-        border: 1px solid $input-border;
-        border-radius: $border-radius-base;
-        word-wrap: break-word;
-
-        color: white;
-        cursor: pointer;
-        background-color: $gray-lighter;
-    }
-
-    .labelbot-labels-label__keyboard {
-        color: $text-muted;
-    }
-
-    .labelbot-labels-label__keyboardHighlighted {
-        color: white;
-    }
+.labelbot-label__keyboard {
+    display: none;
+    color: $text-muted;
+    position: absolute;
+    right: $padding-small-horizontal;
 }
 
 .labelbot-overlay-grap-area {
@@ -138,17 +75,6 @@
     border-radius: $border-radius-base $border-radius-base 0 0;
 }
 
-.labelbot-popup--focused {
-    .labelbot-overlay-grap-area {
-        background-color: $gray-lighter;
-    }
-
-    .labelbot-overlay-grap-area-notch {
-        background-color: $gray-lighter;
-        border-color: $gray-lighter;
-    }
-}
-
 .labelbot-overlay-grap-area::after {
     content: "⋮⋮⋮";
     letter-spacing: 0.2rem;
@@ -158,4 +84,37 @@
     left: 50%;
     transform: translate(-50%, -50%);
     top: 8px;
+}
+
+.labelbot-popup--focused {
+    border-color: $gray-lighter;
+    .labelbot-label__name {
+        color: inherit;
+    }
+
+    .labelbot-label {
+
+        &.labelbot-label--highlighted {
+            color: white;
+            cursor: pointer;
+            background-color: $gray-lighter;
+
+            .labelbot-label__keyboard {
+                color: white;
+            }
+        }
+    }
+
+    .labelbot-label__keyboard {
+        display: inline-block;
+    }
+
+    .labelbot-overlay-grap-area {
+        background-color: $gray-lighter;
+    }
+
+    .labelbot-overlay-grap-area-notch {
+        background-color: $gray-lighter;
+        border-color: $gray-lighter;
+    }
 }
