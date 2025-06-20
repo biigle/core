@@ -157,12 +157,12 @@ export default {
     labelUp() {
       if (!this.isFocused) return;
 
-        this.highlightedLabel = this.highlightedLabel > 0 ? this.highlightedLabel - 1 : 0;
+      this.highlightedLabel = (this.labelbotLabels.length + this.highlightedLabel - 1) % this.labelbotLabels.length;
     },
     labelDown() {
       if (!this.isFocused) return;
 
-        this.highlightedLabel = this.highlightedLabel < this.labelbotLabels.length - 1 ? this.highlightedLabel + 1 : this.labelbotLabels.length - 1;
+      this.highlightedLabel = (this.highlightedLabel + 1) % this.labelbotLabels.length;
     },
     labelEnter() {
       if (!this.isFocused || this.highlightedLabel > (this.labelbotLabels.length - 1)) {
