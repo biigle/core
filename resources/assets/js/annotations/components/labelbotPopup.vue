@@ -6,6 +6,7 @@
       :key="index"
       @mouseover="handleLabelbotFocus(index)"
       @click="selectLabelbotLabel(label)"
+      :title="`Choose label ${label.name}`"
       >
         <div
           v-if="index === 0"
@@ -24,7 +25,17 @@
         </div>
     </li>
     <li>
-      <typeahead :key="popupKey" ref="popupTypeahead" :style="{ width: '100%' }" :items="labels" @focus="handleTypeaheadFocus" more-info="tree.versionedName" @select="selectLabelbotLabel" placeholder="Find label"></typeahead>
+      <typeahead
+        :items="labels"
+        :key="popupKey"
+        class="typeahead--block"
+        more-info="tree.versionedName"
+        placeholder="Find label"
+        ref="popupTypeahead"
+        title="Choose a different label"
+        @focus="handleTypeaheadFocus"
+        @select="selectLabelbotLabel"
+        ></typeahead>
     </li>
   </ul>
 </template>
