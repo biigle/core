@@ -10,8 +10,10 @@
           <span>{{ label.name }}</span>
           <!-- keyboard icon -->
           <span class="labelbot-labels-label__keyboard" :class="{ 'labelbot-labels-label__keyboardHighlighted' : index === highlightedLabel && isFocused}">
-            <span class="fa fa-keyboard" aria-hidden="true"></span>
-            <span v-text="index + 1"></span>
+            <template v-if="isFocused">
+              <span class="fa fa-keyboard" aria-hidden="true"></span>
+              <span v-text="index + 1"></span>
+            </template>
           </span>
         </div>
       </div>
@@ -20,8 +22,10 @@
         <span>{{ label.name }}</span>
         <!-- keyboard icon -->
         <span class="labelbot-labels-label__keyboard" :class="{ 'labelbot-labels-label__keyboardHighlighted' : index === highlightedLabel && isFocused}">
-          <span class="fa fa-keyboard" aria-hidden="true"></span>
-          <span v-text="index + 1"></span>
+          <template v-if="isFocused">
+            <span class="fa fa-keyboard" aria-hidden="true"></span>
+            <span v-text="index + 1"></span>
+          </template>
         </span>
       </div>
     </li>

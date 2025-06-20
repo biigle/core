@@ -197,7 +197,7 @@
                 ></control-button>
         </div>
     </div>
-    <div :class="{ 'labelbot-popup-focused': key === focusedPopupKey }" v-for="(overlay, key) in labelbotOverlays" v-show="overlay.ready" :key="key" :ref="'labelbot-popup-' + key">
+    <div class="labelbot-popup" :class="{ 'labelbot-popup--focused': key === focusedPopupKey }" v-for="(overlay, key) in labelbotOverlays" v-show="overlay.ready" :key="key" :ref="'labelbot-popup-' + key">
         <div class="labelbot-overlay-grap-area"
             :style="{cursor: overlay.isDragging ? 'grabbing' : 'grab'}"
             :key="key"

@@ -1,6 +1,22 @@
-.labelbot-popup-focused {
-  box-shadow: 0 0 15px 3px $gray-light;
-  transition: box-shadow 0.3s ease
+.labelbot-popup {
+    border: 1px solid $input-border;
+    border-radius: $border-radius-base;
+    overflow: hidden;
+}
+
+.labelbot-popup--focused {
+    border-color: $gray-lighter;
+
+    .labelbot-labels-label {
+        .labelbot-labels-label__name {
+            color: inherit;
+        }
+
+        .labelbot-labels-label__nameProgressColor,
+        .labelbot-labels-label__highlighted {
+            color: white;
+        }
+    }
 }
 
 .labelbot-labels {
@@ -8,10 +24,8 @@
     max-width: 300px;
     display: block;
     padding: $padding-large-vertical;
-    border: 1px solid $input-border;
-    border-radius:  0 0 $input-border-radius $input-border-radius;
     margin: 0;
-    background-color: #333333;
+    background-color: $body-bg;
 }
 
 .labelbot-labels-label {
@@ -36,7 +50,7 @@
         padding: $padding-large-vertical 5px $padding-large-vertical 27px;
         margin-bottom: 4px;
         border: 1px solid $input-border;
-        border-radius: $input-border-radius;
+        border-radius: $border-radius-base;
         word-wrap: break-word;
 
         &:hover {
@@ -46,24 +60,21 @@
         }
     }
 
+    .labelbot-labels-label__name,
+    .labelbot-labels-label__nameProgressColor {
+        color: $text-muted;
+    }
+
     .labelbot-labels-label__nameProgress {
         position: relative;
-
-        .labelbot-labels-label__nameProgressColor {
-            border-color: #219b19;
-
-            &:hover {
-                background-color: #219b19;
-            }
-        }
 
         .labelbot-labels-label__progress-bar {
             position: absolute;
             height: 100%;
-            background-color: #186612;
+            opacity: 0.5;
+            background-color: $input-border;
             transition: width 10s linear;
-            border: 1px solid #219b19;
-            border-radius: $input-border-radius;
+            border-radius: $border-radius-base;
         }
     }
 
@@ -75,13 +86,14 @@
         padding: $padding-large-vertical 5px $padding-large-vertical 27px;
         margin-bottom: 4px;
         border: 1px solid $input-border;
-        border-radius: $input-border-radius;
+        border-radius: $border-radius-base;
         word-wrap: break-word;
 
         color: white;
         cursor: pointer;
         background-color: $gray-lighter;
     }
+
     .labelbot-labels-label__highlightedProgress {
         display: flex;
         align-items: center;
@@ -90,17 +102,18 @@
         padding: $padding-large-vertical 5px $padding-large-vertical 27px;
         margin-bottom: 4px;
         border: 1px solid $input-border;
-        border-radius: $input-border-radius;
+        border-radius: $border-radius-base;
         word-wrap: break-word;
 
         color: white;
         cursor: pointer;
-        background-color: #219b19;;
+        background-color: $gray-lighter;
     }
 
     .labelbot-labels-label__keyboard {
         color: $text-muted;
     }
+
     .labelbot-labels-label__keyboardHighlighted {
         color: white;
     }
@@ -108,9 +121,7 @@
 
 .labelbot-overlay-grap-area {
     height: 20px;
-    background-color: #111;
-    border: 1px solid $input-border;
-    border-radius: $input-border-radius $input-border-radius 0 0;
+    background-color: $body-bg;
 }
 
 .labelbot-overlay-grap-area-notch {
@@ -118,13 +129,24 @@
     width: 3em;
     height: 0.4em;
     left: 50%;
-    top: -2%;
+    top: calc(-0.4em + 1px);
     transform: translateX(-50%);
-    background-color: #111;
+    background-color: $body-bg;
     border-top: 1px solid $input-border;
     border-right: 1px solid $input-border;
     border-left: 1px solid $input-border;
-    border-radius: $input-border-radius $input-border-radius 0 0;
+    border-radius: $border-radius-base $border-radius-base 0 0;
+}
+
+.labelbot-popup--focused {
+    .labelbot-overlay-grap-area {
+        background-color: $gray-lighter;
+    }
+
+    .labelbot-overlay-grap-area-notch {
+        background-color: $gray-lighter;
+        border-color: $gray-lighter;
+    }
 }
 
 .labelbot-overlay-grap-area::after {
