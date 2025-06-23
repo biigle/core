@@ -125,11 +125,11 @@ class TileSingleImage extends Job implements ShouldQueue
     {
         $iterator = $this->getIterator($this->tempPath);
         $config = $disk->getConfig();
-        $prefix = "prefix";
-        $root = isset($config[$prefix]) && strlen($config[$prefix]) ?
-            $config[$prefix] . "/" : "";
+        $prefixKey = "prefix";
+        $prefix = isset($config[$prefixKey]) && strlen($config[$prefixKey]) ?
+            $config[$prefixKey] . "/" : "";
 
-        $uploads = function ($files) use ($disk, $root) {
+        $uploads = function ($files) use ($disk, $prefix) {
             $client = $this->getClient($disk);
             $bucket = $this->getBucket($disk);
             $fragment = fragment_uuid_path($this->image->uuid);
@@ -140,7 +140,7 @@ class TileSingleImage extends Job implements ShouldQueue
                 // @phpstan-ignore-next-line
                 yield $client->putObjectAsync([
                     'Bucket' => $bucket,
-                    'Key' => "{$root}{$fragment}{$path}",
+                    'Key' => "{$prefix}{$fragment}{$path}",
                     'SourceFile' => $file,
                     // Return with error if file already exist
                     '@http' => [
