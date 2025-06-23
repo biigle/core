@@ -54,7 +54,8 @@ class TileSingleImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
-        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}";
+        $fragment = fragment_uuid_path($image->uuid);
+        $this->tempPath = config('image.tiles.tmp_dir') . "/{$fragment}";
         $this->queue = config('image.tiles.queue');
     }
 
@@ -89,6 +90,7 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function generateTiles(Image $image, $path)
     {
+        File::ensureDirectoryExists(path: $this->tempPath, recursive: true);
         $this->getVipsImage($path)->dzsave($this->tempPath, [
             'layout' => 'zoomify',
             'container' => 'fs',
@@ -132,15 +134,14 @@ class TileSingleImage extends Job implements ShouldQueue
         $uploads = function ($files) use ($disk, $prefix) {
             $client = $this->getClient($disk);
             $bucket = $this->getBucket($disk);
-            $fragment = fragment_uuid_path($this->image->uuid);
-            $dirLength = strlen(config('image.tiles.tmp_dir')) + 1 + strlen(basename($fragment));
+            $dirLength = strlen(config('image.tiles.tmp_dir')) + 1;
 
             foreach ($files as $file) {
                 $path = substr($file, $dirLength);
                 // @phpstan-ignore-next-line
                 yield $client->putObjectAsync([
                     'Bucket' => $bucket,
-                    'Key' => "{$prefix}{$fragment}{$path}",
+                    'Key' => "{$prefix}{$path}",
                     'SourceFile' => $file,
                     // Return with error if file already exist
                     '@http' => [
