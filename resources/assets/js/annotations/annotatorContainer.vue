@@ -440,7 +440,7 @@ export default {
 
                     if (availableOverlayKey === -1) {
                         this.$nextTick(removeCallback);
-                        Messages.danger(`You already have ${this.labelbotOverlays.length} pending LabelBOT requests. Please wait for one to complete before submitting a new one.`)
+                        Messages.danger(`You already have ${this.labelbotOverlays.length} LabelBOT popups open. Please close one before submitting a new request.`)
                         return;
                     }
 
@@ -470,7 +470,8 @@ export default {
                     })
                     .catch((e) => {
                         if (wasLabelbotActive) {
-                            this.updateLabelbotState(LABELBOT_STATES.OFF);
+                            // Error code 429: max number of requests is reached.
+                            this.updateLabelbotState(e.status === 429 ? LABELBOT_STATES.BUSY : LABELBOT_STATES.OFF);
                         }
                         handleErrorResponse(e);
                     })

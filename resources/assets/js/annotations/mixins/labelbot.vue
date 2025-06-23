@@ -373,8 +373,7 @@ export default {
         }
     },
     created() {
-        const maxNRequests = biigle.$require('labelbot.max_requests');
-        this.labelbotOverlays = Array.from({ length: maxNRequests }, () => ({
+        this.labelbotOverlays = Array.from({ length: 20 }, () => ({
             available: true,
             ready: false, // true when labels is not empty
             isDragging: false,
