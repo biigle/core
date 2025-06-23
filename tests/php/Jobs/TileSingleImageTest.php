@@ -72,7 +72,7 @@ class TileSingleImageTest extends TestCase
         $image = ImageTest::create();
         $fragment = fragment_uuid_path($image->uuid);
         $job = new TileSingleImageStub($image);
-        File::makeDirectory($job->tempPath);
+        File::makeDirectory(path: $job->tempPath, recursive: true);
         File::put("{$job->tempPath}/test.txt", 'test');
 
         try {
@@ -104,21 +104,28 @@ class TileSingleImageTest extends TestCase
         $client = new S3Client($this->s3Config);
         $client->getHandlerList()->setHandler($mock);
 
-        // Treat images as tiles for Biigle\Image
-        $tiles = ['exif-test.jpg', 'test-image.jpg', 'test-image.png'];
-
         $image = ImageTest::create();
+
         $job = new TileSingleImageStub($image);
-        $job->files = $tiles;
-        $job->useParentGetIterator = false;
-        $job->client = $client;
-        $job->disk = $disk;
+        $dir = $job->tempPath . "/TilesGroup0";
+        File::makeDirectory(path: $dir, recursive: true);
+        File::put("{$dir}/0-0-0.jpg", 'test');
+        File::put("{$dir}/0-0-1.jpg", 'test');
+        File::put("{$dir}/0-0-3.jpg", 'test');
 
-        $job->uploadToS3Storage($disk);
+        try {
+            $job->useParentGetIterator = false;
+            $job->client = $client;
 
-        $uploadedFiles = array_map(fn ($f) => basename($f), $disk->allFiles());
+            $job->uploadToS3Storage($disk);
 
-        $this->assertEquals($tiles, $uploadedFiles);
+            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $uploadedFiles = $job->uploadedFiles;
+
+            $this->assertEquals($tiles, $uploadedFiles);
+        } finally {
+            File::deleteDirectory($dir);
+        }
     }
 
     public function testUploadToS3StorageThrowException()
@@ -145,25 +152,32 @@ class TileSingleImageTest extends TestCase
         $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
 
-        // Treat images as tiles for Biigle\Image
-        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
-
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
-        $job->files = $tiles;
-        $job->useParentGetIterator = false;
-        $job->client = $client;
-        $job->disk = $disk;
-
+        $dir = $job->tempPath . "/TilesGroup0";
+        File::makeDirectory(path: $dir, recursive: true);
+        File::put("{$dir}/0-0-0.jpg", 'test');
+        File::put("{$dir}/0-0-1.jpg", 'test');
+        File::put("{$dir}/0-0-3.jpg", 'test');
         $fails = false;
+
         try {
+            $job->useParentGetIterator = false;
+            $job->client = $client;
+
             $job->uploadToS3Storage($disk);
+
+            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $uploadedFiles = $job->uploadedFiles;
+
+            $this->assertEquals($tiles, $uploadedFiles);
         } catch (UploadException $e) {
             $fails = true;
+        } finally {
+            File::deleteDirectory($dir);
         }
 
         $this->assertTrue($fails);
-        $this->assertDirectoryDoesNotExist($disk->path(fragment_uuid_path($image->uuid)));
     }
 
     public function testUploadToS3StorageTilesExist()
@@ -190,26 +204,33 @@ class TileSingleImageTest extends TestCase
         $config['retries'] = 0;
         $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
-
-        // Treat images as tiles for Biigle\Image
-        $tiles = ['test-image.jpg', 'test-image.png', 'exif-test.jpg'];
-
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
-        $job->files = $tiles;
-        $job->useParentGetIterator = false;
-        $job->client = $client;
-        $job->disk = $disk;
-
+        $dir = $job->tempPath . "/TilesGroup0";
         $fails = false;
+
+        File::makeDirectory(path: $dir, recursive: true);
+        File::put("{$dir}/0-0-0.jpg", 'test');
+        File::put("{$dir}/0-0-1.jpg", 'test');
+        File::put("{$dir}/0-0-3.jpg", 'test');
+
         try {
+            $job->useParentGetIterator = false;
+            $job->client = $client;
+
             $job->uploadToS3Storage($disk);
+
+            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $uploadedFiles = $job->uploadedFiles;
+
+            $this->assertEquals($tiles, $uploadedFiles);
         } catch (UploadException $e) {
             $fails = true;
+        } finally {
+            File::deleteDirectory($dir);
         }
 
         $this->assertTrue($fails);
-        $this->assertDirectoryDoesNotExist($disk->path(fragment_uuid_path($image->uuid)));
     }
 
     public function testUploadToS3StorageRetryUpload()
@@ -241,21 +262,27 @@ class TileSingleImageTest extends TestCase
         $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
 
-        // Treat images as tiles for Biigle\Image
-        $tiles = ['exif-test.jpg', 'test-image.jpg', 'test-image.png'];
-
         $image = ImageTest::create();
         $job = new TileSingleImageStub($image);
-        $job->files = $tiles;
-        $job->useParentGetIterator = false;
-        $job->client = $client;
-        $job->disk = $disk;
+        $dir = $job->tempPath . "/TilesGroup0";
+        File::makeDirectory(path: $dir, recursive: true);
+        File::put("{$dir}/0-0-0.jpg", 'test');
+        File::put("{$dir}/0-0-1.jpg", 'test');
+        File::put("{$dir}/0-0-3.jpg", 'test');
 
-        $job->uploadToS3Storage($disk);
+        try {
+            $job->useParentGetIterator = false;
+            $job->client = $client;
 
-        $uploadedFiles = array_map(fn ($f) => basename($f), $disk->allFiles());
+            $job->uploadToS3Storage($disk);
 
-        $this->assertEquals($tiles, $uploadedFiles);
+            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $uploadedFiles = $job->uploadedFiles;
+
+            $this->assertEquals($tiles, $uploadedFiles);
+        } finally {
+            File::deleteDirectory($dir);
+        }
     }
 
     public function testQueue()
@@ -271,13 +298,11 @@ class TileSingleImageStub extends TileSingleImage
 {
     public $mock;
 
-    public $useParentGetIterator = true;
-
     public $files = [];
 
     public $client = null;
 
-    public $disk = null;
+    public $uploadedFiles = [];
 
     protected function getVipsImage($path)
     {
@@ -294,27 +319,13 @@ class TileSingleImageStub extends TileSingleImage
         return 'bucket';
     }
 
-    protected function getIterator($path)
-    {
-        if ($this->useParentGetIterator) {
-            return parent::getIterator($path);
-        }
-
-        $files = [];
-        foreach ($this->files as $file) {
-            $files[] = "tests/files/{$file}";
-        }
-
-        return new ArrayIterator($files);
-    }
-
     protected function sendRequests($files, $onFullfill = null)
     {
         $onFullfill = function ($res, $index) {
             // Simulate file upload
-            $fragment = fragment_uuid_path($this->image->uuid);
-            $path = $fragment . "/" . basename($res->get('ObjectURL'));
-            $this->disk->put($path, "test");
+            $bucketLength = 8;
+            $path = substr(parse_url($res->get('ObjectURL'), PHP_URL_PATH), $bucketLength);
+            $this->uploadedFiles[] = config('image.tiles.tmp_dir') ."/{$path}";
         };
         return parent::sendRequests($files, $onFullfill);
     }
