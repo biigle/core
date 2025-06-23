@@ -132,15 +132,15 @@ class TileSingleImage extends Job implements ShouldQueue
         $uploads = function ($files) use ($disk, $root) {
             $client = $this->getClient($disk);
             $bucket = $this->getBucket($disk);
-            $tmpLength = strlen(config('image.tiles.tmp_dir')) + 1;
+            $fragment = fragment_uuid_path($this->image->uuid);
+            $dirLength = strlen(config('image.tiles.tmp_dir')) + 1 + strlen(basename($fragment));
 
             foreach ($files as $file) {
-                $path = substr($file, $tmpLength);
-                $prefix = $path[0] . $path[1] . '/' . $path[2] . $path[3] . "/";
+                $path = substr($file, $dirLength);
                 // @phpstan-ignore-next-line
                 yield $client->putObjectAsync([
                     'Bucket' => $bucket,
-                    'Key' => "{$root}{$prefix}{$path}",
+                    'Key' => "{$root}{$fragment}{$path}",
                     'SourceFile' => $file,
                     // Return with error if file already exist
                     '@http' => [
