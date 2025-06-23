@@ -217,7 +217,8 @@
         <labelbot-popup 
             :popup-key="key" 
             :focused-popup-key="focusedPopupKey" 
-            :labelbot-labels="overlay.labels" 
+            :labelbot-labels="overlay.labels"
+            :is-dragging="overlay.isDragging"
             @update="updateLabelbotLabel"
             @close="closeLabelbotPopup"
             @delete="handleDeleteLabelbotLabelsAnnotation"

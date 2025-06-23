@@ -66,6 +66,10 @@ export default {
       type: Number,
       required: true,
     },
+    isDragging: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -122,6 +126,11 @@ export default {
         this.progressBarWidth = -1; // setting it to 0 will cause backward transition for the Top 1 Label.
       }
     },
+    isDragging() {
+      if (this.isDragging && this.progressBarWidth > -1) {
+        this.progressBarWidth = -1;
+      }
+    }
   },
   methods: {
     selectLabelbotLabel(label) {
