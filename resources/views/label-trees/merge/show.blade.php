@@ -4,8 +4,8 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('labelTrees.baseTree', {!! $baseTree !!});
-    biigle.$declare('labelTrees.mergeTree', {!! $mergeTree !!});
+    biigle.$declare('labelTrees.baseTree', {{Js::from($baseTree)}});
+    biigle.$declare('labelTrees.mergeTree', {{Js::from($mergeTree)}});
     biigle.$declare('labelTrees.usedLabels', {!! $usedLabels !!});
 </script>
 @endpush
