@@ -4,7 +4,7 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('labelTrees.mergeCandidates', {!! $mergeCandidates !!});
+    biigle.$declare('labelTrees.mergeCandidates', {{Js::from($mergeCandidates)}});
     biigle.$declare('labelTrees.mergeUrlTemplate', '{!! route('label-trees-merge', [$tree->id, ':id']) !!}');
 </script>
 @endpush
