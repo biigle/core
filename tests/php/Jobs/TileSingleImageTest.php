@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Jobs;
 
-use ArrayIterator;
 use Aws\Command;
 use Aws\MockHandler;
 use Aws\Result;
@@ -119,7 +118,7 @@ class TileSingleImageTest extends TestCase
 
             $job->uploadToS3Storage($disk);
 
-            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
@@ -167,7 +166,7 @@ class TileSingleImageTest extends TestCase
 
             $job->uploadToS3Storage($disk);
 
-            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
@@ -220,7 +219,7 @@ class TileSingleImageTest extends TestCase
 
             $job->uploadToS3Storage($disk);
 
-            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
@@ -276,7 +275,7 @@ class TileSingleImageTest extends TestCase
 
             $job->uploadToS3Storage($disk);
 
-            $tiles = array_map(fn($f) => $f->getPathname(), File::allFiles($dir));
+            $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
