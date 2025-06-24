@@ -5,11 +5,11 @@
 @push('scripts')
 <script type="module">
     biigle.$declare('sync.importToken', '{{$token}}');
-    biigle.$declare('sync.labelTreeCandidates', {!!$labelTreeCandidates->toJson()!!});
-    biigle.$declare('sync.importLabels', {!!$importLabels->toJson()!!});
-    biigle.$declare('sync.labelCandidates', {!!$labelCandidates->toJson()!!});
-    biigle.$declare('sync.conflictingParents', {!!$conflictingParents->toJson()!!});
-    biigle.$declare('sync.userCandidates', {!!$userCandidates->toJson()!!});
+    biigle.$declare('sync.labelTreeCandidates', {{Js::from($labelTreeCandidates)}});
+    biigle.$declare('sync.importLabels', {{Js::from($importLabels)}});
+    biigle.$declare('sync.labelCandidates', {{Js::from($labelCandidates)}});
+    biigle.$declare('sync.conflictingParents', {{Js::from($conflictingParents)}});
+    biigle.$declare('sync.userCandidates', {{Js::from($userCandidates)}});
     biigle.$declare('sync.adminRoleId', {!!$adminRoleId!!});
 </script>
 @endpush
