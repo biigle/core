@@ -47,7 +47,7 @@ class MigrateTiledImage extends TileSingleImage
             $zip->extractTo(config('image.tiles.tmp_dir'));
             $zip->close();
             fclose($tmpResource);
-            $this->uploadToStorage();
+            $this->uploadToStorage(Storage::disk(config('image.tiles.disk')));
         } finally {
             File::deleteDirectory($this->tempPath);
         }
