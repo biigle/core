@@ -5,7 +5,7 @@
 @push('scripts')
 <script type="module">
     biigle.$declare('sync.importToken', '{{$token}}');
-    biigle.$declare('sync.importCandidates', {!!$importCandidates->toJson()!!});
+    biigle.$declare('sync.importCandidates', {{Js::from($importCandidates)}});
 </script>
 @endpush
 
