@@ -11,7 +11,7 @@
     @endcan
     biigle.$declare('projects.roles', {!! $roles !!});
     biigle.$declare('projects.defaultRole', {!! Biigle\Role::guest() !!});
-    biigle.$declare('projects.members', {!! $members !!});
+    biigle.$declare('projects.members', {{Js::from($members)}});
     biigle.$declare('projects.invitationUrl', '{!!route('project-invitation', '/')!!}');
     biigle.$declare('projects.invitationQrUrl', '{!! url('api/v1/project-invitations/{id}/qr') !!}');
 </script>
