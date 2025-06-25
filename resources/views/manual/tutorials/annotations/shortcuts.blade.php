@@ -267,6 +267,45 @@
                 </tr>
             </tbody>
         </table>
+
+        <p>
+            When LabelBOT is active:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd></td>
+                    <td>Select the corresponding suggested label (if available)</td>
+                </tr>
+                <tr>
+                    <td><kbd>Arrow Up</kbd></td>
+                    <td>Move selection up through the suggested labels</td>
+                </tr>
+                <tr>
+                    <td><kbd>Arrow Down</kbd></td>
+                    <td>Move selection down through the suggested labels</td>
+                </tr>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Confirm the currently highlighted label</td>
+                </tr>
+                <tr>
+                    <td><kbd>Tab</kbd></td>
+                    <td>Toggle focus between suggested labels and the input field</td>
+                </tr>
+                <tr>
+                    <td><kbd>Backspace, Escape</kbd></td>
+                    <td>Delete the annotation and close the LabelBOT popup</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
 
