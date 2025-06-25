@@ -61,7 +61,7 @@ export default{
             setTimeout(() => location.href = this.redirectUrl, 2000);
         },
         deleteProject() {
-            let inputproject = prompt(`Do you realy want to delete ${this.project.name} ?`);
+            let inputproject = prompt(`Do you want to delete ${this.project.name}?`);
             if (inputproject == this.project.name) {
                 let confirmed = confirm(`Do you really want to delete the project ${this.project.name}?`);
                 if (confirmed) {
