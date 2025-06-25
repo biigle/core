@@ -617,6 +617,9 @@ export default {
             }
         },
         showPreviousVideo() {
+            if (!this.hasSiblingVideos) {
+                return;
+            }
             this.reset();
             let length = this.videoIds.length;
             let index = (this.videoIds.indexOf(this.videoId) + length - 1) % length;
@@ -624,6 +627,9 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         showNextVideo() {
+            if (!this.hasSiblingVideos) {
+                return;
+            }
             this.reset();
             let length = this.videoIds.length;
             let index = (this.videoIds.indexOf(this.videoId) + length + 1) % length;
