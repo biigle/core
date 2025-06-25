@@ -61,13 +61,15 @@ export default{
             setTimeout(() => location.href = this.redirectUrl, 2000);
         },
         deleteProject() {
-            let confirmed = confirm(`Do you really want to delete the project ${this.project.name}?`);
-
-            if (confirmed) {
-                this.startLoading();
-                ProjectsApi.delete({id: this.project.id})
-                    .then(this.projectDeleted, this.maybeForceDeleteProject)
-                    .finally(this.finishLoading);
+            let inputproject = prompt(`Do you want to delete ${this.project.name}?`);
+            if (inputproject == this.project.name) {
+                let confirmed = confirm(`Do you really want to delete the project ${this.project.name}?`);
+                if (confirmed) {
+                    this.startLoading();
+                    ProjectsApi.delete({ id: this.project.id })
+                        .then(this.projectDeleted, this.maybeForceDeleteProject)
+                        .finally(this.finishLoading);
+                }
             }
         },
         maybeForceDeleteProject(response) {
@@ -75,7 +77,7 @@ export default{
                 let confirmed = confirm('Deleting this project will delete one or more volumes with all annotations! Do you want to continue?');
                 if (confirmed) {
                     this.startLoading();
-                    ProjectsApi.delete({id: this.project.id}, {force: true})
+                    ProjectsApi.delete({ id: this.project.id }, { force: true })
                         .then(this.projectDeleted, handleErrorResponse)
                         .finally(this.finishLoading);
                 }
