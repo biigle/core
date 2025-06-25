@@ -2,20 +2,20 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('projects.annotationTimeSeries', {!! $annotationTimeSeries !!});
-    biigle.$declare('projects.volumeAnnotations', {!! $volumeAnnotations !!});
-    biigle.$declare('projects.volumeNames', {!! $volumeNames !!});
+    biigle.$declare('projects.annotationTimeSeries', {{Js::from($annotationTimeSeries)}});
+    biigle.$declare('projects.volumeAnnotations', {{Js::from($volumeAnnotations)}});
+    biigle.$declare('projects.volumeNames', {{Js::from($volumeNames)}});
     biigle.$declare('projects.annotatedImages', {!! $annotatedImages !!});
     biigle.$declare('projects.totalImages', {!! $totalImages !!});
-    biigle.$declare('projects.annotationLabels', {!! $annotationLabels !!});
+    biigle.$declare('projects.annotationLabels', {{Js::from($annotationLabels)}});
     biigle.$declare('projects.sourceTargetLabels', {!! $sourceTargetLabels !!});
-    biigle.$declare('projects.volumes', {!! $volumes !!});
+    biigle.$declare('projects.volumes', {{Js::from($volumes)}});
     biigle.$declare('projects.totalVideos', {!! $totalVideos !!});
     biigle.$declare('projects.annotatedVideos', {!! $annotatedVideos !!});
-    biigle.$declare('projects.annotationTimeSeriesVideo', {!! $annotationTimeSeriesVideo !!});
-    biigle.$declare('projects.volumeAnnotationsVideo', {!! $volumeAnnotationsVideo !!});
-    biigle.$declare('projects.volumeNamesVideo', {!! $volumeNamesVideo !!});
-    biigle.$declare('projects.annotationLabelsVideo', {!! $annotationLabelsVideo !!});
+    biigle.$declare('projects.annotationTimeSeriesVideo', {{Js::from($annotationTimeSeriesVideo)}});
+    biigle.$declare('projects.volumeAnnotationsVideo', {{Js::from($volumeAnnotationsVideo)}});
+    biigle.$declare('projects.volumeNamesVideo', {{Js::from($volumeNamesVideo )}});
+    biigle.$declare('projects.annotationLabelsVideo', {{Js::from($annotationLabelsVideo)}});
     biigle.$declare('projects.sourceTargetLabelsVideo', {!! $sourceTargetLabelsVideo !!});
 </script>
 @endpush
