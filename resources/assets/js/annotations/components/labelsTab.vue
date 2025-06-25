@@ -2,6 +2,7 @@
 import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import { LABELBOT_STATES } from '../mixins/labelbot.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -22,6 +23,7 @@ export default {
     emits: [
         'open',
         'select',
+        'update-labelbot-state',
     ],
     components: {
         labelTrees: LabelTrees,
@@ -43,20 +45,63 @@ export default {
             type: Boolean,
             default: false,
         },
+        labelbotState: {
+            type: String,
+            required: true,
+        },
+        labelbotToggleTitle: {
+            type: String,
+            default: '',
+        },
     },
     computed: {
         plugins() {
             return plugins;
         },
+        labelbotIsActive() {
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+        },
+        labelbotIsDisabled() {
+            return this.labelbotState === LABELBOT_STATES.DISABLED;
+        },
+    },
+    watch: {
+        labelbotState() {
+            if (this.labelbotIsActive) {
+                this.$refs.labelTrees.clear();
+            }
+        },
     },
     methods: {
         handleSelectedLabel(label) {
+            // Turn off LabelBOT if its on
+            if (this.labelbotIsActive) {
+                this.handleLabelbotOff();
+            }
+
             this.selectedLabel = label;
             this.$emit('select', label);
         },
         handleDeselectedLabel() {
             this.selectedLabel = null;
             this.$emit('select', null);
+        },
+        toggleLabelBot() {
+            if (this.labelbotIsActive) {
+                this.handleLabelbotOff();
+            } else {
+                this.handleLabelbotOn();
+            }
+        },
+        handleLabelbotOn() {
+            // Deselect the selected label when LabelBOT is on
+            if (this.selectedLabel) {
+                this.handleDeselectedLabel();
+            }
+            this.$emit('update-labelbot-state', LABELBOT_STATES.READY);
+        },
+        handleLabelbotOff() {
+            this.$emit('update-labelbot-state', LABELBOT_STATES.OFF);
         },
         setFocusInputFindLabel() {
             this.$emit('open', 'labels');

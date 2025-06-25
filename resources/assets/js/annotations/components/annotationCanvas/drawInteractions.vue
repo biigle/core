@@ -53,7 +53,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && this.canAdd) {
+            } else if (!this.hasSelectedLabel && !this.labelbotIsActive && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -146,7 +146,6 @@ export default {
         },
         interactionMode(mode) {
             this.maybeUpdateDrawInteractionMode(mode)
-
         },
     },
     created() {
