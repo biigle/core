@@ -26,7 +26,7 @@
                     v-show="progressBarWidth > -1"
                     class="labelbot-label__progress-bar"
                     :style="{ width: progressBarWidth + '%' }"
-                    @transitionend="closeLabelbotPopup"
+                    @transitionend="emitClose"
                     ></div>
                 <div class="labelbot-label__name">
                     <span class="labelbot-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
@@ -177,17 +177,9 @@ export default {
                 this.$emit('update', {label: label, annotation: this.popup.annotation});
             }
 
-            this.closeLabelbotPopup();
+            this.emitClose();
         },
-        resetPopup() {
-            this.$refs.popupTypeahead?.clear();
-            this.highlightedLabel = -1;
-            this.typeaheadFocused = false;
-        },
-        closeLabelbotPopup() {
-            // TODO
-            this.resetPopup();
-
+        emitClose() {
             this.$emit('close', this.popup);
         },
         handleTypeaheadFocus() {
@@ -200,7 +192,7 @@ export default {
         labelClose() {
             if (!this.isFocused) return;
 
-            this.closeLabelbotPopup();
+            this.emitClose();
         },
         labelUp() {
             if (!this.isFocused) return;
@@ -242,9 +234,8 @@ export default {
         deleteLabelAnnotation() {
             if (!this.isFocused) return;
 
-            this.resetPopup();
-
-            this.$emit('delete', this.popupKey);
+            this.$emit('delete', this.popup.annotation);
+            this.emitClose();
         },
         emitFocus() {
             this.$emit('focus', this.popupKey);

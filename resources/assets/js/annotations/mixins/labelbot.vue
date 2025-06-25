@@ -21,10 +21,6 @@ export const LABELBOT_TOGGLE_TITLE =  {
     DEACTIVATE: 'Deactivate LabelBOT'
 };
 
-/**
- * A Mixin for LabelBOT
- */
-
 export default {
     data() {
         return {
@@ -33,9 +29,7 @@ export default {
             labelbotState: LABELBOT_STATES.OFF,
             labelbotToggleTitle: LABELBOT_TOGGLE_TITLE.ACTIVATE,
             labelbotOverlays: [],
-            labelbotLineFeatureLength: 100, // in px
             focusedPopupKey: -1,
-            labelbotOverlaysTimeline: [],
             // Cache api
             labelbotCacheName: 'labelbot',
             labelbotModelCacheKey: '/cached-labelbot-onnx-model',
@@ -170,39 +164,6 @@ export default {
                 return output[Object.keys(output)[0]].data
             });
         },
-        /*calculateOverlayPosition(annotationPoints) {
-            const offset = this.labelbotLineFeatureLength / 10;
-
-            let startPoint;
-            // Needed for polygon shapes
-            let extraXOffset = annotationPoints[0];
-
-            if (annotationPoints.length === 2) {
-                // Point
-                startPoint = annotationPoints;
-            } else if (annotationPoints.length === 3) {
-                // Circle
-                const [x, y, r] = annotationPoints;
-                startPoint = [x + r, y];
-                extraXOffset = x + r;
-            } else {
-                // Polygon: convert flat array to [x, y] pairs
-                const pointPairs = [];
-                for (let i = 0; i < annotationPoints.length; i += 2) {
-                    pointPairs.push([annotationPoints[i], annotationPoints[i + 1]]);
-                }
-
-                // Sort by X descending
-                pointPairs.sort((a, b) => b[0] - a[0]);
-
-                startPoint = pointPairs[0];
-
-                // Farthest-right point
-                extraXOffset = startPoint[0]; 
-            }
-
-            return startPoint;
-        },*/
         updateLabelbotPopupLine(newPosition) {
             // const popupKey = newPosition.popupKey;
             // const newMousePosition = newPosition.mousePosition;
@@ -257,56 +218,19 @@ export default {
 
             // labelbotOverlay.popupLineFeature = labelbotOverlay.drawPopupLineFeature(path, labelbotOverlay.labels[0].color);
         },
-        getAvailableLabelbotOverlay() {
-            // for (let popupKey = 0; popupKey < this.labelbotOverlays.length; popupKey++) {
-            //     if (this.labelbotOverlays[popupKey].available) {
-            //         this.labelbotOverlays[popupKey].available = false;
-            //         return popupKey;
-            //     }
-            // }
-
-            // this.updateLabelbotState(LABELBOT_STATES.BUSY);
-
-            // return -1;
-        },
         showLabelbotPopup(annotation, popupKey) {
             const popup = new LabelBotPopup(annotation);
 
             this.labelbotOverlays.push(popup);
             this.focusedPopupKey = popup.getKey();
-
-            // const popup = this.labelbotOverlays[popupKey];
-
-            // if (popup) {
-            //     popup.labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
-            //     popup.annotation = annotation;
-
-            //     // Convert annotation points and calculate start/end points
-            //     const convertedPoints = popup.convertPointsToOl(annotation.points);
-            //     const popupPosition = this.calculateOverlayPosition(convertedPoints);
-
-            //     // Draw line feature and set popup position
-            //     popup.overlay.setPosition(popupPosition);
-            //     popup.popupLineFeature = popup.drawPopupLineFeature(popup, annotation.labels[0].label.color);
-
-            //     // Set the popup as focused
-            //     this.focusedPopupKey = popupKey;
-
-            //     this.labelbotOverlaysTimeline.push(popupKey)
-
-            //     popup.ready = true;
-
-            //     Keyboard.setActiveSet('labelbot');
-            // }
-
-            // if (this.labelbotIsActive) {
-            //     this.updateLabelbotState(LABELBOT_STATES.READY);
-            // }
+            Keyboard.setActiveSet('labelbot');
         },
         updateLabelbotState(labelbotState, toggleTitle='') {
-            this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY 
-                ? LABELBOT_STATES.BUSY
-                : labelbotState;
+            // TODO if ready but request limit full, set to busy
+            this.labelbotState = labelbotState;
+            // this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY
+            //     ? LABELBOT_STATES.BUSY
+            //     : labelbotState;
 
             switch (this.labelbotState) {
                 case LABELBOT_STATES.OFF:
@@ -326,31 +250,11 @@ export default {
                 this.labelbotOverlays.splice(index, 1);
             }
 
-            // const popup = this.labelbotOverlays[popupKey];
+            this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.getKey();
 
-            // if (!popup.overlay || !popup.annotation) return
-
-            // popup.removePopupLineFeature(popup);
-            // popup.available = true;
-            // popup.ready = false;
-            // popup.isDragging = false;
-            // popup.labels = [];
-            // popup.annotation = null;
-
-            // // Update State if LabelBOT is active
-            // if (this.labelbotIsActive) {
-            //     this.updateLabelbotState(LABELBOT_STATES.READY);
-            // }
-
-            // // Set focused pop key to the next most recent
-            // this.labelbotOverlaysTimeline.splice(this.labelbotOverlaysTimeline.indexOf(popupKey), 1);
-            // if (this.labelbotOverlaysTimeline.length > 0) {
-            //     this.focusedPopupKey = this.labelbotOverlaysTimeline[this.labelbotOverlaysTimeline.length - 1];
-            // } else {
-            //     this.focusedPopupKey = -1;
-            //     // If no other popups are open then we reactivate the default listener set.
-            //     Keyboard.setActiveSet('default');
-            // }
+            if (!this.focusedPopupKey) {
+                Keyboard.setActiveSet('default');
+            }
         },
         changeLabelbotFocusedPopup(popupKey) {
             this.focusedPopupKey = popupKey;
@@ -362,38 +266,15 @@ export default {
         releaseLabelbotPopup(popupKey) {
             this.labelbotOverlays[popupKey].isDragging = false;
         },
-        deleteLabelbotLabelsAnnotation(popupKey) {
-            if (this.labelbotOverlays[popupKey].annotation) {
-                this.handleDeleteAnnotation(this.labelbotOverlays[popupKey].annotation);
-                this.closeLabelbotPopup(popupKey);
-            }
-        }
     },
     watch: {
         labelbotState() {
             if (this.labelbotIsActive && !this.labelbotModel) {
                 this.initLabelbotModel();
             }
-        }
+        },
     },
     created() {
-        // this.labelbotOverlays = Array.from({ length: 20 }, () => ({
-        //     available: true,
-        //     ready: false, // true when labels is not empty
-        //     isDragging: false,
-        //     overlay: null,
-        //     labels: [],
-        //     annotation: null,
-        //     popupLineFeature: null,
-        //     // functions
-        //     convertPointsToOl: null,
-        //     drawPopupLineFeature: null,
-        //     removePopupLineFeature: null,
-        // }));
-
-        // this.labelbotOverlays = Array.from({length: 20}, () => new LabelBotPopup());
-
-        // Disable LabelBOT if there are no labels in any label tree or no annotations in the project
         const emptyLabelTrees = biigle.$require('annotations.labelTrees').every(tree => tree.labels.length === 0);
         const annotationsExist = biigle.$require('annotations.annotationsExist');
         if (emptyLabelTrees) {

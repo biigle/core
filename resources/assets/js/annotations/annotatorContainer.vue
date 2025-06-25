@@ -379,13 +379,14 @@ export default {
                 this.lastCreatedAnnotation = null;
             }
 
+            // TODO
             this.labelbotOverlays.map((overlay, idx) => {
                 if (overlay.annotation?.id === annotation.id && !overlay.available) {
                     this.closeLabelbotPopup(idx)
                     return;
                 }
             })
-            
+
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
             annotation.markedForDeletion = true;
@@ -436,8 +437,7 @@ export default {
                 if (!this.selectedLabel && wasLabelbotActive) {
                     this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
 
-                    // availableOverlayKey = this.getAvailableLabelbotOverlay();
-
+                    // TODO
                     // if (availableOverlayKey === -1) {
                     //     this.$nextTick(removeCallback);
                     //     Messages.danger(`You already have ${this.labelbotOverlays.length} LabelBOT popups open. Please close one before submitting a new request.`)
@@ -465,6 +465,7 @@ export default {
                                     if (currentImageIndex === this.imageIndex) {
                                         this.showLabelbotPopup(annotation);
                                     }
+                                    // TODO only if no other requests are in flight
                                     this.updateLabelbotState(LABELBOT_STATES.READY);
                                 }
                             });
@@ -474,8 +475,7 @@ export default {
                             // Error code 429: max number of requests is reached.
                             this.updateLabelbotState(e.status === 429 ? LABELBOT_STATES.BUSY : LABELBOT_STATES.OFF);
                         }
-                        throw e;
-                        // handleErrorResponse(e);
+                        handleErrorResponse(e);
                     })
                     .finally(removeCallback);
             }
@@ -747,6 +747,7 @@ export default {
             }
         },
         imageIndex() {
+            // TODO
             // Remove LabelBOT's popups when switching images
             if (this.labelbotIsActive) {
                 this.labelbotOverlays.forEach((_, idx) => this.closeLabelbotPopup(idx));

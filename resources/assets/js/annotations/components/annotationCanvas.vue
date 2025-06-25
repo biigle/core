@@ -75,9 +75,7 @@ export default {
         'delete',
         'requires-selected-label',
         'change-labelbot-focused-popup',
-        'update-labelbot-label',
         'close-labelbot-popup',
-        'delete-labelbot-labels-annotation',
         'update-labelbot-popup-line',
         'grab-labelbot-popup',
         'release-labelbot-popup',
@@ -739,53 +737,6 @@ export default {
                 feature.setStyle(Styles.highlight);
             }, 200);
         },
-        // initLabelbotOverlays() {
-        //     this.labelbotOverlays.forEach((labelbotOverlay, key) => {
-        //         const popup = this.$refs['labelbot-popup-' + key]?.[0];
-        //         popup.addTo(this.map);
-        //         // if (!popup) return;
-        //         // labelbotOverlay.overlay = new Overlay({
-        //         //     element: popup.$el,
-        //         //     positioning: 'center-center',
-        //         //     offset: [LABELBOT_OVERLAY_OFFSET, 0],
-        //         //     insertFirst: false, // last added overlay appears on top
-        //         // });
-        //         // // Add it to the map
-        //         // this.map.addOverlay(labelbotOverlay.overlay);
-        //         // // Attach methods
-        //         // labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb.bind(this);
-        //         // labelbotOverlay.drawPopupLineFeature = this.drawLabelbotPopupLineFeature.bind(this);
-        //         // labelbotOverlay.removePopupLineFeature = this.removeLabelbotPopupLineFeature.bind(this);
-        //     });
-        // },
-        // drawLabelbotPopupLineFeature(popup, color) {
-        //     const line = new LineString([[0, 0], [0, 0]]);
-
-        //     const labelbotPopupLineFeature = new Feature(line);
-        //     labelbotPopupLineFeature.setStyle(Styles.labelbotPopupLineStyle(color));
-
-        //     const updateLineCoordinates = () => {
-        //         const start = popup.overlay.getPosition();
-        //         const end = [start[0] + LABELBOT_OVERLAY_OFFSET * this.map.getView().getResolution(), start[1]];
-        //         line.setCoordinates([start, end]);
-        //     };
-        //     updateLineCoordinates();
-
-        //     this.annotationSource.addFeature(labelbotPopupLineFeature);
-
-        //     popup.listenerKey = this.map.getView().on('change:resolution', updateLineCoordinates);
-
-        //     // We return the feature to save it for later removal from annotation source
-        //     return labelbotPopupLineFeature;
-        // },
-        // removeLabelbotPopupLineFeature(popup) {
-        //     try {
-        //         unByKey(popup.listenerKey);
-        //         this.annotationSource.removeFeature(popup.popupLineFeature);
-        //     } catch(e) {
-        //         // Ignore it
-        //     }
-        // },
         // TODO move to mixin
         updateLabelbotLabel(event) {
             this.$emit('swap', event.annotation, event.label);
@@ -795,23 +746,9 @@ export default {
         },
         handleLabelbotPopupFocused(popupKey) {
             this.$emit('change-labelbot-focused-popup', popupKey);
-            // const currentPopup = this.$refs['labelbot-popup-' + popupKey]?.[0];
-            // const currentContainer = currentPopup?.closest('.ol-overlay-container');
-            // if (!currentContainer) return;
-            // // Changing the popup element's style won't affect overlay stacking,
-            // // so we update the overlay container's z-index directly.
-            // currentContainer.style.zIndex = 100;
-
-            // this.labelbotOverlays.forEach((_, overlayKey) => {
-            //     if (overlayKey !== popupKey) {
-            //         const popup = this.$refs['labelbot-popup-' + overlayKey]?.[0];
-            //         const overlayContainer = popup?.closest('.ol-overlay-container');
-            //         if (overlayContainer) overlayContainer.style.zIndex = '';
-            //     }
-            // });
         },
-        handleDeleteLabelbotLabelsAnnotation(popupKey) {
-            this.$emit('delete-labelbot-labels-annotation', popupKey);
+        handleDeleteLabelbotAnnotation(annotation) {
+            this.$emit('delete', [annotation]);
         },
         grabLabelbotPopup(popupKey) {
             this.$emit('grab-labelbot-popup', popupKey);
@@ -953,8 +890,6 @@ export default {
             // And no Label is selected to avoid empty annotation (blue features).
             if (!this.labelbotIsActive && !this.selectedLabel) {
                 this.resetInteractionMode();
-            } else if (this.labelbotIsActive && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
-                // this.initLabelbotOverlays();
             }
         },
     },

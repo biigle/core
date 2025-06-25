@@ -196,7 +196,7 @@
         :popup="popup"
         @update="updateLabelbotLabel"
         @close="closeLabelbotPopup"
-        @delete="handleDeleteLabelbotLabelsAnnotation"
+        @delete="handleDeleteLabelbotAnnotation"
         @focus="handleLabelbotPopupFocused"
         @grab="grabLabelbotPopup"
         @release="releaseLabelbotPopup"
