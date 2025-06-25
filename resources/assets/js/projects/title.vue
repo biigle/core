@@ -24,7 +24,6 @@ export default{
             description: null,
             userId: null,
             redirectUrl: null,
-            volumes: [],
         };
     },
     computed: {
@@ -71,7 +70,6 @@ export default{
                         .then(this.projectDeleted, this.maybeForceDeleteProject)
                         .finally(this.finishLoading);
                 }
-
             }
         },
         maybeForceDeleteProject(response) {
