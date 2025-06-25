@@ -255,7 +255,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
         $frameRate = 1 / $thumbnailInterval;
 
-        $this->generateSnapshots($path, $frameRate, $destinationPath);
+        $this->generateSnapshots($path, $frameRate, $destinationPath, $estimatedThumbnails);
     }
 
     public function generateVideoThumbnails($disk, $fragment, $tmpDir)
@@ -311,13 +311,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
     /**
      * Run the actual command to extract snapshots from the video. Separated into its own
      * method for easier testing.
+     *
+     * maxFrames = -1 means no restriction.
      */
-    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir): void
+    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir, int $maxFrames = -1): void
     {
         $format = config('thumbnails.format');
         // Leading zeros are important to prevent file sorting afterwards
         Process::forever()
-            ->run("ffmpeg -i '{$sourcePath}' -vf fps={$frameRate} {$targetDir}/%04d.{$format}")
+            ->run("ffmpeg -i '{$sourcePath}' -vf fps={$frameRate} -frames:v {$maxFrames} {$targetDir}/%04d.{$format}")
             ->throw();
     }
 
