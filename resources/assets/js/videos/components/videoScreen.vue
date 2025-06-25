@@ -643,7 +643,7 @@ export default {
             this.resetInteractionMode();
         },
         adaptKeyboardShortcuts() {
-            if (this.enableJumpByFrame) {
+            if(this.enableJumpByFrame) {
                 Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
@@ -659,7 +659,7 @@ export default {
                 Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
-        },
+        }
     },
     watch: {
         selectedAnnotations: {
