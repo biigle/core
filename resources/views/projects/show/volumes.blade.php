@@ -2,7 +2,7 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('projects.volumes', {!! $volumes !!});
+    biigle.$declare('projects.volumes', {{Js::from($volumes)}});
     biigle.$declare('projects.volumeUrlTemplate', '{{url("volumes/clone/:id/?project={$project->id}")}}')
 </script>
 @endpush
