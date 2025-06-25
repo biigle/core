@@ -62,15 +62,9 @@ export default{
             setTimeout(() => location.href = this.redirectUrl, 2000);
         },
         deleteProject() {
-            ProjectsApi.queryVolumes({ id: this.project.id }).then(
-                volumes => {
-                    this.volumes = volumes.data;
-                }
-            );
             let inputproject = prompt(`Do you realy want to delete ${this.project.name} ?`);
-            if (inputproject.replace(/\s/g, '') == this.project.name) {
+            if (inputproject == this.project.name) {
                 let confirmed = confirm(`Do you really want to delete the project ${this.project.name}?`);
-
                 if (confirmed) {
                     this.startLoading();
                     ProjectsApi.delete({ id: this.project.id })
@@ -82,20 +76,14 @@ export default{
         },
         maybeForceDeleteProject(response) {
             if (response.status === 400) {
-                let volNames = [];
-                for (let i = 0; i < this.volumes.length; i++) {
-                    volNames[i] = this.volumes[i].name;
+                let confirmed = confirm('Deleting this project will delete one or more volumes with all annotations! Do you want to continue?');
+                if (confirmed) {
+                    this.startLoading();
+                    ProjectsApi.delete({ id: this.project.id }, { force: true })
+                        .then(this.projectDeleted, handleErrorResponse)
+                        .finally(this.finishLoading);
                 }
-                let inputVolume = prompt(`Do you realy want to delete ${volNames.toString()}?`);
-                if (inputVolume.replace(/\s/g, '') == volNames.toString().replace(/\s/g, '')) {
-                    let confirmed = confirm('Deleting this project will delete one or more volumes with all annotations! Do you want to continue?');
-                    if (confirmed) {
-                        this.startLoading();
-                        ProjectsApi.delete({ id: this.project.id }, { force: true })
-                            .then(this.projectDeleted, handleErrorResponse)
-                            .finally(this.finishLoading);
-                    }
-                }
+
             } else {
                 handleErrorResponse(response);
             }
