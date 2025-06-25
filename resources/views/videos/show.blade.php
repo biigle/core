@@ -58,14 +58,14 @@
     biigle.$declare('videos.errors', {!!$errors!!});
     biigle.$declare('videos.videoFileUri', '{!! url('api/v1/videos/:id/file') !!}');
     @can('addAnnotation', $video)
-        biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
+        biigle.$declare('videos.labelTrees', {{Js::from($labelTrees)}});
     @endcan
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('videos.isEditor', @can('add-annotation', $video) true @else false @endcan);
     biigle.$declare('videos.videoIds', {!! $videos->keys() !!});
-    biigle.$declare('videos.videoFilenames', {!! $videos->values() !!});
-    biigle.$declare('videos.user', {!! $user !!});
+    biigle.$declare('videos.videoFilenames', {{Js::from($videos->values())}});
+    biigle.$declare('videos.user', {{Js::from($user)}});
     biigle.$declare('videos.isAdmin', @can('update', $volume) true @else false @endcan);
     biigle.$declare('videos.fileUuids', {!! $fileIds !!});
     biigle.$declare('videos.thumbUri', '{{ $thumbUriTemplate }}');
