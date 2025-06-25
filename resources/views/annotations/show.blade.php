@@ -91,7 +91,6 @@
             :labelbot-overlays="labelbotOverlays"
             :focused-popup-key="focusedPopupKey"
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
-            v-on:update-labelbot-label="updateLabelbotLabel"
             v-on:close-labelbot-popup="closeLabelbotPopup"
             v-on:delete-labelbot-labels-annotation="deleteLabelbotLabelsAnnotation"
             v-on:update-labelbot-popup-line="updateLabelbotPopupLine"

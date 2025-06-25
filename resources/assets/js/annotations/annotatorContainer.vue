@@ -436,20 +436,19 @@ export default {
                 if (!this.selectedLabel && wasLabelbotActive) {
                     this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
 
-                    availableOverlayKey = this.getAvailableLabelbotOverlay();
+                    // availableOverlayKey = this.getAvailableLabelbotOverlay();
 
-                    if (availableOverlayKey === -1) {
-                        this.$nextTick(removeCallback);
-                        Messages.danger(`You already have ${this.labelbotOverlays.length} LabelBOT popups open. Please close one before submitting a new request.`)
-                        return;
-                    }
+                    // if (availableOverlayKey === -1) {
+                    //     this.$nextTick(removeCallback);
+                    //     Messages.danger(`You already have ${this.labelbotOverlays.length} LabelBOT popups open. Please close one before submitting a new request.`)
+                    //     return;
+                    // }
 
                     promise = this.generateFeatureVector(annotation.points)
                         .then((featureVector) => {
                             // Assign feature vector to the annotation
                             annotation.feature_vector = featureVector;
-                        })
-                        .catch(handleErrorResponse);
+                        });
                 } else {
                     promise = Promise.resolve();
                     annotation.label_id = this.selectedLabel.id;
@@ -460,20 +459,23 @@ export default {
                 promise
                     .then(() => {
                         return AnnotationsStore.create(this.imageId, annotation)
-                            .then((createdAnnotation) => {
-                                if (wasLabelbotActive && currentImageIndex === this.imageIndex) {
-                                    this.showLabelbotPopup(createdAnnotation, availableOverlayKey);
+                            .then(this.setLastCreatedAnnotation)
+                            .then((annotation) => {
+                                if (wasLabelbotActive) {
+                                    if (currentImageIndex === this.imageIndex) {
+                                        this.showLabelbotPopup(annotation);
+                                    }
+                                    this.updateLabelbotState(LABELBOT_STATES.READY);
                                 }
-                                return createdAnnotation;
-                            })
-                            .then(this.setLastCreatedAnnotation);
+                            });
                     })
                     .catch((e) => {
                         if (wasLabelbotActive) {
                             // Error code 429: max number of requests is reached.
                             this.updateLabelbotState(e.status === 429 ? LABELBOT_STATES.BUSY : LABELBOT_STATES.OFF);
                         }
-                        handleErrorResponse(e);
+                        throw e;
+                        // handleErrorResponse(e);
                     })
                     .finally(removeCallback);
             }
@@ -562,6 +564,8 @@ export default {
             this.lastCreatedAnnotationTimeout = window.setTimeout(() => {
                 this.lastCreatedAnnotation = null;
             }, 10000);
+
+            return annotation;
         },
         updateColorAdjustment(params) {
             debounce(() => {

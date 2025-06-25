@@ -52,6 +52,10 @@ import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import {unByKey} from '@biigle/ol/Observable';
+
+// Offset is half of max-width (300px) plus 100px.
+const LABELBOT_OVERLAY_OFFSET = 250;
 
 /**
  * The annotator canvas
@@ -735,64 +739,76 @@ export default {
                 feature.setStyle(Styles.highlight);
             }, 200);
         },
-        initLabelbotOverlays() {
-            this.labelbotOverlays.forEach((labelbotOverlay, key) => {
-                const popup = this.$refs['labelbot-popup-' + key]?.[0];
-                if (!popup) return;
-                labelbotOverlay.overlay = new Overlay({
-                    element: popup,
-                    positioning: 'top-center',
-                    insertFirst: false, // last added overlay appears on top
-                });
-                // Add it to the map
-                this.map.addOverlay(labelbotOverlay.overlay);
-                // Attach methods
-                labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb.bind(this);
-                labelbotOverlay.drawPopupLineFeature = this.drawLabelbotPopupLineFeature.bind(this);
-                labelbotOverlay.removePopupLineFeature = this.removeLabelbotPopupLineFeature.bind(this);
-            });
-        },
-        drawLabelbotPopupLineFeature(path, color) {
-            const labelbotPopupLineFeature = new Feature(new LineString(path));
-            labelbotPopupLineFeature.setStyle(Styles.labelbotPopupLineStyle(color));
+        // initLabelbotOverlays() {
+        //     this.labelbotOverlays.forEach((labelbotOverlay, key) => {
+        //         const popup = this.$refs['labelbot-popup-' + key]?.[0];
+        //         popup.addTo(this.map);
+        //         // if (!popup) return;
+        //         // labelbotOverlay.overlay = new Overlay({
+        //         //     element: popup.$el,
+        //         //     positioning: 'center-center',
+        //         //     offset: [LABELBOT_OVERLAY_OFFSET, 0],
+        //         //     insertFirst: false, // last added overlay appears on top
+        //         // });
+        //         // // Add it to the map
+        //         // this.map.addOverlay(labelbotOverlay.overlay);
+        //         // // Attach methods
+        //         // labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb.bind(this);
+        //         // labelbotOverlay.drawPopupLineFeature = this.drawLabelbotPopupLineFeature.bind(this);
+        //         // labelbotOverlay.removePopupLineFeature = this.removeLabelbotPopupLineFeature.bind(this);
+        //     });
+        // },
+        // drawLabelbotPopupLineFeature(popup, color) {
+        //     const line = new LineString([[0, 0], [0, 0]]);
 
-            // Add the feature in next tick otherwise it will not be rendered
-            this.$nextTick(() => {
-                this.annotationSource.addFeature(labelbotPopupLineFeature);
-            });
+        //     const labelbotPopupLineFeature = new Feature(line);
+        //     labelbotPopupLineFeature.setStyle(Styles.labelbotPopupLineStyle(color));
 
-            // We return the feature to save it for later removal from annotation source
-            return labelbotPopupLineFeature;
-        },
-        removeLabelbotPopupLineFeature(labelbotPopupLineFeature) {
-            try {
-                this.annotationSource.removeFeature(labelbotPopupLineFeature);
-            } catch(e) {
-                // Ignore it
-            }
-        },
-        updateLabelbotLabel(label) {
-            this.$emit('update-labelbot-label', label);
+        //     const updateLineCoordinates = () => {
+        //         const start = popup.overlay.getPosition();
+        //         const end = [start[0] + LABELBOT_OVERLAY_OFFSET * this.map.getView().getResolution(), start[1]];
+        //         line.setCoordinates([start, end]);
+        //     };
+        //     updateLineCoordinates();
+
+        //     this.annotationSource.addFeature(labelbotPopupLineFeature);
+
+        //     popup.listenerKey = this.map.getView().on('change:resolution', updateLineCoordinates);
+
+        //     // We return the feature to save it for later removal from annotation source
+        //     return labelbotPopupLineFeature;
+        // },
+        // removeLabelbotPopupLineFeature(popup) {
+        //     try {
+        //         unByKey(popup.listenerKey);
+        //         this.annotationSource.removeFeature(popup.popupLineFeature);
+        //     } catch(e) {
+        //         // Ignore it
+        //     }
+        // },
+        // TODO move to mixin
+        updateLabelbotLabel(event) {
+            this.$emit('swap', event.annotation, event.label);
         },
         closeLabelbotPopup(popupKey) {
             this.$emit('close-labelbot-popup', popupKey);
         },
         handleLabelbotPopupFocused(popupKey) {
             this.$emit('change-labelbot-focused-popup', popupKey);
-            const currentPopup = this.$refs['labelbot-popup-' + popupKey]?.[0];
-            const currentContainer = currentPopup?.closest('.ol-overlay-container');
-            if (!currentContainer) return;
-            // Changing the popup element's style won't affect overlay stacking,
-            // so we update the overlay container's z-index directly.
-            currentContainer.style.zIndex = 100;
+            // const currentPopup = this.$refs['labelbot-popup-' + popupKey]?.[0];
+            // const currentContainer = currentPopup?.closest('.ol-overlay-container');
+            // if (!currentContainer) return;
+            // // Changing the popup element's style won't affect overlay stacking,
+            // // so we update the overlay container's z-index directly.
+            // currentContainer.style.zIndex = 100;
 
-            this.labelbotOverlays.forEach((_, overlayKey) => {
-                if (overlayKey !== popupKey) {
-                    const popup = this.$refs['labelbot-popup-' + overlayKey]?.[0];
-                    const overlayContainer = popup?.closest('.ol-overlay-container');
-                    if (overlayContainer) overlayContainer.style.zIndex = '';
-                }
-            });
+            // this.labelbotOverlays.forEach((_, overlayKey) => {
+            //     if (overlayKey !== popupKey) {
+            //         const popup = this.$refs['labelbot-popup-' + overlayKey]?.[0];
+            //         const overlayContainer = popup?.closest('.ol-overlay-container');
+            //         if (overlayContainer) overlayContainer.style.zIndex = '';
+            //     }
+            // });
         },
         handleDeleteLabelbotLabelsAnnotation(popupKey) {
             this.$emit('delete-labelbot-labels-annotation', popupKey);
@@ -938,7 +954,7 @@ export default {
             if (!this.labelbotIsActive && !this.selectedLabel) {
                 this.resetInteractionMode();
             } else if (this.labelbotIsActive && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
-                this.initLabelbotOverlays();
+                // this.initLabelbotOverlays();
             }
         },
     },

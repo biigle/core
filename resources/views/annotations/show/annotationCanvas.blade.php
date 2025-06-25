@@ -189,31 +189,16 @@
                 ></control-button>
         </div>
     </div>
-    <div
-        class="labelbot-popup"
-        :class="{ 'labelbot-popup--focused': key === focusedPopupKey }"
-        v-for="(overlay, key) in labelbotOverlays"
-        v-show="overlay.ready"
-        :key="key"
-        :ref="'labelbot-popup-' + key"
-        @mouseover="handleLabelbotPopupFocused(key)"
-        >
-        <div class="labelbot-overlay-grap-area"
-            :style="{cursor: overlay.isDragging ? 'grabbing' : 'grab'}"
-            :key="key"
-            v-on:click="handleLabelbotPopupFocused(key)"
-            @mousedown="grabLabelbotPopup(key)"
-            @mouseup="releaseLabelbotPopup(key)"
-            ><div class="labelbot-overlay-grap-area-notch" :key="key"></div>
-        </div>
-        <labelbot-popup 
-            :popup-key="key" 
-            :focused-popup-key="focusedPopupKey" 
-            :labelbot-labels="overlay.labels"
-            :is-dragging="overlay.isDragging"
-            @update="updateLabelbotLabel"
-            @close="closeLabelbotPopup"
-            @delete="handleDeleteLabelbotLabelsAnnotation"
-            ></labelbot-popup>
-    </div>
+    <labelbot-popup
+        v-for="popup in labelbotOverlays"
+        :key="popup.getKey()"
+        :focused-popup-key="focusedPopupKey"
+        :popup="popup"
+        @update="updateLabelbotLabel"
+        @close="closeLabelbotPopup"
+        @delete="handleDeleteLabelbotLabelsAnnotation"
+        @focus="handleLabelbotPopupFocused"
+        @grab="grabLabelbotPopup"
+        @release="releaseLabelbotPopup"
+        ></labelbot-popup>
 </div>
