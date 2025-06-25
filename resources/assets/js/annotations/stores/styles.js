@@ -185,7 +185,7 @@ export default {
                     color: 'white',
                     width: 5,
                 }),
-                zIndex: -1
+                zIndex: 200
             }),
             new Style({
                 stroke: new Stroke({
@@ -193,7 +193,7 @@ export default {
                     width: 3,
                     lineDash: [5],
                 }),
-                zIndex: -1
+                zIndex: 200
             }),
         ]
     }

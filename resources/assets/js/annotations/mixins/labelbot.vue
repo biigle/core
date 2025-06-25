@@ -222,6 +222,7 @@ export default {
             const popup = new LabelBotPopup(annotation);
 
             this.labelbotOverlays.push(popup);
+            // TODO maybe manage focused key only in annotationCanvas component
             this.focusedPopupKey = popup.getKey();
             Keyboard.setActiveSet('labelbot');
         },
@@ -256,16 +257,16 @@ export default {
                 Keyboard.setActiveSet('default');
             }
         },
-        changeLabelbotFocusedPopup(popupKey) {
-            this.focusedPopupKey = popupKey;
+        changeLabelbotFocusedPopup(popup) {
+            this.focusedPopupKey = popup.getKey();
         },
-        grabLabelbotPopup(popupKey) {
-            this.labelbotOverlays[popupKey].isDragging = true;
-            this.changeLabelbotFocusedPopup(popupKey);
-        },
-        releaseLabelbotPopup(popupKey) {
-            this.labelbotOverlays[popupKey].isDragging = false;
-        },
+        // grabLabelbotPopup(popupKey) {
+        //     this.labelbotOverlays[popupKey].isDragging = true;
+        //     this.changeLabelbotFocusedPopup(popupKey);
+        // },
+        // releaseLabelbotPopup(popupKey) {
+        //     this.labelbotOverlays[popupKey].isDragging = false;
+        // },
     },
     watch: {
         labelbotState() {

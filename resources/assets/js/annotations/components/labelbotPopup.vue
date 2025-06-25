@@ -157,6 +157,7 @@ export default {
         //     }
         // },
         highlightedLabel() {
+            // TODO fix progress bar
             if (this.progressBarWidth > 0) {
                 this.progressBarWidth = -1; // setting it to 0 will cause backward transition for the Top 1 Label.
             }
@@ -238,13 +239,17 @@ export default {
             this.emitClose();
         },
         emitFocus() {
-            this.$emit('focus', this.popupKey);
+            this.$emit('focus', this.popup);
         },
         emitGrab() {
-            this.$emit('grab', this.popupKey);
+            // TODO create invisible curtain element with mousemove event
+            // this.$emit('grab', this.popup);
+            this.popup.isDragging = true;
         },
         emitRelease() {
-            this.$emit('release', this.popupKey);
+            // TODO delete invisible curtain element
+            // this.$emit('release', this.popup);
+            this.popup.isDragging = false;
         },
         getOverlayPosition(annotation) {
             const points = annotation.points;

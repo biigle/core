@@ -1,3 +1,4 @@
+// TODO maybe not needed, only add annotation to labelbotOverlays array?
 export default class LabelBotPopup {
     constructor(annotation) {
         this.isDragging = false;

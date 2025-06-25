@@ -741,27 +741,27 @@ export default {
         updateLabelbotLabel(event) {
             this.$emit('swap', event.annotation, event.label);
         },
-        closeLabelbotPopup(popupKey) {
-            this.$emit('close-labelbot-popup', popupKey);
+        closeLabelbotPopup(popup) {
+            this.$emit('close-labelbot-popup', popup);
         },
-        handleLabelbotPopupFocused(popupKey) {
-            this.$emit('change-labelbot-focused-popup', popupKey);
+        handleLabelbotPopupFocused(popup) {
+            this.$emit('change-labelbot-focused-popup', popup);
         },
         handleDeleteLabelbotAnnotation(annotation) {
             this.$emit('delete', [annotation]);
         },
-        grabLabelbotPopup(popupKey) {
-            this.$emit('grab-labelbot-popup', popupKey);
-        },
-        releaseLabelbotPopup(popupKey) {
-            this.$emit('release-labelbot-popup', popupKey);
-        },
-        dragLabelbotPopup() {
-            if (!this.labelbotOverlays[this.focusedPopupKey]?.isDragging) return;
+        // grabLabelbotPopup(popup) {
+        //     this.$emit('grab-labelbot-popup', popup);
+        // },
+        // releaseLabelbotPopup(popup) {
+        //     this.$emit('release-labelbot-popup', popup);
+        // },
+        // dragLabelbotPopup() {
+        //     if (!this.labelbotOverlays[this.focusedPopupKey]?.isDragging) return;
 
-            this.labelbotOverlays[this.focusedPopupKey].overlay.setPosition(this.mousePosition);
-            this.$emit('update-labelbot-popup-line', {'popupKey': this.focusedPopupKey, 'mousePosition': this.mousePosition});
-        }
+        //     this.labelbotOverlays[this.focusedPopupKey].overlay.setPosition(this.mousePosition);
+        //     this.$emit('update-labelbot-popup-line', {'popupKey': this.focusedPopupKey, 'mousePosition': this.mousePosition});
+        // }
     },
     watch: {
         image(image, oldImage) {
