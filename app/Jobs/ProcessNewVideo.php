@@ -249,7 +249,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             return;
         }
 
-        $estimatedThumbnails = $durationRounded / $defaultThumbnailInterval;
+        $estimatedThumbnails = floor($durationRounded / $defaultThumbnailInterval);
         // Adjust the frame time based on the number of estimated thumbnails
         $thumbnailInterval = ($estimatedThumbnails > $maxThumbnails) ? $durationRounded / $maxThumbnails
             : (($estimatedThumbnails < $minThumbnails) ? $durationRounded / $minThumbnails : $defaultThumbnailInterval);
