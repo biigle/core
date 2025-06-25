@@ -7,7 +7,7 @@
     @else
         biigle.$declare('projects.canEdit', false);
     @endcan
-    biigle.$declare('projects.labelTrees', {!! $labelTrees !!});
+    biigle.$declare('projects.labelTrees', {{Js::from($labelTrees)}});
 </script>
 @endpush
 
