@@ -285,7 +285,7 @@ class ProcessNewVideoStub extends ProcessNewVideo
         return $this->duration;
     }
 
-    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir): void
+    protected function generateSnapshots(string $sourcePath, float $frameRate, string $targetDir, int $maxFrames = -1): void
     {
         $format = config('thumbnails.format');
         $numberSnapshots = intval($this->duration * $frameRate);
