@@ -646,24 +646,20 @@ export default {
             if (this.enableJumpByFrame) {
                 Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-                this.switchVideosWithKeys('Shift+ArrowRight', 'Shift+ArrowLeft');
             }
             else {
                 Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-                this.switchVideosWithKeys('ArrowRight', 'ArrowLeft');
+                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
+                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
         },
-        switchVideosWithKeys(right, left) {
-            if (this.showPrevNext) {
-                Keyboard.on(right, this.emitNext, 0, this.listenerSet);
-                Keyboard.on(left, this.emitPrevious, 0, this.listenerSet);
-            }
-        }
     },
     watch: {
         selectedAnnotations: {
