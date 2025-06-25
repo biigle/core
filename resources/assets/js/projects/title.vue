@@ -81,7 +81,6 @@ export default{
                         .then(this.projectDeleted, handleErrorResponse)
                         .finally(this.finishLoading);
                 }
-
             } else {
                 handleErrorResponse(response);
             }
