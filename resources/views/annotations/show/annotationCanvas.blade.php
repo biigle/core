@@ -8,15 +8,7 @@
     </div>
     <div class="annotation-canvas__right-indicators">
         <label-indicator v-if="selectedLabel" :label="selectedLabel"></label-indicator>
-        <div 
-            v-show="labelbotIsActive" 
-            class="labelbot-indicator-info-box" 
-            :title="'LabelBOT is ' + labelbotState">
-            <labelbot-indicator 
-                class="labelbot-indicator" 
-                :labelbot-state="labelbotState">
-            </labelbot-indicator>
-        </div>
+        <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
     </div>
     <label-tooltip
         :show="showLabelTooltip"

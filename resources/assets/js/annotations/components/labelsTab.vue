@@ -2,7 +2,6 @@
 import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
-import powerToggle from '../../core/components/powerToggle.vue';
 import { LABELBOT_STATES } from '../mixins/labelbot.vue';
 
 /**
@@ -29,7 +28,6 @@ export default {
     components: {
         labelTrees: LabelTrees,
         exampleAnnotations: ExampleAnnotations,
-        powerToggle: powerToggle,
     },
     data() {
         return {
@@ -87,6 +85,13 @@ export default {
         handleDeselectedLabel() {
             this.selectedLabel = null;
             this.$emit('select', null);
+        },
+        toggleLabelBot() {
+            if (this.labelbotIsActive) {
+                this.handleLabelbotOff();
+            } else {
+                this.handleLabelbotOn();
+            }
         },
         handleLabelbotOn() {
             // Deselect the selected label when LabelBOT is on

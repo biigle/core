@@ -1,6 +1,12 @@
 <template>
-    <span class="labelbot-state" :class="classObject">
-    </span>
+    <div
+        class="labelbot-indicator"
+        :title="'LabelBOT is ' + labelbotState"
+        :class="classObject"
+        >
+        <span class="labelbot-indicator__dot"></span>
+        LabelBOT
+    </div>
 </template>
 
 <script>

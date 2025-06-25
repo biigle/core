@@ -13,9 +13,23 @@
 @push('scripts')
 <script type="text/html" id="labels-tab-template">
     <div class="labels-tab">
-            <div class="labelBOT-button">
-                <power-toggle :disabled="labelbotIsDisabled" :active="labelbotIsActive" :title="labelbotToggleTitle" v-on:on="handleLabelbotOn" v-on:off="handleLabelbotOff">LabelBOT</power-toggle>
-            </div>
+        <div class="well well-sm">
+            <p>
+                <button
+                    type="button"
+                    class="btn btn-default btn-block"
+                    :disabled="labelbotIsDisabled"
+                    :title="labelbotToggleTitle"
+                    :class="{'btn-info active': labelbotIsActive}"
+                    v-on:click="toggleLabelBot"
+                    >
+                    LabelBOT<sup :class="{'text-muted': !labelbotIsActive}">beta</sup>
+                    </button>
+            </p>
+            <p>
+                LabelBOT chooses the label of new annotations based on similar annotations from the label trees below. <a href="#" class="btn btn-default btn-xs"><i class="fa fa-info-circle"></i></a>
+            </p>
+        </div>
         <div class="labels-tab__trees">
             <label-trees ref="labelTrees" :trees="labelTrees" :show-favourites="true" :focus-input="focusInputFindlabel" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </div>

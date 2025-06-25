@@ -3,34 +3,53 @@
     50% { opacity: 0; }
 }
 
-.labelbot-indicator-info-box {
+@keyframes labelbot-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.25; }
+    100% { opacity: 1; }
+}
+
+.labelbot-indicator {
     @extend %info-box;
-    border-radius: 50%;
-    padding: 0.25em;
+    color: $gray;
+    border-color: $gray;
 
-    .labelbot-indicator {
-        display: block;
-        width: 1.5em;
-        height: 1.5em;
+    .labelbot-indicator__dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        background-color: $brand-danger;
+        background-color: $gray;
+    }
 
-        &.ready {
+    &.ready {
+        color: $brand-success;
+        border-color: $brand-success;
+
+        .labelbot-indicator__dot {
+            animation: labelbot-pulse 5s ease infinite;
             background-color: $brand-success;
         }
+    }
 
-        &.initializing {
+    &.initializing {
+        color: $brand-warning;
+        border-color: $brand-warning;
+
+        .labelbot-indicator__dot {
+            animation: labelbot-blink 0.5s step-start infinite;
             background-color: $brand-warning;
-            animation: labelbot-blink 0.5s step-start infinite;
-        }
-
-        &.computing {
-            background-color: $brand-info;
-            animation: labelbot-blink 0.5s step-start infinite;
-        }
-
-        &.busy {
-            background-color: $gray;
         }
     }
+
+    &.computing {
+        color: $brand-info;
+        border-color: $brand-info;
+
+        .labelbot-indicator__dot {
+            animation: labelbot-blink 0.5s step-start infinite;
+            background-color: $brand-info;
+        }
+    }
+
 }
