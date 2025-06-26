@@ -24,7 +24,7 @@
         biigle.$declare('volumes.isAdmin', @can('update', $volume) true @else false @endcan);
 
         @can('edit-in', $volume)
-            biigle.$declare('volumes.labelTrees', {!!$labelTrees!!});
+            biigle.$declare('volumes.labelTrees', {{Js::from($labelTrees)}});
         @endcan
     </script>
     @mixin('volumesScripts')
