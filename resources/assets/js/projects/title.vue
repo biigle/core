@@ -61,15 +61,12 @@ export default{
             setTimeout(() => location.href = this.redirectUrl, 2000);
         },
         deleteProject() {
-            let inputproject = prompt(`Do you want to delete ${this.project.name}?`);
+            let inputproject = prompt(`Are you scure you want to delete "${this.project.name}"? Please type the project name to confirm.`);
             if (inputproject == this.project.name) {
-                let confirmed = confirm(`Do you really want to delete the project ${this.project.name}?`);
-                if (confirmed) {
-                    this.startLoading();
-                    ProjectsApi.delete({ id: this.project.id })
-                        .then(this.projectDeleted, this.maybeForceDeleteProject)
-                        .finally(this.finishLoading);
-                }
+                this.startLoading();
+                ProjectsApi.delete({ id: this.project.id })
+                    .then(this.projectDeleted, this.maybeForceDeleteProject)
+                    .finally(this.finishLoading);
             }
         },
         maybeForceDeleteProject(response) {
