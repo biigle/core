@@ -4,13 +4,8 @@
     :class="classObject"
     @mouseover="emitFocus"
     >
-    <div
-        class="labelbot-overlay-grap-area"
-        :style="{cursor: isDragging ? 'grabbing' : 'grab'}"
-        @mousedown="emitGrab"
-        @mouseup="emitRelease"
-        >
-        <div class="labelbot-overlay-grap-area-notch"></div>
+    <div class="labelbot-popup-grap-area" @mousedown="startDrag">
+        <div class="labelbot-popup-grap-area-notch"></div>
     </div>
     <ul class="labelbot-labels">
         <li
@@ -99,6 +94,9 @@ export default {
             overlay: null,
             lineFeature: null,
             listenerKey: null,
+            dragging: false,
+            dragStartMousePosition: [0, 0],
+            dragStartOverlayOffset: [0, 0],
         };
     },
     computed: {
@@ -133,15 +131,13 @@ export default {
         isFocused() {
             return this.popupKey === this.focusedPopupKey;
         },
-        isDragging() {
-            return this.popup.isDragging;
-        },
         labels() {
             return this.popup.labels;
         },
         classObject() {
             return {
                 'labelbot-popup--focused': this.isFocused,
+                'labelbot-popup--dragging': this.dragging,
             };
         },
         popupKey() {
@@ -238,70 +234,69 @@ export default {
             this.emitClose();
         },
         emitFocus() {
-            this.$emit('focus', this.popupKey);
+            this.$emit('focus', this.popup);
         },
-        emitGrab() {
-            this.$emit('grab', this.popupKey);
+        startDrag(e) {
+            this.dragging = true;
+            this.$parent.$el.addEventListener('mousemove', this.handleMove);
+            this.$parent.$el.addEventListener('mouseup', this.endDrag);
+            this.dragStartMousePosition = [e.clientX, e.clientY];
+            this.dragStartOverlayOffset = this.overlay.getOffset();
         },
-        emitRelease() {
-            this.$emit('release', this.popupKey);
+        endDrag() {
+            this.dragging = false;
+            this.$parent.$el.removeEventListener('mousemove', this.handleMove);
+            this.$parent.$el.removeEventListener('mouseup', this.endDrag);
         },
-        getOverlayPosition(annotation) {
-            const points = annotation.points;
+        handleMove(e) {
+            const newPosition = [
+                this.dragStartOverlayOffset[0] + e.clientX - this.dragStartMousePosition[0],
+                this.dragStartOverlayOffset[1] + e.clientY - this.dragStartMousePosition[1],
+            ];
 
-            let position;
-
-            // TODO use actual annotation shape
-            if (points.length === 2) {
-                return points;
-            }
-
-            if (points.length === 3) {
-                // Circle
-                const [x, y, r] = points;
-
-                return [x + r, y];
-            }
-
-            // Polygon: convert flat array to [x, y] pairs
-            const pointPairs = [];
-            for (let i = 0; i < points.length; i += 2) {
-                pointPairs.push([points[i], points[i + 1]]);
-            }
-
-            // Sort by X descending
-            pointPairs.sort((a, b) => b[0] - a[0]);
-
-            return pointPairs[0];
+            this.overlay.setOffset(newPosition);
+            this.lineFeature._updateLineCoordinates();
         },
         createOverlay(annotationCanvas) {
-            const popupPosition = this.getOverlayPosition(this.popup.annotation);
-            const convertedPoints = annotationCanvas.convertPointsFromDbToOl(popupPosition)[0];
+            const annotationGeometry = annotationCanvas.getGeometry(this.popup.annotation);
+            const annotationExtent = annotationGeometry.getExtent();
+            const popupPosition = [
+                annotationExtent[2],
+                (annotationExtent[1] + annotationExtent[3]) / 2,
+            ];
 
             const overlay = new Overlay({
                 element: this.$el,
                 positioning: 'center-center',
-                position: convertedPoints,
+                position: popupPosition,
                 offset: [LABELBOT_OVERLAY_OFFSET, 0],
                 insertFirst: false, // last added overlay appears on top
             });
             this.overlay = markRaw(overlay);
             annotationCanvas.map.addOverlay(overlay)
 
-            const line = new LineString([convertedPoints, convertedPoints]);
+            const line = new LineString([popupPosition, popupPosition]);
             this.lineFeature = markRaw(new Feature(line));
             this.lineFeature.setStyle(Styles.labelbotPopupLineStyle(this.popup.annotation.labels[0].label.color));
 
-            const updateLineCoordinates = () => {
-                const start = convertedPoints;
-                const end = [start[0] + LABELBOT_OVERLAY_OFFSET * annotationCanvas.map.getView().getResolution(), start[1]];
+            // TODO Handle case of user selecting and modifying the annotation,
+            // especially the start point of the line feature. Disable selecting of
+            // the line feature.
+            this.lineFeature._updateLineCoordinates = () => {
+                const overlayOffset = overlay.getOffset();
+                const resolution = annotationCanvas.map.getView().getResolution();
+                const end = [
+                    popupPosition[0] + overlayOffset[0] * resolution,
+                    popupPosition[1] - overlayOffset[1] * resolution,
+                ];
+                const start = annotationGeometry.getClosestPoint(end);
                 line.setCoordinates([start, end]);
             };
-            updateLineCoordinates();
+            this.lineFeature._updateLineCoordinates();
 
             annotationCanvas.annotationSource.addFeature(this.lineFeature);
 
-            this.listenerKey = annotationCanvas.map.getView().on('change:resolution', updateLineCoordinates);
+            this.listenerKey = annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateLineCoordinates);
         },
     },
     created() {

@@ -1,5 +1,4 @@
-<div class="annotation-canvas" v-on:wheel="conditionalHandleScroll" @mousemove="dragLabelbotPopup"
->
+<div class="annotation-canvas" v-on:wheel="conditionalHandleScroll">
     <minimap v-if="showMinimap" :extent="extent"></minimap>
     <div class="annotation-canvas__left-indicators">
         <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution"></scale-line-indicator>
@@ -198,7 +197,5 @@
         @close="closeLabelbotPopup"
         @delete="handleDeleteLabelbotAnnotation"
         @focus="handleLabelbotPopupFocused"
-        @grab="grabLabelbotPopup"
-        @release="releaseLabelbotPopup"
         ></labelbot-popup>
 </div>
