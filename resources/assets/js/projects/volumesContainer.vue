@@ -146,7 +146,7 @@ export default {
                         let inputVolume = prompt(`The volume you are about to remove belongs only to this project and will be deleted. Are you sure you want to delete "${volumeToDelete}"? Please type the volume name to confirm.`);
                         if (inputVolume == volumeToDelete) {
                             this.forceRemoveVolume(id);
-                        } else { Snackbar.make(view, "Volume name does not match", Snackbar.LENGTH_SHORT).show(); }
+                        }
                     } else {
                         handleErrorResponse(response);
                     }
