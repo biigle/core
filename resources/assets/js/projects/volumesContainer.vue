@@ -143,7 +143,7 @@ export default {
                 .then(() => this.volumeRemoved(id), (response) => {
                     let volumeToDelete = this.volumes.find(volume => volume.id === id).name;
                     if (response.status === 400) {
-                        let inputVolume = prompt(`The volume you are about to remove belongs only to this project and will be deleted. Are you sure you want to delete "${volumeToDelete}"? Please type the volume name to confirm.`);
+                        let inputVolume = prompt(`The volume you are about to remove belongs only to this project and will be deleted. \nAre you sure you want to delete "${volumeToDelete}"? \nPlease type the volume name to confirm.`, volumeToDelete);
                         if (inputVolume === volumeToDelete) {
                             this.forceRemoveVolume(id);
                         }
