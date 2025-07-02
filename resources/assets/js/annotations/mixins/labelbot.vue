@@ -202,6 +202,11 @@ export default {
                 Keyboard.setActiveSet('default');
             }
         },
+        closeAllLabelbotPopups() {
+            this.labelbotOverlays = [];
+            this.focusedPopupKey = -1;
+            Keyboard.setActiveSet('default');
+        },
         changeLabelbotFocusedPopup(popup) {
             this.focusedPopupKey = popup.getKey();
         },

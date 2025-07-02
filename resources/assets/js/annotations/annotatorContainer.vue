@@ -746,7 +746,7 @@ export default {
         },
         imageIndex() {
             if (this.labelbotOverlays.length > 0) {
-                this.labelbotOverlays.forEach((_, idx) => this.closeLabelbotPopup(idx));
+                this.closeAllLabelbotPopups();
             }
         }
     },
