@@ -16,7 +16,6 @@ export const LABELBOT_STATES = {
 export const LABELBOT_TOGGLE_TITLE =  {
     NOLABELS: 'There must be at least one label in one of the label trees!',
     CORSERROR: 'Image loaded without proper CORS configuration!',
-    NOANNOTATIONS: 'There are no annotations associated with any labels in this project!',
     ACTIVATE: 'Activate LabelBOT',
     DEACTIVATE: 'Deactivate LabelBOT'
 };
@@ -270,11 +269,8 @@ export default {
     },
     created() {
         const emptyLabelTrees = biigle.$require('annotations.labelTrees').every(tree => tree.labels.length === 0);
-        const annotationsExist = biigle.$require('annotations.annotationsExist');
         if (emptyLabelTrees) {
             this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOLABELS);
-        } else if (!annotationsExist) {
-            this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOANNOTATIONS);
         }
 
         this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');

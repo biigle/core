@@ -258,7 +258,7 @@ class ImageAnnotationController extends Controller
                 // Perform vector search.
                 $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
                 if (empty($topNLabels)) {
-                    throw new NotFoundHttpException("LabelBOT couldn't return any suggestions");
+                    throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
                 }
                 // Set labelId to top 1 label.
                 $labelId = $topNLabels[0];

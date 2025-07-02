@@ -66,11 +66,6 @@ class AnnotationToolController extends Controller
 
         $tilesUriTemplate = Storage::disk(config('image.tiles.disk'))->url(':uuid/');
 
-        // Check whether the labels in the label trees are associated with any annotations.
-        // This is necessary for LabelBOT, so it can be disabled before sending any LabelBOT requests
-        // Because LabelBOT cannot suggest labels if no annotations exist.
-        $annotationsExist = ImageAnnotationLabelFeatureVector::whereIn('label_tree_id', $trees->pluck('id'))->exists();
-
         return view('annotations.show', [
             'user' => $user,
             'image' => $image,
@@ -80,7 +75,6 @@ class AnnotationToolController extends Controller
             'shapes' => $shapes,
             'annotationSessions' => $annotationSessions,
             'tilesUriTemplate' => $tilesUriTemplate,
-            'annotationsExist' => $annotationsExist,
         ]);
     }
 }
