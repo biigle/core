@@ -432,7 +432,7 @@ export default {
             let promise;
 
             if (this.labelbotIsActive) {
-                promise = this.storeLabelbotAnnotation(annotation, removeCallback);
+                promise = this.storeLabelbotAnnotation(annotation);
             } else {
                 annotation.label_id = this.selectedLabel.id;
                 promise = AnnotationsStore.create(this.imageId, annotation);

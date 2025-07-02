@@ -23,7 +23,6 @@ import Minimap from './minimap.vue';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition.vue';
 import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
-import Overlay from '@biigle/ol/Overlay';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction.vue';
@@ -50,7 +49,6 @@ import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
-import {unByKey} from '@biigle/ol/Observable';
 
 /**
  * The annotator canvas

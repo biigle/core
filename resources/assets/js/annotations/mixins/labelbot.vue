@@ -210,8 +210,7 @@ export default {
         changeLabelbotFocusedPopup(annotation) {
             this.focusedPopupKey = annotation.id;
         },
-        storeLabelbotAnnotation(annotation, removeCallback) {
-            const wasLabelbotActive = this.labelbotIsActive;
+        storeLabelbotAnnotation(annotation) {
             const currentImageId = this.imageId;
 
             if (this.labelbotRequestsInFlight >= this.labelbotMaxRequests) {
