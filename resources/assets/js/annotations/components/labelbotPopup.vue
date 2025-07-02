@@ -59,8 +59,8 @@ import Typeahead from '../../label-trees/components/labelTypeahead.vue';
 import {markRaw} from 'vue';
 import {unByKey} from '@biigle/ol/Observable';
 
-// Offset is half of max-width (300px) plus 100px.
-const LABELBOT_OVERLAY_OFFSET = 250;
+// Offset is half of max-width (300px) plus 50px.
+const LABELBOT_OVERLAY_OFFSET = 200;
 
 export default {
     emits: [
@@ -238,24 +238,42 @@ export default {
         },
         startDrag(e) {
             this.dragging = true;
-            this.$parent.$el.addEventListener('mousemove', this.handleMove);
+            this.$parent.$el.addEventListener('mousemove', this.handleDrag);
             this.$parent.$el.addEventListener('mouseup', this.endDrag);
             this.dragStartMousePosition = [e.clientX, e.clientY];
             this.dragStartOverlayOffset = this.overlay.getOffset();
         },
-        endDrag() {
-            this.dragging = false;
-            this.$parent.$el.removeEventListener('mousemove', this.handleMove);
-            this.$parent.$el.removeEventListener('mouseup', this.endDrag);
-        },
-        handleMove(e) {
-            const newPosition = [
+        handleDrag(e) {
+            // During dragging, update the popup position only by modifying the offset.
+            // The position is updated when dragging ended.
+            this.overlay.setOffset([
                 this.dragStartOverlayOffset[0] + e.clientX - this.dragStartMousePosition[0],
                 this.dragStartOverlayOffset[1] + e.clientY - this.dragStartMousePosition[1],
-            ];
-
-            this.overlay.setOffset(newPosition);
+            ]);
             this.lineFeature._updateLineCoordinates();
+        },
+        endDrag() {
+            this.dragging = false;
+            this.$parent.$el.removeEventListener('mousemove', this.handleDrag);
+            this.$parent.$el.removeEventListener('mouseup', this.endDrag);
+
+            // When dragging is finished, update the popup position to the closest point
+            // on the annotation and recalculate the offset so the popup stays where it
+            // was dragged. This feels most natural during zooming.
+            const currentPosition = this.overlay.getPosition();
+            const currentOffset = this.overlay.getOffset();
+            const resolution = this.overlay.getMap().getView().getResolution();
+            const realPosition = [
+                currentPosition[0] + currentOffset[0] * resolution,
+                currentPosition[1] - currentOffset[1] * resolution,
+            ];
+            const newPosition = this.overlay._annotationGeometry.getClosestPoint(realPosition);
+            this.overlay.setPosition(newPosition);
+            this.overlay.setOffset([
+                (realPosition[0] - newPosition[0]) / resolution,
+                (newPosition[1] - realPosition[1]) / resolution,
+            ]);
+
         },
         createOverlay(annotationCanvas) {
             const annotationGeometry = annotationCanvas.getGeometry(this.popup.annotation);
@@ -273,6 +291,7 @@ export default {
                 insertFirst: false, // last added overlay appears on top
             });
             this.overlay = markRaw(overlay);
+            this.overlay._annotationGeometry = annotationGeometry;
             annotationCanvas.map.addOverlay(overlay)
 
             const line = new LineString([popupPosition, popupPosition]);
@@ -283,11 +302,12 @@ export default {
             // especially the start point of the line feature. Disable selecting of
             // the line feature.
             this.lineFeature._updateLineCoordinates = () => {
-                const overlayOffset = overlay.getOffset();
+                const position = overlay.getPosition();
+                const offset = overlay.getOffset();
                 const resolution = annotationCanvas.map.getView().getResolution();
                 const end = [
-                    popupPosition[0] + overlayOffset[0] * resolution,
-                    popupPosition[1] - overlayOffset[1] * resolution,
+                    position[0] + offset[0] * resolution,
+                    position[1] - offset[1] * resolution,
                 ];
                 const start = annotationGeometry.getClosestPoint(end);
                 line.setCoordinates([start, end]);
