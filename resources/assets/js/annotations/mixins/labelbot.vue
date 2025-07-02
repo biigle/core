@@ -1,8 +1,10 @@
 <script>
 import AnnotationsStore from '../stores/annotations.js';
 import Keyboard from '../../core/keyboard';
-import {handleErrorResponse} from '../../core/messages/store';
-import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
+import LabelbotWorker from '../workers/labelbot.js?worker';
+
+// DINOv2 image input size.
+const INPUT_SIZE = 224;
 
 export const LABELBOT_STATES = {
     INITIALIZING: 'initializing',
@@ -18,15 +20,13 @@ export default {
     data() {
         return {
             labelbotModel: null,
-            labelbotModelInputSize: 224, // DINOv2 image input size
             labelbotState: LABELBOT_STATES.OFF,
             labelbotOverlays: [],
             focusedPopupKey: -1,
-            // Cache api
-            labelbotCacheName: 'labelbot',
-            labelbotModelCacheKey: '/cached-labelbot-onnx-model',
             labelbotRequestsInFlight: 0,
             labelbotMaxRequests: 1,
+            labelbotWorker: null,
+            labelBotWorkerListeners: [],
         };
     },
     computed: {
@@ -35,51 +35,49 @@ export default {
         },
     },
     methods: {
-        async initLabelbotModel() {
+        handleLabelbotWorkerMessage(e) {
+            this.labelBotWorkerListeners
+                .filter(l => l.matchFn(e))
+                .map(l => this.labelBotWorkerListeners.splice(this.labelBotWorkerListeners.indexOf(l), 1))
+                .flat()
+                .forEach(l => l.resolve(e));
+        },
+        handleLabelbotWorkerError(e) {
+            this.labelBotWorkerListeners
+                .filter(l => l.matchFn(e))
+                .map(l => this.labelBotWorkerListeners.splice(this.labelBotWorkerListeners.indexOf(l), 1))
+                .flat()
+                .forEach(l => l.reject(e));
+        },
+        addLabelbotWorkerListener(matchFn) {
+            return new Promise((resolve, reject) => {
+                this.labelBotWorkerListeners.push({
+                    matchFn: matchFn,
+                    resolve: resolve,
+                    reject: reject,
+                });
+            });
+        },
+        async initLabelbotWorker() {
+            this.labelbotWorker = new LabelbotWorker();
+            this.labelbotWorker.addEventListener('message', this.handleLabelbotWorkerMessage);
+            this.labelbotWorker.addEventListener('error', this.handleLabelbotWorkerError);
+
             this.updateLabelbotState(LABELBOT_STATES.INITIALIZING);
             const modelUrl = biigle.$require('labelbot.onnxUrl');
 
-            try {
-                const cache = await caches.open(this.labelbotCacheName);
-                const cachedResponse = await cache.match(this.labelbotModelCacheKey);
-
-                const modelBlob = cachedResponse
-                    ? await cachedResponse.blob()
-                    : await (async () => {
-                        const networkResponse = await fetch(modelUrl);
-                        // Cache the model before loading it
-                        cache.put(this.labelbotModelCacheKey, networkResponse.clone());
-                        return await networkResponse.blob();
-                    })();
-
-                const blobUrl = URL.createObjectURL(modelBlob);
-                this.loadLabelbotModel(blobUrl);
-            } catch (error) {
-                this.updateLabelbotState(LABELBOT_STATES.OFF);
-                handleErrorResponse(error);
-            }
-        },
-        warmUpLabelbotModel() {
-            if (this.labelbotModel) {
-                // Warm up
-                const size = this.labelbotModelInputSize * this.labelbotModelInputSize;
-                const dummyAnnotationDataArray = new Float32Array(size * 3);
-                const tensor = new Tensor('float32', dummyAnnotationDataArray, [1, 3, this.labelbotModelInputSize, this.labelbotModelInputSize]);
-                this.labelbotModel.run({ input: tensor})
-            }
-        },
-        loadLabelbotModel(modelUrl) {
-            // Load the onnx model with webgpu first 
-            InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] })
-                // If the client does not have one then fallback to wasm
-                .catch(() => InferenceSession.create(modelUrl, { executionProviders: ['wasm'] }))
-                .then((model) => this.labelbotModel = model)
-                .then(this.warmUpLabelbotModel)
-                .then(() => this.updateLabelbotState(LABELBOT_STATES.READY))
-                .catch((error) => {
+            this.addLabelbotWorkerListener((e) => e.data.type === 'init')
+                .then(() => {
+                    this.updateLabelbotState(LABELBOT_STATES.READY);
+                }, (e) => {
                     this.updateLabelbotState(LABELBOT_STATES.OFF);
-                    handleErrorResponse(error);
+                    this.labelbotWorker.terminate();
+                    this.labelbotWorker = null;
+
+                    throw e;
                 });
+
+            this.labelbotWorker.postMessage({type: 'init', url: modelUrl});
         },
         getBoundingBox(points) {
             let minX = this.image.width;
@@ -119,44 +117,39 @@ export default {
 
             const width = maxX - minX;
             const height = maxY - minY;
+
             return [minX, minY, width, height];
         },
         generateFeatureVector(points) {
-            // Get selected region
-            const [x, y, width, height] = this.getBoundingBox(points);
+            const box = this.getBoundingBox(points);
+            const [x, y, width, height] = box;
 
             // Create a temporary canvas for processing the selected region
             if (!this.tempLabelbotCanvas) {
                 this.tempLabelbotCanvas = document.createElement('canvas');
-                this.tempLabelbotCanvas.width = this.labelbotModelInputSize;
-                this.tempLabelbotCanvas.height = this.labelbotModelInputSize;
+                this.tempLabelbotCanvas.width = INPUT_SIZE;
+                this.tempLabelbotCanvas.height = INPUT_SIZE;
             }
-            // Clear and draw new region
-            this.tempLabelbotCanvas.getContext('2d').clearRect(0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize);
-            this.tempLabelbotCanvas.getContext('2d').drawImage(this.image.source, x, y, width, height, 0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize);
+            const ctx = this.tempLabelbotCanvas.getContext('2d');
 
-            // Extract image data
-            const size = this.labelbotModelInputSize * this.labelbotModelInputSize;
-            const annotationData = this.tempLabelbotCanvas.getContext('2d').getImageData(0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize).data;
-            const annotationDataArray = new Float32Array(size * 3);
+            ctx.clearRect(0, 0, INPUT_SIZE, INPUT_SIZE);
+            ctx.drawImage(this.image.source, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
 
-            // Image normalization
-            const mean = [0.485, 0.456, 0.406];
-            const std = [0.229, 0.224, 0.225];
+            const annotationData = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
 
-            for (let i = 0; i < size; i++) {
-                annotationDataArray[i] = ((annotationData[i * 4] / 255.0) - mean[0]) / std[0]; // R
-                annotationDataArray[size + i] = ((annotationData[i * 4 + 1] / 255.0) - mean[1]) / std[1];  // G
-                annotationDataArray[2 * size + i] = ((annotationData[i * 4 + 2] / 255.0) - mean[2]) / std[2];  // B
-            }
+            const promise = this.addLabelbotWorkerListener(
+                e => box.every((v, i) => v === e.data.box[i])
+            ).then(e => e.data.vector);
 
-            // Convert the annotation data to tensor
-            const tensor = new Tensor('float32', annotationDataArray, [1, 3, this.labelbotModelInputSize, this.labelbotModelInputSize]);
-
-            // Generate feature vector
-            return this.labelbotModel.run({ input: tensor}).then((output) => {
-                return output[Object.keys(output)[0]].data
+            this.labelbotWorker.postMessage({
+                type: 'run',
+                image: annotationData,
+                // Send the box as a means to identify which received vector belongs to
+                // which sent message.
+                box: box,
             });
+
+            return promise;
         },
         showLabelbotPopup(annotation) {
             this.labelbotOverlays.push(annotation);
@@ -226,9 +219,9 @@ export default {
         },
     },
     watch: {
-        labelbotState() {
-            if (this.labelbotIsActive && !this.labelbotModel) {
-                this.initLabelbotModel();
+        labelbotIsActive() {
+            if (!this.labelbotWorker) {
+                this.initLabelbotWorker();
             }
         },
         image(image) {
