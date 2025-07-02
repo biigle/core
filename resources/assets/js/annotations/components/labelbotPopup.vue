@@ -17,11 +17,9 @@
             :title="`Choose label ${label.name}`"
             >
                 <div
-                    v-if="index === 0"
-                    v-show="progressBarWidth > -1"
+                    v-if="index === 0 && hasProgressBar"
                     class="labelbot-label__progress-bar"
-                    :style="{ width: progressBarWidth + '%' }"
-                    @transitionend="emitClose"
+                    @animationend="emitClose"
                     ></div>
                 <div class="labelbot-label__name">
                     <span class="labelbot-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
@@ -86,7 +84,7 @@ export default {
     },
     data() {
         return {
-            progressBarWidth: -1,
+            hasProgressBar: true,
             highlightedLabel: -1,
             typeaheadFocused: false,
             selectedLabel: null,
@@ -145,21 +143,12 @@ export default {
         },
     },
     watch: {
-        // labels() {
-        //     this.progressBarWidth = 0;
-        //     if (this.labels.length > 0) {
-        //         this.selectedLabel = this.labels[0];
-        //         setTimeout(() => this.progressBarWidth = 100, 10);
-        //     }
-        // },
         highlightedLabel() {
-            if (this.progressBarWidth > 0) {
-                this.progressBarWidth = -1; // setting it to 0 will cause backward transition for the Top 1 Label.
-            }
+            this.hasProgressBar = false;
         },
-        isDragging() {
-            if (this.isDragging && this.progressBarWidth > -1) {
-                this.progressBarWidth = -1;
+        dragging() {
+            if (this.dragging && this.hasProgressBar) {
+                this.hasProgressBar = false;
             }
         },
         isFocused(isFocused) {
@@ -331,7 +320,6 @@ export default {
 
         if (this.labels.length > 0) {
             this.selectedLabel = this.labels[0];
-            setTimeout(() => this.progressBarWidth = 100, 10);
 
             // TODO Keyboard.off
             for (let key = 1; key <= 3; key++) {

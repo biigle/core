@@ -37,6 +37,12 @@
     color: $text-muted;
 }
 
+
+@keyframes labelbot-progressbar {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
 .labelbot-label__progress-bar {
     top: 0;
     left: 0;
@@ -44,7 +50,7 @@
     height: 100%;
     opacity: 0.5;
     background-color: $input-border;
-    transition: width 5s linear;
+    animation: 5s linear 1 labelbot-progressbar;
     border-radius: $border-radius-base;
 }
 
