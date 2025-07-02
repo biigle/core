@@ -256,6 +256,18 @@ export default {
                 this.initLabelbotModel();
             }
         },
+        crossOriginError(crossOriginError) {
+            if (crossOriginError) {
+                this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.CORSERROR);
+            } else {
+                this.updateLabelbotState(LABELBOT_STATES.OFF);
+            }
+        },
+        imageIndex() {
+            if (this.labelbotOverlays.length > 0) {
+                this.closeAllLabelbotPopups();
+            }
+        },
     },
     created() {
         const emptyLabelTrees = biigle.$require('annotations.labelTrees').every(tree => tree.labels.length === 0);

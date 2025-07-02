@@ -9,7 +9,6 @@ import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.js';
 import Labelbot from './mixins/labelbot.vue';
-import { LABELBOT_STATES, LABELBOT_TOGGLE_TITLE } from './mixins/labelbot.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
@@ -383,7 +382,7 @@ export default {
                 if (a.id === annotation.id) {
                     this.closeLabelbotPopup(idx)
                 }
-            })
+            });
 
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
@@ -654,7 +653,6 @@ export default {
             } catch (e) {
                 if (e instanceof CrossOriginError) {
                     this.crossOriginError = true;
-                    this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.CORSERROR);
                 } else {
                     this.image = null;
                     this.annotations = [];
@@ -710,11 +708,6 @@ export default {
                 this.openTab = '';
             }
         },
-        imageIndex() {
-            if (this.labelbotOverlays.length > 0) {
-                this.closeAllLabelbotPopups();
-            }
-        }
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
