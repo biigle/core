@@ -9,15 +9,9 @@ export const LABELBOT_STATES = {
     COMPUTING: 'computing',
     READY: 'ready',
     BUSY: 'busy',
-    DISABLED: 'disabled',
+    NOLABELS: 'nolabels',
+    CORSERROR: 'corserror',
     OFF: 'off'
-};
-
-export const LABELBOT_TOGGLE_TITLE =  {
-    NOLABELS: 'There must be at least one label in one of the label trees!',
-    CORSERROR: 'Image loaded without proper CORS configuration!',
-    ACTIVATE: 'Activate LabelBOT',
-    DEACTIVATE: 'Deactivate LabelBOT'
 };
 
 export default {
@@ -26,7 +20,6 @@ export default {
             labelbotModel: null,
             labelbotModelInputSize: 224, // DINOv2 image input size
             labelbotState: LABELBOT_STATES.OFF,
-            labelbotToggleTitle: LABELBOT_TOGGLE_TITLE.ACTIVATE,
             labelbotOverlays: [],
             focusedPopupKey: -1,
             // Cache api
@@ -38,7 +31,7 @@ export default {
     },
     computed: {
         labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.NOLABELS && this.labelbotState !== LABELBOT_STATES.CORSERROR;
         },
     },
     methods: {
@@ -170,24 +163,8 @@ export default {
             this.focusedPopupKey = annotation.id;
             Keyboard.setActiveSet('labelbot');
         },
-        updateLabelbotState(labelbotState, toggleTitle='') {
-            // TODO if ready but request limit full, set to busy
+        updateLabelbotState(labelbotState) {
             this.labelbotState = labelbotState;
-            // this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY
-            //     ? LABELBOT_STATES.BUSY
-            //     : labelbotState;
-
-            switch (this.labelbotState) {
-                case LABELBOT_STATES.OFF:
-                    this.labelbotToggleTitle = LABELBOT_TOGGLE_TITLE.ACTIVATE;
-                    break;
-                case LABELBOT_STATES.DISABLED:
-                    this.labelbotToggleTitle = toggleTitle || '';
-                    break;
-                default:
-                    this.labelbotToggleTitle = LABELBOT_TOGGLE_TITLE.DEACTIVATE;
-                    break;
-            }
         },
         closeLabelbotPopup(annotation) {
             const index = this.labelbotOverlays.indexOf(annotation);
@@ -254,9 +231,9 @@ export default {
                 this.initLabelbotModel();
             }
         },
-        crossOriginError(crossOriginError) {
-            if (crossOriginError) {
-                this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.CORSERROR);
+        image(image) {
+            if (image?.crossOrigin) {
+                this.updateLabelbotState(LABELBOT_STATES.CORSERROR);
             } else {
                 this.updateLabelbotState(LABELBOT_STATES.OFF);
             }
@@ -270,7 +247,7 @@ export default {
     created() {
         const emptyLabelTrees = biigle.$require('annotations.labelTrees').every(tree => tree.labels.length === 0);
         if (emptyLabelTrees) {
-            this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOLABELS);
+            this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
         }
 
         this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');

@@ -30,7 +30,7 @@ export default {
     },
     computed: {
         labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.NOLABELS && this.labelbotState !== LABELBOT_STATES.CORSERROR;
         },
     },
     methods: {

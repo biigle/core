@@ -49,20 +49,28 @@ export default {
             type: String,
             required: true,
         },
-        labelbotToggleTitle: {
-            type: String,
-            default: '',
-        },
     },
     computed: {
         plugins() {
             return plugins;
         },
         labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+            return this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;
         },
         labelbotIsDisabled() {
-            return this.labelbotState === LABELBOT_STATES.DISABLED;
+            return this.labelbotState === LABELBOT_STATES.NOLABELS || this.labelbotState === LABELBOT_STATES.CORSERROR;
+        },
+        labelbotToggleTitle() {
+            switch (this.labelbotState) {
+                case LABELBOT_STATES.OFF:
+                    return 'Enable LabelBOT';
+                case LABELBOT_STATES.CORSERROR:
+                    return 'The remote image must have a proper CORS configuration';
+                case LABELBOT_STATES.NOLABELS:
+                    return 'There must be at least one label in one of the label trees';
+                default:
+                    return 'Disable LabelBOT';
+            }
         },
     },
     watch: {
