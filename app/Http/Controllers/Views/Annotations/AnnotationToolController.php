@@ -4,7 +4,6 @@ namespace Biigle\Http\Controllers\Views\Annotations;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
-use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
