@@ -307,6 +307,15 @@ export default {
 
             this.listenerKey = annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateLineCoordinates);
         },
+        selectLabel1() {
+            this.selectLabelbotLabel(this.labels[0]);
+        },
+        selectLabel2() {
+            this.selectLabelbotLabel(this.labels[1]);
+        },
+        selectLabel3() {
+            this.selectLabelbotLabel(this.labels[2]);
+        },
     },
     created() {
         this.trees = biigle.$require('annotations.labelTrees');
@@ -320,15 +329,9 @@ export default {
 
         if (this.labels.length > 0) {
             this.selectedLabel = this.labels[0];
-
-            // TODO Keyboard.off
-            for (let key = 1; key <= 3; key++) {
-                Keyboard.on(`${key}`, () => {
-                    if (this.labels[key - 1] && this.isFocused) {
-                        this.selectLabelbotLabel(this.labels[key - 1]);
-                    }
-                }, 0, 'labelbot');
-            }
+            Keyboard.on('1', this.selectLabel1, 0, 'labelbot');
+            Keyboard.on('2', this.selectLabel2, 0, 'labelbot');
+            Keyboard.on('3', this.selectLabel3, 0, 'labelbot');
         }
     },
     mounted() {
@@ -350,6 +353,12 @@ export default {
         Keyboard.off('Enter', this.labelEnter, 0, 'labelbot');
         Keyboard.off('delete', this.deleteLabelAnnotation, 0, 'labelbot');
         Keyboard.off('tab', this.labelTab, 0, 'labelbot');
+
+        if (this.labels.length > 0) {
+            Keyboard.off('1', this.selectLabel1, 0, 'labelbot');
+            Keyboard.off('2', this.selectLabel2, 0, 'labelbot');
+            Keyboard.off('3', this.selectLabel3, 0, 'labelbot');
+        }
     },
 };
 </script>
