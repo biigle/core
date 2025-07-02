@@ -423,60 +423,26 @@ export default {
             this.selectedLabel = label;
         },
         handleNewAnnotation(annotation, removeCallback) {
-            if (this.isEditor) {
-                let promise;
-
-                // We need this in case LabelBOT was turned off while computing
-                const wasLabelbotActive = this.labelbotIsActive;
-                const currentImageIndex = this.imageIndex;
-
-                let availableOverlayKey = -1;
-
-                if (!this.selectedLabel && wasLabelbotActive) {
-                    this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-
-                    // TODO
-                    // if (availableOverlayKey === -1) {
-                    //     this.$nextTick(removeCallback);
-                    //     Messages.danger(`You already have ${this.labelbotOverlays.length} LabelBOT popups open. Please close one before submitting a new request.`)
-                    //     return;
-                    // }
-
-                    promise = this.generateFeatureVector(annotation.points)
-                        .then((featureVector) => {
-                            // Assign feature vector to the annotation
-                            annotation.feature_vector = featureVector;
-                        });
-                } else {
-                    promise = Promise.resolve();
-                    annotation.label_id = this.selectedLabel.id;
-                }
-                // TODO: confidence control
-                annotation.confidence = 1;
-
-                promise
-                    .then(() => {
-                        return AnnotationsStore.create(this.imageId, annotation)
-                            .then(this.setLastCreatedAnnotation)
-                            .then((annotation) => {
-                                if (wasLabelbotActive) {
-                                    if (currentImageIndex === this.imageIndex) {
-                                        this.showLabelbotPopup(annotation);
-                                    }
-                                    // TODO only if no other requests are in flight
-                                    this.updateLabelbotState(LABELBOT_STATES.READY);
-                                }
-                            });
-                    })
-                    .catch((e) => {
-                        if (wasLabelbotActive) {
-                            // Error code 429: max number of requests is reached.
-                            this.updateLabelbotState(e.status === 429 ? LABELBOT_STATES.BUSY : LABELBOT_STATES.OFF);
-                        }
-                        handleErrorResponse(e);
-                    })
-                    .finally(removeCallback);
+            if (!this.isEditor) {
+                return;
             }
+
+            // TODO: confidence control
+            annotation.confidence = 1;
+
+            let promise;
+
+            if (this.labelbotIsActive) {
+                promise = this.storeLabelbotAnnotation(annotation, removeCallback);
+            } else {
+                annotation.label_id = this.selectedLabel.id;
+                promise = AnnotationsStore.create(this.imageId, annotation);
+            }
+
+            promise.then(this.setLastCreatedAnnotation)
+                .catch(handleErrorResponse)
+                // Remove the temporary annotation if saving succeeded or failed.
+                .finally(removeCallback);
         },
         handleAttachLabel(annotation, label) {
             label = label || this.selectedLabel;

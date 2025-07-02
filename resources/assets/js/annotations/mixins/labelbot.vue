@@ -1,4 +1,5 @@
 <script>
+import AnnotationsStore from '../stores/annotations.js';
 import Keyboard from '../../core/keyboard';
 import {handleErrorResponse} from '../../core/messages/store';
 import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
@@ -32,6 +33,8 @@ export default {
             // Cache api
             labelbotCacheName: 'labelbot',
             labelbotModelCacheKey: '/cached-labelbot-onnx-model',
+            labelbotRequestsInFlight: 0,
+            labelbotMaxRequests: 1,
         };
     },
     computed: {
@@ -207,6 +210,45 @@ export default {
         changeLabelbotFocusedPopup(annotation) {
             this.focusedPopupKey = annotation.id;
         },
+        storeLabelbotAnnotation(annotation, removeCallback) {
+            const wasLabelbotActive = this.labelbotIsActive;
+            const currentImageId = this.imageId;
+
+            if (this.labelbotRequestsInFlight >= this.labelbotMaxRequests) {
+                return Promise.reject({body: {message: `You already have ${this.labelbotMaxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.`}});
+            }
+
+            this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
+
+            return this.generateFeatureVector(annotation.points)
+                .then(featureVector =>  annotation.feature_vector = featureVector)
+                .then(() => this.labelbotRequestsInFlight += 1)
+                .then(() => AnnotationsStore.create(currentImageId, annotation))
+                .then((annotation) => {
+                    if (currentImageId === this.imageId) {
+                        this.showLabelbotPopup(annotation);
+                    }
+
+                    if (this.labelbotRequestsInFlight === 1) {
+                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    }
+
+                    return annotation;
+                })
+                .catch((e) => {
+                    if (e.status === 429) {
+                        this.updateLabelbotState(LABELBOT_STATES.BUSY);
+                    } else {
+                        this.updateLabelbotState(LABELBOT_STATES.OFF);
+                    }
+                    throw e;
+                })
+                .finally((annotation) => {
+                    this.labelbotRequestsInFlight -= 1;
+
+                    return annotation;
+                });
+        },
     },
     watch: {
         labelbotState() {
@@ -223,6 +265,8 @@ export default {
         } else if (!annotationsExist) {
             this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOANNOTATIONS);
         }
+
+        this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');
     },
 };
 </script>
