@@ -311,13 +311,19 @@ export default {
             this.listenerKey = annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateLineCoordinates);
         },
         selectLabel1() {
-            this.selectLabelbotLabel(this.labels[0]);
+            if (this.isFocused && this.labels[0]) {
+                this.selectLabelbotLabel(this.labels[0]);
+            }
         },
         selectLabel2() {
-            this.selectLabelbotLabel(this.labels[1]);
+            if (this.isFocused && this.labels[1]) {
+                this.selectLabelbotLabel(this.labels[1]);
+            }
         },
         selectLabel3() {
-            this.selectLabelbotLabel(this.labels[2]);
+            if (this.isFocused && this.labels[2]) {
+                this.selectLabelbotLabel(this.labels[2]);
+            }
         },
     },
     created() {
