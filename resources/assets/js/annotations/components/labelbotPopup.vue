@@ -173,10 +173,14 @@ export default {
         handleLabelbotFocus(hoveredLabel) {
             this.highlightedLabel = hoveredLabel;
         },
-        labelClose() {
+        handleEsc() {
             if (!this.isFocused) return;
 
-            this.emitClose();
+            if (this.hasProgressBar) {
+                this.hasProgressBar = false;
+            } else {
+                this.emitClose();
+            }
         },
         labelUp() {
             if (!this.isFocused) return;
@@ -319,7 +323,7 @@ export default {
     created() {
         this.trees = biigle.$require('annotations.labelTrees');
 
-        Keyboard.on('Escape', this.labelClose, 0, 'labelbot');
+        Keyboard.on('Escape', this.handleEsc, 0, 'labelbot');
         Keyboard.on('arrowup', this.labelUp, 0, 'labelbot');
         Keyboard.on('arrowdown', this.labelDown, 0, 'labelbot');
         Keyboard.on('Enter', this.labelEnter, 0, 'labelbot');
@@ -346,7 +350,7 @@ export default {
         this.$parent.annotationSource.removeFeature(this.lineFeature);
         unByKey(this.listenerKey);
 
-        Keyboard.off('Escape', this.labelClose, 0, 'labelbot');
+        Keyboard.off('Escape', this.handleEsc, 0, 'labelbot');
         Keyboard.off('arrowup', this.labelUp, 0, 'labelbot');
         Keyboard.off('arrowdown', this.labelDown, 0, 'labelbot');
         Keyboard.off('Enter', this.labelEnter, 0, 'labelbot');
