@@ -19,10 +19,9 @@ export default {
                 return [];
             },
         },
-        // TODO
         focusedPopupKey: {
             type: Number,
-            default: 0,
+            default: -1,
         },
     },
     components: {

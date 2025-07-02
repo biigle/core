@@ -95,7 +95,7 @@ export default {
             // Point
             if (points.length === 2) {
                 // TODO: maybe use SAM or PTP module to convert point to shape
-                const tempRadius = 60;
+                const tempRadius = 64; // Same radius than used for Largo thumbnails.
                 const [x, y] = points;
                 minX = Math.max(0, x - tempRadius);
                 minY = Math.max(0, y - tempRadius);
