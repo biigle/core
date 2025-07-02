@@ -37,6 +37,7 @@ class StoreImageAnnotation extends FormRequest
         return [
             'label_id'    => 'required_without:feature_vector|integer|exists:labels,id',
             'feature_vector' => 'required_without:label_id|array|size:384',
+            'feature_vector.*' => 'numeric',
             'confidence'  => 'required|numeric|between:0,1',
             'shape_id' => 'required|integer|exists:shapes,id',
             'points'   => 'required|array',
