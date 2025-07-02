@@ -13,40 +13,61 @@ const proxy = {
         messageCurtain: MessageCurtain,
     },
     data() {
-        return {
-            isVideoPopout: true,
-            screenHeightOffset: 0,
-            timelineHeightOffset: 0,
-        };
+        const data = VideoContainer.data();
+
+        data.loading = false;
+        data.isVideoPopout = true;
+
+        return data;
     },
-    computed: {},
-    methods: {},
+    computed: VideoContainer.computed,
+    methods: {
+        mountProxyWatchers() {
+            const ignoreAttributes = [
+                'settings',
+                'isVideoPopout',
+            ];
+
+            const data = VideoContainer.data();
+
+            // TODO deep watch?
+            Object.keys(data)
+                .concat(['loading']) // Comes from mixin which is not visible here.
+                .filter(a => !ignoreAttributes.includes(a))
+                .forEach((attribute) => {
+                    this.parent.$watch(attribute, {
+                        handler: (v) => {
+                            this[attribute] = v;
+                        },
+                        immediate: true,
+                    });
+                });
+
+            Object.keys(data.settings)
+                .forEach((attribute) => {
+                    this.parent.$watch('settings.' + attribute, {
+                        handler: (v) => {
+                            this.settings[attribute] = v;
+                        },
+                        immediate: true,
+                    });
+                });
+        },
+    },
     created() {
         this.parent = window.opener.$videoContainer;
+        this.mountProxyWatchers();
     },
 };
 
-const ignoreAttributes = [
-    'isVideoPopout',
-    'screenHeightOffset',
-    'timelineHeightOffset',
-];
-
-Object.keys(VideoContainer.data())
-    .concat(Object.keys(VideoContainer.computed))
-    .concat(['loading']) // Comes from mixin which is not visible here.
-    .filter(a => !ignoreAttributes.includes(a))
-    .forEach(function (attribute) {
-        proxy.computed[attribute] = function () {
-            return this.parent[attribute];
+Object.keys(VideoContainer.methods)
+    // Comes from mixin which is not visible here.
+    .concat(['startLoading', 'finishLoading', 'handleErrorResponse'])
+    .forEach(function (method) {
+        proxy.methods[method] = function () {
+            return this.parent[method].apply(this.parent, arguments);
         };
     });
-
-Object.keys(VideoContainer.methods).forEach(function (method) {
-    proxy.methods[method] = function () {
-        return this.parent[method].apply(this.parent, arguments);
-    };
-});
 
 export default proxy;
 </script>

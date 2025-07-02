@@ -642,7 +642,10 @@ export default {
             this.initialCurrentTime = 0;
             this.initialFocussedAnnotation = 0;
             this.$refs.videoTimeline.reset();
-            this.$refs.videoScreen.reset();
+            // The video screen may be gone if the video popout is open.
+            if (this.$refs.videoScreen) {
+                this.$refs.videoScreen.reset();
+            }
         },
         initVideoIds(ids) {
             // Look for a sequence of video IDs in local storage. This sequence is
