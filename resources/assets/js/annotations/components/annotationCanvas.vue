@@ -12,9 +12,7 @@ import Events from '@/core/events.js';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '@/core/keyboard.js';
-import LabelbotPopup from './labelbotPopup.vue';
-import LabelbotIndicator from './labelbotIndicator.vue';
-import { LABELBOT_STATES } from '../mixins/labelbot.vue';
+import LabelBot from './annotationCanvas/labelBot.vue';
 import LabelIndicator from './labelIndicator.vue';
 import Lawnmower from './annotationCanvas/lawnmower.vue';
 import LineString from '@biigle/ol/geom/LineString';
@@ -54,9 +52,6 @@ import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 import {unByKey} from '@biigle/ol/Observable';
 
-// Offset is half of max-width (300px) plus 100px.
-const LABELBOT_OVERLAY_OFFSET = 250;
-
 /**
  * The annotator canvas
  *
@@ -74,17 +69,13 @@ export default {
         'new',
         'delete',
         'requires-selected-label',
-        'change-labelbot-focused-popup',
-        'close-labelbot-popup',
-        'update-labelbot-popup-line',
-        'grab-labelbot-popup',
-        'release-labelbot-popup',
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
         AnnotationTooltip,
         AttachLabelInteraction,
         DrawInteractions,
+        LabelBot,
         Lawnmower,
         MagicWandInteraction,
         MeasureInteraction,
@@ -99,8 +90,6 @@ export default {
         minimap: Minimap,
         labelIndicator: LabelIndicator,
         controlButton: ControlButton,
-        labelbotPopup: LabelbotPopup,
-        labelbotIndicator: LabelbotIndicator
     },
     props: {
         canAdd: {
@@ -164,20 +153,6 @@ export default {
         userId: {
             type: Number,
             required: true,
-        },
-        labelbotState: {
-            type: String,
-            required: true,
-        },
-        labelbotOverlays: {
-            type: Array,
-            default() {
-                return [];
-            },
-        },
-        focusedPopupKey: {
-            type: Number,
-            default: 0,
         },
     },
     data() {
@@ -266,9 +241,6 @@ export default {
                 default:
                     return 'Next image';
             }
-        },
-        labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
         },
     },
     methods: {
@@ -737,19 +709,6 @@ export default {
                 feature.setStyle(Styles.highlight);
             }, 200);
         },
-        // TODO move to mixin
-        updateLabelbotLabel(event) {
-            this.$emit('swap', event.annotation, event.label);
-        },
-        closeLabelbotPopup(popup) {
-            this.$emit('close-labelbot-popup', popup);
-        },
-        handleLabelbotPopupFocused(popup) {
-            this.$emit('change-labelbot-focused-popup', popup);
-        },
-        handleDeleteLabelbotAnnotation(annotation) {
-            this.$emit('delete', [annotation]);
-        },
     },
     watch: {
         image(image, oldImage) {
@@ -872,13 +831,6 @@ export default {
         },
         canDelete() {
             this.updateDeleteInteractions();
-        },
-        labelbotState() {
-            // We should always reset interaction mode when LabelBOT's state is changed to OFF/Disabled
-            // And no Label is selected to avoid empty annotation (blue features).
-            if (!this.labelbotIsActive && !this.selectedLabel) {
-                this.resetInteractionMode();
-            }
         },
     },
     created() {
