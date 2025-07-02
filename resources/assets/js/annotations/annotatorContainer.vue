@@ -379,8 +379,8 @@ export default {
                 this.lastCreatedAnnotation = null;
             }
 
-            this.labelbotOverlays.map((overlay, idx) => {
-                if (overlay.annotation?.id === annotation.id) {
+            this.labelbotOverlays.map((a, idx) => {
+                if (a.id === annotation.id) {
                     this.closeLabelbotPopup(idx)
                 }
             })

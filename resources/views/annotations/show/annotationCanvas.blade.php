@@ -189,10 +189,10 @@
         </div>
     </div>
     <labelbot-popup
-        v-for="popup in labelbotOverlays"
-        :key="popup.getKey()"
+        v-for="annotation in labelbotOverlays"
+        :key="annotation.id"
         :focused-popup-key="focusedPopupKey"
-        :popup="popup"
+        :annotation="annotation"
         @update="updateLabelbotLabel"
         @close="closeLabelbotPopup"
         @delete="handleDeleteLabelbotAnnotation"

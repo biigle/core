@@ -49,7 +49,6 @@
 <script>
 import Feature from '@biigle/ol/Feature';
 import Keyboard from '../../core/keyboard';
-import LabelBotPopup from '../models/LabelBotPopup.js';
 import LineString from '@biigle/ol/geom/LineString';
 import Overlay from '@biigle/ol/Overlay';
 import Styles from '../stores/styles.js';
@@ -77,8 +76,8 @@ export default {
             type: Number,
             required: true,
         },
-        popup: {
-            type: LabelBotPopup,
+        annotation: {
+            type: Object,
             required: true,
         },
     },
@@ -130,7 +129,7 @@ export default {
             return this.popupKey === this.focusedPopupKey;
         },
         labels() {
-            return this.popup.labels;
+            return [this.annotation.labels[0].label].concat(this.annotation.labelBOTLabels);
         },
         classObject() {
             return {
@@ -139,7 +138,7 @@ export default {
             };
         },
         popupKey() {
-            return this.popup.getKey();
+            return this.annotation.id;
         },
     },
     watch: {
@@ -159,13 +158,13 @@ export default {
         selectLabelbotLabel(label) {
             // Top 1 label is already attached/selected
             if (this.selectedLabel.id !== label.id) {
-                this.$emit('update', {label: label, annotation: this.popup.annotation});
+                this.$emit('update', {label: label, annotation: this.annotation});
             }
 
             this.emitClose();
         },
         emitClose() {
-            this.$emit('close', this.popup);
+            this.$emit('close', this.annotation);
         },
         handleTypeaheadFocus() {
             this.highlightedLabel = this.labels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
@@ -219,11 +218,11 @@ export default {
         deleteLabelAnnotation() {
             if (!this.isFocused) return;
 
-            this.$emit('delete', this.popup.annotation);
+            this.$emit('delete', this.annotation);
             this.emitClose();
         },
         emitFocus() {
-            this.$emit('focus', this.popup);
+            this.$emit('focus', this.annotation);
         },
         startDrag(e) {
             this.dragging = true;
@@ -265,7 +264,7 @@ export default {
 
         },
         createOverlay(annotationCanvas) {
-            const annotationGeometry = annotationCanvas.getGeometry(this.popup.annotation);
+            const annotationGeometry = annotationCanvas.getGeometry(this.annotation);
             const annotationExtent = annotationGeometry.getExtent();
             const popupPosition = [
                 annotationExtent[2],
@@ -285,7 +284,7 @@ export default {
 
             const line = new LineString([popupPosition, popupPosition]);
             this.lineFeature = markRaw(new Feature(line));
-            this.lineFeature.setStyle(Styles.labelbotPopupLineStyle(this.popup.annotation.labels[0].label.color));
+            this.lineFeature.setStyle(Styles.labelbotPopupLineStyle(this.labels[0].color));
 
             // TODO Handle case of user selecting and modifying the annotation,
             // especially the start point of the line feature. Disable selecting of

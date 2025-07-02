@@ -1,6 +1,5 @@
 <script>
 import Keyboard from '../../core/keyboard';
-import LabelBotPopup from '../models/LabelBotPopup.js';
 import {handleErrorResponse} from '../../core/messages/store';
 import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
 
@@ -164,11 +163,9 @@ export default {
                 return output[Object.keys(output)[0]].data
             });
         },
-        showLabelbotPopup(annotation, popupKey) {
-            const popup = new LabelBotPopup(annotation);
-
-            this.labelbotOverlays.push(popup);
-            this.focusedPopupKey = popup.getKey();
+        showLabelbotPopup(annotation) {
+            this.labelbotOverlays.push(annotation);
+            this.focusedPopupKey = annotation.id;
             Keyboard.setActiveSet('labelbot');
         },
         updateLabelbotState(labelbotState, toggleTitle='') {
@@ -190,13 +187,13 @@ export default {
                     break;
             }
         },
-        closeLabelbotPopup(popup) {
-            const index = this.labelbotOverlays.indexOf(popup);
+        closeLabelbotPopup(annotation) {
+            const index = this.labelbotOverlays.indexOf(annotation);
             if (index !== -1) {
                 this.labelbotOverlays.splice(index, 1);
             }
 
-            this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.getKey();
+            this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.id;
 
             if (!this.focusedPopupKey) {
                 Keyboard.setActiveSet('default');
@@ -207,8 +204,8 @@ export default {
             this.focusedPopupKey = -1;
             Keyboard.setActiveSet('default');
         },
-        changeLabelbotFocusedPopup(popup) {
-            this.focusedPopupKey = popup.getKey();
+        changeLabelbotFocusedPopup(annotation) {
+            this.focusedPopupKey = annotation.id;
         },
     },
     watch: {
