@@ -51,6 +51,23 @@ const proxy = {
                     });
                 });
         },
+        // These methods need special treatment.
+        handleRequiresSelectedLabel() {
+            Messages.info('Please select a label first.');
+            this.parent.handleRequiresSelectedLabel();
+        },
+        showPreviousVideo() {
+            this.reset();
+            this.parent.showPreviousVideo();
+        },
+        showNextVideo() {
+            this.reset();
+            this.parent.showNextVideo();
+        },
+        reset() {
+            this.$refs.videoTimeline.reset();
+            this.$refs.videoScreen.reset();
+        },
     },
     created() {
         this.parent = window.opener?.$videoContainer;
@@ -65,6 +82,7 @@ const proxy = {
 Object.keys(VideoContainer.methods)
     // Comes from mixin which is not visible here.
     .concat(['startLoading', 'finishLoading', 'handleErrorResponse'])
+    .filter(method => !proxy.methods.hasOwnProperty(method))
     .forEach(function (method) {
         proxy.methods[method] = function () {
             return this.parent[method].apply(this.parent, arguments);

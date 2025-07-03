@@ -295,9 +295,10 @@ export default {
             if (!this.video.paused) {
                 this.startUpdateLoop();
             }
-        } else {
-            this.video.addEventListener('loadedmetadata', this.setDuration);
         }
+
+        // This is still needed even in a popup if the next/previous video is shown.
+        this.video.addEventListener('loadedmetadata', this.setDuration);
     },
 };
 </script>
