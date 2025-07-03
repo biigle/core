@@ -527,8 +527,6 @@ export default {
             this.lastCreatedAnnotationTimeout = window.setTimeout(() => {
                 this.lastCreatedAnnotation = null;
             }, 10000);
-
-            return annotation;
         },
         updateColorAdjustment(params) {
             debounce(() => {

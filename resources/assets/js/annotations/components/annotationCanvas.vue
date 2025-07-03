@@ -573,7 +573,6 @@ export default {
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
             let removeCallback = () => {
-
                 try {
                     this.annotationSource.removeFeature(e.feature);
                 } catch (e) {

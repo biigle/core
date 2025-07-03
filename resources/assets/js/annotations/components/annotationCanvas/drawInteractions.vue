@@ -140,7 +140,7 @@ export default {
     },
     watch: {
         selectedLabel(label) {
-            if (this.isDrawing && !label) {
+            if (this.isDrawing && !label && !this.labelbotIsActive) {
                 this.resetInteractionMode();
             }
         },

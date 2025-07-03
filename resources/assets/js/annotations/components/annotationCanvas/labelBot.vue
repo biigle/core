@@ -49,8 +49,9 @@ export default {
     },
     watch: {
         labelbotState() {
-            // We should always reset interaction mode when LabelBOT's state is changed to OFF/Disabled
-            // And no Label is selected to avoid empty annotation (blue features).
+            // We should always reset interaction mode when LabelBOT's state is changed
+            // to OFF/Disabled and no Label is selected to avoid empty annotation (blue
+            // features).
             if (!this.labelbotIsActive && !this.selectedLabel) {
                 this.resetInteractionMode();
             }
