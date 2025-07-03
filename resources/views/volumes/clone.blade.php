@@ -4,14 +4,14 @@
 
 @push('scripts')
     <script type="module">
-        biigle.$declare('destinationProjects', {{Js::from($destinationProjects)}});
-        biigle.$declare('volume', {{Js::from($volume)}});
+        biigle.$declare('destinationProjects', {{ Js::from($destinationProjects) }});
+        biigle.$declare('volume', {{ Js::from($volume) }});
         biigle.$declare('isImageVolume', {{ $volume->isImageVolume() ? 'true' : 'false' }});
-        biigle.$declare('name', {{Js::from(old('name', $volume->name))}});
-        biigle.$declare('fileLabelTrees', {{Js::from($labelTrees)}});
+        biigle.$declare('name', {{ Js::from(old('name', $volume->name)) }});
+        biigle.$declare('fileLabelTrees', {{ Js::from($labelTrees) }});
         biigle.$declare('selectedFilesIds', {!! collect(old('only_files', [])) !!});
         biigle.$declare('fileLabelIds', {!! collect(old('only_file_labels', [])) !!});
-        biigle.$declare('annotationLabelTrees', {{Js::from($labelTrees)}});
+        biigle.$declare('annotationLabelTrees', {{ Js::from($labelTrees) }});
         biigle.$declare('cloneFileLabels', {{old('clone_file_labels', false)}});
         biigle.$declare('cloneAnnotations', {{old('clone_annotations', false)}});
         biigle.$declare('annotationLabelIds', {!! collect(old('only_annotation_labels', [])) !!});

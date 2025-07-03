@@ -3,7 +3,7 @@
 @push('scripts')
 <script type="module">
     @can('update', $tree)
-        biigle.$declare('labelTrees.authorizedProjects', {{Js::from($authorizedProjects )}});
+        biigle.$declare('labelTrees.authorizedProjects', {{ Js::from($authorizedProjects ) }});
         biigle.$declare('labelTrees.authorizedOwnProjects', {!! $authorizedOwnProjects !!});
     @endcan
 </script>

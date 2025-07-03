@@ -4,10 +4,10 @@
 
 @push('scripts')
     <script type="module">
-        biigle.$declare('largo.user', {{Js::from($user)}});
+        biigle.$declare('largo.user', {{ Js::from($user) }});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
         biigle.$declare('largo.mediaType', @if ($volume->isImageVolume()) 'image' @else 'video' @endif);
-        biigle.$declare('largo.labelTrees', {{Js::from($labelTrees)}});
+        biigle.$declare('largo.labelTrees', {{ Js::from($labelTrees) }});
         biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '/') }}/');
         biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '/') }}/');
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');

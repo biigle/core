@@ -5,12 +5,12 @@
 @push('scripts')
 <script type="module">
     biigle.$declare('sync.importToken', '{{$token}}');
-    biigle.$declare('sync.volumeCandidates', {{Js::from($volumeCandidates)}});
-    biigle.$declare('sync.labelTreeCandidates', {{Js::from($labelTreeCandidates)}});
-    biigle.$declare('sync.importLabels', {{Js::from($importLabels)}});
-    biigle.$declare('sync.labelCandidates', {{Js::from($labelCandidates)}});
-    biigle.$declare('sync.conflictingParents', {{Js::from($conflictingParents)}});
-    biigle.$declare('sync.userCandidates', {{Js::from($userCandidates)}});
+    biigle.$declare('sync.volumeCandidates', {{ Js::from($volumeCandidates) }});
+    biigle.$declare('sync.labelTreeCandidates', {{ Js::from($labelTreeCandidates) }});
+    biigle.$declare('sync.importLabels', {{ Js::from($importLabels) }});
+    biigle.$declare('sync.labelCandidates', {{ Js::from($labelCandidates) }});
+    biigle.$declare('sync.conflictingParents', {{ Js::from($conflictingParents) }});
+    biigle.$declare('sync.userCandidates', {{ Js::from($userCandidates) }});
     biigle.$declare('sync.adminRoleId', {!!$adminRoleId!!});
 </script>
 @endpush

@@ -3,7 +3,7 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('projects.project', {{Js::from($project)}});
+    biigle.$declare('projects.project', {{ Js::from($project) }});
     biigle.$declare('projects.userId', {!! $user->id !!});
     biigle.$declare('projects.redirectUrl', '{{route('home')}}');
 </script>

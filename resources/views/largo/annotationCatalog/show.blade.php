@@ -4,7 +4,7 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('annotationCatalog.labelTree', {{Js::from($tree)}});
+    biigle.$declare('annotationCatalog.labelTree', {{ Js::from($tree) }});
     biigle.$declare('annotationCatalog.showImageAnnotationRoute', '{{ route('show-image-annotation', '/') }}/');
     biigle.$declare('annotationCatalog.showVideoAnnotationRoute', '{{ route('show-video-annotation', '/') }}/');
     biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');

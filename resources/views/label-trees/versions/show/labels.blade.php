@@ -2,7 +2,7 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('labelTrees.labels', {{Js::from($labels)}});
+    biigle.$declare('labelTrees.labels', {{ Js::from($labels) }});
     biigle.$declare('labelTrees.canEdit', false);
 </script>
 @endpush

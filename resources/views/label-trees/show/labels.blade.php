@@ -2,8 +2,8 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('labelTrees.labels', {{Js::from($labels)}});
-    biigle.$declare('labelTrees.wormsLabelSource', {{Js::from($wormsLabelSource)}});
+    biigle.$declare('labelTrees.labels', {{ Js::from($labels) }});
+    biigle.$declare('labelTrees.wormsLabelSource', {{ Js::from($wormsLabelSource) }});
     @can('create-label', $tree)
         biigle.$declare('labelTrees.canEdit', true);
     @else

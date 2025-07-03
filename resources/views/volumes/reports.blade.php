@@ -6,7 +6,7 @@
 <script type="module">
     biigle.$declare('reports.volumeId', {!! $volume->id !!});
     biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
-    biigle.$declare('reports.labelTrees', {{Js::from($labelTrees)}});
+    biigle.$declare('reports.labelTrees', {{ Js::from($labelTrees) }});
 </script>
 @endpush
 

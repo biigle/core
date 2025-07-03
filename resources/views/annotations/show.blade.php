@@ -6,20 +6,20 @@
 @push('scripts')
 <script type="module">
     @can('add-annotation', $image)
-        biigle.$declare('annotations.labelTrees', {{Js::from($labelTrees)}});
+        biigle.$declare('annotations.labelTrees', {{ Js::from($labelTrees) }});
     @endcan
     biigle.$declare('annotations.imageId', {!! $image->id !!});
     biigle.$declare('annotations.volumeId', {!! $image->volume_id !!});
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
-    biigle.$declare('annotations.imagesFilenames', {{Js::from($images->values())}});
+    biigle.$declare('annotations.imagesFilenames', {{ Js::from($images->values()) }});
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/:id/file') !!}');
     biigle.$declare('annotations.tilesUri', '{{ $tilesUriTemplate }}');
-    biigle.$declare('annotations.sessions', {{Js::from($annotationSessions)}});
+    biigle.$declare('annotations.sessions', {{ Js::from($annotationSessions) }});
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
-    biigle.$declare('annotations.exportArea', {{Js::from($volume->exportArea)}});
+    biigle.$declare('annotations.exportArea', {{ Js::from($volume->exportArea) }});
 </script>
 @mixin('annotationsScripts')
 @endpush
