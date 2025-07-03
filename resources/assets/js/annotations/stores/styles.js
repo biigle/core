@@ -49,11 +49,6 @@ const defaultCircleStroke = new Stroke({
     width: 2
 });
 
-const selectedCircleStroke = new Stroke({
-    color: colors.white,
-    width: 6,
-});
-
 // Define this here even though it seems to be used only once but actually it can be
 // reused multiple times with different editing styles (colors).
 const editingCircleStroke = new Stroke({
