@@ -379,7 +379,7 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'VideoController@show',
         ]);
 
-        $router->get('videos/{id}/popup', [
+        $router->get('videos/popup', [
             'as' => 'video-popup',
             'uses' => 'VideoController@showPopup',
         ]);

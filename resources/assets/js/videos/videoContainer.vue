@@ -737,7 +737,7 @@ export default {
         handleVideoPopout() {
             if (!this.hasVideoPopout) {
                 window.$videoContainer = this;
-                const popup = window.open('popup', '_blank', 'popup=true');
+                const popup = window.open(biigle.$require('videos.popupUrl'), '_blank', 'popup=true');
                 if (popup) {
                     this.hasVideoPopout = true;
                     popup.addEventListener('beforeunload', () => {

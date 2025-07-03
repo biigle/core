@@ -72,5 +72,6 @@
     biigle.$declare('videos.spritesThumbnailInterval', {!! $spritesThumbnailInterval !!});
     biigle.$declare('videos.spritesMaxThumbnails', {!! $spritesMaxThumbnails !!});
     biigle.$declare('videos.spritesMinThumbnails', {!! $spritesMinThumbnails !!});
+    biigle.$declare('videos.popupUrl', '{!! route('video-popup') !!}');
 </script>
 @endpush

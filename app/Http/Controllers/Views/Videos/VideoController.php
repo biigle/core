@@ -100,14 +100,9 @@ class VideoController extends Controller
 
     /**
      * Show the popup window of the video annotation tool.
-     *
-     * @param int $id Video ID
      */
-    public function showPopup($id)
+    public function showPopup()
     {
-        $video = Video::findOrFail($id);
-        $this->authorize('access', $video);
-
         $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
 
         $spritesThumbnailsPerSprite = config('videos.sprites_thumbnails_per_sprite');
@@ -116,7 +111,6 @@ class VideoController extends Controller
         $spritesMinThumbnails = config('videos.thumbnail_count');
 
         return view('videos.show.popup', compact(
-            'video',
             'thumbUriTemplate',
             'spritesThumbnailsPerSprite',
             'spritesThumbnailInterval',

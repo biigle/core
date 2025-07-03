@@ -1,9 +1,10 @@
 <script>
 import LoaderBlock from '@/core/components/loaderBlock.vue';
 import MessageCurtain from '@/core/components/messageCurtain.vue';
+import Messages from '@/core/messages/store.js';
+import VideoContainer from './videoContainer.vue';
 import VideoScreen from './components/videoScreen.vue';
 import VideoTimeline from './components/videoTimeline.vue';
-import VideoContainer from './videoContainer.vue';
 
 const proxy = {
     components: {
@@ -52,8 +53,12 @@ const proxy = {
         },
     },
     created() {
-        this.parent = window.opener.$videoContainer;
-        this.mountProxyWatchers();
+        this.parent = window.opener?.$videoContainer;
+        if (this.parent) {
+            this.mountProxyWatchers();
+        } else {
+            Messages.danger('This page must be called from the video annotation tool.');
+        }
     },
 };
 

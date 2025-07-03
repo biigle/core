@@ -1,10 +1,12 @@
 @extends('app')
 @section('show-navbar', false)
-@section('title', "Annotate {$video->name}")
+@section('title', "Annotate video")
 
 @section('content')
-<div id="video-popup-container" class="video-popup">
-    @include('videos.show.content')
+<div id="video-popup-container">
+    <div v-if="parent" class="video-popup">
+        @include('videos.show.content')
+    </div>
 </div>
 @endsection
 
