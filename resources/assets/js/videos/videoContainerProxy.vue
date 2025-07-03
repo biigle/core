@@ -14,41 +14,38 @@ const proxy = {
     },
     data() {
         const data = VideoContainer.data();
-
+        Object.keys(VideoContainer.computed).forEach(k => data[k] = null);
         data.loading = false;
         data.isVideoPopout = true;
 
         return data;
     },
-    computed: VideoContainer.computed,
+    computed: {},
     methods: {
         mountProxyWatchers() {
+            const data = VideoContainer.data();
             const ignoreAttributes = [
                 'settings',
                 'isVideoPopout',
             ];
 
-            const data = VideoContainer.data();
-
-            // TODO deep watch?
             Object.keys(data)
                 .concat(['loading']) // Comes from mixin which is not visible here.
+                .concat(Object.keys(VideoContainer.computed))
                 .filter(a => !ignoreAttributes.includes(a))
                 .forEach((attribute) => {
                     this.parent.$watch(attribute, {
-                        handler: (v) => {
-                            this[attribute] = v;
-                        },
+                        handler: v => this[attribute] = v,
                         immediate: true,
                     });
                 });
 
+            // The settings must be watched one level deeper. VideoContainer also has
+            // the urlParams one level deeper but these are irrelevant in the proxy.
             Object.keys(data.settings)
                 .forEach((attribute) => {
                     this.parent.$watch('settings.' + attribute, {
-                        handler: (v) => {
-                            this.settings[attribute] = v;
-                        },
+                        handler: v => this.settings[attribute] = v,
                         immediate: true,
                     });
                 });
