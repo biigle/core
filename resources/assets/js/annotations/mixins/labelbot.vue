@@ -1,6 +1,7 @@
 <script>
 import AnnotationsStore from '../stores/annotations.js';
 import Keyboard from '../../core/keyboard';
+import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
 import LabelbotWorker from '../workers/labelbot.js?worker';
 
 // DINOv2 image input size.
@@ -58,18 +59,40 @@ export default {
                 });
             });
         },
+        getWorker() {
+            if (import.meta.env.DEV) {
+                // This is a workaround to support loading of a web worker via cross
+                // origin during local development. This code does not correctly resolve
+                // ORT binary URLs in production, though, so it is only enabled in dev.
+                // See: https://github.com/vitejs/vite/issues/13680
+                const url = new URL(LabelbotWorkerUrl, import.meta.url);
+                const js = `import ${JSON.stringify(url)}`;
+                const blob = new Blob([js], {type: "application/javascript"});
+                const objURL = URL.createObjectURL(blob);
+                const worker = new Worker(objURL, {type: "module"});
+                worker.addEventListener("error", () => URL.revokeObjectURL(objURL));
+
+                return worker;
+            }
+
+            return new LabelbotWorker();
+        },
         async initLabelbotWorker() {
-            this.labelbotWorker = new LabelbotWorker();
+            this.labelbotWorker = this.getWorker();
             this.labelbotWorker.addEventListener('message', this.handleLabelbotWorkerMessage);
             this.labelbotWorker.addEventListener('error', this.handleLabelbotWorkerError);
 
             this.updateLabelbotState(LABELBOT_STATES.INITIALIZING);
             const modelUrl = biigle.$require('labelbot.onnxUrl');
 
-            this.addLabelbotWorkerListener((e) => e.data.type === 'init')
-                .then(() => {
+            this.addLabelbotWorkerListener(e => e.data?.type === 'init')
+                .then((e) => {
+                    if (e.data?.error) {
+                        throw e.data.error;
+                    }
                     this.updateLabelbotState(LABELBOT_STATES.READY);
-                }, (e) => {
+                })
+                .catch((e) => {
                     this.updateLabelbotState(LABELBOT_STATES.OFF);
                     this.labelbotWorker.terminate();
                     this.labelbotWorker = null;
@@ -138,7 +161,7 @@ export default {
             const annotationData = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
 
             const promise = this.addLabelbotWorkerListener(
-                e => box.every((v, i) => v === e.data.box[i])
+                e => box.every((v, i) => v === e.data?.box[i])
             ).then(e => e.data.vector);
 
             this.labelbotWorker.postMessage({

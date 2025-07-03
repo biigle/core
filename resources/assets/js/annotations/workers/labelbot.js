@@ -12,8 +12,8 @@ function initModel (url) {
         .then(r => r.blob())
         .then(b => URL.createObjectURL(b))
         .then((u) => {
-            return InferenceSession.create(u, { executionProviders: ['webgpu'] })
-                .catch(() => InferenceSession.create(u, { executionProviders: ['wasm'] }))
+            return InferenceSession.create(u, {executionProviders: ['webgpu']})
+                .catch(() => InferenceSession.create(u, {executionProviders: ['wasm']}))
                 .then((m) => MODEL = m)
                 .then(warmUpModel);
         });
