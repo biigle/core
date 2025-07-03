@@ -133,21 +133,17 @@ export default {
                 this.updateGeometry(geometry, points);
             });
         },
-        refreshSingleAnnotation(annotation) {
-            let source = this.annotationSource;
-
-            let feature = source.getFeatureById(annotation.id);
-
-            feature.set('color', annotation.labels[0].label.color);
-        },
         createFeature(annotation) {
             let feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
 
             feature.setId(annotation.id);
             feature.set('annotation', annotation);
-            if (annotation.labels && annotation.labels.length > 0) {
-                feature.set('color', annotation.labels[0].label.color);
-            }
+
+            // The color may change after a detach/swap label action.
+            annotation.watch(() => {
+                feature.set('color', annotation.labels?.[0].label.color);
+
+            }, {immediate: true});
 
             return feature;
         },

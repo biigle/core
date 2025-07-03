@@ -3,7 +3,7 @@ import Messages from '@/core/messages/store.js';
 import VideoAnnotationApi from '../api/videoAnnotations.js';
 import {getRoundToPrecision} from '../utils.js';
 import {interpolate} from 'polymorph-js';
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
 
 let SHAPE_CACHE;
 
@@ -294,12 +294,20 @@ export default class Annotation {
     }
 
     detachAnnotationLabel(annotationLabel) {
+        return VideoAnnotationApi.detachLabel({id: annotationLabel.id})
+            .then((response) => {
+                this.handleDetachedLabel(annotationLabel);
+
+                return response;
+            });
+    }
+
+    handleDetachedLabel(annotationLabel) {
         let index = this.labels.indexOf(annotationLabel);
         if (index !== -1) {
             this.labels.splice(index, 1);
         }
-
-        return VideoAnnotationApi.detachLabel({id: annotationLabel.id});
+        this.revision += 1;
     }
 
     attachAnnotationLabel(label) {
@@ -310,6 +318,7 @@ export default class Annotation {
 
     handleAttachedLabel(response) {
         this.labels.push(response.body);
+        this.revision += 1;
 
         return response;
     }
@@ -397,6 +406,10 @@ export default class Annotation {
 
     delete() {
         return VideoAnnotationApi.delete({id: this.id});
+    }
+
+    watch(fn, options) {
+        watch(this._revision, fn, options);
     }
 }
 </script>
