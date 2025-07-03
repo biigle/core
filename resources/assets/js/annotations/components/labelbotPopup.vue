@@ -90,7 +90,7 @@ export default {
             trees: [],
             overlay: null,
             lineFeature: null,
-            listenerKey: null,
+            listenerKeys: [],
             dragging: false,
             dragStartMousePosition: [0, 0],
             dragStartOverlayOffset: [0, 0],
@@ -242,7 +242,7 @@ export default {
                 this.dragStartOverlayOffset[0] + e.clientX - this.dragStartMousePosition[0],
                 this.dragStartOverlayOffset[1] + e.clientY - this.dragStartMousePosition[1],
             ]);
-            this.lineFeature._updateLineCoordinates();
+            this.lineFeature._updateCoordinates();
         },
         endDrag() {
             this.dragging = false;
@@ -268,7 +268,8 @@ export default {
 
         },
         createOverlay(annotationCanvas) {
-            const annotationGeometry = annotationCanvas.getGeometry(this.annotation);
+            const annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
+            const annotationGeometry = annotationFeature.getGeometry();
             const annotationExtent = annotationGeometry.getExtent();
             const popupPosition = [
                 annotationExtent[2],
@@ -292,10 +293,7 @@ export default {
             this.lineFeature.set('color', this.labels[0].color);
             this.lineFeature.setStyle(Styles.editing);
 
-            // TODO Handle case of user selecting and modifying the annotation,
-            // especially the start point of the line feature. Disable selecting of
-            // the line feature.
-            this.lineFeature._updateLineCoordinates = () => {
+            this.lineFeature._updateCoordinates = () => {
                 const position = overlay.getPosition();
                 const offset = overlay.getOffset();
                 const resolution = annotationCanvas.map.getView().getResolution();
@@ -306,11 +304,12 @@ export default {
                 const start = annotationGeometry.getClosestPoint(end);
                 line.setCoordinates([start, end]);
             };
-            this.lineFeature._updateLineCoordinates();
+            this.lineFeature._updateCoordinates();
 
             annotationCanvas.annotationSource.addFeature(this.lineFeature);
 
-            this.listenerKey = annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateLineCoordinates);
+            this.listenerKeys.push(annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateCoordinates));
+            this.listenerKeys.push(annotationGeometry.on('change', this.lineFeature._updateCoordinates));
         },
         selectLabel1() {
             if (this.isFocused && this.labels[0]) {
@@ -356,7 +355,7 @@ export default {
     beforeUnmount() {
         this.$parent.map.removeOverlay(this.overlay);
         this.$parent.annotationSource.removeFeature(this.lineFeature);
-        unByKey(this.listenerKey);
+        this.listenerKeys.forEach(unByKey);
 
         Keyboard.off('Escape', this.handleEsc, 0, 'labelbot');
         Keyboard.off('arrowup', this.labelUp, 0, 'labelbot');
