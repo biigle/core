@@ -321,7 +321,10 @@ export default {
                 // could always only select the annotation that was drawn last (i.e. on
                 // the top). Use Shift+Click to deselect overlapping annotations that
                 // shouldn't be selected or use the annotation filter.
-                multi: true
+                multi: true,
+                // Some features should not be selectable, i.e. features that are drawn
+                // while the API request is in flight.
+                filter: (f) => f.get('unselectable') ? false : true,
             });
 
             // Map to detect which features were changed between modifystart and
@@ -554,12 +557,23 @@ export default {
                 PolygonValidator.simplifyPolygon(e.feature);
             }
 
-            // If LabelBOT is on then selectedLabel is null
-            e.feature.set('color', this.selectedLabel ? this.selectedLabel.color : null);
+            // This is observed by a filter in the select interaction.
+            e.feature.set('unselectable', true);
+
+            if (this.labelbotIsActive) {
+                // Alternating between the "info" color also used by the LabelBOT
+                // indicator and the white outline color. The interval length is the
+                // same than the animation time of the blinking dot in the indicator.
+                e.feature.set('color', '5bc0de');
+                e.feature.setStyle(Styles.editing);
+            } else {
+                e.feature.set('color', this.selectedLabel.color);
+            }
 
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
             let removeCallback = () => {
+
                 try {
                     this.annotationSource.removeFeature(e.feature);
                 } catch (e) {

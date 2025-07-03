@@ -288,7 +288,9 @@ export default {
 
             const line = new LineString([popupPosition, popupPosition]);
             this.lineFeature = markRaw(new Feature(line));
-            this.lineFeature.setStyle(Styles.labelbotPopupLineStyle(this.labels[0].color));
+            this.lineFeature.set('unselectable', true);
+            this.lineFeature.set('color', this.labels[0].color);
+            this.lineFeature.setStyle(Styles.editing);
 
             // TODO Handle case of user selecting and modifying the annotation,
             // especially the start point of the line feature. Disable selecting of
