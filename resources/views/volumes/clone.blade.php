@@ -7,7 +7,7 @@
         biigle.$declare('destinationProjects', {{Js::from($destinationProjects)}});
         biigle.$declare('volume', {{Js::from($volume)}});
         biigle.$declare('isImageVolume', {{ $volume->isImageVolume() ? 'true' : 'false' }});
-        biigle.$declare('name', '{{old('name', $volume->name)}}');
+        biigle.$declare('name', {{Js::from(old('name', $volume->name))}});
         biigle.$declare('fileLabelTrees', {{Js::from($labelTrees)}});
         biigle.$declare('selectedFilesIds', {!! collect(old('only_files', [])) !!});
         biigle.$declare('fileLabelIds', {!! collect(old('only_file_labels', [])) !!});
