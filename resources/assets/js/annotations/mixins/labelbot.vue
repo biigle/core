@@ -208,6 +208,10 @@ export default {
         storeLabelbotAnnotation(annotation) {
             const currentImageId = this.imageId;
 
+            if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
+                return Promise.reject({body: {message: 'LabelBOT is not finished initializing.'}});
+            }
+
             if (this.labelbotRequestsInFlight >= this.labelbotMaxRequests) {
                 return Promise.reject({body: {message: `You already have ${this.labelbotMaxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.`}});
             }
