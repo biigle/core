@@ -71,7 +71,7 @@ class TileSingleImageTest extends TestCase
         $image = ImageTest::create();
         $fragment = fragment_uuid_path($image->uuid);
         $job = new TileSingleImageStub($image);
-        File::makeDirectory(path: $job->tempPath, recursive: true);
+        File::makeDirectory($job->tempPath);
         File::put("{$job->tempPath}/test.txt", 'test');
 
         try {
