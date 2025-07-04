@@ -437,10 +437,19 @@ class ProcessAnnotatedImageTest extends TestCase
         $annotation = ImageAnnotationTest::create();
         $job = new ProcessAnnotatedImage($annotation->image);
         $job->handle();
-        Bus::assertDispatched(ProcessAnnotatedImage::class);
+        Bus::assertDispatched(ProcessAnnotatedImage::class, fn ($job) => $job->redispatchTries === 1);
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $disk->assertMissing("{$prefix}/{$annotation->id}.svg");
+    }
+
+    public function testGiveUpRedispatch()
+    {
+        FileCache::shouldReceive('get')->andThrow(FileLockedException::class);
+        $annotation = ImageAnnotationTest::create();
+        $job = new ProcessAnnotatedImage($annotation->image, redispatchTries: 150);
+        $this->expectException(ProcessAnnotatedFileException::class);
+        $job->handle();
     }
 
     public function testGenerateFeatureVectorNew()

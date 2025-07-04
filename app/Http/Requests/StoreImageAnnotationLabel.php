@@ -31,7 +31,7 @@ class StoreImageAnnotationLabel extends FormRequest
     {
         $this->annotation = ImageAnnotation::findOrFail($this->route('id'));
 
-        $this->validate(['label_id' => 'integer']);
+        $this->validate(['label_id' => 'integer|exists:labels,id']);
 
         $this->label = Label::find($this->input('label_id'));
 

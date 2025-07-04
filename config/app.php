@@ -178,6 +178,8 @@ return [
         Biigle\Modules\UserStorage\UserStorageServiceProvider::class,
         Biigle\Modules\Newsletter\NewsletterServiceProvider::class,
 
+    ])->replace([
+        Illuminate\Queue\QueueServiceProvider::class => Biigle\Providers\QueueServiceProvider::class,
     ])->toArray(),
 
     /*
