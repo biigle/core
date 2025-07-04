@@ -257,7 +257,7 @@ export default {
         image(image) {
             if (image?.crossOrigin) {
                 this.updateLabelbotState(LABELBOT_STATES.CORSERROR);
-            } else {
+            } else if (this.labelbotState === LABELBOT_STATES.CORSERROR) {
                 this.updateLabelbotState(LABELBOT_STATES.OFF);
             }
         },
