@@ -668,6 +668,14 @@ export default {
             let oldFeaturesMap = {};
             let oldFeatures = source.getFeatures();
             let removedFeatures = oldFeatures.filter(function (feature) {
+                // Ignore temporary features from drawing new annotations. These are
+                // removed with the removeCallback of handleNewFeature(). Since they
+                // have no ID, they would be treated as nonexistent here and might be
+                // accidentally removed with source.clear() below.
+                if (feature.getId() === undefined) {
+                    return false;
+                }
+
                 oldFeaturesMap[feature.getId()] = null;
                 return !annotationsMap.hasOwnProperty(feature.getId());
             });
