@@ -309,6 +309,8 @@ class TileSingleImageStub extends TileSingleImage
 
     public $client = null;
 
+    public $bucket = "bucket";
+
     public $uploadedFiles = [];
 
     protected function getVipsImage($path)
@@ -323,14 +325,15 @@ class TileSingleImageStub extends TileSingleImage
 
     protected function getBucket($disk)
     {
-        return 'bucket';
+        return $this->bucket;
     }
 
     protected function sendRequests($files, $onFullfill = null)
     {
         $onFullfill = function ($res, $index) {
             // Simulate file upload
-            $bucketLength = 8;
+            $nbrSlash = 2;
+            $bucketLength = strlen($this->bucket) + $nbrSlash;
             $path = substr(parse_url($res->get('ObjectURL'), PHP_URL_PATH), $bucketLength);
             $this->uploadedFiles[] = config('image.tiles.tmp_dir') ."/{$path}";
         };
