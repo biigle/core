@@ -1,8 +1,8 @@
 <script>
 import AnnotationsStore from '../stores/annotations.js';
 import Keyboard from '../../core/keyboard';
-import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
 import LabelbotWorker from '../workers/labelbot.js?worker';
+import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
 
 // DINOv2 image input size.
 const INPUT_SIZE = 224;
@@ -152,8 +152,11 @@ export default {
                 this.tempLabelbotCanvas = document.createElement('canvas');
                 this.tempLabelbotCanvas.width = INPUT_SIZE;
                 this.tempLabelbotCanvas.height = INPUT_SIZE;
+                this.tempLabelbotCanvasCtx = this.tempLabelbotCanvas.getContext('2d', {
+                    willReadFrequently: true,
+                });
             }
-            const ctx = this.tempLabelbotCanvas.getContext('2d');
+            const ctx = this.tempLabelbotCanvasCtx;
 
             ctx.clearRect(0, 0, INPUT_SIZE, INPUT_SIZE);
             ctx.drawImage(this.image.source, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
