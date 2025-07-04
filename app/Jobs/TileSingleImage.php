@@ -188,14 +188,13 @@ class TileSingleImage extends Job implements ShouldQueue
      *
      * @param \Iterator $files The files to upload.
      * @param callable $onFullfill Callback for successful uploads.
-     * @throws UploadException If the retry limit is reached or file already exists
+     * @throws UploadException If the retry limit is reached, the file already exists or any other upload error occured
      *
      */
     protected function sendRequests($files, $onFullfill = null)
     {
         $concurrency = config('image.tiles.concurrent_requests');
 
-        // The promise is rejected if the retry limit is reached or the error code is considered non-retryable (file already exists)
         $failedUploads = function ($reason, $index) {
             $id = $this->image->id;
 
