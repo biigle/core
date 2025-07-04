@@ -115,7 +115,6 @@ class TileSingleImageTest extends TestCase
 
         try {
             $job->client = $client;
-
             $job->uploadToS3Storage($disk);
 
             $tiles = array_map(fn ($f) => "/tmp/{$fragment}/TilesGroup0/" . $f->getFilename(), File::allFiles($dir));
@@ -150,7 +149,7 @@ class TileSingleImageTest extends TestCase
         );
 
         $disk = Storage::fake('test-tiles');
-        $config = [...$this->s3Config];
+        $config = $this->s3Config;
         $config['retries'] = 0;
         $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
@@ -166,7 +165,6 @@ class TileSingleImageTest extends TestCase
 
         try {
             $job->client = $client;
-
             $job->uploadToS3Storage($disk);
 
             $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
@@ -203,7 +201,7 @@ class TileSingleImageTest extends TestCase
         );
 
         $disk = Storage::fake('test-tiles');
-        $config = [...$this->s3Config];
+        $config = $this->s3Config;
         $config['retries'] = 0;
         $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
@@ -219,7 +217,6 @@ class TileSingleImageTest extends TestCase
 
         try {
             $job->client = $client;
-
             $job->uploadToS3Storage($disk);
 
             $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
@@ -260,7 +257,7 @@ class TileSingleImageTest extends TestCase
         );
 
         $disk = Storage::fake('test-tiles');
-        $config = [...$this->s3Config];
+        $config = $this->s3Config;
         $config['retries'] = 1;
         $client = new S3Client($config);
         $client->getHandlerList()->setHandler($mock);
@@ -276,7 +273,6 @@ class TileSingleImageTest extends TestCase
 
         try {
             $job->client = $client;
-
             $job->uploadToS3Storage($disk);
 
             $tiles = array_map(fn ($f) => "/tmp/{$fragment}/TilesGroup0/" . $f->getFilename(), File::allFiles($dir));
