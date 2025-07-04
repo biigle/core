@@ -84,7 +84,7 @@ export default {
     data() {
         return {
             hasProgressBar: true,
-            highlightedLabel: -1,
+            highlightedLabel: 0,
             typeaheadFocused: false,
             selectedLabel: null,
             trees: [],
