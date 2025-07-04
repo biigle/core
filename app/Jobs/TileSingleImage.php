@@ -54,8 +54,7 @@ class TileSingleImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
-        $fragment = fragment_uuid_path($image->uuid);
-        $this->tempPath = config('image.tiles.tmp_dir') . "/{$fragment}";
+        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}";
         $this->queue = config('image.tiles.queue');
     }
 
@@ -90,7 +89,6 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function generateTiles(Image $image, $path)
     {
-        File::ensureDirectoryExists(path: $this->tempPath, recursive: true);
         $this->getVipsImage($path)->dzsave($this->tempPath, [
             'layout' => 'zoomify',
             'container' => 'fs',
@@ -130,18 +128,19 @@ class TileSingleImage extends Job implements ShouldQueue
         $prefixKey = "prefix";
         $prefix = isset($config[$prefixKey]) && strlen($config[$prefixKey]) ?
             $config[$prefixKey] . "/" : "";
+        $fragment = fragment_uuid_path($this->image->uuid) . "/";
 
-        $uploads = function ($files) use ($disk, $prefix) {
+        $uploads = function ($files) use ($disk, $prefix, $fragment) {
             $client = $this->getClient($disk);
             $bucket = $this->getBucket($disk);
-            $dirLength = strlen(config('image.tiles.tmp_dir')) + 1;
+            $dirLength = strlen($this->tempPath) + 1;
 
             foreach ($files as $file) {
                 $path = substr($file, $dirLength);
                 // @phpstan-ignore-next-line
                 yield $client->putObjectAsync([
                     'Bucket' => $bucket,
-                    'Key' => "{$prefix}{$path}",
+                    'Key' => "{$prefix}{$fragment}{$path}",
                     'SourceFile' => $file,
                     // Return with error if file already exist
                     '@http' => [
@@ -156,8 +155,7 @@ class TileSingleImage extends Job implements ShouldQueue
         try {
             $this->sendRequests($uploads($iterator));
         } catch (Exception $e) {
-            $dir = fragment_uuid_path($this->image->uuid);
-            $disk->deleteDirectory($dir);
+            $disk->deleteDirectory($this->tempPath);
             throw $e;
         }
     }
