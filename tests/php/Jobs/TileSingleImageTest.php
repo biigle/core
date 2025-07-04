@@ -126,6 +126,7 @@ class TileSingleImageTest extends TestCase
             sort($uploadedFiles);
 
             $this->assertEquals($tiles, $uploadedFiles);
+            $this->assertFileDoesNotExist($disk->path($job->tempPath));
         } finally {
             File::deleteDirectory($dir);
         }
@@ -174,6 +175,7 @@ class TileSingleImageTest extends TestCase
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
+            $this->assertFileDoesNotExist($disk->path($job->tempPath));
         } catch (UploadException $e) {
             $fails = true;
         } finally {
@@ -227,6 +229,7 @@ class TileSingleImageTest extends TestCase
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
+            $this->assertFileDoesNotExist($disk->path($job->tempPath));
         } catch (UploadException $e) {
             $fails = true;
         } finally {
@@ -287,6 +290,7 @@ class TileSingleImageTest extends TestCase
             sort($uploadedFiles);
 
             $this->assertEquals($tiles, $uploadedFiles);
+            $this->assertFileDoesNotExist($disk->path($job->tempPath));
         } finally {
             File::deleteDirectory($dir);
         }
