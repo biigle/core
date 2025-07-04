@@ -60,7 +60,8 @@ class SortAnnotationsByOutliersController extends Controller
                  SELECT "volume_id" FROM "project_volume" WHERE "project_id" = :pid
               )
            ) AS temp2
-        ) DESC, id DESC
+        -- Add the ordering by ID to make result deterministic (in tests).
+        ) DESC, substr(id, 1, 1) DESC, substr(id, 2)::int DESC
         SQL;
 
         $ids = DB::select($sql, ['pid' => $pid, 'lid' => $lid]);
