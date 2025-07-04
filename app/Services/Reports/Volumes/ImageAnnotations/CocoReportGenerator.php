@@ -55,6 +55,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
             $rows = $rows->groupBy('user_id');
             $users = User::whereIn('id', $rows->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {

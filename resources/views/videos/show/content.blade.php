@@ -89,6 +89,7 @@
       :has-error="hasError"
       :collapsed="isVideoPopout"
       :full-height="!isVideoPopout && hasVideoPopout"
+      :duration="videoDuration"
       v-on:seek="seek"
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"

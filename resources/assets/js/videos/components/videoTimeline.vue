@@ -77,6 +77,11 @@ export default {
                 return value instanceof HTMLVideoElement || value.constructor.name === 'HTMLVideoElement';
             },
         },
+        duration: {
+            type: Number,
+            required: true,
+            default: 0
+        },
         seeking: {
             type: Boolean,
             default: false,
@@ -119,7 +124,6 @@ export default {
             refreshRate: 30,
             refreshLastTime: Date.now(),
             currentTime: 0,
-            duration: 0,
             scrollTop: 0,
             hoverTime: 0,
         };
@@ -206,9 +210,6 @@ export default {
         updateCurrentTime() {
             this.currentTime = this.video.currentTime;
         },
-        setDuration() {
-            this.duration = this.video.duration;
-        },
         emitSeek(time) {
             this.$emit('seek', time);
         },
@@ -271,7 +272,6 @@ export default {
         },
         reset() {
             this.currentTime = 0;
-            this.duration = 0;
             this.scrollTop = 0;
             this.hoverTime = 0;
             this.$refs.scrollStrip.reset();
@@ -289,16 +289,12 @@ export default {
 
         // If the video timeline is shown in the popup and the video is already loaded.
         if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-            this.setDuration();
             this.updateCurrentTime();
 
             if (!this.video.paused) {
                 this.startUpdateLoop();
             }
         }
-
-        // This is still needed even in a popup if the next/previous video is shown.
-        this.video.addEventListener('loadedmetadata', this.setDuration);
     },
 };
 </script>

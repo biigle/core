@@ -174,7 +174,7 @@ export default {
         },
         scrollerStyle() {
             return {
-                width: (this.zoom * 100) + '%',
+                width: this.elementWidth + 'px',
                 left: this.scrollLeft + 'px',
             };
         },
