@@ -435,6 +435,11 @@ export default {
                     // TODO: confidence control
                     confidence: 1,
                 };
+
+                if (this.isVolareAnnotationMode) {
+                    this.$refs.canvas.blinkAnnotation(annotation);
+                }
+
                 let promise = AnnotationsStore.attachLabel(annotation, annotationLabel);
                 promise.catch(handleErrorResponse);
 

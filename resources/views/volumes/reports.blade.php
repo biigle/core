@@ -104,8 +104,8 @@
                 @endif
                 <div v-cloak v-if="hasOption('newest_label')" class="form-group" :class="{'has-error': errors.newest_label}">
                     <div class="checkbox">
-                        <label>
-                            <input type="checkbox" v-model="options.newest_label"> Restrict to newest label
+                        <label :class="{'text-muted': options.all_labels}">
+                            <input type="checkbox" v-model="options.newest_label" :disabled="options.all_labels"> Restrict to newest label
                         </label>
                     </div>
                     <div v-if="errors.newest_label" v-cloak class="help-block" v-text="getError('newest_label')"></div>
@@ -115,8 +115,8 @@
                 </div>
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.aggregate_child_labels}">
                     <div class="checkbox">
-                        <label>
-                            <input type="checkbox" v-model="options.aggregate_child_labels"> Aggregate child labels
+                        <label :class="{'text-muted': options.all_labels}">
+                            <input type="checkbox" v-model="options.aggregate_child_labels" :disabled="options.all_labels"> Aggregate child labels
                         </label>
                     </div>
                     <div v-if="errors.aggregate_child_labels" v-cloak class="help-block" v-text="getError('aggregate_child_labels')"></div>
@@ -159,6 +159,17 @@
                     </div>
                 </div>
                 @include('partials.restrictLabels')
+                <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
+                    <div class="checkbox">
+                        <label :class="{'text-muted': disableAllLabelsOption}">
+                            <input type="checkbox" v-model="options.all_labels" :disabled="disableAllLabelsOption"> Include all volume labels
+                        </label>
+                    </div>
+                    <div v-if="errors.all_labels" v-cloak class="help-block" v-text="getError('all_labels')"></div>
+                    <div v-else class="help-block">
+                        Include all labels that can be used in a volume.
+                    </div>
+                </div>
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.
                 </div>

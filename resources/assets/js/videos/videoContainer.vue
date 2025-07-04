@@ -1,5 +1,5 @@
 <script>
-import Annotation from './models/Annotation.vue';
+import Annotation from './models/Annotation.js';
 import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
@@ -617,6 +617,9 @@ export default {
             }
         },
         showPreviousVideo() {
+            if (!this.hasSiblingVideos) {
+                return;
+            }
             this.reset();
             let length = this.videoIds.length;
             let index = (this.videoIds.indexOf(this.videoId) + length - 1) % length;
@@ -624,6 +627,9 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         showNextVideo() {
+            if (!this.hasSiblingVideos) {
+                return;
+            }
             this.reset();
             let length = this.videoIds.length;
             let index = (this.videoIds.indexOf(this.videoId) + length + 1) % length;

@@ -29,7 +29,7 @@ let defaultStrokeOutline = new Stroke({
 
 let selectedStrokeOutline = new Stroke({
     color: colors.white,
-    width: 6,
+    width: 9,
 });
 
 let defaultStroke = new Stroke({
@@ -61,7 +61,7 @@ let defaultCircleStroke = new Stroke({
 
 let selectedCircleStroke = new Stroke({
     color: colors.white,
-    width: defaultStrokeWidth,
+    width: 6,
 });
 
 let editingCircleStroke = new Stroke({
@@ -114,7 +114,6 @@ export default {
             stroke: selectedStrokeOutline,
             image: new Circle({
                 radius: defaultCircleRadius,
-                fill: selectedCircleFill,
                 stroke: selectedCircleStroke,
             }),
             // Add transparent fill for hit detection inside of circles and
@@ -125,6 +124,11 @@ export default {
         }),
         new Style({
             stroke: selectedStroke,
+            image: new Circle({
+                radius: defaultCircleRadius,
+                fill: selectedCircleFill,
+                stroke: defaultCircleStroke,
+            }),
             zIndex: 200,
         }),
     ],
