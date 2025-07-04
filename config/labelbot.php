@@ -35,7 +35,7 @@ return [
     | is resolved by the user, a new request can be made. A higher value means more
     | concurrent searches and increased database workload.
     */
-    'max_requests' => 4,
+    'max_requests' => 5,
 
     /*
     |--------------------------------------------------------------------------
@@ -44,5 +44,5 @@ return [
     |
     | URL of the hosted ONNX model file for LabelBOT.
     */
-    'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', '/assets/dinov2_vits14.onnx'),
+    'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', env('APP_URL').'/assets/dinov2_vits14.onnx'),
 ];

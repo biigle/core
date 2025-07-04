@@ -241,7 +241,7 @@ class ImageAnnotationController extends Controller
         if (is_null($labelId) && $request->has('feature_vector')) {
 
             if ($currentRequests >= $maxRequests) {
-                throw new TooManyRequestsHttpException(message: "You already have {$currentRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
+                throw new TooManyRequestsHttpException(message: "You already have {$maxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
             }
 
             // Add labelBOTlabels attribute to the response.
@@ -258,7 +258,7 @@ class ImageAnnotationController extends Controller
                 // Perform vector search.
                 $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
                 if (empty($topNLabels)) {
-                    throw new NotFoundHttpException("LabelBOT couldn't return any suggestions");
+                    throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
                 }
                 // Set labelId to top 1 label.
                 $labelId = $topNLabels[0];

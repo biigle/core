@@ -20,7 +20,7 @@ export default {
     computed: {
         classObject() {
             return this.labelbotState || '';
-        }
-    }
+        },
+    },
 }
 </script>

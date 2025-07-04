@@ -9,7 +9,6 @@ import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.js';
 import Labelbot from './mixins/labelbot.vue';
-import { LABELBOT_STATES, LABELBOT_TOGGLE_TITLE } from './mixins/labelbot.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
@@ -379,13 +378,12 @@ export default {
                 this.lastCreatedAnnotation = null;
             }
 
-            this.labelbotOverlays.map((overlay, idx) => {
-                if (overlay.annotation?.id === annotation.id && !overlay.available) {
+            this.labelbotOverlays.map((a, idx) => {
+                if (a.id === annotation.id) {
                     this.closeLabelbotPopup(idx)
-                    return;
                 }
-            })
-            
+            });
+
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
             annotation.markedForDeletion = true;
@@ -424,59 +422,26 @@ export default {
             this.selectedLabel = label;
         },
         handleNewAnnotation(annotation, removeCallback) {
-            if (this.isEditor) {
-                let promise;
-
-                // We need this in case LabelBOT was turned off while computing
-                const wasLabelbotActive = this.labelbotIsActive;
-                const currentImageIndex = this.imageIndex;
-
-                let availableOverlayKey = -1;
-
-                if (!this.selectedLabel && wasLabelbotActive) {
-                    this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-
-                    availableOverlayKey = this.getAvailableLabelbotOverlay();
-
-                    if (availableOverlayKey === -1) {
-                        this.$nextTick(removeCallback);
-                        Messages.danger(`You already have ${this.labelbotOverlays.length} LabelBOT popups open. Please close one before submitting a new request.`)
-                        return;
-                    }
-
-                    promise = this.generateFeatureVector(annotation.points)
-                        .then((featureVector) => {
-                            // Assign feature vector to the annotation
-                            annotation.feature_vector = featureVector;
-                        })
-                        .catch(handleErrorResponse);
-                } else {
-                    promise = Promise.resolve();
-                    annotation.label_id = this.selectedLabel.id;
-                }
-                // TODO: confidence control
-                annotation.confidence = 1;
-
-                promise
-                    .then(() => {
-                        return AnnotationsStore.create(this.imageId, annotation)
-                            .then((createdAnnotation) => {
-                                if (wasLabelbotActive && currentImageIndex === this.imageIndex) {
-                                    this.showLabelbotPopup(createdAnnotation, availableOverlayKey);
-                                }
-                                return createdAnnotation;
-                            })
-                            .then(this.setLastCreatedAnnotation);
-                    })
-                    .catch((e) => {
-                        if (wasLabelbotActive) {
-                            // Error code 429: max number of requests is reached.
-                            this.updateLabelbotState(e.status === 429 ? LABELBOT_STATES.BUSY : LABELBOT_STATES.OFF);
-                        }
-                        handleErrorResponse(e);
-                    })
-                    .finally(removeCallback);
+            if (!this.isEditor) {
+                return;
             }
+
+            // TODO: confidence control
+            annotation.confidence = 1;
+
+            let promise;
+
+            if (this.labelbotIsActive) {
+                promise = this.storeLabelbotAnnotation(annotation);
+            } else {
+                annotation.label_id = this.selectedLabel.id;
+                promise = AnnotationsStore.create(this.imageId, annotation);
+            }
+
+            promise.then(this.setLastCreatedAnnotation)
+                .catch(handleErrorResponse)
+                // Remove the temporary annotation if saving succeeded or failed.
+                .finally(removeCallback);
         },
         handleAttachLabel(annotation, label) {
             label = label || this.selectedLabel;
@@ -686,7 +651,6 @@ export default {
             } catch (e) {
                 if (e instanceof CrossOriginError) {
                     this.crossOriginError = true;
-                    this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.CORSERROR);
                 } else {
                     this.image = null;
                     this.annotations = [];
@@ -742,12 +706,6 @@ export default {
                 this.openTab = '';
             }
         },
-        imageIndex() {
-            // Remove LabelBOT's popups when switching images
-            if (this.labelbotIsActive) {
-                this.labelbotOverlays.forEach((_, idx) => this.closeLabelbotPopup(idx));
-            }
-        }
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');

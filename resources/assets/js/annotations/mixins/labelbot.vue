@@ -1,96 +1,106 @@
 <script>
-import {handleErrorResponse} from '../../core/messages/store';
-import {InferenceSession, Tensor} from "onnxruntime-web/webgpu";
+import AnnotationsStore from '../stores/annotations.js';
 import Keyboard from '../../core/keyboard';
+import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
+import LabelbotWorker from '../workers/labelbot.js?worker';
+
+// DINOv2 image input size.
+const INPUT_SIZE = 224;
 
 export const LABELBOT_STATES = {
     INITIALIZING: 'initializing',
     COMPUTING: 'computing',
     READY: 'ready',
     BUSY: 'busy',
-    DISABLED: 'disabled',
+    NOLABELS: 'nolabels',
+    CORSERROR: 'corserror',
     OFF: 'off'
 };
-
-export const LABELBOT_TOGGLE_TITLE =  {
-    NOLABELS: 'There must be at least one label in one of the label trees!',
-    CORSERROR: 'Image loaded without proper CORS configuration!',
-    NOANNOTATIONS: 'There are no annotations associated with any labels in this project!',
-    ACTIVATE: 'Activate LabelBOT',
-    DEACTIVATE: 'Deactivate LabelBOT'
-};
-
-/**
- * A Mixin for LabelBOT
- */
 
 export default {
     data() {
         return {
             labelbotModel: null,
-            labelbotModelInputSize: 224, // DINOv2 image input size
             labelbotState: LABELBOT_STATES.OFF,
-            labelbotToggleTitle: LABELBOT_TOGGLE_TITLE.ACTIVATE,
             labelbotOverlays: [],
-            labelbotLineFeatureLength: 100, // in px
             focusedPopupKey: -1,
-            labelbotOverlaysTimeline: [],
-            // Cache api
-            labelbotCacheName: 'labelbot',
-            labelbotModelCacheKey: '/cached-labelbot-onnx-model',
+            labelbotRequestsInFlight: 0,
+            labelbotMaxRequests: 1,
+            labelbotWorker: null,
+            labelBotWorkerListeners: [],
         };
     },
     computed: {
         labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
+            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.NOLABELS && this.labelbotState !== LABELBOT_STATES.CORSERROR;
         },
     },
     methods: {
-        async initLabelbotModel() {
+        handleLabelbotWorkerMessage(e) {
+            this.labelBotWorkerListeners
+                .filter(l => l.matchFn(e))
+                .map(l => this.labelBotWorkerListeners.splice(this.labelBotWorkerListeners.indexOf(l), 1))
+                .flat()
+                .forEach(l => l.resolve(e));
+        },
+        handleLabelbotWorkerError(e) {
+            this.labelBotWorkerListeners
+                .filter(l => l.matchFn(e))
+                .map(l => this.labelBotWorkerListeners.splice(this.labelBotWorkerListeners.indexOf(l), 1))
+                .flat()
+                .forEach(l => l.reject(e));
+        },
+        addLabelbotWorkerListener(matchFn) {
+            return new Promise((resolve, reject) => {
+                this.labelBotWorkerListeners.push({
+                    matchFn: matchFn,
+                    resolve: resolve,
+                    reject: reject,
+                });
+            });
+        },
+        getWorker() {
+            if (import.meta.env.DEV) {
+                // This is a workaround to support loading of a web worker via cross
+                // origin during local development. This code does not correctly resolve
+                // ORT binary URLs in production, though, so it is only enabled in dev.
+                // See: https://github.com/vitejs/vite/issues/13680
+                const url = new URL(LabelbotWorkerUrl, import.meta.url);
+                const js = `import ${JSON.stringify(url)}`;
+                const blob = new Blob([js], {type: "application/javascript"});
+                const objURL = URL.createObjectURL(blob);
+                const worker = new Worker(objURL, {type: "module"});
+                worker.addEventListener("error", () => URL.revokeObjectURL(objURL));
+
+                return worker;
+            }
+
+            return new LabelbotWorker();
+        },
+        async initLabelbotWorker() {
+            this.labelbotWorker = this.getWorker();
+            this.labelbotWorker.addEventListener('message', this.handleLabelbotWorkerMessage);
+            this.labelbotWorker.addEventListener('error', this.handleLabelbotWorkerError);
+
             this.updateLabelbotState(LABELBOT_STATES.INITIALIZING);
             const modelUrl = biigle.$require('labelbot.onnxUrl');
 
-            try {
-                const cache = await caches.open(this.labelbotCacheName);
-                const cachedResponse = await cache.match(this.labelbotModelCacheKey);
-
-                const modelBlob = cachedResponse
-                    ? await cachedResponse.blob()
-                    : await (async () => {
-                        const networkResponse = await fetch(modelUrl);
-                        // Cache the model before loading it
-                        cache.put(this.labelbotModelCacheKey, networkResponse.clone());
-                        return await networkResponse.blob();
-                    })();
-
-                const blobUrl = URL.createObjectURL(modelBlob);
-                this.loadLabelbotModel(blobUrl);
-            } catch (error) {
-                this.updateLabelbotState(LABELBOT_STATES.OFF);
-                handleErrorResponse(error);
-            }
-        },
-        warmUpLabelbotModel() {
-            if (this.labelbotModel) {
-                // Warm up
-                const size = this.labelbotModelInputSize * this.labelbotModelInputSize;
-                const dummyAnnotationDataArray = new Float32Array(size * 3);
-                const tensor = new Tensor('float32', dummyAnnotationDataArray, [1, 3, this.labelbotModelInputSize, this.labelbotModelInputSize]);
-                this.labelbotModel.run({ input: tensor})
-            }
-        },
-        loadLabelbotModel(modelUrl) {
-            // Load the onnx model with webgpu first 
-            InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] })
-                // If the client does not have one then fallback to wasm
-                .catch(() => InferenceSession.create(modelUrl, { executionProviders: ['wasm'] }))
-                .then((model) => this.labelbotModel = model)
-                .then(this.warmUpLabelbotModel)
-                .then(() => this.updateLabelbotState(LABELBOT_STATES.READY))
-                .catch((error) => {
+            this.addLabelbotWorkerListener(e => e.data?.type === 'init')
+                .then((e) => {
+                    if (e.data?.error) {
+                        throw e.data.error;
+                    }
+                    this.updateLabelbotState(LABELBOT_STATES.READY);
+                })
+                .catch((e) => {
                     this.updateLabelbotState(LABELBOT_STATES.OFF);
-                    handleErrorResponse(error);
+                    this.labelbotWorker.terminate();
+                    this.labelbotWorker = null;
+
+                    throw e;
                 });
+
+            this.labelbotWorker.postMessage({type: 'init', url: modelUrl});
         },
         getBoundingBox(points) {
             let minX = this.image.width;
@@ -100,7 +110,7 @@ export default {
             // Point
             if (points.length === 2) {
                 // TODO: maybe use SAM or PTP module to convert point to shape
-                const tempRadius = 60;
+                const tempRadius = 64; // Same radius than used for Largo thumbnails.
                 const [x, y] = points;
                 minX = Math.max(0, x - tempRadius);
                 minY = Math.max(0, y - tempRadius);
@@ -130,271 +140,133 @@ export default {
 
             const width = maxX - minX;
             const height = maxY - minY;
+
             return [minX, minY, width, height];
         },
         generateFeatureVector(points) {
-            // Get selected region
-            const [x, y, width, height] = this.getBoundingBox(points);
+            const box = this.getBoundingBox(points);
+            const [x, y, width, height] = box;
 
             // Create a temporary canvas for processing the selected region
             if (!this.tempLabelbotCanvas) {
                 this.tempLabelbotCanvas = document.createElement('canvas');
-                this.tempLabelbotCanvas.width = this.labelbotModelInputSize;
-                this.tempLabelbotCanvas.height = this.labelbotModelInputSize;
+                this.tempLabelbotCanvas.width = INPUT_SIZE;
+                this.tempLabelbotCanvas.height = INPUT_SIZE;
             }
-            // Clear and draw new region
-            this.tempLabelbotCanvas.getContext('2d').clearRect(0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize);
-            this.tempLabelbotCanvas.getContext('2d').drawImage(this.image.source, x, y, width, height, 0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize);
+            const ctx = this.tempLabelbotCanvas.getContext('2d');
 
-            // Extract image data
-            const size = this.labelbotModelInputSize * this.labelbotModelInputSize;
-            const annotationData = this.tempLabelbotCanvas.getContext('2d').getImageData(0, 0, this.labelbotModelInputSize, this.labelbotModelInputSize).data;
-            const annotationDataArray = new Float32Array(size * 3);
+            ctx.clearRect(0, 0, INPUT_SIZE, INPUT_SIZE);
+            ctx.drawImage(this.image.source, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
 
-            // Image normalization
-            const mean = [0.485, 0.456, 0.406];
-            const std = [0.229, 0.224, 0.225];
+            const annotationData = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
 
-            for (let i = 0; i < size; i++) {
-                annotationDataArray[i] = ((annotationData[i * 4] / 255.0) - mean[0]) / std[0]; // R
-                annotationDataArray[size + i] = ((annotationData[i * 4 + 1] / 255.0) - mean[1]) / std[1];  // G
-                annotationDataArray[2 * size + i] = ((annotationData[i * 4 + 2] / 255.0) - mean[2]) / std[2];  // B
-            }
+            const promise = this.addLabelbotWorkerListener(
+                e => box.every((v, i) => v === e.data?.box[i])
+            ).then(e => e.data.vector);
 
-            // Convert the annotation data to tensor
-            const tensor = new Tensor('float32', annotationDataArray, [1, 3, this.labelbotModelInputSize, this.labelbotModelInputSize]);
+            this.labelbotWorker.postMessage({
+                type: 'run',
+                image: annotationData,
+                // Send the box as a means to identify which received vector belongs to
+                // which sent message.
+                box: box,
+            });
 
-            // Generate feature vector
-            return this.labelbotModel.run({ input: tensor}).then((output) => {
-                return output[Object.keys(output)[0]].data
-            })
-            .catch(handleErrorResponse);
+            return promise;
         },
-        calculateOverlayPosition(annotationPoints) {
-            const offset = this.labelbotLineFeatureLength / 10;
-
-            let startPoint;
-            // Needed for polygon shapes
-            let extraXOffset = annotationPoints[0];
-
-            if (annotationPoints.length === 2) {
-                // Point
-                startPoint = annotationPoints;
-            } else if (annotationPoints.length === 3) {
-                // Circle
-                const [x, y, r] = annotationPoints;
-                startPoint = [x + r, y];
-                extraXOffset = x + r;
-            } else {
-                // Polygon: convert flat array to [x, y] pairs
-                const pointPairs = [];
-                for (let i = 0; i < annotationPoints.length; i += 2) {
-                    pointPairs.push([annotationPoints[i], annotationPoints[i + 1]]);
-                }
-
-                // Sort by X descending
-                pointPairs.sort((a, b) => b[0] - a[0]);
-
-                startPoint = pointPairs[0];
-
-                // Farthest-right point
-                extraXOffset = startPoint[0]; 
-            }
-
-            // Positions
-            const overlayPosition = [startPoint[0] + this.labelbotLineFeatureLength, startPoint[1]];
-            const annotationOffset = [extraXOffset + 2 * offset, startPoint[1] + offset];
-            const overlayOffset = [overlayPosition[0], overlayPosition[1] + offset];
-
-            const path = [startPoint, annotationOffset, overlayOffset, overlayPosition];
-
-            return { overlayPosition, path };
+        showLabelbotPopup(annotation) {
+            this.labelbotOverlays.push(annotation);
+            this.focusedPopupKey = annotation.id;
+            Keyboard.setActiveSet('labelbot');
         },
-        updateLabelbotPopupLine(newPosition) {
-            const popupKey = newPosition.popupKey;
-            const newMousePosition = newPosition.mousePosition;
-
-            const labelbotOverlay = this.labelbotOverlays[popupKey];
-            if (!labelbotOverlay) return;
-
-            const annotationPoints = labelbotOverlay.convertPointsToOl(labelbotOverlay.annotation.points);
-            const offset =  10;
-            let startPoint;
-
-            if (annotationPoints.length === 2) {
-                startPoint = annotationPoints;
-            } else if (annotationPoints.length === 3) {
-                const [x, y, r] = annotationPoints;
-                const dx = newMousePosition[0] - x;
-                const dy = newMousePosition[1] - y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance === 0) {
-                    startPoint = [x + r, y];
-                } else {
-                    const scale = r / distance;
-                    startPoint = [x + dx * scale, y + dy * scale];
-                }
-            } else {
-                const pointPairs = [];
-                for (let i = 0; i < annotationPoints.length; i += 2) {
-                    pointPairs.push([annotationPoints[i], annotationPoints[i + 1]]);
-                }
-
-                // Find the closest point to the mouse
-                let minDistance = Infinity;
-                for (const point of pointPairs) {
-                    const dx = point[0] - newMousePosition[0];
-                    const dy = point[1] - newMousePosition[1];
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        startPoint = point;
-                    }
-                }
-            }
-
-            const overlayOffset = [newMousePosition[0], newMousePosition[1] + offset];
-
-            const path = [startPoint, overlayOffset, newMousePosition];
-
-            if (labelbotOverlay.popupLineFeature) {
-                labelbotOverlay.removePopupLineFeature(labelbotOverlay.popupLineFeature);
-            }
-
-            labelbotOverlay.popupLineFeature = labelbotOverlay.drawPopupLineFeature(path, labelbotOverlay.labels[0].color);
+        updateLabelbotState(labelbotState) {
+            this.labelbotState = labelbotState;
         },
-        getAvailableLabelbotOverlay() {
-            for (let popupKey = 0; popupKey < this.labelbotOverlays.length; popupKey++) {
-                if (this.labelbotOverlays[popupKey].available) {
-                    this.labelbotOverlays[popupKey].available = false;
-                    return popupKey;
-                }
+        closeLabelbotPopup(annotation) {
+            const index = this.labelbotOverlays.indexOf(annotation);
+            if (index !== -1) {
+                this.labelbotOverlays.splice(index, 1);
             }
 
-            this.updateLabelbotState(LABELBOT_STATES.BUSY);
+            this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.id;
 
-            return -1;
-        },
-        showLabelbotPopup(annotation, popupKey) {
-            if (this.labelbotOverlays[popupKey]) {
-                this.labelbotOverlays[popupKey].labels = [annotation.labels[0].label].concat(annotation.labelBOTLabels);
-                this.labelbotOverlays[popupKey].annotation = annotation;
-
-                // Convert annotation points and calculate start/end points
-                const convertedPoints = this.labelbotOverlays[popupKey].convertPointsToOl(annotation.points);
-                const { overlayPosition, path } = this.calculateOverlayPosition(convertedPoints);
-
-                // Draw line feature and set overlay position
-                this.labelbotOverlays[popupKey].popupLineFeature = this.labelbotOverlays[popupKey].drawPopupLineFeature(path, annotation.labels[0].label.color);
-                this.labelbotOverlays[popupKey].overlay.setPosition(overlayPosition);
-
-                // Set the popup as focused
-                this.focusedPopupKey = popupKey;
-
-                this.labelbotOverlaysTimeline.push(popupKey)
-
-                this.labelbotOverlays[popupKey].ready = true;
-
-                Keyboard.setActiveSet('labelbot');
-            }
-
-            if (this.labelbotIsActive) {
-                this.updateLabelbotState(LABELBOT_STATES.READY);
-            }
-        },
-        updateLabelbotLabel(label) {
-            this.handleSwapLabel(this.labelbotOverlays[label.popupKey].annotation, label.label)
-        },
-        updateLabelbotState(labelbotState, toggleTitle='') {            
-            this.labelbotState = this.labelbotOverlays?.every(overlay => !overlay.available) && labelbotState === LABELBOT_STATES.READY 
-                ? LABELBOT_STATES.BUSY
-                : labelbotState;
-
-            switch (this.labelbotState) {
-                case LABELBOT_STATES.OFF:
-                    this.labelbotToggleTitle = LABELBOT_TOGGLE_TITLE.ACTIVATE;
-                    break;
-                case LABELBOT_STATES.DISABLED:
-                    this.labelbotToggleTitle = toggleTitle || '';
-                    break;
-                default:
-                    this.labelbotToggleTitle = LABELBOT_TOGGLE_TITLE.DEACTIVATE;
-                    break;
-            }
-        },
-        closeLabelbotPopup(popupKey) {
-            if (!this.labelbotOverlays[popupKey].overlay || !this.labelbotOverlays[popupKey].annotation) return
-
-            this.labelbotOverlays[popupKey].removePopupLineFeature(this.labelbotOverlays[popupKey].popupLineFeature);
-            this.labelbotOverlays[popupKey].available = true;
-            this.labelbotOverlays[popupKey].ready = false;
-            this.labelbotOverlays[popupKey].isDragging = false;
-            this.labelbotOverlays[popupKey].labels = [];
-            this.labelbotOverlays[popupKey].annotation = null;
-
-            // Update State if LabelBOT is active
-            if (this.labelbotIsActive) {
-                this.updateLabelbotState(LABELBOT_STATES.READY);
-            }
-
-            // Set focused pop key to the next most recent
-            this.labelbotOverlaysTimeline.splice(this.labelbotOverlaysTimeline.indexOf(popupKey), 1);
-            if (this.labelbotOverlaysTimeline.length > 0) {
-                this.focusedPopupKey = this.labelbotOverlaysTimeline[this.labelbotOverlaysTimeline.length - 1];
-            } else {
-                this.focusedPopupKey = -1;
-                // If no other popups are open then we reactivate the default listener set.
+            if (!this.focusedPopupKey) {
                 Keyboard.setActiveSet('default');
             }
         },
-        changeLabelbotFocusedPopup(popupKey) {
-            this.focusedPopupKey = popupKey;
+        closeAllLabelbotPopups() {
+            this.labelbotOverlays = [];
+            this.focusedPopupKey = -1;
+            Keyboard.setActiveSet('default');
         },
-        grabLabelbotPopup(popupKey) {
-            this.labelbotOverlays[popupKey].isDragging = true;
-            this.changeLabelbotFocusedPopup(popupKey);
+        changeLabelbotFocusedPopup(annotation) {
+            this.focusedPopupKey = annotation.id;
         },
-        releaseLabelbotPopup(popupKey) {
-            this.labelbotOverlays[popupKey].isDragging = false;
-        },
-        deleteLabelbotLabelsAnnotation(popupKey) {
-            if (this.labelbotOverlays[popupKey].annotation) {
-                this.handleDeleteAnnotation(this.labelbotOverlays[popupKey].annotation);
-                this.closeLabelbotPopup(popupKey);
+        storeLabelbotAnnotation(annotation) {
+            const currentImageId = this.imageId;
+
+            if (this.labelbotRequestsInFlight >= this.labelbotMaxRequests) {
+                return Promise.reject({body: {message: `You already have ${this.labelbotMaxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.`}});
             }
-        }
+
+            this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
+
+            return this.generateFeatureVector(annotation.points)
+                .then(featureVector =>  annotation.feature_vector = featureVector)
+                .then(() => this.labelbotRequestsInFlight += 1)
+                .then(() => AnnotationsStore.create(currentImageId, annotation))
+                .then((annotation) => {
+                    if (currentImageId === this.imageId) {
+                        this.showLabelbotPopup(annotation);
+                    }
+
+                    if (this.labelbotRequestsInFlight === 1) {
+                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    }
+
+                    return annotation;
+                })
+                .catch((e) => {
+                    if (e.status === 429) {
+                        this.updateLabelbotState(LABELBOT_STATES.BUSY);
+                    } else {
+                        this.updateLabelbotState(LABELBOT_STATES.OFF);
+                    }
+                    throw e;
+                })
+                .finally((annotation) => {
+                    this.labelbotRequestsInFlight -= 1;
+
+                    return annotation;
+                });
+        },
     },
     watch: {
-        labelbotState() {
-            if (this.labelbotIsActive && !this.labelbotModel) {
-                this.initLabelbotModel();
+        labelbotIsActive() {
+            if (!this.labelbotWorker) {
+                this.initLabelbotWorker();
             }
-        }
+        },
+        image(image) {
+            if (image?.crossOrigin) {
+                this.updateLabelbotState(LABELBOT_STATES.CORSERROR);
+            } else {
+                this.updateLabelbotState(LABELBOT_STATES.OFF);
+            }
+        },
+        imageIndex() {
+            if (this.labelbotOverlays.length > 0) {
+                this.closeAllLabelbotPopups();
+            }
+        },
     },
     created() {
-        this.labelbotOverlays = Array.from({ length: 20 }, () => ({
-            available: true,
-            ready: false, // true when labels is not empty
-            isDragging: false,
-            overlay: null,
-            labels: [],
-            annotation: null,
-            popupLineFeature: null,
-            // functions
-            convertPointsToOl: null,
-            drawPopupLineFeature: null,
-            removePopupLineFeature: null,
-        }));
-
-        // Disable LabelBOT if there are no labels in any label tree or no annotations in the project        
         const emptyLabelTrees = biigle.$require('annotations.labelTrees').every(tree => tree.labels.length === 0);
-        const annotationsExist = biigle.$require('annotations.annotationsExist');
         if (emptyLabelTrees) {
-            this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOLABELS);
-        } else if (!annotationsExist) {
-            this.updateLabelbotState(LABELBOT_STATES.DISABLED, LABELBOT_TOGGLE_TITLE.NOANNOTATIONS);
+            this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
         }
+
+        this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');
     },
 };
 </script>

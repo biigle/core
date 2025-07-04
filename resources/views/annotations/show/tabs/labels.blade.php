@@ -1,7 +1,6 @@
 <sidebar-tab name="labels" icon="tags" title="Label trees">
     <labels-tab
         :labelbot-state="labelbotState"
-        :labelbot-toggle-title="labelbotToggleTitle"
         :show-example-annotations="showExampleAnnotations"
         v-on:select="handleSelectedLabel"
         v-on:open="openSidebarLabels"

@@ -1,5 +1,4 @@
-<div class="annotation-canvas" v-on:wheel="conditionalHandleScroll" @mousemove="dragLabelbotPopup"
->
+<div class="annotation-canvas" v-on:wheel="conditionalHandleScroll">
     <minimap v-if="showMinimap" :extent="extent"></minimap>
     <div class="annotation-canvas__left-indicators">
         <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution"></scale-line-indicator>
@@ -189,31 +188,14 @@
                 ></control-button>
         </div>
     </div>
-    <div
-        class="labelbot-popup"
-        :class="{ 'labelbot-popup--focused': key === focusedPopupKey }"
-        v-for="(overlay, key) in labelbotOverlays"
-        v-show="overlay.ready"
-        :key="key"
-        :ref="'labelbot-popup-' + key"
-        @mouseover="handleLabelbotPopupFocused(key)"
-        >
-        <div class="labelbot-overlay-grap-area"
-            :style="{cursor: overlay.isDragging ? 'grabbing' : 'grab'}"
-            :key="key"
-            v-on:click="handleLabelbotPopupFocused(key)"
-            @mousedown="grabLabelbotPopup(key)"
-            @mouseup="releaseLabelbotPopup(key)"
-            ><div class="labelbot-overlay-grap-area-notch" :key="key"></div>
-        </div>
-        <labelbot-popup 
-            :popup-key="key" 
-            :focused-popup-key="focusedPopupKey" 
-            :labelbot-labels="overlay.labels"
-            :is-dragging="overlay.isDragging"
-            @update="updateLabelbotLabel"
-            @close="closeLabelbotPopup"
-            @delete="handleDeleteLabelbotLabelsAnnotation"
-            ></labelbot-popup>
-    </div>
+    <labelbot-popup
+        v-for="annotation in labelbotOverlays"
+        :key="annotation.id"
+        :focused-popup-key="focusedPopupKey"
+        :annotation="annotation"
+        @update="updateLabelbotLabel"
+        @close="closeLabelbotPopup"
+        @delete="handleDeleteLabelbotAnnotation"
+        @focus="handleLabelbotPopupFocused"
+        ></labelbot-popup>
 </div>

@@ -12,9 +12,7 @@ import Events from '@/core/events.js';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '@/core/keyboard.js';
-import LabelbotPopup from './labelbotPopup.vue';
-import LabelbotIndicator from './labelbotIndicator.vue';
-import { LABELBOT_STATES } from '../mixins/labelbot.vue';
+import LabelBot from './annotationCanvas/labelBot.vue';
 import LabelIndicator from './labelIndicator.vue';
 import Lawnmower from './annotationCanvas/lawnmower.vue';
 import LineString from '@biigle/ol/geom/LineString';
@@ -25,7 +23,6 @@ import Minimap from './minimap.vue';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition.vue';
 import MouseWheelZoom from '@biigle/ol/interaction/MouseWheelZoom';
-import Overlay from '@biigle/ol/Overlay';
 import Point from '@biigle/ol/geom/Point';
 import Polygon from '@biigle/ol/geom/Polygon';
 import PolygonBrushInteraction from './annotationCanvas/polygonBrushInteraction.vue';
@@ -70,19 +67,13 @@ export default {
         'new',
         'delete',
         'requires-selected-label',
-        'change-labelbot-focused-popup',
-        'update-labelbot-label',
-        'close-labelbot-popup',
-        'delete-labelbot-labels-annotation',
-        'update-labelbot-popup-line',
-        'grab-labelbot-popup',
-        'release-labelbot-popup',
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
         AnnotationTooltip,
         AttachLabelInteraction,
         DrawInteractions,
+        LabelBot,
         Lawnmower,
         MagicWandInteraction,
         MeasureInteraction,
@@ -97,8 +88,6 @@ export default {
         minimap: Minimap,
         labelIndicator: LabelIndicator,
         controlButton: ControlButton,
-        labelbotPopup: LabelbotPopup,
-        labelbotIndicator: LabelbotIndicator
     },
     props: {
         canAdd: {
@@ -162,20 +151,6 @@ export default {
         userId: {
             type: Number,
             required: true,
-        },
-        labelbotState: {
-            type: String,
-            required: true,
-        },
-        labelbotOverlays: {
-            type: Array,
-            default() {
-                return [];
-            },
-        },
-        focusedPopupKey: {
-            type: Number,
-            default: 0,
         },
     },
     data() {
@@ -265,9 +240,6 @@ export default {
                     return 'Next image';
             }
         },
-        labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.DISABLED;
-        },
     },
     methods: {
         createMap() {
@@ -349,7 +321,10 @@ export default {
                 // could always only select the annotation that was drawn last (i.e. on
                 // the top). Use Shift+Click to deselect overlapping annotations that
                 // shouldn't be selected or use the annotation filter.
-                multi: true
+                multi: true,
+                // Some features should not be selectable, i.e. features that are drawn
+                // while the API request is in flight.
+                filter: (f) => f.get('unselectable') ? false : true,
             });
 
             // Map to detect which features were changed between modifystart and
@@ -582,8 +557,18 @@ export default {
                 PolygonValidator.simplifyPolygon(e.feature);
             }
 
-            // If LabelBOT is on then selectedLabel is null
-            e.feature.set('color', this.selectedLabel ? this.selectedLabel.color : null);
+            // This is observed by a filter in the select interaction.
+            e.feature.set('unselectable', true);
+
+            if (this.labelbotIsActive) {
+                // Alternating between the "info" color also used by the LabelBOT
+                // indicator and the white outline color. The interval length is the
+                // same than the animation time of the blinking dot in the indicator.
+                e.feature.set('color', '5bc0de');
+                e.feature.setStyle(Styles.editing);
+            } else {
+                e.feature.set('color', this.selectedLabel.color);
+            }
 
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
@@ -683,6 +668,14 @@ export default {
             let oldFeaturesMap = {};
             let oldFeatures = source.getFeatures();
             let removedFeatures = oldFeatures.filter(function (feature) {
+                // Ignore temporary features from drawing new annotations. These are
+                // removed with the removeCallback of handleNewFeature(). Since they
+                // have no ID, they would be treated as nonexistent here and might be
+                // accidentally removed with source.clear() below.
+                if (feature.getId() === undefined) {
+                    return false;
+                }
+
                 oldFeaturesMap[feature.getId()] = null;
                 return !annotationsMap.hasOwnProperty(feature.getId());
             });
@@ -735,80 +728,6 @@ export default {
                 feature.setStyle(Styles.highlight);
             }, 200);
         },
-        initLabelbotOverlays() {
-            this.labelbotOverlays.forEach((labelbotOverlay, key) => {
-                const popup = this.$refs['labelbot-popup-' + key]?.[0];
-                if (!popup) return;
-                labelbotOverlay.overlay = new Overlay({
-                    element: popup,
-                    positioning: 'top-center',
-                    insertFirst: false, // last added overlay appears on top
-                });
-                // Add it to the map
-                this.map.addOverlay(labelbotOverlay.overlay);
-                // Attach methods
-                labelbotOverlay.convertPointsToOl = this.convertPointsFromOlToDb.bind(this);
-                labelbotOverlay.drawPopupLineFeature = this.drawLabelbotPopupLineFeature.bind(this);
-                labelbotOverlay.removePopupLineFeature = this.removeLabelbotPopupLineFeature.bind(this);
-            });
-        },
-        drawLabelbotPopupLineFeature(path, color) {
-            const labelbotPopupLineFeature = new Feature(new LineString(path));
-            labelbotPopupLineFeature.setStyle(Styles.labelbotPopupLineStyle(color));
-
-            // Add the feature in next tick otherwise it will not be rendered
-            this.$nextTick(() => {
-                this.annotationSource.addFeature(labelbotPopupLineFeature);
-            });
-
-            // We return the feature to save it for later removal from annotation source
-            return labelbotPopupLineFeature;
-        },
-        removeLabelbotPopupLineFeature(labelbotPopupLineFeature) {
-            try {
-                this.annotationSource.removeFeature(labelbotPopupLineFeature);
-            } catch(e) {
-                // Ignore it
-            }
-        },
-        updateLabelbotLabel(label) {
-            this.$emit('update-labelbot-label', label);
-        },
-        closeLabelbotPopup(popupKey) {
-            this.$emit('close-labelbot-popup', popupKey);
-        },
-        handleLabelbotPopupFocused(popupKey) {
-            this.$emit('change-labelbot-focused-popup', popupKey);
-            const currentPopup = this.$refs['labelbot-popup-' + popupKey]?.[0];
-            const currentContainer = currentPopup?.closest('.ol-overlay-container');
-            if (!currentContainer) return;
-            // Changing the popup element's style won't affect overlay stacking,
-            // so we update the overlay container's z-index directly.
-            currentContainer.style.zIndex = 100;
-
-            this.labelbotOverlays.forEach((_, overlayKey) => {
-                if (overlayKey !== popupKey) {
-                    const popup = this.$refs['labelbot-popup-' + overlayKey]?.[0];
-                    const overlayContainer = popup?.closest('.ol-overlay-container');
-                    if (overlayContainer) overlayContainer.style.zIndex = '';
-                }
-            });
-        },
-        handleDeleteLabelbotLabelsAnnotation(popupKey) {
-            this.$emit('delete-labelbot-labels-annotation', popupKey);
-        },
-        grabLabelbotPopup(popupKey) {
-            this.$emit('grab-labelbot-popup', popupKey);
-        },
-        releaseLabelbotPopup(popupKey) {
-            this.$emit('release-labelbot-popup', popupKey);
-        },
-        dragLabelbotPopup() {
-            if (!this.labelbotOverlays[this.focusedPopupKey]?.isDragging) return;
-
-            this.labelbotOverlays[this.focusedPopupKey].overlay.setPosition(this.mousePosition);
-            this.$emit('update-labelbot-popup-line', {'popupKey': this.focusedPopupKey, 'mousePosition': this.mousePosition});
-        }
     },
     watch: {
         image(image, oldImage) {
@@ -931,15 +850,6 @@ export default {
         },
         canDelete() {
             this.updateDeleteInteractions();
-        },
-        labelbotState() {
-            // We should always reset interaction mode when LabelBOT's state is changed to OFF/Disabled
-            // And no Label is selected to avoid empty annotation (blue features).
-            if (!this.labelbotIsActive && !this.selectedLabel) {
-                this.resetInteractionMode();
-            } else if (this.labelbotIsActive && !this.labelbotOverlays.every(overlayObject => overlayObject.overlay)) {
-                this.initLabelbotOverlays();
-            }
         },
     },
     created() {

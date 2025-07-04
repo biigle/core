@@ -20,7 +20,6 @@
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
     biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});
-    biigle.$declare('annotations.annotationsExist', {!! $annotationsExist !!});
     biigle.$declare('labelbot.max_requests', {{ config('labelbot.max_requests') }});
     biigle.$declare('labelbot.onnxUrl', '{{config('labelbot.onnx_url')}}');
 </script>
@@ -91,12 +90,7 @@
             :labelbot-overlays="labelbotOverlays"
             :focused-popup-key="focusedPopupKey"
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
-            v-on:update-labelbot-label="updateLabelbotLabel"
             v-on:close-labelbot-popup="closeLabelbotPopup"
-            v-on:delete-labelbot-labels-annotation="deleteLabelbotLabelsAnnotation"
-            v-on:update-labelbot-popup-line="updateLabelbotPopupLine"
-            v-on:grab-labelbot-popup="grabLabelbotPopup"
-            v-on:release-labelbot-popup="releaseLabelbotPopup"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"
             v-on:next="handleNext"

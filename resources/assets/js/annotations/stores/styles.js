@@ -7,7 +7,7 @@ import Style from '@biigle/ol/style/Style';
 /**
  * Store for the styles of OpenLayers features (annotations)
  */
-let colors = {
+const colors = {
     white: [255, 255, 255, 1],
     blue: [0, 153, 255, 1],
     orange: '#ff5e00',
@@ -17,63 +17,44 @@ let colors = {
 // If these were not cached the style for each feature would be recreated for each
 // render call, resulting in a huge amount of new memory allocations and very
 // noticeable garbage collection interrupts.
-let styleCache = {};
+const styleCache = {
+    features: {},
+    editing: {},
+};
 
-let defaultCircleRadius = 6;
-let defaultStrokeWidth = 3;
+const defaultCircleRadius = 6;
+const defaultStrokeWidth = 3;
 
-let defaultStrokeOutline = new Stroke({
+const defaultStrokeOutline = new Stroke({
     color: colors.white,
     width: 5,
 });
 
-let selectedStrokeOutline = new Stroke({
+const selectedStrokeOutline = new Stroke({
     color: colors.white,
     width: 9,
 });
 
-let defaultStroke = new Stroke({
-    color: colors.blue,
-    width: defaultStrokeWidth,
-});
-
-let selectedStroke = new Stroke({
+const selectedStroke = new Stroke({
     color: colors.orange,
     width: defaultStrokeWidth,
 });
 
-let defaultCircleFill = new Fill({
-    color: colors.blue,
-});
-
-let selectedCircleFill = new Fill({
-    color: colors.orange,
-});
-
-let transparentFill =  new Fill({
+const transparentFill =  new Fill({
     color: 'transparent',
 });
 
-let defaultCircleStroke = new Stroke({
+const defaultCircleStroke = new Stroke({
     color: colors.white,
     width: 2
 });
 
-let selectedCircleStroke = new Stroke({
-    color: colors.white,
-    width: 6,
-});
-
-let editingCircleStroke = new Stroke({
+// Define this here even though it seems to be used only once but actually it can be
+// reused multiple times with different editing styles (colors).
+const editingCircleStroke = new Stroke({
     color: colors.white,
     width: 2,
     lineDash: [3],
-});
-
-let editingStroke = new Stroke({
-    color: colors.blue,
-    width: defaultStrokeWidth,
-    lineDash: [5],
 });
 
 export default {
@@ -82,8 +63,8 @@ export default {
         let color = feature.get('color');
         color = color ? ('#' + color) : colors.blue;
 
-        if (!styleCache.hasOwnProperty(color)) {
-            styleCache[color] = [
+        if (!styleCache.features.hasOwnProperty(color)) {
+            styleCache.features[color] = [
                 new Style({
                     stroke: defaultStrokeOutline,
                     image: new Circle({
@@ -107,14 +88,17 @@ export default {
             ];
         }
 
-        return styleCache[color];
+        return styleCache.features[color];
     },
     highlight: [
         new Style({
             stroke: selectedStrokeOutline,
             image: new Circle({
                 radius: defaultCircleRadius,
-                stroke: selectedCircleStroke,
+                stroke: new Stroke({
+                    color: colors.white,
+                    width: 6,
+                }),
             }),
             // Add transparent fill for hit detection inside of circles and
             // polygons.
@@ -126,30 +110,20 @@ export default {
             stroke: selectedStroke,
             image: new Circle({
                 radius: defaultCircleRadius,
-                fill: selectedCircleFill,
+                fill: new Fill({
+                    color: colors.orange,
+                }),
                 stroke: defaultCircleStroke,
             }),
             zIndex: 200,
         }),
     ],
-    editing: [
-        new Style({
-            stroke: defaultStrokeOutline,
-            image: new Circle({
-                radius: defaultCircleRadius,
-                fill: defaultCircleFill,
-                stroke: editingCircleStroke,
-            }),
-            // Also for hit detection (see above) in some scenarios (e.g. biigle/maia).
-            fill: transparentFill,
-        }),
-        new Style({
-            stroke: editingStroke,
-        }),
-    ],
     viewport: [
         new Style({
-            stroke: defaultStroke,
+            stroke: new Stroke({
+                color: colors.blue,
+                width: defaultStrokeWidth,
+            }),
         }),
         new Style({
             stroke: new Stroke({
@@ -178,23 +152,36 @@ export default {
             }),
         }),
     ],
-    labelbotPopupLineStyle(color) {
-        return [
-            new Style({
-                stroke: new Stroke({
-                    color: 'white',
-                    width: 5,
+    editing(feature) {
+        let color = feature.get('color');
+        color = color ? ('#' + color) : colors.blue;
+
+        if (!styleCache.editing.hasOwnProperty(color)) {
+            styleCache.editing[color] = [
+                new Style({
+                    stroke: defaultStrokeOutline,
+                    image: new Circle({
+                        radius: defaultCircleRadius,
+                        fill: new Fill({
+                            color: color,
+                        }),
+                        stroke: editingCircleStroke,
+                    }),
+                    // Also for hit detection (see above) in some scenarios (e.g. biigle/maia).
+                    fill: transparentFill,
+                    zIndex: 100,
                 }),
-                zIndex: -1
-            }),
-            new Style({
-                stroke: new Stroke({
-                    color: '#' + color,
-                    width: 3,
-                    lineDash: [5],
+                new Style({
+                    stroke: new Stroke({
+                        color: color,
+                        width: defaultStrokeWidth,
+                        lineDash: [5],
+                    }),
+                    zIndex: 100,
                 }),
-                zIndex: -1
-            }),
-        ]
+            ];
+        }
+
+        return styleCache.editing[color];
     }
 }
