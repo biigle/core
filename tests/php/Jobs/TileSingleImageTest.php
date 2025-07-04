@@ -114,7 +114,6 @@ class TileSingleImageTest extends TestCase
         File::put("{$dir}/0-0-3.jpg", 'test');
 
         try {
-            $job->useParentGetIterator = false;
             $job->client = $client;
 
             $job->uploadToS3Storage($disk);
@@ -166,7 +165,6 @@ class TileSingleImageTest extends TestCase
         $fails = false;
 
         try {
-            $job->useParentGetIterator = false;
             $job->client = $client;
 
             $job->uploadToS3Storage($disk);
@@ -220,7 +218,6 @@ class TileSingleImageTest extends TestCase
         File::put("{$dir}/0-0-3.jpg", 'test');
 
         try {
-            $job->useParentGetIterator = false;
             $job->client = $client;
 
             $job->uploadToS3Storage($disk);
@@ -278,7 +275,6 @@ class TileSingleImageTest extends TestCase
         File::put("{$dir}/0-0-3.jpg", 'test');
 
         try {
-            $job->useParentGetIterator = false;
             $job->client = $client;
 
             $job->uploadToS3Storage($disk);
