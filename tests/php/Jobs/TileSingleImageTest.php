@@ -122,6 +122,9 @@ class TileSingleImageTest extends TestCase
             $tiles = array_map(fn ($f) => "/tmp/{$fragment}/TilesGroup0/" . $f->getFilename(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
 
+            sort($tiles);
+            sort($uploadedFiles);
+
             $this->assertEquals($tiles, $uploadedFiles);
         } finally {
             File::deleteDirectory($dir);
@@ -279,6 +282,9 @@ class TileSingleImageTest extends TestCase
 
             $tiles = array_map(fn ($f) => "/tmp/{$fragment}/TilesGroup0/" . $f->getFilename(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
+
+            sort($tiles);
+            sort($uploadedFiles);
 
             $this->assertEquals($tiles, $uploadedFiles);
         } finally {
