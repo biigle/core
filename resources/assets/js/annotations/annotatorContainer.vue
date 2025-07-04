@@ -378,11 +378,7 @@ export default {
                 this.lastCreatedAnnotation = null;
             }
 
-            this.labelbotOverlays.map((a, idx) => {
-                if (a.id === annotation.id) {
-                    this.closeLabelbotPopup(idx)
-                }
-            });
+            this.closeLabelbotPopup(annotation);
 
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70

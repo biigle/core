@@ -186,13 +186,13 @@ export default {
             const index = this.labelbotOverlays.indexOf(annotation);
             if (index !== -1) {
                 this.labelbotOverlays.splice(index, 1);
+                this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.id;
+
+                if (!this.focusedPopupKey) {
+                    Keyboard.setActiveSet('default');
+                }
             }
 
-            this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.id;
-
-            if (!this.focusedPopupKey) {
-                Keyboard.setActiveSet('default');
-            }
         },
         closeAllLabelbotPopups() {
             this.labelbotOverlays = [];
