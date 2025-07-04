@@ -104,6 +104,7 @@ class TileSingleImageTest extends TestCase
         $client->getHandlerList()->setHandler($mock);
 
         $image = ImageTest::create();
+        $fragment = fragment_uuid_path($image->uuid);
 
         $job = new TileSingleImageStub($image);
         $dir = $job->tempPath . "/TilesGroup0";
@@ -118,7 +119,7 @@ class TileSingleImageTest extends TestCase
 
             $job->uploadToS3Storage($disk);
 
-            $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
+            $tiles = array_map(fn ($f) => "/tmp/{$fragment}/TilesGroup0/" . $f->getFilename(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
@@ -262,6 +263,7 @@ class TileSingleImageTest extends TestCase
         $client->getHandlerList()->setHandler($mock);
 
         $image = ImageTest::create();
+        $fragment = fragment_uuid_path($image->uuid);
         $job = new TileSingleImageStub($image);
         $dir = $job->tempPath . "/TilesGroup0";
         File::makeDirectory(path: $dir, recursive: true);
@@ -275,7 +277,7 @@ class TileSingleImageTest extends TestCase
 
             $job->uploadToS3Storage($disk);
 
-            $tiles = array_map(fn ($f) => $f->getPathname(), File::allFiles($dir));
+            $tiles = array_map(fn ($f) => "/tmp/{$fragment}/TilesGroup0/" . $f->getFilename(), File::allFiles($dir));
             $uploadedFiles = $job->uploadedFiles;
 
             $this->assertEquals($tiles, $uploadedFiles);
