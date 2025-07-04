@@ -58,7 +58,7 @@ export default {
             return this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;
         },
         labelbotIsDisabled() {
-            return this.labelbotState === LABELBOT_STATES.NOLABELS || this.labelbotState === LABELBOT_STATES.CORSERROR;
+            return this.labelbotState === LABELBOT_STATES.NOLABELS || this.labelbotState === LABELBOT_STATES.CORSERROR || this.labelbotState === LABELBOT_STATES.TILEDIMAGE;
         },
         labelbotToggleTitle() {
             switch (this.labelbotState) {
@@ -68,6 +68,8 @@ export default {
                     return 'The remote image must have a proper CORS configuration';
                 case LABELBOT_STATES.NOLABELS:
                     return 'There must be at least one label in one of the label trees';
+                case LABELBOT_STATES.TILEDIMAGE:
+                    return 'LabelBOT is not yet available for very large images';
                 default:
                     return 'Disable LabelBOT';
             }

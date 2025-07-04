@@ -14,6 +14,7 @@ export const LABELBOT_STATES = {
     BUSY: 'busy',
     NOLABELS: 'nolabels',
     CORSERROR: 'corserror',
+    TILEDIMAGE: 'tiledimage',
     OFF: 'off'
 };
 
@@ -32,7 +33,7 @@ export default {
     },
     computed: {
         labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.OFF && this.labelbotState !== LABELBOT_STATES.NOLABELS && this.labelbotState !== LABELBOT_STATES.CORSERROR;
+            return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;
         },
     },
     methods: {
@@ -257,7 +258,11 @@ export default {
         image(image) {
             if (image?.crossOrigin) {
                 this.updateLabelbotState(LABELBOT_STATES.CORSERROR);
+            } else if (image?.tiled) {
+                this.updateLabelbotState(LABELBOT_STATES.TILEDIMAGE);
             } else if (this.labelbotState === LABELBOT_STATES.CORSERROR) {
+                this.updateLabelbotState(LABELBOT_STATES.OFF);
+            } else if (this.labelbotState === LABELBOT_STATES.TILEDIMAGE) {
                 this.updateLabelbotState(LABELBOT_STATES.OFF);
             }
         },
