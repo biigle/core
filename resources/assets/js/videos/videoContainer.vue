@@ -1,5 +1,6 @@
 <script>
 import Annotation from './models/Annotation.js';
+import AnnotationArray from './models/AnnotationArray.js';
 import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
@@ -58,7 +59,7 @@ export default {
             labelTrees: [],
             selectedLabel: null,
             pendingAnnotation: null,
-            annotations: [],
+            annotations: new AnnotationArray(),
             seeking: false,
             settings: {
                 annotationOpacity: 1,
@@ -193,7 +194,7 @@ export default {
             return markRaw(new Annotation(annotation));
         },
         setAnnotations(args) {
-            this.annotations = args[0].body.map(this.prepareAnnotation);
+            this.annotations = AnnotationArray.from(args[0].body.map(this.prepareAnnotation));
         },
         addCreatedAnnotation(response) {
             let annotation = this.prepareAnnotation(response.body);
@@ -634,7 +635,7 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         reset() {
-            this.annotations = [];
+            this.annotations = new AnnotationArray();
             this.seeking = false;
             this.initialCurrentTime = 0;
             this.initialFocussedAnnotation = 0;

@@ -24,14 +24,10 @@ export default {
                 padding: [50, 50, 50, 50],
                 minResolution: 1,
             },
+            annotationWatchers: [],
         };
     },
     computed: {
-        annotationsRevision() {
-            return this.annotations.reduce(function (carry, annotation) {
-                return carry + annotation.revision;
-            }, 0);
-        },
         annotationsPreparedToRender() {
             // Extract start and end times of the annotations as well as sort them so
             // they can be accessed fast during rendering.
@@ -140,10 +136,14 @@ export default {
             feature.set('annotation', annotation);
 
             // The color may change after a detach/swap label action.
-            annotation.watch(() => {
+            // Using the watcher of the Annotation object is important here in the
+            // context of the video popup. Watching objects from the parent window in
+            // the popup window does not work. Hence, we define the watcher in the
+            // Annotation of the parent window and just register a callback here.
+            const unwatch = annotation.watch(() => {
                 feature.set('color', annotation.labels?.[0].label.color);
-
             }, {immediate: true});
+            this.annotationWatchers.push(unwatch);
 
             return feature;
         },
@@ -249,11 +249,26 @@ export default {
         mapReadyRevision() {
             this.videoSource.on('change', this.refreshAllAnnotations);
         },
-        annotationsRevision() {
-            if (this.map) {
-                this.refreshAllAnnotations();
-            }
+        annotations: {
+            handler(annotations) {
+                // Using the watcher of the AnnotationArray is important here in the
+                // context of the video popup. Watching objects from the parent window in
+                // the popup window does not work. Hence, we define the watcher in the
+                // AnnotationArray of the parent window and just register a callback here.
+                const unwatch = annotations.watch(() => {
+                    if (this?.map) {
+                        this.refreshAllAnnotations();
+                    }
+                });
+                this.annotationWatchers.push(unwatch);
+            },
+            immediate: true,
         },
+    },
+    beforeUnmount() {
+        this.annotationWatchers.forEach(unwatch => unwatch());
+        this.annotationWatchers = [];
+        this.videoSource.un('change', this.refreshAllAnnotations);
     },
 };
 </script>

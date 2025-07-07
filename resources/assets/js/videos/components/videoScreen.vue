@@ -335,6 +335,7 @@
 </template>
 
 <script>
+import AnnotationArray from '../models/AnnotationArray.js';
 import AnnotationPlayback from './videoScreen/annotationPlayback.vue';
 import Collection from '@biigle/ol/Collection';
 import ControlButton from '@/annotations/components/controlButton.vue';
@@ -384,9 +385,13 @@ export default {
     },
     props: {
         annotations: {
-            type: Array,
-            default() {
-                return [];
+            required: true,
+            validator(value) {
+                // In case of a popup window, the video may be a AnnotationArray of a
+                // different context which would fail a simple "type: AnnotationArray"
+                // check. We do the type check here and have a fallback based on the
+                // constructor name for the popup.
+                return value instanceof AnnotationArray || value.constructor.name === 'AnnotationArray';
             },
         },
         annotationOpacity: {

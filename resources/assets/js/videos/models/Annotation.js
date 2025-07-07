@@ -416,6 +416,6 @@ export default class Annotation {
     }
 
     watch(fn, options) {
-        watch(this._revision, fn, options);
+        return watch(this._revision, fn, options);
     }
 }
