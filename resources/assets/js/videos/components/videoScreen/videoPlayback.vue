@@ -298,5 +298,13 @@ export default {
             this.supportsVideoFrameCallback = true;
         }
     },
+    beforeUnmount() {
+        // Cleanup is important because the videoScreen can be created and destroyed with
+        // with the video popout feature.
+        this.video.removeEventListener('play', this.setPlaying);
+        this.video.removeEventListener('pause', this.setPausedAndSeek);
+        this.video.removeEventListener('seeked', this.handleSeeked);
+        this.video.removeEventListener('loadeddata', this.renderVideo);
+    },
 };
 </script>
