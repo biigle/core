@@ -140,11 +140,16 @@ export default {
     },
     methods: {
         handleSidebarOpen(tab) {
-            this.imageLabelMode = tab === 'labels';
+            // Handle charts tab specially - show modal and close sidebar
             if (tab === 'charts') {
-                // Call showCharts and immediately close the sidebar 
                 this.showCharts();
+                // Close the sidebar immediately
+                this.$nextTick(() => {
+                    this.$refs.sidebar.handleCloseTab('charts');
+                });
+                return;
             }
+            this.imageLabelMode = tab === 'labels';
         },
         handleSidebarClose() {
             this.imageLabelMode = false;
