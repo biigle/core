@@ -357,17 +357,17 @@ export default {
         this.$parent.annotationSource.removeFeature(this.lineFeature);
         this.listenerKeys.forEach(unByKey);
 
-        Keyboard.off('Escape', this.handleEsc, 0, 'labelbot');
-        Keyboard.off('ArrowUp', this.labelUp, 0, 'labelbot');
-        Keyboard.off('ArrowDown', this.labelDown, 0, 'labelbot');
-        Keyboard.off('Enter', this.labelEnter, 0, 'labelbot');
-        Keyboard.off('Backspace', this.deleteLabelAnnotation, 0, 'labelbot');
-        Keyboard.off('Tab', this.labelTab, 0, 'labelbot');
+        Keyboard.off('Escape', this.handleEsc, 'labelbot');
+        Keyboard.off('ArrowUp', this.labelUp, 'labelbot');
+        Keyboard.off('ArrowDown', this.labelDown, 'labelbot');
+        Keyboard.off('Enter', this.labelEnter, 'labelbot');
+        Keyboard.off('Backspace', this.deleteLabelAnnotation, 'labelbot');
+        Keyboard.off('Tab', this.labelTab, 'labelbot');
 
         if (this.labels.length > 0) {
-            Keyboard.off('1', this.selectLabel1, 0, 'labelbot');
-            Keyboard.off('2', this.selectLabel2, 0, 'labelbot');
-            Keyboard.off('3', this.selectLabel3, 0, 'labelbot');
+            Keyboard.off('1', this.selectLabel1, 'labelbot');
+            Keyboard.off('2', this.selectLabel2, 'labelbot');
+            Keyboard.off('3', this.selectLabel3, 'labelbot');
         }
     },
 };
