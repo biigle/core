@@ -256,6 +256,13 @@
                 The Label Review Grid Overview and what you can do with it.
             </p>
 
+            <h3>
+                <a href="{{route('manual-tutorials', ['labelBOT', 'labelBOT'])}}">LabelBOT</a>
+            </h3>
+            <p>
+                Learn how LabelBOT works and what it can do.
+            </p>
+
             <h3>Reports</h3>
             <h4>
                 <a href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}">Reports schema</a>

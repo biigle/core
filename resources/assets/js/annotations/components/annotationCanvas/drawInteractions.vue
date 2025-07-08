@@ -53,7 +53,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && this.canAdd) {
+            } else if (!this.hasSelectedLabel && !this.labelbotIsActive && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -103,7 +103,7 @@ export default {
                     if (this.isDrawingPoint) {
                         if (this.isPointDoubleClick(e)) {
                             // The feature is added to the source only after this event
-                            // is handled, so removel has to happen after the addfeature
+                            // is handled, so removal has to happen after the addfeature
                             // event.
                             this.annotationSource.once('addfeature', function () {
                                 this.removeFeature(e.feature);
@@ -140,13 +140,12 @@ export default {
     },
     watch: {
         selectedLabel(label) {
-            if (this.isDrawing && !label) {
+            if (this.isDrawing && !label && !this.labelbotIsActive) {
                 this.resetInteractionMode();
             }
         },
         interactionMode(mode) {
             this.maybeUpdateDrawInteractionMode(mode)
-
         },
     },
     created() {
