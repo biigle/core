@@ -757,6 +757,10 @@ export default {
                 }
             }
         },
+        handleInitMap(map) {
+            // Update reference in screenshot button if the popout is closed.
+            Events.emit('videos.map.init', map);
+        },
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -843,8 +847,6 @@ export default {
         if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
-
-        Events.emit('videos.map.init', this.$refs.videoScreen.map);
     },
 };
 </script>

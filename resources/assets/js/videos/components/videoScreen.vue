@@ -369,6 +369,7 @@ export default {
         'select',
         'track',
         'popout',
+        'initMap',
     ],
     mixins: [
         VideoPlayback,
@@ -778,6 +779,7 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
+        this.$emit('initMap', this.map);
     },
 };
 </script>
