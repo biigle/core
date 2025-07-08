@@ -164,6 +164,9 @@ export default {
                     chartdata.push([sum, name, ...Object.values(entry[1]),userid]);
                 }
             });
+            // Sort the data by sum of annotations per user
+            chartdata.sort((a, b) => b[0] - a[0]);
+
             return chartdata;
         },
         createTimelineSeries() {
