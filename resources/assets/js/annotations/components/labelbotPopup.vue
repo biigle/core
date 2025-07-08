@@ -13,13 +13,13 @@
             class="labelbot-label" :class="{ 'labelbot-label--highlighted': index === highlightedLabel }"
             :key="index"
             @mouseover="handleLabelbotFocus(index)"
-            @click="selectLabelbotLabel(label)"
+            @click="selectLabel(index)"
             :title="`Choose label ${label.name}`"
             >
                 <div
                     v-if="index === 0 && hasProgressBar"
                     class="labelbot-label__progress-bar"
-                    @animationend="emitClose"
+                    @animationend="confirmAndClose"
                     ></div>
                 <div class="labelbot-label__name">
                     <span class="labelbot-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
@@ -39,7 +39,7 @@
                 ref="popupTypeahead"
                 title="Choose a different label"
                 @focus="handleTypeaheadFocus"
-                @select="selectLabelbotLabel"
+                @select="selectTypeaheadLabel"
                 ></typeahead>
         </li>
     </ul>
@@ -47,12 +47,13 @@
 </template>
 
 <script>
+import Events from '@/core/events';
 import Feature from '@biigle/ol/Feature';
-import Keyboard from '../../core/keyboard';
+import Keyboard from '@/core/keyboard';
 import LineString from '@biigle/ol/geom/LineString';
 import Overlay from '@biigle/ol/Overlay';
 import Styles from '../stores/styles.js';
-import Typeahead from '../../label-trees/components/labelTypeahead.vue';
+import Typeahead from '@/label-trees/components/labelTypeahead.vue';
 import {markRaw} from 'vue';
 import {unByKey} from '@biigle/ol/Observable';
 
@@ -155,13 +156,17 @@ export default {
         },
     },
     methods: {
-        selectLabelbotLabel(label) {
+        updateAndClose(label) {
             // Top 1 label is already attached/selected
             if (this.selectedLabel.id !== label.id) {
                 this.$emit('update', {label: label, annotation: this.annotation});
             }
 
             this.emitClose();
+        },
+        confirmAndClose() {
+            this.emitClose();
+            Events.emit('labelbot.chose_label_1');
         },
         emitClose() {
             this.$emit('close', this.annotation);
@@ -170,8 +175,8 @@ export default {
             this.highlightedLabel = this.labels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
             this.typeaheadFocused = true;
         },
-        handleLabelbotFocus(hoveredLabel) {
-            this.highlightedLabel = hoveredLabel;
+        handleLabelbotFocus(index) {
+            this.highlightedLabel = index;
         },
         handleEsc() {
             if (!this.isFocused) return;
@@ -179,7 +184,7 @@ export default {
             if (this.hasProgressBar) {
                 this.hasProgressBar = false;
             } else {
-                this.emitClose();
+                this.confirmAndClose();
             }
         },
         labelUp() {
@@ -193,12 +198,9 @@ export default {
             this.highlightedLabel = (this.highlightedLabel + 1) % this.labels.length;
         },
         labelEnter() {
-            if (!this.isFocused || this.highlightedLabel > (this.labels.length - 1)) {
-                return;
-            }
+            if (!this.isFocused || this.highlightedLabel >= this.labels.length) return;
 
-            // At the start the highlighted label is -1 so we need to check it before selecting the label.
-            this.selectLabelbotLabel(this.labels[this.highlightedLabel < 0 ? 0 : this.highlightedLabel]);
+            this.selectLabel(this.highlightedLabel);
         },
         handleTab(e) {
             if (e.key === "Tab") {
@@ -224,6 +226,7 @@ export default {
 
             this.$emit('delete', this.annotation);
             this.emitClose();
+            Events.emit('labelbot.dismissed');
         },
         emitFocus() {
             this.$emit('focus', this.annotation);
@@ -312,20 +315,33 @@ export default {
             this.listenerKeys.push(annotationGeometry.on('change', this.lineFeature._updateCoordinates));
         },
         selectLabel1() {
-            if (this.isFocused && this.labels[0]) {
-                this.selectLabelbotLabel(this.labels[0]);
+            if (this.isFocused) {
+                this.confirmAndClose();
             }
         },
         selectLabel2() {
             if (this.isFocused && this.labels[1]) {
-                this.selectLabelbotLabel(this.labels[1]);
+                this.updateAndClose(this.labels[1]);
+                Events.emit('labelbot.chose_label_2');
             }
         },
         selectLabel3() {
             if (this.isFocused && this.labels[2]) {
-                this.selectLabelbotLabel(this.labels[2]);
+                this.updateAndClose(this.labels[2]);
+                Events.emit('labelbot.chose_label_3');
             }
         },
+        selectTypeaheadLabel(label) {
+            this.updateAndClose(label);
+            Events.emit('labelbot.chose_label_other');
+        },
+        selectLabel(index) {
+            switch (index) {
+                case 0: return this.selectLabel1();
+                case 1: return this.selectLabel2();
+                case 2: return this.selectLabel3();
+            }
+        }
     },
     created() {
         this.trees = biigle.$require('annotations.labelTrees');
