@@ -1,5 +1,6 @@
 <?php
 
+use Biigle\ApiToken;
 use Biigle\Label;
 use Biigle\Role;
 use Biigle\Tests\LabelTest;
@@ -246,5 +247,22 @@ class ApiTestCase extends TestCase
     {
         $this->json($method, $uri)->assertStatus(401);
         $this->call($method, $uri)->assertStatus(302);
+    }
+
+    /*
+     * Make an API call with token-based authentication.
+     */
+    protected function callToken($verb, $route, $user)
+    {
+        $token = ApiToken::factory()->create([
+            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
+            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
+            'owner_id' => $user->id,
+        ]);
+
+        return $this->json($verb, $route, [], [
+            'PHP_AUTH_USER' => $user->email,
+            'PHP_AUTH_PW' => 'test_token',
+        ]);
     }
 }
