@@ -190,7 +190,6 @@ export default {
             let lanes = [[]];
 
             annotations.forEach((annotation) => {
-                let range = [annotation.startFrame, annotation.endFrame];
                 let lane = 0;
                 let set = false;
 
