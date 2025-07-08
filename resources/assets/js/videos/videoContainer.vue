@@ -105,7 +105,7 @@ export default {
             corsRequestBreaksVideo: false,
             attemptWithCors: false,
             invalidMoovAtomPosition: false,
-            hasVideoPopout: false,
+            videoPopout: null,
             isVideoPopout: false,
         };
     },
@@ -185,7 +185,10 @@ export default {
         },
         annotationsAreHidden() {
             return this.settings.annotationOpacity === 0;
-        }
+        },
+        hasVideoPopout() {
+            return this.videoPopout !== null;
+        },
     },
     methods: {
         prepareAnnotation(annotation) {
@@ -733,28 +736,25 @@ export default {
             this.invalidMoovAtomPosition = false;
         },
         handleVideoPopout() {
-            if (!this.hasVideoPopout) {
+            if (this.hasVideoPopout) {
+                this.videoPopout.close();
+                this.videoPopout = null;
+            } else {
                 window.$videoContainer = this;
-                const popup = window.open(biigle.$require('videos.popupUrl'), '_blank', 'popup=true');
-                if (popup) {
-                    this.hasVideoPopout = true;
-                    popup.addEventListener('beforeunload', () => {
+                const url = biigle.$require('videos.popupUrl');
+                this.videoPopout = markRaw(window.open(url, '_blank', 'popup=true'));
+                if (this.videoPopout) {
+                    this.videoPopout.addEventListener('beforeunload', () => {
                         // This event could also happen if the popup is reloaded, which
                         // would break the connection to the opener. So we close the
                         // popup here for good to make sure.
-                        popup.close();
-                        this.hasVideoPopout = false;
+                        this.videoPopout.close();
+                        this.videoPopout = null;
                         delete window.$videoContainer;
                     });
                 } else {
                     delete window.$videoContainer;
                 }
-
-                window.addEventListener('beforeunload', () => {
-                    if (!popup?.closed) {
-                        popup.close();
-                    }
-                });
             }
         },
     },
@@ -828,6 +828,11 @@ export default {
 
         Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
 
+        window.addEventListener('beforeunload', () => {
+            if (this.videoPopout && !this.videoPopout.closed) {
+                this.videoPopout.close();
+            }
+        });
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before

@@ -1,10 +1,10 @@
 import Control from '@biigle/ol/control/Control';
 
 class PopoutControl extends Control {
-    constructor() {
+    constructor(options) {
         let button = document.createElement('button');
-        button.innerHTML = '\uf31e'; // FontAwesome expand-arrows-alt
-        button.title = 'Move the video to a separate window';
+        button.innerHTML = options.icon || '';
+        button.title = options?.title || '';
 
         button.addEventListener('click', () => {
             this.dispatchEvent({type: 'click'});

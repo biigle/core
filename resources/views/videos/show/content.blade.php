@@ -56,6 +56,8 @@
       :has-error="hasError"
       :seeking="seeking"
       :reached-tracked-annotation-limit="reachedTrackedAnnotationLimit"
+      :show-open-popout-button="!isVideoPopout"
+      :show-close-popout-button="isVideoPopout"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
       v-on:split-annotation="splitAnnotation"

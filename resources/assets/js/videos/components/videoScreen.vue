@@ -491,6 +491,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        showOpenPopoutButton: {
+            type: Boolean,
+            default: false,
+        },
+        showClosePopoutButton: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -565,9 +573,23 @@ export default {
 
             map.addControl(control);
 
-            control =  new PopoutControl();
-            control.on('click', this.handlePopout);
-            map.addControl(control);
+            if (this.showOpenPopoutButton) {
+                control =  new PopoutControl({
+                    // FontAwesome expand-alt
+                    icon: '\uf424',
+                    title: 'Move the video to a separate window',
+                });
+                control.on('click', this.handlePopout);
+                map.addControl(control);
+            } else if (this.showClosePopoutButton) {
+                control =  new PopoutControl({
+                    // FontAwesome compress-alt
+                    icon: '\uf422',
+                    title: 'Merge video with the main window',
+                });
+                control.on('click', this.handlePopout);
+                map.addControl(control);
+            }
 
             return map;
         },
