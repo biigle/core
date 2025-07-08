@@ -40,7 +40,8 @@ class MigrateTiledImages extends Command
 
         $query->eachById(function (Image $image) use ($dryRun, $bar, $disk) {
             if (!$dryRun) {
-                Queue::push(new MigrateTiledImage($image, $disk));
+                $targetPath = fragment_uuid_path($image->uuid);
+                Queue::push(new MigrateTiledImage($image, $disk, $targetPath));
             }
             $bar->advance();
         });

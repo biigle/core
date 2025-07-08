@@ -149,7 +149,7 @@ class ProcessNewImageTest extends TestCase
         Queue::fake();
         $job->handle();
 
-        Queue::assertPushed(TileSingleImage::class, fn ($job) => $job->image->id === $image->id);
+        Queue::assertPushed(TileSingleImage::class, fn ($job) => $job->file->id === $image->id);
         $image->refresh();
         $this->assertTrue($image->tiled);
         $this->assertTrue($image->tilingInProgress);

@@ -24,9 +24,9 @@ class MigrateTiledImage extends TileSingleImage
      *
      * @return void
      */
-    public function __construct(Image $image, $disk)
+    public function __construct(Image $image, string $disk, string $targetPath)
     {
-        parent::__construct($image);
+        parent::__construct($image, $disk, $targetPath);
         $this->disk = $disk;
     }
 
@@ -38,9 +38,8 @@ class MigrateTiledImage extends TileSingleImage
     public function handle()
     {
         try {
-            $fragment = fragment_uuid_path($this->image->uuid);
             $tmpResource = tmpfile();
-            $zipResource = Storage::disk($this->disk)->readStream($fragment);
+            $zipResource = Storage::disk($this->disk)->readStream($this->targetPath);
             stream_copy_to_stream($zipResource, $tmpResource);
             $zip = new ZipArchive;
             $zip->open(stream_get_meta_data($tmpResource)['uri']);
