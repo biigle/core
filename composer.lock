@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "51da301c1ebaf19e25916eb316a6e95f",
+    "content-hash": "dd45fb341120fe4400a9b2f356d443bc",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1106,6 +1106,56 @@
                 "source": "https://github.com/biigle/metadata-ifdo"
             },
             "time": "2024-12-03T08:33:30+00:00"
+        },
+        {
+            "name": "biigle/metrics",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/metrics.git",
+                "reference": "22d5053f9283aa6cd25622f0743acef10ad1d2b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/metrics/zipball/22d5053f9283aa6cd25622f0743acef10ad1d2b5",
+                "reference": "22d5053f9283aa6cd25622f0743acef10ad1d2b5",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\Metrics\\MetricsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Metrics\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "A template for a new BIIGLE module.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/metrics/issues",
+                "source": "https://github.com/biigle/metrics"
+            },
+            "time": "2025-07-08T12:25:30+00:00"
         },
         {
             "name": "biigle/module",
@@ -13171,6 +13221,7 @@
         "biigle/magic-sam": 20,
         "biigle/maia": 20,
         "biigle/metadata-coco": 20,
+        "biigle/metrics": 20,
         "biigle/module": 20,
         "biigle/newsletter": 20,
         "biigle/user-disks": 20,
