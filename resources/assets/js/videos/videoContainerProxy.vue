@@ -1,4 +1,5 @@
 <script>
+import Keyboard from '@/core/keyboard.js';
 import LoaderBlock from '@/core/components/loaderBlock.vue';
 import MessageCurtain from '@/core/components/messageCurtain.vue';
 import Messages from '@/core/messages/store.js';
@@ -73,6 +74,7 @@ const proxy = {
         this.parent = window.opener?.$videoContainer;
         if (this.parent) {
             this.mountProxyWatchers();
+            Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
         } else {
             Messages.danger('This page must be called from the video annotation tool.');
         }
