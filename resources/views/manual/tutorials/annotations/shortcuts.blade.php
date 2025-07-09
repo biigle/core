@@ -269,7 +269,7 @@
         </table>
 
         <p>
-            When LabelBOT is active:
+            <a name="labelbot"></a>When a LabelBOT overlay is active:
         </p>
 
         <table class="table">
@@ -280,6 +280,10 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Confirm the currently highlighted label</td>
+                </tr>
                 <tr>
                     <td><kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd></td>
                     <td>Select the corresponding suggested label (if available)</td>
@@ -293,16 +297,16 @@
                     <td>Move selection down through the suggested labels</td>
                 </tr>
                 <tr>
-                    <td><kbd>Enter</kbd></td>
-                    <td>Confirm the currently highlighted label</td>
-                </tr>
-                <tr>
                     <td><kbd>Tab</kbd></td>
-                    <td>Toggle focus between suggested labels and the input field</td>
+                    <td>Toggle focus between suggested labels and the typeahead</td>
                 </tr>
                 <tr>
-                    <td><kbd>Backspace, Escape</kbd></td>
-                    <td>Delete the annotation and close the LabelBOT popup</td>
+                    <td><kbd>Esc</kbd></td>
+                    <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise</td>
+                </tr>
+                <tr>
+                    <td><kbd>Backspace</kbd></td>
+                    <td>Delete the new annotation</td>
                 </tr>
             </tbody>
         </table>

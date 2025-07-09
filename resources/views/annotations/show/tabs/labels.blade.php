@@ -27,7 +27,7 @@
                         </button>
                 </p>
                 <p>
-                    LabelBOT chooses the label of new annotations based on similar annotations from the label trees below. <a href="#" class="btn btn-default btn-xs"><i class="fa fa-info-circle"></i></a>
+                    LabelBOT chooses the label of new annotations based on similar annotations from the label trees below.<a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}" class="btn btn-default btn-xs" title="Learn more about LabelBOT" target="_blank"><i class="fa fa-info-circle"></i></a>
                 </p>
             </div>
         @endif
