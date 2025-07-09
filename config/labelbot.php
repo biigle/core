@@ -3,6 +3,15 @@
 return [
 
     /*
+    | Controls if the LabelBOT button in the UI is shown. This can be used to hide the
+    | button while the HNSW index builds in the background. The button can be shown with
+    | a switch of the env variable once the index is finished.
+    |
+    | This does not disable LabelBOT in the API endpoint!
+    */
+    'show_button' => env('LABELBOT_SHOW_BUTTON', true),
+
+    /*
     |--------------------------------------------------------------------------
     | K for KNN (K-Nearest Neighbors)
     |--------------------------------------------------------------------------

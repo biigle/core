@@ -30,10 +30,10 @@
             <a href="{{asset('assets/images/manual/creating_annotations_1.jpg')}}"><img src="{{asset('assets/images/manual/creating_annotations_1.jpg')}}" width="50%"></a>
         </p>
         <p>
-            As you will notice you are required to select a label from the <i class="fa fa-tags"></i> label trees tab in the sidebar first before you can activate one of these tools. A new annotation can only be created if there is a label attached to it. The currently selected label will be attached to all new annotations that you create.
+            Before one of these tools cen be activated, you have to select a label from the <i class="fa fa-tags"></i> label trees tab in the sidebar. A new annotation can only be created if there is a label attached to it. The currently selected label will be attached to all new annotations that you create. As an alternative to a manually selected label, you can also enable <a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a>.
         </p>
         <p>
-            Once you have selected a label and activated an annotation tool you can start creating annotations. You can choose from the following shapes:
+            Once you have activated an annotation tool you can start creating annotations. You can choose from the following shapes:
         </p>
 
         <h3><a name="point"></a><i class="icon icon-point"></i> Point</h3>
@@ -172,7 +172,7 @@
             </div>
         </div>
         <p>
-            Internally the magic wand tool uses a scanline flood fill algorithm with a variable threshold to detect a region. The flood fill algorithm starts with the pixel at the point where the mouse button was initially pressed and adds all neighboring pixels to the detected region that don't differ too much from the color of the initial pixel. The accepted difference is computed according to a specific threshold. The threshold is dynamically updated and depends on the distance of the cursor to the point where the mouse button was initially pressed. The larger the distance/threshold, the more pixels will be added to the detected region.
+            Internally, the magic wand tool uses a scanline flood fill algorithm with a variable threshold to detect a region. The flood fill algorithm starts with the pixel at the point where the mouse button was initially pressed and adds all neighboring pixels to the detected region that don't differ too much from the color of the initial pixel. The accepted difference is computed according to a specific threshold. The threshold is dynamically updated and depends on the distance of the cursor to the point where the mouse button was initially pressed. The larger the distance/threshold, the more pixels will be added to the detected region.
         </p>
         <p>
             The magic wand tool uses your current view of the image for reference and not the original image itself. This means that you can draw more detailed polygons when your view is zoomed in and less detailed polygons when your view is zoomed out. Also, the detected region can never get larger than your current viewport.

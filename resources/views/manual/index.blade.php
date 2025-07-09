@@ -257,7 +257,7 @@
             </p>
 
             <h3>
-                <a href="{{route('manual-tutorials', ['labelBOT', 'labelBOT'])}}">LabelBOT</a>
+                <a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a>
             </h3>
             <p>
                 Learn how LabelBOT works and what it can do.
