@@ -143,9 +143,6 @@ export default {
         },
     },
     watch: {
-        highlightedLabel() {
-            this.hasProgressBar = false;
-        },
         dragging() {
             if (this.dragging && this.hasProgressBar) {
                 this.hasProgressBar = false;
@@ -177,6 +174,7 @@ export default {
         },
         handleLabelbotFocus(index) {
             this.highlightedLabel = index;
+            this.hasProgressBar = false;
         },
         handleEsc() {
             if (!this.isFocused) return;
