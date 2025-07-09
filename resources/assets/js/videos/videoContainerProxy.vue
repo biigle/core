@@ -69,14 +69,34 @@ const proxy = {
             this.$refs.videoTimeline.reset();
             this.$refs.videoScreen.reset();
         },
+        deleteSelectedAnnotationsOrKeyframes() {
+            // Override this method to show the confirmation dialog in the window the
+            // deletion was requested.
+            if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                this.parent.deleteSelectedAnnotationsOrKeyframes(true);
+            }
+        },
+        bindProxyShortcuts() {
+            Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+            Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+        },
+        releaseProxyShortcuts() {
+            Keyboard.off('C', this.selectLastAnnotation, this.listenerSet);
+            Keyboard.off('Delete', this.deleteSelectedAnnotationsOrKeyframes, this.listenerSet);
+        },
     },
     created() {
         this.parent = window.opener?.$videoContainer;
         if (this.parent) {
             this.mountProxyWatchers();
-            Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+            this.bindProxyShortcuts();
         } else {
             Messages.danger('This page must be called from the video annotation tool.');
+        }
+    },
+    beforeUnmount() {
+        if (this.parent) {
+            this.releaseProxyShortcuts();
         }
     },
 };

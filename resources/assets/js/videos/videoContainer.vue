@@ -342,9 +342,15 @@ export default {
         handleDeselectedLabel() {
             this.selectedLabel = null;
         },
-        deleteAnnotationsOrKeyframes(event) {
-            if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
-                event.forEach(this.deleteAnnotationOrKeyframe);
+        deleteSelectedAnnotationsOrKeyframes(force) {
+            if (this.selectAnnotations.length === 0) {
+                return;
+            }
+
+            if (force === true || confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                this.selectedAnnotations
+                    .map(a => ({annotation: a, time: this.video.currentTime}))
+                    .forEach(this.deleteAnnotationOrKeyframe);
             }
         },
         deleteAnnotationOrKeyframe(event) {
@@ -817,6 +823,7 @@ export default {
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+        Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');

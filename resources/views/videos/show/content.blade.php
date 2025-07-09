@@ -68,7 +68,7 @@
       v-on:swap-label="swapAnnotationLabel"
       v-on:select="selectAnnotations"
       v-on:modify="modifyAnnotations"
-      v-on:delete="deleteAnnotationsOrKeyframes"
+      v-on:delete="deleteSelectedAnnotationsOrKeyframes"
       v-on:moveend="updateMapUrlParams"
       v-on:requires-selected-label="handleRequiresSelectedLabel"
       v-on:previous="showPreviousVideo"
