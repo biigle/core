@@ -1,8 +1,9 @@
 <script>
 import AnnotationsStore from '../stores/annotations.js';
-import Keyboard from '../../core/keyboard';
+import Keyboard from '@/core/keyboard.js';
 import LabelbotWorker from '../workers/labelbot.js?worker';
 import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
+import Messages from '@/core/messages/store.js';
 
 // DINOv2 image input size.
 const INPUT_SIZE = 224;
@@ -94,6 +95,7 @@ export default {
                     this.updateLabelbotState(LABELBOT_STATES.READY);
                 })
                 .catch((e) => {
+                    Messages.danger('LabelBOT could not be initialized.');
                     this.updateLabelbotState(LABELBOT_STATES.OFF);
                     this.labelbotWorker.terminate();
                     this.labelbotWorker = null;
@@ -250,8 +252,8 @@ export default {
         },
     },
     watch: {
-        labelbotIsActive() {
-            if (!this.labelbotWorker) {
+        labelbotIsActive(active) {
+            if (active && !this.labelbotWorker) {
                 this.initLabelbotWorker();
             }
         },
