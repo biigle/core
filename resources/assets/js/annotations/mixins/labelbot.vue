@@ -275,10 +275,9 @@ export default {
         },
     },
     created() {
+        const labelTrees = biigle.$require('annotations.labelTrees');
         // Label trees may not be set if the user can't annotate.
-        const labelTrees = biigle.$require('annotations.labelTrees') || [];
-        const hasLabels = labelTrees.some(tree => tree.labels.length > 0);
-        if (!hasLabels) {
+        if (!Array.isArray(labelTrees) || !labelTrees.some(t => t.labels.length > 0)) {
             this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
         }
 
