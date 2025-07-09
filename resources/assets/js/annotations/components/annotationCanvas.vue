@@ -142,6 +142,10 @@ export default {
             type: Boolean,
             default: true,
         },
+        restrictToBounds: {
+            type: Boolean,
+            default: false,
+        },
         listenerSet: {
             type: String,
             default: 'default',

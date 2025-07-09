@@ -51,6 +51,7 @@ export default {
                 'jumpStep',
                 'muteVideo',
                 'singleAnnotation',
+                'restrictToBounds',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -64,6 +65,7 @@ export default {
             enableJumpByFrame: false,
             muteVideo: true,
             singleAnnotation: false,
+            restrictToBounds: false,
         };
     },
     computed: {
@@ -119,6 +121,12 @@ export default {
         },
         handleDisableSingleAnnotation() {
             this.singleAnnotation = false;
+        },
+        handleEnableRestrictToBounds() {
+            this.restrictToBounds = true;
+        },
+        handleDisableRestrictToBounds() {
+            this.restrictToBounds = false;
         },
         toggleAnnotationOpacity() {
             if (this.annotationOpacity > 0) {
@@ -183,6 +191,10 @@ export default {
         singleAnnotation(show) {
             this.$emit('update', 'singleAnnotation', show);
             Settings.set('singleAnnotation', show);
+        },
+        restrictToBounds(enabled) {
+            this.$emit('update', 'restrictToBounds', enabled);
+            Settings.set('restrictToBounds', enabled);
         },
     },
     created() {

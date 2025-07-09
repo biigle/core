@@ -60,6 +60,10 @@
             <power-toggle :active="measureTooltip" title-off="Show measure tooltip" title-on="Hide measure tooltip" v-on:on="showMeasureTooltip" v-on:off="hideMeasureTooltip">Measure Tooltip</power-toggle>
         </div>
 
+        <div class="sidebar-tab__section">
+            <power-toggle :active="restrictToBounds" title-off="Enable annotation boundary restriction" title-on="Disable annotation boundary restriction" v-on:on="enableRestrictToBounds" v-on:off="disableRestrictToBounds">Restrict to Boundaries</power-toggle>
+        </div>
+
         <export-area :settings="settings"></export-area>
 
         @can ('edit-in', $volume)

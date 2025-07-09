@@ -18,6 +18,7 @@ let defaults = {
     minimap: true,
     progressIndicator: true,
     exampleAnnotations: true,
+    restrictToBounds: false,
     // Annotation modes tab.
     randomSamplingNumber: 9,
     regularSamplingRows: 3,
