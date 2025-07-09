@@ -137,7 +137,6 @@ class TileSingleImage extends Job implements ShouldQueue
 
             foreach ($files as $file) {
                 $path = substr($file, $dirLength);
-                // @phpstan-ignore-next-line
                 yield $client->putObjectAsync([
                     'Bucket' => $bucket,
                     'Key' => "{$prefix}{$fragment}{$path}",
@@ -165,7 +164,7 @@ class TileSingleImage extends Job implements ShouldQueue
      *
      * @param mixed $disk S3 filesystem adapter
      */
-    protected function getClient($disk): S3Client // @phpstan-ignore-line
+    protected function getClient($disk)
     {
         return $disk->getClient();
     }
