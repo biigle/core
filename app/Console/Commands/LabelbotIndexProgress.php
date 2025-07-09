@@ -5,60 +5,55 @@ namespace Biigle\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class ShowHNSWProgress extends Command
+class LabelbotIndexProgress extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'labelbot:hnsw-build-progress';
+    protected $signature = 'labelbot:index-progress';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Show progress of HNSW index creation';
+    protected $description = 'Show the progress while building the database index for LabelBOT';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-
         $bar = $this->output->createProgressBar(100);
         $hasProgress = false;
 
         do {
             $progress = DB::select("
-                SELECT round(100.0 * blocks_done / nullif(blocks_total, 0), 1) AS percent, phase
+                SELECT round(100.0 * blocks_done / nullif(blocks_total, 0), 1) AS percent
                 FROM pg_stat_progress_create_index
-                WHERE command = 'CREATE INDEX'
+                WHERE command = 'CREATE INDEX CONCURRENTLY'
                 ");
 
-            if (count($progress)) {
+            if (!empty($progress)) {
                 if (!$hasProgress) {
-                    $this->line("Building the HNSW index...");
                     $bar->start();
                     $hasProgress = true;
                 }
 
                 $percent = (int) $progress[0]->percent;
                 $bar->setProgress($percent);
-            } else {
-                if (!$hasProgress) {
-                    $this->warn('No HNSW index creation in progress.');
-                }
-                break;
+            } elseif (!$hasProgress) {
+                $this->warn('Could not find any index being built.');
             }
 
             sleep(1);
-        } while (true);
+        } while (!empty($progress));
 
         if ($hasProgress) {
             $bar->finish();
-            $this->info("HNSW index build is complete.");
+            $this->line('');
         }
     }
 }
