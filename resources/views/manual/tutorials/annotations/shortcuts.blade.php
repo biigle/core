@@ -35,6 +35,10 @@
                     <td>Zoom to show the whole image</td>
                 </tr>
                 <tr>
+                    <td><kbd>Backquote</kbd><br>(key left of <kbd>1</kbd>)</td>
+                    <td>Toggle <a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a></td>
+                </tr>
+                <tr>
                     <td><kbd>1</kbd> - <kbd>9</kbd></td>
                     <td>Select favourite label 1-9</td>
                 </tr>

@@ -125,6 +125,7 @@ export default {
         this.labelTrees = biigle.$require('annotations.labelTrees');
 
         Keyboard.on('control+k', this.setFocusInputFindLabel, 0, this.listenerSet);
+        Keyboard.on('Backquote', this.toggleLabelBot, 0, this.listenerSet);
     },
 };
 </script>
