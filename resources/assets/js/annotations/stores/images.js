@@ -215,6 +215,51 @@ class Images {
             };
         });
 
+        function loadTiffImage(tiffUrl, imageWrapper) {
+            return new Promise(function (resolve, reject) {
+                let xhr = new XMLHttpRequest();
+                xhr.open("GET", tiffUrl, true);
+                xhr.responseType = "arraybuffer";
+
+                xhr.onload = function () {
+                    try {
+                        let ifds = UTIF.decode(xhr.response);
+                        UTIF.decodeImage(xhr.response, ifds[0]);
+                        let rgba = UTIF.toRGBA8(ifds[0]);
+                        let width = ifds[0].width;
+                        let height = ifds[0].height;
+
+                        imageWrapper.width = width;
+                        imageWrapper.height = height;
+                        imageWrapper.canvas.width = width;
+                        imageWrapper.canvas.height = height;
+
+                        let tempCanvas = document.createElement("canvas");
+                        tempCanvas.width = width;
+                        tempCanvas.height = height;
+
+                        let ctx = tempCanvas.getContext("2d");
+                        let imgData = ctx.createImageData(width, height);
+                        imgData.data.set(rgba);
+                        ctx.putImageData(imgData, 0, 0);
+
+                        ctx = imageWrapper.canvas.getContext("2d");
+                        ctx.drawImage(tempCanvas, 0, 0);
+                        imageWrapper.canvas._dirty = false;
+                        resolve(imageWrapper);
+                    } catch (err) {
+                        reject("TIFF decode error: " + err.message);
+                    }
+                };
+
+                xhr.onerror = function () {
+                    reject(`Failed to load TIFF image at ${tiffUrl}`);
+                };
+
+                xhr.send();
+            });
+        }
+
         // The image may be tiled, so we request the data from the endpoint and
         // check if it's an image or a JSON. If this is a cross origin request,
         // the preflight request is automatically performed. If CORS is blocked,
@@ -247,59 +292,6 @@ class Images {
                 // 2. Error Message if CORS is configured incorrectly -> error has to be shown.
                 if (type === "image/tiff" || type === "image/tif") {
                     if (size < 1000000000) {
-                        function loadTiffImage(tiffUrl, imageWrapper) {
-                            return new Promise(function (resolve, reject) {
-                                let xhr = new XMLHttpRequest();
-                                xhr.open("GET", tiffUrl, true);
-                                xhr.responseType = "arraybuffer";
-
-                                xhr.onload = function () {
-                                    try {
-                                        let ifds = UTIF.decode(xhr.response);
-                                        UTIF.decodeImage(xhr.response, ifds[0]);
-                                        let rgba = UTIF.toRGBA8(ifds[0]);
-                                        let width = ifds[0].width;
-                                        let height = ifds[0].height;
-
-                                        imageWrapper.width = width;
-                                        imageWrapper.height = height;
-                                        imageWrapper.canvas.width = width;
-                                        imageWrapper.canvas.height = height;
-
-                                        let tempCanvas =
-                                            document.createElement("canvas");
-                                        tempCanvas.width = width;
-                                        tempCanvas.height = height;
-
-                                        let ctx = tempCanvas.getContext("2d");
-                                        let imgData = ctx.createImageData(
-                                            width,
-                                            height
-                                        );
-                                        imgData.data.set(rgba);
-                                        ctx.putImageData(imgData, 0, 0);
-
-                                        ctx =imageWrapper.canvas.getContext("2d");
-                                        ctx.drawImage(tempCanvas, 0, 0);
-                                        imageWrapper.canvas._dirty = false;
-                                        resolve(imageWrapper);
-                                    } catch (err) {
-                                        reject(
-                                            "TIFF decode error: " + err.message
-                                        );
-                                    }
-                                };
-
-                                xhr.onerror = function () {
-                                    reject(
-                                        `Failed to load TIFF image at ${tiffUrl}`
-                                    );
-                                };
-
-                                xhr.send();
-                            });
-                        }
-
                         return loadTiffImage(url, imageWrapper)
                             .then((wrapper) => {
                                 // Show the canvas in the document
