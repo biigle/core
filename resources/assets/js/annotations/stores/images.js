@@ -288,13 +288,11 @@ class Images {
                 }
 
                 // TODO:
-                // 1. Funktion auslagern
-                // 2. Error Message if CORS is configured incorrectly -> error has to be shown.
+                // Handle error caused by CORS as in img
                 if (type === "image/tiff" || type === "image/tif") {
                     if (size < 1000000000) {
                         return loadTiffImage(url, imageWrapper)
                             .then((wrapper) => {
-                                // Show the canvas in the document
                                 document.body.appendChild(wrapper.canvas);
                                 return wrapper;
                             })
