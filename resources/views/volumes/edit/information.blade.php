@@ -70,6 +70,7 @@
         <p class="text-muted">
             Select which annotation tools should be available when annotating this volume. If none are selected, all tools will be available.
         </p>
+        
         <form role="form" method="POST" action="{{ url('api/v1/volumes/'.$volume->id.'/annotation-tools') }}">
             <div class="row">
                 <div class="col-sm-12">
@@ -166,9 +167,59 @@
                     </div>
                 </div>
             </div>
-            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="_redirect" value="{{ route('volume-edit', $volume->id) }}">
-            <input type="submit" class="btn btn-success" value="Save">
+            <div class="row">
+                <div class="col-sm-6">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_redirect" value="{{ route('volume-edit', $volume->id) }}">
+                    <input type="submit" class="btn btn-success" value="Save">
+                </div>
+                <div class="col-sm-6 text-right">
+                    <button type="button" id="toggle-all-tools" class="btn btn-default" title="Select all tools">
+                        <i class="fa fa-check"></i>
+                    </button>
+                </div>
+            </div>
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.getElementById('toggle-all-tools');
+    const checkboxes = document.querySelectorAll('input[name="tools[]"]');
+    
+    function updateToggleButton() {
+        const checkedCount = document.querySelectorAll('input[name="tools[]"]:checked').length;
+        const totalCount = checkboxes.length;
+        
+        if (checkedCount === totalCount) {
+            toggleButton.innerHTML = '<i class="fa fa-times"></i>';
+            toggleButton.setAttribute('data-action', 'deselect');
+            toggleButton.setAttribute('title', 'Deselect all tools');
+        } else {
+            toggleButton.innerHTML = '<i class="fa fa-check"></i>';
+            toggleButton.setAttribute('data-action', 'select');
+            toggleButton.setAttribute('title', 'Select all tools');
+        }
+    }
+    
+    toggleButton.addEventListener('click', function() {
+        const action = this.getAttribute('data-action');
+        const shouldCheck = action === 'select';
+        
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = shouldCheck;
+        });
+        
+        updateToggleButton();
+    });
+    
+    // Update button state when individual checkboxes change
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', updateToggleButton);
+    });
+    
+    // Initialize button state
+    updateToggleButton();
+});
+</script>
