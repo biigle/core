@@ -83,6 +83,7 @@
             :show-label-tooltip="showLabelTooltip"
             :show-measure-tooltip="showMeasureTooltip"
             :show-minimap="showMinimap"
+            :restrict-to-bounds="restrictToBounds"
             :user-id="userId"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"

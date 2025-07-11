@@ -47,6 +47,7 @@
       :show-label-tooltip="settings.showLabelTooltip"
       :show-minimap="settings.showMinimap"
       :single-annotation="settings.singleAnnotation"
+      :restrict-to-bounds="settings.restrictToBounds"
       :show-mouse-position="settings.showMousePosition"
       :enable-jump-by-frame="settings.enableJumpByFrame"
       :video="video"

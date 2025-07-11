@@ -447,6 +447,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        restrictToBounds: {
+            type: Boolean,
+            default: false,
+        },
         showMousePosition: {
             type: Boolean,
             default: true,
