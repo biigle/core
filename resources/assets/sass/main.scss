@@ -78,6 +78,8 @@ $font-family-monospace: monospace;
 .checkbox-control-button {
     display: inline-block;
     position: relative;
+    width: 44px;
+    box-sizing: border-box;
 
     input[type="checkbox"] {
         display: none;
@@ -101,11 +103,14 @@ $font-family-monospace: monospace;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 44px;
+        width: 44px !important;
         height: 44px;
         margin: 0;
         padding: 2px;
         backdrop-filter: blur(5px);
+        box-sizing: border-box;
+        min-width: 44px;
+        max-width: 44px;
 
         &:not(:last-child) {
             margin-right: 4px;
@@ -161,6 +166,34 @@ $font-family-monospace: monospace;
 
     &.control-button-with-sub:hover .control-button__sub-controls {
         transform: translate(-50%, -100%) scale(1);
+    }
+}
+
+// Fix spacing consistency for annotation tools selector in volume settings
+.annotation-tools-selector {
+    .btn-group.drawing-controls {
+        .checkbox-control-button {
+            // Ensure all tool buttons have the same width and consistent spacing
+            width: 44px;
+            display: inline-block;
+            
+            &:not(:last-child) {
+                margin-right: 4px !important;
+            }
+            
+            // Ensure consistent spacing regardless of sub-controls
+            &.control-button-with-sub {
+                width: 44px;
+                
+                &:not(:last-child) {
+                    margin-right: 4px !important;
+                }
+                
+                &:last-child {
+                    margin-right: 0 !important;
+                }
+            }
+        }
     }
 }
 

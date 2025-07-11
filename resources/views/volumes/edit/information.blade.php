@@ -101,7 +101,7 @@
                                 <div class="control-button__sub-controls btn-group">
                                     <div class="checkbox-control-button">
                                         <input type="checkbox" name="tools[]" id="tool-ellipse" value="ellipse" @if (in_array('ellipse', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-ellipse" class="control-button btn" title="Draw an ellipse">
+                                        <label for="tool-ellipse" class="control-button" title="Draw an ellipse">
                                             <i class="icon icon-white icon-ellipse"></i>
                                         </label>
                                     </div>
@@ -117,7 +117,7 @@
                                 <div class="control-button__sub-controls btn-group">
                                     <div class="checkbox-control-button">
                                         <input type="checkbox" name="tools[]" id="tool-measure" value="measure" @if (in_array('measure', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-measure" class="control-button btn" title="Measure a line string">
+                                        <label for="tool-measure" class="control-button" title="Measure a line string">
                                             <i class="fa fa-ruler"></i>
                                         </label>
                                     </div>
@@ -133,31 +133,31 @@
                                 <div class="control-button__sub-controls btn-group">
                                     <div class="checkbox-control-button">
                                         <input type="checkbox" name="tools[]" id="tool-polygonbrush" value="polygonbrush" @if (in_array('polygonbrush', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-polygonbrush" class="control-button btn" title="Draw a polygon using the brush tool">
+                                        <label for="tool-polygonbrush" class="control-button" title="Draw a polygon using the brush tool">
                                             <i class="fa fa-paint-brush"></i>
                                         </label>
                                     </div>
                                     <div class="checkbox-control-button">
                                         <input type="checkbox" name="tools[]" id="tool-polygonEraser" value="polygonEraser" @if (in_array('polygonEraser', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-polygonEraser" class="control-button btn" title="Modify selected polygons using the eraser tool">
+                                        <label for="tool-polygonEraser" class="control-button" title="Modify selected polygons using the eraser tool">
                                             <i class="fa fa-eraser"></i>
                                         </label>
                                     </div>
                                     <div class="checkbox-control-button">
                                         <input type="checkbox" name="tools[]" id="tool-polygonFill" value="polygonFill" @if (in_array('polygonFill', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-polygonFill" class="control-button btn" title="Modify selected polygons using the fill tool">
+                                        <label for="tool-polygonFill" class="control-button" title="Modify selected polygons using the fill tool">
                                             <i class="fa fa-fill-drip"></i>
                                         </label>
                                     </div>
                                     <div class="checkbox-control-button">
                                         <input type="checkbox" name="tools[]" id="tool-magicwand" value="magicwand" @if (in_array('magicwand', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-magicwand" class="control-button btn" title="Draw a polygon using the magic wand tool">
+                                        <label for="tool-magicwand" class="control-button" title="Draw a polygon using the magic wand tool">
                                             <i class="fa fa-magic"></i>
                                         </label>
                                     </div>
                                     <div class="checkbox-control-button">
                                         <input type="checkbox" name="tools[]" id="tool-magicsam" value="magicsam" @if (in_array('magicsam', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-magicsam" class="control-button btn" title="Draw a polygon using the magic sam tool">
+                                        <label for="tool-magicsam" class="control-button" title="Draw a polygon using the magic sam tool">
                                             <i class="fa fa-hat-wizard"></i>
                                         </label>
                                     </div>
