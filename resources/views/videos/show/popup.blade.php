@@ -7,6 +7,12 @@
     <div v-if="parent" class="video-popup">
         @include('videos.show.content')
     </div>
+    <screenshot-button
+        v-show="false"
+        :current-id="videoId"
+        :filenames="videoFilenames"
+        :ids="videoIds"
+        ></screenshot-button>
 </div>
 @endsection
 

@@ -1,8 +1,10 @@
 <script>
+import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
 import LoaderBlock from '@/core/components/loaderBlock.vue';
 import MessageCurtain from '@/core/components/messageCurtain.vue';
 import Messages from '@/core/messages/store.js';
+import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
 import VideoContainer from './videoContainer.vue';
 import VideoScreen from './components/videoScreen.vue';
 import VideoTimeline from './components/videoTimeline.vue';
@@ -13,6 +15,7 @@ const proxy = {
         videoTimeline: VideoTimeline,
         loaderBlock: LoaderBlock,
         messageCurtain: MessageCurtain,
+        screenshotButton: ScreenshotButton,
     },
     data() {
         const data = VideoContainer.data();
@@ -139,6 +142,10 @@ const proxy = {
             Keyboard.on('8', this.selectFavouriteLabel8, this.listenerSet);
             Keyboard.on('9', this.selectFavouriteLabel9, this.listenerSet);
             Keyboard.on('0', this.selectFavouriteLabel0, this.listenerSet);
+        },
+        handleInitMap(map) {
+            Events.emit('videos.map.init', map);
+            this.parent.handleInitMap(map);
         },
     },
     created() {
