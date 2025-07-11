@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd45fb341120fe4400a9b2f356d443bc",
+    "content-hash": "b79ab54a0d268601da05006fde77cd26",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -255,6 +255,60 @@
             "time": "2025-05-05T08:39:15+00:00"
         },
         {
+            "name": "biigle/auth-haai",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/auth-haai.git",
+                "reference": "3351d90cb2f278f98156702939b2209276da0937"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/auth-haai/zipball/3351d90cb2f278f98156702939b2209276da0937",
+                "reference": "3351d90cb2f278f98156702939b2209276da0937",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "socialiteproviders/manager": "^4.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\AuthHaai\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\AuthHaai\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "BIIGLE module to offer authentication via Helmholtz AAI.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/auth-haai/issues",
+                "source": "https://github.com/biigle/auth-haai"
+            },
+            "time": "2025-07-11T10:14:14+00:00"
+        },
+        {
             "name": "biigle/auth-lslogin",
             "version": "dev-master",
             "source": {
@@ -313,17 +367,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/auth-nfdi.git",
-                "reference": "3b6a639ceb01866ae386b32a893cc88024ca8a00"
+                "reference": "c09278e3a72f6740457fdf48466687121974a532"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/auth-nfdi/zipball/3b6a639ceb01866ae386b32a893cc88024ca8a00",
-                "reference": "3b6a639ceb01866ae386b32a893cc88024ca8a00",
+                "url": "https://api.github.com/repos/biigle/auth-nfdi/zipball/c09278e3a72f6740457fdf48466687121974a532",
+                "reference": "c09278e3a72f6740457fdf48466687121974a532",
                 "shasum": ""
             },
             "require": {
-                "ext-json": "*",
-                "socialiteproviders/manager": "^4.4"
+                "socialiteproviders/nfdilogin": "^5.0"
             },
             "default-branch": true,
             "type": "library",
@@ -359,7 +412,7 @@
                 "issues": "https://github.com/biigle/auth-nfdi/issues",
                 "source": "https://github.com/biigle/auth-nfdi"
             },
-            "time": "2025-03-13T12:50:09+00:00"
+            "time": "2025-07-11T08:52:03+00:00"
         },
         {
             "name": "biigle/color-sort",
@@ -1113,12 +1166,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/metrics.git",
-                "reference": "22d5053f9283aa6cd25622f0743acef10ad1d2b5"
+                "reference": "84ce2b200ed3c257520c177ef65c131964e71dc8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/metrics/zipball/22d5053f9283aa6cd25622f0743acef10ad1d2b5",
-                "reference": "22d5053f9283aa6cd25622f0743acef10ad1d2b5",
+                "url": "https://api.github.com/repos/biigle/metrics/zipball/84ce2b200ed3c257520c177ef65c131964e71dc8",
+                "reference": "84ce2b200ed3c257520c177ef65c131964e71dc8",
                 "shasum": ""
             },
             "default-branch": true,
@@ -1155,7 +1208,7 @@
                 "issues": "https://github.com/biigle/metrics/issues",
                 "source": "https://github.com/biigle/metrics"
             },
-            "time": "2025-07-08T12:25:30+00:00"
+            "time": "2025-07-08T14:25:36+00:00"
         },
         {
             "name": "biigle/module",
@@ -6793,6 +6846,57 @@
                 "source": "https://github.com/socialiteproviders/manager"
             },
             "time": "2025-02-24T19:33:30+00:00"
+        },
+        {
+            "name": "socialiteproviders/nfdilogin",
+            "version": "5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/NFDILogin.git",
+                "reference": "a789b4db97d99e8988578c07dd9e28b990674bbe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/NFDILogin/zipball/a789b4db97d99e8988578c07dd9e28b990674bbe",
+                "reference": "a789b4db97d99e8988578c07dd9e28b990674bbe",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.0",
+                "socialiteproviders/manager": "^4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\NfdiLogin\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "NFDI Login OAuth2 Provider for Laravel Socialite",
+            "keywords": [
+                "laravel",
+                "login",
+                "nfdi",
+                "oauth",
+                "provider",
+                "socialite"
+            ],
+            "support": {
+                "docs": "https://socialiteproviders.com/nfdilogin",
+                "issues": "https://github.com/socialiteproviders/providers/issues",
+                "source": "https://github.com/socialiteproviders/providers"
+            },
+            "time": "2025-06-28T23:12:23+00:00"
         },
         {
             "name": "spatie/temporary-directory",
@@ -13210,6 +13314,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "biigle/ananas": 20,
+        "biigle/auth-haai": 20,
         "biigle/auth-lslogin": 20,
         "biigle/auth-nfdi": 20,
         "biigle/color-sort": 20,

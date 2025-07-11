@@ -36,6 +36,12 @@ return [
        'redirect' => '/auth/iam4nfdi/callback',
    ],
 
+   'haai' => [
+       'client_id' => env('HAAI_CLIENT_ID'),
+       'client_secret' => env('HAAI_CLIENT_SECRET'),
+       'redirect' => '/auth/haai/callback',
+   ],
+
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],

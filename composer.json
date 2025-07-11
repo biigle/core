@@ -23,6 +23,7 @@
         "ext-soap": "*",
         "ext-zip": "*",
         "biigle/ananas": "dev-master",
+        "biigle/auth-haai": "dev-main",
         "biigle/auth-lslogin": "dev-master",
         "biigle/auth-nfdi": "dev-main",
         "biigle/color-sort": "dev-master",
