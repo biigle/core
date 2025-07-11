@@ -55,6 +55,18 @@ const IGNORED_TAGS = [
  *
  * // Now only the last event listener is active.
  * kb.setActiveSet('other-set');
+ *
+ * You can define listeners for key combinations, too:
+ *
+ * kb.on('Control+A');
+ *
+ * Instead of "event.key" values to define listeners, you can also use "event.code" values
+ * for listeners that are independent from the keyboard layout and language. Example:
+ *
+ * kb.on('Alt+Backquote');
+ *
+ * Note that modifier keys such as Alt, Control, etc. are still identified by their "event.key"
+ * value here and not by "event.code" (AltLeft, ControlLeft, etc.).
  */
 class Keyboard {
     constructor() {
@@ -63,6 +75,7 @@ class Keyboard {
             'default': {},
         };
         this.pressedKeysArray = [];
+        this.pressedCodesArray = [];
 
         // Use keydown because keypress does not fire for all keys that can be used in
         // shortcuts.
@@ -77,6 +90,10 @@ class Keyboard {
 
     get pressedKeys() {
         return this.pressedKeysArray.slice().sort().join('+');
+    }
+
+    get pressedCodes() {
+        return this.pressedCodesArray.slice().sort().join('+');
     }
 
     isKeyIdentifier(key) {
@@ -111,6 +128,7 @@ class Keyboard {
 
         if (!e.repeat) {
             this.pressedKeysArray.push(e.key.toLowerCase());
+            this.pressedCodesArray.push(e.code.toLowerCase());
         }
         // Sometimes a modifier key is still pressed when the page is loaded (e.g.
         // if the user travelled back in browser history using the keys). Check for
@@ -118,20 +136,25 @@ class Keyboard {
         // cases.
         this.maybeInjectModifierKeys(e);
         this.handleKeyEvents(e, this.pressedKeys);
+        this.handleKeyEvents(e, this.pressedCodes);
     }
 
     maybeInjectModifierKeys(e) {
-        if (e.altKey && this.pressedKeysArray.indexOf('alt') === -1) {
-            this.pressedKeysArray.push('alt');
+        if (e.altKey) {
+            if (this.pressedKeysArray.indexOf('alt') === -1) this.pressedKeysArray.push('alt');
+            if (this.pressedCodesArray.indexOf('alt') === -1) this.pressedCodesArray.push('alt');
         }
-        if (e.ctrlKey && this.pressedKeysArray.indexOf('control') === -1) {
-            this.pressedKeysArray.push('control');
+        if (e.ctrlKey) {
+            if (this.pressedKeysArray.indexOf('control') === -1) this.pressedKeysArray.push('control');
+            if (this.pressedCodesArray.indexOf('control') === -1) this.pressedCodesArray.push('control');
         }
-        if (e.metaKey && this.pressedKeysArray.indexOf('meta') === -1) {
-            this.pressedKeysArray.push('meta');
+        if (e.metaKey) {
+            if (this.pressedKeysArray.indexOf('meta') === -1) this.pressedKeysArray.push('meta');
+            if (this.pressedCodesArray.indexOf('meta') === -1) this.pressedCodesArray.push('meta');
         }
-        if (e.shiftKey && this.pressedKeysArray.indexOf('shift') === -1) {
-            this.pressedKeysArray.push('shift');
+        if (e.shiftKey) {
+            if (this.pressedKeysArray.indexOf('shift') === -1) this.pressedKeysArray.push('shift');
+            if (this.pressedCodesArray.indexOf('shift') === -1) this.pressedCodesArray.push('shift');
         }
     }
 
@@ -139,6 +162,11 @@ class Keyboard {
         let index = this.pressedKeysArray.indexOf(e.key.toLowerCase());
         if (index !== -1) {
             this.pressedKeysArray.splice(index, 1);
+        }
+
+        index = this.pressedCodesArray.indexOf(e.code.toLowerCase());
+        if (index !== -1) {
+            this.pressedCodesArray.splice(index, 1);
         }
     }
 
@@ -150,6 +178,7 @@ class Keyboard {
 
     clearPressedKeys() {
         this.pressedKeysArray = [];
+        this.pressedCodesArray = [];
     }
 
     executeCallbacks(list, e) {
