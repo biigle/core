@@ -1,7 +1,6 @@
 <script>
 import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '@/core/keyboard.js';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
 
@@ -125,13 +124,6 @@ export default {
             // at currentTime and be sure that the same frame can be reproduced later for
             // the annotations. See: https://github.com/biigle/core/issues/433
             this.$emit('seek', this.video.currentTime, true);
-        },
-        togglePlaying() {
-            if (this.playing) {
-                this.pause();
-            } else {
-                this.play();
-            }
         },
         play() {
             this.video.play();
@@ -285,8 +277,6 @@ export default {
                     }
                 }
             });
-
-        Keyboard.on(' ', this.togglePlaying);
 
         this.$watch('hasError', (hasError) => {
             if (this.videoLayer) {

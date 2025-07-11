@@ -735,7 +735,7 @@ export default {
         },
         openSidebarLabels() {
             this.$refs.sidebar.handleOpenTab('labels');
-            this.setFocusInputFindLabel()
+            this.setFocusInputFindLabel();
         },
         setFocusInputFindLabel() {
             this.focusInputFindlabel = false;
@@ -771,6 +771,13 @@ export default {
         handleInitMap(map) {
             // Update reference in screenshot button if the popout is closed.
             Events.emit('videos.map.init', map);
+        },
+        togglePlaying() {
+            if (this.video.paused) {
+                this.video.play();
+            } else {
+                this.video.pause();
+            }
         },
     },
     watch: {
@@ -827,8 +834,6 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
-        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
-        Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
@@ -843,6 +848,9 @@ export default {
         }
 
         Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+        Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+        Keyboard.on(' ', this.togglePlaying, 0, this.listenerSet);
 
         window.addEventListener('beforeunload', () => {
             if (this.videoPopout && !this.videoPopout.closed) {

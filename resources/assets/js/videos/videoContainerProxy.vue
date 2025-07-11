@@ -83,10 +83,12 @@ const proxy = {
         bindProxyShortcuts() {
             Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
             Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+            Keyboard.on(' ', this.togglePlaying, 0, this.listenerSet);
         },
         releaseProxyShortcuts() {
             Keyboard.off('C', this.selectLastAnnotation, this.listenerSet);
             Keyboard.off('Delete', this.deleteSelectedAnnotationsOrKeyframes, this.listenerSet);
+            Keyboard.off(' ', this.togglePlaying, this.listenerSet);
         },
     },
     created() {
