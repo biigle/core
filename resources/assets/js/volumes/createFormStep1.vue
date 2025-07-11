@@ -105,6 +105,12 @@ export default {
             this.selectedAnnotationTools = this.selectedAnnotationTools.filter(tool => 
                 this.availableAnnotationTools.includes(tool)
             );
+            
+            // Add media-type specific tools that should be enabled by default
+            if (this.isVideoMediaType && !this.selectedAnnotationTools.includes('wholeframe')) {
+                this.selectedAnnotationTools.push('wholeframe');
+            }
+            
             // If no tools are selected after filtering, select all available tools
             if (this.selectedAnnotationTools.length === 0) {
                 this.selectedAnnotationTools = [...this.availableAnnotationTools];
