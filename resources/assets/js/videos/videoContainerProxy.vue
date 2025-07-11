@@ -80,15 +80,65 @@ const proxy = {
                 this.parent.deleteSelectedAnnotationsOrKeyframes(true);
             }
         },
+        selectFavouriteLabel1() {
+            this.parent.selectedFavouriteLabel = 0;
+        },
+        selectFavouriteLabel2() {
+            this.parent.selectedFavouriteLabel = 1;
+        },
+        selectFavouriteLabel3() {
+            this.parent.selectedFavouriteLabel = 2;
+        },
+        selectFavouriteLabel4() {
+            this.parent.selectedFavouriteLabel = 3;
+        },
+        selectFavouriteLabel5() {
+            this.parent.selectedFavouriteLabel = 4;
+        },
+        selectFavouriteLabel6() {
+            this.parent.selectedFavouriteLabel = 5;
+        },
+        selectFavouriteLabel7() {
+            this.parent.selectedFavouriteLabel = 6;
+        },
+        selectFavouriteLabel8() {
+            this.parent.selectedFavouriteLabel = 7;
+        },
+        selectFavouriteLabel9() {
+            this.parent.selectedFavouriteLabel = 8;
+        },
+        selectFavouriteLabel0() {
+            this.parent.selectedFavouriteLabel = 9;
+        },
         bindProxyShortcuts() {
             Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
             Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
             Keyboard.on(' ', this.togglePlaying, 0, this.listenerSet);
+            Keyboard.on('1', this.selectFavouriteLabel1, 0, this.listenerSet);
+            Keyboard.on('2', this.selectFavouriteLabel2, 0, this.listenerSet);
+            Keyboard.on('3', this.selectFavouriteLabel3, 0, this.listenerSet);
+            Keyboard.on('4', this.selectFavouriteLabel4, 0, this.listenerSet);
+            Keyboard.on('5', this.selectFavouriteLabel5, 0, this.listenerSet);
+            Keyboard.on('6', this.selectFavouriteLabel6, 0, this.listenerSet);
+            Keyboard.on('7', this.selectFavouriteLabel7, 0, this.listenerSet);
+            Keyboard.on('8', this.selectFavouriteLabel8, 0, this.listenerSet);
+            Keyboard.on('9', this.selectFavouriteLabel9, 0, this.listenerSet);
+            Keyboard.on('0', this.selectFavouriteLabel0, 0, this.listenerSet);
         },
         releaseProxyShortcuts() {
             Keyboard.off('C', this.selectLastAnnotation, this.listenerSet);
             Keyboard.off('Delete', this.deleteSelectedAnnotationsOrKeyframes, this.listenerSet);
             Keyboard.off(' ', this.togglePlaying, this.listenerSet);
+            Keyboard.on('1', this.selectFavouriteLabel1, this.listenerSet);
+            Keyboard.on('2', this.selectFavouriteLabel2, this.listenerSet);
+            Keyboard.on('3', this.selectFavouriteLabel3, this.listenerSet);
+            Keyboard.on('4', this.selectFavouriteLabel4, this.listenerSet);
+            Keyboard.on('5', this.selectFavouriteLabel5, this.listenerSet);
+            Keyboard.on('6', this.selectFavouriteLabel6, this.listenerSet);
+            Keyboard.on('7', this.selectFavouriteLabel7, this.listenerSet);
+            Keyboard.on('8', this.selectFavouriteLabel8, this.listenerSet);
+            Keyboard.on('9', this.selectFavouriteLabel9, this.listenerSet);
+            Keyboard.on('0', this.selectFavouriteLabel0, this.listenerSet);
         },
     },
     created() {

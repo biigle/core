@@ -106,6 +106,9 @@ export default {
             invalidMoovAtomPosition: false,
             videoPopout: null,
             isVideoPopout: false,
+            // This is used to enable selecting labels via keyboard shortcut from the
+            // video popout window.
+            selectedFavouriteLabel: undefined,
         };
     },
     computed: {
