@@ -19,6 +19,10 @@ export default {
             initialized: false,
             parsers: [],
             selectedParser: null,
+            selectedAnnotationTools: [
+                'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
+                'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+            ],
         };
     },
     computed: {
@@ -49,6 +53,16 @@ export default {
         availableParsers() {
             return this.parsers[this.mediaType] || [];
         },
+        allAnnotationToolsSelected() {
+            // All 11 tools: point, rectangle, circle, ellipse, linestring, measure, polygon, polygonbrush, polygonEraser, polygonFill, magicwand, magicsam
+            return this.selectedAnnotationTools.length === 12;
+        },
+        allToolsSelectedText() {
+            return this.allAnnotationToolsSelected ? 'Deselect all tools' : 'Select all tools';
+        },
+        toggleAllToolsIcon() {
+            return this.allAnnotationToolsSelected ? 'fa fa-times' : 'fa fa-check';
+        },
     },
     methods: {
         selectImageMediaType() {
@@ -65,6 +79,16 @@ export default {
         },
         handleSelectedFile() {
             this.hasFile = this.$refs.metadataFileField.files.length > 0;
+        },
+        toggleAllAnnotationTools() {
+            if (this.allAnnotationToolsSelected) {
+                this.selectedAnnotationTools = [];
+            } else {
+                this.selectedAnnotationTools = [
+                    'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
+                    'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+                ];
+            }
         },
     },
     created() {

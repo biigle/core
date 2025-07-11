@@ -40,6 +40,114 @@
         </fieldset>
         <fieldset>
             <legend>
+                Select annotation tools <span class="text-muted">(optional)</span>
+            </legend>
+            <div class="form-group">
+                <p class="text-muted">
+                    Choose which annotation tools should be available when annotating this volume. If none are selected, all tools will be available.
+                </p>
+                
+                <div class="annotation-tools-selector">
+                    <div class="btn-group drawing-controls">
+                        <!-- Point tool -->
+                        <div class="checkbox-control-button">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-point" value="point" v-model="selectedAnnotationTools">
+                            <label for="create-tool-point" class="control-button" title="Draw a point">
+                                <i class="icon icon-white icon-point"></i>
+                            </label>
+                        </div>
+                        
+                        <!-- Rectangle tool -->
+                        <div class="checkbox-control-button">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-rectangle" value="rectangle" v-model="selectedAnnotationTools">
+                            <label for="create-tool-rectangle" class="control-button" title="Draw a rectangle">
+                                <i class="icon icon-white icon-rectangle"></i>
+                            </label>
+                        </div>
+                        
+                        <!-- Circle with Ellipse sub-control -->
+                        <div class="checkbox-control-button control-button-with-sub">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-circle" value="circle" v-model="selectedAnnotationTools">
+                            <label for="create-tool-circle" class="control-button" title="Draw a circle">
+                                <i class="icon icon-white icon-circle"></i>
+                            </label>
+                            <div class="control-button__sub-controls btn-group">
+                                <div class="checkbox-control-button">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-ellipse" value="ellipse" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-ellipse" class="control-button" title="Draw an ellipse">
+                                        <i class="icon icon-white icon-ellipse"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- LineString with Measure sub-controls -->
+                        <div class="checkbox-control-button control-button-with-sub">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-linestring" value="linestring" v-model="selectedAnnotationTools">
+                            <label for="create-tool-linestring" class="control-button" title="Draw a line string">
+                                <i class="icon icon-white icon-linestring"></i>
+                            </label>
+                            <div class="control-button__sub-controls btn-group">
+                                <div class="checkbox-control-button">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-measure" value="measure" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-measure" class="control-button" title="Measure a line string">
+                                        <i class="fa fa-ruler"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Polygon with all sub-tools -->
+                        <div class="checkbox-control-button control-button-with-sub">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-polygon" value="polygon" v-model="selectedAnnotationTools">
+                            <label for="create-tool-polygon" class="control-button" title="Draw a polygon">
+                                <i class="icon icon-white icon-polygon"></i>
+                            </label>
+                            <div class="control-button__sub-controls btn-group">
+                                <div class="checkbox-control-button">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-polygonbrush" value="polygonbrush" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-polygonbrush" class="control-button" title="Draw a polygon using the brush tool">
+                                        <i class="fa fa-paint-brush"></i>
+                                    </label>
+                                </div>
+                                <div class="checkbox-control-button">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-polygonEraser" value="polygonEraser" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-polygonEraser" class="control-button" title="Modify selected polygons using the eraser tool">
+                                        <i class="fa fa-eraser"></i>
+                                    </label>
+                                </div>
+                                <div class="checkbox-control-button">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-polygonFill" value="polygonFill" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-polygonFill" class="control-button" title="Modify selected polygons using the fill tool">
+                                        <i class="fa fa-fill-drip"></i>
+                                    </label>
+                                </div>
+                                <div class="checkbox-control-button">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-magicwand" value="magicwand" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-magicwand" class="control-button" title="Draw a polygon using the magic wand tool">
+                                        <i class="fa fa-magic"></i>
+                                    </label>
+                                </div>
+                                <div class="checkbox-control-button">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-magicsam" value="magicsam" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-magicsam" class="control-button" title="Draw a polygon using the magic sam tool">
+                                        <i class="fa fa-hat-wizard"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-right" style="margin-top: 15px;">
+                    <button type="button" class="btn btn-default btn-sm" v-on:click="toggleAllAnnotationTools" :title="allToolsSelectedText">
+                        <i :class="toggleAllToolsIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>
                 Select a metadata file <span class="text-muted">(optional)</span>
             </legend>
             <div class="form-group{{ $errors->hasAny(['metadata_file', 'metadata_parser']) ? ' has-error' : '' }}">

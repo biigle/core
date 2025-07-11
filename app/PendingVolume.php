@@ -30,6 +30,7 @@ class PendingVolume extends Model
         'label_map',
         'user_map',
         'importing',
+        'attrs',
     ];
 
     /**
@@ -51,6 +52,7 @@ class PendingVolume extends Model
         'only_file_labels' => 'array',
         'label_map' => 'array',
         'user_map' => 'array',
+        'attrs' => 'array',
     ];
 
     /**
@@ -94,5 +96,59 @@ class PendingVolume extends Model
     public function getMetadataFileDisk(): string
     {
         return config('volumes.pending_metadata_storage_disk');
+    }
+
+    /**
+     * Available annotation tools.
+     */
+    const ANNOTATION_TOOLS = [
+        'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure',
+        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+    ];
+
+    /**
+     * Get the enabled annotation tools for this pending volume.
+     *
+     * @return array
+     */
+    public function enabledAnnotationTools()
+    {
+        return $this->getJsonAttr('enabled_annotation_tools', static::ANNOTATION_TOOLS);
+    }
+
+    /**
+     * Set the enabled annotation tools for this pending volume.
+     *
+     * @param array $tools
+     */
+    public function setEnabledAnnotationTools($tools)
+    {
+        $this->setJsonAttr('enabled_annotation_tools', $tools);
+    }
+
+    /**
+     * Get a JSON attribute.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function getJsonAttr($key, $default = null)
+    {
+        $attrs = $this->attrs ?: [];
+        return array_key_exists($key, $attrs) ? $attrs[$key] : $default;
+    }
+
+    /**
+     * Set a JSON attribute.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    protected function setJsonAttr($key, $value)
+    {
+        $attrs = $this->attrs ?: [];
+        $attrs[$key] = $value;
+        $this->attrs = $attrs;
     }
 }

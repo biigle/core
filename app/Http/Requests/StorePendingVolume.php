@@ -41,6 +41,11 @@ class StorePendingVolume extends FormRequest
                 'file',
                 'max:500000',
             ],
+            'annotation_tools' => ['array'],
+            'annotation_tools.*' => [Rule::in([
+                'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure',
+                'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+            ])],
         ];
 
         $parserClass = $this->input('metadata_parser', false);
