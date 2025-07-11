@@ -56,6 +56,7 @@ class Volume extends Model
         'polygonEraser',
         'polygonFill',
         'magicwand',
+        'magicsam',
     ];
 
     /**

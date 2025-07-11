@@ -21,7 +21,7 @@ export default {
             selectedParser: null,
             selectedAnnotationTools: [
                 'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
-                'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand'
+                'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
             ],
         };
     },
@@ -61,7 +61,7 @@ export default {
                 // Image volumes support all tools except wholeframe
                 return [
                     'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
-                    'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand'
+                    'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
                 ];
             }
         },

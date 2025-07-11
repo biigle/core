@@ -103,7 +103,7 @@ class PendingVolume extends Model
      */
     const IMAGE_ANNOTATION_TOOLS = [
         'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure',
-        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand'
+        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
     ];
 
     /**

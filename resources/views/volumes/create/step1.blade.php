@@ -143,6 +143,12 @@
                                         <i class="fa fa-magic"></i>
                                     </label>
                                 </div>
+                                <div class="checkbox-control-button" v-show="isImageMediaType">
+                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-magicsam" value="magicsam" v-model="selectedAnnotationTools">
+                                    <label for="create-tool-magicsam" class="control-button" title="Draw a polygon using the magic SAM tool">
+                                        <i class="fa fa-hat-wizard"></i>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         
