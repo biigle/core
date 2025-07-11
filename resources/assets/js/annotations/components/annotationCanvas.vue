@@ -162,6 +162,7 @@ export default {
                     'polygon',
                     'polygonbrush',
                     'magicwand',
+                    'magicsam',
                 ];
             },
         },

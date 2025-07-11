@@ -154,6 +154,12 @@
                                             <i class="fa fa-magic"></i>
                                         </label>
                                     </div>
+                                    <div class="checkbox-control-button">
+                                        <input type="checkbox" name="tools[]" id="tool-magicsam" value="magicsam" @if (in_array('magicsam', $volume->enabledAnnotationTools())) checked @endif>
+                                        <label for="tool-magicsam" class="control-button btn" title="Draw a polygon using the magic sam tool">
+                                            <i class="fa fa-hat-wizard"></i>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
