@@ -312,3 +312,5 @@ class VolumeController extends Controller
      * @apiDescription Only members of one of the volume's projects can retrieve this.
      *
      * @apiParam {Number} id The volume ID.
+     */
+}
