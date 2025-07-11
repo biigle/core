@@ -257,7 +257,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button>     
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -335,7 +335,6 @@
 </template>
 
 <script>
-import AnnotationArray from '../models/AnnotationArray.js';
 import AnnotationPlayback from './videoScreen/annotationPlayback.vue';
 import Collection from '@biigle/ol/Collection';
 import ControlButton from '@/annotations/components/controlButton.vue';
@@ -387,13 +386,13 @@ export default {
     props: {
         annotations: {
             required: true,
-            validator(value) {
-                // In case of a popup window, the video may be a AnnotationArray of a
-                // different context which would fail a simple "type: AnnotationArray"
-                // check. We do the type check here and have a fallback based on the
-                // constructor name for the popup.
-                return value instanceof AnnotationArray || value.constructor.name === 'AnnotationArray';
-            },
+            type: Array,
+        },
+        // This is required to update annotations reliably in the video popout.
+        // Objects from the main window cannot be watched from the popout.
+        annotationRevision: {
+            required: true,
+            type: Number,
         },
         annotationOpacity: {
             type: Number,

@@ -35,6 +35,7 @@
       ref="videoScreen"
       v-if="isVideoPopout || !hasVideoPopout"
       :annotations="filteredAnnotations"
+      :annotation-revision="annotationRevision"
       :annotation-opacity="settings.annotationOpacity"
       :autoplay-draw="settings.autoplayDraw"
       :jump-step="settings.jumpStep"

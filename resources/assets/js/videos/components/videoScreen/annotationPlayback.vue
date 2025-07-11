@@ -19,16 +19,16 @@ export default {
         return {
             // A map of annotation IDs to OpenLayers feature objects for all
             // currently rendered annotations.
-            renderedAnnotationMap: {},
-            viewFitOptions: {
+            renderedAnnotationMap: markRaw({}),
+            viewFitOptions: markRaw({
                 padding: [50, 50, 50, 50],
                 minResolution: 1,
-            },
-            annotationWatchers: [],
+            }),
+            annotationsPreparedToRender: markRaw([]),
         };
     },
-    computed: {
-        annotationsPreparedToRender() {
+    methods: {
+        getAnnotationsPreparedToRender() {
             // Extract start and end times of the annotations as well as sort them so
             // they can be accessed fast during rendering.
             return this.annotations
@@ -43,8 +43,6 @@ export default {
                 })
                 .sort((a, b) => a.start - b.start);
         },
-    },
-    methods: {
         refreshAllAnnotations() {
             let time = this.video.currentTime;
             let source = this.annotationSource;
@@ -129,21 +127,17 @@ export default {
                 this.updateGeometry(geometry, points);
             });
         },
+        refreshFeatureColors() {
+            this.annotationSource.getFeatures().forEach(f => {
+                f.set('color', f.get('annotation')?.color);
+            });
+        },
         createFeature(annotation) {
             let feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
 
             feature.setId(annotation.id);
             feature.set('annotation', annotation);
-
-            // The color may change after a detach/swap label action.
-            // Using the watcher of the Annotation object is important here in the
-            // context of the video popup. Watching objects from the parent window in
-            // the popup window does not work. Hence, we define the watcher in the
-            // Annotation of the parent window and just register a callback here.
-            const unwatch = annotation.watch(() => {
-                feature.set('color', annotation.labels?.[0].label.color);
-            }, {immediate: true});
-            this.annotationWatchers.push(unwatch);
+            feature.set('color', annotation.color);
 
             return feature;
         },
@@ -249,25 +243,19 @@ export default {
         mapReadyRevision() {
             this.videoSource.on('change', this.refreshAllAnnotations);
         },
-        annotations: {
-            handler(annotations) {
-                // Using the watcher of the AnnotationArray is important here in the
-                // context of the video popup. Watching objects from the parent window in
-                // the popup window does not work. Hence, we define the watcher in the
-                // AnnotationArray of the parent window and just register a callback here.
-                const unwatch = annotations.watch(() => {
-                    if (this?.map) {
-                        this.refreshAllAnnotations();
-                    }
-                });
-                this.annotationWatchers.push(unwatch);
-            },
-            immediate: true,
+        annotationRevision() {
+            // This must be done manually instead of as a computed property, otherwise it
+            // won't work in the popout window.
+            this.annotationsPreparedToRender = markRaw(this.getAnnotationsPreparedToRender());
+            this.refreshAllAnnotations();
+            // The color may change after a detach/swap label action.
+            this.refreshFeatureColors();
         },
     },
+    created() {
+        this.annotationsPreparedToRender = markRaw(this.getAnnotationsPreparedToRender());
+    },
     beforeUnmount() {
-        this.annotationWatchers.forEach(unwatch => unwatch());
-        this.annotationWatchers = [];
         this.videoSource.un('change', this.refreshAllAnnotations);
     },
 };

@@ -2,7 +2,7 @@ import Messages from '@/core/messages/store.js';
 import VideoAnnotationApi from '../api/videoAnnotations.js';
 import {getRoundToPrecision} from '../utils.js';
 import {interpolate} from 'polymorph-js';
-import {ref, watch} from 'vue';
+import {ref} from 'vue';
 
 let SHAPE_CACHE;
 
@@ -61,6 +61,10 @@ export default class Annotation {
 
     set labels(value) {
         this._labels.value = value;
+    }
+
+    get color() {
+        return this.labels?.[0].label.color;
     }
 
     get frames() {
@@ -426,9 +430,5 @@ export default class Annotation {
 
     delete() {
         return VideoAnnotationApi.delete({id: this.id});
-    }
-
-    watch(fn, options) {
-        return watch(this._revision, fn, options);
     }
 }
