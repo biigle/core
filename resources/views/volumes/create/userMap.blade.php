@@ -4,8 +4,8 @@
 
 @push('scripts')
     <script type="module">
-        biigle.$declare('volumes.userMap', {!! $userMap !!});
-        biigle.$declare('volumes.users', {!! $users !!});
+        biigle.$declare('volumes.userMap', {{ Js::from($userMap) }});
+        biigle.$declare('volumes.users', {{ Js::from($users) }});
         biigle.$declare('volumes.ownUserId', {!! $user->id !!});
     </script>
 @endpush

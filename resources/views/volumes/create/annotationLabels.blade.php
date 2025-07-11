@@ -4,7 +4,7 @@
 
 @push('scripts')
     <script type="module">
-        biigle.$declare('volumes.labels', {!! $labels !!});
+        biigle.$declare('volumes.labels', {{ Js::from($labels) }});
     </script>
 @endpush
 

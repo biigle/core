@@ -4,9 +4,9 @@
 
 @push('scripts')
     <script type="module">
-        biigle.$declare('volumes.labelMap', {!! $labelMap !!});
-        biigle.$declare('volumes.labels', {!! $labels !!});
-        biigle.$declare('volumes.labelTrees', {!! $labelTrees !!});
+        biigle.$declare('volumes.labelMap', {{ Js::from($labelMap) }});
+        biigle.$declare('volumes.labels', {{ Js::from($labels) }});
+        biigle.$declare('volumes.labelTrees', {{ Js::from($labelTrees) }});
     </script>
 @endpush
 
