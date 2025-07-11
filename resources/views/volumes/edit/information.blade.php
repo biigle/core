@@ -61,3 +61,108 @@
         </form>
     </div>
 </div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Enabled annotation tools
+    </div>
+    <div class="panel-body">
+        <p class="text-muted">
+            Select which annotation tools should be available when annotating this volume. If none are selected, all tools will be available.
+        </p>
+        <form role="form" method="POST" action="{{ url('api/v1/volumes/'.$volume->id.'/annotation-tools') }}">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="annotation-tools-selector">
+                        <div class="btn-group drawing-controls">
+                            <!-- Point tool -->
+                            <div class="checkbox-control-button">
+                                <input type="checkbox" name="tools[]" id="tool-point" value="point" @if (in_array('point', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-point" class="control-button" title="Draw a point">
+                                    <i class="icon icon-white icon-point"></i>
+                                </label>
+                            </div>
+                            
+                            <!-- Rectangle tool -->
+                            <div class="checkbox-control-button">
+                                <input type="checkbox" name="tools[]" id="tool-rectangle" value="rectangle" @if (in_array('rectangle', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-rectangle" class="control-button" title="Draw a rectangle">
+                                    <i class="icon icon-white icon-rectangle"></i>
+                                </label>
+                            </div>
+                            
+                            <!-- Circle with Ellipse sub-control -->
+                            <div class="checkbox-control-button control-button-with-sub">
+                                <input type="checkbox" name="tools[]" id="tool-circle" value="circle" @if (in_array('circle', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-circle" class="control-button" title="Draw a circle">
+                                    <i class="icon icon-white icon-circle"></i>
+                                </label>
+                                <div class="control-button__sub-controls btn-group">
+                                    <div class="checkbox-control-button">
+                                        <input type="checkbox" name="tools[]" id="tool-ellipse" value="ellipse" @if (in_array('ellipse', $volume->enabledAnnotationTools())) checked @endif>
+                                        <label for="tool-ellipse" class="control-button btn" title="Draw an ellipse">
+                                            <i class="icon icon-white icon-ellipse"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- LineString with Measure sub-controls -->
+                            <div class="checkbox-control-button control-button-with-sub">
+                                <input type="checkbox" name="tools[]" id="tool-linestring" value="linestring" @if (in_array('linestring', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-linestring" class="control-button" title="Draw a line string">
+                                    <i class="icon icon-white icon-linestring"></i>
+                                </label>
+                                <div class="control-button__sub-controls btn-group">
+                                    <div class="checkbox-control-button">
+                                        <input type="checkbox" name="tools[]" id="tool-measure" value="measure" @if (in_array('measure', $volume->enabledAnnotationTools())) checked @endif>
+                                        <label for="tool-measure" class="control-button btn" title="Measure a line string">
+                                            <i class="fa fa-ruler"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Polygon with all sub-tools -->
+                            <div class="checkbox-control-button control-button-with-sub">
+                                <input type="checkbox" name="tools[]" id="tool-polygon" value="polygon" @if (in_array('polygon', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-polygon" class="control-button" title="Draw a polygon">
+                                    <i class="icon icon-white icon-polygon"></i>
+                                </label>
+                                <div class="control-button__sub-controls btn-group">
+                                    <div class="checkbox-control-button">
+                                        <input type="checkbox" name="tools[]" id="tool-polygonbrush" value="polygonbrush" @if (in_array('polygonbrush', $volume->enabledAnnotationTools())) checked @endif>
+                                        <label for="tool-polygonbrush" class="control-button btn" title="Draw a polygon using the brush tool">
+                                            <i class="fa fa-paint-brush"></i>
+                                        </label>
+                                    </div>
+                                    <div class="checkbox-control-button">
+                                        <input type="checkbox" name="tools[]" id="tool-polygonEraser" value="polygonEraser" @if (in_array('polygonEraser', $volume->enabledAnnotationTools())) checked @endif>
+                                        <label for="tool-polygonEraser" class="control-button btn" title="Modify selected polygons using the eraser tool">
+                                            <i class="fa fa-eraser"></i>
+                                        </label>
+                                    </div>
+                                    <div class="checkbox-control-button">
+                                        <input type="checkbox" name="tools[]" id="tool-polygonFill" value="polygonFill" @if (in_array('polygonFill', $volume->enabledAnnotationTools())) checked @endif>
+                                        <label for="tool-polygonFill" class="control-button btn" title="Modify selected polygons using the fill tool">
+                                            <i class="fa fa-fill-drip"></i>
+                                        </label>
+                                    </div>
+                                    <div class="checkbox-control-button">
+                                        <input type="checkbox" name="tools[]" id="tool-magicwand" value="magicwand" @if (in_array('magicwand', $volume->enabledAnnotationTools())) checked @endif>
+                                        <label for="tool-magicwand" class="control-button btn" title="Draw a polygon using the magic wand tool">
+                                            <i class="fa fa-magic"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="_redirect" value="{{ route('volume-edit', $volume->id) }}">
+            <input type="submit" class="btn btn-success" value="Save">
+        </form>
+    </div>
+</div>

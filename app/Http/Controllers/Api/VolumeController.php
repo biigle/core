@@ -120,12 +120,20 @@ class VolumeController extends Controller
      * @apiGroup Volumes
      * @apiName UpdateVolumes
      * @apiPermission projectAdmin
+     * @apiDescription Only project admins of the volume's projects can update it.
      *
      * @apiParam {Number} id The volume ID.
      *
-     * @apiParam (Attributes that can be updated) {String} name Name of the volume.
-     * @apiParam (Attributes that can be updated) {String} url The base URL of the files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume thumbnails.
-     * @apiParam (Attributes that can be updated) {String} handle Handle or DOI of the dataset that is represented by the new volume.
+     * @apiParam (Optional parameters) {String} name New name of the volume.
+     * @apiParam (Optional parameters) {String} url New base URL of the volume files.
+     * @apiParam (Optional parameters) {String} handle New handle or DOI of the volume.
+     * @apiParam (Optional parameters) {string} _redirect If this parameter is present,
+     * this will be a redirect response to the given URL.
+     *
+     * @apiParamExample {String} Request example:
+     * name: 'My volume'
+     * url: 'https://example.com/files'
+     * handle: '10.1000/xyz123'
      *
      */
     public function update(UpdateVolume $request)
@@ -258,4 +266,49 @@ class VolumeController extends Controller
 
         return $ids->pluck('id');
     }
-}
+
+    /**
+     * Updates the enabled annotation tools for a volume.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @api {post} volumes/:id/annotation-tools Update enabled annotation tools
+     * @apiGroup Volumes
+     * @apiName UpdateVolumeAnnotationTools
+     * @apiPermission projectAdmin
+     * @apiDescription Only project admins of the volume's projects can update the enabled annotation tools.
+     *
+     * @apiParam {Number} id The volume ID.
+     *
+     * @apiParam {Array} tools Array of annotation tool names to enable.
+     */
+    public function updateAnnotationTools(Request $request, $id)
+    {
+        $volume = Volume::findOrFail($id);
+        $this->authorize('update', $volume);
+        
+        $tools = $request->input('tools', []);
+        $volume->setEnabledAnnotationTools($tools);
+        $volume->save();
+
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
+                ->with('saved', true);
+        }
+
+        return response('OK');
+    }
+
+    /**
+     * Export area of a volume.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     * @api {get} volumes/:id/export-area Get the export area
+     * @apiGroup Volumes
+     * @apiName ShowVolumesExportArea
+     * @apiPermission projectMember
+     * @apiDescription Only members of one of the volume's projects can retrieve this.
+     *
+     * @apiParam {Number} id The volume ID.

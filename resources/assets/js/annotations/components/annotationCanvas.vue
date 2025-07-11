@@ -150,6 +150,21 @@ export default {
             type: Number,
             required: true,
         },
+        enabledAnnotationTools: {
+            type: Array,
+            default() {
+                return biigle.$require('annotations.enabledAnnotationTools') || [
+                    'point',
+                    'rectangle',
+                    'circle',
+                    'ellipse',
+                    'linestring',
+                    'polygon',
+                    'polygonbrush',
+                    'magicwand',
+                ];
+            },
+        },
     },
     data() {
         return {
@@ -704,6 +719,104 @@ export default {
             setTimeout(() => {
                 feature.setStyle(Styles.highlight);
             }, 200);
+        },
+        
+        /**
+         * Check if a tool is enabled for this volume
+         *
+         * @param {string} tool
+         * @return {boolean}
+         */
+        isToolEnabled(tool) {
+            return this.enabledAnnotationTools.includes(tool);
+        },
+        
+        /**
+         * Draw a point if the tool is enabled
+         */
+        drawPoint() {
+            if (this.isToolEnabled('point')) {
+                this.draw('Point');
+            }
+        },
+        
+        /**
+         * Draw a rectangle if the tool is enabled
+         */
+        drawRectangle() {
+            if (this.isToolEnabled('rectangle')) {
+                this.draw('Rectangle');
+            }
+        },
+        
+        /**
+         * Draw a circle if the tool is enabled
+         */
+        drawCircle() {
+            if (this.isToolEnabled('circle')) {
+                this.draw('Circle');
+            }
+        },
+        
+        /**
+         * Draw an ellipse if the tool is enabled
+         */
+        drawEllipse() {
+            if (this.isToolEnabled('ellipse')) {
+                this.draw('Ellipse');
+            }
+        },
+        
+        /**
+         * Draw a linestring if the tool is enabled
+         */
+        drawLineString() {
+            if (this.isToolEnabled('linestring')) {
+                this.draw('LineString');
+            }
+        },
+        
+        /**
+         * Draw a polygon if the tool is enabled
+         */
+        drawPolygon() {
+            if (this.isToolEnabled('polygon')) {
+                this.draw('Polygon');
+            }
+        },
+        
+        /**
+         * Toggle polygon brush if the tool is enabled
+         */
+        togglePolygonBrush() {
+            if (this.isToolEnabled('polygonbrush')) {
+                if (this.isUsingPolygonBrush) {
+                    this.interactionMode = 'default';
+                } else if (this.canAdd) {
+                    if (!this.hasSelectedLabel) {
+                        this.requireSelectedLabel();
+                    } else {
+                        this.interactionMode = 'polygonBrush';
+                    }
+                }
+            }
+        },
+        
+        /**
+         * Toggle magic wand if the tool is enabled
+         */
+        toggleMagicWand() {
+            if (this.isToolEnabled('magicwand')) {
+                if (this.isMagicWanding) {
+                    this.interactionMode = 'default';
+                } else if (this.canAdd) {
+                    if (!this.hasSelectedLabel) {
+                        this.requireSelectedLabel();
+                    } else {
+                        this.interactionMode = 'magicWand';
+                    }
+                }
+            }
         },
     },
     watch: {

@@ -374,6 +374,8 @@ $router->resource('volumes', 'VolumeController', [
     'parameters' => ['volumes' => 'id'],
 ]);
 
+$router->post('volumes/{id}/annotation-tools', 'VolumeController@updateAnnotationTools');
+
 $router->resource('volumes.annotation-sessions', 'VolumeAnnotationSessionController', [
     'only' => ['index', 'store'],
     'parameters' => ['volumes' => 'id'],
