@@ -111,6 +111,16 @@ export default {
                 this.selectedAnnotationTools.push('wholeframe');
             }
             
+            if (this.isImageMediaType) {
+                // Add image-specific tools that should be enabled by default
+                const imageSpecificTools = ['ellipse', 'measure', 'magicwand', 'magicsam'];
+                imageSpecificTools.forEach(tool => {
+                    if (!this.selectedAnnotationTools.includes(tool)) {
+                        this.selectedAnnotationTools.push(tool);
+                    }
+                });
+            }
+            
             // If no tools are selected after filtering, select all available tools
             if (this.selectedAnnotationTools.length === 0) {
                 this.selectedAnnotationTools = [...this.availableAnnotationTools];
@@ -120,6 +130,8 @@ export default {
     created() {
         this.mediaType = biigle.$require('volumes.mediaType');
         this.parsers = biigle.$require('volumes.parsers');
+        // Update tools for the initial media type
+        this.updateToolsForMediaType();
         // Used to hide a dummy button that masks a flashing selected state on load.
         this.initialized = true;
     },
