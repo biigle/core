@@ -49,7 +49,7 @@
                 
                 <div class="annotation-tools-selector">
                     <div class="btn-group drawing-controls">
-                        <!-- Point tool -->
+                        <!-- Point tool (Both - supports object tracking for video) -->
                         <div class="checkbox-control-button">
                             <input type="checkbox" name="annotation_tools[]" id="create-tool-point" value="point" v-model="selectedAnnotationTools">
                             <label for="create-tool-point" class="control-button" title="Draw a point">
@@ -57,7 +57,7 @@
                             </label>
                         </div>
                         
-                        <!-- Rectangle tool -->
+                        <!-- Rectangle tool (Both) -->
                         <div class="checkbox-control-button">
                             <input type="checkbox" name="annotation_tools[]" id="create-tool-rectangle" value="rectangle" v-model="selectedAnnotationTools">
                             <label for="create-tool-rectangle" class="control-button" title="Draw a rectangle">
@@ -65,8 +65,8 @@
                             </label>
                         </div>
                         
-                        <!-- Circle with Ellipse sub-control -->
-                        <div class="checkbox-control-button control-button-with-sub">
+                        <!-- Circle with Ellipse sub-control (Image only) -->
+                        <div class="checkbox-control-button control-button-with-sub" v-show="isImageMediaType">
                             <input type="checkbox" name="annotation_tools[]" id="create-tool-circle" value="circle" v-model="selectedAnnotationTools">
                             <label for="create-tool-circle" class="control-button" title="Draw a circle">
                                 <i class="icon icon-white icon-circle"></i>
@@ -81,8 +81,23 @@
                             </div>
                         </div>
                         
-                        <!-- LineString with Measure sub-controls -->
-                        <div class="checkbox-control-button control-button-with-sub">
+                        <!-- Circle tool (Video only - supports object tracking) -->
+                        <div class="checkbox-control-button" v-show="isVideoMediaType">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-circle-video" value="circle" v-model="selectedAnnotationTools">
+                            <label for="create-tool-circle-video" class="control-button" title="Draw a circle">
+                                <i class="icon icon-white icon-circle"></i>
+                            </label>
+                        </div>
+                        
+                        <!-- LineString with Measure sub-controls (Image has measure, Video doesn't) -->
+                        <div class="checkbox-control-button" v-show="isVideoMediaType" v-bind:class="{'control-button-with-sub': false}">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-linestring-video" value="linestring" v-model="selectedAnnotationTools">
+                            <label for="create-tool-linestring-video" class="control-button" title="Draw a line string">
+                                <i class="icon icon-white icon-linestring"></i>
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-control-button control-button-with-sub" v-show="isImageMediaType">
                             <input type="checkbox" name="annotation_tools[]" id="create-tool-linestring" value="linestring" v-model="selectedAnnotationTools">
                             <label for="create-tool-linestring" class="control-button" title="Draw a line string">
                                 <i class="icon icon-white icon-linestring"></i>
@@ -97,7 +112,7 @@
                             </div>
                         </div>
                         
-                        <!-- Polygon with all sub-tools -->
+                        <!-- Polygon tools with sub-tools for both media types -->
                         <div class="checkbox-control-button control-button-with-sub">
                             <input type="checkbox" name="annotation_tools[]" id="create-tool-polygon" value="polygon" v-model="selectedAnnotationTools">
                             <label for="create-tool-polygon" class="control-button" title="Draw a polygon">
@@ -122,19 +137,21 @@
                                         <i class="fa fa-fill-drip"></i>
                                     </label>
                                 </div>
-                                <div class="checkbox-control-button">
+                                <div class="checkbox-control-button" v-show="isImageMediaType">
                                     <input type="checkbox" name="annotation_tools[]" id="create-tool-magicwand" value="magicwand" v-model="selectedAnnotationTools">
                                     <label for="create-tool-magicwand" class="control-button" title="Draw a polygon using the magic wand tool">
                                         <i class="fa fa-magic"></i>
                                     </label>
                                 </div>
-                                <div class="checkbox-control-button">
-                                    <input type="checkbox" name="annotation_tools[]" id="create-tool-magicsam" value="magicsam" v-model="selectedAnnotationTools">
-                                    <label for="create-tool-magicsam" class="control-button" title="Draw a polygon using the magic sam tool">
-                                        <i class="fa fa-hat-wizard"></i>
-                                    </label>
-                                </div>
                             </div>
+                        </div>
+                        
+                        <!-- WholeFrame tool (Video only) -->
+                        <div class="checkbox-control-button" v-show="isVideoMediaType">
+                            <input type="checkbox" name="annotation_tools[]" id="create-tool-wholeframe" value="wholeframe" v-model="selectedAnnotationTools">
+                            <label for="create-tool-wholeframe" class="control-button" title="Mark the whole frame">
+                                <i class="icon icon-white icon-wholeframe"></i>
+                            </label>
                         </div>
                     </div>
                 </div>

@@ -76,23 +76,24 @@
                 <div class="col-sm-12">
                     <div class="annotation-tools-selector">
                         <div class="btn-group drawing-controls">
-                            <!-- Point tool -->
-                            <div class="checkbox-control-button">
-                                <input type="checkbox" name="tools[]" id="tool-point" value="point" @if (in_array('point', $volume->enabledAnnotationTools())) checked @endif>
-                                <label for="tool-point" class="control-button" title="Draw a point">
-                                    <i class="icon icon-white icon-point"></i>
-                                </label>
-                            </div>
-                            
-                            <!-- Rectangle tool -->
-                            <div class="checkbox-control-button">
-                                <input type="checkbox" name="tools[]" id="tool-rectangle" value="rectangle" @if (in_array('rectangle', $volume->enabledAnnotationTools())) checked @endif>
-                                <label for="tool-rectangle" class="control-button" title="Draw a rectangle">
-                                    <i class="icon icon-white icon-rectangle"></i>
-                                </label>
-                            </div>
-                            
-                            <!-- Circle with Ellipse sub-control -->
+                        <!-- Point tool (Both - supports object tracking for video) -->
+                        <div class="checkbox-control-button">
+                            <input type="checkbox" name="tools[]" id="tool-point" value="point" @if (in_array('point', $volume->enabledAnnotationTools())) checked @endif>
+                            <label for="tool-point" class="control-button" title="Draw a point">
+                                <i class="icon icon-white icon-point"></i>
+                            </label>
+                        </div>
+                        
+                        <!-- Rectangle tool (Both) -->
+                        <div class="checkbox-control-button">
+                            <input type="checkbox" name="tools[]" id="tool-rectangle" value="rectangle" @if (in_array('rectangle', $volume->enabledAnnotationTools())) checked @endif>
+                            <label for="tool-rectangle" class="control-button" title="Draw a rectangle">
+                                <i class="icon icon-white icon-rectangle"></i>
+                            </label>
+                        </div>
+                        
+                        @if ($volume->isImageVolume())
+                            <!-- Circle with Ellipse sub-control (Image only) -->
                             <div class="checkbox-control-button control-button-with-sub">
                                 <input type="checkbox" name="tools[]" id="tool-circle" value="circle" @if (in_array('circle', $volume->enabledAnnotationTools())) checked @endif>
                                 <label for="tool-circle" class="control-button" title="Draw a circle">
@@ -108,7 +109,7 @@
                                 </div>
                             </div>
                             
-                            <!-- LineString with Measure sub-controls -->
+                            <!-- LineString with Measure sub-controls (Image only) -->
                             <div class="checkbox-control-button control-button-with-sub">
                                 <input type="checkbox" name="tools[]" id="tool-linestring" value="linestring" @if (in_array('linestring', $volume->enabledAnnotationTools())) checked @endif>
                                 <label for="tool-linestring" class="control-button" title="Draw a line string">
@@ -123,9 +124,29 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Polygon with all sub-tools -->
-                            <div class="checkbox-control-button control-button-with-sub">
+                        @endif
+                        
+                        @if ($volume->isVideoVolume())
+                            <div class="checkbox-control-button">
+                                <input type="checkbox" name="tools[]" id="tool-circle-video" value="circle" @if (in_array('circle', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-circle-video" class="control-button" title="Draw a circle">
+                                    <i class="icon icon-white icon-circle"></i>
+                                </label>
+                            </div>
+                        @endif
+
+                        
+                        @if ($volume->isVideoVolume())
+                            <div class="checkbox-control-button">
+                                <input type="checkbox" name="tools[]" id="tool-linestring-video" value="linestring" @if (in_array('linestring', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-linestring-video" class="control-button" title="Draw a line string">
+                                    <i class="icon icon-white icon-linestring"></i>
+                                </label>
+                            </div>
+                        @endif
+                        
+                        
+                        <div class="checkbox-control-button control-button-with-sub">
                                 <input type="checkbox" name="tools[]" id="tool-polygon" value="polygon" @if (in_array('polygon', $volume->enabledAnnotationTools())) checked @endif>
                                 <label for="tool-polygon" class="control-button" title="Draw a polygon">
                                     <i class="icon icon-white icon-polygon"></i>
@@ -149,21 +170,26 @@
                                             <i class="fa fa-fill-drip"></i>
                                         </label>
                                     </div>
-                                    <div class="checkbox-control-button">
-                                        <input type="checkbox" name="tools[]" id="tool-magicwand" value="magicwand" @if (in_array('magicwand', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-magicwand" class="control-button" title="Draw a polygon using the magic wand tool">
-                                            <i class="fa fa-magic"></i>
-                                        </label>
-                                    </div>
-                                    <div class="checkbox-control-button">
-                                        <input type="checkbox" name="tools[]" id="tool-magicsam" value="magicsam" @if (in_array('magicsam', $volume->enabledAnnotationTools())) checked @endif>
-                                        <label for="tool-magicsam" class="control-button" title="Draw a polygon using the magic sam tool">
-                                            <i class="fa fa-hat-wizard"></i>
-                                        </label>
-                                    </div>
+                                    @if ($volume->isImageVolume())
+                                        <div class="checkbox-control-button">
+                                            <input type="checkbox" name="tools[]" id="tool-magicwand" value="magicwand" @if (in_array('magicwand', $volume->enabledAnnotationTools())) checked @endif>
+                                            <label for="tool-magicwand" class="control-button" title="Draw a polygon using the magic wand tool">
+                                                <i class="fa fa-magic"></i>
+                                            </label>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                        </div>
+                        
+                        @if ($volume->isVideoVolume())
+                            <div class="checkbox-control-button">
+                                <input type="checkbox" name="tools[]" id="tool-wholeframe" value="wholeframe" @if (in_array('wholeframe', $volume->enabledAnnotationTools())) checked @endif>
+                                <label for="tool-wholeframe" class="control-button" title="Mark the whole frame">
+                                    <i class="icon icon-white icon-wholeframe"></i>
+                                </label>
+                            </div>
+                        @endif
+                    </div>
                     </div>
                 </div>
             </div>

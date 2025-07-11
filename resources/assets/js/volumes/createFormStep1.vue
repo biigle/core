@@ -21,7 +21,7 @@ export default {
             selectedParser: null,
             selectedAnnotationTools: [
                 'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
-                'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+                'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand'
             ],
         };
     },
@@ -53,9 +53,20 @@ export default {
         availableParsers() {
             return this.parsers[this.mediaType] || [];
         },
+        availableAnnotationTools() {
+            if (this.isVideoMediaType) {
+                // Video volumes support: point, rectangle, circle, linestring, polygon, polygonbrush, polygonEraser, polygonFill, wholeframe
+                return ['point', 'rectangle', 'circle', 'linestring', 'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'wholeframe'];
+            } else {
+                // Image volumes support all tools except wholeframe
+                return [
+                    'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
+                    'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand'
+                ];
+            }
+        },
         allAnnotationToolsSelected() {
-            // All 11 tools: point, rectangle, circle, ellipse, linestring, measure, polygon, polygonbrush, polygonEraser, polygonFill, magicwand, magicsam
-            return this.selectedAnnotationTools.length === 12;
+            return this.selectedAnnotationTools.length === this.availableAnnotationTools.length;
         },
         allToolsSelectedText() {
             return this.allAnnotationToolsSelected ? 'Deselect all tools' : 'Select all tools';
@@ -67,9 +78,11 @@ export default {
     methods: {
         selectImageMediaType() {
             this.mediaType = MEDIA_TYPE.IMAGE;
+            this.updateToolsForMediaType();
         },
         selectVideoMediaType() {
             this.mediaType = MEDIA_TYPE.VIDEO;
+            this.updateToolsForMediaType();
         },
         selectFile(parser) {
             this.selectedParser = parser;
@@ -84,10 +97,17 @@ export default {
             if (this.allAnnotationToolsSelected) {
                 this.selectedAnnotationTools = [];
             } else {
-                this.selectedAnnotationTools = [
-                    'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
-                    'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
-                ];
+                this.selectedAnnotationTools = [...this.availableAnnotationTools];
+            }
+        },
+        updateToolsForMediaType() {
+            // Filter selected tools to only include those available for the current media type
+            this.selectedAnnotationTools = this.selectedAnnotationTools.filter(tool => 
+                this.availableAnnotationTools.includes(tool)
+            );
+            // If no tools are selected after filtering, select all available tools
+            if (this.selectedAnnotationTools.length === 0) {
+                this.selectedAnnotationTools = [...this.availableAnnotationTools];
             }
         },
     },

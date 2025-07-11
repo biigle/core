@@ -99,11 +99,26 @@ class PendingVolume extends Model
     }
 
     /**
-     * Available annotation tools.
+     * Available annotation tools for image volumes.
+     */
+    const IMAGE_ANNOTATION_TOOLS = [
+        'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure',
+        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand'
+    ];
+
+    /**
+     * Available annotation tools for video volumes.
+     */
+    const VIDEO_ANNOTATION_TOOLS = [
+        'point', 'rectangle', 'circle', 'linestring', 'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'wholeframe'
+    ];
+
+    /**
+     * All available annotation tools (for backward compatibility).
      */
     const ANNOTATION_TOOLS = [
         'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure',
-        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'wholeframe'
     ];
 
     /**
@@ -113,7 +128,28 @@ class PendingVolume extends Model
      */
     public function enabledAnnotationTools()
     {
-        return $this->getJsonAttr('enabled_annotation_tools', static::ANNOTATION_TOOLS);
+        $defaultTools = $this->isImageVolume() ? static::IMAGE_ANNOTATION_TOOLS : static::VIDEO_ANNOTATION_TOOLS;
+        return $this->getJsonAttr('enabled_annotation_tools', $defaultTools);
+    }
+
+    /**
+     * Check if this is an image volume.
+     *
+     * @return bool
+     */
+    public function isImageVolume()
+    {
+        return $this->media_type_id === \Biigle\MediaType::imageId();
+    }
+
+    /**
+     * Check if this is a video volume.
+     *
+     * @return bool
+     */
+    public function isVideoVolume()
+    {
+        return $this->media_type_id === \Biigle\MediaType::videoId();
     }
 
     /**

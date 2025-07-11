@@ -40,7 +40,43 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
 
     /**
-     * Available annotation tools.
+     * Available annotation tools for image volumes.
+     *
+     * @var array
+     */
+    const IMAGE_ANNOTATION_TOOLS = [
+        'point',
+        'rectangle',
+        'circle',
+        'ellipse',
+        'linestring',
+        'measure',
+        'polygon',
+        'polygonbrush',
+        'polygonEraser',
+        'polygonFill',
+        'magicwand',
+    ];
+
+    /**
+     * Available annotation tools for video volumes.
+     *
+     * @var array
+     */
+    const VIDEO_ANNOTATION_TOOLS = [
+        'point',
+        'rectangle',
+        'circle',
+        'linestring',
+        'polygon',
+        'polygonbrush',
+        'polygonEraser',
+        'polygonFill',
+        'wholeframe',
+    ];
+
+    /**
+     * All available annotation tools (for backward compatibility).
      *
      * @var array
      */
@@ -56,7 +92,7 @@ class Volume extends Model
         'polygonEraser',
         'polygonFill',
         'magicwand',
-        'magicsam',
+        'wholeframe',
     ];
 
     /**
@@ -565,7 +601,7 @@ class Volume extends Model
 
     /**
      * Get the list of enabled annotation tools for this volume.
-     * If no specific tools are enabled, all tools are enabled.
+     * If no specific tools are enabled, all tools for the media type are enabled.
      *
      * @return array
      */
@@ -574,7 +610,7 @@ class Volume extends Model
         $tools = $this->getJsonAttr(self::ENABLED_ANNOTATION_TOOLS_ATTRIBUTE);
         
         if (empty($tools)) {
-            return self::ANNOTATION_TOOLS;
+            return $this->isImageVolume() ? self::IMAGE_ANNOTATION_TOOLS : self::VIDEO_ANNOTATION_TOOLS;
         }
         
         return $tools;
