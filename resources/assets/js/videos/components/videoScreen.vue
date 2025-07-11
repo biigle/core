@@ -325,11 +325,10 @@
                 ></mouse-position-indicator>
         </div>
         <div class="indicators indicators--right">
-            <div
-                class="indicator"
+            <label-indicator
                 v-if="selectedLabel"
-                v-text="selectedLabel.name"
-                ></div>
+                :label="selectedLabel"
+                ></label-indicator>
         </div>
     </div>
 </template>
@@ -341,6 +340,7 @@ import ControlButton from '@/annotations/components/controlButton.vue';
 import DrawInteractions from './videoScreen/drawInteractions.vue';
 import Indicators from './videoScreen/indicators.vue';
 import Keyboard from '@/core/keyboard.js';
+import LabelIndicator from '@/annotations/components/labelIndicator.vue';
 import Map from '@biigle/ol/Map';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
@@ -382,6 +382,7 @@ export default {
     components: {
         controlButton: ControlButton,
         minimap: Minimap,
+        labelIndicator: LabelIndicator,
     },
     props: {
         annotations: {
