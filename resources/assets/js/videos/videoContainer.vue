@@ -348,7 +348,7 @@ export default {
             this.selectedLabel = null;
         },
         deleteSelectedAnnotationsOrKeyframes(force) {
-            if (this.selectAnnotations.length === 0) {
+            if (this.selectedAnnotations.length === 0) {
                 return;
             }
 

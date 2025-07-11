@@ -70,6 +70,10 @@ const proxy = {
             this.$refs.videoScreen.reset();
         },
         deleteSelectedAnnotationsOrKeyframes() {
+            if (this.selectedAnnotations.length === 0) {
+                return;
+            }
+
             // Override this method to show the confirmation dialog in the window the
             // deletion was requested.
             if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
