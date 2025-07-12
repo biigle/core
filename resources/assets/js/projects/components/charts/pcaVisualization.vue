@@ -406,7 +406,14 @@ export default {
             if (this.chart && this.hasLoaded) {
                 // Clear and recreate chart when switching between 2D/3D to prevent axis overlap
                 this.chart.dispose();
-                this.initChart();
+                
+                // For t-SNE, we need to recompute with different dimensions
+                if (this.method === 'tsne' && !this.processing) {
+                    this.processedData = [];
+                    this.processData();
+                } else {
+                    this.initChart();
+                }
             }
         },
         method() {
@@ -566,17 +573,20 @@ export default {
                 
                 // Configure t-SNE parameters
                 const perplexity = Math.min(30, Math.max(5, Math.floor(numSamples / 4)));
+                const dimensions = this.is3D ? 3 : 2;
                 
                 // Simple t-SNE implementation
-                const embedding = await this.runSimpleTSNE(vectors, perplexity);
+                const embedding = await this.runSimpleTSNE(vectors, perplexity, dimensions);
                 
                 // Check if embedding was computed successfully
                 if (!embedding || embedding.length === 0) {
                     throw new Error('t-SNE computation returned empty result');
                 }
                 
-                // Convert to 3D format (adding z=0)
-                const embedding3D = embedding.map(point => [point[0], point[1], 0]);
+                // Convert to 3D format (adding z=0 for 2D, or keep 3D as-is)
+                const embedding3D = this.is3D ? 
+                    embedding : 
+                    embedding.map(point => [point[0], point[1], 0]);
                 
                 // Normalize to [-1, 1] range and combine with metadata
                 this.processedData = this.normalizeEmbedding(embedding3D);
@@ -620,17 +630,18 @@ export default {
                 this.processing = false;
             }
         },
-        async runSimpleTSNE(vectors, perplexity = 30) {
+        async runSimpleTSNE(vectors, perplexity = 30, outputDims = 2) {
             const n = vectors.length;
             const dims = vectors[0].length;
             
-            // Initialize 2D embedding randomly
+            // Initialize embedding randomly
             const Y = [];
             for (let i = 0; i < n; i++) {
-                Y.push([
-                    (Math.random() - 0.5) * 0.0001, // Very small initial values
-                    (Math.random() - 0.5) * 0.0001
-                ]);
+                const point = [];
+                for (let d = 0; d < outputDims; d++) {
+                    point.push((Math.random() - 0.5) * 0.0001); // Very small initial values
+                }
+                Y.push(point);
             }
             
             // Calculate pairwise squared distances in high dimension
@@ -730,8 +741,8 @@ export default {
             
             // Initialize gains and momentum
             for (let i = 0; i < n; i++) {
-                gains[i] = [1, 1];
-                uY[i] = [0, 0];
+                gains[i] = new Array(outputDims).fill(1);
+                uY[i] = new Array(outputDims).fill(0);
             }
             
             // Run optimization
@@ -744,9 +755,11 @@ export default {
                     Q[i] = [];
                     for (let j = 0; j < n; j++) {
                         if (i !== j) {
-                            const dx = Y[i][0] - Y[j][0];
-                            const dy = Y[i][1] - Y[j][1];
-                            const dist = dx * dx + dy * dy;
+                            let dist = 0;
+                            for (let d = 0; d < outputDims; d++) {
+                                const diff = Y[i][d] - Y[j][d];
+                                dist += diff * diff;
+                            }
                             Q[i][j] = 1 / (1 + dist);
                             qSum += Q[i][j];
                         } else {
@@ -768,19 +781,20 @@ export default {
                 // Calculate gradients
                 let dY = [];
                 for (let i = 0; i < n; i++) {
-                    dY[i] = [0, 0];
+                    dY[i] = new Array(outputDims).fill(0);
                     for (let j = 0; j < n; j++) {
                         if (i !== j) {
                             const mult = 4 * (P[i][j] - Q[i][j]) * Q[i][j] * qSum;
-                            dY[i][0] += mult * (Y[i][0] - Y[j][0]);
-                            dY[i][1] += mult * (Y[i][1] - Y[j][1]);
+                            for (let d = 0; d < outputDims; d++) {
+                                dY[i][d] += mult * (Y[i][d] - Y[j][d]);
+                            }
                         }
                     }
                 }
                 
                 // Update Y using momentum and adaptive gains
                 for (let i = 0; i < n; i++) {
-                    for (let dim = 0; dim < 2; dim++) {
+                    for (let dim = 0; dim < outputDims; dim++) {
                         if (Math.sign(dY[i][dim]) !== Math.sign(uY[i][dim])) {
                             gains[i][dim] += 0.2;
                         } else {
@@ -800,17 +814,20 @@ export default {
                 
                 // Center the data
                 if (iter % 10 === 0) {
-                    let meanY = [0, 0];
+                    let meanY = new Array(outputDims).fill(0);
                     for (let i = 0; i < n; i++) {
-                        meanY[0] += Y[i][0];
-                        meanY[1] += Y[i][1];
+                        for (let d = 0; d < outputDims; d++) {
+                            meanY[d] += Y[i][d];
+                        }
                     }
-                    meanY[0] /= n;
-                    meanY[1] /= n;
+                    for (let d = 0; d < outputDims; d++) {
+                        meanY[d] /= n;
+                    }
                     
                     for (let i = 0; i < n; i++) {
-                        Y[i][0] -= meanY[0];
-                        Y[i][1] -= meanY[1];
+                        for (let d = 0; d < outputDims; d++) {
+                            Y[i][d] -= meanY[d];
+                        }
                     }
                 }
                 
@@ -820,11 +837,14 @@ export default {
                 }
             }
             
-            // Final validation
-            const result = Y.map(point => [
-                isNaN(point[0]) || !isFinite(point[0]) ? 0 : point[0],
-                isNaN(point[1]) || !isFinite(point[1]) ? 0 : point[1]
-            ]);
+            // Final validation - return all dimensions
+            const result = Y.map(point => {
+                const validatedPoint = [];
+                for (let d = 0; d < outputDims; d++) {
+                    validatedPoint.push(isNaN(point[d]) || !isFinite(point[d]) ? 0 : point[d]);
+                }
+                return validatedPoint;
+            });
             
             return result;
         },
@@ -844,7 +864,7 @@ export default {
             // Extract x, y, z coordinates
             const x_values = embedding.map(point => point[0]);
             const y_values = embedding.map(point => point[1]);
-            const z_values = embedding.map(point => point[2] || 0);
+            const z_values = embedding.map(point => point.length > 2 ? point[2] : 0);
             
             // Check if we have valid coordinates
             if (x_values.some(x => x === null || x === undefined || isNaN(x)) ||
