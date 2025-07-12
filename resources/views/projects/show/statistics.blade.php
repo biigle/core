@@ -52,5 +52,8 @@
         :source-target-labels="computedData.sourceTargetLabels"
         :container="container"
         ></net-map>
+    <pca-visualization
+        :project-id="{{$project->id}}"
+        ></pca-visualization>
 </div>
 @endsection

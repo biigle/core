@@ -40,4 +40,27 @@ class VideoAnnotationLabelFeatureVector extends Model
         'vector',
     ];
 
+    /**
+     * The label that this feature vector belongs to.
+     */
+    public function label()
+    {
+        return $this->belongsTo(Label::class);
+    }
+
+    /**
+     * The annotation that this feature vector belongs to.
+     */
+    public function annotation()
+    {
+        return $this->belongsTo(VideoAnnotation::class, 'annotation_id');
+    }
+
+    /**
+     * The volume that this feature vector belongs to.
+     */
+    public function volume()
+    {
+        return $this->belongsTo(Volume::class);
+    }
 }

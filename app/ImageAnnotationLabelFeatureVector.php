@@ -39,4 +39,28 @@ class ImageAnnotationLabelFeatureVector extends Model
         'volume_id',
         'vector',
     ];
+
+    /**
+     * The label that this feature vector belongs to.
+     */
+    public function label()
+    {
+        return $this->belongsTo(Label::class);
+    }
+
+    /**
+     * The annotation that this feature vector belongs to.
+     */
+    public function annotation()
+    {
+        return $this->belongsTo(ImageAnnotation::class, 'annotation_id');
+    }
+
+    /**
+     * The volume that this feature vector belongs to.
+     */
+    public function volume()
+    {
+        return $this->belongsTo(Volume::class);
+    }
 }

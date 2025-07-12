@@ -4,6 +4,7 @@ import SankeyPlot from './components/charts/sankeyPlot.vue';
 import PieChart from './components/charts/pieChart.vue';
 import NetMap from './components/charts/netmapDisplay.vue';
 import PieLabel from './components/charts/pieLabelChart.vue';
+import PcaVisualization from './components/charts/pcaVisualization.vue';
 
 export default {
     data() {
@@ -35,7 +36,8 @@ export default {
         pieChart: PieChart,
         sankeyPlot: SankeyPlot,
         pieLabel: PieLabel,
-        netMap: NetMap
+        netMap: NetMap,
+        pcaVisualization: PcaVisualization
     },
     computed: {
         toggleImageVolumesClass() {

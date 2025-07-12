@@ -243,6 +243,10 @@ $router->post('projects/{id}/reports', [
     'uses' => 'ProjectReportController@store',
 ]);
 
+$router->get('projects/{id}/pca-visualization', [
+    'uses' => 'Projects\\PcaVisualizationController@index',
+]);
+
 $router->resource('project-invitations', 'ProjectInvitationController', [
     'only' => ['destroy'],
     'parameters' => ['project-invitations' => 'id'],
