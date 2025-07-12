@@ -71,6 +71,12 @@ class PendingVolumeController extends Controller
             $pv->saveMetadata($request->file('metadata_file'));
         }
 
+        // Store annotation tools selection
+        if ($request->has('annotation_tools')) {
+            $pv->setEnabledAnnotationTools($request->input('annotation_tools'));
+            $pv->save();
+        }
+
         if ($this->isAutomatedRequest()) {
             return $pv;
         }
@@ -176,6 +182,12 @@ class PendingVolumeController extends Controller
             ]);
 
             $pv->project->volumes()->attach($volume);
+
+            // Transfer annotation tools settings from pending volume to volume
+            if ($pv->enabledAnnotationTools() !== $pv::ANNOTATION_TOOLS) {
+                $volume->setEnabledAnnotationTools($pv->enabledAnnotationTools());
+                $volume->save();
+            }
 
             if ($pv->hasMetadata()) {
                 $volume->update([

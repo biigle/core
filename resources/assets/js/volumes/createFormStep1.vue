@@ -19,6 +19,13 @@ export default {
             initialized: false,
             parsers: [],
             selectedParser: null,
+            selectedImageAnnotationTools: [
+                'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
+                'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+            ],
+            selectedVideoAnnotationTools: [
+                'point', 'rectangle', 'circle', 'linestring', 'polygon', 'wholeframe'
+            ],
         };
     },
     computed: {
@@ -49,13 +56,48 @@ export default {
         availableParsers() {
             return this.parsers[this.mediaType] || [];
         },
+        availableAnnotationTools() {
+            if (this.isVideoMediaType) {
+                // Video volumes support: point, rectangle, circle, linestring, polygon, polygonbrush, polygonEraser, polygonFill, wholeframe
+                return ['point', 'rectangle', 'circle', 'linestring', 'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'wholeframe'];
+            } else {
+                // Image volumes support all tools except wholeframe
+                return [
+                    'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
+                    'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+                ];
+            }
+        },
+        selectedAnnotationTools: {
+            get() {
+                return this.isVideoMediaType ? this.selectedVideoAnnotationTools : this.selectedImageAnnotationTools;
+            },
+            set(value) {
+                if (this.isVideoMediaType) {
+                    this.selectedVideoAnnotationTools = value;
+                } else {
+                    this.selectedImageAnnotationTools = value;
+                }
+            }
+        },
+        allAnnotationToolsSelected() {
+            return this.selectedAnnotationTools.length === this.availableAnnotationTools.length;
+        },
+        allToolsSelectedText() {
+            return this.allAnnotationToolsSelected ? 'Deselect all tools' : 'Select all tools';
+        },
+        toggleAllToolsIcon() {
+            return this.allAnnotationToolsSelected ? 'fa fa-times' : 'fa fa-check';
+        },
     },
     methods: {
         selectImageMediaType() {
             this.mediaType = MEDIA_TYPE.IMAGE;
+            this.updateToolsForMediaType();
         },
         selectVideoMediaType() {
             this.mediaType = MEDIA_TYPE.VIDEO;
+            this.updateToolsForMediaType();
         },
         selectFile(parser) {
             this.selectedParser = parser;
@@ -66,10 +108,41 @@ export default {
         handleSelectedFile() {
             this.hasFile = this.$refs.metadataFileField.files.length > 0;
         },
+        toggleAllAnnotationTools() {
+            if (this.allAnnotationToolsSelected) {
+                this.selectedAnnotationTools = [];
+            } else {
+                this.selectedAnnotationTools = [...this.availableAnnotationTools];
+            }
+        },
+        updateToolsForMediaType() {
+            // Each media type now has its own tool selection, so we just need to
+            // ensure that the current selection has appropriate tools enabled
+            const currentTools = this.selectedAnnotationTools;
+            
+            // If no tools are selected for this media type, select all available tools
+            if (currentTools.length === 0) {
+                this.selectedAnnotationTools = [...this.availableAnnotationTools];
+            } else {
+                // Filter out any tools that are not available for this media type
+                const filteredTools = currentTools.filter(tool => 
+                    this.availableAnnotationTools.includes(tool)
+                );
+                
+                // If filtering removed all tools, select all available tools
+                if (filteredTools.length === 0) {
+                    this.selectedAnnotationTools = [...this.availableAnnotationTools];
+                } else {
+                    this.selectedAnnotationTools = filteredTools;
+                }
+            }
+        },
     },
     created() {
         this.mediaType = biigle.$require('volumes.mediaType');
         this.parsers = biigle.$require('volumes.parsers');
+        // Update tools for the initial media type
+        this.updateToolsForMediaType();
         // Used to hide a dummy button that masks a flashing selected state on load.
         this.initialized = true;
     },

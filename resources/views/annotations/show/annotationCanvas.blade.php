@@ -46,21 +46,24 @@
         <div class="btn-group drawing-controls" v-if="canAdd" @cannot('add-annotation') v-cloak @endcannot>
             <control-button
                 icon="icon-point"
-                title="Set a point 𝗔"
+                title="Draw a point 𝗔"
                 :active="isDrawingPoint"
                 v-on:click="drawPoint"
+                :disabled="!isToolEnabled('point')"
                 ></control-button>
             <control-button
                 icon="icon-rectangle"
                 title="Draw a rectangle 𝗦"
                 :active="isDrawingRectangle"
                 v-on:click="drawRectangle"
+                :disabled="!isToolEnabled('rectangle')"
                 ></control-button>
             <control-button
                 icon="icon-circle"
                 title="Draw a circle 𝗗"
                 :active="isDrawingCircle"
                 v-on:click="drawCircle"
+                :disabled="!isToolEnabled('circle')"
                 v-slot="{onActive}"
                 >
                 <control-button
@@ -68,6 +71,7 @@
                     title="Draw an ellipse 𝗦𝗵𝗶𝗳𝘁+𝗗"
                     :active="isDrawingEllipse"
                     v-on:click="drawEllipse"
+                    :disabled="!isToolEnabled('ellipse')"
                     v-on:active="onActive"
                     ></control-button>
             </control-button>
@@ -76,6 +80,7 @@
                 title="Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand"
                 :active="isDrawingLineString"
                 v-on:click="drawLineString"
+                :disabled="!isToolEnabled('linestring')"
                 v-slot="{onActive}"
                 >
                 <control-button
@@ -98,6 +103,7 @@
                 title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand"
                 :active="isDrawingPolygon"
                 v-on:click="drawPolygon"
+                :disabled="!isToolEnabled('polygon')"
                 v-slot="{onActive}"
                 >
                 <control-button
@@ -105,6 +111,7 @@
                     title="Draw a polygon using the brush tool 𝗘"
                     :active="isUsingPolygonBrush"
                     v-on:click="togglePolygonBrush"
+                    :disabled="!isToolEnabled('polygonbrush')"
                     v-on:active="onActive"
                     ></control-button>
                 <control-button
@@ -133,6 +140,7 @@
                     title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
                     :active="isMagicWanding"
                     v-on:click="toggleMagicWand"
+                    :disabled="!isToolEnabled('magicwand')"
                     v-on:active="onActive"
                     ></control-button>
                 @mixin('imageAnnotationPolygonTools')

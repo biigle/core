@@ -30,6 +30,7 @@ class PendingVolume extends Model
         'label_map',
         'user_map',
         'importing',
+        'attrs',
     ];
 
     /**
@@ -51,6 +52,7 @@ class PendingVolume extends Model
         'only_file_labels' => 'array',
         'label_map' => 'array',
         'user_map' => 'array',
+        'attrs' => 'array',
     ];
 
     /**
@@ -94,5 +96,95 @@ class PendingVolume extends Model
     public function getMetadataFileDisk(): string
     {
         return config('volumes.pending_metadata_storage_disk');
+    }
+
+    /**
+     * Available annotation tools for image volumes.
+     */
+    const IMAGE_ANNOTATION_TOOLS = [
+        'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure',
+        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+    ];
+
+    /**
+     * Available annotation tools for video volumes.
+     */
+    const VIDEO_ANNOTATION_TOOLS = [
+        'point', 'rectangle', 'circle', 'linestring', 'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'wholeframe'
+    ];
+
+    /**
+     * All available annotation tools (for backward compatibility).
+     */
+    const ANNOTATION_TOOLS = [
+        'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure',
+        'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'wholeframe'
+    ];
+
+    /**
+     * Get the enabled annotation tools for this pending volume.
+     *
+     * @return array
+     */
+    public function enabledAnnotationTools()
+    {
+        $defaultTools = $this->isImageVolume() ? static::IMAGE_ANNOTATION_TOOLS : static::VIDEO_ANNOTATION_TOOLS;
+        return $this->getJsonAttr('enabled_annotation_tools', $defaultTools);
+    }
+
+    /**
+     * Check if this is an image volume.
+     *
+     * @return bool
+     */
+    public function isImageVolume()
+    {
+        return $this->media_type_id === \Biigle\MediaType::imageId();
+    }
+
+    /**
+     * Check if this is a video volume.
+     *
+     * @return bool
+     */
+    public function isVideoVolume()
+    {
+        return $this->media_type_id === \Biigle\MediaType::videoId();
+    }
+
+    /**
+     * Set the enabled annotation tools for this pending volume.
+     *
+     * @param array $tools
+     */
+    public function setEnabledAnnotationTools($tools)
+    {
+        $this->setJsonAttr('enabled_annotation_tools', $tools);
+    }
+
+    /**
+     * Get a JSON attribute.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function getJsonAttr($key, $default = null)
+    {
+        $attrs = $this->attrs ?: [];
+        return array_key_exists($key, $attrs) ? $attrs[$key] : $default;
+    }
+
+    /**
+     * Set a JSON attribute.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    protected function setJsonAttr($key, $value)
+    {
+        $attrs = $this->attrs ?: [];
+        $attrs[$key] = $value;
+        $this->attrs = $attrs;
     }
 }

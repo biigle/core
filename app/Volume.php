@@ -40,6 +40,98 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
 
     /**
+     * Available annotation tools for image volumes.
+     *
+     * @var array
+     */
+    const IMAGE_ANNOTATION_TOOLS = [
+        'point',
+        'rectangle',
+        'circle',
+        'ellipse',
+        'linestring',
+        'measure',
+        'polygon',
+        'polygonbrush',
+        'polygonEraser',
+        'polygonFill',
+        'magicwand',
+        'magicsam',
+    ];
+
+    /**
+     * Available annotation tools for video volumes.
+     *
+     * @var array
+     */
+    const VIDEO_ANNOTATION_TOOLS = [
+        'point',
+        'rectangle',
+        'circle',
+        'linestring',
+        'polygon',
+        'polygonbrush',
+        'polygonEraser',
+        'polygonFill',
+        'wholeframe',
+    ];
+
+    /**
+     * All available annotation tools (for backward compatibility).
+     *
+     * @var array
+     */
+    const ANNOTATION_TOOLS = [
+        'point',
+        'rectangle',
+        'circle',
+        'ellipse',
+        'linestring',
+        'measure',
+        'polygon',
+        'polygonbrush',
+        'polygonEraser',
+        'polygonFill',
+        'magicwand',
+        'wholeframe',
+    ];
+
+    /**
+     * Media type for an image volume.
+     *
+     * @var int
+     */
+    const IMAGE_VOLUME = 1;
+
+    /**
+     * Media type for a video volume.
+     *
+     * @var int
+     */
+    const VIDEO_VOLUME = 2;
+
+    /**
+     * The metadata file attribute name.
+     *
+     * @var string
+     */
+    const FILE_ATTRIBUTE = 'metadata';
+
+    /**
+     * The export area attribute name.
+     *
+     * @var string
+     */
+    const EXPORT_AREA_ATTRIBUTE = 'export_area';
+
+    /**
+     * The enabled annotation tools attribute name.
+     *
+     * @var string
+     */
+    const ENABLED_ANNOTATION_TOOLS_ATTRIBUTE = 'enabled_annotation_tools';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -506,5 +598,44 @@ class Volume extends Model
     protected function getGeoInfoCacheKey()
     {
         return "volume-{$this->id}-has-geo-info";
+    }
+
+    /**
+     * Get the list of enabled annotation tools for this volume.
+     * If no specific tools are enabled, all tools for the media type are enabled.
+     *
+     * @return array
+     */
+    public function enabledAnnotationTools()
+    {
+        $tools = $this->getJsonAttr(self::ENABLED_ANNOTATION_TOOLS_ATTRIBUTE);
+        
+        if (empty($tools)) {
+            return $this->isImageVolume() ? self::IMAGE_ANNOTATION_TOOLS : self::VIDEO_ANNOTATION_TOOLS;
+        }
+        
+        return $tools;
+    }
+
+    /**
+     * Set the enabled annotation tools for this volume.
+     *
+     * @param array $tools
+     */
+    public function setEnabledAnnotationTools($tools)
+    {
+        $validTools = array_intersect($tools, self::ANNOTATION_TOOLS);
+        $this->setJsonAttr(self::ENABLED_ANNOTATION_TOOLS_ATTRIBUTE, $validTools);
+    }
+
+    /**
+     * Scope a query to all volumes where the file was already processed.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeProcessed($query)
+    {
+        return $query->whereNotNull('metadata_file_path');
     }
 }

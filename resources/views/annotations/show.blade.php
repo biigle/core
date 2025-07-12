@@ -20,6 +20,7 @@
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
     biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});
+    biigle.$declare('annotations.enabledAnnotationTools', {!! json_encode($volume->enabledAnnotationTools()) !!});
 </script>
 @mixin('annotationsScripts')
 @endpush
