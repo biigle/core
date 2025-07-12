@@ -81,7 +81,7 @@
                     </div>
                 </div>
                 
-                <div v-if="!is3D" class="control-group">
+                <div v-if="!is3D && method === 'pca'" class="control-group">
                     <label class="control-label">Components:</label>
                     <div class="toggle-switch">
                         <input 
