@@ -19,9 +19,12 @@ export default {
             initialized: false,
             parsers: [],
             selectedParser: null,
-            selectedAnnotationTools: [
+            selectedImageAnnotationTools: [
                 'point', 'rectangle', 'circle', 'ellipse', 'linestring', 'measure', 
                 'polygon', 'polygonbrush', 'polygonEraser', 'polygonFill', 'magicwand', 'magicsam'
+            ],
+            selectedVideoAnnotationTools: [
+                'point', 'rectangle', 'circle', 'linestring', 'polygon', 'wholeframe'
             ],
         };
     },
@@ -65,6 +68,18 @@ export default {
                 ];
             }
         },
+        selectedAnnotationTools: {
+            get() {
+                return this.isVideoMediaType ? this.selectedVideoAnnotationTools : this.selectedImageAnnotationTools;
+            },
+            set(value) {
+                if (this.isVideoMediaType) {
+                    this.selectedVideoAnnotationTools = value;
+                } else {
+                    this.selectedImageAnnotationTools = value;
+                }
+            }
+        },
         allAnnotationToolsSelected() {
             return this.selectedAnnotationTools.length === this.availableAnnotationTools.length;
         },
@@ -101,29 +116,25 @@ export default {
             }
         },
         updateToolsForMediaType() {
-            // Filter selected tools to only include those available for the current media type
-            this.selectedAnnotationTools = this.selectedAnnotationTools.filter(tool => 
-                this.availableAnnotationTools.includes(tool)
-            );
+            // Each media type now has its own tool selection, so we just need to
+            // ensure that the current selection has appropriate tools enabled
+            const currentTools = this.selectedAnnotationTools;
             
-            // Add media-type specific tools that should be enabled by default
-            if (this.isVideoMediaType && !this.selectedAnnotationTools.includes('wholeframe')) {
-                this.selectedAnnotationTools.push('wholeframe');
-            }
-            
-            if (this.isImageMediaType) {
-                // Add image-specific tools that should be enabled by default
-                const imageSpecificTools = ['ellipse', 'measure', 'magicwand', 'magicsam'];
-                imageSpecificTools.forEach(tool => {
-                    if (!this.selectedAnnotationTools.includes(tool)) {
-                        this.selectedAnnotationTools.push(tool);
-                    }
-                });
-            }
-            
-            // If no tools are selected after filtering, select all available tools
-            if (this.selectedAnnotationTools.length === 0) {
+            // If no tools are selected for this media type, select all available tools
+            if (currentTools.length === 0) {
                 this.selectedAnnotationTools = [...this.availableAnnotationTools];
+            } else {
+                // Filter out any tools that are not available for this media type
+                const filteredTools = currentTools.filter(tool => 
+                    this.availableAnnotationTools.includes(tool)
+                );
+                
+                // If filtering removed all tools, select all available tools
+                if (filteredTools.length === 0) {
+                    this.selectedAnnotationTools = [...this.availableAnnotationTools];
+                } else {
+                    this.selectedAnnotationTools = filteredTools;
+                }
             }
         },
     },
