@@ -8,11 +8,12 @@ use Biigle\Project;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PcaVisualizationController extends Controller
 {
     /**
-     * Get annotation feature vectors for PCA visualization.
+     * Get annotation feature vectors for dimensionality reduction visualization.
      *
      * @param Request $request
      * @param int $id Project ID
@@ -22,6 +23,15 @@ class PcaVisualizationController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
+
+        // Validate method parameter
+        $method = $request->get('method', 'pca');
+        if (!in_array($method, ['pca', 'umap', 'tsne'])) {
+            $method = 'pca';
+        }
+        
+        // Debug: log the method parameter
+        Log::info('PCA Visualization method parameter: ' . $method);
 
         // Get image annotation feature vectors
         $imageFeatures = ImageAnnotationLabelFeatureVector::select([
@@ -75,7 +85,7 @@ class PcaVisualizationController extends Controller
             ]);
         }
 
-        // Convert vectors to arrays and compute PCA
+        // Convert vectors to arrays
         $vectors = $allFeatures->map(function ($feature) {
             return [
                 'id' => $feature->id,
@@ -88,11 +98,23 @@ class PcaVisualizationController extends Controller
             ];
         });
 
-        $pcaData = $this->computePCA($vectors->toArray());
+        // Apply the selected dimensionality reduction method
+        switch ($method) {
+            case 'tsne':
+            case 'umap':
+                // For tsne and umap, return raw vectors for frontend processing
+                $data = $this->prepareRawVectors($vectors->toArray());
+                break;
+            case 'pca':
+            default:
+                $data = $this->computePCA($vectors->toArray());
+                break;
+        }
 
         return response()->json([
-            'data' => $pcaData,
+            'data' => $data,
             'count' => $allFeatures->count(),
+            'method' => $method,
         ]);
     }
 
@@ -202,6 +224,52 @@ class PcaVisualizationController extends Controller
                 'x' => $x,
                 'y' => $y,
                 'z' => $z,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Prepare raw vectors for frontend processing (t-SNE, UMAP).
+     *
+     * @param array $data
+     * @return array
+     */
+    private function prepareRawVectors(array $data)
+    {
+        if (empty($data)) {
+            return [];
+        }
+
+        // Extract vectors and reduce dimensionality for performance
+        $vectors = array_map(function ($item) {
+            return $item['vector'];
+        }, $data);
+
+        $numSamples = count($vectors);
+        $numFeatures = count($vectors[0]);
+
+        // For performance, reduce dimensionality first by taking every 8th dimension
+        // This gives us 48 dimensions from the original 384 DINO features
+        $stride = 8;
+        $reducedDims = intval($numFeatures / $stride);
+        
+        $result = [];
+        for ($i = 0; $i < $numSamples; $i++) {
+            $reducedVector = [];
+            for ($j = 0; $j < $reducedDims; $j++) {
+                $reducedVector[] = $vectors[$i][$j * $stride];
+            }
+            
+            $result[] = [
+                'id' => $data[$i]['id'],
+                'annotation_id' => $data[$i]['annotation_id'],
+                'label_id' => $data[$i]['label_id'],
+                'label_name' => $data[$i]['label_name'],
+                'label_color' => $data[$i]['label_color'],
+                'volume_id' => $data[$i]['volume_id'],
+                'vector' => $reducedVector,
             ];
         }
 

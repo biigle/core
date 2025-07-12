@@ -4,11 +4,11 @@
             <button 
                 class="btn btn-sm btn-default"
                 @click="handleShowClick"
-                :disabled="loading"
+                :disabled="loading || processing"
             >
-                <i v-if="loading" class="fa fa-spinner fa-spin"></i>
+                <i v-if="loading || processing" class="fa fa-spinner fa-spin"></i>
                 <i v-else class="fa fa-play"></i>
-                {{ loading ? 'Loading...' : 'Show PCA Feature Visualization' }}
+                {{ getLoadingText() }}
             </button>
         </div>
         
@@ -17,19 +17,25 @@
             <button 
                 class="btn btn-sm btn-default retry-btn"
                 @click="handleShowClick"
-                :disabled="loading"
+                :disabled="loading || processing"
             >
-                <i v-if="loading" class="fa fa-spinner fa-spin"></i>
+                <i v-if="loading || processing" class="fa fa-spinner fa-spin"></i>
                 <i v-else class="fa fa-refresh"></i>
                 Retry
             </button>
         </div>
         
-        <div v-else-if="hasLoaded && (!data || data.length === 0)" class="alert alert-info">
+        <div v-else-if="hasLoaded && (!hasValidData)" class="alert alert-info">
             <i class="fa fa-info-circle"></i> No feature vectors found for this project.
         </div>
         
-        <div v-else-if="hasLoaded && data && data.length > 0">
+        <div v-else-if="hasLoaded && hasValidData">
+            <div v-if="processing" class="processing-indicator">
+                <div class="text-center">
+                    <i class="fa fa-spinner fa-spin fa-2x"></i>
+                    <p class="mt-2">Computing {{ method.toUpperCase() }}... This may take a few moments.</p>
+                </div>
+            </div>
             <div class="controls-panel">
                 <div class="control-group">
                     <label class="control-label">Method:</label>
@@ -93,7 +99,7 @@
                 </div>
             </div>
             
-            <div ref="root" class="chart-container" :class="{ 'chart-3d': is3D }"></div>
+            <div v-if="!processing" ref="root" class="chart-container" :class="{ 'chart-3d': is3D }"></div>
         </div>
     </div>
 </template>
@@ -118,23 +124,30 @@ export default {
         return {
             loading: false,
             error: null,
-            data: [],
+            rawData: [], // Raw data from backend for frontend processing
+            processedData: [], // Processed data ready for visualization
             dataCount: 0,
             chart: null,
             hasLoaded: false,
             is3D: false,
             showPC2vsPC3: false, // false = PC1 vs PC2, true = PC3 vs PC2
             method: 'pca', // 'pca', 'umap', or 'tsne'
+            processing: false, // Flag for frontend processing
         };
     },
     computed: {
+        hasValidData() {
+            // Check if we have raw data (for t-SNE/UMAP) or processed data (for PCA or completed processing)
+            return (this.rawData && this.rawData.length > 0) || (this.processedData && this.processedData.length > 0);
+        },
         uniqueLabels() {
-            if (!this.data || this.data.length === 0) {
+            const data = this.processedData || [];
+            if (data.length === 0) {
                 return [];
             }
             
             const labelMap = new Map();
-            this.data.forEach(point => {
+            data.forEach(point => {
                 const key = point.label_id;
                 if (labelMap.has(key)) {
                     labelMap.get(key).count++;
@@ -151,21 +164,30 @@ export default {
             return Array.from(labelMap.values()).sort((a, b) => b.count - a.count);
         },
         chartData() {
-            if (!this.data || this.data.length === 0) {
+            const data = this.processedData || [];
+            if (data.length === 0 || this.processing) {
                 return [];
             }
             
             // Group data by label for better visualization
             const labelGroups = new Map();
-            this.data.forEach(point => {
-                const key = point.label_name;
+            data.forEach(point => {
+                // Ensure we have the required properties
+                if (!point || typeof point.x === 'undefined' || typeof point.y === 'undefined') {
+                    return; // Skip invalid points
+                }
+                
+                const key = point.label_name || 'Unknown';
                 if (!labelGroups.has(key)) {
                     labelGroups.set(key, {
                         name: key,
                         type: this.is3D ? 'scatter3D' : 'scatter',
                         data: [],
+                        symbolSize: 6,
+                        symbol: 'circle',
                         itemStyle: {
-                            color: '#' + point.label_color,
+                            color: point.label_color ? '#' + point.label_color : '#1f77b4',
+                            opacity: 0.8,
                         },
                     });
                 }
@@ -183,7 +205,40 @@ export default {
                 labelGroups.get(key).data.push(coords);
             });
             
-            return Array.from(labelGroups.values());
+            const result = Array.from(labelGroups.values());
+            
+            // Debug: Ensure we have data
+            if (result.length === 0) {
+                // If no groups found, create a single group with all points
+                const allPoints = [];
+                data.forEach(point => {
+                    if (point && typeof point.x !== 'undefined' && typeof point.y !== 'undefined') {
+                        if (this.is3D) {
+                            allPoints.push([point.x, point.y, point.z || 0]);
+                        } else if (!this.showPC2vsPC3) {
+                            allPoints.push([point.x, point.y]);
+                        } else {
+                            allPoints.push([point.z || 0, point.y]);
+                        }
+                    }
+                });
+                
+                if (allPoints.length > 0) {
+                    return [{
+                        name: 'Data Points',
+                        type: this.is3D ? 'scatter3D' : 'scatter',
+                        data: allPoints,
+                        symbolSize: 6,
+                        symbol: 'circle',
+                        itemStyle: {
+                            color: '#1f77b4',
+                            opacity: 0.8,
+                        },
+                    }];
+                }
+            }
+            
+            return result;
         },
         chartOption() {
             const baseOption = {
@@ -354,6 +409,13 @@ export default {
                 this.initChart();
             }
         },
+        method() {
+            if (this.hasLoaded && !this.processing) {
+                // Reload data when method changes (only if not currently processing)
+                this.processedData = [];
+                this.loadData();
+            }
+        },
     },
     beforeCreate() {
         use([
@@ -403,56 +465,485 @@ export default {
         handleShowClick() {
             this.loadData();
         },
+        getLoadingText() {
+            if (this.loading) return 'Loading...';
+            if (this.processing) return `Computing ${this.method.toUpperCase()}...`;
+            return 'Show Feature Visualization';
+        },
         async loadData() {
             this.loading = true;
             this.error = null;
             
             try {
                 const PcaVisualizationApi = biigle.$require('api.pcaVisualization');
-                const response = await PcaVisualizationApi.get({id: this.projectId});
-                this.data = response.body.data;
+                
+                // Pass method parameter directly in URL parameters
+                const response = await PcaVisualizationApi.get({
+                    id: this.projectId,
+                    method: this.method
+                });
+                
+                this.rawData = response.body.data;
                 this.dataCount = response.body.count;
                 this.hasLoaded = true;
                 
                 if (response.body.message) {
                     this.error = response.body.message;
-                } else if (this.data && this.data.length > 0) {
-                    // Wait for Vue to update DOM before initializing chart
-                    setTimeout(() => {
-                        this.initChart();
-                    }, 50);
+                    return;
                 }
+                
+                if (!this.rawData || this.rawData.length === 0) {
+                    this.processedData = [];
+                    return;
+                }
+
+                // Process data based on method
+                await this.processData();
+                
             } catch (error) {
-                console.error('Error loading PCA data:', error);
+                console.error('Error loading feature visualization data:', error);
                 this.error = 'Failed to load feature vectors. Please try again later.';
                 this.hasLoaded = true;
             } finally {
                 this.loading = false;
             }
         },
+        async processData() {
+            if (this.method === 'pca') {
+                // PCA data is already processed by backend
+                this.processedData = this.rawData;
+            } else if (this.method === 'tsne') {
+                await this.computeTSNE();
+            } else if (this.method === 'umap') {
+                await this.computeUMAP();
+            }
+            
+            // Initialize chart after processing
+            if (this.processedData && this.processedData.length > 0) {
+                setTimeout(() => {
+                    this.initChart();
+                }, 50);
+            }
+        },
+        async computeTSNE() {
+            this.processing = true;
+            
+            try {
+                // Check if we have valid raw data
+                if (!this.rawData || !Array.isArray(this.rawData) || this.rawData.length === 0) {
+                    throw new Error('No valid raw data available for t-SNE computation');
+                }
+                
+                // Extract vectors from raw data
+                let vectors;
+                const firstItem = this.rawData[0];
+                
+                // Check if this has the structure expected for t-SNE (raw vectors with metadata)
+                if (firstItem && firstItem.vector && Array.isArray(firstItem.vector)) {
+                    vectors = this.rawData.map(item => {
+                        if (!item || !item.vector || !Array.isArray(item.vector)) {
+                            throw new Error('Invalid data format: missing or invalid vector property');
+                        }
+                        return item.vector;
+                    });
+                } else {
+                    // Check if data has already processed coordinates (x, y, z) - indicates PCA data
+                    if (firstItem && (typeof firstItem.x !== 'undefined' || 
+                                     typeof firstItem.y !== 'undefined' || 
+                                     typeof firstItem.z !== 'undefined')) {
+                        throw new Error('Backend returned processed coordinates instead of raw vectors. Check backend method handling.');
+                    } else {
+                        throw new Error('Unknown data format - cannot extract vectors for t-SNE');
+                    }
+                }
+                
+                // Validate vectors
+                if (!vectors || vectors.length === 0) {
+                    throw new Error('No vectors extracted from raw data');
+                }
+                
+                const numSamples = vectors.length;
+                
+                // Configure t-SNE parameters
+                const perplexity = Math.min(30, Math.max(5, Math.floor(numSamples / 4)));
+                
+                // Simple t-SNE implementation
+                const embedding = await this.runSimpleTSNE(vectors, perplexity);
+                
+                // Check if embedding was computed successfully
+                if (!embedding || embedding.length === 0) {
+                    throw new Error('t-SNE computation returned empty result');
+                }
+                
+                // Convert to 3D format (adding z=0)
+                const embedding3D = embedding.map(point => [point[0], point[1], 0]);
+                
+                // Normalize to [-1, 1] range and combine with metadata
+                this.processedData = this.normalizeEmbedding(embedding3D);
+                
+                // Ensure we have valid processed data
+                if (!this.processedData || this.processedData.length === 0) {
+                    throw new Error('Failed to normalize t-SNE embedding data');
+                }
+                
+                // Force chart update in next tick
+                this.$nextTick(() => {
+                    if (this.chart) {
+                        this.chart.dispose();
+                    }
+                    this.initChart();
+                });
+                
+            } catch (error) {
+                console.error('t-SNE computation error:', error);
+                this.error = 't-SNE computation failed. Falling back to PCA.';
+                
+                // Fallback to PCA by reloading with PCA method
+                this.method = 'pca';
+                await this.loadData();
+            } finally {
+                this.processing = false;
+            }
+        },
+        async computeUMAP() {
+            // UMAP implementation placeholder
+            this.processing = true;
+            
+            try {
+                // For now, show an error message
+                this.error = 'UMAP is not yet implemented. Please use PCA or t-SNE.';
+                
+                // Fallback to PCA
+                this.method = 'pca';
+                await this.loadData();
+            } finally {
+                this.processing = false;
+            }
+        },
+        async runSimpleTSNE(vectors, perplexity = 30) {
+            const n = vectors.length;
+            const dims = vectors[0].length;
+            
+            // Initialize 2D embedding randomly
+            const Y = [];
+            for (let i = 0; i < n; i++) {
+                Y.push([
+                    (Math.random() - 0.5) * 0.0001, // Very small initial values
+                    (Math.random() - 0.5) * 0.0001
+                ]);
+            }
+            
+            // Calculate pairwise squared distances in high dimension
+            const distances = [];
+            for (let i = 0; i < n; i++) {
+                distances[i] = [];
+                for (let j = 0; j < n; j++) {
+                    let dist = 0;
+                    for (let k = 0; k < dims; k++) {
+                        const diff = vectors[i][k] - vectors[j][k];
+                        dist += diff * diff;
+                    }
+                    distances[i][j] = dist;
+                }
+            }
+            
+            // Calculate P matrix with simpler approach
+            const P = [];
+            const targetEntropy = Math.log(perplexity);
+            
+            for (let i = 0; i < n; i++) {
+                P[i] = [];
+                let beta = 1.0;
+                let tries = 0;
+                
+                while (tries < 50) {
+                    let sum = 0;
+                    let probs = [];
+                    
+                    // Calculate probabilities
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) {
+                            const prob = Math.exp(-beta * distances[i][j]);
+                            probs.push(prob);
+                            sum += prob;
+                        } else {
+                            probs.push(0);
+                        }
+                    }
+                    
+                    if (sum === 0) {
+                        beta /= 2;
+                        tries++;
+                        continue;
+                    }
+                    
+                    // Normalize and calculate entropy
+                    let entropy = 0;
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) {
+                            probs[j] /= sum;
+                            if (probs[j] > 1e-12) {
+                                entropy -= probs[j] * Math.log(probs[j]);
+                            }
+                        }
+                    }
+                    
+                    const entropyDiff = entropy - targetEntropy;
+                    
+                    if (Math.abs(entropyDiff) < 1e-4 || tries >= 49) {
+                        P[i] = probs;
+                        break;
+                    }
+                    
+                    if (entropyDiff > 0) {
+                        beta *= 1.5;
+                    } else {
+                        beta /= 1.5;
+                    }
+                    tries++;
+                }
+                
+                if (!P[i]) {
+                    // Fallback
+                    P[i] = new Array(n).fill(0);
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) {
+                            P[i][j] = 1 / (n - 1);
+                        }
+                    }
+                }
+            }
+            
+            // Make P symmetric
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    P[i][j] = (P[i][j] + P[j][i]) / (2 * n);
+                    P[i][j] = Math.max(P[i][j], 1e-12);
+                }
+            }
+            
+            // Gradient descent with simpler approach
+            const learningRate = 200;
+            const momentum = 0.8;
+            let gains = [];
+            let uY = [];
+            
+            // Initialize gains and momentum
+            for (let i = 0; i < n; i++) {
+                gains[i] = [1, 1];
+                uY[i] = [0, 0];
+            }
+            
+            // Run optimization
+            for (let iter = 0; iter < 300; iter++) {
+                // Calculate Q matrix (similarities in low dimension)
+                let Q = [];
+                let qSum = 0;
+                
+                for (let i = 0; i < n; i++) {
+                    Q[i] = [];
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) {
+                            const dx = Y[i][0] - Y[j][0];
+                            const dy = Y[i][1] - Y[j][1];
+                            const dist = dx * dx + dy * dy;
+                            Q[i][j] = 1 / (1 + dist);
+                            qSum += Q[i][j];
+                        } else {
+                            Q[i][j] = 0;
+                        }
+                    }
+                }
+                
+                // Normalize Q
+                qSum = Math.max(qSum, 1e-12);
+                for (let i = 0; i < n; i++) {
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) {
+                            Q[i][j] = Math.max(Q[i][j] / qSum, 1e-12);
+                        }
+                    }
+                }
+                
+                // Calculate gradients
+                let dY = [];
+                for (let i = 0; i < n; i++) {
+                    dY[i] = [0, 0];
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) {
+                            const mult = 4 * (P[i][j] - Q[i][j]) * Q[i][j] * qSum;
+                            dY[i][0] += mult * (Y[i][0] - Y[j][0]);
+                            dY[i][1] += mult * (Y[i][1] - Y[j][1]);
+                        }
+                    }
+                }
+                
+                // Update Y using momentum and adaptive gains
+                for (let i = 0; i < n; i++) {
+                    for (let dim = 0; dim < 2; dim++) {
+                        if (Math.sign(dY[i][dim]) !== Math.sign(uY[i][dim])) {
+                            gains[i][dim] += 0.2;
+                        } else {
+                            gains[i][dim] *= 0.8;
+                        }
+                        gains[i][dim] = Math.max(gains[i][dim], 0.01);
+                        
+                        uY[i][dim] = momentum * uY[i][dim] - learningRate * gains[i][dim] * dY[i][dim];
+                        Y[i][dim] += uY[i][dim];
+                        
+                        // Prevent explosion
+                        if (Math.abs(Y[i][dim]) > 1000) {
+                            Y[i][dim] = Math.sign(Y[i][dim]) * 1000;
+                        }
+                    }
+                }
+                
+                // Center the data
+                if (iter % 10 === 0) {
+                    let meanY = [0, 0];
+                    for (let i = 0; i < n; i++) {
+                        meanY[0] += Y[i][0];
+                        meanY[1] += Y[i][1];
+                    }
+                    meanY[0] /= n;
+                    meanY[1] /= n;
+                    
+                    for (let i = 0; i < n; i++) {
+                        Y[i][0] -= meanY[0];
+                        Y[i][1] -= meanY[1];
+                    }
+                }
+                
+                // Yield control periodically
+                if (iter % 50 === 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                }
+            }
+            
+            // Final validation
+            const result = Y.map(point => [
+                isNaN(point[0]) || !isFinite(point[0]) ? 0 : point[0],
+                isNaN(point[1]) || !isFinite(point[1]) ? 0 : point[1]
+            ]);
+            
+            return result;
+        },
+        normalizeEmbedding(embedding) {
+            if (!embedding || embedding.length === 0) {
+                return [];
+            }
+            
+            if (!this.rawData || this.rawData.length === 0) {
+                return [];
+            }
+            
+            if (embedding.length !== this.rawData.length) {
+                return [];
+            }
+            
+            // Extract x, y, z coordinates
+            const x_values = embedding.map(point => point[0]);
+            const y_values = embedding.map(point => point[1]);
+            const z_values = embedding.map(point => point[2] || 0);
+            
+            // Check if we have valid coordinates
+            if (x_values.some(x => x === null || x === undefined || isNaN(x)) ||
+                y_values.some(y => y === null || y === undefined || isNaN(y))) {
+                return [];
+            }
+            
+            // Calculate ranges
+            const x_min = Math.min(...x_values);
+            const x_max = Math.max(...x_values);
+            const y_min = Math.min(...y_values);
+            const y_max = Math.max(...y_values);
+            const z_min = Math.min(...z_values);
+            const z_max = Math.max(...z_values);
+            
+            const x_range = x_max - x_min || 1;
+            const y_range = y_max - y_min || 1;
+            const z_range = z_max - z_min || 1;
+            
+            // Normalize and combine with original data
+            const result = this.rawData.map((item, i) => {
+                if (i >= embedding.length) {
+                    return item;
+                }
+                
+                const normalized = {
+                    ...item,
+                    x: ((x_values[i] - x_min) / x_range) * 2 - 1,
+                    y: ((y_values[i] - y_min) / y_range) * 2 - 1,
+                    z: ((z_values[i] - z_min) / z_range) * 2 - 1,
+                };
+                
+                // Check for NaN values
+                if (isNaN(normalized.x) || isNaN(normalized.y)) {
+                    // Return with fallback coordinates instead of breaking everything
+                    return {
+                        ...item,
+                        x: 0,
+                        y: 0,
+                        z: 0
+                    };
+                }
+                
+                return normalized;
+            });
+            
+            // Final validation
+            if (result.length === 0) {
+                return [];
+            }
+            
+            return result;
+        },
         initChart() {
             if (!this.$refs.root) {
+                console.warn('Chart root element not available');
                 return;
             }
             
-            // Initialize with explicit sizing options
-            this.chart = markRaw(init(this.$refs.root, 'dark', { 
-                renderer: 'canvas',
-                width: 'auto',
-                height: 'auto'
-            }));
+            // Dispose existing chart first
+            if (this.chart) {
+                this.chart.dispose();
+                this.chart = null;
+            }
             
-            this.chart.setOption(this.chartOption, true); // true = notMerge
-            
-            // Force resize after initialization
-            setTimeout(() => {
-                if (this.chart) {
-                    this.chart.resize();
+            try {
+                // Initialize with explicit sizing options
+                this.chart = markRaw(init(this.$refs.root, null, { 
+                    renderer: 'canvas',
+                    width: 'auto',
+                    height: 'auto'
+                }));
+                
+                if (!this.chart) {
+                    console.error('Failed to initialize chart');
+                    return;
                 }
-            }, 100);
-            
-            // Handle window resize
-            window.addEventListener('resize', this.handleResize);
+                
+                // Check if we have valid chart data
+                if (!this.chartData || this.chartData.length === 0) {
+                    console.warn('No chart data available for rendering');
+                    return;
+                }
+                
+                this.chart.setOption(this.chartOption, true); // true = notMerge
+                
+                // Force resize after initialization
+                setTimeout(() => {
+                    if (this.chart) {
+                        this.chart.resize();
+                    }
+                }, 100);
+                
+                // Handle window resize
+                window.addEventListener('resize', this.handleResize);
+            } catch (error) {
+                console.error('Error initializing chart:', error);
+                this.error = 'Failed to initialize visualization. Please try again.';
+            }
         },
         handleResize() {
             if (this.chart) {
@@ -661,5 +1152,20 @@ export default {
 
 .toggle-input:checked + .toggle-label .toggle-option:last-child {
     color: #fff;
+}
+
+.processing-indicator {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.processing-indicator p {
+    margin: 10px 0 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
 }
 </style>
