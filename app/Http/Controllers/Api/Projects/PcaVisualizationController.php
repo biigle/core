@@ -149,7 +149,7 @@ class PcaVisualizationController extends Controller
             }
         }
 
-        // Compute variance for each dimension and select top 2
+        // Compute variance for each dimension and select top 3
         $variances = [];
         for ($i = 0; $i < $reducedDims; $i++) {
             $variance = 0;
@@ -159,32 +159,38 @@ class PcaVisualizationController extends Controller
             $variances[] = ['index' => $i, 'variance' => $variance / ($numSamples - 1)];
         }
 
-        // Sort by variance and take top 2
+        // Sort by variance and take top 3
         usort($variances, function($a, $b) {
             return $b['variance'] <=> $a['variance'];
         });
 
         $pc1_idx = $variances[0]['index'];
         $pc2_idx = $variances[1]['index'];
+        $pc3_idx = $variances[2]['index'];
 
-        // Project data onto these two dimensions and normalize
+        // Project data onto these three dimensions and normalize
         $pc1_values = array_column($centeredVectors, $pc1_idx);
         $pc2_values = array_column($centeredVectors, $pc2_idx);
+        $pc3_values = array_column($centeredVectors, $pc3_idx);
         
         // Calculate range for normalization
         $pc1_min = min($pc1_values);
         $pc1_max = max($pc1_values);
         $pc2_min = min($pc2_values);
         $pc2_max = max($pc2_values);
+        $pc3_min = min($pc3_values);
+        $pc3_max = max($pc3_values);
         
         $pc1_range = $pc1_max - $pc1_min ?: 1;
         $pc2_range = $pc2_max - $pc2_min ?: 1;
+        $pc3_range = $pc3_max - $pc3_min ?: 1;
 
         $result = [];
         for ($i = 0; $i < $numSamples; $i++) {
             // Normalize to [-1, 1] range
             $x = (($pc1_values[$i] - $pc1_min) / $pc1_range) * 2 - 1;
             $y = (($pc2_values[$i] - $pc2_min) / $pc2_range) * 2 - 1;
+            $z = (($pc3_values[$i] - $pc3_min) / $pc3_range) * 2 - 1;
             
             $result[] = [
                 'id' => $data[$i]['id'],
@@ -195,6 +201,7 @@ class PcaVisualizationController extends Controller
                 'volume_id' => $data[$i]['volume_id'],
                 'x' => $x,
                 'y' => $y,
+                'z' => $z,
             ];
         }
 

@@ -28,6 +28,7 @@
     "@turf/union": "^6.5.0",
     "bootstrap-sass": "^3.3.7",
     "echarts": "^5.3.2",
+    "echarts-gl": "^2.0.9",
     "jsts": "^2.11.0",
     "magic-wand-tool": "^1.1.4",
     "mitt": "^3.0.1",

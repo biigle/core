@@ -29,7 +29,58 @@
             <i class="fa fa-info-circle"></i> No feature vectors found for this project.
         </div>
         
-        <div v-else-if="hasLoaded && data && data.length > 0" ref="root" class="chart-container"></div>
+        <div v-else-if="hasLoaded && data && data.length > 0">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Visualization:</label>
+                    <div class="toggle-buttons">
+                        <button 
+                            class="btn btn-sm"
+                            :class="{ 'btn-primary': !is3D, 'btn-default': is3D }"
+                            @click="is3D = false"
+                        >
+                            2D
+                        </button>
+                        <button 
+                            class="btn btn-sm"
+                            :class="{ 'btn-primary': is3D, 'btn-default': !is3D }"
+                            @click="is3D = true"
+                        >
+                            3D
+                        </button>
+                    </div>
+                </div>
+                
+                <div v-if="!is3D" class="control-group">
+                    <label class="control-label">Components:</label>
+                    <div class="toggle-buttons">
+                        <button 
+                            class="btn btn-sm"
+                            :class="{ 'btn-primary': pcComponents === 'PC1_PC2', 'btn-default': pcComponents !== 'PC1_PC2' }"
+                            @click="pcComponents = 'PC1_PC2'"
+                        >
+                            PC1 vs PC2
+                        </button>
+                        <button 
+                            class="btn btn-sm"
+                            :class="{ 'btn-primary': pcComponents === 'PC2_PC3', 'btn-default': pcComponents !== 'PC2_PC3' }"
+                            @click="pcComponents = 'PC2_PC3'"
+                        >
+                            PC2 vs PC3
+                        </button>
+                        <button 
+                            class="btn btn-sm"
+                            :class="{ 'btn-primary': pcComponents === 'PC1_PC3', 'btn-default': pcComponents !== 'PC1_PC3' }"
+                            @click="pcComponents = 'PC1_PC3'"
+                        >
+                            PC1 vs PC3
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div ref="root" class="chart-container"></div>
+        </div>
     </div>
 </template>
 
@@ -38,6 +89,7 @@ import { use, init } from 'echarts/core';
 import { ScatterChart } from 'echarts/charts';
 import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import 'echarts-gl';
 import { markRaw } from 'vue';
 
 export default {
@@ -56,6 +108,8 @@ export default {
             dataCount: 0,
             chart: null,
             hasLoaded: false,
+            is3D: false,
+            pcComponents: 'PC1_PC2', // 'PC1_PC2', 'PC2_PC3', or 'PC1_PC3'
         };
     },
     computed: {
@@ -93,24 +147,37 @@ export default {
                 if (!labelGroups.has(key)) {
                     labelGroups.set(key, {
                         name: key,
-                        type: 'scatter',
+                        type: this.is3D ? 'scatter3D' : 'scatter',
                         data: [],
                         itemStyle: {
                             color: '#' + point.label_color,
                         },
                     });
                 }
-                labelGroups.get(key).data.push([point.x, point.y]);
+                
+                // Select which components to display
+                let coords;
+                if (this.is3D) {
+                    coords = [point.x, point.y, point.z || 0];
+                } else if (this.pcComponents === 'PC1_PC2') {
+                    coords = [point.x, point.y];
+                } else if (this.pcComponents === 'PC2_PC3') {
+                    coords = [point.y, point.z || 0];
+                } else { // PC1_PC3
+                    coords = [point.x, point.z || 0];
+                }
+                
+                labelGroups.get(key).data.push(coords);
             });
             
             return Array.from(labelGroups.values());
         },
         chartOption() {
-            return {
+            const baseOption = {
                 backgroundColor: 'transparent',
                 title: {
                     text: 'PCA Feature Visualization',
-                    subtext: 'Principal Components of annotation feature vectors',
+                    subtext: this.getSubtitle(),
                     left: 'center',
                     top: '2%',
                     textStyle: {
@@ -122,9 +189,7 @@ export default {
                 },
                 tooltip: {
                     trigger: 'item',
-                    formatter: function(params) {
-                        return `${params.seriesName}<br/>PC1: ${params.value[0].toFixed(3)}<br/>PC2: ${params.value[1].toFixed(3)}`;
-                    },
+                    formatter: this.getTooltipFormatter(),
                 },
                 legend: {
                     type: 'scroll',
@@ -133,45 +198,126 @@ export default {
                     left: 'center',
                     pageButtonPosition: 'end',
                 },
-                grid: {
-                    left: '8%',
-                    right: '5%',
-                    top: '18%',
-                    bottom: '25%',
-                },
-                xAxis: {
-                    type: 'value',
-                    name: 'Principal Component 1',
-                    nameLocation: 'middle',
-                    nameGap: 25,
-                    splitLine: {
-                        show: true,
-                        lineStyle: {
-                            type: 'dashed',
-                        },
-                    },
-                },
-                yAxis: {
-                    type: 'value',
-                    name: 'Principal Component 2',
-                    nameLocation: 'middle',
-                    nameGap: 35,
-                    splitLine: {
-                        show: true,
-                        lineStyle: {
-                            type: 'dashed',
-                        },
-                    },
-                },
                 series: this.chartData,
                 animation: true,
                 animationDuration: 1000,
             };
+            
+            if (this.is3D) {
+                return {
+                    ...baseOption,
+                    grid3D: {
+                        left: '10%',
+                        right: '10%',
+                        top: '20%',
+                        bottom: '25%',
+                        viewControl: {
+                            projection: 'perspective',
+                            autoRotate: false,
+                            rotateSensitivity: 1,
+                            zoomSensitivity: 1,
+                            panSensitivity: 1,
+                            alpha: 20,
+                            beta: 40,
+                            distance: 200,
+                        },
+                        postEffect: {
+                            enable: false
+                        },
+                        light: {
+                            main: {
+                                intensity: 1.2,
+                                shadow: false
+                            },
+                            ambient: {
+                                intensity: 0.3
+                            }
+                        }
+                    },
+                    xAxis3D: {
+                        type: 'value',
+                        name: 'Principal Component 1',
+                        nameTextStyle: {
+                            fontSize: 12
+                        }
+                    },
+                    yAxis3D: {
+                        type: 'value',
+                        name: 'Principal Component 2',
+                        nameTextStyle: {
+                            fontSize: 12
+                        }
+                    },
+                    zAxis3D: {
+                        type: 'value',
+                        name: 'Principal Component 3',
+                        nameTextStyle: {
+                            fontSize: 12
+                        }
+                    },
+                };
+            } else {
+                let xAxisName, yAxisName;
+                if (this.pcComponents === 'PC1_PC2') {
+                    xAxisName = 'Principal Component 1';
+                    yAxisName = 'Principal Component 2';
+                } else if (this.pcComponents === 'PC2_PC3') {
+                    xAxisName = 'Principal Component 2';
+                    yAxisName = 'Principal Component 3';
+                } else { // PC1_PC3
+                    xAxisName = 'Principal Component 1';
+                    yAxisName = 'Principal Component 3';
+                }
+                
+                return {
+                    ...baseOption,
+                    grid: {
+                        left: '8%',
+                        right: '5%',
+                        top: '18%',
+                        bottom: '25%',
+                    },
+                    xAxis: {
+                        type: 'value',
+                        name: xAxisName,
+                        nameLocation: 'middle',
+                        nameGap: 25,
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                type: 'dashed',
+                            },
+                        },
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: yAxisName,
+                        nameLocation: 'middle',
+                        nameGap: 35,
+                        splitLine: {
+                            show: true,
+                            lineStyle: {
+                                type: 'dashed',
+                            },
+                        },
+                    },
+                };
+            }
         },
     },
     watch: {
         chartOption() {
             if (this.chart) {
+                this.chart.setOption(this.chartOption);
+            }
+        },
+        pcComponents() {
+            if (this.chart && this.hasLoaded) {
+                this.chart.setOption(this.chartOption);
+            }
+        },
+        is3D() {
+            if (this.chart && this.hasLoaded) {
                 this.chart.setOption(this.chartOption);
             }
         },
@@ -195,6 +341,36 @@ export default {
         }
     },
     methods: {
+        getSubtitle() {
+            if (this.is3D) {
+                return 'Principal Components 1, 2, and 3 of annotation feature vectors (3D)';
+            } else if (this.pcComponents === 'PC1_PC2') {
+                return 'Principal Components 1 vs 2 of annotation feature vectors';
+            } else if (this.pcComponents === 'PC2_PC3') {
+                return 'Principal Components 2 vs 3 of annotation feature vectors';
+            } else { // PC1_PC3
+                return 'Principal Components 1 vs 3 of annotation feature vectors';
+            }
+        },
+        getTooltipFormatter() {
+            if (this.is3D) {
+                return function(params) {
+                    return `${params.seriesName}<br/>PC1: ${params.value[0].toFixed(3)}<br/>PC2: ${params.value[1].toFixed(3)}<br/>PC3: ${params.value[2].toFixed(3)}`;
+                };
+            } else if (this.pcComponents === 'PC1_PC2') {
+                return function(params) {
+                    return `${params.seriesName}<br/>PC1: ${params.value[0].toFixed(3)}<br/>PC2: ${params.value[1].toFixed(3)}`;
+                };
+            } else if (this.pcComponents === 'PC2_PC3') {
+                return function(params) {
+                    return `${params.seriesName}<br/>PC2: ${params.value[0].toFixed(3)}<br/>PC3: ${params.value[1].toFixed(3)}`;
+                };
+            } else { // PC1_PC3
+                return function(params) {
+                    return `${params.seriesName}<br/>PC1: ${params.value[0].toFixed(3)}<br/>PC3: ${params.value[1].toFixed(3)}`;
+                };
+            }
+        },
         handleShowClick() {
             this.loadData();
         },
@@ -261,7 +437,7 @@ export default {
 <style scoped>
 .chart {
     margin-bottom: 20px;
-    min-height: 650px;
+    min-height: 620px;
 }
 
 .chart-container {
@@ -344,5 +520,48 @@ export default {
 
 .fa {
     margin-right: 4px;
+}
+
+.controls-panel {
+    padding: 15px 0;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 15px;
+}
+
+.control-group {
+    display: inline-block;
+    margin-right: 30px;
+    vertical-align: top;
+}
+
+.control-label {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: 500;
+    color: #333;
+}
+
+.toggle-buttons {
+    display: inline-block;
+}
+
+.toggle-buttons .btn {
+    margin-right: 5px;
+}
+
+.toggle-buttons .btn:last-child {
+    margin-right: 0;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+.btn-primary:hover:not(:disabled) {
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
 }
 </style>
