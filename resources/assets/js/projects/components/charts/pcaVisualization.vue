@@ -112,9 +112,12 @@ export default {
                     text: 'PCA Feature Visualization',
                     subtext: 'Principal Components of annotation feature vectors',
                     left: 'center',
-                    top: '5%',
+                    top: '2%',
                     textStyle: {
                         fontSize: 15,
+                    },
+                    subtextStyle: {
+                        fontSize: 12,
                     },
                 },
                 tooltip: {
@@ -131,16 +134,16 @@ export default {
                     pageButtonPosition: 'end',
                 },
                 grid: {
-                    left: '3%',
-                    right: '3%',
-                    top: '12%',
-                    bottom: '15%',
+                    left: '8%',
+                    right: '5%',
+                    top: '18%',
+                    bottom: '25%',
                 },
                 xAxis: {
                     type: 'value',
                     name: 'Principal Component 1',
                     nameLocation: 'middle',
-                    nameGap: 30,
+                    nameGap: 25,
                     splitLine: {
                         show: true,
                         lineStyle: {
@@ -152,7 +155,7 @@ export default {
                     type: 'value',
                     name: 'Principal Component 2',
                     nameLocation: 'middle',
-                    nameGap: 50,
+                    nameGap: 35,
                     splitLine: {
                         show: true,
                         lineStyle: {
@@ -258,11 +261,12 @@ export default {
 <style scoped>
 .chart {
     margin-bottom: 20px;
+    min-height: 650px;
 }
 
 .chart-container {
     width: 100%;
-    height: 500px;
+    height: 600px;
     display: block;
 }
 
