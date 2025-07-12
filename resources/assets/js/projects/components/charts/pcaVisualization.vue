@@ -79,7 +79,7 @@
                 </div>
             </div>
             
-            <div ref="root" class="chart-container"></div>
+            <div ref="root" class="chart-container" :class="{ 'chart-3d': is3D }"></div>
         </div>
     </div>
 </template>
@@ -207,10 +207,12 @@ export default {
                 return {
                     ...baseOption,
                     grid3D: {
-                        left: '10%',
-                        right: '10%',
-                        top: '20%',
-                        bottom: '25%',
+                        left: '5%',
+                        right: '5%',
+                        top: '12%',
+                        bottom: '15%', // Reduced space for legend to fit within container
+                        width: '90%',
+                        height: '65%', // Increased height since legend space is reduced
                         viewControl: {
                             projection: 'perspective',
                             autoRotate: false,
@@ -219,7 +221,7 @@ export default {
                             panSensitivity: 1,
                             alpha: 20,
                             beta: 40,
-                            distance: 200,
+                            distance: 200, // Further increased distance to zoom out more and fit within canvas
                         },
                         postEffect: {
                             enable: false
@@ -234,25 +236,38 @@ export default {
                             }
                         }
                     },
+                    legend: {
+                        type: 'scroll',
+                        orient: 'horizontal',
+                        bottom: '1%', // Move legend closer to bottom edge but within container
+                        left: 'center',
+                        pageButtonPosition: 'end',
+                        itemWidth: 12, // Smaller legend items for better fit
+                        itemHeight: 12,
+                        textStyle: {
+                            fontSize: 10 // Smaller text for more compact legend
+                        },
+                        padding: [2, 5, 2, 5] // Reduced padding to save space
+                    },
                     xAxis3D: {
                         type: 'value',
-                        name: 'Principal Component 1',
+                        name: 'PC1',
                         nameTextStyle: {
-                            fontSize: 12
+                            fontSize: 11
                         }
                     },
                     yAxis3D: {
                         type: 'value',
-                        name: 'Principal Component 2',
+                        name: 'PC2',
                         nameTextStyle: {
-                            fontSize: 12
+                            fontSize: 11
                         }
                     },
                     zAxis3D: {
                         type: 'value',
-                        name: 'Principal Component 3',
+                        name: 'PC3',
                         nameTextStyle: {
-                            fontSize: 12
+                            fontSize: 11
                         }
                     },
                 };
@@ -308,17 +323,19 @@ export default {
     watch: {
         chartOption() {
             if (this.chart) {
-                this.chart.setOption(this.chartOption);
+                this.chart.setOption(this.chartOption, true); // true = notMerge, completely replace options
             }
         },
         pcComponents() {
             if (this.chart && this.hasLoaded) {
-                this.chart.setOption(this.chartOption);
+                this.chart.setOption(this.chartOption, true);
             }
         },
         is3D() {
             if (this.chart && this.hasLoaded) {
-                this.chart.setOption(this.chartOption);
+                // Clear and recreate chart when switching between 2D/3D to prevent axis overlap
+                this.chart.dispose();
+                this.initChart();
             }
         },
     },
@@ -413,7 +430,7 @@ export default {
                 height: 'auto'
             }));
             
-            this.chart.setOption(this.chartOption);
+            this.chart.setOption(this.chartOption, true); // true = notMerge
             
             // Force resize after initialization
             setTimeout(() => {
@@ -437,13 +454,17 @@ export default {
 <style scoped>
 .chart {
     margin-bottom: 20px;
-    min-height: 620px;
+    min-height: 800px; /* Increased height to accommodate legend without overflow */
 }
 
 .chart-container {
     width: 100%;
     height: 600px;
     display: block;
+}
+
+.chart-container.chart-3d {
+    height: 720px; /* Reduced height to better contain the 3D visualization and legend */
 }
 
 .pca-show-button {
