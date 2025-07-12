@@ -32,49 +32,63 @@
         <div v-else-if="hasLoaded && data && data.length > 0">
             <div class="controls-panel">
                 <div class="control-group">
-                    <label class="control-label">Visualization:</label>
+                    <label class="control-label">Method:</label>
                     <div class="toggle-buttons">
                         <button 
                             class="btn btn-sm"
-                            :class="{ 'btn-primary': !is3D, 'btn-default': is3D }"
-                            @click="is3D = false"
+                            :class="{ 'btn-primary': method === 'pca', 'btn-default': method !== 'pca' }"
+                            @click="method = 'pca'"
                         >
-                            2D
+                            PCA
                         </button>
                         <button 
                             class="btn btn-sm"
-                            :class="{ 'btn-primary': is3D, 'btn-default': !is3D }"
-                            @click="is3D = true"
+                            :class="{ 'btn-primary': method === 'umap', 'btn-default': method !== 'umap' }"
+                            @click="method = 'umap'"
                         >
-                            3D
+                            UMAP
                         </button>
+                        <button 
+                            class="btn btn-sm"
+                            :class="{ 'btn-primary': method === 'tsne', 'btn-default': method !== 'tsne' }"
+                            @click="method = 'tsne'"
+                        >
+                            t-SNE
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">Visualization:</label>
+                    <div class="toggle-switch">
+                        <input 
+                            type="checkbox" 
+                            id="dimension-toggle" 
+                            v-model="is3D"
+                            class="toggle-input"
+                        >
+                        <label for="dimension-toggle" class="toggle-label">
+                            <span class="toggle-option">2D</span>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-option">3D</span>
+                        </label>
                     </div>
                 </div>
                 
                 <div v-if="!is3D" class="control-group">
                     <label class="control-label">Components:</label>
-                    <div class="toggle-buttons">
-                        <button 
-                            class="btn btn-sm"
-                            :class="{ 'btn-primary': pcComponents === 'PC1_PC2', 'btn-default': pcComponents !== 'PC1_PC2' }"
-                            @click="pcComponents = 'PC1_PC2'"
+                    <div class="toggle-switch">
+                        <input 
+                            type="checkbox" 
+                            id="components-toggle" 
+                            v-model="showPC2vsPC3"
+                            class="toggle-input"
                         >
-                            PC1 vs PC2
-                        </button>
-                        <button 
-                            class="btn btn-sm"
-                            :class="{ 'btn-primary': pcComponents === 'PC2_PC3', 'btn-default': pcComponents !== 'PC2_PC3' }"
-                            @click="pcComponents = 'PC2_PC3'"
-                        >
-                            PC2 vs PC3
-                        </button>
-                        <button 
-                            class="btn btn-sm"
-                            :class="{ 'btn-primary': pcComponents === 'PC1_PC3', 'btn-default': pcComponents !== 'PC1_PC3' }"
-                            @click="pcComponents = 'PC1_PC3'"
-                        >
-                            PC1 vs PC3
-                        </button>
+                        <label for="components-toggle" class="toggle-label">
+                            <span class="toggle-option">PC1 vs PC2</span>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-option">PC3 vs PC2</span>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -109,7 +123,8 @@ export default {
             chart: null,
             hasLoaded: false,
             is3D: false,
-            pcComponents: 'PC1_PC2', // 'PC1_PC2', 'PC2_PC3', or 'PC1_PC3'
+            showPC2vsPC3: false, // false = PC1 vs PC2, true = PC3 vs PC2
+            method: 'pca', // 'pca', 'umap', or 'tsne'
         };
     },
     computed: {
@@ -159,12 +174,10 @@ export default {
                 let coords;
                 if (this.is3D) {
                     coords = [point.x, point.y, point.z || 0];
-                } else if (this.pcComponents === 'PC1_PC2') {
-                    coords = [point.x, point.y];
-                } else if (this.pcComponents === 'PC2_PC3') {
-                    coords = [point.y, point.z || 0];
-                } else { // PC1_PC3
-                    coords = [point.x, point.z || 0];
+                } else if (!this.showPC2vsPC3) {
+                    coords = [point.x, point.y]; // PC1 vs PC2
+                } else {
+                    coords = [point.z || 0, point.y]; // PC3 vs PC2 (PC2 on y-axis)
                 }
                 
                 labelGroups.get(key).data.push(coords);
@@ -176,7 +189,7 @@ export default {
             const baseOption = {
                 backgroundColor: 'transparent',
                 title: {
-                    text: 'PCA Feature Visualization',
+                    text: `${this.method.toUpperCase()} Feature Visualization`,
                     subtext: this.getSubtitle(),
                     left: 'center',
                     top: '2%',
@@ -251,21 +264,21 @@ export default {
                     },
                     xAxis3D: {
                         type: 'value',
-                        name: 'PC1',
+                        name: `${this.method.toUpperCase()}1`,
                         nameTextStyle: {
                             fontSize: 11
                         }
                     },
                     yAxis3D: {
                         type: 'value',
-                        name: 'PC2',
+                        name: `${this.method.toUpperCase()}2`,
                         nameTextStyle: {
                             fontSize: 11
                         }
                     },
                     zAxis3D: {
                         type: 'value',
-                        name: 'PC3',
+                        name: `${this.method.toUpperCase()}3`,
                         nameTextStyle: {
                             fontSize: 11
                         }
@@ -273,15 +286,13 @@ export default {
                 };
             } else {
                 let xAxisName, yAxisName;
-                if (this.pcComponents === 'PC1_PC2') {
-                    xAxisName = 'Principal Component 1';
-                    yAxisName = 'Principal Component 2';
-                } else if (this.pcComponents === 'PC2_PC3') {
-                    xAxisName = 'Principal Component 2';
-                    yAxisName = 'Principal Component 3';
-                } else { // PC1_PC3
-                    xAxisName = 'Principal Component 1';
-                    yAxisName = 'Principal Component 3';
+                const methodName = this.method === 'tsne' ? 't-SNE' : this.method.toUpperCase();
+                if (!this.showPC2vsPC3) {
+                    xAxisName = `${methodName} Component 1`;
+                    yAxisName = `${methodName} Component 2`;
+                } else {
+                    xAxisName = `${methodName} Component 3`;
+                    yAxisName = `${methodName} Component 2`;
                 }
                 
                 return {
@@ -331,6 +342,11 @@ export default {
                 this.chart.setOption(this.chartOption, true);
             }
         },
+        showPC2vsPC3() {
+            if (this.chart && this.hasLoaded) {
+                this.chart.setOption(this.chartOption, true);
+            }
+        },
         is3D() {
             if (this.chart && this.hasLoaded) {
                 // Clear and recreate chart when switching between 2D/3D to prevent axis overlap
@@ -359,32 +375,28 @@ export default {
     },
     methods: {
         getSubtitle() {
+            const methodName = this.method === 'tsne' ? 't-SNE' : this.method.toUpperCase();
             if (this.is3D) {
-                return 'Principal Components 1, 2, and 3 of annotation feature vectors (3D)';
-            } else if (this.pcComponents === 'PC1_PC2') {
-                return 'Principal Components 1 vs 2 of annotation feature vectors';
-            } else if (this.pcComponents === 'PC2_PC3') {
-                return 'Principal Components 2 vs 3 of annotation feature vectors';
-            } else { // PC1_PC3
-                return 'Principal Components 1 vs 3 of annotation feature vectors';
+                return `${methodName} Components 1, 2, and 3 of annotation feature vectors (3D)`;
+            } else if (!this.showPC2vsPC3) {
+                return `${methodName} Components 1 vs 2 of annotation feature vectors`;
+            } else {
+                return `${methodName} Components 3 vs 2 of annotation feature vectors`;
             }
         },
         getTooltipFormatter() {
+            const prefix = this.method === 'tsne' ? 'tSNE' : this.method.toUpperCase();
             if (this.is3D) {
                 return function(params) {
-                    return `${params.seriesName}<br/>PC1: ${params.value[0].toFixed(3)}<br/>PC2: ${params.value[1].toFixed(3)}<br/>PC3: ${params.value[2].toFixed(3)}`;
+                    return `${params.seriesName}<br/>${prefix}1: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}<br/>${prefix}3: ${params.value[2].toFixed(3)}`;
                 };
-            } else if (this.pcComponents === 'PC1_PC2') {
+            } else if (!this.showPC2vsPC3) {
                 return function(params) {
-                    return `${params.seriesName}<br/>PC1: ${params.value[0].toFixed(3)}<br/>PC2: ${params.value[1].toFixed(3)}`;
+                    return `${params.seriesName}<br/>${prefix}1: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}`;
                 };
-            } else if (this.pcComponents === 'PC2_PC3') {
+            } else {
                 return function(params) {
-                    return `${params.seriesName}<br/>PC2: ${params.value[0].toFixed(3)}<br/>PC3: ${params.value[1].toFixed(3)}`;
-                };
-            } else { // PC1_PC3
-                return function(params) {
-                    return `${params.seriesName}<br/>PC1: ${params.value[0].toFixed(3)}<br/>PC3: ${params.value[1].toFixed(3)}`;
+                    return `${params.seriesName}<br/>${prefix}3: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}`;
                 };
             }
         },
@@ -584,5 +596,70 @@ export default {
     color: #fff;
     background-color: #286090;
     border-color: #204d74;
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 4px 6px;
+    position: relative;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.toggle-option {
+    font-size: 11px;
+    font-weight: 500;
+    color: #666;
+    padding: 4px 8px;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+    z-index: 2;
+    position: relative;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: calc(100% - 4px);
+    background-color: #337ab7;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+/* Default state - first option selected */
+.toggle-input:not(:checked) + .toggle-label .toggle-slider {
+    width: calc(50% - 2px);
+    transform: translateX(0);
+}
+
+.toggle-input:not(:checked) + .toggle-label .toggle-option:first-child {
+    color: #fff;
+}
+
+/* Checked state - second option selected */
+.toggle-input:checked + .toggle-label .toggle-slider {
+    width: calc(50% - 2px);
+    transform: translateX(calc(100% + 4px));
+}
+
+.toggle-input:checked + .toggle-label .toggle-option:last-child {
+    color: #fff;
 }
 </style>
