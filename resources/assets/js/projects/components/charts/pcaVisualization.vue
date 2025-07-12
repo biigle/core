@@ -111,6 +111,7 @@ import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from
 import { CanvasRenderer } from 'echarts/renderers';
 import 'echarts-gl';
 import { markRaw } from 'vue';
+import { UMAP } from 'umap-js';
 
 export default {
     name: 'PcaVisualization',
@@ -196,10 +197,10 @@ export default {
                 let coords;
                 if (this.is3D) {
                     coords = [point.x, point.y, point.z || 0];
-                } else if (!this.showPC2vsPC3) {
-                    coords = [point.x, point.y]; // PC1 vs PC2
+                } else if (!this.showPC2vsPC3 || this.method !== 'pca') {
+                    coords = [point.x, point.y]; // Default: Component 1 vs Component 2
                 } else {
-                    coords = [point.z || 0, point.y]; // PC3 vs PC2 (PC2 on y-axis)
+                    coords = [point.z || 0, point.y]; // PCA only: PC3 vs PC2 (PC2 on y-axis)
                 }
                 
                 labelGroups.get(key).data.push(coords);
@@ -215,7 +216,7 @@ export default {
                     if (point && typeof point.x !== 'undefined' && typeof point.y !== 'undefined') {
                         if (this.is3D) {
                             allPoints.push([point.x, point.y, point.z || 0]);
-                        } else if (!this.showPC2vsPC3) {
+                        } else if (!this.showPC2vsPC3 || this.method !== 'pca') {
                             allPoints.push([point.x, point.y]);
                         } else {
                             allPoints.push([point.z || 0, point.y]);
@@ -342,7 +343,7 @@ export default {
             } else {
                 let xAxisName, yAxisName;
                 const methodName = this.method === 'tsne' ? 't-SNE' : this.method.toUpperCase();
-                if (!this.showPC2vsPC3) {
+                if (!this.showPC2vsPC3 || this.method !== 'pca') {
                     xAxisName = `${methodName} Component 1`;
                     yAxisName = `${methodName} Component 2`;
                 } else {
@@ -407,8 +408,8 @@ export default {
                 // Clear and recreate chart when switching between 2D/3D to prevent axis overlap
                 this.chart.dispose();
                 
-                // For t-SNE, we need to recompute with different dimensions
-                if (this.method === 'tsne' && !this.processing) {
+                // For t-SNE and UMAP, we need to recompute with different dimensions
+                if ((this.method === 'tsne' || this.method === 'umap') && !this.processing) {
                     this.processedData = [];
                     this.processData();
                 } else {
@@ -447,7 +448,7 @@ export default {
             const methodName = this.method === 'tsne' ? 't-SNE' : this.method.toUpperCase();
             if (this.is3D) {
                 return `${methodName} Components 1, 2, and 3 of annotation feature vectors (3D)`;
-            } else if (!this.showPC2vsPC3) {
+            } else if (!this.showPC2vsPC3 || this.method !== 'pca') {
                 return `${methodName} Components 1 vs 2 of annotation feature vectors`;
             } else {
                 return `${methodName} Components 3 vs 2 of annotation feature vectors`;
@@ -459,7 +460,7 @@ export default {
                 return function(params) {
                     return `${params.seriesName}<br/>${prefix}1: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}<br/>${prefix}3: ${params.value[2].toFixed(3)}`;
                 };
-            } else if (!this.showPC2vsPC3) {
+            } else if (!this.showPC2vsPC3 || this.method !== 'pca') {
                 return function(params) {
                     return `${params.seriesName}<br/>${prefix}1: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}`;
                 };
@@ -616,14 +617,99 @@ export default {
             }
         },
         async computeUMAP() {
-            // UMAP implementation placeholder
             this.processing = true;
             
             try {
-                // For now, show an error message
-                this.error = 'UMAP is not yet implemented. Please use PCA or t-SNE.';
+                // Check if we have valid raw data
+                if (!this.rawData || !Array.isArray(this.rawData) || this.rawData.length === 0) {
+                    throw new Error('No valid raw data available for UMAP computation');
+                }
                 
-                // Fallback to PCA
+                // Extract vectors from raw data
+                let vectors;
+                const firstItem = this.rawData[0];
+                
+                // Check if this has the structure expected for UMAP (raw vectors with metadata)
+                if (firstItem && firstItem.vector && Array.isArray(firstItem.vector)) {
+                    vectors = this.rawData.map(item => {
+                        if (!item || !item.vector || !Array.isArray(item.vector)) {
+                            throw new Error('Invalid data format: missing or invalid vector property');
+                        }
+                        return item.vector;
+                    });
+                } else {
+                    // Check if data has already processed coordinates (x, y, z) - indicates PCA data
+                    if (firstItem && (typeof firstItem.x !== 'undefined' || 
+                                     typeof firstItem.y !== 'undefined' || 
+                                     typeof firstItem.z !== 'undefined')) {
+                        throw new Error('Backend returned processed coordinates instead of raw vectors. Check backend method handling.');
+                    } else {
+                        throw new Error('Unknown data format - cannot extract vectors for UMAP');
+                    }
+                }
+                
+                // Validate vectors
+                if (!vectors || vectors.length === 0) {
+                    throw new Error('No vectors extracted from raw data');
+                }
+                
+                const numSamples = vectors.length;
+                const dimensions = this.is3D ? 3 : 2;
+                
+                // Configure UMAP parameters
+                const umapParams = {
+                    nComponents: dimensions,
+                    nEpochs: Math.min(500, Math.max(200, numSamples)),
+                    nNeighbors: Math.min(15, Math.max(2, Math.floor(numSamples * 0.1))),
+                    minDist: 0.1,
+                    spread: 1.0,
+                    random: Math.random
+                };
+                
+                // Create UMAP instance
+                const umap = new UMAP(umapParams);
+                
+                // Fit and transform the data
+                const embedding = await new Promise((resolve, reject) => {
+                    try {
+                        const result = umap.fit(vectors);
+                        resolve(result);
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+                
+                // Check if embedding was computed successfully
+                if (!embedding || embedding.length === 0) {
+                    throw new Error('UMAP computation returned empty result');
+                }
+                
+                // Convert to 3D format (adding z=0 for 2D, or keep 3D as-is)
+                const embedding3D = this.is3D ? 
+                    embedding : 
+                    embedding.map(point => [point[0], point[1], 0]);
+                
+                // Normalize to [-1, 1] range and combine with metadata
+                this.processedData = this.normalizeEmbedding(embedding3D);
+                
+                // Ensure we have valid processed data
+                if (!this.processedData || this.processedData.length === 0) {
+                    throw new Error('Failed to normalize UMAP embedding data');
+                }
+                
+                // Force chart update in next tick
+                this.$nextTick(() => {
+                    if (this.chart) {
+                        this.chart.dispose();
+                    }
+                    this.initChart();
+                });
+                
+            } catch (error) {
+                console.error('UMAP computation error:', error);
+                this.error = 'UMAP computation failed. Falling back to PCA.';
+                
+                // Fallback to PCA by reloading with PCA method
                 this.method = 'pca';
                 await this.loadData();
             } finally {
