@@ -1253,7 +1253,7 @@ export default {
 /* Checked state - second option selected */
 .toggle-input:checked + .toggle-label .toggle-slider {
     width: calc(50% - 2px);
-    transform: translateX(calc(100% + 4px));
+    transform: translateX(calc(100% + 2px));
 }
 
 .toggle-input:checked + .toggle-label .toggle-option:last-child {
