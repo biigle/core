@@ -98,18 +98,8 @@ class PcaVisualizationController extends Controller
             ];
         });
 
-        // Apply the selected dimensionality reduction method
-        switch ($method) {
-            case 'tsne':
-            case 'umap':
-                // For tsne and umap, return raw vectors for frontend processing
-                $data = $this->prepareRawVectors($vectors->toArray());
-                break;
-            case 'pca':
-            default:
-                $data = $this->computePCA($vectors->toArray());
-                break;
-        }
+        // Return raw vectors for all methods - dimensionality reduction is handled in frontend
+        $data = $this->prepareRawVectors($vectors->toArray());
 
         return response()->json([
             'data' => $data,

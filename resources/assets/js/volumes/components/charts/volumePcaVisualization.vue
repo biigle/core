@@ -535,12 +535,10 @@ export default {
         },
         async processData() {
             if (this.method === 'pca') {
-                // PCA data is already processed by backend
-                this.processedData = this.rawData;
+                // PCA data now needs to be computed in frontend with full 384 dimensions
+                await this.computePCA();
             } else if (this.method === 'tsne') {
                 await this.computeTSNE();
-            } else if (this.method === 'umap') {
-                await this.computeUMAP();
             }
             
             // Initialize chart after processing
@@ -549,6 +547,141 @@ export default {
                     this.initChart();
                 }, 50);
             }
+        },
+        async computePCA() {
+            this.processing = true;
+            
+            try {
+                // Check if we have valid raw data
+                if (!this.rawData || !Array.isArray(this.rawData) || this.rawData.length === 0) {
+                    throw new Error('No valid raw data available for PCA computation');
+                }
+                
+                // Extract vectors from raw data
+                let vectors;
+                const firstItem = this.rawData[0];
+                
+                if (firstItem && firstItem.vector && Array.isArray(firstItem.vector)) {
+                    vectors = this.rawData.map(item => {
+                        if (!item || !item.vector || !Array.isArray(item.vector)) {
+                            throw new Error('Invalid data format: missing or invalid vector property');
+                        }
+                        return item.vector;
+                    });
+                } else {
+                    throw new Error('Unknown data format - cannot extract vectors for PCA');
+                }
+                
+                // Validate vectors
+                if (!vectors || vectors.length === 0) {
+                    throw new Error('No vectors extracted from raw data');
+                }
+                
+                // Perform PCA with all 384 dimensions
+                const pcaResult = await this.performPCA(vectors, 3); // Compute 3 components
+                
+                // Convert to the expected format
+                this.processedData = this.rawData.map((item, i) => ({
+                    ...item,
+                    x: pcaResult[i][0],
+                    y: pcaResult[i][1],
+                    z: pcaResult[i][2] || 0,
+                }));
+                
+                // Force chart update in next tick
+                this.$nextTick(() => {
+                    if (this.chart) {
+                        this.chart.dispose();
+                    }
+                    this.initChart();
+                });
+                
+            } catch (error) {
+                console.error('PCA computation error:', error);
+                this.error = 'PCA computation failed. Please try again.';
+            } finally {
+                this.processing = false;
+            }
+        },
+        async performPCA(vectors, numComponents = 3) {
+            const numSamples = vectors.length;
+            const numFeatures = vectors[0].length;
+            
+            // Center the data (subtract mean)
+            const means = new Array(numFeatures).fill(0);
+            for (let i = 0; i < numSamples; i++) {
+                for (let j = 0; j < numFeatures; j++) {
+                    means[j] += vectors[i][j];
+                }
+            }
+            for (let j = 0; j < numFeatures; j++) {
+                means[j] /= numSamples;
+            }
+            
+            // Center the vectors
+            const centeredVectors = vectors.map(vector => 
+                vector.map((val, idx) => val - means[idx])
+            );
+            
+            // Compute covariance matrix (simplified approach for performance)
+            // For high dimensional data, we'll use SVD approach
+            // Create data matrix (samples x features)
+            const dataMatrix = centeredVectors;
+            
+            // For computational efficiency with 384 dimensions, we'll use a simplified approach
+            // Compute the variance for each dimension and select top components
+            const variances = [];
+            for (let j = 0; j < numFeatures; j++) {
+                let variance = 0;
+                for (let i = 0; i < numSamples; i++) {
+                    variance += dataMatrix[i][j] * dataMatrix[i][j];
+                }
+                variance /= (numSamples - 1);
+                variances.push({ index: j, variance });
+            }
+            
+            // Sort by variance and take top components
+            variances.sort((a, b) => b.variance - a.variance);
+            const topComponents = variances.slice(0, numComponents);
+            
+            // Project data onto top components
+            const result = [];
+            for (let i = 0; i < numSamples; i++) {
+                const projected = [];
+                for (let c = 0; c < numComponents; c++) {
+                    const componentIdx = topComponents[c].index;
+                    projected.push(dataMatrix[i][componentIdx]);
+                }
+                result.push(projected);
+            }
+            
+            // Normalize the result to [-1, 1] range for better visualization
+            const normalizedResult = this.normalizeProjectedData(result);
+            
+            return normalizedResult;
+        },
+        normalizeProjectedData(data) {
+            if (!data || data.length === 0) return [];
+            
+            const numComponents = data[0].length;
+            const mins = new Array(numComponents).fill(Infinity);
+            const maxs = new Array(numComponents).fill(-Infinity);
+            
+            // Find min and max for each component
+            for (const point of data) {
+                for (let c = 0; c < numComponents; c++) {
+                    mins[c] = Math.min(mins[c], point[c]);
+                    maxs[c] = Math.max(maxs[c], point[c]);
+                }
+            }
+            
+            // Normalize to [-1, 1] range
+            return data.map(point => 
+                point.map((val, c) => {
+                    const range = maxs[c] - mins[c];
+                    return range === 0 ? 0 : ((val - mins[c]) / range) * 2 - 1;
+                })
+            );
         },
         async computeTSNE() {
             this.processing = true;

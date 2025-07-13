@@ -91,23 +91,12 @@ class PcaVisualizationController extends Controller
 
         $count = $vectors->count();
 
-        if ($method === 'pca') {
-            // Process for PCA - backend handles the dimensionality reduction
-            $processedData = $this->computePCA($vectors);
-            
-            return response()->json([
-                'data' => $processedData,
-                'count' => $count,
-                'method' => 'pca'
-            ]);
-        } else {
-            // For t-SNE and UMAP, return raw data for frontend processing
-            return response()->json([
-                'data' => $vectors->toArray(),
-                'count' => $count,
-                'method' => $method
-            ]);
-        }
+        // Return raw data for all methods - dimensionality reduction is handled in frontend
+        return response()->json([
+            'data' => $vectors->toArray(),
+            'count' => $count,
+            'method' => $method
+        ]);
     }
 
     /**
