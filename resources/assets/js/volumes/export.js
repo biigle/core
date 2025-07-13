@@ -5,10 +5,12 @@ import ImageGridImage from './components/imageGridImage.vue';
 import SortComponent from './components/sortComponent.vue';
 import SorterStore from './stores/sorters.js';
 import VolumesApi from './api/volumes.js';
+import VolumePcaVisualizationApi from './api/volumePcaVisualization.js';
 import { plugins } from './volumeContainer.vue';
 
 biigle.$declare('annotations.api.volumes', VolumesApi); // Legacy support
 biigle.$declare('volumes.api.volumes', VolumesApi);
+biigle.$declare('api.volumePcaVisualization', VolumePcaVisualizationApi);
 biigle.$declare('volumes.components.filterListComponent', FilterListComponent);
 biigle.$declare('volumes.components.imageGrid', ImageGrid);
 biigle.$declare('volumes.components.imageGridImage', ImageGridImage);

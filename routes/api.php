@@ -475,6 +475,10 @@ $router->group([
         'uses' => 'StatisticsController@index',
     ]);
 
+    $router->get('{id}/pca-visualization', [
+        'uses' => 'PcaVisualizationController@index',
+    ]);
+
     $router->get('{id}/annotations/sort/outliers/{id2}', [
         'uses' => 'SortAnnotationsByOutliersController@index',
     ]);

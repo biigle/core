@@ -5,6 +5,7 @@
             <pie-chart :total-files="statisticsData.totalFiles" :annotated-files="statisticsData.annotatedFiles" :volumeType="statisticsData.volumeType"></pie-chart>
             <pie-label v-if="showPieLabel" :annotation-labels="statisticsData.annotationLabels" :volumeType="statisticsData.volumeType"></pie-label>
             <net-map v-if="showNetMap" :annotation-labels="statisticsData.annotationLabels" :source-target-labels="statisticsData.sourceTargetLabels" :volumeType="statisticsData.volumeType"></net-map>
+            <volume-pca-visualization :volume-id="statisticsData.volumeName && statisticsData.volumeName[0] && statisticsData.volumeName[0].id"></volume-pca-visualization>
         </div>
     </modal>
 </template>
@@ -14,6 +15,7 @@ import AnnotationTimeline from './charts/timelinePlot.vue';
 import NetMap from './charts/netmapDisplay.vue';
 import PieChart from './charts/pieChart.vue';
 import PieLabel from './charts/pieLabelChart.vue';
+import VolumePcaVisualization from '../../volumes/components/charts/volumePcaVisualization.vue';
 import { Modal } from 'uiv';
 
 
@@ -25,6 +27,7 @@ export default {
         pieChart: PieChart,
         pieLabel: PieLabel,
         netMap: NetMap,
+        volumePcaVisualization: VolumePcaVisualization,
     },
     props: {
         showModal: {
