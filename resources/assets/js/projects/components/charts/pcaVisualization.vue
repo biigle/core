@@ -203,7 +203,13 @@ export default {
                     coords = [point.z || 0, point.y]; // PCA only: PC3 vs PC2 (PC2 on y-axis)
                 }
                 
-                labelGroups.get(key).data.push(coords);
+                // Add point data with annotation_id for click handling
+                labelGroups.get(key).data.push({
+                    value: coords,
+                    annotation_id: point.annotation_id,
+                    label_name: point.label_name,
+                    label_color: point.label_color
+                });
             });
             
             const result = Array.from(labelGroups.values());
@@ -214,13 +220,21 @@ export default {
                 const allPoints = [];
                 data.forEach(point => {
                     if (point && typeof point.x !== 'undefined' && typeof point.y !== 'undefined') {
+                        let coords;
                         if (this.is3D) {
-                            allPoints.push([point.x, point.y, point.z || 0]);
+                            coords = [point.x, point.y, point.z || 0];
                         } else if (!this.showPC2vsPC3 || this.method !== 'pca') {
-                            allPoints.push([point.x, point.y]);
+                            coords = [point.x, point.y];
                         } else {
-                            allPoints.push([point.z || 0, point.y]);
+                            coords = [point.z || 0, point.y];
                         }
+                        
+                        allPoints.push({
+                            value: coords,
+                            annotation_id: point.annotation_id,
+                            label_name: point.label_name,
+                            label_color: point.label_color
+                        });
                     }
                 });
                 
@@ -458,15 +472,18 @@ export default {
             const prefix = this.method === 'tsne' ? 'tSNE' : this.method.toUpperCase();
             if (this.is3D) {
                 return function(params) {
-                    return `${params.seriesName}<br/>${prefix}1: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}<br/>${prefix}3: ${params.value[2].toFixed(3)}`;
+                    const value = params.data.value || params.value;
+                    return `${params.seriesName}<br/>${prefix}1: ${value[0].toFixed(3)}<br/>${prefix}2: ${value[1].toFixed(3)}<br/>${prefix}3: ${value[2].toFixed(3)}<br/>Click to view annotation`;
                 };
             } else if (!this.showPC2vsPC3 || this.method !== 'pca') {
                 return function(params) {
-                    return `${params.seriesName}<br/>${prefix}1: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}`;
+                    const value = params.data.value || params.value;
+                    return `${params.seriesName}<br/>${prefix}1: ${value[0].toFixed(3)}<br/>${prefix}2: ${value[1].toFixed(3)}<br/>Click to view annotation`;
                 };
             } else {
                 return function(params) {
-                    return `${params.seriesName}<br/>${prefix}3: ${params.value[0].toFixed(3)}<br/>${prefix}2: ${params.value[1].toFixed(3)}`;
+                    const value = params.data.value || params.value;
+                    return `${params.seriesName}<br/>${prefix}3: ${value[0].toFixed(3)}<br/>${prefix}2: ${value[1].toFixed(3)}<br/>Click to view annotation`;
                 };
             }
         },
@@ -1036,6 +1053,14 @@ export default {
                 }
                 
                 this.chart.setOption(this.chartOption, true); // true = notMerge
+                
+                // Add click event listener for data points
+                this.chart.on('click', (params) => {
+                    if (params.data && params.data.annotation_id) {
+                        const url = `http://localhost:8000/image-annotations/${params.data.annotation_id}`;
+                        window.open(url, '_blank');
+                    }
+                });
                 
                 // Force resize after initialization
                 setTimeout(() => {
