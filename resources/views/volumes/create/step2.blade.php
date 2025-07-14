@@ -4,9 +4,9 @@
 
 @push('scripts')
     <script type="module">
-        biigle.$declare('volumes.name', '{!! $oldName !!}');
+        biigle.$declare('volumes.name', {{ Js::from(old('name', $oldName)) }});
         biigle.$declare('volumes.url', '{!! $oldUrl !!}');
-        biigle.$declare('volumes.handle', `{!! $oldHandle !!}`);
+        biigle.$declare('volumes.handle', `{{ $oldHandle }}`);
         biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
         biigle.$declare('volumes.filenames', '{{ $filenames }}');
         biigle.$declare('volumes.filenamesFromMeta', {{ $filenamesFromMeta ? 'true' : 'false' }});
