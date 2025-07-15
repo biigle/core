@@ -108,9 +108,12 @@
 
     .labelbot-label {
 
-        &.labelbot-label--highlighted {
+        &.labelbot-label--progress, &.labelbot-label--highlighted {
             color: white;
             cursor: pointer;
+        }
+
+        &.labelbot-label--highlighted {
             background-color: $gray-lighter;
 
             .labelbot-label__keyboard {

@@ -12,7 +12,10 @@
         <li
             v-for="(label, index) in labels"
             class="labelbot-label"
-            :class="{ 'labelbot-label--highlighted': index === highlightedLabel }"
+            :class="{
+                'labelbot-label--highlighted': index === highlightedLabel,
+                'labelbot-label--progress': index === 0 && hasProgressBar,
+            }"
             :key="index"
             @mouseover="handleLabelbotFocus(index)"
             @click="selectLabel(index)"
@@ -86,7 +89,7 @@ export default {
     },
     data() {
         return {
-            hasProgressBar: true,
+            shouldHaveProgressBar: true,
             cancelProgressTimeoutId: null,
             highlightedLabel: 0,
             typeaheadFocused: false,
@@ -144,11 +147,14 @@ export default {
         popupKey() {
             return this.annotation.id;
         },
+        hasProgressBar() {
+            return this.isFocused && this.shouldHaveProgressBar;
+        },
     },
     watch: {
         dragging() {
-            if (this.dragging && this.hasProgressBar) {
-                this.hasProgressBar = false;
+            if (this.dragging && this.shouldHaveProgressBar) {
+                this.shouldHaveProgressBar = false;
             }
         },
         isFocused(isFocused) {
@@ -174,12 +180,12 @@ export default {
         handleTypeaheadFocus() {
             this.highlightedLabel = this.labels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
             this.typeaheadFocused = true;
-            this.hasProgressBar = false;
+            this.shouldHaveProgressBar = false;
         },
         handleLabelbotFocus(index) {
             this.highlightedLabel = index;
             this.cancelProgressTimeoutId = setTimeout(() => {
-                this.hasProgressBar = false;
+                this.shouldHaveProgressBar = false;
             }, 250);
         },
         cancelProgressTimeout() {
@@ -190,8 +196,8 @@ export default {
         handleEsc() {
             if (!this.isFocused) return;
 
-            if (this.hasProgressBar) {
-                this.hasProgressBar = false;
+            if (this.shouldHaveProgressBar) {
+                this.shouldHaveProgressBar = false;
             } else {
                 this.confirmAndClose();
             }
@@ -238,6 +244,9 @@ export default {
             Events.emit('labelbot.dismissed');
         },
         emitFocus() {
+            if (!this.isFocused) {
+                this.shouldHaveProgressBar = false;
+            }
             this.$emit('focus', this.annotation);
         },
         startDrag(e) {
