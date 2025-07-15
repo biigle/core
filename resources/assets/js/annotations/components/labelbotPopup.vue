@@ -3,6 +3,7 @@
     class="labelbot-popup"
     :class="classObject"
     @mouseover="emitFocus"
+    @mouseout="cancelProgressTimeout"
     >
     <div class="labelbot-popup-grap-area" @mousedown="startDrag">
         <div class="labelbot-popup-grap-area-notch"></div>
@@ -85,6 +86,7 @@ export default {
     data() {
         return {
             hasProgressBar: true,
+            cancelProgressTimeoutId: null,
             highlightedLabel: 0,
             typeaheadFocused: false,
             selectedLabel: null,
@@ -171,10 +173,18 @@ export default {
         handleTypeaheadFocus() {
             this.highlightedLabel = this.labels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
             this.typeaheadFocused = true;
+            this.hasProgressBar = false;
         },
         handleLabelbotFocus(index) {
             this.highlightedLabel = index;
-            this.hasProgressBar = false;
+            this.cancelProgressTimeoutId = setTimeout(() => {
+                this.hasProgressBar = false;
+            }, 250);
+        },
+        cancelProgressTimeout() {
+            if (this.cancelProgressTimeoutId) {
+                clearTimeout(this.cancelProgressTimeoutId);
+            }
         },
         handleEsc() {
             if (!this.isFocused) return;
