@@ -32,6 +32,7 @@ export default {
             labelbotMaxRequests: 1,
             labelbotWorker: null,
             labelBotWorkerListeners: [],
+            labelbotTimeout: 1,
         };
     },
     computed: {

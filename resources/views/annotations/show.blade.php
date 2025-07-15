@@ -89,6 +89,7 @@
             :labelbot-state="labelbotState"
             :labelbot-overlays="labelbotOverlays"
             :focused-popup-key="focusedPopupKey"
+            :labelbot-timeout="labelbotTimeout"
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
             v-on:close-labelbot-popup="closeLabelbotPopup"
             v-on:moveend="handleMapMoveend"

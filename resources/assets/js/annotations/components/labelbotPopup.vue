@@ -13,9 +13,7 @@
         <li
             v-for="(label, index) in labels"
             class="labelbot-label"
-            :class="{
-                'labelbot-label--progress': index === 0 && hasProgressBar,
-            }"
+            :class="{'labelbot-label--progress': index === 0 && hasProgressBar}"
             :key="index"
             @click="selectLabel(index)"
             :title="`Choose label ${label.name}`"
@@ -23,6 +21,7 @@
                 <div
                     v-if="index === 0 && hasProgressBar"
                     class="labelbot-label__progress-bar"
+                    :style="progressBarStyle"
                     @animationend="confirmAndClose"
                     ></div>
                 <div class="labelbot-label__name">
@@ -66,6 +65,14 @@ import {unByKey} from '@biigle/ol/Observable';
 const OVERLAY_MAX_WIDTH = 300;
 const OVERLAY_OFFSET = OVERLAY_MAX_WIDTH / 2 + 50;
 
+// Defines the available settings options.
+export const TIMEOUTS = [
+    '3s',
+    '5s',
+    '10s',
+    'off',
+];
+
 export default {
     emits: [
         'update',
@@ -86,6 +93,10 @@ export default {
         annotation: {
             type: Object,
             required: true,
+        },
+        timeout: {
+            type: Number,
+            default: 1,
         },
     },
     data() {
@@ -149,6 +160,14 @@ export default {
         },
         hasProgressBar() {
             return this.isFocused && this.shouldHaveProgressBar;
+        },
+        timeoutValue() {
+            return TIMEOUTS[this.timeout];
+        },
+        progressBarStyle() {
+            return {
+                'animation-duration': this.timeoutValue,
+            };
         },
     },
     watch: {
@@ -366,6 +385,10 @@ export default {
         }
     },
     created() {
+        if (this.timeout === (TIMEOUTS.length - 1)) {
+            this.shouldHaveProgressBar = false;
+        }
+
         this.trees = biigle.$require('annotations.labelTrees');
 
         Keyboard.on('Escape', this.handleEsc, 0, 'labelbot');

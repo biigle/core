@@ -49,7 +49,8 @@
     position: absolute;
     height: 100%;
     background-color: $brand-info;
-    animation: 5s linear 1 labelbot-progressbar;
+    // Duration is defined by JS.
+    animation: linear 1 labelbot-progressbar;
 }
 
 .labelbot-label__keyboard {

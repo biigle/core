@@ -23,6 +23,10 @@ export default {
             type: Number,
             default: -1,
         },
+        labelbotTimeout: {
+            type: Number,
+            default: 1,
+        },
     },
     components: {
         labelbotPopup: LabelbotPopup,
