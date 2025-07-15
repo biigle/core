@@ -8,6 +8,8 @@ import Messages from '@/core/messages/store.js';
 // DINOv2 image input size.
 const INPUT_SIZE = 224;
 
+const MAX_OVERLAY_COUNT = 5;
+
 export const LABELBOT_STATES = {
     INITIALIZING: 'initializing',
     COMPUTING: 'computing',
@@ -35,6 +37,9 @@ export default {
     computed: {
         labelbotIsActive() {
             return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;
+        },
+        labelbotOverlayCount() {
+            return this.labelbotOverlays.length;
         },
     },
     methods: {
@@ -271,6 +276,11 @@ export default {
         imageIndex() {
             if (this.labelbotOverlays.length > 0) {
                 this.closeAllLabelbotPopups();
+            }
+        },
+        labelbotOverlayCount(count) {
+            if (count > MAX_OVERLAY_COUNT) {
+                this.closeLabelbotPopup(this.labelbotOverlays[0]);
             }
         },
     },
