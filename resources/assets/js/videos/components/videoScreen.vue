@@ -122,7 +122,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button>    
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -187,7 +187,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button>     
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -206,20 +206,24 @@
                     @click="drawPolygon"
                     v-slot="{onActive}"
                     >
-                        <control-button
-                            v-if="(isDrawingPolygon || isUsingPolygonBrush) && singleAnnotation"
-                            icon="fa-check"
-                            title="Disable the single-frame annotation option to create multi-frame annotations"
-                            :disabled="true"
-                            ></control-button>     
-                        <control-button
-                            v-else-if="isDrawingPolygon || isUsingPolygonBrush"
-                            icon="fa-check"
-                            title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation || null"
-                            @click="finishDrawAnnotation"
-                            @active="onActive"
-                            ></control-button>
+                        <template v-if="singleAnnotation">
+                            <control-button
+                                v-show="(isDrawingPolygon || isUsingPolygonBrush)"
+                                icon="fa-check"
+                                title="Disable the single-frame annotation option to create multi-frame annotations"
+                                :disabled="true"
+                                ></control-button>
+                        </template>
+                        <template v-else>
+                            <control-button
+                                v-show="(isDrawingPolygon || isUsingPolygonBrush)"
+                                icon="fa-check"
+                                title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
+                                :disabled="cantFinishDrawAnnotation || null"
+                                @click="finishDrawAnnotation"
+                                @active="onActive"
+                                ></control-button>
+                        </template>
                         <control-button
                             icon="fa-paint-brush"
                             title="Draw a polygon using the brush tool 𝗘"
