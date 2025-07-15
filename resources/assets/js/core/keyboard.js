@@ -135,8 +135,13 @@ class Keyboard {
         // meta keys on each keypress to get the correct set of pressed keys in these
         // cases.
         this.maybeInjectModifierKeys(e);
+
         this.handleKeyEvents(e, this.pressedKeys);
-        this.handleKeyEvents(e, this.pressedCodes);
+        // Some keys are the same as codes. Only execute the codes listeners if they are
+        // actually different.
+        if (this.pressedKeys !== this.pressedCodes) {
+            this.handleKeyEvents(e, this.pressedCodes);
+        }
     }
 
     maybeInjectModifierKeys(e) {
