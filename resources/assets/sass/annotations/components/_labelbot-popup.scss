@@ -59,14 +59,22 @@
     right: $padding-small-horizontal;
 }
 
-.labelbot-popup-grap-area {
+.labelbot-popup-grab-area {
     height: 1.5em;
     background-color: $body-bg;
     cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+        color: $text-muted;
+        display: none;
+    }
 }
 
 .labelbot-popup--dragging {
-    .labelbot-popup-grap-area  {
+    .labelbot-popup-grab-area  {
         cursor: grabbing;
     }
 
@@ -106,7 +114,11 @@
         display: inline-block;
     }
 
-    .labelbot-popup-grap-area {
+    .labelbot-popup-grab-area {
         background-color: $gray-lighter;
+
+        i {
+            display: block;
+        }
     }
 }

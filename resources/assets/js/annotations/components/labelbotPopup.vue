@@ -6,7 +6,9 @@
     @mouseleave="handleMouseLeave"
     @mousemove="handleMouseMove"
     >
-    <div class="labelbot-popup-grap-area" @mousedown="startDrag"></div>
+    <div class="labelbot-popup-grab-area" @mousedown="startDrag">
+        <i class="fas fa-grip-lines"></i>
+    </div>
     <ul class="labelbot-labels">
         <li
             v-for="(label, index) in labels"
