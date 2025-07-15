@@ -46,11 +46,13 @@ class UrlParams {
     }
     set(params) {
         this.params = params;
-        this.updateSearch();
+        // Browser history updates must not be too frequent.
+        throttle(this.updateSearch.bind(this), 500, 'update-url-params');
     }
     unset(key) {
         delete this.params[key];
-        this.updateSearch();
+        // Browser history updates must not be too frequent.
+        throttle(this.updateSearch.bind(this), 500, 'update-url-params');
     }
     get(key) {
         return this.params[key];
