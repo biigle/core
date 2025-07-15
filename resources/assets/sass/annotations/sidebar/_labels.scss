@@ -11,4 +11,17 @@
     .labels-tab__plugins:not(:empty) {
         padding-top: 1em;
     }
+
+    .labelbot-buttons {
+        display: flex;
+
+        button:first-child {
+            flex: 1;
+            margin-right: 9px;
+        }
+    }
+
+    .labelbot-info {
+        margin-top: 10px;
+    }
 }

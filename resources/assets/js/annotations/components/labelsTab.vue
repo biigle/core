@@ -34,6 +34,7 @@ export default {
             labelTrees: [],
             selectedLabel: null,
             focusInputFindlabel: false,
+            showLabelbotInfo: false,
         };
     },
     props: {
@@ -119,6 +120,9 @@ export default {
             this.$nextTick(() => {
                 this.focusInputFindlabel = true;
             });
+        },
+        toggleLabelbotInfo() {
+            this.showLabelbotInfo = !this.showLabelbotInfo;
         },
     },
     created() {
