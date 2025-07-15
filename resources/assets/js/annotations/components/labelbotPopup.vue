@@ -208,19 +208,20 @@ export default {
                 this.confirmAndClose();
             }
         },
-        handleTab(e) {
-            if (e.key === "Tab") {
+        handleTypeaheadKey(e) {
+            if (e.key === "Tab" || e.key === "Escape") {
                 e.preventDefault();
-                this.labelTab();
+                this.leaveTypeahead();
             }
         },
-        labelTab() {
-            if (!this.isFocused) return;
-
-            if (!this.typeaheadFocused) {
+        enterTypeahead() {
+            if (this.isFocused && !this.typeaheadFocused) {
                 this.$refs.popupTypeahead?.$refs.input.focus();
                 this.typeaheadFocused = true;
-            } else {
+            }
+        },
+        leaveTypeahead() {
+            if (this.isFocused && this.typeaheadFocused) {
                 this.$refs.popupTypeahead?.$refs.input.blur();
                 this.typeaheadFocused = false;
             }
@@ -349,7 +350,7 @@ export default {
 
         Keyboard.on('Escape', this.handleEsc, 0, 'labelbot');
         Keyboard.on('Backspace', this.deleteLabelAnnotation, 0, 'labelbot');
-        Keyboard.on('Tab', this.labelTab, 0, 'labelbot');
+        Keyboard.on('Tab', this.enterTypeahead, 0, 'labelbot');
 
         if (this.labels.length > 0) {
             this.selectedLabel = this.labels[0];
@@ -362,10 +363,7 @@ export default {
     mounted() {
         this.createOverlay(this.$parent);
 
-        // So the user can leave the focused input
-        this.$refs.popupTypeahead?.$refs.input?.addEventListener("keydown", (e) => {
-            this.handleTab(e);
-        });
+        this.$refs.popupTypeahead?.$refs.input?.addEventListener("keydown", this.handleTypeaheadKey);
     },
     beforeUnmount() {
         this.$parent.map.removeOverlay(this.overlay);
@@ -374,7 +372,7 @@ export default {
 
         Keyboard.off('Escape', this.handleEsc, 'labelbot');
         Keyboard.off('Backspace', this.deleteLabelAnnotation, 'labelbot');
-        Keyboard.off('Tab', this.labelTab, 'labelbot');
+        Keyboard.off('Tab', this.enterTypeahead, 'labelbot');
 
         if (this.labels.length > 0) {
             Keyboard.off('Enter', this.selectLabel1, 'labelbot');
