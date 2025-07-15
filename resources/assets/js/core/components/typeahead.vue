@@ -32,7 +32,7 @@
                 :item="item"
                 :item-key="moreInfo"
                 :select="select"
-                :highlightHtml="highlight(item)"
+                :highlightHtml="highlight(escape(item))"
                 >
             </component>
         </template>
@@ -142,6 +142,21 @@ export default {
                 }
             }
         },
+        escape(item) {
+            let escItem = { ...item };
+            let escape = function (match) {
+                const escape = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escape[match];
+            };
+            escItem.name = escItem.name.replace(/[&<>"']/g, escape);
+            return escItem;
+        }
     },
     watch: {
         value(value) {
