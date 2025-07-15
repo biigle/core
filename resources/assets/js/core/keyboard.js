@@ -68,7 +68,7 @@ class Keyboard {
         // shortcuts.
         document.body.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.body.addEventListener('keyup', this.handleKeyUp.bind(this));
-        window.addEventListener('focus', this.clearPressedKeys.bind(this));
+        window.addEventListener('blur', this.clearPressedKeys.bind(this));
     }
 
     get activeListenerSet() {
@@ -117,6 +117,10 @@ class Keyboard {
         // cases.
         this.maybeInjectModifierKeys(e);
         this.handleKeyEvents(e, this.pressedKeys);
+        // Similarly, modifier keys must be removed immediately, e.g. in case a "switch
+        // window" key combination was pressed. Otherwise the modifier keys would stick
+        // forever.
+        this.maybeRemoveModifierKeys(e);
     }
 
     maybeInjectModifierKeys(e) {
@@ -131,6 +135,21 @@ class Keyboard {
         }
         if (e.shiftKey) {
             this.pressedKeysSet.add('shift');
+        }
+    }
+
+    maybeRemoveModifierKeys(e) {
+        if (e.altKey) {
+            this.pressedKeysSet.delete('alt');
+        }
+        if (e.ctrlKey) {
+            this.pressedKeysSet.delete('control');
+        }
+        if (e.metaKey) {
+            this.pressedKeysSet.delete('meta');
+        }
+        if (e.shiftKey) {
+            this.pressedKeysSet.delete('shift');
         }
     }
 
