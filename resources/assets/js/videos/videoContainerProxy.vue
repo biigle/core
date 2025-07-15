@@ -113,6 +113,9 @@ const proxy = {
         selectFavouriteLabel0() {
             this.parent.selectedFavouriteLabel = 9;
         },
+        toggleOpenTab(e) {
+            this.parent.$refs.sidebar.toggleLastOpenedTab(e);
+        },
         bindProxyShortcuts() {
             Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
             Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
@@ -127,6 +130,7 @@ const proxy = {
             Keyboard.on('8', this.selectFavouriteLabel8, 0, this.listenerSet);
             Keyboard.on('9', this.selectFavouriteLabel9, 0, this.listenerSet);
             Keyboard.on('0', this.selectFavouriteLabel0, 0, this.listenerSet);
+            Keyboard.on('Tab', this.toggleOpenTab, 0, this.listenerSet);
         },
         releaseProxyShortcuts() {
             Keyboard.off('C', this.selectLastAnnotation, this.listenerSet);
@@ -142,6 +146,7 @@ const proxy = {
             Keyboard.on('8', this.selectFavouriteLabel8, this.listenerSet);
             Keyboard.on('9', this.selectFavouriteLabel9, this.listenerSet);
             Keyboard.on('0', this.selectFavouriteLabel0, this.listenerSet);
+            Keyboard.on('Tab', this.toggleOpenTab, this.listenerSet);
         },
         handleInitMap(map) {
             Events.emit('videos.map.init', map);
