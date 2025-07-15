@@ -60,7 +60,7 @@
 }
 
 .labelbot-popup-grap-area {
-    height: 20px;
+    height: 1.5em;
     background-color: $body-bg;
     cursor: grab;
 }
@@ -71,33 +71,8 @@
     }
 
     .labelbot-labels {
-        pointer-events: none;
+        user-select: none;
     }
-}
-
-.labelbot-popup-grap-area-notch {
-    position: absolute;
-    width: 3em;
-    height: 0.4em;
-    left: 50%;
-    top: calc(-0.4em + 1px);
-    transform: translateX(-50%);
-    background-color: $body-bg;
-    border-top: 1px solid $input-border;
-    border-right: 1px solid $input-border;
-    border-left: 1px solid $input-border;
-    border-radius: $border-radius-base $border-radius-base 0 0;
-}
-
-.labelbot-popup-grap-area::after {
-    content: "⋮⋮⋮";
-    letter-spacing: 0.2rem;
-    font-size: 15px;
-    color: white;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    top: 8px;
 }
 
 .labelbot-popup--focused {
@@ -132,10 +107,5 @@
 
     .labelbot-popup-grap-area {
         background-color: $gray-lighter;
-    }
-
-    .labelbot-popup-grap-area-notch {
-        background-color: $gray-lighter;
-        border-color: $gray-lighter;
     }
 }

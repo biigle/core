@@ -5,9 +5,7 @@
     @mouseover="emitFocus"
     @mouseout="cancelProgressTimeout"
     >
-    <div class="labelbot-popup-grap-area" @mousedown="startDrag">
-        <div class="labelbot-popup-grap-area-notch"></div>
-    </div>
+    <div class="labelbot-popup-grap-area" @mousedown="startDrag"></div>
     <ul class="labelbot-labels">
         <li
             v-for="(label, index) in labels"
