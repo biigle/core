@@ -241,7 +241,7 @@ export default {
                 this.setShouldUseVideoFrameCallback();
             }
         },
-        toggleFirefoxFullscreen(e) {
+        toggleFirefoxFullscreen() {
             document.body.requestFullscreen();
         },
     },
