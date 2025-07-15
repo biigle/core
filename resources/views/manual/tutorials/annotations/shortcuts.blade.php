@@ -35,6 +35,10 @@
                     <td>Zoom to show the whole image</td>
                 </tr>
                 <tr>
+                    <td><kbd>Backquote</kbd><br>(key left of <kbd>1</kbd>)</td>
+                    <td>Toggle <a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a></td>
+                </tr>
+                <tr>
                     <td><kbd>1</kbd> - <kbd>9</kbd></td>
                     <td>Select favourite label 1-9</td>
                 </tr>
@@ -264,6 +268,41 @@
                 <tr>
                     <td><kbd>Enter</kbd></td>
                     <td>Attach the currently selected label to the current image</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            <a name="labelbot"></a>When a LabelBOT overlay is active:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Confirm the first suggested label in the overlay</td>
+                </tr>
+                <tr>
+                    <td><kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd></td>
+                    <td>Select the corresponding suggested label (if available)</td>
+                </tr>
+                <tr>
+                    <td><kbd>Tab</kbd></td>
+                    <td>Toggle focus of the typeahead in the overlay</td>
+                </tr>
+                <tr>
+                    <td><kbd>Esc</kbd></td>
+                    <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise</td>
+                </tr>
+                <tr>
+                    <td><kbd>Backspace</kbd></td>
+                    <td>Delete the new annotation</td>
                 </tr>
             </tbody>
         </table>
