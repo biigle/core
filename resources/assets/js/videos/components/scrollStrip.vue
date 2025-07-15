@@ -10,6 +10,7 @@
         ></thumbnail-preview>
     <div
         ref="strip"
+        v-bind="$attrs"
         class="scroll-strip"
         :class="classObject"
         @wheel.stop="handleWheel"
