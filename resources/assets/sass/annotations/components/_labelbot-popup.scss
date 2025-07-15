@@ -48,10 +48,8 @@
     left: 0;
     position: absolute;
     height: 100%;
-    opacity: 0.5;
-    background-color: $input-border;
+    background-color: $brand-info;
     animation: 5s linear 1 labelbot-progressbar;
-    border-radius: $border-radius-base;
 }
 
 .labelbot-label__keyboard {
@@ -118,6 +116,10 @@
             .labelbot-label__keyboard {
                 color: white;
             }
+        }
+
+        &:first-child {
+            border-color: $brand-info;
         }
     }
 

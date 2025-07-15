@@ -11,7 +11,8 @@
     <ul class="labelbot-labels">
         <li
             v-for="(label, index) in labels"
-            class="labelbot-label" :class="{ 'labelbot-label--highlighted': index === highlightedLabel }"
+            class="labelbot-label"
+            :class="{ 'labelbot-label--highlighted': index === highlightedLabel }"
             :key="index"
             @mouseover="handleLabelbotFocus(index)"
             @click="selectLabel(index)"
