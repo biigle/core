@@ -2,8 +2,9 @@
 <div
     class="labelbot-popup"
     :class="classObject"
-    @mouseover="emitFocus"
-    @mouseout="cancelProgressTimeout"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+    @mousemove="handleMouseMove"
     >
     <div class="labelbot-popup-grap-area" @mousedown="startDrag"></div>
     <ul class="labelbot-labels">
@@ -11,11 +12,9 @@
             v-for="(label, index) in labels"
             class="labelbot-label"
             :class="{
-                'labelbot-label--highlighted': index === highlightedLabel,
                 'labelbot-label--progress': index === 0 && hasProgressBar,
             }"
             :key="index"
-            @mouseover="handleLabelbotFocus(index)"
             @click="selectLabel(index)"
             :title="`Choose label ${label.name}`"
             >
@@ -57,6 +56,7 @@ import LineString from '@biigle/ol/geom/LineString';
 import Overlay from '@biigle/ol/Overlay';
 import Styles from '../stores/styles.js';
 import Typeahead from '@/label-trees/components/labelTypeahead.vue';
+import {debounce} from '@/core/utils.js';
 import {markRaw} from 'vue';
 import {unByKey} from '@biigle/ol/Observable';
 
@@ -88,8 +88,7 @@ export default {
     data() {
         return {
             shouldHaveProgressBar: true,
-            cancelProgressTimeoutId: null,
-            highlightedLabel: 0,
+            maybeGetsAttention: false,
             typeaheadFocused: false,
             selectedLabel: null,
             trees: [],
@@ -176,20 +175,27 @@ export default {
             this.$emit('close', this.annotation);
         },
         handleTypeaheadFocus() {
-            this.highlightedLabel = this.labels.length; // We don't set it to -1 because this will not trigger the highlightedLabel watcher at start.
             this.typeaheadFocused = true;
             this.shouldHaveProgressBar = false;
         },
-        handleLabelbotFocus(index) {
-            this.highlightedLabel = index;
-            this.cancelProgressTimeoutId = setTimeout(() => {
+        handleMouseEnter() {
+            this.maybeGetsAttention = true;
+
+            if (!this.isFocused) {
                 this.shouldHaveProgressBar = false;
-            }, 250);
-        },
-        cancelProgressTimeout() {
-            if (this.cancelProgressTimeoutId) {
-                clearTimeout(this.cancelProgressTimeoutId);
             }
+
+            this.$emit('focus', this.annotation);
+        },
+        handleMouseLeave() {
+            this.maybeGetsAttention = false;
+        },
+        handleMouseMove() {
+            debounce(() => {
+                if (this.maybeGetsAttention) {
+                    this.shouldHaveProgressBar = false;
+                }
+            }, 100, 'labelbot-popup-attention');
         },
         handleEsc() {
             if (!this.isFocused) return;
@@ -199,21 +205,6 @@ export default {
             } else {
                 this.confirmAndClose();
             }
-        },
-        labelUp() {
-            if (!this.isFocused) return;
-
-            this.highlightedLabel = (this.labels.length + this.highlightedLabel - 1) % this.labels.length;
-        },
-        labelDown() {
-            if (!this.isFocused) return;
-
-            this.highlightedLabel = (this.highlightedLabel + 1) % this.labels.length;
-        },
-        labelEnter() {
-            if (!this.isFocused || this.highlightedLabel >= this.labels.length) return;
-
-            this.selectLabel(this.highlightedLabel);
         },
         handleTab(e) {
             if (e.key === "Tab") {
@@ -226,11 +217,9 @@ export default {
 
             if (!this.typeaheadFocused) {
                 this.$refs.popupTypeahead?.$refs.input.focus();
-                this.highlightedLabel = this.labels.length;
                 this.typeaheadFocused = true;
             } else {
                 this.$refs.popupTypeahead?.$refs.input.blur();
-                this.highlightedLabel = this.labels.length - 1;
                 this.typeaheadFocused = false;
             }
         },
@@ -240,12 +229,6 @@ export default {
             this.$emit('delete', this.annotation);
             this.emitClose();
             Events.emit('labelbot.dismissed');
-        },
-        emitFocus() {
-            if (!this.isFocused) {
-                this.shouldHaveProgressBar = false;
-            }
-            this.$emit('focus', this.annotation);
         },
         startDrag(e) {
             this.dragging = true;
@@ -363,14 +346,12 @@ export default {
         this.trees = biigle.$require('annotations.labelTrees');
 
         Keyboard.on('Escape', this.handleEsc, 0, 'labelbot');
-        Keyboard.on('ArrowUp', this.labelUp, 0, 'labelbot');
-        Keyboard.on('ArrowDown', this.labelDown, 0, 'labelbot');
-        Keyboard.on('Enter', this.labelEnter, 0, 'labelbot');
         Keyboard.on('Backspace', this.deleteLabelAnnotation, 0, 'labelbot');
         Keyboard.on('Tab', this.labelTab, 0, 'labelbot');
 
         if (this.labels.length > 0) {
             this.selectedLabel = this.labels[0];
+            Keyboard.on('Enter', this.selectLabel1, 0, 'labelbot');
             Keyboard.on('1', this.selectLabel1, 0, 'labelbot');
             Keyboard.on('2', this.selectLabel2, 0, 'labelbot');
             Keyboard.on('3', this.selectLabel3, 0, 'labelbot');
@@ -390,13 +371,11 @@ export default {
         this.listenerKeys.forEach(unByKey);
 
         Keyboard.off('Escape', this.handleEsc, 'labelbot');
-        Keyboard.off('ArrowUp', this.labelUp, 'labelbot');
-        Keyboard.off('ArrowDown', this.labelDown, 'labelbot');
-        Keyboard.off('Enter', this.labelEnter, 'labelbot');
         Keyboard.off('Backspace', this.deleteLabelAnnotation, 'labelbot');
         Keyboard.off('Tab', this.labelTab, 'labelbot');
 
         if (this.labels.length > 0) {
+            Keyboard.off('Enter', this.selectLabel1, 'labelbot');
             Keyboard.off('1', this.selectLabel1, 'labelbot');
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');

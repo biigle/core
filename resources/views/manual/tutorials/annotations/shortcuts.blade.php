@@ -286,23 +286,15 @@
             <tbody>
                 <tr>
                     <td><kbd>Enter</kbd></td>
-                    <td>Confirm the currently highlighted label</td>
+                    <td>Confirm the first suggested label in the overlay</td>
                 </tr>
                 <tr>
                     <td><kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd></td>
                     <td>Select the corresponding suggested label (if available)</td>
                 </tr>
                 <tr>
-                    <td><kbd>Arrow Up</kbd></td>
-                    <td>Move selection up through the suggested labels</td>
-                </tr>
-                <tr>
-                    <td><kbd>Arrow Down</kbd></td>
-                    <td>Move selection down through the suggested labels</td>
-                </tr>
-                <tr>
                     <td><kbd>Tab</kbd></td>
-                    <td>Toggle focus between suggested labels and the typeahead</td>
+                    <td>Toggle focus of the typeahead in the overlay</td>
                 </tr>
                 <tr>
                     <td><kbd>Esc</kbd></td>
