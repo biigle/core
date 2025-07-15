@@ -538,6 +538,9 @@ export default {
                 case 'cachedImagesCount':
                     this.cachedImagesCount = value;
                     break;
+                case 'labelbotTimeout':
+                    this.labelbotTimeout = value;
+                    break;
                 case 'mousePosition':
                     this.showMousePosition = value;
                     break;

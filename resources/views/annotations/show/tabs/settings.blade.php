@@ -28,8 +28,13 @@
         </div>
 
         <div class="sidebar-tab__section">
-            <h5 title="Set the number of caches images ">Cached Images (<span v-text="cachedImagesCount"></span>)</h5>
+            <h5 title="Set the number of caches images">Cached Images (<span v-text="cachedImagesCount"></span>)</h5>
             <input type="range" min="1" max="50" step="1" v-model="cachedImagesCount" onmouseup="this.blur()">
+        </div>
+
+        <div class="sidebar-tab__section">
+            <h5 title="Set the duration of the LabelBOT popup timeout">LabelBOT Timeout (<span v-text="labelbotTimeoutValue"></span>)</h5>
+            <input type="range" min="0" :max="labelbotTimeoutMax" step="1" v-model="labelbotTimeout" onmouseup="this.blur()">
         </div>
 
         <div class="sidebar-tab__section">

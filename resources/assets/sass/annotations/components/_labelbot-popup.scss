@@ -48,10 +48,9 @@
     left: 0;
     position: absolute;
     height: 100%;
-    opacity: 0.5;
-    background-color: $input-border;
-    animation: 5s linear 1 labelbot-progressbar;
-    border-radius: $border-radius-base;
+    background-color: $brand-info;
+    // Duration is defined by JS.
+    animation: linear 1 labelbot-progressbar;
 }
 
 .labelbot-label__keyboard {
@@ -61,63 +60,54 @@
     right: $padding-small-horizontal;
 }
 
-.labelbot-popup-grap-area {
-    height: 20px;
+.labelbot-popup-grab-area {
+    height: 1.5em;
     background-color: $body-bg;
     cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+        color: $text-muted;
+        display: none;
+    }
 }
 
 .labelbot-popup--dragging {
-    .labelbot-popup-grap-area  {
+    .labelbot-popup-grab-area  {
         cursor: grabbing;
     }
 
     .labelbot-labels {
-        pointer-events: none;
+        user-select: none;
     }
-}
-
-.labelbot-popup-grap-area-notch {
-    position: absolute;
-    width: 3em;
-    height: 0.4em;
-    left: 50%;
-    top: calc(-0.4em + 1px);
-    transform: translateX(-50%);
-    background-color: $body-bg;
-    border-top: 1px solid $input-border;
-    border-right: 1px solid $input-border;
-    border-left: 1px solid $input-border;
-    border-radius: $border-radius-base $border-radius-base 0 0;
-}
-
-.labelbot-popup-grap-area::after {
-    content: "⋮⋮⋮";
-    letter-spacing: 0.2rem;
-    font-size: 15px;
-    color: white;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    top: 8px;
 }
 
 .labelbot-popup--focused {
     border-color: $gray-lighter;
+    box-shadow: 2px 2px 10px #0008;
+
     .labelbot-label__name {
         color: inherit;
     }
 
     .labelbot-label {
-
-        &.labelbot-label--highlighted {
+        &.labelbot-label--progress, &:hover {
             color: white;
             cursor: pointer;
-            background-color: $gray-lighter;
 
             .labelbot-label__keyboard {
                 color: white;
             }
+        }
+
+        &:hover {
+            background-color: $gray-lighter;
+        }
+
+        &:first-child {
+            border-color: $brand-info;
         }
     }
 
@@ -125,12 +115,11 @@
         display: inline-block;
     }
 
-    .labelbot-popup-grap-area {
+    .labelbot-popup-grab-area {
         background-color: $gray-lighter;
-    }
 
-    .labelbot-popup-grap-area-notch {
-        background-color: $gray-lighter;
-        border-color: $gray-lighter;
+        i {
+            display: block;
+        }
     }
 }

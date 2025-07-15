@@ -122,6 +122,10 @@
         </p>
 
         <p>
+            <a name="labelbot-timeout"></a>The LabelBOT timeout slider allows you to control the time after a <a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a> popup automatically closes. Move the slider to the far right to disable automatic closing.
+        </p>
+
+        <p>
             The progress indicator switch constrols the display of the indicator element next to the image filename in the navbar. The indicator shows your progress through the current (filtered) volume and whether you have seen all images.
         </p>
 

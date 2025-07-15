@@ -4,6 +4,7 @@ import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import ScreenshotButton from './screenshotButton.vue';
 import Settings from '../stores/settings.js';
+import {TIMEOUTS} from '../components/labelbotPopup.vue';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -58,6 +59,7 @@ export default {
                 'minimap',
                 'progressIndicator',
                 'exampleAnnotations',
+                'labelbotTimeout',
             ],
             annotationOpacity: 1.0,
             cachedImagesCount: 1,
@@ -69,6 +71,8 @@ export default {
             minimap: true,
             progressIndicator: true,
             exampleAnnotations: true,
+            labelbotTimeout: 1,
+            labelbotTimeoutMax: TIMEOUTS.length - 1,
         };
     },
     computed: {
@@ -80,6 +84,9 @@ export default {
         },
         settings() {
             return Settings;
+        },
+        labelbotTimeoutValue() {
+            return TIMEOUTS[this.labelbotTimeout];
         },
     },
     methods: {
@@ -148,9 +155,14 @@ export default {
             this.settings.set('annotationOpacity', opacity);
         },
         cachedImagesCount(amount) {
-            amount = parseFloat(amount);
+            amount = parseInt(amount);
             this.$emit('change', 'cachedImagesCount', amount);
             this.settings.set('cachedImagesCount', amount);
+        },
+        labelbotTimeout(index) {
+            index = parseInt(index);
+            this.$emit('change', 'labelbotTimeout', index);
+            this.settings.set('labelbotTimeout', index);
         },
         mousePosition(show) {
             this.$emit('change', 'mousePosition', show);

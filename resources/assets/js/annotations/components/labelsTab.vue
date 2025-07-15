@@ -34,6 +34,7 @@ export default {
             labelTrees: [],
             selectedLabel: null,
             focusInputFindlabel: false,
+            showLabelbotInfo: false,
         };
     },
     props: {
@@ -120,11 +121,15 @@ export default {
                 this.focusInputFindlabel = true;
             });
         },
+        toggleLabelbotInfo() {
+            this.showLabelbotInfo = !this.showLabelbotInfo;
+        },
     },
     created() {
         this.labelTrees = biigle.$require('annotations.labelTrees');
 
         Keyboard.on('control+k', this.setFocusInputFindLabel, 0, this.listenerSet);
+        Keyboard.on('Backquote', this.toggleLabelBot, 0, this.listenerSet);
     },
 };
 </script>
