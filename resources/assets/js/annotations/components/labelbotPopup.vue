@@ -62,8 +62,9 @@ import {debounce} from '@/core/utils.js';
 import {markRaw} from 'vue';
 import {unByKey} from '@biigle/ol/Observable';
 
-// Offset is half of max-width (300px) plus 50px.
-const LABELBOT_OVERLAY_OFFSET = 200;
+// Defined in CSS.
+const OVERLAY_MAX_WIDTH = 300;
+const OVERLAY_OFFSET = OVERLAY_MAX_WIDTH / 2 + 50;
 
 export default {
     emits: [
@@ -285,12 +286,31 @@ export default {
                 element: this.$el,
                 positioning: 'center-center',
                 position: popupPosition,
-                offset: [LABELBOT_OVERLAY_OFFSET, 0],
+                offset: [OVERLAY_OFFSET, 0],
                 insertFirst: false, // last added overlay appears on top
             });
             this.overlay = markRaw(overlay);
             this.overlay._annotationGeometry = annotationGeometry;
-            annotationCanvas.map.addOverlay(overlay)
+            annotationCanvas.map.addOverlay(overlay);
+
+            // Check if the popup must be moved so it is fully contained in the viewport.
+            // This must be done after the element was added to the map so the offsetWidth
+            // and offsetHeight are known.
+            const mapExtent = annotationCanvas.map.getView().calculateExtent(annotationCanvas.map.getSize());
+            const resolution = annotationCanvas.map.getView().getResolution();
+            const shouldSwapX = ((mapExtent[2] - annotationExtent[2]) / resolution) < (OVERLAY_OFFSET + this.$el.offsetWidth / 2);
+            if (shouldSwapX) {
+                overlay.setPosition([annotationExtent[0], popupPosition[1]]);
+                overlay.setOffset([-OVERLAY_OFFSET, 0]);
+            }
+
+            const yOverflowBottom = (mapExtent[1] - popupPosition[1]) / resolution + this.$el.offsetHeight / 2;
+            const yOverflowTop = this.$el.offsetHeight / 2 - (mapExtent[3] - popupPosition[1]) / resolution;
+            if (yOverflowBottom > 0) {
+                overlay.setOffset([overlay.getOffset()[0], -yOverflowBottom]);
+            } else if (yOverflowTop > 0) {
+                overlay.setOffset([overlay.getOffset()[0], yOverflowTop]);
+            }
 
             const line = new LineString([popupPosition, popupPosition]);
             this.lineFeature = markRaw(new Feature(line));
