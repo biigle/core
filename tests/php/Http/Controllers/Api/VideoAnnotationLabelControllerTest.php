@@ -45,6 +45,16 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
 
         $this
             ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => -1,
+            ])
+            ->assertStatus(422);
+
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels")
+            ->assertStatus(422);
+
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
                 'label_id' => $this->labelRoot()->id,
             ])
             ->assertSuccessful()

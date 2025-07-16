@@ -130,6 +130,17 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         ]);
         $response->assertStatus(422);
 
+        $response = $this->json('POST', "{$url}/{$id}/labels", [
+            'label_id' => -1,
+            'confidence' => 1,
+        ]);
+        $response->assertStatus(422);
+
+        $response = $this->json('POST', "{$url}/{$id}/labels", [
+            'confidence' => 1,
+        ]);
+        $response->assertStatus(422);
+
         $this->assertSame(0, $this->annotation->labels()->count());
 
         $this->beUser();
