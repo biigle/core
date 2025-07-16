@@ -296,7 +296,7 @@ export default {
             const annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
             const annotationGeometry = annotationFeature.getGeometry();
             const annotationExtent = annotationGeometry.getExtent();
-            const popupPosition = [
+            let popupPosition = [
                 annotationExtent[2],
                 (annotationExtent[1] + annotationExtent[3]) / 2,
             ];
@@ -317,10 +317,19 @@ export default {
             // and offsetHeight are known.
             const mapExtent = annotationCanvas.map.getView().calculateExtent(annotationCanvas.map.getSize());
             const resolution = annotationCanvas.map.getView().getResolution();
-            const shouldSwapX = ((mapExtent[2] - annotationExtent[2]) / resolution) < (OVERLAY_OFFSET + this.$el.offsetWidth / 2);
+            const shouldSwapX = ((mapExtent[2] - popupPosition[0]) / resolution) < (OVERLAY_OFFSET + this.$el.offsetWidth / 2);
             if (shouldSwapX) {
-                overlay.setPosition([annotationExtent[0], popupPosition[1]]);
+                popupPosition = [annotationExtent[0], popupPosition[1]];
+                overlay.setPosition(popupPosition);
                 overlay.setOffset([-OVERLAY_OFFSET, 0]);
+            }
+
+            // If the annotation is as wide as the viewport, the popup could now overflow
+            // in the other direction. Here is a check if the popup should be moved yet
+            // again so it remains visible.
+            const shouldMoveX = ((popupPosition[0] - mapExtent[0]) / resolution) < (OVERLAY_OFFSET + this.$el.offsetWidth / 2);
+            if (shouldMoveX) {
+                overlay.setOffset([OVERLAY_OFFSET, 0]);
             }
 
             const yOverflowBottom = (mapExtent[1] - popupPosition[1]) / resolution + this.$el.offsetHeight / 2;
