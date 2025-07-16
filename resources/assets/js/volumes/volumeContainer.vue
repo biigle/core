@@ -143,7 +143,6 @@ export default {
             // Handle charts tab specially - show modal and close sidebar
             if (tab === 'charts') {
                 this.showCharts();
-                // Close the sidebar immediately
                 this.$nextTick(() => {
                     this.$refs.sidebar.handleCloseTab('charts');
                 });
@@ -232,7 +231,6 @@ export default {
         },
         showCharts() {
             this.startLoading();
-            // api request to get data for specific volume
             VolumeStatisticsApi.get({id: this.volumeId})
                 .then((response) => {
                     this.statisticsData = response.data;
@@ -294,8 +292,6 @@ export default {
                 showLabels: false,
             },
         });
-
-        // Initialize settings
 
         let fileUuids = biigle.$require('volumes.fileUuids');
         let thumbUri = biigle.$require('volumes.thumbUri');

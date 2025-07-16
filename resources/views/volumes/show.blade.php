@@ -58,7 +58,6 @@
             @include('volumes.show.sorting')
         </sidebar-tab>
         <sidebar-tab name="charts" icon="chart-bar" title="Show volume charts">
-            <div style="display: none;"></div>
         </sidebar-tab>
         <sidebar-tab name="reports" icon="file" title="Request reports for this volume" href="{{route('volume-reports', $volume->id)}}"></sidebar-tab>
         @canany (['edit-in', 'sudo'], $volume)
