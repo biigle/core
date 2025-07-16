@@ -78,11 +78,11 @@
         <h3><a name="swap-labels"></a><i class="fa fa-sync-alt"></i> Swap Labels</h3>
 
         <p>
-            This tool allows you to swap your most recently attached label of an annotation with a new one. The button to activate the swap label tool appears when you hover your cursor over the button of the attach label tool. To swap a label, select the label from the <i class="fa fa-tags"></i> label trees tab in the sidebar, activate the swap labels tool and then click on the annotation you want to swap your most recent label of.
+            This tool allows you to swap your most recently attached label of an annotation with a new one. The button to activate the swap label tool appears when you hover your cursor over the button of the attach label tool. To swap a label, select the label from the <i class="fa fa-tags"></i> label trees tab in the sidebar, activate the swap labels tool and then click on the annotation you want to swap your most recent label of. If none of the original labels of the selected annotation were attached by you, this tool will just attach the new label to the annotation.
         </p>
 
         <p>
-            If none of the original labels of the selected annotation were attached by you, this tool will just attach the new label to the annotation.
+            If you are an expert or admin in the project, you also can choose the force-swap labels tool <button class="btn btn-default btn-xs"><i class="fa fa-sync-alt"></i> <b>!</b></button>. With this tool you can swap the most recent label of an annotation even it it was made by another user.
         </p>
 
         <h3><a name="detach-labels"></a>Detach Labels</h3>
@@ -98,7 +98,7 @@
         <h3><a name="delete-annotations"></a><i class="fa fa-trash"></i> Delete Annotations</h3>
 
         <p>
-            To delete an annotation, select it and press the delete annotations button in the toolbar. You can also delete multiple annotations in one go. You might have noticed that the delete annotations button changes to the <i class="fa fa-undo"></i> undo button if you have drawn a new annotation. Press this button to delete the annotation you've just created even if you didn't select it first.
+            To delete an annotation, select it and press the delete annotations button in the toolbar. You can also delete multiple annotations in one go. You might have noticed that the delete annotations button changes to the <button class="btn btn-default btn-xs"><i class="fa fa-undo"></i></button> undo button if you have drawn a new annotation. Press this button to delete the annotation you've just created even if you didn't select it first.
         </p>
     </div>
 @endsection

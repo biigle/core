@@ -316,6 +316,7 @@
                 <control-button
                     v-if="canDelete"
                     icon="fa-trash"
+                    class="control-button--danger"
                     title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲"
                     :disabled="(hasNoSelectedAnnotations || hasError) || null"
                     @click="emitDelete"

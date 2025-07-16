@@ -13,6 +13,7 @@ export default {
     emits: [
         'attach',
         'swap',
+        'force-swap',
     ],
     computed: {
         isAttaching() {
@@ -20,6 +21,9 @@ export default {
         },
         isSwapping() {
             return this.interactionMode === 'swap';
+        },
+        isForceSwapping() {
+            return this.interactionMode === 'force-swap';
         },
     },
     methods: {
@@ -37,11 +41,22 @@ export default {
                 this.interactionMode = 'swap';
             }
         },
+        toggleForceSwapping() {
+            if (this.isForceSwapping) {
+                this.resetInteractionMode();
+            } else if (this.canAdd){
+                this.interactionMode = 'force-swap';
+            }
+        },
         handleAttachLabel(e) {
             this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
         },
         handleSwapLabel(e) {
-            this.$emit('swap', e.feature.get('annotation'), this.selectedLabel);
+            if (this.isSwapping) {
+                this.$emit('swap', e.feature.get('annotation'), this.selectedLabel);
+            } else if (this.isForceSwapping) {
+                this.$emit('force-swap', e.feature.get('annotation'), this.selectedLabel);
+            }
         },
     },
     watch: {
@@ -59,10 +74,16 @@ export default {
             } else {
                 swapLabelInteraction.setActive(swapping);
             }
-
+        },
+        isForceSwapping(swapping) {
+            if (swapping && !this.hasSelectedLabel) {
+                this.requireSelectedLabel();
+            } else {
+                swapLabelInteraction.setActive(swapping);
+            }
         },
         selectedLabel(label) {
-            if (!label && (this.isAttaching || this.isSwapping)) {
+            if (!label && (this.isAttaching || this.isSwapping || this.isForceSwapping)) {
                 this.resetInteractionMode();
             }
         },
