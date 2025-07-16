@@ -8,8 +8,11 @@ import Settings from '@/core/models/Settings.js';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import SortingTab from './components/sortingTab.vue';
+import StatisticsModal from '@/projects/components/statisticsModal.vue';
 import VolumesApi from './api/volumes.js';
+import VolumeStatisticsApi from '@/projects/api/volumeStatistics.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
+import {handleErrorResponse} from '@/core/messages/store.js';
 
 let transformUuid = function (uuid) {
     return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;
@@ -39,6 +42,7 @@ export default {
         filterTab: FilterTab,
         sortingTab: SortingTab,
         labelsTab: LabelsTab,
+        statisticsModal: StatisticsModal,
     },
     data() {
         return {
@@ -60,6 +64,8 @@ export default {
             labelsPromise: null,
             settings: null,
             type: null,
+            showStatisticsModal: false,
+            statisticsData: {},
         };
     },
     computed: {
@@ -134,6 +140,14 @@ export default {
     },
     methods: {
         handleSidebarOpen(tab) {
+            // Handle charts tab specially - show modal and close sidebar
+            if (tab === 'charts') {
+                this.showCharts();
+                this.$nextTick(() => {
+                    this.$refs.sidebar.handleCloseTab('charts');
+                });
+                return;
+            }
             this.imageLabelMode = tab === 'labels';
         },
         handleSidebarClose() {
@@ -214,6 +228,18 @@ export default {
             if (this.settings.get('showLabels') === true) {
                 this.enableLabels();
             }
+        },
+        showCharts() {
+            this.startLoading();
+            VolumeStatisticsApi.get({id: this.volumeId})
+                .then((response) => {
+                    this.statisticsData = response.data;
+                    this.showStatisticsModal = true;
+                }, handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+        hideStatisticsModal() {
+            this.showStatisticsModal = false;
         },
     },
     watch: {
