@@ -30,7 +30,9 @@ class StoreVideoAnnotationLabel extends FormRequest
     public function authorize()
     {
         $this->annotation = VideoAnnotation::findOrFail($this->route('id'));
-        $this->label = Label::findOrFail($this->input('label_id'));
+
+        $this->validate(['label_id' => 'required|integer|exists:labels,id']);
+        $this->label = Label::find($this->input('label_id'));
 
         return $this->user()->can('attach-label', [$this->annotation, $this->label]);
     }
@@ -43,7 +45,7 @@ class StoreVideoAnnotationLabel extends FormRequest
     public function rules()
     {
         return [
-            'label_id' => 'required|integer|exists:labels,id',
+            // The label_id is already validated above.
         ];
     }
 
