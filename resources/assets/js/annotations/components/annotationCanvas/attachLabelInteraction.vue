@@ -25,6 +25,9 @@ export default {
         isForceSwapping() {
             return this.interactionMode === 'force-swap';
         },
+        isAnySwapping() {
+            return this.isSwapping || this.isForceSwapping;
+        },
     },
     methods: {
         toggleAttaching() {
@@ -68,14 +71,7 @@ export default {
             }
 
         },
-        isSwapping(swapping) {
-            if (swapping && !this.hasSelectedLabel) {
-                this.requireSelectedLabel();
-            } else {
-                swapLabelInteraction.setActive(swapping);
-            }
-        },
-        isForceSwapping(swapping) {
+        isAnySwapping(swapping) {
             if (swapping && !this.hasSelectedLabel) {
                 this.requireSelectedLabel();
             } else {
