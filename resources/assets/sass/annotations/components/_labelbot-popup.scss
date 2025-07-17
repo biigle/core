@@ -105,10 +105,6 @@
         &:hover {
             background-color: $gray-lighter;
         }
-
-        &:first-child {
-            border-color: $brand-info;
-        }
     }
 
     .labelbot-label__keyboard {
@@ -120,6 +116,12 @@
 
         i {
             display: block;
+        }
+    }
+
+    &:not(.labelbot-popup--typing) {
+        .labelbot-label:first-child {
+            border-color: $brand-info;
         }
     }
 }

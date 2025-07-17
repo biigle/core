@@ -153,6 +153,7 @@ export default {
             return {
                 'labelbot-popup--focused': this.isFocused,
                 'labelbot-popup--dragging': this.dragging,
+                'labelbot-popup--typing': this.typeaheadFocused,
             };
         },
         popupKey() {
