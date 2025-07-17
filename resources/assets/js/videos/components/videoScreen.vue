@@ -290,6 +290,16 @@
                             @click="toggleSwapping"
                             @active="onActive"
                             ></control-button>
+                        <control-button
+                            v-if="canForce"
+                            icon="fa-sync-alt"
+                            class="control-button--danger control-button--force-swap"
+                            title="Force-swap the most recent label of an existing annotation (even of another user) with the currently selected one"
+                            :active="isForceSwapping"
+                            :disabled="(hasNoSelectedLabel || hasError) || null"
+                            v-on:click="toggleForceSwapping"
+                            v-on:active="onActive"
+                            ></control-button>
                     </control-button>
                 <control-button
                     v-if="canModify"
@@ -414,6 +424,10 @@ export default {
             default: false,
         },
         canDelete: {
+            type: Boolean,
+            default: false,
+        },
+        canForce: {
             type: Boolean,
             default: false,
         },
