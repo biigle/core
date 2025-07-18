@@ -17,6 +17,7 @@
     biigle.$declare('annotations.tilesUri', '{{ $tilesUriTemplate }}');
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
+    biigle.$declare('annotations.isExpert', @can('force-edit-in', $volume) true @else false @endcan);
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
     biigle.$declare('annotations.exportArea', {!! json_encode($volume->exportArea) !!});
@@ -92,6 +93,7 @@
             v-on:update="handleUpdateAnnotations"
             v-on:attach="handleAttachLabel"
             v-on:swap="handleSwapLabel"
+            v-on:force-swap="handleForceSwapLabel"
             v-on:delete="handleDeleteAnnotations"
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
