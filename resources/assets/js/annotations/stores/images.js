@@ -1,6 +1,7 @@
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
 import {ref} from 'vue';
+import * as UTIF from 'utif2';
 
 export class CrossOriginError extends Error {}
 
@@ -214,6 +215,51 @@ class Images {
             };
         });
 
+        function loadTiffImage(tiffUrl, imageWrapper) {
+            return new Promise(function (resolve, reject) {
+                let xhr = new XMLHttpRequest();
+                xhr.open("GET", tiffUrl, true);
+                xhr.responseType = "arraybuffer";
+
+                xhr.onload = function () {
+                    try {
+                        let ifds = UTIF.decode(xhr.response);
+                        UTIF.decodeImage(xhr.response, ifds[0]);
+                        let rgba = UTIF.toRGBA8(ifds[0]);
+                        let width = ifds[0].width;
+                        let height = ifds[0].height;
+
+                        imageWrapper.width = width;
+                        imageWrapper.height = height;
+                        imageWrapper.canvas.width = width;
+                        imageWrapper.canvas.height = height;
+
+                        let tempCanvas = document.createElement("canvas");
+                        tempCanvas.width = width;
+                        tempCanvas.height = height;
+
+                        let ctx = tempCanvas.getContext("2d");
+                        let imgData = ctx.createImageData(width, height);
+                        imgData.data.set(rgba);
+                        ctx.putImageData(imgData, 0, 0);
+
+                        ctx = imageWrapper.canvas.getContext("2d");
+                        ctx.drawImage(tempCanvas, 0, 0);
+                        imageWrapper.canvas._dirty = false;
+                        resolve(imageWrapper);
+                    } catch (err) {
+                        reject("TIFF decode error: " + err.message);
+                    }
+                };
+
+                xhr.onerror = function () {
+                    reject(`Failed to load TIFF image at ${tiffUrl}`);
+                };
+
+                xhr.send();
+            });
+        }
+
         // The image may be tiled, so we request the data from the endpoint and
         // check if it's an image or a JSON. If this is a cross origin request,
         // the preflight request is automatically performed. If CORS is blocked,
@@ -230,7 +276,7 @@ class Images {
                 if (!response.ok) {
                     throw new Error();
                 }
-
+                let size = response.headers.get('content-length');
                 let type = response.headers.get('content-type');
                 if (type === 'application/json') {
                     return response.json().then((body) => {
@@ -239,6 +285,21 @@ class Images {
 
                         return body;
                     });
+                }
+
+                // TODO:
+                // Handle error caused by CORS as in img
+                if (type === "image/tiff" || type === "image/tif") {
+                    if (size < 1000000000) {
+                        return loadTiffImage(url, imageWrapper)
+                            .then((wrapper) => {
+                                document.body.appendChild(wrapper.canvas);
+                                return wrapper;
+                            })
+                            .catch((err) => {
+                                console.error("Error loading TIFF image:", err);
+                            });
+                    }
                 }
 
                 response.blob().then(function (blob) {
