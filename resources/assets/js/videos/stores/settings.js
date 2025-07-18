@@ -12,6 +12,7 @@ let defaults = {
     jumpStep: 5.0,
     muteVideo: true,
     singleAnnotation: false,
+    restrictToBounds: false,
 };
 
 export default new Settings({
