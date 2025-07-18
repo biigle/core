@@ -1,8 +1,8 @@
 <template>
     <div class="current-time">
-        <loader v-if="seeking" :active="true"></loader>
-        <div ref="wrapper" class="current-time__wrapper">
-            <canvas ref="canvas" v-show="!seeking"></canvas>
+        <loader :active="seeking"></loader>
+        <div ref="wrapper" class="current-time__wrapper" v-show="!seeking">
+            <canvas ref="canvas"></canvas>
         </div>
     </div>
 </template>

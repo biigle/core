@@ -265,7 +265,7 @@ export default {
         window.addEventListener('resize', this.updateDimensions);
         // The image grid is often used with a sidebar so we implement support directly
         // here.
-        Events.on('sidebar.toggle', () => this.$nextTick(this.updateDimensions));
+        Events.on('sidebar.toggle', () => this.$nextTick().then(this.updateDimensions));
         this.$nextTick(this.updateDimensions);
         this.$watch('canScroll', this.updateDimensions);
     },

@@ -30,13 +30,13 @@ export default {
         },
         ids: {
             type: Array,
-            default: () => []
-        }
+            default: () => [],
+        },
     },
     data() {
         return {
-            filesObj: {}
-        }
+            filesObj: {},
+        };
     },
     computed: {
         filename() {

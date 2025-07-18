@@ -62,13 +62,13 @@ class Keyboard {
         this.listenerSets = {
             'default': {},
         };
-        this.pressedKeysArray = [];
+        this.pressedKeysSet = new Set();
 
         // Use keydown because keypress does not fire for all keys that can be used in
         // shortcuts.
         document.body.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.body.addEventListener('keyup', this.handleKeyUp.bind(this));
-        window.addEventListener('focus', this.clearPressedKeys.bind(this));
+        window.addEventListener('blur', this.clearPressedKeys.bind(this));
     }
 
     get activeListenerSet() {
@@ -76,7 +76,7 @@ class Keyboard {
     }
 
     get pressedKeys() {
-        return this.pressedKeysArray.slice().sort().join('+');
+        return Array.from(this.pressedKeysSet).sort().join('+');
     }
 
     isKeyIdentifier(key) {
@@ -109,37 +109,52 @@ class Keyboard {
             return;
         }
 
-        if (!e.repeat) {
-            this.pressedKeysArray.push(e.key.toLowerCase());
-        }
+        this.pressedKeysSet.add(e.key.toLowerCase());
+
         // Sometimes a modifier key is still pressed when the page is loaded (e.g.
         // if the user travelled back in browser history using the keys). Check for
         // meta keys on each keypress to get the correct set of pressed keys in these
         // cases.
         this.maybeInjectModifierKeys(e);
         this.handleKeyEvents(e, this.pressedKeys);
+        // Similarly, modifier keys must be removed immediately, e.g. in case a "switch
+        // window" key combination was pressed. Otherwise the modifier keys would stick
+        // forever.
+        this.maybeRemoveModifierKeys(e);
     }
 
     maybeInjectModifierKeys(e) {
-        if (e.altKey && this.pressedKeysArray.indexOf('alt') === -1) {
-            this.pressedKeysArray.push('alt');
+        if (e.altKey) {
+            this.pressedKeysSet.add('alt');
         }
-        if (e.ctrlKey && this.pressedKeysArray.indexOf('control') === -1) {
-            this.pressedKeysArray.push('control');
+        if (e.ctrlKey) {
+            this.pressedKeysSet.add('control');
         }
-        if (e.metaKey && this.pressedKeysArray.indexOf('meta') === -1) {
-            this.pressedKeysArray.push('meta');
+        if (e.metaKey) {
+            this.pressedKeysSet.add('meta');
         }
-        if (e.shiftKey && this.pressedKeysArray.indexOf('shift') === -1) {
-            this.pressedKeysArray.push('shift');
+        if (e.shiftKey) {
+            this.pressedKeysSet.add('shift');
+        }
+    }
+
+    maybeRemoveModifierKeys(e) {
+        if (e.altKey) {
+            this.pressedKeysSet.delete('alt');
+        }
+        if (e.ctrlKey) {
+            this.pressedKeysSet.delete('control');
+        }
+        if (e.metaKey) {
+            this.pressedKeysSet.delete('meta');
+        }
+        if (e.shiftKey) {
+            this.pressedKeysSet.delete('shift');
         }
     }
 
     handleKeyUp(e) {
-        let index = this.pressedKeysArray.indexOf(e.key.toLowerCase());
-        if (index !== -1) {
-            this.pressedKeysArray.splice(index, 1);
-        }
+        this.pressedKeysSet.delete(e.key.toLowerCase());
     }
 
     handleKeyEvents(e, keys) {
@@ -149,7 +164,7 @@ class Keyboard {
     }
 
     clearPressedKeys() {
-        this.pressedKeysArray = [];
+        this.pressedKeysSet.clear();
     }
 
     executeCallbacks(list, e) {

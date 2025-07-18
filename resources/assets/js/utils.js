@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 
 /**
  * Mount a Vue viewmodel to an element with a given ID if the element exists.

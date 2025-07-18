@@ -63,6 +63,10 @@ export default class Annotation {
         this._labels.value = value;
     }
 
+    get color() {
+        return this.labels?.[0].label.color;
+    }
+
     get frames() {
         return this._frames.value;
     }
@@ -310,12 +314,20 @@ export default class Annotation {
     }
 
     detachAnnotationLabel(annotationLabel) {
+        return VideoAnnotationApi.detachLabel({id: annotationLabel.id})
+            .then((response) => {
+                this.handleDetachedLabel(annotationLabel);
+
+                return response;
+            });
+    }
+
+    handleDetachedLabel(annotationLabel) {
         let index = this.labels.indexOf(annotationLabel);
         if (index !== -1) {
             this.labels.splice(index, 1);
         }
-
-        return VideoAnnotationApi.detachLabel({id: annotationLabel.id});
+        this.revision += 1;
     }
 
     attachAnnotationLabel(label) {
@@ -326,6 +338,7 @@ export default class Annotation {
 
     handleAttachedLabel(response) {
         this.labels.push(response.body);
+        this.revision += 1;
 
         return response;
     }

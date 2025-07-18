@@ -1,0 +1,15 @@
+.ol-control.video-popout {
+    left: .5em;
+    top: 9.6em;
+
+    button {
+        color: white;
+        display: block;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 400;
+    }
+}
+
+.ol-touch .ol-control.video-popout {
+    top: 12.3em;
+}
