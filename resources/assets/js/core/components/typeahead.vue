@@ -32,7 +32,7 @@
                 :item="item"
                 :item-key="moreInfo"
                 :select="select"
-                :highlightHtml="highlight(escape(item))"
+                :highlightHtml="highlight(escapeItem(item))"
                 >
             </component>
         </template>
@@ -42,7 +42,7 @@
 
 <script>
 import TypeaheadItem from './typeaheadItem.vue';
-import {debounce} from '../utils.js';
+import {debounce, escape} from '../utils.js';
 import {Typeahead} from 'uiv';
 
 /**
@@ -142,20 +142,8 @@ export default {
                 }
             }
         },
-        escape(item) {
-            let escItem = { ...item };
-            let escape = function (match) {
-                const escape = {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                };
-                return escape[match];
-            };
-            escItem.name = escItem.name.replace(/[&<>"']/g, escape);
-            return escItem;
+        escapeItem(item) {
+            return escape(item);
         }
     },
     watch: {
