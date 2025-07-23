@@ -62,7 +62,7 @@
             </div>
         </div>
         <div class="filter-form__selects">
-            <div class="form-group largo-filter-select">
+            <div class="form-group largo-filter-select" v-if="selectedFilter !== 'Filename'">
                 <select class="form-control" v-model="selectedFilterValue">
                     <option
                         v-for="(filter_name, filter_id) in activeFilterValue"
@@ -71,10 +71,19 @@
                     ></option>
                 </select>
             </div>
+            <div class="form-group largo-filter-select" v-else>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="filenamePattern"
+                    placeholder="Filename pattern (use * for wildcards)"
+                    title="Enter a filename pattern. Use * as wildcard to match any characters."
+                />
+            </div>
             <div class="form-group filter-select largo-filter-select">
                 <button
                     type="button"
-                    :disabled="!selectedFilterValue || null"
+                    :disabled="!canAddFilter"
                     class="btn btn-default btn-block"
                     title="Add the selected filter rule"
                     @click="addFilter"
@@ -109,14 +118,17 @@ export default {
         return {
             filterValues: {
                 Shape: availableShapes,
-                User: {}
+                User: {},
+                Filename: {}
             },
             filterToKeyMapping: {
                 Shape: "shape_id",
-                User: "user_id"
+                User: "user_id",
+                Filename: "filename"
             },
             selectedFilter: "Shape",
             selectedFilterValue: null,
+            filenamePattern: '',
             negate: false,
         };
     },
@@ -124,6 +136,12 @@ export default {
     computed: {
         activeFilterValue() {
             return this.filterValues[this.selectedFilter];
+        },
+        canAddFilter() {
+            if (this.selectedFilter === 'Filename') {
+                return this.filenamePattern && this.filenamePattern.trim().length > 0;
+            }
+            return this.selectedFilterValue !== null;
         }
     },
 
@@ -139,6 +157,7 @@ export default {
         },
         resetSelectedFilter() {
             this.selectedFilterValue = null;
+            this.filenamePattern = '';
         },
         loadApiFilters() {
             //Load here filters that should be loaded AFTER the page is rendered
@@ -169,39 +188,61 @@ export default {
             );
         },
         addFilter() {
-            if (!this.selectedFilterValue) {
-                return;
-            }
-
-            let logicalString;
-
-            //Avoid changing directly the value of selectedFilterValue
-            //This can cause weird bugs on the frontend otherwise
-            let selectedFilterValue = [...this.selectedFilterValue];
-
-            //convert to integer
-            selectedFilterValue[1] = +selectedFilterValue[1];
-
-            if (this.negate) {
-                logicalString = "is not";
-                if (selectedFilterValue[1] > 0) {
-                    selectedFilterValue[1] = -selectedFilterValue[1];
+            if (this.selectedFilter === 'Filename') {
+                if (!this.filenamePattern || this.filenamePattern.trim().length === 0) {
+                    return;
                 }
-            } else {
-                logicalString = "is";
-            }
 
-            let filterToAdd = {
-                name:
-                    this.selectedFilter +
-                    " " +
-                    logicalString +
-                    " " +
-                    selectedFilterValue[0],
-                filter: this.filterToKeyMapping[this.selectedFilter],
-                value: selectedFilterValue[1]
-            };
-            this.$emit('add-filter', filterToAdd);
+                let pattern = this.filenamePattern.trim();
+                let logicalString = this.negate ? "does not match" : "matches";
+                
+                if (this.negate) {
+                    pattern = '-' + pattern;
+                }
+
+                let filterToAdd = {
+                    name: this.selectedFilter + " " + logicalString + " " + this.filenamePattern.trim(),
+                    filter: this.filterToKeyMapping[this.selectedFilter],
+                    value: pattern
+                };
+                
+                this.$emit('add-filter', filterToAdd);
+                this.filenamePattern = '';
+            } else {
+                if (!this.selectedFilterValue) {
+                    return;
+                }
+
+                let logicalString;
+
+                //Avoid changing directly the value of selectedFilterValue
+                //This can cause weird bugs on the frontend otherwise
+                let selectedFilterValue = [...this.selectedFilterValue];
+
+                //convert to integer
+                selectedFilterValue[1] = +selectedFilterValue[1];
+
+                if (this.negate) {
+                    logicalString = "is not";
+                    if (selectedFilterValue[1] > 0) {
+                        selectedFilterValue[1] = -selectedFilterValue[1];
+                    }
+                } else {
+                    logicalString = "is";
+                }
+
+                let filterToAdd = {
+                    name:
+                        this.selectedFilter +
+                        " " +
+                        logicalString +
+                        " " +
+                        selectedFilterValue[0],
+                    filter: this.filterToKeyMapping[this.selectedFilter],
+                    value: selectedFilterValue[1]
+                };
+                this.$emit('add-filter', filterToAdd);
+            }
         }
     }
 };
