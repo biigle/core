@@ -107,7 +107,7 @@ export let capitalize = function (s) {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-export let escape = function (item) {
+export let escapeHtml = function (item) {
     let escItem = { ...item };
     let replaceDangerous = function (match) {
         const dangerousChars = {

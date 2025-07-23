@@ -42,7 +42,7 @@
 
 <script>
 import TypeaheadItem from './typeaheadItem.vue';
-import {debounce, escape} from '../utils.js';
+import {debounce, escapeHtml} from '../utils.js';
 import {Typeahead} from 'uiv';
 
 /**
@@ -143,7 +143,7 @@ export default {
             }
         },
         escapeItem(item) {
-            return escape(item);
+            return escapeHtml(item);
         }
     },
     watch: {
