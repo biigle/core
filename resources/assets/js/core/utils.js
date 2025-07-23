@@ -108,3 +108,19 @@ export let capitalize = function (s) {
 
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
+
+export let escapeHtml = function (item) {
+    let escItem = { ...item };
+    let replaceDangerous = function (match) {
+        const dangerousChars = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+        return dangerousChars[match];
+    };
+    escItem.name = escItem.name.replace(/[&<>"']/g, replaceDangerous);
+    return escItem;
+}
