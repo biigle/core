@@ -173,6 +173,7 @@ class Images {
             height: 0,
             canvas: canvas,
             crossOrigin: false,
+            crossOriginTiff : false,
         };
 
         // Disable auto-rotation based on image metadata. This only works when the
@@ -191,6 +192,7 @@ class Images {
 
         let promise = new Promise(function (resolve, reject) {
             img.onload = function () {
+                imageWrapper.crossOriginTiff = false;
                 // The element must be appended to the DOM so the dimensions are
                 // correctly determined. Otherwise imageOrientation=none has no
                 // effect.
@@ -216,10 +218,12 @@ class Images {
         });
 
         function loadTiffImage(tiffUrl, imageWrapper) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", tiffUrl, true);
+            xhr.responseType = "arraybuffer";
+
             return new Promise(function (resolve, reject) {
-                let xhr = new XMLHttpRequest();
-                xhr.open("GET", tiffUrl, true);
-                xhr.responseType = "arraybuffer";
+ 
 
                 xhr.onload = function () {
                     try {
@@ -253,7 +257,8 @@ class Images {
                 };
 
                 xhr.onerror = function () {
-                    reject(`Failed to load TIFF image at ${tiffUrl}`);
+                    imageWrapper.crossOriginTiff = true;
+                    reject(`Failed to load TIFF ${id}!`);
                 };
 
                 xhr.send();
@@ -270,7 +275,12 @@ class Images {
         // problems with CORS.
         //
         // See: https://github.com/laravel/echo/issues/152
-        let url = this.imageFileUri.replace(':id', id);
+
+
+        // To try out CrossOrigin Error
+        // let url = 'https://biigle.de/assets/images/jumbo_1_sq.jpg';
+         let url = 'https://people.math.sc.edu/Burkardt/data/tif/bali.tif';
+        // let url = this.imageFileUri.replace(':id', id);
 
         return fetch(url).then((response) => {
                 if (!response.ok) {
@@ -287,8 +297,6 @@ class Images {
                     });
                 }
 
-                // TODO:
-                // Handle error caused by CORS as in img
                 if (type === "image/tiff" || type === "image/tif") {
                     if (size < 1000000000) {
                         return loadTiffImage(url, imageWrapper)
@@ -298,6 +306,7 @@ class Images {
                             })
                             .catch((err) => {
                                 console.error("Error loading TIFF image:", err);
+                                return Promise.reject(err);
                             });
                     }
                 }
@@ -315,10 +324,23 @@ class Images {
                 // Remote image without CORS support will be dropped in a future
                 // release. See: https://github.com/biigle/core/issues/351
                 if (error instanceof TypeError) {
+                    imageWrapper.crossOriginTiff = true;
                     imageWrapper.crossOrigin = true;
                     img.src = url;
 
-                    return promise;
+                    return promise.catch((err) => {
+                        console.warn(err);
+
+                        // Fallback dummy image
+                        imageWrapper.source = new Image();
+                        imageWrapper.width = 1;
+                        imageWrapper.height = 1;
+                        imageWrapper.canvas.width = 1;
+                        imageWrapper.canvas.height = 1;
+                        imageWrapper.crossOriginTiff = true;
+
+                        return Promise.resolve(imageWrapper);
+                    });
                 }
 
                 return Promise.reject(`Failed to load image ${id}!`);
