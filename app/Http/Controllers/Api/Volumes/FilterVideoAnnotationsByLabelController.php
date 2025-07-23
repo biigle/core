@@ -23,6 +23,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Number} take Number of video annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
      * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
+     * @apiParam (Optional arguments) {Array} annotation_size Array of annotation size category ids to use to filter values
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for video volumes.
@@ -43,6 +44,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'shape_id.*' => 'integer',
             'user_id' => 'array',
             'user_id.*' => 'integer',
+            'annotation_size' => 'array',
+            'annotation_size.*' => 'integer',
             'union' => 'boolean',
         ]);
 
@@ -50,6 +53,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
         $filters = [
             'shape_id' => $request->input('shape_id'),
             'user_id' => $request->input('user_id'),
+            'annotation_size' => $request->input('annotation_size'),
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
@@ -66,7 +70,40 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->where('videos.volume_id', $vid)
             ->where('video_annotation_labels.label_id', $lid)
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
+            ->when(!empty($filters), function ($query) use ($union, $filters) {
+                // Handle annotation size filtering separately as it requires calculation
+                if (isset($filters['annotation_size'])) {
+                    $sizeValues = $filters['annotation_size'];
+                    
+                    if ($union) {
+                        $query->where(function ($q) use ($sizeValues) {
+                            foreach ($sizeValues as $value) {
+                                if ($value < 0) {
+                                    $q->orWhereRaw($this->getAnnotationSizeQuery(abs($value), true));
+                                } else {
+                                    $q->orWhereRaw($this->getAnnotationSizeQuery($value, false));
+                                }
+                            }
+                        });
+                    } else {
+                        foreach ($sizeValues as $value) {
+                            if ($value < 0) {
+                                $query->whereRaw($this->getAnnotationSizeQuery(abs($value), true));
+                            } else {
+                                $query->whereRaw($this->getAnnotationSizeQuery($value, false));
+                            }
+                        }
+                    }
+                    
+                    // Remove annotation_size from filters array to avoid double processing
+                    unset($filters['annotation_size']);
+                }
+                
+                // Process remaining filters normally
+                if (!empty($filters)) {
+                    $this->compileFilterConditions($query, $union, $filters);
+                }
+            })
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
                     $query->where('video_annotation_labels.user_id', $request->user()->id);
@@ -77,5 +114,44 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->distinct()
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
+    }
+
+    /**
+     * Get the SQL query for filtering video annotations by size category.
+     *
+     * @param int $categoryId The size category ID
+     * @param bool $negate Whether to negate the condition
+     * @return string The SQL condition
+     */
+    private function getAnnotationSizeQuery(int $categoryId, bool $negate = false): string
+    {
+        $operator = $negate ? '!=' : '=';
+        
+        return "CASE 
+            WHEN video_annotations.shape_id = " . \Biigle\Shape::circleId() . " THEN
+                CASE 
+                    WHEN POW((video_annotations.points->0->>2)::float, 2) * PI() = 0 THEN 0
+                    WHEN POW((video_annotations.points->0->>2)::float, 2) * PI() < 100 THEN 1
+                    WHEN POW((video_annotations.points->0->>2)::float, 2) * PI() < 1000 THEN 2
+                    WHEN POW((video_annotations.points->0->>2)::float, 2) * PI() < 10000 THEN 3
+                    WHEN POW((video_annotations.points->0->>2)::float, 2) * PI() < 100000 THEN 4
+                    ELSE 5
+                END
+            WHEN video_annotations.shape_id = " . \Biigle\Shape::rectangleId() . " THEN
+                CASE 
+                    WHEN SQRT(POW((video_annotations.points->0->>0)::float - (video_annotations.points->0->>2)::float, 2) + POW((video_annotations.points->0->>1)::float - (video_annotations.points->0->>3)::float, 2)) * SQRT(POW((video_annotations.points->0->>2)::float - (video_annotations.points->0->>4)::float, 2) + POW((video_annotations.points->0->>3)::float - (video_annotations.points->0->>5)::float, 2)) = 0 THEN 0
+                    WHEN SQRT(POW((video_annotations.points->0->>0)::float - (video_annotations.points->0->>2)::float, 2) + POW((video_annotations.points->0->>1)::float - (video_annotations.points->0->>3)::float, 2)) * SQRT(POW((video_annotations.points->0->>2)::float - (video_annotations.points->0->>4)::float, 2) + POW((video_annotations.points->0->>3)::float - (video_annotations.points->0->>5)::float, 2)) < 100 THEN 1
+                    WHEN SQRT(POW((video_annotations.points->0->>0)::float - (video_annotations.points->0->>2)::float, 2) + POW((video_annotations.points->0->>1)::float - (video_annotations.points->0->>3)::float, 2)) * SQRT(POW((video_annotations.points->0->>2)::float - (video_annotations.points->0->>4)::float, 2) + POW((video_annotations.points->0->>3)::float - (video_annotations.points->0->>5)::float, 2)) < 1000 THEN 2
+                    WHEN SQRT(POW((video_annotations.points->0->>0)::float - (video_annotations.points->0->>2)::float, 2) + POW((video_annotations.points->0->>1)::float - (video_annotations.points->0->>3)::float, 2)) * SQRT(POW((video_annotations.points->0->>2)::float - (video_annotations.points->0->>4)::float, 2) + POW((video_annotations.points->0->>3)::float - (video_annotations.points->0->>5)::float, 2)) < 10000 THEN 3
+                    WHEN SQRT(POW((video_annotations.points->0->>0)::float - (video_annotations.points->0->>2)::float, 2) + POW((video_annotations.points->0->>1)::float - (video_annotations.points->0->>3)::float, 2)) * SQRT(POW((video_annotations.points->0->>2)::float - (video_annotations.points->0->>4)::float, 2) + POW((video_annotations.points->0->>3)::float - (video_annotations.points->0->>5)::float, 2)) < 100000 THEN 4
+                    ELSE 5
+                END
+            WHEN video_annotations.shape_id IN (" . \Biigle\Shape::pointId() . ", " . \Biigle\Shape::lineId() . ") THEN 0
+            ELSE 
+                CASE 
+                    WHEN json_array_length(video_annotations.points->0) < 6 THEN 0
+                    ELSE 2
+                END
+        END {$operator} {$categoryId}";
     }
 }

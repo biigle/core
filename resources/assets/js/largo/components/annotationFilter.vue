@@ -109,11 +109,20 @@ export default {
         return {
             filterValues: {
                 Shape: availableShapes,
-                User: {}
+                User: {},
+                "Size": {
+                    0: "No area",
+                    1: "Very small (< 100 px²)",
+                    2: "Small (100-1000 px²)",
+                    3: "Medium (1k-10k px²)",
+                    4: "Large (10k-100k px²)",
+                    5: "Very large (> 100k px²)"
+                }
             },
             filterToKeyMapping: {
                 Shape: "shape_id",
-                User: "user_id"
+                User: "user_id",
+                "Size": "annotation_size"
             },
             selectedFilter: "Shape",
             selectedFilterValue: null,
