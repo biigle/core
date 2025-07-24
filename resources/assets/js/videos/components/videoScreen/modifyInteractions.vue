@@ -27,6 +27,8 @@ export default {
         'split-annotation',
         'swap-label',
         'swapping-active',
+        'force-swap-label',
+        'force-swapping-active',
     ],
     data() {
         return {
@@ -53,6 +55,12 @@ export default {
         },
         isSwapping() {
             return this.interactionMode === 'swapLabel';
+        },
+        isForceSwapping() {
+            return this.interactionMode === 'forceSwapLabel';
+        },
+        isAnySwapping() {
+            return this.isSwapping || this.isForceSwapping;
         },
     },
     methods: {
@@ -164,6 +172,13 @@ export default {
                 this.interactionMode = 'swapLabel';
             }
         },
+        toggleForceSwapping() {
+            if (this.isForceSwapping) {
+                this.resetInteractionMode();
+            } else {
+                this.interactionMode = 'forceSwapLabel';
+            }
+        },
         initAttachInteraction(map) {
             this.attachInteraction = new AttachLabelInteraction({
                 features: this.annotationFeatures,
@@ -186,7 +201,11 @@ export default {
             this.$emit('attach-label', e.feature.get('annotation'));
         },
         handleSwapLabel(e) {
-            this.$emit('swap-label', e.feature.get('annotation'));
+            if (this.isSwapping) {
+                this.$emit('swap-label', e.feature.get('annotation'));
+            } else if (this.isForceSwapping) {
+                this.$emit('force-swap-label', e.feature.get('annotation'));
+            }
         },
         maybeResetAttaching(hasNoLabel) {
             if (this.isAttaching && hasNoLabel) {
@@ -195,6 +214,11 @@ export default {
         },
         maybeResetSwapping(hasNoLabel) {
             if (this.isSwapping && hasNoLabel) {
+                this.resetInteractionMode();
+            }
+        },
+        maybeResetForceSwapping(hasNoLabel) {
+            if (this.isForceSwapping && hasNoLabel) {
                 this.resetInteractionMode();
             }
         },
@@ -217,12 +241,16 @@ export default {
 
             this.$emit('attaching-active', attaching);
         },
-        isSwapping(swapping) {
+        isAnySwapping(swapping) {
             if (this.swapInteraction) {
                 this.swapInteraction.setActive(swapping);
             }
-
+        },
+        isSwapping(swapping) {
             this.$emit('swapping-active', swapping);
+        },
+        isForceSwapping(swapping) {
+            this.$emit('force-swapping-active', swapping);
         },
     },
     created() {
@@ -244,6 +272,7 @@ export default {
             this.$watch('isDefaultInteractionMode', this.maybeUpdateIsTranslating);
             this.$watch('hasNoSelectedLabel', this.maybeResetAttaching);
             this.$watch('hasNoSelectedLabel', this.maybeResetSwapping);
+            this.$watch('hasNoSelectedLabel', this.maybeResetForceSwapping);
             Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
             Keyboard.on('Escape', this.resetTranslating, 0, this.listenerSet);
             Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);

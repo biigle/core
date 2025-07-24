@@ -327,7 +327,15 @@ export default class Annotation {
         if (index !== -1) {
             this.labels.splice(index, 1);
         }
+
         this.revision += 1;
+
+        return VideoAnnotationApi.detachLabel({id: annotationLabel.id})
+            .catch(e => {
+                this.labels.splice(index, 0, annotationLabel);
+
+                throw e;
+            });
     }
 
     attachAnnotationLabel(label) {

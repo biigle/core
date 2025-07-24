@@ -54,6 +54,7 @@ export default {
             videoFileUri: '',
             shapes: [],
             canEdit: false,
+            canForce: false,
             video: null,
             labelTrees: [],
             selectedLabel: null,
@@ -96,6 +97,7 @@ export default {
             user: null,
             attachingLabel: false,
             swappingLabel: false,
+            forceSwappingLabel: false,
             disableJobTracking: false,
             supportsJumpByFrame: false,
             hasCrossOriginError: false,
@@ -241,6 +243,10 @@ export default {
                 return Promise.resolve();
             } else if (this.swappingLabel) {
                 this.swapAnnotationLabel(annotation);
+
+                return Promise.resolve();
+            } else if (this.forceSwappingLabel) {
+                this.forceSwapAnnotationLabel(annotation);
 
                 return Promise.resolve();
             }
@@ -472,14 +478,15 @@ export default {
                 .attachAnnotationLabel(this.selectedLabel)
                 .catch(handleErrorResponse);
         },
-        swapAnnotationLabel(annotation) {
-            let lastLabel = annotation.labels
-                .filter(l => l.user_id === this.user.id)
-                .sort((a, b) => a.id - b.id)
-                .pop();
+        swapAnnotationLabel(annotation, force) {
+            let labels = annotation.labels.slice();
+            if (!force) {
+                labels = labels.filter(l => l.user_id === this.user.id);
+            }
+            let lastLabel = labels.sort((a, b) => a.id - b.id).pop();
 
-            // Can't use attachAnnotationLabel() because detachAnnotationLabel() should
-            // not be called on error.
+            // Can't use this.attachAnnotationLabel() because detachAnnotationLabel()
+            // should not be called on error.
             annotation.attachAnnotationLabel(this.selectedLabel)
                 .then(() => {
                     if (lastLabel) {
@@ -487,6 +494,9 @@ export default {
                     }
                 })
                 .catch(handleErrorResponse);
+        },
+        forceSwapAnnotationLabel(annotation) {
+            this.swapAnnotationLabel(annotation, true);
         },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
@@ -682,12 +692,13 @@ export default {
             return ids;
         },
         handleAttachingLabelActive(attaching) {
-            this.swappingLabel = false;
             this.attachingLabel = attaching;
         },
         handleSwappingLabelActive(swapping) {
-            this.attachingLabel = false;
             this.swappingLabel = swapping;
+        },
+        handleForceSwappingLabelActive(swapping) {
+            this.forceSwappingLabel = swapping;
         },
         initializeEcho() {
             // Use the websocket connection to get events on object tracking.
@@ -810,6 +821,7 @@ export default {
         this.videoIds = this.initVideoIds(biigle.$require('videos.videoIds'));
         this.videoFileUri = biigle.$require('videos.videoFileUri');
         this.canEdit = biigle.$require('videos.isEditor');
+        this.canForce = biigle.$require('videos.isExpert');
         this.labelTrees = biigle.$require('videos.labelTrees');
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');

@@ -55,6 +55,11 @@ class ImageLabelControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/images/{$id}/labels");
         $response->assertStatus(422);
 
+        $response = $this->json('POST', "/api/v1/images/{$id}/labels", [
+            'label_id' => -1,
+        ]);
+        $response->assertStatus(422);
+
         $this->assertSame(0, $this->image->labels()->count());
 
         $this->beUser();
