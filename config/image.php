@@ -29,6 +29,11 @@ return [
          | Queue on which the tile image job should run.
          */
         'queue' => env('IMAGE_TILES_QUEUE', 'default'),
+
+        /*
+         | Number of concurrent requests that should be sent when using a S3 storage
+         */
+        'concurrent_requests' => env('IMAGE_CON_REQUESTS', 10),
     ],
 
 ];

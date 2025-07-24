@@ -187,46 +187,30 @@ export default {
             this.scrollTop = scrollTop;
         },
         getAnnotationTrackLanes(annotations) {
-            let timeRanges = [[]];
             let lanes = [[]];
 
             annotations.forEach((annotation) => {
-                let range = [annotation.startFrame, annotation.endFrame];
                 let lane = 0;
                 let set = false;
 
                 outerloop: while (!set) {
                     if (!lanes[lane]) {
-                        timeRanges[lane] = [];
                         lanes[lane] = [];
                     } else {
-                        for (let i = timeRanges[lane].length - 1; i >= 0; i--) {
-                            if (this.rangesCollide(timeRanges[lane][i], range)) {
+                        for (let i = lanes[lane].length - 1; i >= 0; i--) {
+                            if (annotation.overlapsTime(lanes[lane][i])) {
                                 lane += 1;
                                 continue outerloop;
                             }
                         }
                     }
 
-                    timeRanges[lane].push(range);
                     lanes[lane].push(annotation);
                     set = true;
                 }
             });
 
             return lanes;
-        },
-        rangesCollide(range1, range2) {
-            // Start of range1 overlaps with range2.
-            return range1[0] >= range2[0] && range1[0] < range2[1] ||
-                // End of range1 overlaps with range2.
-                range1[1] > range2[0] && range1[1] <= range2[1] ||
-                // Start of range2 overlaps with range1.
-                range2[0] >= range1[0] && range2[0] < range1[1] ||
-                // End of range2 overlaps with range1.
-                range2[1] > range1[0] && range2[1] <= range1[1] ||
-                // range1 equals range2.
-                range1[0] === range2[0] && range1[1] === range2[1];
         },
         updateHoverTime(time) {
             this.hoverTime = time;

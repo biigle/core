@@ -296,6 +296,19 @@ export default class Annotation {
         return false;
     }
 
+    overlapsTime(other) {
+        // Start of this overlaps with other.
+        return this.startFrame >= other.startFrame && this.startFrame < other.endFrame ||
+            // End of this overlaps with other.
+            this.endFrame > other.startFrame && this.endFrame <= other.endFrame ||
+            // Start of other overlaps with this.
+            other.startFrame >= this.startFrame && other.startFrame < this.endFrame ||
+            // End of other overlaps with this.
+            other.endFrame > this.startFrame && other.endFrame <= this.endFrame ||
+            // this equals other.
+            this.startFrame === other.startFrame && this.endFrame === other.endFrame;
+    }
+
     detachAnnotationLabel(annotationLabel) {
         let index = this.labels.indexOf(annotationLabel);
         if (index !== -1) {

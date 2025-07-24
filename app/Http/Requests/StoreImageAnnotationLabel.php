@@ -31,8 +31,7 @@ class StoreImageAnnotationLabel extends FormRequest
     {
         $this->annotation = ImageAnnotation::findOrFail($this->route('id'));
 
-        $this->validate(['label_id' => 'integer']);
-
+        $this->validate(['label_id' => 'required|integer|exists:labels,id']);
         $this->label = Label::find($this->input('label_id'));
 
         return $this->user()->can('attach-label', [$this->annotation, $this->label]);
@@ -46,7 +45,7 @@ class StoreImageAnnotationLabel extends FormRequest
     public function rules()
     {
         return [
-            'label_id'    => 'required|integer|exists:labels,id',
+            // The label_id is already validated above.
             'confidence'  => 'required|numeric|between:0,1',
         ];
     }

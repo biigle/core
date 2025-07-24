@@ -32,7 +32,7 @@
                 :item="item"
                 :item-key="moreInfo"
                 :select="select"
-                :highlightHtml="highlight(item)"
+                :highlightHtml="highlight(escapeItem(item))"
                 >
             </component>
         </template>
@@ -42,7 +42,7 @@
 
 <script>
 import TypeaheadItem from './typeaheadItem.vue';
-import {debounce} from '../utils.js';
+import {debounce, escapeHtml} from '../utils.js';
 import {Typeahead} from 'uiv';
 
 /**
@@ -142,6 +142,9 @@ export default {
                 }
             }
         },
+        escapeItem(item) {
+            return escapeHtml(item);
+        }
     },
     watch: {
         value(value) {

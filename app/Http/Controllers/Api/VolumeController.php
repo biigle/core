@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Queue;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class VolumeController extends Controller
 {
@@ -49,8 +50,7 @@ class VolumeController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-
-        return Volume::accessibleBy($user)
+        $query = Volume::accessibleBy($user)
             ->with(['projects' => function ($query) use ($user) {
                 $query
                     ->when(
@@ -62,8 +62,16 @@ class VolumeController extends Controller
                     ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
-            ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id')
-            ->get();
+            ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id');
+
+        $generator = function () use ($query) {
+            foreach ($query->lazy() as $volume) {
+                yield $volume;
+            }
+        };
+
+        return new StreamedJsonResponse($generator());
+
     }
 
     /**
