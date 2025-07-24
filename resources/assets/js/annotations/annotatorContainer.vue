@@ -84,6 +84,7 @@ export default {
             showMinimap: true,
             showScaleLine: false,
             showExampleAnnotations: true,
+            restrictToBounds: false,
             imagesArea: null,
             openTab: null,
             userUpdatedVolareResolution: false,
@@ -553,6 +554,9 @@ export default {
                 case 'exampleAnnotations':
                     this.showExampleAnnotations = value;
                     break;
+                case 'restrictToBounds':
+                    this.restrictToBounds = value;
+                    break;
             }
         },
         handleAnnotationModeChange(mode, data) {
@@ -704,6 +708,9 @@ export default {
         this.isExpert = biigle.$require('annotations.isExpert');
         this.userId = biigle.$require('annotations.userId');
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
+
+        // Initialize settings from stored values
+        this.restrictToBounds = Settings.get('restrictToBounds');
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');

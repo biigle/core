@@ -58,6 +58,7 @@ export default {
                 'minimap',
                 'progressIndicator',
                 'exampleAnnotations',
+                'restrictToBounds',
             ],
             annotationOpacity: 1.0,
             cachedImagesCount: 1,
@@ -69,6 +70,7 @@ export default {
             minimap: true,
             progressIndicator: true,
             exampleAnnotations: true,
+            restrictToBounds: false,
         };
     },
     computed: {
@@ -140,6 +142,12 @@ export default {
         hideExampleAnnotations() {
             this.exampleAnnotations = false;
         },
+        enableRestrictToBounds() {
+            this.restrictToBounds = true;
+        },
+        disableRestrictToBounds() {
+            this.restrictToBounds = false;
+        },
     },
     watch: {
         annotationOpacity(opacity) {
@@ -183,6 +191,10 @@ export default {
         exampleAnnotations(show) {
             this.$emit('change', 'exampleAnnotations', show);
             this.settings.set('exampleAnnotations', show);
+        },
+        restrictToBounds(enabled) {
+            this.$emit('change', 'restrictToBounds', enabled);
+            this.settings.set('restrictToBounds', enabled);
         },
     },
     created() {

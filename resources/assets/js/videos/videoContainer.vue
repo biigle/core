@@ -74,6 +74,7 @@ export default {
                 enableJumpByFrame: false,
                 muteVideo: true,
                 singleAnnotation: false,
+                restrictToBounds: false,
             },
             openTab: '',
             urlParams: {
@@ -826,6 +827,13 @@ export default {
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
         this.videoFilenames = biigle.$require('videos.videoFilenames');
+
+        // Initialize settings from stored values
+        Object.keys(this.settings).forEach((key) => {
+            if (Settings.has(key)) {
+                this.settings[key] = Settings.get(key);
+            }
+        });
 
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;
