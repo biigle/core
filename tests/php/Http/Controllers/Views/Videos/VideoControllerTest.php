@@ -20,4 +20,14 @@ class VideoControllerTest extends ApiTestCase
         $this->beGuest();
         $this->get("videos/{$video->id}/annotations")->assertStatus(200);
     }
+
+    public function testShowPopup()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $video = VideoTest::create(['volume_id' => $id]);
+
+        $this->get('videos/popup')->assertStatus(302);
+        $this->beUser();
+        $this->get('videos/popup')->assertStatus(200);
+    }
 }

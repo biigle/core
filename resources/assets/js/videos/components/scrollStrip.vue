@@ -1,6 +1,18 @@
 <template>
+    <thumbnail-preview
+        v-if="finishedInitalizingData"
+        v-show="canShowThumb"
+        :duration="duration"
+        :hoverTime="hoverTime"
+        :clientMouseX="clientMouseX"
+        :videoUuid="videoUuid"
+        :showThumbnails="showThumbnailPreview"
+        ></thumbnail-preview>
     <div
+        ref="strip"
+        v-bind="$attrs"
         class="scroll-strip"
+        :class="classObject"
         @wheel.stop="handleWheel"
         @mouseleave="handleHideHoverTime"
         >
@@ -10,24 +22,15 @@
                 :style="scrollerStyle"
                 @mousemove="handleUpdateHoverTime"
                 >
-                    <thumbnail-preview
-                        :duration="duration"
-                        :hoverTime="hoverTime"
-                        :clientMouseX="clientMouseX"
-                        :scrollstripTop="scrollstripTop"
-                        :videoId="videoId"
-                        :showThumbnails="showThumbnailPreview"
-                        v-if="finishedInitalizingData"
-                        v-show="canShowThumb"
-                        ></thumbnail-preview>
                     <video-progress
+                        v-if="!fullHeight"
                         :duration="duration"
                         :element-width="elementWidth"
                         @seek="emitSeek"
                         @mousemove="handleVideoProgressMousemove"
                         @mouseout="hideThumbnailPreview"
                         ></video-progress>
-                    <div class="annotation-tracks-wrapper">
+                    <div v-if="!collapsed" class="annotation-tracks-wrapper">
                         <annotation-tracks
                             ref="annotationTracks"
                             :tracks="tracks"
@@ -43,6 +46,15 @@
                         <div class="overflow-shadow overflow-shadow--top" v-show="hasOverflowTop"></div>
                         <div class="overflow-shadow overflow-shadow--bottom" v-show="hasOverflowBottom"></div>
                     </div>
+                    <video-progress
+                        ref="progress"
+                        v-if="fullHeight"
+                        :duration="duration"
+                        :element-width="elementWidth"
+                        @seek="emitSeek"
+                        @mousemove="handleVideoProgressMousemove"
+                        @mouseout="hideThumbnailPreview"
+                        ></video-progress>
                     <span
                         class="time-indicator"
                         :class="timeIndicatorClass"
@@ -54,8 +66,16 @@
                         v-show="showHoverTime"
                         ></span>
             </div>
-            <div class="overflow-shadow overflow-shadow--left" v-show="hasOverflowLeft"></div>
-            <div class="overflow-shadow overflow-shadow--right" v-show="hasOverflowRight"></div>
+            <div
+                v-if="!collapsed"
+                v-show="hasOverflowLeft"
+                class="overflow-shadow overflow-shadow--left"
+                ></div>
+            <div
+                v-if="!collapsed"
+                v-show="hasOverflowRight"
+                class="overflow-shadow overflow-shadow--right"
+                ></div>
     </div>
 </template>
 
@@ -102,15 +122,20 @@ export default {
             type: Boolean,
             default: true
         },
-        videoId: {
-            type: Number,
+        videoUuid: {
+            type: String,
             required: true
         },
         hasError: {
             type: Boolean,
             default: false
         },
+        collapsed: {
+            type: Boolean,
+            default: false,
+        },
     },
+    inject: ['fullHeight'],
     data() {
         return {
             zoom: 1,
@@ -126,7 +151,6 @@ export default {
             hasOverflowBottom: false,
             // thumbnail preview
             clientMouseX: 0,
-            scrollstripTop: 0,
             canShowThumb: false,
         };
     },
@@ -177,10 +201,15 @@ export default {
         finishedInitalizingData() {
             return !this.hasError && this.duration > 0;
         },
+        classObject() {
+            return {
+                'full-height': this.fullHeight,
+            };
+        },
     },
     methods: {
         updateInitialElementWidth() {
-            this.initialElementWidth = this.$el.clientWidth;
+            this.initialElementWidth = this.$refs?.strip.clientWidth || 0;
         },
         emitSeek(time) {
             this.$emit('seek', time);
@@ -195,6 +224,10 @@ export default {
             this.$emit('scroll-y', scrollTop);
         },
         handleWheel(e) {
+            if (this.collapsed) {
+                return;
+            }
+
             if (e.shiftKey) {
                 if (e.deltaY !== 0) {
                     this.updateZoom(e);
@@ -208,7 +241,7 @@ export default {
             }
         },
         updateZoom(e) {
-            let xRel = e.clientX - this.$el.getBoundingClientRect().left;
+            let xRel = e.clientX - this.$refs.strip.getBoundingClientRect().left;
             let xAbs = e.clientX - this.$refs.scroller.getBoundingClientRect().left;
             let xPercent = xAbs / this.elementWidth;
 
@@ -253,7 +286,6 @@ export default {
         handleVideoProgressMousemove(clientX) {
             this.canShowThumb = true;
             this.clientMouseX = clientX;
-            this.scrollstripTop = this.$refs.scroller.getBoundingClientRect().top;
         },
         hideThumbnailPreview() {
             this.canShowThumb = false;

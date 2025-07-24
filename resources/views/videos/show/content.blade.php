@@ -33,7 +33,9 @@
 </message-curtain>
 <video-screen
       ref="videoScreen"
+      v-if="isVideoPopout || !hasVideoPopout"
       :annotations="filteredAnnotations"
+      :annotation-revision="annotationRevision"
       :annotation-opacity="settings.annotationOpacity"
       :autoplay-draw="settings.autoplayDraw"
       :jump-step="settings.jumpStep"
@@ -56,6 +58,9 @@
       :has-error="hasError"
       :seeking="seeking"
       :reached-tracked-annotation-limit="reachedTrackedAnnotationLimit"
+      :show-open-popout-button="!isVideoPopout"
+      :show-close-popout-button="isVideoPopout"
+      v-on:init-map="handleInitMap"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
       v-on:split-annotation="splitAnnotation"
@@ -66,7 +71,7 @@
       v-on:force-swap-label="forceSwapAnnotationLabel"
       v-on:select="selectAnnotations"
       v-on:modify="modifyAnnotations"
-      v-on:delete="deleteAnnotationsOrKeyframes"
+      v-on:delete="deleteSelectedAnnotationsOrKeyframes"
       v-on:moveend="updateMapUrlParams"
       v-on:requires-selected-label="handleRequiresSelectedLabel"
       v-on:previous="showPreviousVideo"
@@ -77,6 +82,7 @@
       v-on:seek="seek"
       v-on:start-seeking="startSeeking"
       v-on:is-invalid-shape="handleInvalidShape"
+      v-on:popout="handleVideoPopout"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"
@@ -86,8 +92,10 @@
       :height-offset="timelineHeightOffset"
       :pending-annotation="pendingAnnotation"
       :show-thumbnail-preview="settings.showThumbnailPreview"
-      :video-id="videoId"
+      :video-uuid="videoUuid"
       :has-error="hasError"
+      :collapsed="isVideoPopout"
+      :full-height="!isVideoPopout && hasVideoPopout"
       :duration="videoDuration"
       v-on:seek="seek"
       v-on:select="selectAnnotation"

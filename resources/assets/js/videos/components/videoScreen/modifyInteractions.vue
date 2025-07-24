@@ -126,13 +126,8 @@ export default {
             }
         },
         emitDelete() {
-            if (this.canDelete && this.hasSelectedAnnotations) {
-                this.$emit('delete', this.selectedAnnotations.map((a) => {
-                    return {
-                        annotation: a,
-                        time: this.video.currentTime,
-                    };
-                }));
+            if (this.canDelete) {
+                this.$emit('delete');
             }
         },
         toggleTranslating() {
@@ -282,10 +277,6 @@ export default {
             Keyboard.on('Escape', this.resetTranslating, 0, this.listenerSet);
             Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
             Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
-        }
-
-        if (this.canDelete) {
-            Keyboard.on('Delete', this.emitDelete);
         }
     },
 };

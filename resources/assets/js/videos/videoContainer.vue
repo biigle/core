@@ -50,6 +50,7 @@ export default {
             videoId: null,
             videoDuration: 0,
             videoIds: [],
+            videoUuid: '',
             videoFileUri: '',
             shapes: [],
             canEdit: false,
@@ -105,6 +106,11 @@ export default {
             corsRequestBreaksVideo: false,
             attemptWithCors: false,
             invalidMoovAtomPosition: false,
+            videoPopout: null,
+            isVideoPopout: false,
+            // This is used to enable selecting labels via keyboard shortcut from the
+            // video popout window.
+            selectedFavouriteLabel: undefined,
         };
     },
     computed: {
@@ -183,7 +189,16 @@ export default {
         },
         annotationsAreHidden() {
             return this.settings.annotationOpacity === 0;
-        }
+        },
+        hasVideoPopout() {
+            return this.videoPopout !== null;
+        },
+        // This is required for reliable updates in the video popout.
+        annotationRevision() {
+            return this.annotations.reduce(function (carry, annotation) {
+                return carry + annotation.revision;
+            }, 0);
+        },
     },
     methods: {
         prepareAnnotation(annotation) {
@@ -341,9 +356,15 @@ export default {
         handleDeselectedLabel() {
             this.selectedLabel = null;
         },
-        deleteAnnotationsOrKeyframes(event) {
-            if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
-                event.forEach(this.deleteAnnotationOrKeyframe);
+        deleteSelectedAnnotationsOrKeyframes(force) {
+            if (this.selectedAnnotations.length === 0) {
+                return;
+            }
+
+            if (force === true || confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                this.selectedAnnotations
+                    .map(a => ({annotation: a, time: this.video.currentTime}))
+                    .forEach(this.deleteAnnotationOrKeyframe);
             }
         },
         deleteAnnotationOrKeyframe(event) {
@@ -377,7 +398,9 @@ export default {
             Settings.delete('openTab');
         },
         handleToggledTab() {
-            this.$refs.videoScreen.updateSize();
+            if (this.$refs.videoScreen) {
+                this.$refs.videoScreen.updateSize();
+            }
         },
         removeAnnotation(annotation) {
             let index = this.annotations.indexOf(annotation);
@@ -443,12 +466,6 @@ export default {
         detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
                 annotation.detachAnnotationLabel(annotationLabel)
-                    .then(() => {
-                        // don't refresh whole frame annotations due to missing shape
-                        if (annotation.points.length > 0) {
-                            this.refreshSingleAnnotation(annotation);
-                        }
-                    })
                     .catch(handleErrorResponse);
             } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
                 annotation.delete()
@@ -480,9 +497,6 @@ export default {
         },
         forceSwapAnnotationLabel(annotation) {
             this.swapAnnotationLabel(annotation, true);
-        },
-        refreshSingleAnnotation(annotation) {
-            this.$refs.videoScreen.refreshSingleAnnotation(annotation);
         },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
@@ -544,6 +558,7 @@ export default {
 
             this.error = null;
             this.videoDuration = video.duration;
+            this.videoUuid = video.uuid;
 
             return video;
         },
@@ -652,7 +667,10 @@ export default {
             this.initialCurrentTime = 0;
             this.initialFocussedAnnotation = 0;
             this.$refs.videoTimeline.reset();
-            this.$refs.videoScreen.reset();
+            // The video screen may be gone if the video popout is open.
+            if (this.$refs.videoScreen) {
+                this.$refs.videoScreen.reset();
+            }
         },
         initVideoIds(ids) {
             // Look for a sequence of video IDs in local storage. This sequence is
@@ -731,7 +749,7 @@ export default {
         },
         openSidebarLabels() {
             this.$refs.sidebar.handleOpenTab('labels');
-            this.setFocusInputFindLabel()
+            this.setFocusInputFindLabel();
         },
         setFocusInputFindLabel() {
             this.focusInputFindlabel = false;
@@ -741,6 +759,39 @@ export default {
         },
         dismissMoovAtomError() {
             this.invalidMoovAtomPosition = false;
+        },
+        handleVideoPopout() {
+            if (this.hasVideoPopout) {
+                this.videoPopout.close();
+                this.videoPopout = null;
+            } else {
+                window.$videoContainer = this;
+                const url = biigle.$require('videos.popupUrl');
+                this.videoPopout = markRaw(window.open(url, '_blank', 'popup=true'));
+                if (this.videoPopout) {
+                    this.videoPopout.addEventListener('beforeunload', () => {
+                        // This event could also happen if the popup is reloaded, which
+                        // would break the connection to the opener. So we close the
+                        // popup here for good to make sure.
+                        this.videoPopout.close();
+                        this.videoPopout = null;
+                        delete window.$videoContainer;
+                    });
+                } else {
+                    delete window.$videoContainer;
+                }
+            }
+        },
+        handleInitMap(map) {
+            // Update reference in screenshot button if the popout is closed.
+            Events.emit('videos.map.init', map);
+        },
+        togglePlaying() {
+            if (this.video.paused) {
+                this.video.play();
+            } else {
+                this.video.pause();
+            }
         },
     },
     watch: {
@@ -798,7 +849,6 @@ export default {
         this.video.addEventListener('pause', this.updateVideoUrlParams);
         this.video.addEventListener('seeked', this.updateVideoUrlParams);
 
-        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
 
         if (Settings.has('openTab')) {
             this.openTab = Settings.get('openTab');
@@ -813,7 +863,15 @@ export default {
         }
 
         Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
+        Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+        Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+        Keyboard.on(' ', this.togglePlaying, 0, this.listenerSet);
 
+        window.addEventListener('beforeunload', () => {
+            if (this.videoPopout && !this.videoPopout.closed) {
+                this.videoPopout.close();
+            }
+        });
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before
@@ -821,11 +879,9 @@ export default {
         this.loadVideo(this.videoId);
 
         // See: https://github.com/biigle/core/issues/391
-        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+        if (navigator.userAgent.toLowerCase().includes('firefox')) {
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
         }
-
-        Events.emit('videos.map.init', this.$refs.videoScreen.map);
     },
 };
 </script>

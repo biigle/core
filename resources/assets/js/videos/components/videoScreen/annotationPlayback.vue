@@ -19,20 +19,16 @@ export default {
         return {
             // A map of annotation IDs to OpenLayers feature objects for all
             // currently rendered annotations.
-            renderedAnnotationMap: {},
-            viewFitOptions: {
+            renderedAnnotationMap: markRaw({}),
+            viewFitOptions: markRaw({
                 padding: [50, 50, 50, 50],
                 minResolution: 1,
-            },
+            }),
+            annotationsPreparedToRender: markRaw([]),
         };
     },
-    computed: {
-        annotationsRevision() {
-            return this.annotations.reduce(function (carry, annotation) {
-                return carry + annotation.revision;
-            }, 0);
-        },
-        annotationsPreparedToRender() {
+    methods: {
+        getAnnotationsPreparedToRender() {
             // Extract start and end times of the annotations as well as sort them so
             // they can be accessed fast during rendering.
             return this.annotations
@@ -47,8 +43,6 @@ export default {
                 })
                 .sort((a, b) => a.start - b.start);
         },
-    },
-    methods: {
         refreshAllAnnotations() {
             let time = this.video.currentTime;
             let source = this.annotationSource;
@@ -133,21 +127,17 @@ export default {
                 this.updateGeometry(geometry, points);
             });
         },
-        refreshSingleAnnotation(annotation) {
-            let source = this.annotationSource;
-
-            let feature = source.getFeatureById(annotation.id);
-
-            feature.set('color', annotation.labels[0].label.color);
+        refreshFeatureColors() {
+            this.annotationSource.getFeatures().forEach(f => {
+                f.set('color', f.get('annotation')?.color);
+            });
         },
         createFeature(annotation) {
             let feature = new Feature(this.getGeometryFromPoints(annotation.shape, annotation.points[0]));
 
             feature.setId(annotation.id);
             feature.set('annotation', annotation);
-            if (annotation.labels && annotation.labels.length > 0) {
-                feature.set('color', annotation.labels[0].label.color);
-            }
+            feature.set('color', annotation.color);
 
             return feature;
         },
@@ -253,11 +243,20 @@ export default {
         mapReadyRevision() {
             this.videoSource.on('change', this.refreshAllAnnotations);
         },
-        annotationsRevision() {
-            if (this.map) {
-                this.refreshAllAnnotations();
-            }
+        annotationRevision() {
+            // This must be done manually instead of as a computed property, otherwise it
+            // won't work in the popout window.
+            this.annotationsPreparedToRender = markRaw(this.getAnnotationsPreparedToRender());
+            this.refreshAllAnnotations();
+            // The color may change after a detach/swap label action.
+            this.refreshFeatureColors();
         },
+    },
+    created() {
+        this.annotationsPreparedToRender = markRaw(this.getAnnotationsPreparedToRender());
+    },
+    beforeUnmount() {
+        this.videoSource.un('change', this.refreshAllAnnotations);
     },
 };
 </script>

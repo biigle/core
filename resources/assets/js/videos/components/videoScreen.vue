@@ -261,7 +261,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button>     
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -369,6 +369,7 @@ import VideoPlayback from './videoScreen/videoPlayback.vue';
 import ZoomControl from '@biigle/ol/control/Zoom';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
+import PopoutControl from '../ol/PopoutControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
@@ -381,6 +382,8 @@ export default {
         'previous',
         'select',
         'track',
+        'popout',
+        'initMap',
     ],
     mixins: [
         VideoPlayback,
@@ -398,10 +401,14 @@ export default {
     },
     props: {
         annotations: {
+            required: true,
             type: Array,
-            default() {
-                return [];
-            },
+        },
+        // This is required to update annotations reliably in the video popout.
+        // Objects from the main window cannot be watched from the popout.
+        annotationRevision: {
+            required: true,
+            type: Number,
         },
         annotationOpacity: {
             type: Number,
@@ -471,8 +478,14 @@ export default {
             default: true,
         },
         video: {
-            type: HTMLVideoElement,
             required: true,
+            validator(value) {
+                // In case of a popup window, the video may be a HTMLVideoElement of a
+                // different context which would fail a simple "type: HTMLVideoElement"
+                // check. We do the type check here and have a fallback based on the
+                // constructor name for the popup.
+                return value instanceof HTMLVideoElement || value.constructor.name === 'HTMLVideoElement';
+            },
         },
         heightOffset: {
             type: Number,
@@ -495,6 +508,14 @@ export default {
             default: false,
         },
         enableJumpByFrame: {
+            type: Boolean,
+            default: false,
+        },
+        showOpenPopoutButton: {
+            type: Boolean,
+            default: false,
+        },
+        showClosePopoutButton: {
             type: Boolean,
             default: false,
         },
@@ -571,6 +592,24 @@ export default {
             Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
 
             map.addControl(control);
+
+            if (this.showOpenPopoutButton) {
+                control =  new PopoutControl({
+                    // FontAwesome expand-alt
+                    icon: '\uf424',
+                    title: 'Move the video to a separate window',
+                });
+                control.on('click', this.handlePopout);
+                map.addControl(control);
+            } else if (this.showClosePopoutButton) {
+                control =  new PopoutControl({
+                    // FontAwesome compress-alt
+                    icon: '\uf422',
+                    title: 'Merge video with the main window',
+                });
+                control.on('click', this.handlePopout);
+                map.addControl(control);
+            }
 
             return map;
         },
@@ -679,7 +718,10 @@ export default {
                 Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
-        }
+        },
+        handlePopout() {
+            this.$emit('popout');
+        },
     },
     watch: {
         selectedAnnotations: {
@@ -756,6 +798,7 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
+        this.$emit('initMap', this.map);
     },
 };
 </script>
