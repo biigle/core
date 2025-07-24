@@ -314,15 +314,6 @@ export default class Annotation {
     }
 
     detachAnnotationLabel(annotationLabel) {
-        return VideoAnnotationApi.detachLabel({id: annotationLabel.id})
-            .then((response) => {
-                this.handleDetachedLabel(annotationLabel);
-
-                return response;
-            });
-    }
-
-    handleDetachedLabel(annotationLabel) {
         let index = this.labels.indexOf(annotationLabel);
         if (index !== -1) {
             this.labels.splice(index, 1);
