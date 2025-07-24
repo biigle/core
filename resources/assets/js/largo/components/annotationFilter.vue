@@ -109,11 +109,19 @@ export default {
         return {
             filterValues: {
                 Shape: availableShapes,
-                User: {}
+                User: {},
+                Confidence: {
+                    0: 'Very low (0 - 0.25)',
+                    1: 'Low (0.25 - 0.5)', 
+                    2: 'Medium (0.5 - 0.75)',
+                    3: 'High (0.75 - 0.9)',
+                    4: 'Very high (0.9 - 1.0)'
+                }
             },
             filterToKeyMapping: {
                 Shape: "shape_id",
-                User: "user_id"
+                User: "user_id",
+                Confidence: "confidence"
             },
             selectedFilter: "Shape",
             selectedFilterValue: null,
