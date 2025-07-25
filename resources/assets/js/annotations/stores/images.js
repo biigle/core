@@ -455,7 +455,7 @@ class Images {
 
             xhr.onerror = function () {
                 imageWrapper.crossOriginTiff = true;
-                reject(`Failed to load TIFF!`);
+                reject(`Failed to load TIFF ${imageWrapper.id}!`);
             };
 
             xhr.send();
