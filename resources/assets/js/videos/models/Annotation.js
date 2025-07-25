@@ -63,6 +63,10 @@ export default class Annotation {
         this._labels.value = value;
     }
 
+    get color() {
+        return this.labels?.[0].label.color;
+    }
+
     get frames() {
         return this._frames.value;
     }
@@ -315,7 +319,14 @@ export default class Annotation {
             this.labels.splice(index, 1);
         }
 
-        return VideoAnnotationApi.detachLabel({id: annotationLabel.id});
+        this.revision += 1;
+
+        return VideoAnnotationApi.detachLabel({id: annotationLabel.id})
+            .catch(e => {
+                this.labels.splice(index, 0, annotationLabel);
+
+                throw e;
+            });
     }
 
     attachAnnotationLabel(label) {
@@ -326,6 +337,7 @@ export default class Annotation {
 
     handleAttachedLabel(response) {
         this.labels.push(response.body);
+        this.revision += 1;
 
         return response;
     }
