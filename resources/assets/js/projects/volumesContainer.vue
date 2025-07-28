@@ -139,10 +139,12 @@ export default {
     methods: {
         removeVolume(id) {
             this.startLoading();
-            ProjectsApi.detachVolume({id: this.project.id, volume_id: id})
+            ProjectsApi.detachVolume({ id: this.project.id, volume_id: id })
                 .then(() => this.volumeRemoved(id), (response) => {
                     if (response.status === 400) {
-                        if (confirm('The volume you are about to remove belongs only to this project and will be deleted. Are you sure you want to delete this volume?')) {
+                        let volumeToDelete = this.volumes.find(volume => volume.id === id).name;
+                        let inputVolume = prompt(`The volume you are about to remove belongs only to this project and will be deleted. Are you sure you want to delete "${volumeToDelete}"? Please type the volume name to confirm.`);
+                        if (inputVolume === volumeToDelete) {
                             this.forceRemoveVolume(id);
                         }
                     } else {
