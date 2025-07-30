@@ -248,7 +248,9 @@ class ImageAnnotationController extends Controller
             $annotation->append('labelBOTLabels');
 
             // Get label tree id(s).
-            $trees = $this->getLabelTreeIds($request->user(), $image->volume_id);
+            $treeIds = $this->getLabelTreeIds($request->user(), $image->volume_id);
+            $ignoreIds = array_map('intval', config('labelbot.ignore_label_trees'));
+            $treeIds = array_diff($treeIds, $ignoreIds);
 
             // Convert the feature vector into a Vector object for compatibility with the query.
             $featureVector = new Vector($request->input('feature_vector'));
@@ -256,7 +258,7 @@ class ImageAnnotationController extends Controller
             Cache::increment($cacheKey);
             try {
                 // Perform vector search.
-                $topNLabels = $this->performVectorSearch($featureVector, $trees, $topNLabels);
+                $topNLabels = $this->performVectorSearch($featureVector, $treeIds, $topNLabels);
                 if (empty($topNLabels)) {
                     throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
                 }
@@ -409,17 +411,11 @@ class ImageAnnotationController extends Controller
                 Role::adminId(),
             ])->pluck('id');
         }
-        $trees = LabelTree::select('id', 'name', 'version_id')
-            ->with('labels', 'version')
-            ->whereIn('id', function ($query) use ($projectIds) {
-                $query->select('label_tree_id')
-                    ->from('label_tree_project')
-                    ->whereIn('project_id', $projectIds);
-            })
-            ->pluck('id')
-            ->toArray();
 
-        return $trees;
+        return DB::table('label_tree_project')
+            ->whereIn('project_id', $projectIds)
+            ->pluck('label_tree_id')
+            ->toArray();
     }
 
     /**

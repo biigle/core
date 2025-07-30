@@ -54,4 +54,11 @@ return [
     | URL of the hosted ONNX model file for LabelBOT.
     */
     'onnx_url' => env('LABELBOT_ONNX_MODEL_URL', env('APP_URL').'/assets/dinov2_vits14.onnx'),
+
+    /*
+    | Array of label tree IDs that should be ignored by LabelBOT. Typically this should
+    | be the global label tree that could otherwise taint the results of LabelBOT with
+    | irrelevant suggestions.
+    */
+    'ignore_label_trees' => array_filter(explode(',', env('LABELBOT_IGNORE_LABEL_TREES', ''))),
 ];
