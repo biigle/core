@@ -26,34 +26,30 @@ class LabelbotIndexProgress extends Command
      */
     public function handle()
     {
-        $bar = $this->output->createProgressBar(100);
-        $hasProgress = false;
+        while (!empty($query = $this->runQuery())) {
+            if (!isset($bar)) {
+                $bar = $this->output->createProgressBar($query[0]->blocks_total);
+                $bar->start();
+            }
 
-        do {
-            $progress = DB::select("
-                SELECT round(100.0 * blocks_done / nullif(blocks_total, 0), 1) AS percent
+            $bar->setProgress($query[0]->blocks_done);
+            sleep(1);
+        };
+
+        if (isset($bar)) {
+            $bar->finish();
+            $this->line('');
+        } else {
+            $this->warn('Could not find any index being built.');
+        }
+    }
+
+    protected function runQuery()
+    {
+        return DB::select("
+                SELECT blocks_done, blocks_total
                 FROM pg_stat_progress_create_index
                 WHERE command = 'CREATE INDEX CONCURRENTLY'
                 ");
-
-            if (!empty($progress)) {
-                if (!$hasProgress) {
-                    $bar->start();
-                    $hasProgress = true;
-                }
-
-                $percent = (int) $progress[0]->percent;
-                $bar->setProgress($percent);
-            } elseif (!$hasProgress) {
-                $this->warn('Could not find any index being built.');
-            }
-
-            sleep(1);
-        } while (!empty($progress));
-
-        if ($hasProgress) {
-            $bar->finish();
-            $this->line('');
-        }
     }
 }
