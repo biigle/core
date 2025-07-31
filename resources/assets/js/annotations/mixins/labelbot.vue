@@ -245,8 +245,8 @@ export default {
                 .catch((e) => {
                     if (e.status === 429) {
                         this.updateLabelbotState(LABELBOT_STATES.BUSY);
-                    } else {
-                        this.updateLabelbotState(LABELBOT_STATES.OFF);
+                    } else if (this.labelbotRequestsInFlight === 1) {
+                        this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
                     throw e;
                 })
