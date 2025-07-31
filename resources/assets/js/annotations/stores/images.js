@@ -37,9 +37,7 @@ class Images {
 
     get supportedTextureSize() {
         if (this.fxCanvas) {
-            return this.fxCanvas._.gl.getParameter(
-                this.fxCanvas._.gl.MAX_TEXTURE_SIZE
-            );
+            return this.fxCanvas._.gl.getParameter(this.fxCanvas._.gl.MAX_TEXTURE_SIZE);
         }
 
         return 0;
@@ -47,10 +45,7 @@ class Images {
 
     get hasColorAdjustment() {
         for (let type in this.colorAdjustment) {
-            if (
-                this.colorAdjustment.hasOwnProperty(type) &&
-                this.isAdjustmentActive(type)
-            ) {
+            if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
                 return true;
             }
         }
@@ -66,7 +61,7 @@ class Images {
         this._maxCacheSize = size;
 
         // Add +1 to cache size for the "current" image.
-        while (this.cachedIds.length > size + 1) {
+        while (this.cachedIds.length > (size + 1)) {
             let id = this.cachedIds.shift();
             delete this.cache[id];
         }
@@ -141,9 +136,7 @@ class Images {
         // Check supported texture size.
         let size = this.supportedTextureSize;
         if (size < image.width || size < image.height) {
-            console.warn(
-                `Insufficient WebGL texture size. Required: ${image.width}x${image.height}, available: ${size}x${size}. Color adjustment disabled.`
-            );
+            console.warn(`Insufficient WebGL texture size. Required: ${image.width}x${image.height}, available: ${size}x${size}. Color adjustment disabled.`);
             this.supportsColorAdjustment = false;
             return;
         }
@@ -153,17 +146,9 @@ class Images {
         let tmpCanvas = fx.canvas();
         tmpCanvas.width = image.width;
         tmpCanvas.height = image.height;
-        if (
-            image.width !== tmpCanvas._.gl.drawingBufferWidth ||
-            image.height !== tmpCanvas._.gl.drawingBufferHeight
-        ) {
-            console.warn(
-                'Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.'
-            );
-            this.supportsColorAdjustment = false;
-            return;
+        if (image.width !== tmpCanvas._.gl.drawingBufferWidth || image.height !== tmpCanvas._.gl.drawingBufferHeight) {
+            console.warn('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
         }
-
         this.supportsColorAdjustment = true;
     }
 
@@ -244,8 +229,7 @@ class Images {
         // See: https://github.com/laravel/echo/issues/152
         let url = this.imageFileUri.replace(':id', id);
 
-        return fetch(url)
-            .then((response) => {
+        return fetch(url).then((response) => {
                 if (!response.ok) {
                     throw new Error();
                 }
@@ -254,17 +238,7 @@ class Images {
                 if (type === 'application/json') {
                     return response.json().then((body) => {
                         let uuid = body.uuid;
-                        body.url = this.tilesUri.replace(
-                            ':uuid',
-                            uuid[0] +
-                                uuid[1] +
-                                '/' +
-                                uuid[2] +
-                                uuid[3] +
-                                '/' +
-                                uuid
-                        );
-
+                        body.url = this.tilesUri.replace(':uuid', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
                         return body;
                     });
                 }
@@ -351,14 +325,8 @@ class Images {
         this.fxCanvas.draw(this.fxTexture);
 
         for (let type in this.colorAdjustment) {
-            if (
-                this.colorAdjustment.hasOwnProperty(type) &&
-                this.isAdjustmentActive(type)
-            ) {
-                this.fxCanvas[type].apply(
-                    this.fxCanvas,
-                    this.colorAdjustment[type]
-                );
+            if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
+                this.fxCanvas[type].apply(this.fxCanvas, this.colorAdjustment[type]);
             }
         }
 
@@ -390,7 +358,7 @@ class Images {
         if (!this.cache.hasOwnProperty(id)) {
             Events.emit('images.fetching', id);
             this.cache[id] = this.createImage(id);
-            // Also do the "else'" case if next is undefined.
+            // Also do the "else" case if next is undefined.
             if (next !== true) {
                 this.cachedIds.unshift(id);
             } else {
@@ -398,12 +366,11 @@ class Images {
             }
 
             // Add +1 to cache size for the "current" image.
-            if (this.cachedIds.length > this.maxCacheSize + 1) {
+            if (this.cachedIds.length > (this.maxCacheSize + 1)) {
                 // Also do the "else" case if next is undefined.
-                let deleteId =
-                    next !== true
-                        ? this.cachedIds.pop()
-                        : this.cachedIds.shift();
+                let deleteId = next !== true
+                    ? this.cachedIds.pop()
+                    : this.cachedIds.shift();
                 if (id !== deleteId) {
                     delete this.cache[deleteId];
                 }
