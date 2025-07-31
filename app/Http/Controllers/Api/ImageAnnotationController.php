@@ -232,13 +232,12 @@ class ImageAnnotationController extends Controller
         $annotation->points = $points;
         $labelId = $request->input('label_id');
 
-        // LabelBOT
-        $topNLabels = [];
-        $maxRequests = config('labelbot.max_requests');
-        $cacheKey = "labelbot-requests-{$request->user()->id}";
-        $currentRequests = Cache::get($cacheKey, 0);
-
         if (is_null($labelId) && $request->has('feature_vector')) {
+            // LabelBOT
+            $topNLabels = [];
+            $maxRequests = config('labelbot.max_requests');
+            $cacheKey = "labelbot-requests-{$request->user()->id}";
+            $currentRequests = Cache::get($cacheKey, 0);
 
             if ($currentRequests >= $maxRequests) {
                 throw new TooManyRequestsHttpException(message: "You already have {$maxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
