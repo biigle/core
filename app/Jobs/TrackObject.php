@@ -50,7 +50,7 @@ class TrackObject extends Job implements ShouldQueue
      *
      * @var bool
      */
-    protected $deleteWhenMissingModels = true;
+    // protected $deleteWhenMissingModels = true;
 
     /**
      * Return the cache key to store the number of concurrent jobs for each user.
@@ -61,6 +61,7 @@ class TrackObject extends Job implements ShouldQueue
      */
     public static function getRateLimitCacheKey(User $user)
     {
+        Log::info("getRateLimitCacheKEY");
         return "object-tracking-jobs-{$user->id}";
     }
 
@@ -83,7 +84,14 @@ class TrackObject extends Job implements ShouldQueue
      */
     public function handle()
     {
+        Log::info("Handle trackObject");
         try {
+            
+            if (!$this->annotation || !$this->annotation->exists) {
+                Log::info("Annotation missing for object tracking job for user {$this->user->id}");
+                return;
+            }
+                
             $keyframes = $this->getTrackingKeyframes($this->annotation);
             $frames = $this->annotation->frames;
             $points = $this->annotation->points;
@@ -108,9 +116,10 @@ class TrackObject extends Job implements ShouldQueue
             Log::warning("Could not track object for video {$this->annotation->video->id}: {$e->getMessage()}");
             ObjectTrackingFailed::dispatch($this->annotation, $this->user);
         } finally {
-            $count = Cache::decrement(static::getRateLimitCacheKey($this->user));
+            $count = Cache::decrement(static::getRateLimitCacheKey($this->user)); // Decrement cache
+            Log::info("Finaly: {$count}");
             if ($count <= 0) {
-                Cache::forget(static::getRateLimitCacheKey($this->user));
+                Cache::forget(static::getRateLimitCacheKey($this->user));  // delete the key, because the user has no jobs running anymore.
             }
         }
     }
@@ -124,6 +133,7 @@ class TrackObject extends Job implements ShouldQueue
      */
     protected function getTrackingKeyframes(VideoAnnotation $annotation)
     {
+        Log::info("getTrackingKeyframes in TrackObject");
         return FileCache::get($annotation->video, function ($video, $path) use ($annotation) {
             $script = config('videos.object_tracker_script');
 
