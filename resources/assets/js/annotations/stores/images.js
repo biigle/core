@@ -31,8 +31,8 @@ class Images {
             vibrance: [0],
             gamma: [1],
         };
-        this.imageFileUri = "";
-        this.tilesUri = "";
+        this.imageFileUri = '';
+        this.tilesUri = '';
     }
 
     get supportedTextureSize() {
@@ -82,8 +82,8 @@ class Images {
 
     initialize() {
         this.initialized = true;
-        this.imageFileUri = biigle.$require("annotations.imageFileUri");
-        this.tilesUri = biigle.$require("annotations.tilesUri");
+        this.imageFileUri = biigle.$require('annotations.imageFileUri');
+        this.tilesUri = biigle.$require('annotations.tilesUri');
 
         try {
             // If this.fxCanvas is not initialized WebGL is not supported at all.
@@ -91,10 +91,10 @@ class Images {
             this.fxTexture = null;
             this.loadedImageTexture = null;
         } catch (error) {
-            console.warn("WebGL not supported. Color adjustment disabled.");
+            console.warn('WebGL not supported. Color adjustment disabled.');
         }
 
-        window.addEventListener("beforeunload", function () {
+        window.addEventListener('beforeunload', function () {
             // Make sure the texture is destroyed when the page is left.
             // The browser may take its time to garbage collect it and it may cause
             // crashes due to lack of memory if not explicitly destroyed like this.
@@ -158,7 +158,7 @@ class Images {
             image.height !== tmpCanvas._.gl.drawingBufferHeight
         ) {
             console.warn(
-                "Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled."
+                'Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.'
             );
             this.supportsColorAdjustment = false;
             return;
@@ -168,7 +168,7 @@ class Images {
     }
 
     createImage(id) {
-        let img = document.createElement("img");
+        let img = document.createElement('img');
 
         // The canvas is required 1) to draw the image with ignored EXIF rotation and
         // pass it on to OpenLayers and 2) to apply color adjustment and pass it on to
@@ -179,7 +179,7 @@ class Images {
         // its own canvas element to make switching between images much faster, since
         // the canvases can be prepared before display and don't have to be redrawn
         // on each switch (unless color adjustment is active).
-        let canvas = document.createElement("canvas");
+        let canvas = document.createElement('canvas');
 
         let imageWrapper = {
             id: id,
@@ -193,13 +193,13 @@ class Images {
 
         // Disable auto-rotation based on image metadata. This only works when the
         // element is in the DOM so we have to append it whenever we need it.
-        img.style.imageOrientation = "none";
-        canvas.style.imageOrientation = "none";
+        img.style.imageOrientation = 'none';
+        canvas.style.imageOrientation = 'none';
         // Make the element invisible when it is appended to the DOM.
-        img.style.visibility = "hidden";
-        img.style.position = "fixed";
-        canvas.style.visibility = "hidden";
-        canvas.style.position = "fixed";
+        img.style.visibility = 'hidden';
+        img.style.position = 'fixed';
+        canvas.style.visibility = 'hidden';
+        canvas.style.position = 'fixed';
 
         // Flag to skip redrawing of the original image if no color adjustment is
         // active.
@@ -219,7 +219,7 @@ class Images {
                 imageWrapper.canvas.height = img.height;
                 // Draw the image to the canvas already so the switch to a cached
                 // image is as fast as possible.
-                imageWrapper.canvas.getContext("2d").drawImage(img, 0, 0);
+                imageWrapper.canvas.getContext('2d').drawImage(img, 0, 0);
                 imageWrapper.canvas._dirty = false;
                 document.body.removeChild(img);
                 document.body.removeChild(imageWrapper.canvas);
@@ -242,26 +242,26 @@ class Images {
         // problems with CORS.
         //
         // See: https://github.com/laravel/echo/issues/152
-        let url = this.imageFileUri.replace(":id", id);
+        let url = this.imageFileUri.replace(':id', id);
 
         return fetch(url)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error();
                 }
-                let size = response.headers.get("content-length");
-                let type = response.headers.get("content-type");
-                if (type === "application/json") {
+                let size = response.headers.get('content-length');
+                let type = response.headers.get('content-type');
+                if (type === 'application/json') {
                     return response.json().then((body) => {
                         let uuid = body.uuid;
                         body.url = this.tilesUri.replace(
-                            ":uuid",
+                            ':uuid',
                             uuid[0] +
                                 uuid[1] +
-                                "/" +
+                                '/' +
                                 uuid[2] +
                                 uuid[3] +
-                                "/" +
+                                '/' +
                                 uuid
                         );
 
@@ -269,7 +269,7 @@ class Images {
                     });
                 }
 
-                if (type === "image/tiff" || type === "image/tif") {
+                if (type === 'image/tiff' || type === 'image/tif') {
                     if (size < 1000000000) {
                         return this.loadSmallTiffs(url, imageWrapper)
                             .then((wrapper) => {
@@ -326,7 +326,7 @@ class Images {
             // This has to be called somehow to force the browser to respect
             // imageOrientation=none.
             image.source.width;
-            image.canvas.getContext("2d").drawImage(image.source, 0, 0);
+            image.canvas.getContext('2d').drawImage(image.source, 0, 0);
             image.canvas._dirty = false;
             document.body.removeChild(image.source);
             document.body.appendChild(image.canvas);
@@ -363,7 +363,7 @@ class Images {
         }
 
         this.fxCanvas.update();
-        image.canvas.getContext("2d").drawImage(this.fxCanvas, 0, 0);
+        image.canvas.getContext('2d').drawImage(this.fxCanvas, 0, 0);
         image.canvas._dirty = true;
 
         return image;
@@ -388,9 +388,9 @@ class Images {
         }
 
         if (!this.cache.hasOwnProperty(id)) {
-            Events.emit("images.fetching", id);
+            Events.emit('images.fetching', id);
             this.cache[id] = this.createImage(id);
-            // Also do the "else" case if next is undefined.
+            // Also do the "else'" case if next is undefined.
             if (next !== true) {
                 this.cachedIds.unshift(id);
             } else {
@@ -450,8 +450,8 @@ class Images {
 
     loadSmallTiffs(tiffUrl, imageWrapper) {
         let xhr = new XMLHttpRequest();
-        xhr.open("GET", tiffUrl, true);
-        xhr.responseType = "arraybuffer";
+        xhr.open('GET', tiffUrl, true);
+        xhr.responseType = 'arraybuffer';
 
         return new Promise(function (resolve, reject) {
             xhr.onload = function () {
@@ -467,21 +467,21 @@ class Images {
                     imageWrapper.canvas.width = width;
                     imageWrapper.canvas.height = height;
 
-                    let tempCanvas = document.createElement("canvas");
+                    let tempCanvas = document.createElement('canvas');
                     tempCanvas.width = width;
                     tempCanvas.height = height;
 
-                    let ctx = tempCanvas.getContext("2d");
+                    let ctx = tempCanvas.getContext('2d');
                     let imgData = ctx.createImageData(width, height);
                     imgData.data.set(rgba);
                     ctx.putImageData(imgData, 0, 0);
 
-                    ctx = imageWrapper.canvas.getContext("2d");
+                    ctx = imageWrapper.canvas.getContext('2d');
                     ctx.drawImage(tempCanvas, 0, 0);
                     imageWrapper.canvas._dirty = false;
                     resolve(imageWrapper);
                 } catch (err) {
-                    reject("TIFF decode error: " + err.message);
+                    reject('TIFF decode error: ' + err.message);
                 }
             };
 
