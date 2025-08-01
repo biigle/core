@@ -166,7 +166,7 @@
         </p>
 
         <p>
-            The "Restrict to Boundaries" setting controls whether new annotation points can be placed outside the image boundaries. When enabled, the floating vertex beneath the mouse cursor will be constrained to stay within the image area while drawing new annotations. This can be useful to prevent accidental annotation placement outside the visible image content.
+            The "Restrict to Boundaries" setting controls whether new annotation points can be placed outside the image boundaries. When enabled, clicks outside the image boundaries will be ignored when drawing new annotations. This can be useful to prevent accidental annotation placement outside the visible image content.
         </p>
 
 

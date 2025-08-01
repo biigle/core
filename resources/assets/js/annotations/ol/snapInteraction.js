@@ -35,7 +35,10 @@ export default {
         maybeRestrictToBounds(mapBrowserEvent) {
             // If boundary restriction is enabled, check if coordinates are within bounds
             if (this.restrictToBounds) {
-                return this.drawsOnImage;
+                // Check if the coordinates are within image bounds
+                const coords = mapBrowserEvent.coordinate;
+                return coords[0] >= 0 && coords[1] >= 0
+                    && coords[0] <= this.width && coords[1] <= this.height;
             }
             
             // Return always true if restriction is disabled

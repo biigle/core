@@ -93,7 +93,7 @@
         </p>
 
         <p>
-            The "Restrict to Boundaries" setting controls whether new annotation points can be placed outside the video boundaries. When enabled, the floating vertex beneath the mouse cursor will be constrained to stay within the video frame area while drawing new annotations. This can be useful to prevent accidental annotation placement outside the visible video content.
+            The "Restrict to Boundaries" setting controls whether new annotation points can be placed outside the video boundaries. When enabled, clicks outside the video boundaries will be ignored when drawing new annotations. This can be useful to prevent accidental annotation placement outside the visible video content.
         </p>
     </div>
 @endsection
