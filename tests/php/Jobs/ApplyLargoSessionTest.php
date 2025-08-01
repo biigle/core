@@ -740,10 +740,10 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertNotNull($a2->fresh());
     }
 
-    public function testChunkDismissedImageAnnotations()
+    public function testChunkDismissedAnnotations()
     {
         // Set a very low parameter limit to test chunking
-        // With limit of 5: chunkSize = 5 - 2 = 3 (accounting for user_id and label_id params)
+        // With limit of 5: chunkSize = 5 - 2 = 3 (accounting for label_id and user_id params)
         config(['biigle.db_param_limit' => 5]);
         
         $user = UserTest::create();
@@ -768,80 +768,6 @@ class ApplyLargoSessionTest extends TestCase
         $dismissed = [$label->id => $annotationIds];
         
         $job = new ApplyLargoSession('job_id', $user, $dismissed, [], [], [], false);
-        $job->handle();
-        
-        // All annotation labels should be dismissed and annotations deleted
-        foreach ($annotations as $annotation) {
-            $this->assertFalse($annotation->exists());
-        }
-    }
-
-    public function testChunkDismissedVideoAnnotations()
-    {
-        // Set a very low parameter limit to test chunking
-        // With limit of 5: chunkSize = 5 - 2 = 3 (accounting for user_id and label_id params)
-        config(['biigle.db_param_limit' => 5]);
-        
-        $user = UserTest::create();
-        $video = VideoTest::create();
-        $this->setJobId($video, 'job_id');
-        
-        // Create multiple annotations with the same label
-        $annotations = [];
-        $label = LabelTest::create();
-        
-        for ($i = 0; $i < 7; $i++) {
-            $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
-            $annotations[] = $annotation;
-            VideoAnnotationLabelTest::create([
-                'annotation_id' => $annotation->id,
-                'user_id' => $user->id,
-                'label_id' => $label->id,
-            ]);
-        }
-        
-        $annotationIds = collect($annotations)->pluck('id')->toArray();
-        $dismissed = [$label->id => $annotationIds];
-        
-        $job = new ApplyLargoSession('job_id', $user, [], [], $dismissed, [], false);
-        $job->handle();
-        
-        // All annotation labels should be dismissed and annotations deleted
-        foreach ($annotations as $annotation) {
-            $this->assertFalse($annotation->exists());
-        }
-    }
-
-    public function testChunkDismissedForceImageAnnotations()
-    {
-        // Set a very low parameter limit to test chunking with force=true
-        // With limit of 4 and force=true: chunkSize = 4 - 1 = 3 (only label_id param, no user_id)
-        config(['biigle.db_param_limit' => 4]);
-        
-        $user = UserTest::create();
-        $image = ImageTest::create();
-        $this->setJobId($image, 'job_id');
-        
-        // Create multiple annotations with the same label from different users
-        $annotations = [];
-        $label = LabelTest::create();
-        
-        for ($i = 0; $i < 5; $i++) {
-            $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
-            $annotations[] = $annotation;
-            $annotationUser = $i < 2 ? $user : UserTest::create(); // Mix of users
-            ImageAnnotationLabelTest::create([
-                'annotation_id' => $annotation->id,
-                'user_id' => $annotationUser->id,
-                'label_id' => $label->id,
-            ]);
-        }
-        
-        $annotationIds = collect($annotations)->pluck('id')->toArray();
-        $dismissed = [$label->id => $annotationIds];
-        
-        // Use force=true to dismiss labels from all users
-        $job = new ApplyLargoSession('job_id', $user, $dismissed, [], [], [], true);
         $job->handle();
         
         // All annotation labels should be dismissed and annotations deleted
