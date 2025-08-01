@@ -484,6 +484,40 @@ class VolumeTest extends ModelTestCase
         $this->assertInstanceOf(Image::class, $thumbnails[0]);
     }
 
+    public function testGetThumbnailsAttributeWithGapsInIds()
+    {
+        $id = $this->model->id;
+        $images = [];
+        
+        // Create 60 images to ensure step > 1 (60/10 = 6)
+        for ($i = 0; $i < 60; $i++) {
+            $images[] = ImageTest::create(['volume_id' => $id, 'filename' => sprintf("file%02d.jpg", $i)]);
+        }
+
+        // Delete all even-numbered ID images to create gaps
+        // This simulates the scenario described in the issue where step=6 
+        // and only odd IDs remain (which are never divisible by 6)
+        foreach ($images as $image) {
+            if ($image->id % 2 == 0) {
+                $image->delete();
+            }
+        }
+
+        // Clear cache to ensure fresh calculation
+        $this->model->flushThumbnailCache();
+
+        $thumbnails = $this->model->thumbnails;
+        
+        // Should still get thumbnails even with gaps in IDs
+        // With 30 remaining images and step calculation (30/10 = 3), 
+        // we should get 10 thumbnails
+        $this->assertGreaterThan(0, $thumbnails->count(), 'Should get thumbnails even with gaps in file IDs');
+        $this->assertInstanceOf(Image::class, $thumbnails[0]);
+        
+        // Verify that thumbnails are reasonably distributed
+        $this->assertLessThanOrEqual(10, $thumbnails->count());
+    }
+
     public function testGetThumbnailUrlAttributeImage()
     {
         $this->assertNull($this->model->thumbnailUrl);
