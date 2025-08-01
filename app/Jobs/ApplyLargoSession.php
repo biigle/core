@@ -271,7 +271,9 @@ class ApplyLargoSession extends Job implements ShouldQueue
     protected function applyDismissedLabels($user, $dismissed, $force, $labelModel)
     {
         foreach ($dismissed as $labelId => $annotationIds) {
-            $chunks = array_chunk($annotationIds, config('biigle.db_param_limit'));
+            // Account for additional parameters in the query (label_id and potentially user_id)
+            $chunkSize = config('biigle.db_param_limit') - ($force ? 1 : 2);
+            $chunks = array_chunk($annotationIds, $chunkSize);
             foreach ($chunks as $chunk) {
                 $labelModel::whereIn('annotation_id', $chunk)
                     ->when(!$force, fn ($query) => $query->where('user_id', $user->id))
