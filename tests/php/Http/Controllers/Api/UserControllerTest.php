@@ -257,8 +257,6 @@ class UserControllerTest extends ApiTestCase
         $this->assertNull($user->fresh()->affiliation);
     }
 
-
-
     public function testUpdateRole()
     {
         $user = $this->guest();
