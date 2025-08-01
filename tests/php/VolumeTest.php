@@ -511,11 +511,7 @@ class VolumeTest extends ModelTestCase
         // Should still get thumbnails even with gaps in IDs
         // With 30 remaining images and step calculation (30/10 = 3), 
         // we should get 10 thumbnails
-        $this->assertGreaterThan(0, $thumbnails->count(), 'Should get thumbnails even with gaps in file IDs');
-        $this->assertInstanceOf(Image::class, $thumbnails[0]);
-        
-        // Verify that thumbnails are reasonably distributed
-        $this->assertLessThanOrEqual(10, $thumbnails->count());
+        $this->assertCount(10, $thumbnails);
     }
 
     public function testGetThumbnailUrlAttributeImage()
