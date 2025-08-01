@@ -250,6 +250,7 @@ class UserControllerTest extends ApiTestCase
 
         $this->assertSame('My Company', $user->fresh()->affiliation);
 
+        // Admins should still be able to clear affiliations with empty strings
         $this->putJson("api/v1/users/{$user->id}", ['affiliation' => ''])
             ->assertStatus(200);
 
@@ -443,10 +444,12 @@ class UserControllerTest extends ApiTestCase
 
         $this->assertSame('My Company', $this->guest()->fresh()->affiliation);
 
+        // Empty string should now be rejected for user self-updates
         $this->putJson('api/v1/users/my', ['affiliation' => ''])
-            ->assertStatus(200);
+            ->assertStatus(422);
 
-        $this->assertNull($this->guest()->fresh()->affiliation);
+        // Affiliation should remain unchanged
+        $this->assertSame('My Company', $this->guest()->fresh()->affiliation);
     }
 
     public function testStoreWithToken()
