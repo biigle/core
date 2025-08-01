@@ -295,6 +295,7 @@ export default {
             Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
             Keyboard.on('h', this.drawWholeFrame, 0, this.listenerSet);
             Keyboard.on('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
+            Keyboard.on('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
     },
 };
