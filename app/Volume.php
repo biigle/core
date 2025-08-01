@@ -337,8 +337,22 @@ class Volume extends Model
             $step = intdiv($total, $number);
 
             return $this->orderedFiles()
+                // The query must use the row number instead of the ID because in some
+                // cases no ID may be divisible by the step (e.g. if the step is even)
+                // and only odd IDs are there.
                 ->when($step > 1, function ($query) use ($step) {
-                    $query->whereRaw("(id % {$step}) = 0");
+                    $tableName = $query->getModel()->getTable();
+                    $query->whereIn(
+                        'id',
+                        fn ($query) =>
+                        $query->select('id')
+                            ->fromSub(function ($query) use ($tableName) {
+                                $query->selectRaw('id, ROW_NUMBER() OVER (ORDER BY filename ASC) as row_num')
+                                    ->from($tableName)
+                                    ->where('volume_id', $this->id);
+                            }, 'numbered_files')
+                            ->whereRaw("(row_num - 1) % ? = 0", [$step])
+                    );
                 })
                 ->limit($number)
                 ->get();
