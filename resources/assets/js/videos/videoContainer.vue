@@ -765,8 +765,6 @@ export default {
         this.user = biigle.$require('videos.user');
         this.videoFilenames = biigle.$require('videos.videoFilenames');
 
-
-
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;
         this.video.preload = 'auto';
