@@ -332,23 +332,24 @@ class Volume extends Model
         // volume exists.
         return Cache::remember($this->getThumbnailsCacheKey(), 3600, function () {
             $number = 10;
-            $total = $this->files()->count();
+            $files = $this->orderedFiles()->get();
+            $total = $files->count();
             
             if ($total <= $number) {
                 // If we have fewer files than desired thumbnails, return all files
-                return $this->orderedFiles()->get();
+                return $files;
             }
 
             $step = intdiv($total, $number);
 
-            // Instead of using modulo on ID, use offset to select evenly spaced files
+            // Select evenly spaced files by index instead of ID
             // This ensures even distribution regardless of ID gaps
             $thumbnails = collect();
             
-            for ($i = 0; $i < $number && $i * $step < $total; $i++) {
-                $file = $this->orderedFiles()->offset($i * $step)->first();
-                if ($file) {
-                    $thumbnails->push($file);
+            for ($i = 0; $i < $number; $i++) {
+                $index = $i * $step;
+                if ($index < $total) {
+                    $thumbnails->push($files[$index]);
                 }
             }
             
