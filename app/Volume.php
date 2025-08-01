@@ -338,7 +338,16 @@ class Volume extends Model
 
             return $this->orderedFiles()
                 ->when($step > 1, function ($query) use ($step) {
-                    $query->whereRaw("(ROW_NUMBER() OVER (ORDER BY filename ASC) - 1) % {$step} = 0");
+                    // Use a subquery to handle ROW_NUMBER() properly
+                    $tableName = $query->getModel()->getTable();
+                    $query->whereRaw("id IN (
+                        SELECT id FROM (
+                            SELECT id, ROW_NUMBER() OVER (ORDER BY filename ASC) as row_num
+                            FROM {$tableName}
+                            WHERE volume_id = ?
+                        ) numbered_files
+                        WHERE (row_num - 1) % {$step} = 0
+                    )", [$this->id]);
                 })
                 ->limit($number)
                 ->get();

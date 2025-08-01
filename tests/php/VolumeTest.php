@@ -489,14 +489,14 @@ class VolumeTest extends ModelTestCase
         $id = $this->model->id;
         $images = [];
         
-        // Create 60 images to ensure step > 1 (60/10 = 6)
-        for ($i = 0; $i < 60; $i++) {
-            $images[] = ImageTest::create(['volume_id' => $id, 'filename' => sprintf("file%02d.jpg", $i)]);
+        // Create 120 images to ensure step = 12 (120/10 = 12, which is even)
+        for ($i = 0; $i < 120; $i++) {
+            $images[] = ImageTest::create(['volume_id' => $id, 'filename' => sprintf("file%03d.jpg", $i)]);
         }
 
         // Delete all even-numbered ID images to create gaps
-        // This simulates the scenario described in the issue where step=6 
-        // and only odd IDs remain (which are never divisible by 6)
+        // This creates a scenario where step=12 (even) but only odd IDs remain
+        // Since no odd number is divisible by 12, old algorithm returns 0 thumbnails
         foreach ($images as $image) {
             if ($image->id % 2 == 0) {
                 $image->delete();
@@ -508,9 +508,6 @@ class VolumeTest extends ModelTestCase
 
         $thumbnails = $this->model->thumbnails;
         
-        // Should still get thumbnails even with gaps in IDs
-        // With 30 remaining images and step calculation (30/10 = 3), 
-        // we should get 10 thumbnails
         $this->assertCount(10, $thumbnails);
     }
 
