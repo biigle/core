@@ -154,6 +154,16 @@
                     v-on:click="toggleSwapping"
                     v-on:active="onActive"
                     ></control-button>
+                @can('force-edit-in', $volume)
+                    <control-button
+                        icon="fa-sync-alt"
+                        class="control-button--danger control-button--force-swap"
+                        title="Force-swap the most recent label of an existing annotation (even of another user) with the currently selected one"
+                        :active="isForceSwapping"
+                        v-on:click="toggleForceSwapping"
+                        v-on:active="onActive"
+                        ></control-button>
+                @endcan
             </control-button>
             <control-button
                 v-if="canModify"
@@ -166,12 +176,14 @@
             <control-button
                 v-if="hasLastCreatedAnnotation && canDelete"
                 icon="fa-undo"
+                class="control-button--danger"
                 title="Delete the last drawn annotation 𝗕𝗮𝗰𝗸𝘀𝗽𝗮𝗰𝗲"
                 v-on:click="deleteLastCreatedAnnotation"
                 ></control-button>
             <control-button
                 v-else-if="canDelete"
                 icon="fa-trash"
+                class="control-button--danger"
                 title="Delete selected annotations 𝗗𝗲𝗹"
                 :disabled="modifyInProgress||!hasSelectedAnnotations"
                 v-on:click="deleteSelectedAnnotations"

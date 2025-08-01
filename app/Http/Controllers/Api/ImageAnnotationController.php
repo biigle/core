@@ -90,7 +90,7 @@ class ImageAnnotationController extends Controller
                 }
             };
         }
-    
+
         return new StreamedJsonResponse($yieldAnnotations());
     }
 

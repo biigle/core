@@ -1,17 +1,27 @@
 <template>
-    <div class="video-timeline" :style="styleObject">
-        <div class="grab-border"
+    <div class="video-timeline" :style="styleObject" :class="classObject">
+        <div
+            v-if="!collapsed && !fullHeight"
+            class="grab-border"
             @mousedown="emitStartResize"
             ></div>
         <div class="static-strip">
             <current-time
+                v-if="!fullHeight"
                 :current-time="currentTime"
                 :seeking="seeking"
                 ></current-time>
-            <track-headers ref="trackheaders"
+            <track-headers
+                v-if="!collapsed"
+                ref="trackheaders"
                 :tracks="annotationTracks"
                 :scroll-top="scrollTop"
                 ></track-headers>
+            <current-time
+                v-if="fullHeight"
+                :current-time="currentTime"
+                :seeking="seeking"
+                ></current-time>
         </div>
         <scroll-strip
             ref="scrollStrip"
@@ -20,8 +30,9 @@
             :current-time="currentTime"
             :seeking="seeking"
             :showThumbnailPreview="showThumbnailPreview"
-            :videoId="videoId"
+            :videoUuid="videoUuid"
             :has-error="hasError"
+            :collapsed="collapsed"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -35,6 +46,7 @@
 import CurrentTime from './currentTime.vue';
 import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
+import { computed } from 'vue'
 
 export default {
     emits: [
@@ -56,8 +68,14 @@ export default {
             },
         },
         video: {
-            type: HTMLVideoElement,
             required: true,
+            validator(value) {
+                // In case of a popup window, the video may be a HTMLVideoElement of a
+                // different context which would fail a simple "type: HTMLVideoElement"
+                // check. We do the type check here and have a fallback based on the
+                // constructor name for the popup.
+                return value instanceof HTMLVideoElement || value.constructor.name === 'HTMLVideoElement';
+            },
         },
         duration: {
             type: Number,
@@ -82,13 +100,21 @@ export default {
             type: Boolean,
             default: true,
         },
-        videoId: {
-            type: Number,
+        videoUuid: {
+            type: String,
             required: true,
         },
         hasError: {
             type: Boolean,
             default: false
+        },
+        collapsed: {
+            type: Boolean,
+            default: false,
+        },
+        fullHeight: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -100,6 +126,11 @@ export default {
             currentTime: 0,
             scrollTop: 0,
             hoverTime: 0,
+        };
+    },
+    provide() {
+        return {
+            fullHeight: computed(() => this.fullHeight),
         };
     },
     computed: {
@@ -150,11 +181,16 @@ export default {
             });
         },
         styleObject() {
-            if (this.heightOffset !== 0) {
+            if (this.heightOffset !== 0 && !this.fullHeight && !this.collapsed) {
                 return `height: calc(35% + ${this.heightOffset}px);`;
             }
 
             return '';
+        },
+        classObject() {
+            return {
+                'full-height': this.fullHeight,
+            };
         },
     },
     methods: {
@@ -187,46 +223,30 @@ export default {
             this.scrollTop = scrollTop;
         },
         getAnnotationTrackLanes(annotations) {
-            let timeRanges = [[]];
             let lanes = [[]];
 
             annotations.forEach((annotation) => {
-                let range = [annotation.startFrame, annotation.endFrame];
                 let lane = 0;
                 let set = false;
 
                 outerloop: while (!set) {
                     if (!lanes[lane]) {
-                        timeRanges[lane] = [];
                         lanes[lane] = [];
                     } else {
-                        for (let i = timeRanges[lane].length - 1; i >= 0; i--) {
-                            if (this.rangesCollide(timeRanges[lane][i], range)) {
+                        for (let i = lanes[lane].length - 1; i >= 0; i--) {
+                            if (annotation.overlapsTime(lanes[lane][i])) {
                                 lane += 1;
                                 continue outerloop;
                             }
                         }
                     }
 
-                    timeRanges[lane].push(range);
                     lanes[lane].push(annotation);
                     set = true;
                 }
             });
 
             return lanes;
-        },
-        rangesCollide(range1, range2) {
-            // Start of range1 overlaps with range2.
-            return range1[0] >= range2[0] && range1[0] < range2[1] ||
-                // End of range1 overlaps with range2.
-                range1[1] > range2[0] && range1[1] <= range2[1] ||
-                // Start of range2 overlaps with range1.
-                range2[0] >= range1[0] && range2[0] < range1[1] ||
-                // End of range2 overlaps with range1.
-                range2[1] > range1[0] && range2[1] <= range1[1] ||
-                // range1 equals range2.
-                range1[0] === range2[0] && range1[1] === range2[1];
         },
         updateHoverTime(time) {
             this.hoverTime = time;
@@ -247,10 +267,18 @@ export default {
         },
     },
     created() {
-        // this.video.addEventListener('timeupdate', this.updateCurrentTime);
         this.video.addEventListener('play', this.startUpdateLoop);
         this.video.addEventListener('pause', this.stopUpdateLoop);
         this.video.addEventListener('seeked', this.updateCurrentTime);
+
+        // If the video timeline is shown in the popup and the video is already loaded.
+        if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+            this.updateCurrentTime();
+
+            if (!this.video.paused) {
+                this.startUpdateLoop();
+            }
+        }
     },
 };
 </script>

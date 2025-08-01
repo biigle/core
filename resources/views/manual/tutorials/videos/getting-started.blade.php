@@ -23,6 +23,9 @@
             On the right there is the sidebar with the <i class="fa fa-tags"></i> label trees and <i class="fa fa-cog"></i> settings tabs. Open a tab by clicking on the icon.
         </p>
         <p>
+            On the left of the video there are controls to zoom in <button class="btn btn-default btn-xs"><i class="fa fa-plus"></i></button> or out <button class="btn btn-default btn-xs"><i class="fa fa-minus"></i></button>, fit the video to the current viewport <button class="btn btn-default btn-xs"><i class="fa fa-compress"></i></button> or zoom the video to its original resolution <button class="btn btn-default btn-xs"><i class="fa fa-expand"></i></button>. You can also pop out the video to a separate window with the <button class="btn btn-default btn-xs"><i class="fa fa-expand-alt"></i></button> button. This is most useful if you can use multiple screens with one screen for the video timeline and one screen for the video itself.
+        </p>
+        <p>
             Finally, on the bottom of the video there is the tool bar. Starting from the left there are the video navigation and playback buttons, the annotation tools to create new video annotations and the manipulation tools to edit existing video annotations.
         </p>
         <p>

@@ -1,3 +1,13 @@
 .label-indicator {
     @extend %info-box;
+
+    .labelbot-indicator__color {
+        display: inline-block;
+        transform: translateY(2px);
+        margin-right: 4px;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
 }

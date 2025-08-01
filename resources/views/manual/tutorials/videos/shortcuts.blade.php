@@ -108,6 +108,10 @@
                     <td>Finish the video annotation that is currently drawn</td>
                 </tr>
                 <tr>
+                    <td><kbd>Shift</kbd>+<kbd>Enter</kbd></td>
+                    <td>Finish and track the video annotation that is currently drawn</td>
+                </tr>
+                <tr>
                     <td><kbd>Shift</kbd>+<kbd>Mouse left</kbd></td>
                     <td>Select multiple annotation at the same time</td>
                 </tr>

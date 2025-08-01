@@ -77,6 +77,7 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
             $labels = $labels->groupBy('user_id');
             $users = User::whereIn('id', $labels->keys())
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {

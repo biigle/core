@@ -46,11 +46,13 @@ class UrlParams {
     }
     set(params) {
         this.params = params;
-        this.updateSearch();
+        // Browser history updates must not be too frequent.
+        throttle(this.updateSearch.bind(this), 500, 'update-url-params');
     }
     unset(key) {
         delete this.params[key];
-        this.updateSearch();
+        // Browser history updates must not be too frequent.
+        throttle(this.updateSearch.bind(this), 500, 'update-url-params');
     }
     get(key) {
         return this.params[key];
@@ -105,4 +107,20 @@ export let capitalize = function (s) {
   if (typeof s !== 'string') return ''
 
   return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+export let escapeHtml = function (item) {
+    let escItem = { ...item };
+    let replaceDangerous = function (match) {
+        const dangerousChars = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        };
+        return dangerousChars[match];
+    };
+    escItem.name = escItem.name.replace(/[&<>"']/g, replaceDangerous);
+    return escItem;
 }
