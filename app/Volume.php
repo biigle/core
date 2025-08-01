@@ -342,13 +342,15 @@ class Volume extends Model
                 // and only odd IDs are there.
                 ->when($step > 1, function ($query) use ($step) {
                     $tableName = $query->getModel()->getTable();
-                    $query->whereIn('id', fn ($query) =>
+                    $query->whereIn(
+                        'id',
+                        fn ($query) =>
                         $query->select('id')
                             ->fromSub(function ($query) use ($tableName) {
-                                    $query->selectRaw('id, ROW_NUMBER() OVER (ORDER BY filename ASC) as row_num')
-                                        ->from($tableName)
-                                        ->where('volume_id', $this->id);
-                                }, 'numbered_files')
+                                $query->selectRaw('id, ROW_NUMBER() OVER (ORDER BY filename ASC) as row_num')
+                                    ->from($tableName)
+                                    ->where('volume_id', $this->id);
+                            }, 'numbered_files')
                             ->whereRaw("(row_num - 1) % ? = 0", [$step])
                     );
                 })
