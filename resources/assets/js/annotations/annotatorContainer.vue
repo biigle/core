@@ -702,8 +702,7 @@ export default {
         this.userId = biigle.$require('annotations.userId');
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
 
-        // Initialize settings from stored values
-        this.restrictToBounds = Settings.get('restrictToBounds');
+
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');

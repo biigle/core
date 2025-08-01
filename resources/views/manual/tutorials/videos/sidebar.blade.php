@@ -91,5 +91,9 @@
         <p>
             The Single Frame Annotation switch allows you to add annotations with a single click by automatically completing them after the first frame. When enabled, additional controls for finishing and tracking are disabled.
         </p>
+
+        <p>
+            The "Restrict to Boundaries" setting controls whether new annotation points can be placed outside the video boundaries. When enabled, the floating vertex beneath the mouse cursor will be constrained to stay within the video frame area while drawing new annotations. This can be useful to prevent accidental annotation placement outside the visible video content.
+        </p>
     </div>
 @endsection

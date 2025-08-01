@@ -89,7 +89,11 @@ export default {
                     type: mode.slice(4), // remove 'draw' prefix
                     style: Styles.editing,
                     freehandCondition: this.getFreehandCondition(mode),
-                    condition: this.restrictToBounds ? this.updateSnapCoordsWithBoundaryRestriction : this.updateSnapCoords
+                    condition: (mapBrowserEvent) => {
+                        this.updateSnapCoords(mapBrowserEvent);
+                        
+                        return this.maybeRestrictToBounds(mapBrowserEvent);
+                    }
                 });
                 this.map.addInteraction(drawInteraction);
 

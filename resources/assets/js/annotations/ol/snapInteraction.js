@@ -32,17 +32,13 @@ export default {
             // Return always true to enable snapping when first point is set
             return true;
         },
-        updateSnapCoordsWithBoundaryRestriction(mapBrowserEvent) {
-            // Coordinates need to be set here, because only this event contains the last set coordinate
-            this.snappingCoords = mapBrowserEvent.coordinate;
-            this.shouldSnap = mapBrowserEvent.originalEvent.ctrlKey;
-            
+        maybeRestrictToBounds(mapBrowserEvent) {
             // If boundary restriction is enabled, check if coordinates are within bounds
             if (this.restrictToBounds) {
                 return this.drawsOnImage;
             }
             
-            // Return always true to enable snapping when first point is set
+            // Return always true if restriction is disabled
             return true;
         },
         drawSnaplines() {

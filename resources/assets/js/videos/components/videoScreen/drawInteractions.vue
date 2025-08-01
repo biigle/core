@@ -152,7 +152,11 @@ export default {
                         type: shape,
                         style: Styles.editing,
                         freehandCondition: this.getFreehandCondition(mode),
-                        condition: this.restrictToBounds ? this.updateSnapCoordsWithBoundaryRestriction : this.updateSnapCoords
+                        condition: (mapBrowserEvent) => {
+                            this.updateSnapCoords(mapBrowserEvent);
+                            
+                            return this.maybeRestrictToBounds(mapBrowserEvent);
+                        }
                     });
 
                     this.map.addInteraction(this.drawInteraction);

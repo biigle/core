@@ -165,6 +165,10 @@
             The example annotations switch allows you to enable or disable the example annotation patches that are displayed in the <i class="fa fa-tags"></i> label trees tab.
         </p>
 
+        <p>
+            The "Restrict to Boundaries" setting controls whether new annotation points can be placed outside the image boundaries. When enabled, the floating vertex beneath the mouse cursor will be constrained to stay within the image area while drawing new annotations. This can be useful to prevent accidental annotation placement outside the visible image content.
+        </p>
+
 
         @mixin('annotationsManualSidebarSettings')
     </div>

@@ -61,7 +61,7 @@
         </div>
 
         <div class="sidebar-tab__section">
-            <power-toggle :active="restrictToBounds" title-off="Enable annotation boundary restriction" title-on="Disable annotation boundary restriction" v-on:on="enableRestrictToBounds" v-on:off="disableRestrictToBounds">Restrict to Boundaries</power-toggle>
+            <power-toggle :active="restrictToBounds" title-off="Enable restricting new annotation points to the image boundaries" title-on="Disable restricting new annotation points to the image boundaries" v-on:on="enableRestrictToBounds" v-on:off="disableRestrictToBounds">Restrict to Boundaries</power-toggle>
         </div>
 
         <export-area :settings="settings"></export-area>

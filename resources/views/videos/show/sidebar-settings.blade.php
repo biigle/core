@@ -76,7 +76,7 @@
     </div>
 
     <div class="sidebar-tab__section">
-        <power-toggle :active="restrictToBounds" title-off="Enable annotation boundary restriction" title-on="Disable annotation boundary restriction" v-on:on="handleEnableRestrictToBounds" v-on:off="handleDisableRestrictToBounds">Restrict to Boundaries</power-toggle>
+        <power-toggle :active="restrictToBounds" title-off="Enable restricting new annotation points to the video boundaries" title-on="Disable restricting new annotation points to the video boundaries" v-on:on="handleEnableRestrictToBounds" v-on:off="handleDisableRestrictToBounds">Restrict to Boundaries</power-toggle>
     </div>
 </div>
 </script>
