@@ -4,6 +4,7 @@ namespace Biigle\Tests\Jobs;
 
 use Biigle\Events\LargoSessionFailed;
 use Biigle\Events\LargoSessionSaved;
+use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ApplyLargoSession;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
@@ -771,9 +772,7 @@ class ApplyLargoSessionTest extends TestCase
         $job->handle();
         
         // All annotation labels should be dismissed and annotations deleted
-        foreach ($annotations as $annotation) {
-            $this->assertFalse($annotation->exists());
-        }
+        $this->assertFalse(ImageAnnotation::whereIn('id', $annotationIds)->exists());
     }
 
     protected function setJobId(VolumeFile $file, string $id): void
