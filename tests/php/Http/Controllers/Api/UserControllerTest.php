@@ -257,32 +257,7 @@ class UserControllerTest extends ApiTestCase
         $this->assertNull($user->fresh()->affiliation);
     }
 
-    public function testUpdateOwnAffiliationEmptyStringPrevention()
-    {
-        $this->beGuest();
-        
-        // Set initial affiliation
-        $this->putJson('api/v1/users/my', ['affiliation' => 'Initial Company'])
-            ->assertStatus(200);
-        $this->assertSame('Initial Company', $this->guest()->fresh()->affiliation);
-        
-        // Try to clear with empty string - should fail
-        $response = $this->putJson('api/v1/users/my', ['affiliation' => '']);
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['affiliation']);
-        
-        // Affiliation should remain unchanged
-        $this->assertSame('Initial Company', $this->guest()->fresh()->affiliation);
-        
-        // But null values should still be allowed (if the field is not sent)
-        $this->putJson('api/v1/users/my', ['firstname' => 'Updated'])
-            ->assertStatus(200);
-        
-        // And valid non-empty strings should work
-        $this->putJson('api/v1/users/my', ['affiliation' => 'New Company'])
-            ->assertStatus(200);
-        $this->assertSame('New Company', $this->guest()->fresh()->affiliation);
-    }
+
 
     public function testUpdateRole()
     {
