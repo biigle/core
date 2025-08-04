@@ -233,6 +233,7 @@ class Images {
                 if (!response.ok) {
                     throw new Error();
                 }
+
                 let size = response.headers.get('content-length');
                 let type = response.headers.get('content-type');
                 if (type === 'application/json') {
@@ -334,7 +335,7 @@ class Images {
 
         return image;
     }
-
+    
     drawImage(image) {
         
         this.checkSupportsColorAdjustment(image);
