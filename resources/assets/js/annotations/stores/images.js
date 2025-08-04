@@ -335,9 +335,9 @@ class Images {
 
         return image;
     }
-    
+
     drawImage(image) {
-        
+
         this.checkSupportsColorAdjustment(image);
         this.currentlyDrawnImage = image;
 
