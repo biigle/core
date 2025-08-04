@@ -101,6 +101,7 @@ class Images {
                 this.fxCanvas.height = 1;
             }
         });
+
     }
 
     isTiledImage(image) {
@@ -125,11 +126,7 @@ class Images {
 
         // If we already have a drawn image we only need to check the support
         // again if the image dimensions changed.
-        if (
-            this.currentlyDrawnImage &&
-            this.currentlyDrawnImage.width === image.width &&
-            this.currentlyDrawnImage.height === image.height
-        ) {
+        if (this.currentlyDrawnImage && this.currentlyDrawnImage.width === image.width && this.currentlyDrawnImage.height === image.height) {
             return this.supportsColorAdjustment;
         }
 
@@ -149,6 +146,7 @@ class Images {
         if (image.width !== tmpCanvas._.gl.drawingBufferWidth || image.height !== tmpCanvas._.gl.drawingBufferHeight) {
             console.warn('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
         }
+
         this.supportsColorAdjustment = true;
     }
 
@@ -239,6 +237,7 @@ class Images {
                     return response.json().then((body) => {
                         let uuid = body.uuid;
                         body.url = this.tilesUri.replace(':uuid', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
+
                         return body;
                     });
                 }
@@ -269,13 +268,11 @@ class Images {
                 // Remote image without CORS support will be dropped in a future
                 // release. See: https://github.com/biigle/core/issues/351
                 if (error instanceof TypeError) {
-                    imageWrapper.crossOriginTiff = true;
+                   // imageWrapper.crossOriginTiff = true; // TODO: schauen ob gebraucht->was wenn löschen?
                     imageWrapper.crossOrigin = true;
                     img.src = url;
 
                     return promise.catch((err) => {
-                        console.warn(err);
-
                         // Fallback dummy image
                         imageWrapper.source = new Image();
                         imageWrapper.width = 1;
@@ -338,6 +335,7 @@ class Images {
     }
 
     drawImage(image) {
+        
         this.checkSupportsColorAdjustment(image);
         this.currentlyDrawnImage = image;
 
@@ -372,7 +370,7 @@ class Images {
                     ? this.cachedIds.pop()
                     : this.cachedIds.shift();
                 if (id !== deleteId) {
-                    delete this.cache[deleteId];
+                    delete this.cache[deleteId]
                 }
             }
         }
@@ -434,17 +432,10 @@ class Images {
                     imageWrapper.canvas.width = width;
                     imageWrapper.canvas.height = height;
 
-                    let tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = width;
-                    tempCanvas.height = height;
-
-                    let ctx = tempCanvas.getContext('2d');
+                    let ctx = imageWrapper.canvas.getContext('2d');
                     let imgData = ctx.createImageData(width, height);
                     imgData.data.set(rgba);
                     ctx.putImageData(imgData, 0, 0);
-
-                    ctx = imageWrapper.canvas.getContext('2d');
-                    ctx.drawImage(tempCanvas, 0, 0);
                     imageWrapper.canvas._dirty = false;
                     resolve(imageWrapper);
                 } catch (err) {

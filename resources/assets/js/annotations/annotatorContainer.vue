@@ -89,6 +89,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            crossOriginTiffError: false,
             imageFilenames: {}
         };
     },
@@ -159,7 +160,7 @@ export default {
             return !this.loading && this.crossOriginError && !this.crossOriginTiffError;
         },
         hasCrossOriginErrorTiff() {
-            return this.crossOriginError && this.crossOriginTiffError;
+            return !this.loading && this.crossOriginTiffError;
         },
 
         annotationsHiddenByFilter() {

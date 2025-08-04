@@ -67,7 +67,7 @@
         <message-curtain v-if="hasCrossOriginErrorTiff" v-cloak>
             <div class="message-curtain--text text-danger">
                 <div class="lead">
-                    Unable to display the image.<br>Please configure <a href="/manual/tutorials/volumes/remote-volumes#cors">cross origin resource sharing</a> on your remote image location.
+                Image can't be displayed.<br>Please configure <a href="/manual/tutorials/volumes/remote-volumes#cors">cross origin resource sharing</a> on your remote image location.
                 </div>
             </div>
         </message-curtain>
