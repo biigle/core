@@ -145,6 +145,8 @@ class Images {
         tmpCanvas.height = image.height;
         if (image.width !== tmpCanvas._.gl.drawingBufferWidth || image.height !== tmpCanvas._.gl.drawingBufferHeight) {
             console.warn('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
+            this.supportsColorAdjustment = false;
+            return;
         }
 
         this.supportsColorAdjustment = true;
@@ -268,7 +270,6 @@ class Images {
                 // Remote image without CORS support will be dropped in a future
                 // release. See: https://github.com/biigle/core/issues/351
                 if (error instanceof TypeError) {
-                   // imageWrapper.crossOriginTiff = true; // TODO: schauen ob gebraucht->was wenn löschen?
                     imageWrapper.crossOrigin = true;
                     img.src = url;
 
