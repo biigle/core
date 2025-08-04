@@ -89,6 +89,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
+            crossOriginTiffError: false,
             imageFilenames: {}
         };
     },
@@ -156,8 +157,12 @@ export default {
             return imagesIds;
         },
         hasCrossOriginError() {
-            return !this.loading && this.crossOriginError;
+            return !this.loading && this.crossOriginError && !this.crossOriginTiffError;
         },
+        hasCrossOriginErrorTiff() {
+            return !this.loading && this.crossOriginTiffError;
+        },
+
         annotationsHiddenByFilter() {
             return this.annotations.length !== this.filteredAnnotations.length;
         },
@@ -690,6 +695,7 @@ export default {
         },
         image(image) {
             this.crossOriginError = image?.crossOrigin;
+            this.crossOriginTiffError = image?.crossOriginTiff;
         },
         supportsColorAdjustment(value) {
             if (!value && this.openTab === 'color-adjustment') {

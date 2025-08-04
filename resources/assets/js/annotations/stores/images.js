@@ -1,6 +1,7 @@
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
 import {ref} from 'vue';
+import * as UTIF from 'utif2';
 
 export class CrossOriginError extends Error {}
 
@@ -172,6 +173,7 @@ class Images {
             height: 0,
             canvas: canvas,
             crossOrigin: false,
+            crossOriginTiff: false,
         };
 
         // Disable auto-rotation based on image metadata. This only works when the
@@ -190,6 +192,7 @@ class Images {
 
         let promise = new Promise(function (resolve, reject) {
             img.onload = function () {
+                imageWrapper.crossOriginTiff = false;
                 // The element must be appended to the DOM so the dimensions are
                 // correctly determined. Otherwise imageOrientation=none has no
                 // effect.
@@ -231,6 +234,7 @@ class Images {
                     throw new Error();
                 }
 
+                let size = response.headers.get('content-length');
                 let type = response.headers.get('content-type');
                 if (type === 'application/json') {
                     return response.json().then((body) => {
@@ -239,6 +243,19 @@ class Images {
 
                         return body;
                     });
+                }
+
+                if (type === 'image/tiff' || type === 'image/tif') {
+                    if (size < 1000000000) {
+                        return this.loadSmallTiffs(url, imageWrapper)
+                            .then((wrapper) => {
+                                document.body.appendChild(wrapper.canvas);
+                                return wrapper;
+                            })
+                            .catch((err) => {
+                                return Promise.reject(err);
+                            });
+                    }
                 }
 
                 response.blob().then(function (blob) {
@@ -257,7 +274,17 @@ class Images {
                     imageWrapper.crossOrigin = true;
                     img.src = url;
 
-                    return promise;
+                    return promise.catch(() => {
+                        // Fallback dummy image
+                        imageWrapper.source = new Image();
+                        imageWrapper.width = 1;
+                        imageWrapper.height = 1;
+                        imageWrapper.canvas.width = 1;
+                        imageWrapper.canvas.height = 1;
+                        imageWrapper.crossOriginTiff = true;
+
+                        return Promise.resolve(imageWrapper);
+                    });
                 }
 
                 return Promise.reject(`Failed to load image ${id}!`);
@@ -386,6 +413,45 @@ class Images {
 
     setMaxCacheSize(size) {
         this.maxCacheSize = size;
+    }
+
+    loadSmallTiffs(tiffUrl, imageWrapper) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', tiffUrl, true);
+        xhr.responseType = 'arraybuffer';
+
+        return new Promise(function (resolve, reject) {
+            xhr.onload = function () {
+                try {
+                    let ifds = UTIF.decode(xhr.response);
+                    UTIF.decodeImage(xhr.response, ifds[0]);
+                    let rgba = UTIF.toRGBA8(ifds[0]);
+                    let width = ifds[0].width;
+                    let height = ifds[0].height;
+
+                    imageWrapper.width = width;
+                    imageWrapper.height = height;
+                    imageWrapper.canvas.width = width;
+                    imageWrapper.canvas.height = height;
+
+                    let ctx = imageWrapper.canvas.getContext('2d');
+                    let imgData = ctx.createImageData(width, height);
+                    imgData.data.set(rgba);
+                    ctx.putImageData(imgData, 0, 0);
+                    imageWrapper.canvas._dirty = false;
+                    resolve(imageWrapper);
+                } catch (err) {
+                    reject('TIFF decode error: ' + err.message);
+                }
+            };
+
+            xhr.onerror = function () {
+                imageWrapper.crossOriginTiff = true;
+                reject(`Failed to load TIFF ${imageWrapper.id}!`);
+            };
+
+            xhr.send();
+        });
     }
 }
 
