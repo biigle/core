@@ -272,7 +272,7 @@ class Images {
                     imageWrapper.crossOrigin = true;
                     img.src = url;
 
-                    return promise.catch((err) => {
+                    return promise.catch(() => {
                         // Fallback dummy image
                         imageWrapper.source = new Image();
                         imageWrapper.width = 1;
