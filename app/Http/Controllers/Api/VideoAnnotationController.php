@@ -2,23 +2,24 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Http\Requests\StoreVideoAnnotation;
-use Biigle\Http\Requests\UpdateVideoAnnotation;
-use Biigle\Jobs\TrackObject;
+use DB;
+use Cache;
+use Queue;
+use Exception;
+use Generator;
 use Biigle\Label;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabel;
-use Cache;
-use DB;
-use Exception;
-use Generator;
+use Biigle\Jobs\TrackObject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Biigle\VideoAnnotationLabel;
+use Illuminate\Support\Facades\Log;
+use Biigle\Http\Requests\StoreVideoAnnotation;
 use Illuminate\Validation\ValidationException;
-use Queue;
+use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
-use Illuminate\Support\Facades\Log;
 
 class VideoAnnotationController extends Controller
 {
@@ -204,6 +205,8 @@ class VideoAnnotationController extends Controller
     public function store(StoreVideoAnnotation $request)
     {
         Log::info("store ");
+        //Cache::put(TrackObject::getRateLimitCacheKey($request->user()), 0);
+        
         if ($request->shouldTrack()) {
             $maxJobs = config('videos.track_object_max_jobs_per_user');
             $currentJobs = Cache::get(TrackObject::getRateLimitCacheKey($request->user()), 0);
@@ -249,7 +252,11 @@ class VideoAnnotationController extends Controller
 
         if ($request->shouldTrack()) {
             $queue = config('videos.track_object_queue');
-            Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
+            // Zur verzögerung
+            $job = (new TrackObject($annotation->id, $request->user()))->delay(Carbon::now()->addSeconds(10));
+
+            Queue::pushOn($queue, $job);
+            //Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
             //Increment cache value
             Cache::increment(TrackObject::getRateLimitCacheKey($request->user())); //Increments a counter in the cache that tracks how many jobs the user currently has running
             /** @phpstan-ignore property.notFound */
@@ -319,5 +326,6 @@ class VideoAnnotationController extends Controller
         $annotation = VideoAnnotation::findOrFail($id);
         $this->authorize('destroy', $annotation);
         $annotation->delete();
+        Log::info("stdestroy!!!ore ");
     }
 }
