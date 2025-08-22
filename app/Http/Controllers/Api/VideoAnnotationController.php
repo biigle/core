@@ -18,6 +18,8 @@ use Illuminate\Validation\ValidationException;
 use Queue;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Illuminate\Support\Facades\Log; // TODO: Remove if ready
+
 
 class VideoAnnotationController extends Controller
 {
@@ -201,10 +203,16 @@ class VideoAnnotationController extends Controller
      * @return VideoAnnotation
      */
     public function store(StoreVideoAnnotation $request)
-    {
+    {  
         if ($request->shouldTrack()) {
             $maxJobs = config('videos.track_object_max_jobs_per_user');
             $currentJobs = Cache::get(TrackObject::getRateLimitCacheKey($request->user()), 0);
+            // TODO: remove if ready
+            Log::info('Object Tracking Jobs before checking if too many', [
+                'maxJobs' => $maxJobs,
+                'currentJobs' => $currentJobs,
+            ]);
+            // tail -f storage/logs/laravel.log
 
             if ($currentJobs >= $maxJobs) {
                 throw new TooManyRequestsHttpException(message: "You already have {$currentJobs} object tracking jobs running. Please wait for one to finish until you submit a new one.");
@@ -242,7 +250,7 @@ class VideoAnnotationController extends Controller
 
         if ($request->shouldTrack()) {
             $queue = config('videos.track_object_queue');
-            Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
+            Queue::pushOn($queue, new TrackObject($annotation->id, $request->user()));
             Cache::increment(TrackObject::getRateLimitCacheKey($request->user()));
             /** @phpstan-ignore property.notFound */
             $annotation->trackingJobLimitReached = $currentJobs === ($maxJobs - 1);
