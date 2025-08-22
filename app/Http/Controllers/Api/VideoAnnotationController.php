@@ -2,24 +2,24 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use DB;
-use Cache;
-use Queue;
-use Exception;
-use Generator;
+use Biigle\Http\Requests\StoreVideoAnnotation;
+use Biigle\Http\Requests\UpdateVideoAnnotation;
+use Biigle\Jobs\TrackObject;
 use Biigle\Label;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
-use Biigle\Jobs\TrackObject;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Biigle\VideoAnnotationLabel;
-use Illuminate\Support\Facades\Log;
-use Biigle\Http\Requests\StoreVideoAnnotation;
+use Cache;
+use DB;
+use Exception;
+use Generator;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Biigle\Http\Requests\UpdateVideoAnnotation;
+use Queue;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Illuminate\Support\Facades\Log; // TODO: Remove if ready
+
 
 class VideoAnnotationController extends Controller
 {
@@ -203,13 +203,11 @@ class VideoAnnotationController extends Controller
      * @return VideoAnnotation
      */
     public function store(StoreVideoAnnotation $request)
-    {
-        Log::info("store ");
-        //Cache::put(TrackObject::getRateLimitCacheKey($request->user()), 0);
-        
+    {  
         if ($request->shouldTrack()) {
             $maxJobs = config('videos.track_object_max_jobs_per_user');
             $currentJobs = Cache::get(TrackObject::getRateLimitCacheKey($request->user()), 0);
+            // TODO: remove if ready
             Log::info('Object Tracking Jobs before checking if too many', [
                 'maxJobs' => $maxJobs,
                 'currentJobs' => $currentJobs,
@@ -252,15 +250,10 @@ class VideoAnnotationController extends Controller
 
         if ($request->shouldTrack()) {
             $queue = config('videos.track_object_queue');
-            // Zur verzögerung
-            $job = (new TrackObject($annotation->id, $request->user()))->delay(Carbon::now()->addSeconds(10));
-
-            Queue::pushOn($queue, $job);
-            //Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
-            //Increment cache value
-            Cache::increment(TrackObject::getRateLimitCacheKey($request->user())); //Increments a counter in the cache that tracks how many jobs the user currently has running
+            Queue::pushOn($queue, new TrackObject($annotation->id, $request->user()));
+            Cache::increment(TrackObject::getRateLimitCacheKey($request->user()));
             /** @phpstan-ignore property.notFound */
-            $annotation->trackingJobLimitReached = $currentJobs === ($maxJobs - 1); //Checking: After adding this job, they’ve reached the max allowed jobs.
+            $annotation->trackingJobLimitReached = $currentJobs === ($maxJobs - 1);
         }
 
         $annotation->load('labels.label', 'labels.user');
@@ -326,6 +319,5 @@ class VideoAnnotationController extends Controller
         $annotation = VideoAnnotation::findOrFail($id);
         $this->authorize('destroy', $annotation);
         $annotation->delete();
-        Log::info("stdestroy!!!ore ");
     }
 }
