@@ -12,7 +12,9 @@ class LabelbotCreateIndex extends Command
      *
      * @var string
      */
-    protected $signature = 'labelbot:create-index';
+    protected $signature = 'labelbot:create-index
+        {--work-mem= : Sets "maintenance_work_mem" during index build}
+        {--parallel-workers= : Sets "max_parallel_maintenance_workers" during index build}';
 
     /**
      * The console command description.
@@ -26,6 +28,18 @@ class LabelbotCreateIndex extends Command
      */
     public function handle()
     {
+        DB::beginTransaction();
+
+        $workMem = $this->option('work-mem');
+        if (!is_null($workMem)) {
+            DB::statement("SET LOCAL maintenance_work_mem = '?'", [$workMem]);
+        }
+
+        $parallelWorkers = $this->option('parallel-workers');
+        if (!is_null($parallelWorkers)) {
+            DB::statement("SET LOCAL max_parallel_maintenance_workers = '?'", [$parallelWorkers]);
+        }
+
         $this->line("Building image annotation index.");
         DB::statement('CREATE INDEX CONCURRENTLY IF NOT EXISTS image_annotation_label_feature_vectors_vector_idx ON image_annotation_label_feature_vectors USING hnsw (vector vector_cosine_ops) WITH (m = 16, ef_construction = 256)');
         $this->info("Finished.");
@@ -33,5 +47,7 @@ class LabelbotCreateIndex extends Command
         $this->line("Building video annotation index.");
         DB::statement('CREATE INDEX CONCURRENTLY IF NOT EXISTS video_annotation_label_feature_vectors_vector_idx ON video_annotation_label_feature_vectors USING hnsw (vector vector_cosine_ops) WITH (m = 16, ef_construction = 256)');
         $this->info("Finished.");
+
+        DB::commit();
     }
 }
