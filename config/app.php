@@ -169,6 +169,14 @@ return [
         Biigle\Providers\RouteServiceProvider::class,
 
         // Insert Biigle module service providers here.
+        Biigle\Modules\ColorSort\ColorSortServiceProvider::class,
+        Biigle\Modules\Geo\GeoServiceProvider::class,
+        Biigle\Modules\Laserpoints\LaserpointsServiceProvider::class,
+        Biigle\Modules\Ananas\AnanasServiceProvider::class,
+        Biigle\Modules\Demo\DemoServiceProvider::class,
+        Biigle\Modules\Maia\MaiaServiceProvider::class,
+        Biigle\Modules\UserStorage\UserStorageServiceProvider::class,
+        Biigle\Modules\Newsletter\NewsletterServiceProvider::class,
 
     ])->replace([
         Illuminate\Queue\QueueServiceProvider::class => Biigle\Providers\QueueServiceProvider::class,

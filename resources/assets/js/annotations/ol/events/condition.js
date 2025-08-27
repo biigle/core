@@ -1,15 +1,15 @@
-import { shiftKeyOnly, penOnly } from '@biigle/ol/events/condition';
+import { shiftKeyOnly, penOnly, touchOnly } from '@biigle/ol/events/condition';
 
-// Custom OpenLayers freehandCondition that is true if either the input is a pen or the
+// Custom OpenLayers freehandCondition that is true if either the input is pen/touch or the
 // shift key is pressed (but not both).
-export let penXorShift = function (mapBrowserEvent) {
-    let isPen = penOnly(mapBrowserEvent);
+export let penTouchXorShift = function (mapBrowserEvent) {
+    let penOrTouch = penOnly(mapBrowserEvent) || touchOnly(mapBrowserEvent);
     let isShift = shiftKeyOnly(mapBrowserEvent);
 
-    return isPen && !isShift || !isPen && isShift;
+    return penOrTouch && !isShift || !penOrTouch && isShift;
 };
 
-// Custom OpenLayers freehandCondition that is true if either the input is a pen or the shift key is pressed or both.
-export let penOrShift = function (mapBrowserEvent) {
-    return penOnly(mapBrowserEvent) || shiftKeyOnly(mapBrowserEvent);
+// Custom OpenLayers freehandCondition that is true if either the input is a pen or touch or the shift key is pressed or all.
+export let penTouchOrShift = function (mapBrowserEvent) {
+    return penOnly(mapBrowserEvent) || shiftKeyOnly(mapBrowserEvent) || touchOnly(mapBrowserEvent);
 };

@@ -9,6 +9,8 @@
 /public/build
 /storage/*.key
 /storage/largo_patches
+/storage/maia_jobs
+/storage/largo_cache
 /storage/metadata
 /storage/pending-metadata
 /vendor
@@ -24,3 +26,4 @@ yarn-error.log
 /*.phar
 /*.php-cs-fixer.cache
 /.idea
+**/.DS_Store

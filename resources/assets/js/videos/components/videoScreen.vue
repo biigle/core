@@ -122,7 +122,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button>    
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -187,7 +187,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button>     
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -206,20 +206,24 @@
                     @click="drawPolygon"
                     v-slot="{onActive}"
                     >
-                        <control-button
-                            v-if="(isDrawingPolygon || isUsingPolygonBrush) && singleAnnotation"
-                            icon="fa-check"
-                            title="Disable the single-frame annotation option to create multi-frame annotations"
-                            :disabled="true"
-                            ></control-button>     
-                        <control-button
-                            v-else-if="isDrawingPolygon || isUsingPolygonBrush"
-                            icon="fa-check"
-                            title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation || null"
-                            @click="finishDrawAnnotation"
-                            @active="onActive"
-                            ></control-button>
+                        <template v-if="singleAnnotation">
+                            <control-button
+                                v-show="(isDrawingPolygon || isUsingPolygonBrush)"
+                                icon="fa-check"
+                                title="Disable the single-frame annotation option to create multi-frame annotations"
+                                :disabled="true"
+                                ></control-button>
+                        </template>
+                        <template v-else>
+                            <control-button
+                                v-show="(isDrawingPolygon || isUsingPolygonBrush)"
+                                icon="fa-check"
+                                title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
+                                :disabled="cantFinishDrawAnnotation || null"
+                                @click="finishDrawAnnotation"
+                                @active="onActive"
+                                ></control-button>
+                        </template>
                         <control-button
                             icon="fa-paint-brush"
                             title="Draw a polygon using the brush tool 𝗘"
@@ -257,7 +261,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button>     
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -286,6 +290,16 @@
                             @click="toggleSwapping"
                             @active="onActive"
                             ></control-button>
+                        <control-button
+                            v-if="canForce"
+                            icon="fa-sync-alt"
+                            class="control-button--danger control-button--force-swap"
+                            title="Force-swap the most recent label of an existing annotation (even of another user) with the currently selected one"
+                            :active="isForceSwapping"
+                            :disabled="(hasNoSelectedLabel || hasError) || null"
+                            v-on:click="toggleForceSwapping"
+                            v-on:active="onActive"
+                            ></control-button>
                     </control-button>
                 <control-button
                     v-if="canModify"
@@ -312,6 +326,7 @@
                 <control-button
                     v-if="canDelete"
                     icon="fa-trash"
+                    class="control-button--danger"
                     title="Delete selected annotations/keyframes 𝗗𝗲𝗹𝗲𝘁𝗲"
                     :disabled="(hasNoSelectedAnnotations || hasError) || null"
                     @click="emitDelete"
@@ -325,11 +340,10 @@
                 ></mouse-position-indicator>
         </div>
         <div class="indicators indicators--right">
-            <div
-                class="indicator"
+            <label-indicator
                 v-if="selectedLabel"
-                v-text="selectedLabel.name"
-                ></div>
+                :label="selectedLabel"
+                ></label-indicator>
         </div>
     </div>
 </template>
@@ -341,6 +355,7 @@ import ControlButton from '@/annotations/components/controlButton.vue';
 import DrawInteractions from './videoScreen/drawInteractions.vue';
 import Indicators from './videoScreen/indicators.vue';
 import Keyboard from '@/core/keyboard.js';
+import LabelIndicator from '@/annotations/components/labelIndicator.vue';
 import Map from '@biigle/ol/Map';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
@@ -354,6 +369,7 @@ import VideoPlayback from './videoScreen/videoPlayback.vue';
 import ZoomControl from '@biigle/ol/control/Zoom';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
+import PopoutControl from '../ol/PopoutControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
@@ -366,6 +382,8 @@ export default {
         'previous',
         'select',
         'track',
+        'popout',
+        'initMap',
     ],
     mixins: [
         VideoPlayback,
@@ -379,13 +397,18 @@ export default {
     components: {
         controlButton: ControlButton,
         minimap: Minimap,
+        labelIndicator: LabelIndicator,
     },
     props: {
         annotations: {
+            required: true,
             type: Array,
-            default() {
-                return [];
-            },
+        },
+        // This is required to update annotations reliably in the video popout.
+        // Objects from the main window cannot be watched from the popout.
+        annotationRevision: {
+            required: true,
+            type: Number,
         },
         annotationOpacity: {
             type: Number,
@@ -408,6 +431,10 @@ export default {
             default: false,
         },
         canDelete: {
+            type: Boolean,
+            default: false,
+        },
+        canForce: {
             type: Boolean,
             default: false,
         },
@@ -451,8 +478,14 @@ export default {
             default: true,
         },
         video: {
-            type: HTMLVideoElement,
             required: true,
+            validator(value) {
+                // In case of a popup window, the video may be a HTMLVideoElement of a
+                // different context which would fail a simple "type: HTMLVideoElement"
+                // check. We do the type check here and have a fallback based on the
+                // constructor name for the popup.
+                return value instanceof HTMLVideoElement || value.constructor.name === 'HTMLVideoElement';
+            },
         },
         heightOffset: {
             type: Number,
@@ -475,6 +508,14 @@ export default {
             default: false,
         },
         enableJumpByFrame: {
+            type: Boolean,
+            default: false,
+        },
+        showOpenPopoutButton: {
+            type: Boolean,
+            default: false,
+        },
+        showClosePopoutButton: {
             type: Boolean,
             default: false,
         },
@@ -551,6 +592,24 @@ export default {
             Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
 
             map.addControl(control);
+
+            if (this.showOpenPopoutButton) {
+                control =  new PopoutControl({
+                    // FontAwesome expand-alt
+                    icon: '\uf424',
+                    title: 'Move the video to a separate window',
+                });
+                control.on('click', this.handlePopout);
+                map.addControl(control);
+            } else if (this.showClosePopoutButton) {
+                control =  new PopoutControl({
+                    // FontAwesome compress-alt
+                    icon: '\uf422',
+                    title: 'Merge video with the main window',
+                });
+                control.on('click', this.handlePopout);
+                map.addControl(control);
+            }
 
             return map;
         },
@@ -659,7 +718,10 @@ export default {
                 Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
-        }
+        },
+        handlePopout() {
+            this.$emit('popout');
+        },
     },
     watch: {
         selectedAnnotations: {
@@ -736,6 +798,7 @@ export default {
     },
     mounted() {
         this.map.setTarget(this.$el);
+        this.$emit('initMap', this.map);
     },
 };
 </script>

@@ -5,11 +5,13 @@ on:
     branches:
       - master
     paths:
+      - '.github/workflows/lint-js.yml'
       - 'resources/assets/**'
       - 'package.json'
       - 'package.lock'
   pull_request:
     paths:
+      - '.github/workflows/lint-js.yml'
       - 'resources/assets/**'
       - 'package.json'
       - 'package.lock'

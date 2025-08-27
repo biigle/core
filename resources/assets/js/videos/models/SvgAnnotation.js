@@ -278,6 +278,7 @@ export default class SvgAnnotation {
 
         rect.firstFrame = firstFrame;
         rect.lastFrame = lastFrame;
+        rect.back();
         this.segments.push(rect);
 
         const line = this.svg

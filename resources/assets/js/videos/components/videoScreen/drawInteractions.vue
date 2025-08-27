@@ -8,7 +8,7 @@ import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
 import { never } from '@biigle/ol/events/condition';
-import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
+import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
 
@@ -267,11 +267,11 @@ export default {
         },
         getFreehandCondition(mode) {
             if (mode === 'drawCircle') {
-                return penOrShift
+                return penTouchOrShift;
             }
 
             if (mode === 'drawLineString' || mode === 'drawPolygon') {
-                return penXorShift
+                return penTouchXorShift;
             }
 
             return never;
@@ -295,6 +295,7 @@ export default {
             Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
             Keyboard.on('h', this.drawWholeFrame, 0, this.listenerSet);
             Keyboard.on('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
+            Keyboard.on('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
     },
 };

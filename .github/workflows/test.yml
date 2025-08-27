@@ -9,12 +9,16 @@ on:
       - 'resources/assets/**'
       - 'resources/scripts/**'
       - 'storage/**'
+      - 'package.json'
+      - 'package.lock'
   pull_request:
     paths-ignore:
       - '.docker/**'
       - 'resources/assets/**'
       - 'resources/scripts/**'
       - 'storage/**'
+      - 'package.json'
+      - 'package.lock'
 
 jobs:
   test-current:
@@ -38,47 +42,8 @@ jobs:
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
 
-    - name: Fetch base images
-      run: |
-        docker pull ghcr.io/biigle/app:latest
-        docker pull ghcr.io/biigle/worker:latest
-        docker pull ghcr.io/biigle/pgvector:latest
-
-    - name: Start test database
-      run: |
-        docker compose up -d --no-build database_testing
-        sleep 5
-
-    - name: Run tests
-      run: docker compose run --rm -u 1001 worker php artisan test --parallel
-
-  test-modules:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        ref: dev-modules
-        fetch-depth: 1
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-
-    - name: Copy .env
-      run: cp .env.example .env
-
-    - name: Set testing key
-      run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
-
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
-
-    - name: Remove BIIGLE modules
-      run: rm -r vendor/biigle
-
-    - name: Update BIIGLE modules from source
-      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-reqs biigle/*
+    - name: Install aws dependency
+      run: composer require league/flysystem-aws-s3-v3
 
     - name: Fetch base images
       run: |
