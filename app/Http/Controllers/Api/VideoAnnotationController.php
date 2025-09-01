@@ -14,12 +14,11 @@ use DB;
 use Exception;
 use Generator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Queue;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
-use Illuminate\Support\Facades\Log; // TODO: Remove if ready
-
 
 class VideoAnnotationController extends Controller
 {
@@ -203,7 +202,7 @@ class VideoAnnotationController extends Controller
      * @return VideoAnnotation
      */
     public function store(StoreVideoAnnotation $request)
-    {  
+    {
         if ($request->shouldTrack()) {
             $maxJobs = config('videos.track_object_max_jobs_per_user');
             $currentJobs = Cache::get(TrackObject::getRateLimitCacheKey($request->user()), 0);
@@ -251,6 +250,7 @@ class VideoAnnotationController extends Controller
         if ($request->shouldTrack()) {
             $queue = config('videos.track_object_queue');
             Queue::pushOn($queue, new TrackObject($annotation->id, $request->user()));
+            // Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
             Cache::increment(TrackObject::getRateLimitCacheKey($request->user()));
             /** @phpstan-ignore property.notFound */
             $annotation->trackingJobLimitReached = $currentJobs === ($maxJobs - 1);

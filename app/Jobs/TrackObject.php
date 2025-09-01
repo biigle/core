@@ -63,7 +63,7 @@ class TrackObject extends Job implements ShouldQueue
      * @param VideoAnnotation $annotation The annotation that defines the initial object to track. //ToDo: anpassen
      * @param User $user The user who initialized the tracking request.
      */
-    public function __construct($annotationId, User $user)
+    public function __construct($annotationId, User $user) //TODO try: public function __construct(VideoAnnotation $annotationId, User $user)
     {
         $this->annotationId = ($annotationId);
         $this->user = $user;
@@ -76,19 +76,21 @@ class TrackObject extends Job implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            $annotation = VideoAnnotation::findOrFail($this->annotationId);
-            Log::info("Annotation found"); //ToDo: delete if ready
-        } catch (Exception $e) {
-        Log::info("NOPE, annotation not found");
-        $annotation = false;
-        $count = $this->decrementJobCount();
-        return;
-        }
 
         try {
+
+            try {
+                $annotation = VideoAnnotation::findOrFail($this->annotationId);
+                // Log::info("Annotation found"); //ToDo: delete if ready
+            } catch (Exception $e) {
+                // Log::info("NOPE, annotation not found");
+                $annotation = false;
+                $count = $this->decrementJobCount();
+                //ObjectTrackingFailed::dispatch($annotation, $this->user);
+                return;
+            }
                 
-           // $annotation = VideoAnnotation::find($this->annotationId);
+            // $annotation = VideoAnnotation::find($this->annotationId);
             $keyframes = $this->getTrackingKeyframes($annotation);
             $frames = $annotation->frames;
             $points = $annotation->points;
@@ -292,13 +294,14 @@ class TrackObject extends Job implements ShouldQueue
         }
     }
 
-    private function decrementJobCount(){
+    private function decrementJobCount()
+    {
         $count = Cache::decrement(static::getRateLimitCacheKey($this->user));
         //ToDo: remove log if ready
-            Log::info("Finaly: {$count}, if 0 delte, is after Cache");
-            if ($count <= 0) {
-                Cache::forget(static::getRateLimitCacheKey($this->user));
-            }
+        Log::info("Finaly: {$count}, if 0 delte, is after Cache");
+        if ($count <= 0) {
+            Cache::forget(static::getRateLimitCacheKey($this->user));
+        }
         return $count;
-    } 
+    }
 }
