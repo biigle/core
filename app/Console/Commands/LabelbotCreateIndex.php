@@ -32,12 +32,12 @@ class LabelbotCreateIndex extends Command
 
         $workMem = $this->option('work-mem');
         if (!is_null($workMem)) {
-            DB::statement("SET LOCAL maintenance_work_mem = '?'", [$workMem]);
+            DB::statement("SET LOCAL maintenance_work_mem = ?", [$workMem]);
         }
 
         $parallelWorkers = $this->option('parallel-workers');
         if (!is_null($parallelWorkers)) {
-            DB::statement("SET LOCAL max_parallel_maintenance_workers = '?'", [$parallelWorkers]);
+            DB::statement("SET LOCAL max_parallel_maintenance_workers = ?", [$parallelWorkers]);
         }
 
         $this->line("Building image annotation index.");
