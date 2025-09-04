@@ -28,8 +28,6 @@ class LabelbotCreateIndex extends Command
      */
     public function handle()
     {
-        DB::beginTransaction();
-
         $workMem = (int) $this->option('work-mem');
         if ($workMem > 0) {
             DB::statement("SET LOCAL maintenance_work_mem = '{$workMem}GB'");
@@ -47,7 +45,5 @@ class LabelbotCreateIndex extends Command
         $this->line("Building video annotation index.");
         DB::statement('CREATE INDEX CONCURRENTLY IF NOT EXISTS video_annotation_label_feature_vectors_vector_idx ON video_annotation_label_feature_vectors USING hnsw (vector vector_cosine_ops) WITH (m = 16, ef_construction = 256)');
         $this->info("Finished.");
-
-        DB::commit();
     }
 }
