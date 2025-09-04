@@ -13,7 +13,7 @@ class LabelbotCreateIndex extends Command
      * @var string
      */
     protected $signature = 'labelbot:create-index
-        {--work-mem= : Sets "maintenance_work_mem" during index build}
+        {--work-mem= : Sets "maintenance_work_mem" during index build to this value in GB}
         {--parallel-workers= : Sets "max_parallel_maintenance_workers" during index build}';
 
     /**
@@ -30,14 +30,14 @@ class LabelbotCreateIndex extends Command
     {
         DB::beginTransaction();
 
-        $workMem = $this->option('work-mem');
-        if (!is_null($workMem)) {
-            DB::statement("SET LOCAL maintenance_work_mem = ?", [$workMem]);
+        $workMem = (int) $this->option('work-mem');
+        if ($workMem > 0) {
+            DB::statement("SET LOCAL maintenance_work_mem = '{$workMem}GB'");
         }
 
-        $parallelWorkers = $this->option('parallel-workers');
-        if (!is_null($parallelWorkers)) {
-            DB::statement("SET LOCAL max_parallel_maintenance_workers = ?", [$parallelWorkers]);
+        $parallelWorkers = (int) $this->option('parallel-workers');
+        if ($parallelWorkers > 0) {
+            DB::statement("SET LOCAL max_parallel_maintenance_workers = {$parallelWorkers}");
         }
 
         $this->line("Building image annotation index.");
