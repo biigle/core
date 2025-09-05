@@ -31,7 +31,7 @@ export default class SvgAnnotation {
         this.onDeselect = args.onDeselect;
 
         this.fill = this._getFill();
-        this.keyframeSymbols = this._getKeyframeSymbols();
+        this.keyframeRects = this._getKeyframeRects();
         this.selectedFill = undefined;
 
         this.segments = [];
@@ -154,13 +154,14 @@ export default class SvgAnnotation {
         return '#' + this.color;
     }
 
-    _getKeyframeSymbols() {
-        let symbols = this.svg.root().remember('keyframe-symbol');
+    _getKeyframeRects() {
+        let rects = this.svg.root().remember('keyframe-rects');
 
-        if (!symbols) {
+        if (!rects) {
+            rects = {};
             // Draw a rectangle with "inset" border. This is done with the double stroke
             // width and a clip rectangle.
-            const rect = this.svg.root().defs()
+            rects.default = this.svg.root().defs()
                 .rect(KEYFRAME_WIDTH, KEYFRAME_HEIGHT)
                 .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
                 .clipWith(
@@ -169,7 +170,7 @@ export default class SvgAnnotation {
                         .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
                 );
 
-            const rectCompact = this.svg.root().defs()
+            rects.compact = this.svg.root().defs()
                 .rect(KEYFRAME_COMPACT_WIDTH, KEYFRAME_HEIGHT)
                 .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
                 .clipWith(
@@ -178,14 +179,10 @@ export default class SvgAnnotation {
                         .attr({rx: BORDER_RADIUS, ry: BORDER_RADIUS})
                 );
 
-            symbols = {
-                default: this.svg.root().defs().symbol().add(rect),
-                compact: this.svg.root().defs().symbol().add(rectCompact),
-            };
-            this.svg.root().remember('keyframe-symbol', symbols);
+            this.svg.root().remember('keyframe-rects', rects);
         }
 
-        return symbols;
+        return rects;
     }
 
     _getSelectedFill() {
@@ -281,6 +278,7 @@ export default class SvgAnnotation {
 
         rect.firstFrame = firstFrame;
         rect.lastFrame = lastFrame;
+        rect.back();
         this.segments.push(rect);
 
         const line = this.svg
@@ -324,7 +322,7 @@ export default class SvgAnnotation {
 
     _drawKeyframe(frame, last, singleAfterGap) {
         let width = this.compactness === COMPACTNESS.LOW ? KEYFRAME_WIDTH : KEYFRAME_COMPACT_WIDTH;
-        let symbol = this.compactness === COMPACTNESS.LOW ? this.keyframeSymbols.default : this.keyframeSymbols.compact;
+        let rect = this.compactness === COMPACTNESS.LOW ? this.keyframeRects.default : this.keyframeRects.compact;
         let x = frame * this.xFactor;
 
         if (last || singleAfterGap) {
@@ -334,20 +332,20 @@ export default class SvgAnnotation {
         // Prevent overflow.
         x = Math.min(x, this.svg.root().width() - width);
 
-        const rect = this.svg.use(symbol)
+        const keyframe = this.svg.use(rect)
             .move(x, 0)
             .fill(this.fill)
             .addClass('svg-annotation-selectable svg-keyframe');
 
         if (!singleAfterGap && this.compactness === COMPACTNESS.HIGH) {
-            rect.remove();
+            keyframe.remove();
         }
 
-        rect.frame = frame;
-        rect.last = last;
-        rect.singleAfterGap = singleAfterGap;
+        keyframe.frame = frame;
+        keyframe.last = last;
+        keyframe.singleAfterGap = singleAfterGap;
 
-        this.keyframes.push(rect);
+        this.keyframes.push(keyframe);
     }
 
     _updateCompactness() {
@@ -372,9 +370,11 @@ export default class SvgAnnotation {
 
         const svgWidth = this.svg.root().width();
         let width = this.compactness === COMPACTNESS.LOW ? KEYFRAME_WIDTH : KEYFRAME_COMPACT_WIDTH;
-        let symbol = this.compactness === COMPACTNESS.LOW ? this.keyframeSymbols.default : this.keyframeSymbols.compact;
-        const symbolId = '#' + symbol.attr('id');
-        let switchSymbol = this.keyframes[0].attr('href') !== symbolId;
+        let rect = this.compactness === COMPACTNESS.LOW ? this.keyframeRects.default : this.keyframeRects.compact;
+        // Call id() instead of attr('id') because the first will generate a new ID if the
+        // rect was never used before.
+        const rectId = '#' + rect.id();
+        let switchRect = this.keyframes[0].attr('href') !== rectId;
 
         this.keyframes.forEach((k) => {
             const attrs = {
@@ -386,8 +386,8 @@ export default class SvgAnnotation {
             // Prevent overflow.
             attrs.x = Math.min(attrs.x, svgWidth - width);
 
-            if (switchSymbol) {
-                attrs.href = symbolId;
+            if (switchRect) {
+                attrs.href = rectId;
             }
 
             k.attr(attrs);

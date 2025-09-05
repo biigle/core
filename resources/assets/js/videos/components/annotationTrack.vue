@@ -36,9 +36,6 @@ export default {
         annotationCount() {
             return this.lanes.reduce((c, l) => c + l.length, 0);
         },
-        laneCount() {
-            return this.lanes.length;
-        },
         trackHeight() {
             return this.lanes.length * (KEYFRAME_HEIGHT + LANE_MARGIN_BOTTOM) - LANE_MARGIN_BOTTOM;
         },
@@ -97,8 +94,8 @@ export default {
         xFactor(factor) {
             Object.values(this.annotationCache).forEach(a => a.updateXFactor(factor));
         },
-        annotationCount(count, oldCount) {
-            if (count < oldCount) {
+        lanes() {
+            if (this.annotationCount < Object.keys(this.annotationCache).length) {
                 const annotationMap = {};
                 this.lanes.forEach(l => l.forEach(a => annotationMap[a.id] = true));
                 Object.keys(this.annotationCache)
@@ -109,9 +106,6 @@ export default {
                     });
             }
 
-            this.draw();
-        },
-        laneCount() {
             this.draw();
         },
     },

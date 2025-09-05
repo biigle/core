@@ -16,6 +16,16 @@
     &:focus {
         color: white;
     }
+
+    &.control-button--danger {
+        &:hover {
+            background-color: darken($btn-danger-bg, 17%);
+        }
+
+        &.active {
+            background-color: darken($btn-danger-bg, 10%);
+        }
+    }
 }
 
 .control-button__sub-controls {

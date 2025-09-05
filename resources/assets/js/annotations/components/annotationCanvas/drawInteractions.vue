@@ -5,7 +5,7 @@ import Keyboard from '@/core/keyboard.js';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
-import { penXorShift, penOrShift } from '@/annotations/ol/events/condition.js';
+import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 
 
@@ -128,11 +128,11 @@ export default {
         },
         getFreehandCondition(mode) {
             if (mode === 'drawCircle') {
-                return penOrShift
+                return penTouchOrShift;
             }
 
             if (mode === 'drawLineString' || mode === 'drawPolygon') {
-                return penXorShift
+                return penTouchXorShift;
             }
 
             return never;

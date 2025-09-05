@@ -5,7 +5,6 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Auth;
 use Biigle\Role;
-use Biigle\Tests\ApiTokenTest;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Hash;
@@ -13,20 +12,6 @@ use Session;
 
 class UserControllerTest extends ApiTestCase
 {
-    private function callToken($verb, $route, $user)
-    {
-        $token = ApiTokenTest::create([
-            // 'test_token', hashed with 4 rounds as defined in phpunit.xml
-            'hash' => '$2y$04$9Ncj6qJVqenJ13VtdtV5yOca8rQyN1UwATdGpAQ80FeRjS67.Efaq',
-            'owner_id' => $user->id,
-        ]);
-
-        return $this->json($verb, $route, [], [
-            'PHP_AUTH_USER' => $user->email,
-            'PHP_AUTH_PW' => 'test_token',
-        ]);
-    }
-
     public function testIndex()
     {
         $this->doTestApiRoute('GET', '/api/v1/users');
@@ -265,6 +250,7 @@ class UserControllerTest extends ApiTestCase
 
         $this->assertSame('My Company', $user->fresh()->affiliation);
 
+        // Admins should still be able to clear affiliations with empty strings
         $this->putJson("api/v1/users/{$user->id}", ['affiliation' => ''])
             ->assertStatus(200);
 
@@ -458,10 +444,12 @@ class UserControllerTest extends ApiTestCase
 
         $this->assertSame('My Company', $this->guest()->fresh()->affiliation);
 
+        // Empty string should now be rejected for user self-updates
         $this->putJson('api/v1/users/my', ['affiliation' => ''])
-            ->assertStatus(200);
+            ->assertStatus(422);
 
-        $this->assertNull($this->guest()->fresh()->affiliation);
+        // Affiliation should remain unchanged
+        $this->assertSame('My Company', $this->guest()->fresh()->affiliation);
     }
 
     public function testStoreWithToken()

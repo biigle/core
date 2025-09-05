@@ -30,13 +30,8 @@ abstract class StoreVolumeFileLabel extends FormRequest
     {
         $model = $this->getFileModel();
         $this->file = $model::findOrFail($this->route('id'));
-        $this->validate(['label_id' => 'integer']);
+        $this->validate(['label_id' => 'required|integer|exists:labels,id']);
         $this->label = Label::find($this->input('label_id'));
-        if (is_null($this->label)) {
-            // Skip authorization if the label could not be found. The validation rules
-            // will take care of rejecting this request with the proper response code.
-            return true;
-        }
 
         return $this->user()->can('attach-label', [$this->file, $this->label]);
     }
@@ -49,7 +44,7 @@ abstract class StoreVolumeFileLabel extends FormRequest
     public function rules()
     {
         return [
-            'label_id'    => 'required|integer|exists:labels,id',
+            // The label_id is already validated above.
         ];
     }
 

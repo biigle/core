@@ -129,6 +129,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        selectedFavouriteLabel: {
+            type: Number,
+            default: undefined,
+        },
     },
     computed: {
         localeCompareSupportsLocales() {
@@ -261,8 +265,10 @@ export default {
             if (this.focusInput) {
                 this.$refs.typeaheadInput.$el.querySelector('input').focus();
             }
-        }
-
+        },
+        selectedFavouriteLabel(index) {
+            this.selectFavourite(index);
+        },
     },
     created() {
         this.events = mitt();

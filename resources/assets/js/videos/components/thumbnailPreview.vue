@@ -27,12 +27,8 @@ export default {
             type: Number,
             required: true,
         },
-        scrollstripTop: {
-            type: Number,
-            required: true,
-        },
-        videoId: {
-            type: Number,
+        videoUuid: {
+            type: String,
             required: true,
         },
         showThumbnails: {
@@ -40,6 +36,7 @@ export default {
             default: true,
         }
     },
+    inject: ['fullHeight'],
     data() {
         return {
             thumbnailPreview: null,
@@ -47,7 +44,6 @@ export default {
             sprite: new Image(),
             spriteIdx: 0,
             thumbnailIndex: -1,
-            thumbProgressBarSpace: 10,
             sideButtonsWidth: 52,
             spritesFolderPath: null,
             triedUrls: {},
@@ -79,10 +75,9 @@ export default {
                 this.clientMouseX - width / 2,
                 window.innerWidth - width - this.sideButtonsWidth
             );
-            let top = this.scrollstripTop - this.thumbProgressBarSpace;
+
             return {
                 transform: `translate(${left}px, -100%)`,
-                top: `${top}px`,
             };
         },
         spriteGridInfo() {
@@ -228,10 +223,8 @@ export default {
             }
         },
         setSpritesFolderpath() {
-            let fileUuids = biigle.$require('videos.fileUuids');
             let thumbUri = biigle.$require('videos.thumbUri');
-            let fileUuid = fileUuids[this.videoId];
-            this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(fileUuid) + '/').replace('.jpg', '');
+            this.spritesFolderPath = thumbUri.replace(':uuid', transformUuid(this.videoUuid) + '/').replace('.jpg', '');
         },
         viewHoverTimeBar() {
             let ctx = this.hovertimeCanvas.getContext('2d');
@@ -266,6 +259,13 @@ export default {
         }
     },
     watch: {
+        duration() {
+            this.setSpritesFolderpath();
+            this.updateThumbnailInterval();
+
+            this.updateSprite();
+            this.viewHoverTimeBar();
+        },
         hoverTime() {
             if (this.hoverTime === 0) {
                 return;
@@ -295,7 +295,6 @@ export default {
     created() {
         this.setSpritesFolderpath();
         this.updateThumbnailInterval();
-        this.thumbnailSizes = biigle.$require('videos.thumbnailSizes');
         this.thumbnailsPerSprite = biigle.$require('videos.spritesThumbnailsPerSprite');
 
         this.sprite.onload = () => {
@@ -328,8 +327,6 @@ export default {
         ctx.fillStyle = window.getComputedStyle(this.$el, null).getPropertyValue('color');
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-
-        this.spriteIdx = Math.floor(this.hoverTime / (this.thumbnailInterval * this.thumbnailsPerSprite));
 
         this.updateSprite();
         this.viewHoverTimeBar();

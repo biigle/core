@@ -460,13 +460,14 @@ export default {
 
             return Promise.reject();
         },
-        handleSwapLabel(annotation, label) {
+        handleSwapLabel(annotation, label, force) {
             label = label || this.selectedLabel;
             if (this.isEditor && label) {
-                let lastLabel = annotation.labels
-                    .filter(l => l.user_id === this.userId)
-                    .sort((a, b) => a.id - b.id)
-                    .pop();
+                let labels = annotation.labels.slice();
+                if (!force) {
+                    labels = labels.filter(l => l.user_id === this.userId);
+                }
+                let lastLabel = labels.sort((a, b) => a.id - b.id).pop();
 
                 this.handleAttachLabel(annotation, label)
                     .then(() => {
@@ -475,6 +476,11 @@ export default {
                         }
                     })
                     .catch(handleErrorResponse);
+            }
+        },
+        handleForceSwapLabel(annotation, label) {
+            if (this.isExpert) {
+                this.handleSwapLabel(annotation, label, true);
             }
         },
         refreshSingleAnnotation(annotation){
@@ -710,6 +716,7 @@ export default {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
+        this.isExpert = biigle.$require('annotations.isExpert');
         this.userId = biigle.$require('annotations.userId');
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
 

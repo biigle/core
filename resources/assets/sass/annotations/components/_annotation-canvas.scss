@@ -48,3 +48,15 @@
 .annotation-canvas__right-indicators {
     right: 0.5em;
 }
+
+.control-button--force-swap {
+    i {
+        transform: translateX(-3px);
+
+        &::after {
+            content: '!';
+            position: absolute;
+            right: -6px;
+        }
+    }
+}

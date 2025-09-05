@@ -63,6 +63,10 @@ export default class Annotation {
         this._labels.value = value;
     }
 
+    get color() {
+        return this.labels?.[0].label.color;
+    }
+
     get frames() {
         return this._frames.value;
     }
@@ -296,13 +300,33 @@ export default class Annotation {
         return false;
     }
 
+    overlapsTime(other) {
+        // Start of this overlaps with other.
+        return this.startFrame >= other.startFrame && this.startFrame < other.endFrame ||
+            // End of this overlaps with other.
+            this.endFrame > other.startFrame && this.endFrame <= other.endFrame ||
+            // Start of other overlaps with this.
+            other.startFrame >= this.startFrame && other.startFrame < this.endFrame ||
+            // End of other overlaps with this.
+            other.endFrame > this.startFrame && other.endFrame <= this.endFrame ||
+            // this equals other.
+            this.startFrame === other.startFrame && this.endFrame === other.endFrame;
+    }
+
     detachAnnotationLabel(annotationLabel) {
         let index = this.labels.indexOf(annotationLabel);
         if (index !== -1) {
             this.labels.splice(index, 1);
         }
 
-        return VideoAnnotationApi.detachLabel({id: annotationLabel.id});
+        this.revision += 1;
+
+        return VideoAnnotationApi.detachLabel({id: annotationLabel.id})
+            .catch(e => {
+                this.labels.splice(index, 0, annotationLabel);
+
+                throw e;
+            });
     }
 
     attachAnnotationLabel(label) {
@@ -313,6 +337,7 @@ export default class Annotation {
 
     handleAttachedLabel(response) {
         this.labels.push(response.body);
+        this.revision += 1;
 
         return response;
     }
