@@ -8,7 +8,6 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
-use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Shape;
