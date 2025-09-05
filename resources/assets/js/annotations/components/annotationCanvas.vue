@@ -561,9 +561,7 @@ export default {
             e.feature.set('unselectable', true);
 
             if (this.labelbotIsActive) {
-                // Alternating between the "info" color also used by the LabelBOT
-                // indicator and the white outline color. The interval length is the
-                // same than the animation time of the blinking dot in the indicator.
+                // The "info" color.
                 e.feature.set('color', '5bc0de');
                 e.feature.setStyle(Styles.editing);
             } else {
