@@ -257,23 +257,25 @@ class ImageAnnotationController extends Controller
 
             Cache::increment($cacheKey);
             try {
-                // Perform vector search.
                 $topNLabels = $this->performVectorSearch($featureVector, $treeIds, $topNLabels);
-                if (empty($topNLabels)) {
-                    throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
-                }
-                // Set labelId to top 1 label.
-                $labelId = $topNLabels[0];
-
             } finally {
                 $count = Cache::decrement($cacheKey);
                 if ($count <= 0) {
                     Cache::forget($cacheKey);
                 }
             }
-        }
 
-        $label = Label::findOrFail($labelId);
+            if (empty($topNLabels)) {
+                throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
+            }
+            // Get labels sorted by their top N order.
+            $labelModels = Label::whereIn('id', $topNLabels)->get()->keyBy('id');
+            $labelBotLabels = array_map(fn ($id) => $labelModels->get($id), $topNLabels);
+
+            $label = array_shift($labelBotLabels);
+        } else {
+            $label = Label::findOrFail($labelId);
+        }
 
         $this->authorize('attach-label', [$annotation, $label]);
 
@@ -288,9 +290,9 @@ class ImageAnnotationController extends Controller
 
         $annotation->load('labels.label', 'labels.user');
 
-        if (isset($topNLabels)) {
-            // Attach the other two labels if they exist.
-            $annotation->labelBOTLabels = Label::whereIn('id', array_slice($topNLabels, 1))->get()->toArray();
+        if (isset($labelBotLabels)) {
+            // Attach the remaining labels (if any).
+            $annotation->labelBOTLabels = $labelBotLabels;
         }
 
         return $annotation;
