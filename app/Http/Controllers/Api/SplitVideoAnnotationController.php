@@ -3,7 +3,6 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\SplitVideoAnnotation;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use DB;

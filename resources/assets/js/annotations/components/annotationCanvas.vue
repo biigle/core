@@ -12,6 +12,7 @@ import Events from '@/core/events.js';
 import Feature from '@biigle/ol/Feature';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '@/core/keyboard.js';
+import LabelBot from './annotationCanvas/labelBot.vue';
 import LabelIndicator from './labelIndicator.vue';
 import Lawnmower from './annotationCanvas/lawnmower.vue';
 import LineString from '@biigle/ol/geom/LineString';
@@ -72,6 +73,7 @@ export default {
         AnnotationTooltip,
         AttachLabelInteraction,
         DrawInteractions,
+        LabelBot,
         Lawnmower,
         MagicWandInteraction,
         MeasureInteraction,
@@ -319,7 +321,10 @@ export default {
                 // could always only select the annotation that was drawn last (i.e. on
                 // the top). Use Shift+Click to deselect overlapping annotations that
                 // shouldn't be selected or use the annotation filter.
-                multi: true
+                multi: true,
+                // Some features should not be selectable, i.e. features that are drawn
+                // while the API request is in flight.
+                filter: (f) => f.get('unselectable') ? false : true,
             });
 
             // Map to detect which features were changed between modifystart and
@@ -530,7 +535,7 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         handleNewFeature(e) {
-            if (!this.hasSelectedLabel) {
+            if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                 this.annotationSource.removeFeature(e.feature);
                 return;
             }
@@ -552,7 +557,16 @@ export default {
                 PolygonValidator.simplifyPolygon(e.feature);
             }
 
-            e.feature.set('color', this.selectedLabel.color);
+            // This is observed by a filter in the select interaction.
+            e.feature.set('unselectable', true);
+
+            if (this.labelbotIsActive) {
+                // The "info" color.
+                e.feature.set('color', '5bc0de');
+                e.feature.setStyle(Styles.editing);
+            } else {
+                e.feature.set('color', this.selectedLabel.color);
+            }
 
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
@@ -569,7 +583,6 @@ export default {
                 shape: geometry.getType(),
                 points: this.getPoints(geometry),
             }, removeCallback);
-
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
@@ -582,9 +595,9 @@ export default {
             }
         },
         createPointAnnotationAt(x, y) {
-            if (this.hasSelectedLabel) {
+            if (this.hasSelectedLabel || this.labelbotIsActive) {
                 let feature = new Feature(new Point([x, y]));
-                // Simulare a feature created event so we can reuse the apropriate
+                // Simulate a feature created event so we can reuse the appropriate
                 // function.
                 this.annotationSource.addFeature(feature);
                 this.handleNewFeature({feature: feature});
@@ -653,6 +666,14 @@ export default {
             let oldFeaturesMap = {};
             let oldFeatures = source.getFeatures();
             let removedFeatures = oldFeatures.filter(function (feature) {
+                // Ignore temporary features from drawing new annotations. These are
+                // removed with the removeCallback of handleNewFeature(). Since they
+                // have no ID, they would be treated as nonexistent here and might be
+                // accidentally removed with source.clear() below.
+                if (feature.getId() === undefined) {
+                    return false;
+                }
+
                 oldFeaturesMap[feature.getId()] = null;
                 return !annotationsMap.hasOwnProperty(feature.getId());
             });

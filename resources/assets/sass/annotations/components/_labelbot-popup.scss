@@ -1,0 +1,127 @@
+.labelbot-popup {
+    border: 1px solid $input-border;
+    border-radius: $border-radius-base;
+}
+
+.labelbot-labels {
+    list-style-type: none;
+    max-width: 300px;
+    display: block;
+    padding: $padding-large-vertical;
+    margin: 0;
+    background-color: $body-bg;
+}
+
+.labelbot-label__color {
+    position: absolute;
+    top: 14px;
+    left: $padding-small-horizontal;
+    width: 1em;
+    height: 1em;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.labelbot-label {
+    position: relative;
+    margin-bottom: 4px;
+    border: 1px solid $input-border;
+    border-radius: $border-radius-base;
+}
+
+.labelbot-label__name {
+    position: relative;
+    // 45px for the keyboard icon, 30px for the color dot.
+    padding: $padding-large-vertical 45px $padding-large-vertical 30px;
+    word-wrap: break-word;
+    color: $text-muted;
+}
+
+
+@keyframes labelbot-progressbar {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+.labelbot-label__progress-bar {
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    background-color: $brand-info;
+    // Duration is defined by JS.
+    animation: linear 1 labelbot-progressbar;
+}
+
+.labelbot-label__keyboard {
+    display: none;
+    color: $text-muted;
+    position: absolute;
+    right: $padding-small-horizontal;
+}
+
+.labelbot-popup-grab-area {
+    height: 1.5em;
+    background-color: $body-bg;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+        color: $text-muted;
+        display: none;
+    }
+}
+
+.labelbot-popup--dragging {
+    .labelbot-popup-grab-area  {
+        cursor: grabbing;
+    }
+
+    .labelbot-labels {
+        user-select: none;
+    }
+}
+
+.labelbot-popup--focused {
+    border-color: $gray-lighter;
+    box-shadow: 2px 2px 10px #0008;
+
+    .labelbot-label__name {
+        color: inherit;
+    }
+
+    .labelbot-label {
+        &.labelbot-label--progress, &:hover {
+            color: white;
+            cursor: pointer;
+
+            .labelbot-label__keyboard {
+                color: white;
+            }
+        }
+
+        &:hover {
+            background-color: $gray-lighter;
+        }
+    }
+
+    .labelbot-label__keyboard {
+        display: inline-block;
+    }
+
+    .labelbot-popup-grab-area {
+        background-color: $gray-lighter;
+
+        i {
+            display: block;
+        }
+    }
+
+    &:not(.labelbot-popup--typing) {
+        .labelbot-label:first-child {
+            border-color: $brand-info;
+        }
+    }
+}

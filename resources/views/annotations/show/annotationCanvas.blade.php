@@ -7,6 +7,7 @@
     </div>
     <div class="annotation-canvas__right-indicators">
         <label-indicator v-if="selectedLabel" :label="selectedLabel"></label-indicator>
+        <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
     </div>
     <label-tooltip
         :show="showLabelTooltip"
@@ -199,4 +200,15 @@
                 ></control-button>
         </div>
     </div>
+    <labelbot-popup
+        v-for="annotation in labelbotOverlays"
+        :key="annotation.id"
+        :focused-popup-key="focusedPopupKey"
+        :annotation="annotation"
+        :timeout="labelbotTimeout"
+        @update="updateLabelbotLabel"
+        @close="closeLabelbotPopup"
+        @delete="handleDeleteLabelbotAnnotation"
+        @focus="handleLabelbotPopupFocused"
+        ></labelbot-popup>
 </div>
