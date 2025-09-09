@@ -11,7 +11,7 @@ export default {
     props: {
         labelbotState: {
             type: String,
-            required: true,
+            default: null,
         },
         labelbotOverlays: {
             type: Array,
