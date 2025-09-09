@@ -153,7 +153,9 @@ export default {
         }),
     ],
     editing(feature) {
-        let color = feature.get('color');
+        // Allow this to be called without feature too, as some modules use the default
+        // editing style.
+        let color = feature?.get('color');
         color = color ? ('#' + color) : colors.blue;
 
         if (!styleCache.editing.hasOwnProperty(color)) {
