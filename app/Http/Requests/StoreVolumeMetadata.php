@@ -18,6 +18,14 @@ class StoreVolumeMetadata extends FormRequest
     public $volume;
 
     /**
+     * The volume metadata after validation.
+     * This is used so the metadata is not parsed twice during the request.
+     *
+     * @var \Biigle\Services\MetadataParsing\VolumeMetadata
+     */
+    public $metadata;
+
+    /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
@@ -86,7 +94,8 @@ class StoreVolumeMetadata extends FormRequest
                 default => new ImageMetadata,
             };
 
-            if (!$rule->passes('file', $parser->getMetadata())) {
+            $this->metadata = $parser->getMetadata();
+            if (!$rule->passes('file', $this->metadata)) {
                 $validator->errors()->add('file', $rule->message());
             }
         });
