@@ -49,9 +49,14 @@ trait HasConstantInstances
             // Finally, in a single request, it is also cached in the array store for
             // even faster retrieval. This can make a difference of several seconds in
             // scripts that ask for constant instances a lot!
-            $instance = Cache::store('array')->rememberForever($cacheKey, function () use ($name, $cacheKey) {
-                return Cache::rememberForever($cacheKey, fn () => static::whereName($name)->first());
-            });
+            $instance = Cache::store('array')->rememberForever(
+                $cacheKey,
+                fn () =>
+                    Cache::rememberForever(
+                        $cacheKey,
+                        fn () => static::whereName($name)->first()
+                    )
+            );
 
             return $wantsId ? $instance->id : $instance;
         }
