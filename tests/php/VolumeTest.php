@@ -484,6 +484,33 @@ class VolumeTest extends ModelTestCase
         $this->assertInstanceOf(Image::class, $thumbnails[0]);
     }
 
+    public function testGetThumbnailsAttributeWithGapsInIds()
+    {
+        $id = $this->model->id;
+        $images = [];
+        
+        // Create 40 images to ensure step = 4 (40/10 = 4, which is even)
+        for ($i = 0; $i < 40; $i++) {
+            $images[] = ImageTest::create(['volume_id' => $id, 'filename' => sprintf("file%03d.jpg", $i)]);
+        }
+
+        // Delete all even-numbered ID images to create gaps
+        // This creates a scenario where step=4 (even) but only odd IDs remain
+        // Since no odd number is divisible by 4, old algorithm returns 0 thumbnails
+        foreach ($images as $image) {
+            if ($image->id % 2 == 0) {
+                $image->delete();
+            }
+        }
+
+        // Clear cache to ensure fresh calculation
+        $this->model->flushThumbnailCache();
+
+        $thumbnails = $this->model->thumbnails;
+        
+        $this->assertCount(10, $thumbnails);
+    }
+
     public function testGetThumbnailUrlAttributeImage()
     {
         $this->assertNull($this->model->thumbnailUrl);

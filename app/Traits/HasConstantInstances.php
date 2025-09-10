@@ -43,7 +43,20 @@ trait HasConstantInstances
             $name = static::INSTANCES[$key];
             $cacheKey = static::class.'::'.$key;
 
-            $instance = Cache::rememberForever($cacheKey, fn () => static::whereName($name)->first());
+            // Use a layered caching approach to make this as fast as possible.
+            // The model is fetched from the database if it is not cached at all.
+            // Then it is cached in the regular cache for faster retrieval.
+            // Finally, in a single request, it is also cached in the array store for
+            // even faster retrieval. This can make a difference of several seconds in
+            // scripts that ask for constant instances a lot!
+            $instance = Cache::store('array')->rememberForever(
+                $cacheKey,
+                fn () =>
+                    Cache::rememberForever(
+                        $cacheKey,
+                        fn () => static::whereName($name)->first()
+                    )
+            );
 
             return $wantsId ? $instance->id : $instance;
         }

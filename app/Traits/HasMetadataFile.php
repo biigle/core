@@ -67,8 +67,8 @@ trait HasMetadataFile
     public function deleteMetadata($noUpdate = false): void
     {
         if ($this->hasMetadata()) {
-            Storage::disk($this->getMetadataFileDisk())->delete($this->metadata_file_path);
             $disk = $this->getMetadataFileDisk();
+            Storage::disk($disk)->delete($this->metadata_file_path);
             Cache::store('array')->forget("metadata-{$disk}-{$this->metadata_file_path}");
             if (!$noUpdate) {
                 $this->update([

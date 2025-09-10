@@ -86,11 +86,9 @@ class MetadataController extends Controller
         Queue::push(new UpdateVolumeMetadata($request->volume));
 
         if ($this->isAutomatedRequest()) {
-            $metadata = $request->volume->getMetadata();
-
             return [
-                'has_annotations' => $metadata->hasAnnotations(),
-                'has_file_labels' => $metadata->hasFileLabels(),
+                'has_annotations' => $request->metadata->hasAnnotations(),
+                'has_file_labels' => $request->metadata->hasFileLabels(),
             ];
         }
     }
