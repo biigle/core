@@ -36,7 +36,7 @@ class TrackObject extends Job implements ShouldQueue
      *
      * @var VideoAnnotation
      */
-    protected $annotation;
+    protected $annotationId; // TODO: look for if can stay annotation or change to annotationId
 
     /**
      * The user who initialized the tracking request.
@@ -44,13 +44,6 @@ class TrackObject extends Job implements ShouldQueue
      * @var User
      */
     protected $user;
-
-    /**
-     * Ignore this job if the annotation does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Return the cache key to store the number of concurrent jobs for each user.
@@ -67,12 +60,12 @@ class TrackObject extends Job implements ShouldQueue
     /**
      * Create a new instance.
      *
-     * @param VideoAnnotation $annotation The annotation that defines the initial object to track.
+     * @param VideoAnnotation $annotation The annotation that defines the initial object to track. //ToDo: anpassen
      * @param User $user The user who initialized the tracking request.
      */
-    public function __construct(VideoAnnotation $annotation, User $user)
+    public function __construct($annotationId, User $user) //TODO try: public function __construct(VideoAnnotation $annotationId, User $user)
     {
-        $this->annotation = $annotation;
+        $this->annotationId = ($annotationId);
         $this->user = $user;
     }
 
@@ -83,35 +76,44 @@ class TrackObject extends Job implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            $keyframes = $this->getTrackingKeyframes($this->annotation);
-            $frames = $this->annotation->frames;
-            $points = $this->annotation->points;
 
+        try {
+
+            try {
+                $annotation = VideoAnnotation::findOrFail($this->annotationId);
+                // Log::info("Annotation found"); //ToDo: delete if ready
+            } catch (Exception $e) {
+                // Log::info("NOPE, annotation not found");
+                $annotation = false;
+                $count = $this->decrementJobCount();
+                //ObjectTrackingFailed::dispatch($annotation, $this->user);
+                return;
+            }
+                
+            // $annotation = VideoAnnotation::find($this->annotationId);
+            $keyframes = $this->getTrackingKeyframes($annotation);
+            $frames = $annotation->frames;
+            $points = $annotation->points;
             if (empty($keyframes)) {
                 throw new Exception("Empty keyframes.");
             }
 
             foreach ($keyframes as $keyframe) {
                 $frames[] = $keyframe[0];
-                $points[] = $this->getPointsFromKeyframe($this->annotation, $keyframe);
+                $points[] = $this->getPointsFromKeyframe($annotation, $keyframe);
             }
 
-            $this->annotation->frames = $frames;
-            $this->annotation->points = $points;
+            $annotation->frames = $frames;
+            $annotation->points = $points;
             // If the annotation has been deleted in the meantime, ignore the result.
-            if ($this->annotation->exists()) {
-                $this->annotation->save();
-                ObjectTrackingSucceeded::dispatch($this->annotation, $this->user);
+            if ($annotation->exists()) {
+                $annotation->save();
+                ObjectTrackingSucceeded::dispatch($annotation, $this->user);
             }
         } catch (Exception $e) {
-            Log::warning("Could not track object for video {$this->annotation->video->id}: {$e->getMessage()}");
-            ObjectTrackingFailed::dispatch($this->annotation, $this->user);
+            ObjectTrackingFailed::dispatch($annotation, $this->user);
         } finally {
-            $count = Cache::decrement(static::getRateLimitCacheKey($this->user));
-            if ($count <= 0) {
-                Cache::forget(static::getRateLimitCacheKey($this->user));
-            }
+            $count = $this->decrementJobCount();
         }
     }
 
@@ -290,5 +292,16 @@ class TrackObject extends Job implements ShouldQueue
                 array_shift($keyframe);
                 return $keyframe;
         }
+    }
+
+    private function decrementJobCount()
+    {
+        $count = Cache::decrement(static::getRateLimitCacheKey($this->user));
+        //ToDo: remove log if ready
+        Log::info("Finaly: {$count}, if 0 delte, is after Cache");
+        if ($count <= 0) {
+            Cache::forget(static::getRateLimitCacheKey($this->user));
+        }
+        return $count;
     }
 }
