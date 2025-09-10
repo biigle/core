@@ -64,7 +64,7 @@ export default {
         },
         convertMeasurement() {
             if (this.isMeasuring && !this.cantConvertMeasureFeature) {
-                if (!this.hasSelectedLabel) {
+                if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                     this.requireSelectedLabel(false);
                 } else {
                     this.annotationSource.addFeature(this.measureFeature);

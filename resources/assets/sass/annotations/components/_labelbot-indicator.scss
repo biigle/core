@@ -1,0 +1,55 @@
+@keyframes labelbot-blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes labelbot-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.25; }
+    100% { opacity: 1; }
+}
+
+.labelbot-indicator {
+    @extend %info-box;
+    color: $gray;
+    border-color: $gray;
+
+    .labelbot-indicator__dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: $gray;
+    }
+
+    &.ready {
+        color: $brand-success;
+        border-color: $brand-success;
+
+        .labelbot-indicator__dot {
+            animation: labelbot-pulse 5s ease infinite;
+            background-color: $brand-success;
+        }
+    }
+
+    &.initializing {
+        color: $brand-warning;
+        border-color: $brand-warning;
+
+        .labelbot-indicator__dot {
+            animation: labelbot-blink 0.5s step-start infinite;
+            background-color: $brand-warning;
+        }
+    }
+
+    &.computing {
+        color: $brand-info;
+        border-color: $brand-info;
+
+        .labelbot-indicator__dot {
+            animation: labelbot-blink 0.5s step-start infinite;
+            background-color: $brand-info;
+        }
+    }
+
+}
