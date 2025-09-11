@@ -173,7 +173,7 @@ class Images {
             height: 0,
             canvas: canvas,
             crossOrigin: false,
-            crossOriginTiff: false,
+            isTiff: false,
         };
 
         // Disable auto-rotation based on image metadata. This only works when the
@@ -192,7 +192,7 @@ class Images {
 
         let promise = new Promise(function (resolve, reject) {
             img.onload = function () {
-                imageWrapper.crossOriginTiff = false;
+               // imageWrapper.crossOriginTiff = false;
                 // The element must be appended to the DOM so the dimensions are
                 // correctly determined. Otherwise imageOrientation=none has no
                 // effect.
@@ -234,7 +234,6 @@ class Images {
                     throw new Error();
                 }
 
-                let size = response.headers.get('content-length');
                 let type = response.headers.get('content-type');
                 if (type === 'application/json') {
                     return response.json().then((body) => {
@@ -245,18 +244,15 @@ class Images {
                     });
                 }
 
-                if (type === 'image/tiff' || type === 'image/tif') {
-                    if (size < 1000000000) {
-                        return this.loadSmallTiffs(url, imageWrapper)
-                            .then((wrapper) => {
-                                document.body.appendChild(wrapper.canvas);
-                                return wrapper;
-                            })
-                            .catch((err) => {
-                                return Promise.reject(err);
-                            });
-                    }
-                }
+            if (type === 'image/tiff' || type === 'image/tif') {
+                return response
+                    .arrayBuffer().then((buffer) =>
+                        this.loadSmallTiffs(buffer, imageWrapper))
+                    .then((wrapper) => {
+                        document.body.appendChild(wrapper.canvas);
+                        return wrapper;
+                    });
+            }
 
                 response.blob().then(function (blob) {
                     let urlCreator = window.URL || window.webkitURL;
@@ -281,7 +277,7 @@ class Images {
                         imageWrapper.height = 1;
                         imageWrapper.canvas.width = 1;
                         imageWrapper.canvas.height = 1;
-                        imageWrapper.crossOriginTiff = true;
+                        imageWrapper.isTiff = true;
 
                         return Promise.resolve(imageWrapper);
                     });
@@ -309,7 +305,18 @@ class Images {
     }
 
     drawColorAdjustedImage(image) {
-        if (this.loadedImageTexture !== image.source.src) {
+        let currentSourceId;
+
+        if (image.source instanceof HTMLImageElement) {
+            currentSourceId = image.source.src;
+        } else if (image.source instanceof HTMLCanvasElement) {
+            currentSourceId = image.source;
+        } else {
+            throw new Error("Unsupported image source type");
+        }
+     
+        if (this.loadedImageTexture !== currentSourceId) {
+            
             // Maybe redraw the unmodified image to the canvas again.
             this.drawSimpleImage(image);
 
@@ -318,7 +325,7 @@ class Images {
             } else {
                 this.fxTexture = this.fxCanvas.texture(image.canvas);
             }
-            this.loadedImageTexture = image.source.src;
+            this.loadedImageTexture = currentSourceId;
         }
 
         this.fxCanvas.draw(this.fxTexture);
@@ -415,16 +422,11 @@ class Images {
         this.maxCacheSize = size;
     }
 
-    loadSmallTiffs(tiffUrl, imageWrapper) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', tiffUrl, true);
-        xhr.responseType = 'arraybuffer';
-
+    loadSmallTiffs(arrayBuffer, imageWrapper) {
         return new Promise(function (resolve, reject) {
-            xhr.onload = function () {
                 try {
-                    let ifds = UTIF.decode(xhr.response);
-                    UTIF.decodeImage(xhr.response, ifds[0]);
+                    let ifds = UTIF.decode(arrayBuffer);
+                    UTIF.decodeImage(arrayBuffer, ifds[0]);
                     let rgba = UTIF.toRGBA8(ifds[0]);
                     let width = ifds[0].width;
                     let height = ifds[0].height;
@@ -438,19 +440,12 @@ class Images {
                     let imgData = ctx.createImageData(width, height);
                     imgData.data.set(rgba);
                     ctx.putImageData(imgData, 0, 0);
+                    imageWrapper.source = imageWrapper.canvas;
                     imageWrapper.canvas._dirty = false;
                     resolve(imageWrapper);
                 } catch (err) {
                     reject('TIFF decode error: ' + err.message);
                 }
-            };
-
-            xhr.onerror = function () {
-                imageWrapper.crossOriginTiff = true;
-                reject(`Failed to load TIFF ${imageWrapper.id}!`);
-            };
-
-            xhr.send();
         });
     }
 }
