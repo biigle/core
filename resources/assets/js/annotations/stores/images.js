@@ -305,7 +305,6 @@ class Images {
 
     drawColorAdjustedImage(image) {
         if (this.loadedImageTexture !== image.source.src) {
-            
             // Maybe redraw the unmodified image to the canvas again.
             this.drawSimpleImage(image);
 
@@ -431,7 +430,6 @@ class Images {
                     ctx.putImageData(imgData, 0, 0);
                     imageWrapper.source = imageWrapper.canvas;
                     imageWrapper.canvas._dirty = false;
-                    // resolve(imageWrapper);
                     imageWrapper.canvas.toBlob((blob) => {
                         let url = URL.createObjectURL(blob);
                         let img = new Image();
