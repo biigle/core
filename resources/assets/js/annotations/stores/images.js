@@ -192,7 +192,6 @@ class Images {
 
         let promise = new Promise(function (resolve, reject) {
             img.onload = function () {
-               // imageWrapper.crossOriginTiff = false;
                 // The element must be appended to the DOM so the dimensions are
                 // correctly determined. Otherwise imageOrientation=none has no
                 // effect.
@@ -305,17 +304,7 @@ class Images {
     }
 
     drawColorAdjustedImage(image) {
-        let currentSourceId;
-
-        if (image.source instanceof HTMLImageElement) {
-            currentSourceId = image.source.src;
-        } else if (image.source instanceof HTMLCanvasElement) {
-            currentSourceId = image.source;
-        } else {
-            throw new Error("Unsupported image source type");
-        }
-     
-        if (this.loadedImageTexture !== currentSourceId) {
+        if (this.loadedImageTexture !== image.source.src) {
             
             // Maybe redraw the unmodified image to the canvas again.
             this.drawSimpleImage(image);
@@ -325,7 +314,7 @@ class Images {
             } else {
                 this.fxTexture = this.fxCanvas.texture(image.canvas);
             }
-            this.loadedImageTexture = currentSourceId;
+            this.loadedImageTexture = image.source.src;
         }
 
         this.fxCanvas.draw(this.fxTexture);
@@ -442,7 +431,17 @@ class Images {
                     ctx.putImageData(imgData, 0, 0);
                     imageWrapper.source = imageWrapper.canvas;
                     imageWrapper.canvas._dirty = false;
-                    resolve(imageWrapper);
+                    // resolve(imageWrapper);
+                    imageWrapper.canvas.toBlob((blob) => {
+                        let url = URL.createObjectURL(blob);
+                        let img = new Image();
+                        img.onload = () => {
+                            URL.revokeObjectURL(url);
+                            imageWrapper.source = img;
+                            resolve(imageWrapper);
+                        };
+                        img.src = url;
+                    }, "image/png"); 
                 } catch (err) {
                     reject('TIFF decode error: ' + err.message);
                 }
