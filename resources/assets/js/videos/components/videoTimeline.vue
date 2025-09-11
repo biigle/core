@@ -54,6 +54,7 @@ export default {
         'seek',
         'select',
         'start-resize',
+        'crossed-frame',
     ],
     components: {
         currentTime: CurrentTime,
@@ -126,6 +127,7 @@ export default {
             currentTime: 0,
             scrollTop: 0,
             hoverTime: 0,
+            ignoreNextCrossedFrame: false,
         };
     },
     provide() {
@@ -191,6 +193,13 @@ export default {
             return {
                 'full-height': this.fullHeight,
             };
+        },
+        annotationStartFrames() {
+            return [...new Set(this.annotations.map(a => a.startFrame))]
+                .sort((a, b) => a - b);
+        },
+        nextAnnotationStartFrame() {
+            return this.annotationStartFrames.find(f => f >= this.currentTime);
         },
     },
     methods: {
@@ -260,14 +269,37 @@ export default {
             this.hoverTime = 0;
             this.$refs.scrollStrip.reset();
         },
+        checkIgnoreNextCrossedFrame() {
+            if (this.currentTime === this.nextAnnotationStartFrame) {
+                this.ignoreNextCrossedFrame = true;
+            }
+        },
     },
     watch: {
         heightOffset() {
             this.$refs.scrollStrip.updateHeight();
         },
+        nextAnnotationStartFrame(nextFrame, previousFrame) {
+            // TODO wait for feedback if the pause-by-seconds feature is required at all or if the video can just stop
+            // TODO wait for feedback if this should work only for single-frame annotations
+            // TODO fix jumping ahead manually (should not pause)
+            // TODO add stopwatch on timeout (cancelled on manual play, seek, annotate)
+            console.log('next', nextFrame, 'prev', previousFrame);
+            // Don't fire on the initial undefined frame.
+            // Also not if the previous is larger than the next frame which happens if
+            // the video seeks to pause at an annotation.
+            if (previousFrame < nextFrame && previousFrame) {
+                if (this.ignoreNextCrossedFrame) {
+                    this.ignoreNextCrossedFrame = false;
+                } else {
+                    this.$emit('crossed-frame', previousFrame);
+                }
+            }
+        },
     },
     created() {
         this.video.addEventListener('play', this.startUpdateLoop);
+        this.video.addEventListener('play', this.checkIgnoreNextCrossedFrame);
         this.video.addEventListener('pause', this.stopUpdateLoop);
         this.video.addEventListener('seeked', this.updateCurrentTime);
 

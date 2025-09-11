@@ -43,6 +43,7 @@ export default {
                 'annotationOpacity',
                 'showMinimap',
                 'autoplayDraw',
+                'autoPause',
                 'showLabelTooltip',
                 'showMousePosition',
                 'showProgressIndicator',
@@ -55,6 +56,7 @@ export default {
             annotationOpacity: 1,
             showMinimap: true,
             autoplayDraw: 0,
+            autoPause: 0,
             showLabelTooltip: false,
             showMousePosition: false,
             playbackRate: 1.0,
@@ -144,6 +146,11 @@ export default {
             value = parseFloat(value);
             this.$emit('update', 'autoplayDraw', value);
             Settings.set('autoplayDraw', value);
+        },
+        autoPause(value) {
+            value = parseFloat(value);
+            this.$emit('update', 'autoPause', value);
+            Settings.set('autoPause', value);
         },
         showLabelTooltip(show) {
             this.$emit('update', 'showLabelTooltip', show);

@@ -65,6 +65,7 @@ export default {
                 annotationOpacity: 1,
                 showMinimap: true,
                 autoplayDraw: 0,
+                autoPause: 0,
                 showLabelTooltip: false,
                 showMousePosition: false,
                 playbackRate: 1.0,
@@ -791,6 +792,13 @@ export default {
                 this.video.play();
             } else {
                 this.video.pause();
+            }
+        },
+        handleCrossedFrame(frame) {
+            console.log('crossed', frame);
+            if (!this.video.paused && this.settings.autoPause > 0) {
+                this.video.pause();
+                this.seek(frame).then(() => null);
             }
         },
     },

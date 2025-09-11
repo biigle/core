@@ -35,6 +35,10 @@
     @endcan
 
     <div class="sidebar-tab__section">
+        <input type="number" min="0" step="0.5" v-model="autoPause" class="form-control form-control--small" title="Time in seconds that the video should stop at each annotation"> Play/pause while viewing
+    </div>
+
+    <div class="sidebar-tab__section">
         <input type="number" min="0.25" max="4.0" step="0.25" v-model="playbackRate" class="form-control form-control--small" title="Video playback rate"> Playback rate
     </div>
 

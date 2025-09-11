@@ -101,4 +101,5 @@
       v-on:select="selectAnnotation"
       v-on:deselect="deselectAnnotation"
       v-on:start-resize="startUpdateTimelineHeight"
+      v-on:crossed-frame="handleCrossedFrame"
       ></video-timeline>
