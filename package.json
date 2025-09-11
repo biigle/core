@@ -14,9 +14,9 @@
     "laravel-vite-plugin": "^1.2.0",
     "pusher-js": "^7.5.0",
     "sass": "^1.32.0",
-    "vite": "^6.3.4",
+    "vite": "^6.3.6",
     "vite-plugin-externalize-dependencies": "^1.0.1",
-    "vite-plugin-static-copy": "^2.3.0"
+    "vite-plugin-static-copy": "^2.3.2"
   },
   "dependencies": {
     "@biigle/ol": "^9.2.4",
@@ -31,6 +31,7 @@
     "jsts": "^2.11.0",
     "magic-wand-tool": "^1.1.4",
     "mitt": "^3.0.1",
+    "onnxruntime-web": "^1.20.1",
     "polymorph-js": "^0.2.4",
     "uiv": "^2.0.6",
     "utif2": "^4.1.0",

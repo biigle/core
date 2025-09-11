@@ -4,6 +4,7 @@ namespace Biigle\Tests\Jobs;
 
 use Biigle\Events\LargoSessionFailed;
 use Biigle\Events\LargoSessionSaved;
+use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ApplyLargoSession;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
@@ -738,6 +739,40 @@ class ApplyLargoSessionTest extends TestCase
 
         $this->assertNotNull($a1->fresh());
         $this->assertNotNull($a2->fresh());
+    }
+
+    public function testChunkDismissedAnnotations()
+    {
+        // Set a very low parameter limit to test chunking
+        // With limit of 5: chunkSize = 5 - 2 = 3 (accounting for label_id and user_id params)
+        config(['biigle.db_param_limit' => 5]);
+        
+        $user = UserTest::create();
+        $image = ImageTest::create();
+        $this->setJobId($image, 'job_id');
+        
+        // Create multiple annotations with the same label
+        $annotations = [];
+        $label = LabelTest::create();
+        
+        for ($i = 0; $i < 7; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+            $annotations[] = $annotation;
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $annotation->id,
+                'user_id' => $user->id,
+                'label_id' => $label->id,
+            ]);
+        }
+        
+        $annotationIds = collect($annotations)->pluck('id')->toArray();
+        $dismissed = [$label->id => $annotationIds];
+        
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, [], [], [], false);
+        $job->handle();
+        
+        // All annotation labels should be dismissed and annotations deleted
+        $this->assertFalse(ImageAnnotation::whereIn('id', $annotationIds)->exists());
     }
 
     protected function setJobId(VolumeFile $file, string $id): void
