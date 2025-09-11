@@ -90,7 +90,7 @@ export default {
             userId: null,
             crossOriginError: false,
             isTiff: false,
-            imageFilenames: {}
+            imageFilenames: {},
         };
     },
     computed: {
