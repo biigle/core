@@ -4,6 +4,11 @@ import PowerToggle from '@/core/components/powerToggle.vue';
 import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
 import Settings from '../stores/settings.js';
 
+// Determines the maximum number of configurable seconds for the auto pause option.
+// The max is this value -1. If this value is reached, playback should not resume at all
+// after an auto pause.
+export const AUTO_PAUSE_INDEFINITE = 11;
+
 export default {
     template: '#settings-tab-template',
     emits: ['update'],
@@ -66,11 +71,22 @@ export default {
             enableJumpByFrame: false,
             muteVideo: true,
             singleAnnotation: false,
+            autoPauseMax: AUTO_PAUSE_INDEFINITE,
         };
     },
     computed: {
         jumpByFrameNotSupported() {
             return !this.supportsJumpByFrame;
+        },
+        autoPauseText() {
+            const value = parseInt(this.autoPause);
+            if (value === 0) {
+                return 'off';
+            } else if (value === AUTO_PAUSE_INDEFINITE) {
+                return 'pause';
+            }
+
+            return value + ' s';
         },
     },
     methods: {
@@ -148,7 +164,7 @@ export default {
             Settings.set('autoplayDraw', value);
         },
         autoPause(value) {
-            value = parseFloat(value);
+            value = parseInt(value);
             this.$emit('update', 'autoPause', value);
             Settings.set('autoPause', value);
         },

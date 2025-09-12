@@ -60,6 +60,7 @@
       :reached-tracked-annotation-limit="reachedTrackedAnnotationLimit"
       :show-open-popout-button="!isVideoPopout"
       :show-close-popout-button="isVideoPopout"
+      :auto-pause-timeout="autoPauseTimeout"
       v-on:init-map="handleInitMap"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
@@ -83,6 +84,7 @@
       v-on:start-seeking="startSeeking"
       v-on:is-invalid-shape="handleInvalidShape"
       v-on:popout="handleVideoPopout"
+      v-on:cancel-auto-play="cancelAutoPlay"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

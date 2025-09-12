@@ -35,7 +35,8 @@
     @endcan
 
     <div class="sidebar-tab__section">
-        <input type="number" min="0" step="0.5" v-model="autoPause" class="form-control form-control--small" title="Time in seconds that the video should stop at each annotation"> Play/pause while viewing
+        <h5 title="Configure the time to stop the video on each annotation">Play/pause while viewing (<span v-text="autoPauseText"></span>)</h5>
+        <input type="range" min="0" :max="autoPauseMax" step="1" v-model="autoPause">
     </div>
 
     <div class="sidebar-tab__section">

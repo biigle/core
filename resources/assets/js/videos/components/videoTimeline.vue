@@ -283,13 +283,8 @@ export default {
             this.$refs.scrollStrip.updateHeight();
         },
         nextAnnotationStartFrame(nextFrame, previousFrame) {
-            // TODO fix jumping ahead manually (should not pause)
-            // TODO add stopwatch on timeout (cancelled on manual play, seek, annotate)
-            console.log('next', nextFrame, 'prev', previousFrame);
-            // Don't fire on the initial undefined frame. And ignore the undefined
-            // nextFrame when the last annotation is crossed.
-            // Also not if the previous is larger than the next frame which happens if
-            // the video seeks to pause at an annotation.
+            // Don't fire on the initial undefined frame and only if the playback was
+            // "near" an annotation before (see updateCurrentTime for explanation).
             if (this.watchForCrossedFrame && previousFrame !== undefined) {
                 this.watchForCrossedFrame = false;
                 this.$emit('reached-annotation', previousFrame);
