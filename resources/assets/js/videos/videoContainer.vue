@@ -794,8 +794,7 @@ export default {
                 this.video.pause();
             }
         },
-        handleCrossedFrame(frame) {
-            console.log('crossed', frame);
+        handleReachedAnnotation(frame) {
             if (!this.video.paused && this.settings.autoPause > 0) {
                 this.video.pause();
                 this.seek(frame).then(() => null);
