@@ -8,7 +8,9 @@ import Messages from '@/core/messages/store.js';
 // DINOv2 image input size.
 const INPUT_SIZE = 224;
 
-const MAX_OVERLAY_COUNT = 5;
+// This used to be higher to allow multiple popups at the same time but we found that
+// only a single popup at a time supports a more efficient workflow.
+const MAX_OVERLAY_COUNT = 1;
 
 export const LABELBOT_STATES = {
     INITIALIZING: 'initializing',

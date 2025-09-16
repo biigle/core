@@ -27,7 +27,7 @@
         </p>
 
         <p>
-            The automatic timeout for confirming the first suggested label <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#:~:text=The%20LabelBOT%20timeout">can be configured</a> and is cancelled on any interaction with the overlay. If multiple overlays are open at the same time, the timeout is only active in the currently focused overlay. Once more than five overlays are open at the same time, the oldest overlay will automatically close, confirming the first suggested label for the respective annotation.
+            The automatic timeout for confirming the first suggested label <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#:~:text=The%20LabelBOT%20timeout">can be configured</a> and is cancelled on any interaction with the overlay. The timeout is also cancelled, confirming the first suggested label, when the next annotation is created.
         </p>
         <p>
             A LabelBOT overlay can be dragged to a different position, which can be handy if you create several new annotations in a row and have to review multiple overlapping overlays. To drag an overlay, grab the top edge with the cursor and release it at a different position. A dashed line indicates which overlay belongs to which annotation.
