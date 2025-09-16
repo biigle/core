@@ -51,8 +51,8 @@ export default {
             }
         },
         updateProgress() {
-            this.progress = Math.min((Date.now() - this.startTime) / this.timeout, 1);
-            if (this.progress < 1) {
+            this.progress = 1 - Math.min((Date.now() - this.startTime) / this.timeout, 1);
+            if (this.progress > 0) {
                 window.requestAnimationFrame(this.updateProgress.bind(this));
             }
         },
@@ -65,11 +65,21 @@ export default {
 </script>
 
 <style scoped>
+@keyframes pulse {
+  50% {
+    transform: scale(2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .timer-svg {
     display: inline-block;
     vertical-align: middle;
     width: 14px;
     height: 14px;
+    animation: .5s ease-out pulse;
 }
 
 .timer-svg path, .timer-svg circle {
