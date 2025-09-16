@@ -57,6 +57,10 @@
         </p>
 
         <p>
+            <a name="play-pause-while-viewing"></a> With the play/pause while viewing slider you can configure a time in seconds that the video playback should automatically pause on each annotation. After the configured time, the video will automatically play again. While the video is paused, a timer is displayed instead of the video play/pause button. Click on the timer or press <kbd>Space</kbd> to cancel the timer. Move the settings slider to the far right to enable the "pause" setting, which will pause the video indefinitely on each annotation. This feature can be useful to review single-frame annotations which are otherwise invisible during playback.
+        </p>
+
+        <p>
             The playback rate determines the speed in which the video is played. Set it below 1 to slow the video down or above 1 to speed it up. The default video playback rate is 1.
         </p>
 
