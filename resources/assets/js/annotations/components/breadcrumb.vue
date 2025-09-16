@@ -23,6 +23,13 @@ const arcPosition = function (percent) {
     ];
 };
 
+export const progressPath = function (percent) {
+    let largeArc = percent >= 0.5 ? 1 : 0;
+    let position = arcPosition(percent);
+
+    return 'M 2 1 A 1 1 0 ' + largeArc + ' 1 ' + position.join(' ') + 'L 1 1';
+};
+
 export default {
     props: {
         fileIds: {
@@ -57,10 +64,7 @@ export default {
     },
     computed: {
         progressPath() {
-            let largeArc = this.progress >= 0.5 ? 1 : 0;
-            let position = arcPosition(this.progress);
-
-            return 'M 2 1 A 1 1 0 ' + largeArc + ' 1 ' + position.join(' ') + 'L 1 1';
+            return progressPath(this.progress);
         },
         initialProgressPath() {
             let position = arcPosition(this.initialProgress);

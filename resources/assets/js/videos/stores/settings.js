@@ -4,6 +4,7 @@ let defaults = {
     annotationOpacity: 1,
     showMinimap: true,
     autoplayDraw: 0,
+    autoPause: 0,
     showLabelTooltip: false,
     showMousePosition: false,
     showProgressIndicator: true,

@@ -37,8 +37,14 @@
                     title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
                     v-on:click="emitPreviousFrame"
                     ></control-button>
+                <timer-button
+                    v-if="autoPauseTimeout"
+                    :timeout="autoPauseTimeout"
+                    title="Cancel auto-play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
+                    @click="emitCancelAutoPlay"
+                    ></timer-button>
                 <control-button
-                    v-if="playing"
+                    v-else-if="playing"
                     icon="fa-pause"
                     title="Pause 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
                     :disabled="hasError || null"
@@ -360,8 +366,10 @@ import Map from '@biigle/ol/Map';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
+import PopoutControl from '../ol/PopoutControl.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
+import TimerButton from './timerButton.vue';
 import Tooltips from './videoScreen/tooltips.vue';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
@@ -369,7 +377,6 @@ import VideoPlayback from './videoScreen/videoPlayback.vue';
 import ZoomControl from '@biigle/ol/control/Zoom';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
-import PopoutControl from '../ol/PopoutControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
@@ -398,6 +405,7 @@ export default {
         controlButton: ControlButton,
         minimap: Minimap,
         labelIndicator: LabelIndicator,
+        timerButton: TimerButton,
     },
     props: {
         annotations: {
@@ -518,6 +526,10 @@ export default {
         showClosePopoutButton: {
             type: Boolean,
             default: false,
+        },
+        autoPauseTimeout: {
+            type: Number,
+            default: 0,
         },
     },
     data() {
@@ -721,6 +733,9 @@ export default {
         },
         handlePopout() {
             this.$emit('popout');
+        },
+        emitCancelAutoPlay() {
+            this.$emit('cancel-auto-play');
         },
     },
     watch: {
