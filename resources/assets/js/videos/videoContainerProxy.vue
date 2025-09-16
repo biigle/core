@@ -131,6 +131,10 @@ const proxy = {
             Events.emit('videos.map.init', map);
             this.parent.handleInitMap(map);
         },
+        handleReachedAnnotation(frame) {
+            // Ignore this event from the timeline of the popup. The event from the
+            // timeline of the main window will be handled.
+        },
     },
     created() {
         this.parent = window.opener?.$videoContainer;
