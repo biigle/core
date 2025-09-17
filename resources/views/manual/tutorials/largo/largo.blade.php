@@ -148,6 +148,7 @@
         <ul>
             <li><b>Shape</b>: the shape of the annotation.</li>
             <li><b>User</b>: which user has created the annotation.</li>
+            <li><b>Size</b>: the size category of the annotation based on its area in pixels.</li>
         </ul>
         <h4>Settings</h4>
 
