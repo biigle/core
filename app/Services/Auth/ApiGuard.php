@@ -11,7 +11,7 @@ class ApiGuard extends TokenGuard
     /**
      * Get the currently authenticated user.
      *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
+     * @return \Illuminate\Contracts\Auth\Authenticatable|void
      */
     public function user()
     {
@@ -29,7 +29,7 @@ class ApiGuard extends TokenGuard
 
         // Check the encoding bcause a user can put anything into the string and cause
         // a server/database error with weird strings.
-        if (!empty($token) && !empty($email) && mb_detect_encoding($email) !== false) {
+        if (!empty($token) && !empty($email) && mb_check_encoding($email, 'UTF-8')) {
             $user = $this->provider->retrieveByCredentials(
                 ['email' => strtolower($email)]
             );

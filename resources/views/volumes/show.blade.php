@@ -42,7 +42,7 @@
 
 @section('content')
 <div id="volume-container" class="sidebar-container">
-    <sidebar direction="left" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
+    <sidebar ref="sidebar" direction="left" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
         @can ('update', $volume)
             <sidebar-tab name="edit" icon="pencil-alt" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
@@ -56,6 +56,8 @@
         </sidebar-tab>
         <sidebar-tab name="sorting" icon="exchange-alt fa-rotate-90" title="Sort files" :highlight="sortingActive">
             @include('volumes.show.sorting')
+        </sidebar-tab>
+        <sidebar-tab name="charts" icon="chart-bar" title="Show volume charts">
         </sidebar-tab>
         <sidebar-tab name="reports" icon="file" title="Request reports for this volume" href="{{route('volume-reports', $volume->id)}}"></sidebar-tab>
         @canany (['edit-in', 'sudo'], $volume)
@@ -100,5 +102,10 @@
             v-on:scroll="handleScroll"
             ></image-grid>
     </div>
+    <statistics-modal
+        :show-modal="showStatisticsModal"
+        :statistics-data="statisticsData"
+        @close-modal="hideStatisticsModal"
+        ></statistics-modal>
 </div>
 @endsection

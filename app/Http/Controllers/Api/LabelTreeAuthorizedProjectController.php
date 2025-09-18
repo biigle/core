@@ -23,7 +23,7 @@ class LabelTreeAuthorizedProjectController extends Controller
      * @apiParam (Required attributes) {Number} id ID of the project to authorize
      *
      * @param StoreLabelTreeAuthorizedProject $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function store(StoreLabelTreeAuthorizedProject $request)
     {
@@ -65,7 +65,7 @@ class LabelTreeAuthorizedProjectController extends Controller
      * @param Request $request
      * @param  int  $lid
      * @param  int  $pid
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy(Request $request, $lid, $pid)
     {

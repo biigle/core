@@ -8,6 +8,7 @@ import ColorAdjustmentTab from './components/colorAdjustmentTab.vue';
 import Events from '@/core/events.js';
 import ImageLabelTab from './components/imageLabelTab.vue';
 import ImagesStore from './stores/images.js';
+import Labelbot from './mixins/labelbot.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelsTab from './components/labelsTab.vue';
 import Loader from '@/core/mixins/loader.vue';
@@ -42,7 +43,7 @@ const asyncAnnotationCanvas = defineAsyncComponent({
  */
 
 export default {
-    mixins: [Loader],
+    mixins: [Loader, Labelbot],
     components: {
         sidebar: Sidebar,
         sidebarTab: SidebarTab,
@@ -89,7 +90,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
-            imageFilenames: {}
+            imageFilenames: {},
         };
     },
     computed: {
@@ -225,7 +226,6 @@ export default {
                 }
             }
 
-            // Show next image.
             this.imageIndex = this.getNextIndex(this.imageIndex);
         },
         handlePrevious() {
@@ -378,6 +378,8 @@ export default {
                 this.lastCreatedAnnotation = null;
             }
 
+            this.closeLabelbotPopup(annotation);
+
             // Mark for deletion so the annotation is immediately removed from
             // the canvas. See https://github.com/biigle/annotations/issues/70
             annotation.markedForDeletion = true;
@@ -416,16 +418,26 @@ export default {
             this.selectedLabel = label;
         },
         handleNewAnnotation(annotation, removeCallback) {
-            if (this.isEditor) {
-                annotation.label_id = this.selectedLabel.id;
-                // TODO: confidence control
-                annotation.confidence = 1;
-                AnnotationsStore.create(this.imageId, annotation)
-                    .then(this.setLastCreatedAnnotation)
-                    .catch(handleErrorResponse)
-                    // Remove the temporary annotation if saving succeeded or failed.
-                    .finally(removeCallback);
+            if (!this.isEditor) {
+                return;
             }
+
+            // TODO: confidence control
+            annotation.confidence = 1;
+
+            let promise;
+
+            if (this.labelbotIsActive) {
+                promise = this.storeLabelbotAnnotation(annotation);
+            } else {
+                annotation.label_id = this.selectedLabel.id;
+                promise = AnnotationsStore.create(this.imageId, annotation);
+            }
+
+            promise.then(this.setLastCreatedAnnotation)
+                .catch(handleErrorResponse)
+                // Remove the temporary annotation if saving succeeded or failed.
+                .finally(removeCallback);
         },
         handleAttachLabel(annotation, label) {
             label = label || this.selectedLabel;
@@ -435,6 +447,11 @@ export default {
                     // TODO: confidence control
                     confidence: 1,
                 };
+
+                if (this.isVolareAnnotationMode) {
+                    this.$refs.canvas.blinkAnnotation(annotation);
+                }
+
                 let promise = AnnotationsStore.attachLabel(annotation, annotationLabel);
                 promise.catch(handleErrorResponse);
 
@@ -443,13 +460,14 @@ export default {
 
             return Promise.reject();
         },
-        handleSwapLabel(annotation, label) {
+        handleSwapLabel(annotation, label, force) {
             label = label || this.selectedLabel;
             if (this.isEditor && label) {
-                let lastLabel = annotation.labels
-                    .filter(l => l.user_id === this.userId)
-                    .sort((a, b) => a.id - b.id)
-                    .pop();
+                let labels = annotation.labels.slice();
+                if (!force) {
+                    labels = labels.filter(l => l.user_id === this.userId);
+                }
+                let lastLabel = labels.sort((a, b) => a.id - b.id).pop();
 
                 this.handleAttachLabel(annotation, label)
                     .then(() => {
@@ -458,6 +476,11 @@ export default {
                         }
                     })
                     .catch(handleErrorResponse);
+            }
+        },
+        handleForceSwapLabel(annotation, label) {
+            if (this.isExpert) {
+                this.handleSwapLabel(annotation, label, true);
             }
         },
         refreshSingleAnnotation(annotation){
@@ -520,6 +543,9 @@ export default {
                     break;
                 case 'cachedImagesCount':
                     this.cachedImagesCount = value;
+                    break;
+                case 'labelbotTimeout':
+                    this.labelbotTimeout = value;
                     break;
                 case 'mousePosition':
                     this.showMousePosition = value;
@@ -690,6 +716,7 @@ export default {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
         this.volumeId = biigle.$require('annotations.volumeId');
         this.isEditor = biigle.$require('annotations.isEditor');
+        this.isExpert = biigle.$require('annotations.isExpert');
         this.userId = biigle.$require('annotations.userId');
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
 

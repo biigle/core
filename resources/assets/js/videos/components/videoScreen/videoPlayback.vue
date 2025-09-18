@@ -26,7 +26,7 @@ export default {
             minResolution: 0.01,
             // parameter tracking seeking state specific for frame jump, needed because looking for seeking directly leads to error
             seekingFrame: this.seeking,
-            supportsVideoFrameCallback: false,
+            shouldUseVideoFrameCallback: false,
         };
     },
     methods: {
@@ -85,7 +85,7 @@ export default {
         },
         startRenderLoop() {
             let render;
-            if (this.supportsVideoFrameCallback) {
+            if (this.shouldUseVideoFrameCallback) {
                 render = () => {
                     this.renderVideo();
                     this.animationFrameId = this.video.requestVideoFrameCallback(render);
@@ -100,7 +100,7 @@ export default {
             this.map.render();
         },
         stopRenderLoop() {
-            if (this.supportsVideoFrameCallback) {
+            if (this.shouldUseVideoFrameCallback) {
                 this.video.cancelVideoFrameCallback(this.animationFrameId);
             } else {
                 window.cancelAnimationFrame(this.animationFrameId);
@@ -125,13 +125,6 @@ export default {
             // at currentTime and be sure that the same frame can be reproduced later for
             // the annotations. See: https://github.com/biigle/core/issues/433
             this.$emit('seek', this.video.currentTime, true);
-        },
-        togglePlaying() {
-            if (this.playing) {
-                this.pause();
-            } else {
-                this.play();
-            }
         },
         play() {
             this.video.play();
@@ -233,6 +226,24 @@ export default {
                 this.$emit('seek', this.video.currentTime + this.jumpStep);
             }
         },
+        setShouldUseVideoFrameCallback() {
+            this.shouldUseVideoFrameCallback = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+        },
+        handleFirefoxFullscreenChange() {
+            if (document.fullscreenElement) {
+                this.shouldUseVideoFrameCallback = false;
+                if (this.playing) {
+                    // Restart the render loop with requestAnimationFrame.
+                    this.stopRenderLoop();
+                    this.startRenderLoop();
+                }
+            } else {
+                this.setShouldUseVideoFrameCallback();
+            }
+        },
+        toggleFirefoxFullscreen() {
+            document.body.requestFullscreen();
+        },
     },
     watch: {
         seeking(seeking) {
@@ -259,14 +270,32 @@ export default {
                 },
             });
         });
-        let metadataPromise = new Promise((resolve) => {
-            this.video.addEventListener('loadedmetadata', resolve);
-        });
+
+        let metadataPromise;
+        // If the video screen is shown in the popup and the video is already loaded.
+        if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+            metadataPromise = Promise.resolve();
+        } else {
+            metadataPromise = new Promise((resolve) => {
+                this.video.addEventListener('loadedmetadata', resolve);
+            });
+        }
+
+
         Promise.all([mapPromise, metadataPromise])
             .then(this.updateVideoLayer)
-            .then(this.attachUpdateVideoLayerListener);
+            .then(this.attachUpdateVideoLayerListener)
+            .then(() => {
+                // If the video screen is shown in the popup and the video is already
+                // loaded.
+                if (this.video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+                    this.renderVideo();
 
-        Keyboard.on(' ', this.togglePlaying);
+                    if (!this.video.paused) {
+                        this.setPlaying();
+                    }
+                }
+            });
 
         this.$watch('hasError', (hasError) => {
             if (this.videoLayer) {
@@ -274,9 +303,27 @@ export default {
             }
         });
 
-        if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
-            this.supportsVideoFrameCallback = true;
+        // If in Firefox and in the video popup and in "F11 fullscreen" or actual
+        // fullscreen mode then the video playback with requestVideoFrameCallback does
+        // not work. Presumably, this is because the video lives in the parent
+        // window which is now invisible. This detects the state and switches to
+        // requestAnimationFrame instead. To reliably detect the state we add an F11
+        // event listener and switch to actual fullscreen mode instead of allowing the
+        // "F11 fullscreen" mode of Firefox which cannot be reliably detected.
+        if (this.showClosePopoutButton && navigator.userAgent.toLowerCase().includes('firefox')) {
+            Keyboard.on('F11', this.toggleFirefoxFullscreen, 0, this.listenerSet);
+            document.addEventListener("fullscreenchange", this.handleFirefoxFullscreenChange);
         }
+
+        this.setShouldUseVideoFrameCallback();
+    },
+    beforeUnmount() {
+        // Cleanup is important because the videoScreen can be created and destroyed with
+        // with the video popout feature.
+        this.video.removeEventListener('play', this.setPlaying);
+        this.video.removeEventListener('pause', this.setPausedAndSeek);
+        this.video.removeEventListener('seeked', this.handleSeeked);
+        this.video.removeEventListener('loadeddata', this.renderVideo);
     },
 };
 </script>

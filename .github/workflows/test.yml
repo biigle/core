@@ -9,12 +9,16 @@ on:
       - 'resources/assets/**'
       - 'resources/scripts/**'
       - 'storage/**'
+      - 'package.json'
+      - 'package.lock'
   pull_request:
     paths-ignore:
       - '.docker/**'
       - 'resources/assets/**'
       - 'resources/scripts/**'
       - 'storage/**'
+      - 'package.json'
+      - 'package.lock'
 
 jobs:
   test-current:
@@ -37,6 +41,9 @@ jobs:
 
     - name: Install Dependencies
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
+
+    - name: Install aws dependency
+      run: composer require league/flysystem-aws-s3-v3
 
     - name: Fetch base images
       run: |

@@ -70,7 +70,7 @@ class VolumeReportGenerator extends ReportGenerator
      */
     protected function getVolumeLabels()
     {
-        return Label::select('id', 'name', 'parent_id')
+        return Label::select('id', 'name', 'parent_id', 'label_tree_id')
             ->whereIn('label_tree_id', function ($query) {
                 $query->select('label_tree_id')
                     ->from('label_tree_project')

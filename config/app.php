@@ -179,6 +179,8 @@ return [
         Biigle\Modules\Newsletter\NewsletterServiceProvider::class,
         Biigle\Modules\Ptp\PtpServiceProvider::class,
 
+    ])->replace([
+        Illuminate\Queue\QueueServiceProvider::class => Biigle\Providers\QueueServiceProvider::class,
     ])->toArray(),
 
     /*

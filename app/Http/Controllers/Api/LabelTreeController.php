@@ -186,7 +186,7 @@ class LabelTreeController extends Controller
      * @apiParam (Attributes that can be updated) {Number} visibility_id ID of the new visibility of the label tree (public or private).
      *
      * @param UpdateLabelTree $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function update(UpdateLabelTree $request)
     {
@@ -238,7 +238,7 @@ class LabelTreeController extends Controller
      * @apiParam {Number} id The label tree ID.
      *
      * @param DestroyLabelTree $request
-     * @return \Illuminate\Http\RedirectResponse|null
+     * @return \Illuminate\Http\RedirectResponse|void
      */
     public function destroy(DestroyLabelTree $request)
     {

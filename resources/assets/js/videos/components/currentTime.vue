@@ -1,12 +1,9 @@
 <template>
-    <div
-        class="current-time">
-            <loader v-if="seeking" :active="true"></loader>
-            <span v-else>
-                <span
-                    v-text="currentTimeText"
-                    ></span>
-            </span>
+    <div class="current-time">
+        <loader :active="seeking"></loader>
+        <div ref="wrapper" class="current-time__wrapper" v-show="!seeking">
+            <canvas ref="canvas"></canvas>
+        </div>
     </div>
 </template>
 
@@ -32,6 +29,32 @@ export default {
         currentTimeText() {
             return videoTime(this.currentTime);
         },
+    },
+    methods: {
+        updateText() {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillText(this.currentTimeText, this.textX, this.textY);
+        },
+    },
+    watch: {
+        currentTimeText() {
+            this.updateText();
+        },
+    },
+    mounted() {
+        this.canvas = this.$refs.canvas;
+        const dpr = window.devicePixelRatio;
+        this.canvas.width = this.$refs.wrapper.clientWidth * dpr;
+        this.canvas.height = this.$refs.wrapper.clientHeight * dpr;
+        this.ctx = this.canvas.getContext('2d');
+        this.ctx.scale(dpr, dpr);
+        this.ctx.font = window.getComputedStyle(this.$el, null).getPropertyValue('font');
+        this.ctx.fillStyle = window.getComputedStyle(this.$el, null).getPropertyValue('color');
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.textX = this.canvas.width / dpr / 2;
+        this.textY = this.canvas.height / dpr / 2 + 1;
+        this.updateText();
     },
 };
 </script>

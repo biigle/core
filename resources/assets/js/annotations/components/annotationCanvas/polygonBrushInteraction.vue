@@ -28,16 +28,18 @@ export default {
         },
         isNotAPolygonTool() {
             return !(this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill);
-        }
+        },
     },
     methods: {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel && this.canAdd) {
-                this.requireSelectedLabel();
             } else if (this.canAdd) {
-                this.interactionMode = 'polygonBrush';
+                if ((!this.hasSelectedLabel && !this.labelbotIsActive)) {
+                    this.requireSelectedLabel();
+                } else {
+                    this.interactionMode = 'polygonBrush';
+                }
             }
         },
         togglePolygonEraser() {

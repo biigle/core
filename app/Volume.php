@@ -42,7 +42,7 @@ class Volume extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -57,7 +57,7 @@ class Volume extends Model
     /**
      * The attributes hidden from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'pivot',
@@ -337,8 +337,22 @@ class Volume extends Model
             $step = intdiv($total, $number);
 
             return $this->orderedFiles()
+                // The query must use the row number instead of the ID because in some
+                // cases no ID may be divisible by the step (e.g. if the step is even)
+                // and only odd IDs are there.
                 ->when($step > 1, function ($query) use ($step) {
-                    $query->whereRaw("(id % {$step}) = 0");
+                    $tableName = $query->getModel()->getTable();
+                    $query->whereIn(
+                        'id',
+                        fn ($query) =>
+                        $query->select('id')
+                            ->fromSub(function ($query) use ($tableName) {
+                                $query->selectRaw('id, ROW_NUMBER() OVER (ORDER BY filename ASC) as row_num')
+                                    ->from($tableName)
+                                    ->where('volume_id', $this->id);
+                            }, 'numbered_files')
+                            ->whereRaw("(row_num - 1) % ? = 0", [$step])
+                    );
                 })
                 ->limit($number)
                 ->get();
@@ -386,10 +400,8 @@ class Volume extends Model
 
     /**
      * Set the url attribute of this volume.
-     *
-     * @param string $value
      */
-    public function setUrlAttribute($value)
+    public function setUrlAttribute(?string $value)
     {
         // Do not trim the slashes defining the protocol/storage disk.
         if (is_string($value) && !str_ends_with($value, '://')) {

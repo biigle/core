@@ -37,10 +37,8 @@ class LabelTreeVersion extends Model
 
     /**
      * Set the doi attribute of this version.
-     *
-     * @param string $value
      */
-    public function setDoiAttribute($value)
+    public function setDoiAttribute(?string $value)
     {
         if (is_string($value)) {
             $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);

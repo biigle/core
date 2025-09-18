@@ -22,7 +22,7 @@ class Announcement extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = ['title', 'show_until', 'body'];
 
@@ -58,8 +58,20 @@ class Announcement extends Model
      */
     public static function getActive()
     {
-        // Store false if no announcement exists because null can't be stored.
-        return Cache::rememberForever(self::CACHE_KEY, fn () => self::active()->first() ?: false) ?: null;
+        $active = Cache::get(self::CACHE_KEY);
+
+        if (is_null($active)) {
+            $active = self::active()->first();
+
+            if ($active) {
+                Cache::put(self::CACHE_KEY, $active, $active->show_until);
+            } else {
+                // Store false if no announcement exists because null can't be stored.
+                Cache::put(self::CACHE_KEY, false);
+            }
+        }
+
+        return $active;
     }
 
     /**

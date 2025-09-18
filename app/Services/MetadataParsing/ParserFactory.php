@@ -6,6 +6,9 @@ use Exception;
 
 class ParserFactory
 {
+    /**
+     * @var array<string, list<string>>
+     */
     public static array $parsers = [
         'image' => [
             ImageCsvParser::class,

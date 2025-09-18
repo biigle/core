@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
@@ -67,7 +68,6 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertJsonFragment(['points' => [10, 20, 30, 40]])
             ->assertJsonFragment(['color' => 'bada55'])
             ->assertJsonFragment(['name' => 'My label']);
-        
     }
 
     public function testIndexAnnotationSessionHideOwn()
@@ -325,6 +325,134 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertNotNull($annotation);
         $this->assertSame(2, sizeof($annotation->points));
         $this->assertSame(1, $annotation->labels()->count());
+    }
+
+    public function testStoreWithFeatureVectorWithoutHNSW()
+    {
+        $this->beEditor();
+
+        // Test label
+        $label = LabelTest::create();
+        // Label must be attached to a label tree
+        $this->project()->labelTrees()->attach($label->label_tree_id);
+        // Save it in DB
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $label->id,
+            'label_tree_id' => $label->label_tree_id,
+            'vector' => range(1, 384),
+        ]);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ]);
+        // A label or a feature vector must be provided
+        $response->assertStatus(422);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 10),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ]);
+        // Invalid feature vector dimension
+        $response->assertStatus(422);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ]);
+        $response->assertSuccessful();
+
+        // Since we saved just one label in DB we get it as the result
+        // of the vector search
+        $response->assertJsonFragment(['label_id' => $label->id]);
+
+        // Save multiple labels in DB
+        $differentLabel = LabelTest::create();
+        $this->project()->labelTrees()->attach($differentLabel->label_tree_id);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $differentLabel->id,
+            'label_tree_id' => $differentLabel->label_tree_id,
+            'vector' => range(384, 384 * 2 - 1),
+        ]);
+
+        $anotherDifferentLabel = LabelTest::create();
+        $this->project()->labelTrees()->attach($anotherDifferentLabel->label_tree_id);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $anotherDifferentLabel->id,
+            'label_tree_id' => $anotherDifferentLabel->label_tree_id,
+            'vector' => range(384 * 2, 384 * 3 - 1),
+        ]);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ]);
+
+        $response->assertSuccessful();
+        // The feature vector of differentLabel is more similar to the input feature vector
+        // than feature vector of anotherDifferentLabel, so it is ranked higher.
+        $response->assertJson([
+            'labelBOTLabels' => [
+                ['id' => $differentLabel->id],
+                ['id' => $anotherDifferentLabel->id],
+            ]
+        ]);
+    }
+
+    public function testStoreWithFeatureVectorIgnoreLabelTrees()
+    {
+        $this->beEditor();
+
+        $label1 = LabelTest::create();
+        $this->project()->labelTrees()->attach($label1->label_tree_id);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $label1->id,
+            'label_tree_id' => $label1->label_tree_id,
+            'vector' => range(1, 384),
+        ]);
+
+        $label2 = LabelTest::create();
+        $this->project()->labelTrees()->attach($label2->label_tree_id);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $label2->id,
+            'label_tree_id' => $label2->label_tree_id,
+            'vector' => range(384, 384 * 2 - 1),
+        ]);
+
+        $label3 = LabelTest::create();
+        $this->project()->labelTrees()->attach($label3->label_tree_id);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $label3->id,
+            'label_tree_id' => $label3->label_tree_id,
+            'vector' => range(384, 384 * 2 - 1),
+        ]);
+
+        // Test handling of spaces before IDs, too.
+        config(['labelbot.ignore_label_trees' => [' '.$label3->label_tree_id]]);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJsonPath('labelBOTLabels.0.id', $label2->id);
+        $response->assertJsonMissingPath('labelBOTLabels.1.id', $label3->id);
     }
 
     public function testStoreValidatePoints()

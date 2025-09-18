@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielef
 LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 
 RUN LC_ALL=C.UTF-8 apt-get update \
-    && apt-get install -y --no-install-recommends software-properties-common \
+    && apt-get install -y --no-install-recommends software-properties-common gnupg-agent \
     && add-apt-repository -y ppa:ondrej/php \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         php8.2-cli \

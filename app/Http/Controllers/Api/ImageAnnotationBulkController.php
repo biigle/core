@@ -104,6 +104,7 @@ class ImageAnnotationBulkController extends Controller
                 $label = $request->labels[$annotation->label_id];
                 /** @phpstan-ignore property.notFound */
                 $confidence = $annotation->confidence;
+                /** @phpstan-ignore property.notFound,property.notFound */
                 unset($annotation->label_id, $annotation->confidence);
 
                 $this->authorize('attach-label', [$annotation, $label]);

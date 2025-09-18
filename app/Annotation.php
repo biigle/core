@@ -24,7 +24,7 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The attributes excluded from the model's JSON form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'pivot',
@@ -38,6 +38,11 @@ abstract class Annotation extends Model implements AnnotationContract
     protected $casts = [
         'points' => 'array',
     ];
+
+    /**
+     * The additional labels suggested by the LabelBOT.
+     */
+    public $labelBOTLabels = [];
 
     /**
      * Scope a query to only include annotations that are visible for a certain user.
@@ -216,5 +221,15 @@ abstract class Annotation extends Model implements AnnotationContract
     public function getId(): int
     {
         return $this->id;
+    }
+
+    /**
+     * Get the LabelBOT suggested labels.
+     *
+     * @return array<int>
+     */
+    public function getLabelBOTLabelsAttribute(): array
+    {
+        return $this->labelBOTLabels;
     }
 }

@@ -55,6 +55,18 @@ const IGNORED_TAGS = [
  *
  * // Now only the last event listener is active.
  * kb.setActiveSet('other-set');
+ *
+ * You can define listeners for key combinations, too:
+ *
+ * kb.on('Control+A');
+ *
+ * Instead of "event.key" values to define listeners, you can also use "event.code" values
+ * for listeners that are independent from the keyboard layout and language. Example:
+ *
+ * kb.on('Alt+Backquote');
+ *
+ * Note that modifier keys such as Alt, Control, etc. are still identified by their "event.key"
+ * value here and not by "event.code" (AltLeft, ControlLeft, etc.).
  */
 class Keyboard {
     constructor() {
@@ -62,13 +74,14 @@ class Keyboard {
         this.listenerSets = {
             'default': {},
         };
-        this.pressedKeysArray = [];
+        this.pressedKeysSet = new Set();
+        this.pressedCodesSet = new Set();
 
         // Use keydown because keypress does not fire for all keys that can be used in
         // shortcuts.
         document.body.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.body.addEventListener('keyup', this.handleKeyUp.bind(this));
-        window.addEventListener('focus', this.clearPressedKeys.bind(this));
+        window.addEventListener('blur', this.clearPressedKeys.bind(this));
     }
 
     get activeListenerSet() {
@@ -76,7 +89,11 @@ class Keyboard {
     }
 
     get pressedKeys() {
-        return this.pressedKeysArray.slice().sort().join('+');
+        return Array.from(this.pressedKeysSet).sort().join('+');
+    }
+
+    get pressedCodes() {
+        return Array.from(this.pressedCodesSet).sort().join('+');
     }
 
     isKeyIdentifier(key) {
@@ -109,37 +126,70 @@ class Keyboard {
             return;
         }
 
-        if (!e.repeat) {
-            this.pressedKeysArray.push(e.key.toLowerCase());
-        }
+        this.pressedKeysSet.add(e.key.toLowerCase());
+        this.pressedCodesSet.add(e.code.toLowerCase());
+
         // Sometimes a modifier key is still pressed when the page is loaded (e.g.
         // if the user travelled back in browser history using the keys). Check for
         // meta keys on each keypress to get the correct set of pressed keys in these
         // cases.
         this.maybeInjectModifierKeys(e);
+
         this.handleKeyEvents(e, this.pressedKeys);
+
+        // Some keys are the same as codes. Only execute the codes listeners if they are
+        // actually different.
+        if (this.pressedKeys !== this.pressedCodes) {
+            this.handleKeyEvents(e, this.pressedCodes);
+        }
+
+        // Similarly, modifier keys must be removed immediately, e.g. in case a "switch
+        // window" key combination was pressed. Otherwise the modifier keys would stick
+        // forever.
+        this.maybeRemoveModifierKeys(e);
     }
 
     maybeInjectModifierKeys(e) {
-        if (e.altKey && this.pressedKeysArray.indexOf('alt') === -1) {
-            this.pressedKeysArray.push('alt');
+        if (e.altKey) {
+            this.pressedKeysSet.add('alt');
+            this.pressedCodesSet.add('alt');
         }
-        if (e.ctrlKey && this.pressedKeysArray.indexOf('control') === -1) {
-            this.pressedKeysArray.push('control');
+        if (e.ctrlKey) {
+            this.pressedKeysSet.add('control');
+            this.pressedCodesSet.add('control');
         }
-        if (e.metaKey && this.pressedKeysArray.indexOf('meta') === -1) {
-            this.pressedKeysArray.push('meta');
+        if (e.metaKey) {
+            this.pressedKeysSet.add('meta');
+            this.pressedCodesSet.add('meta');
         }
-        if (e.shiftKey && this.pressedKeysArray.indexOf('shift') === -1) {
-            this.pressedKeysArray.push('shift');
+        if (e.shiftKey) {
+            this.pressedKeysSet.add('shift');
+            this.pressedCodesSet.add('shift');
+        }
+    }
+
+    maybeRemoveModifierKeys(e) {
+        if (e.altKey) {
+            this.pressedKeysSet.delete('alt');
+            this.pressedKeysSet.delete('alt');
+        }
+        if (e.ctrlKey) {
+            this.pressedKeysSet.delete('control');
+            this.pressedKeysSet.delete('control');
+        }
+        if (e.metaKey) {
+            this.pressedKeysSet.delete('meta');
+            this.pressedKeysSet.delete('meta');
+        }
+        if (e.shiftKey) {
+            this.pressedKeysSet.delete('shift');
+            this.pressedKeysSet.delete('shift');
         }
     }
 
     handleKeyUp(e) {
-        let index = this.pressedKeysArray.indexOf(e.key.toLowerCase());
-        if (index !== -1) {
-            this.pressedKeysArray.splice(index, 1);
-        }
+        this.pressedKeysSet.delete(e.key.toLowerCase());
+        this.pressedCodesSet.delete(e.code.toLowerCase());
     }
 
     handleKeyEvents(e, keys) {
@@ -149,7 +199,8 @@ class Keyboard {
     }
 
     clearPressedKeys() {
-        this.pressedKeysArray = [];
+        this.pressedKeysSet.clear();
+        this.pressedCodesSet.clear();
     }
 
     executeCallbacks(list, e) {
