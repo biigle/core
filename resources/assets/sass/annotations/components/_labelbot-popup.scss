@@ -1,6 +1,12 @@
 .labelbot-popup {
     border: 1px solid $input-border;
     border-radius: $border-radius-base;
+
+    &:not(.labelbot-popup--typing) {
+        .labelbot-label:first-child {
+            border-color: $brand-info;
+        }
+    }
 }
 
 .labelbot-labels {
@@ -116,12 +122,6 @@
 
         i {
             display: block;
-        }
-    }
-
-    &:not(.labelbot-popup--typing) {
-        .labelbot-label:first-child {
-            border-color: $brand-info;
         }
     }
 }

@@ -54,6 +54,7 @@ export default {
         'seek',
         'select',
         'start-resize',
+        'reached-annotation',
     ],
     components: {
         currentTime: CurrentTime,
@@ -126,6 +127,7 @@ export default {
             currentTime: 0,
             scrollTop: 0,
             hoverTime: 0,
+            watchForCrossedFrame: false,
         };
     },
     provide() {
@@ -192,6 +194,13 @@ export default {
                 'full-height': this.fullHeight,
             };
         },
+        annotationStartFrames() {
+            return [...new Set(this.annotations.map(a => a.startFrame))]
+                .sort((a, b) => a - b);
+        },
+        nextAnnotationStartFrame() {
+            return this.annotationStartFrames.find(f => f >= this.currentTime);
+        },
     },
     methods: {
         startUpdateLoop() {
@@ -209,6 +218,14 @@ export default {
         },
         updateCurrentTime() {
             this.currentTime = this.video.currentTime;
+
+            // This check is used to emit the "reached-annotation" event only if the
+            // playback was "near" the annotation before. Otherwise the event would also
+            // fire if the user jumps over the annotation with manual seeking or if the
+            // plaback should resume at the exact frame after an automatic pause.
+            if (this.currentTime >= (this.nextAnnotationStartFrame - 0.06) && this.currentTime < this.nextAnnotationStartFrame) {
+                this.watchForCrossedFrame = true;
+            }
         },
         emitSeek(time) {
             this.$emit('seek', time);
@@ -264,6 +281,14 @@ export default {
     watch: {
         heightOffset() {
             this.$refs.scrollStrip.updateHeight();
+        },
+        nextAnnotationStartFrame(nextFrame, previousFrame) {
+            // Don't fire on the initial undefined frame and only if the playback was
+            // "near" an annotation before (see updateCurrentTime for explanation).
+            if (this.watchForCrossedFrame && previousFrame !== undefined) {
+                this.watchForCrossedFrame = false;
+                this.$emit('reached-annotation', previousFrame);
+            }
         },
     },
     created() {

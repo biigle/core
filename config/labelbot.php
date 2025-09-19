@@ -36,15 +36,15 @@ return [
 
     /*
     ---------------------------------------------------------------------------
-    | M: Maximum Number of LabelBOT's Requests (Vector Searches)
+    | Maximum Number of parallel LabelBOT Requests (Vector Searches)
     ---------------------------------------------------------------------------
     |
-    | The value of M specifies the maximum number of vector searches in a row.
-    | This value is only needed for the UI. Once the result of a vector search
+    | The value of specifies the maximum number of parallel vector searches.
+    | This value is mostly needed for the API. Once the result of a vector search
     | is resolved by the user, a new request can be made. A higher value means more
-    | concurrent searches and increased database workload.
+    | concurrent searches and possible increased database workload.
     */
-    'max_requests' => 5,
+    'max_requests' => 2,
 
     /*
     |--------------------------------------------------------------------------
