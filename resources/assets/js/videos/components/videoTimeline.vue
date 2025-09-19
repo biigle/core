@@ -219,11 +219,23 @@ export default {
         updateCurrentTime() {
             this.currentTime = this.video.currentTime;
 
+            // Make sure the video time and frame time are rounded to the same number of
+            // decimals. otherwise the comparison below may not work correctly.
+            // Example: 12.3 is smaller than 12.33 although the comparison expects
+            // it to be equal.
+            const time = Math.round(this.currentTime * 1e4) / 1e4;
+            const startFrame = Math.round(this.nextAnnotationStartFrame * 1e4) / 1e4;
+            // The offset should make sure that the condition below is true for at least
+            // one call of this function before the next annotation is hit. With 0.1 I
+            // still saw some jumps over the "watch window" at the maximum 4x playback
+            // speed so I chose 0.2 to be sure.
+            const watchOffset = 0.2;
+
             // This check is used to emit the "reached-annotation" event only if the
             // playback was "near" the annotation before. Otherwise the event would also
             // fire if the user jumps over the annotation with manual seeking or if the
-            // plaback should resume at the exact frame after an automatic pause.
-            if (this.currentTime >= (this.nextAnnotationStartFrame - 0.06) && this.currentTime < this.nextAnnotationStartFrame) {
+            // playback should resume at the exact frame after an automatic pause.
+            if (time >= (startFrame - watchOffset) && time < startFrame) {
                 this.watchForCrossedFrame = true;
             }
         },
