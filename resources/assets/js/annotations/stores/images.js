@@ -1,6 +1,7 @@
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
 import {ref} from 'vue';
+import * as UTIF from 'utif2';
 
 export class CrossOriginError extends Error {}
 
@@ -172,6 +173,7 @@ class Images {
             height: 0,
             canvas: canvas,
             crossOrigin: false,
+            isTiff: false,
         };
 
         // Disable auto-rotation based on image metadata. This only works when the
@@ -241,6 +243,16 @@ class Images {
                     });
                 }
 
+            if (type === 'image/tiff' || type === 'image/tif') {
+                return response
+                    .arrayBuffer().then((buffer) =>
+                        this.loadSmallTiffs(buffer, imageWrapper))
+                    .then((wrapper) => {
+                        document.body.appendChild(wrapper.canvas);
+                        return wrapper;
+                    });
+            }
+
                 response.blob().then(function (blob) {
                     let urlCreator = window.URL || window.webkitURL;
                     img.src = urlCreator.createObjectURL(blob);
@@ -257,7 +269,17 @@ class Images {
                     imageWrapper.crossOrigin = true;
                     img.src = url;
 
-                    return promise;
+                    return promise.catch(() => {
+                        // Fallback dummy image
+                        imageWrapper.source = new Image();
+                        imageWrapper.width = 1;
+                        imageWrapper.height = 1;
+                        imageWrapper.canvas.width = 1;
+                        imageWrapper.canvas.height = 1;
+                        imageWrapper.isTiff = true;
+
+                        return Promise.resolve(imageWrapper);
+                    });
                 }
 
                 return Promise.reject(`Failed to load image ${id}!`);
@@ -386,6 +408,42 @@ class Images {
 
     setMaxCacheSize(size) {
         this.maxCacheSize = size;
+    }
+
+    loadSmallTiffs(arrayBuffer, imageWrapper) {
+        return new Promise(function (resolve, reject) {
+                try {
+                    let ifds = UTIF.decode(arrayBuffer);
+                    UTIF.decodeImage(arrayBuffer, ifds[0]);
+                    let rgba = UTIF.toRGBA8(ifds[0]);
+                    let width = ifds[0].width;
+                    let height = ifds[0].height;
+
+                    imageWrapper.width = width;
+                    imageWrapper.height = height;
+                    imageWrapper.canvas.width = width;
+                    imageWrapper.canvas.height = height;
+
+                    let ctx = imageWrapper.canvas.getContext('2d');
+                    let imgData = ctx.createImageData(width, height);
+                    imgData.data.set(rgba);
+                    ctx.putImageData(imgData, 0, 0);
+                    imageWrapper.source = imageWrapper.canvas;
+                    imageWrapper.canvas._dirty = false;
+                    imageWrapper.canvas.toBlob((blob) => {
+                        let url = URL.createObjectURL(blob);
+                        let img = new Image();
+                        img.onload = () => {
+                            URL.revokeObjectURL(url);
+                            imageWrapper.source = img;
+                            resolve(imageWrapper);
+                        };
+                        img.src = url;
+                    }, "image/png"); 
+                } catch (err) {
+                    reject('TIFF decode error: ' + err.message);
+                }
+        });
     }
 }
 
