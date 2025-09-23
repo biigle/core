@@ -128,6 +128,7 @@ export default {
             scrollTop: 0,
             hoverTime: 0,
             watchForCrossedFrame: false,
+            nextAnnotationStartFrame: 0,
         };
     },
     provide() {
@@ -198,11 +199,20 @@ export default {
             return [...new Set(this.annotations.map(a => a.startFrame))]
                 .sort((a, b) => a - b);
         },
-        nextAnnotationStartFrame() {
-            return this.annotationStartFrames.find(f => f >= this.currentTime);
-        },
     },
     methods: {
+        findNextAnnotationStartFrame(currentFrame) {
+            currentFrame = this.roundTime(currentFrame > 0 ? currentFrame : this.currentTime);
+
+            this.nextAnnotationStartFrame = this.annotationStartFrames.find(f => this.roundTime(f) > currentFrame);
+        },
+        roundTime(t) {
+            // Make sure the video time and frame time are rounded to the same number of
+            // decimals. otherwise the comparison below may not work correctly.
+            // Example: 12.3 is smaller than 12.33 although the comparison expects
+            // it to be equal.
+            return Math.round(t * 1e4) / 1e4
+        },
         startUpdateLoop() {
             let now = Date.now();
             if (now - this.refreshLastTime >= this.refreshRate) {
@@ -219,12 +229,8 @@ export default {
         updateCurrentTime() {
             this.currentTime = this.video.currentTime;
 
-            // Make sure the video time and frame time are rounded to the same number of
-            // decimals. otherwise the comparison below may not work correctly.
-            // Example: 12.3 is smaller than 12.33 although the comparison expects
-            // it to be equal.
-            const time = Math.round(this.currentTime * 1e4) / 1e4;
-            const startFrame = Math.round(this.nextAnnotationStartFrame * 1e4) / 1e4;
+            const time = this.roundTime(this.currentTime);
+            const startFrame = this.roundTime(this.nextAnnotationStartFrame);
             // The offset should make sure that the condition below is true for at least
             // one call of this function before the next annotation is hit. With 0.1 I
             // still saw some jumps over the "watch window" at the maximum 4x playback
@@ -238,6 +244,13 @@ export default {
             if (time >= (startFrame - watchOffset) && time < startFrame) {
                 this.watchForCrossedFrame = true;
             }
+
+            if (this.watchForCrossedFrame && time >= startFrame) {
+                this.watchForCrossedFrame = false;
+                this.$emit('reached-annotation', this.nextAnnotationStartFrame)
+                this.findNextAnnotationStartFrame(this.nextAnnotationStartFrame);
+            }
+
         },
         emitSeek(time) {
             this.$emit('seek', time);
@@ -294,23 +307,20 @@ export default {
         heightOffset() {
             this.$refs.scrollStrip.updateHeight();
         },
-        nextAnnotationStartFrame(nextFrame, previousFrame) {
-            // Don't fire on the initial undefined frame and only if the playback was
-            // "near" an annotation before (see updateCurrentTime for explanation).
-            if (this.watchForCrossedFrame && previousFrame !== undefined) {
-                this.watchForCrossedFrame = false;
-                this.$emit('reached-annotation', previousFrame);
-            }
+        annotations() {
+            this.findNextAnnotationStartFrame();
         },
     },
     created() {
         this.video.addEventListener('play', this.startUpdateLoop);
         this.video.addEventListener('pause', this.stopUpdateLoop);
         this.video.addEventListener('seeked', this.updateCurrentTime);
+        this.video.addEventListener('seeked', this.findNextAnnotationStartFrame);
 
         // If the video timeline is shown in the popup and the video is already loaded.
         if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
             this.updateCurrentTime();
+            this.findNextAnnotationStartFrame();
 
             if (!this.video.paused) {
                 this.startUpdateLoop();

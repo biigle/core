@@ -810,7 +810,9 @@ export default {
                     this.autoPauseTimeout = this.settings.autoPause * 1000;
                 }
                 this.seek(frame).then(() => {
-                    if (this.settings.autoPause < AUTO_PAUSE_INDEFINITE) {
+                    // Check autoPauseTimeout again because the timeout could have been
+                    // cancelled while the video was still seeking.
+                    if (this.autoPauseTimeout > 0 && this.settings.autoPause < AUTO_PAUSE_INDEFINITE) {
                         this.autoPauseTimeoutId = window.setTimeout(() => {
                             this.video.play();
                             this.autoPauseTimeout = 0;

@@ -391,6 +391,7 @@ export default {
         'track',
         'popout',
         'initMap',
+        'cancel-auto-play',
     ],
     mixins: [
         VideoPlayback,
