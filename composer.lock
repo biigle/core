@@ -260,17 +260,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/auth-haai.git",
-                "reference": "f9f37d76604ca11dee65f3c490bb1db42eea8a0d"
+                "reference": "2025973a7e64040ed433d1257a4e0e9aee0fa152"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/auth-haai/zipball/f9f37d76604ca11dee65f3c490bb1db42eea8a0d",
-                "reference": "f9f37d76604ca11dee65f3c490bb1db42eea8a0d",
+                "url": "https://api.github.com/repos/biigle/auth-haai/zipball/2025973a7e64040ed433d1257a4e0e9aee0fa152",
+                "reference": "2025973a7e64040ed433d1257a4e0e9aee0fa152",
                 "shasum": ""
             },
             "require": {
-                "ext-json": "*",
-                "socialiteproviders/manager": "^4.4"
+                "biigle/laravel-socialite-haai": "^1.0",
+                "ext-json": "*"
             },
             "default-branch": true,
             "type": "library",
@@ -306,7 +306,7 @@
                 "issues": "https://github.com/biigle/auth-haai/issues",
                 "source": "https://github.com/biigle/auth-haai"
             },
-            "time": "2025-07-21T10:17:37+00:00"
+            "time": "2025-09-26T14:09:25+00:00"
         },
         {
             "name": "biigle/auth-lslogin",
@@ -856,6 +856,63 @@
                 "source": "https://github.com/biigle/laravel-file-cache/tree/v5.1.0"
             },
             "time": "2025-05-13T13:23:10+00:00"
+        },
+        {
+            "name": "biigle/laravel-socialite-haai",
+            "version": "v1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/laravel-socialite-haai.git",
+                "reference": "f1d57f3da5fa4add3b8a40c26c8fcd95dd76430f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-socialite-haai/zipball/f1d57f3da5fa4add3b8a40c26c8fcd95dd76430f",
+                "reference": "f1d57f3da5fa4add3b8a40c26c8fcd95dd76430f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^8.0",
+                "socialiteproviders/manager": "^4.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\SocialiteProviders\\HelmholtzAAI\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\SocialiteProviders\\HelmholtzAAI\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                }
+            ],
+            "description": "Helmholtz AAI OAuth2 Provider for Laravel Socialite",
+            "homepage": "https://github.com/biigle/laravel-socialite-haai",
+            "keywords": [
+                "laravel",
+                "login",
+                "oauth",
+                "provider",
+                "socialite"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/laravel-socialite-haai/issues",
+                "source": "https://github.com/biigle/laravel-socialite-haai/tree/v1.2"
+            },
+            "time": "2025-09-26T14:05:08+00:00"
         },
         {
             "name": "biigle/laravel-webdav",
