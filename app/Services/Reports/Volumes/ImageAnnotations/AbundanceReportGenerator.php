@@ -37,11 +37,8 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        $query = $this->query();
-        // Separate the annotated images from the empty ones, since only the annotated images could require additional processing.
-        $annotatedImageRows = $query->clone()->whereNotNull('label_id')->get();
-        // Get query for images that have no annotations
-        $emptyImagesQuery = $query->clone()->whereNull('label_id')->select('filename');
+        $annotatedImageRows = $this->query()->get();
+        $emptyImagesQuery = $this->source->images()->select('filename');
 
         if ($this->shouldSeparateLabelTrees()) {
             $annotatedImageRows = $annotatedImageRows->groupBy('label_tree_id');
@@ -78,14 +75,14 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
 
             foreach ($users as $id => $name) {
                 $usedImageIds = $annotatedImageRows->get($id)->pluck('image_id')->unique();
-                $emptyImagesQuery = $this->source->images()->select('filename')->whereNotIn('id', $usedImageIds);
+                $emptyImagesQueryTmp = $emptyImagesQuery->clone()->whereNotIn('id', $usedImageIds);
                 $rowGroup = $annotatedImageRows->get($id);
 
                 if (!$this->shouldUseAllLabels()) {
                     $labels = Label::whereIn('id', $rowGroup->pluck('label_id'))->get();
                 }
 
-                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQuery);
+                $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQueryTmp);
             }
         } else {
             if ($this->shouldUseAllLabels()) {
@@ -161,8 +158,7 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
                     ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
             })
-            // Use rightJoin because query needs to start with Label due information order i.e. annotation labels need to be present before annotations
-            ->rightJoin('images', 'image_annotations.image_id', '=', 'images.id')
+            ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->distinct();
     }
 
@@ -212,6 +208,9 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
         $labelsCount = $labels->count();
         $zeroEntries = array_fill(0, $labelsCount, 0);
         foreach ($emptyImagesQuery->orderBy('filename')->lazy() as $image) {
+            if ($rows->has($image->filename)) {
+                continue;
+            }
             $row = [$image->filename];
             $row = array_merge($row, $zeroEntries);
             $csv->putCsv($row);
