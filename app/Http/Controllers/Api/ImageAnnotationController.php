@@ -439,7 +439,7 @@ class ImageAnnotationController extends Controller
         // Perform ANN search.
         $topNLabels = $this->performAnnSearch($featureVector, $trees);
 
-        // TODO DISABLED BECAUSE IT REPEATEDLY KILLED OUR DATABASE DURING BACKUPS
+        // TODO DISABLED BECAUSE IT CAN GET BLOCKED DURING THE DATABASE BACKUP
         // Perform KNN search as a fallback if ANN search returns no results.
         // if (empty($topNLabels)) {
         //     $topNLabels = $this->performKnnSearch($featureVector, $trees);
