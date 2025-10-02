@@ -158,6 +158,9 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                     ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
                     ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery']);
             })
+            // Do NOT use a rightJoin here in an attempt to use the same query for
+            // annotated and empty images! Using rightJoin and then whereNull('label_id')
+            // will kill any larger database with the highe memory consumption.
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->distinct();
     }
