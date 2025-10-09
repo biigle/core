@@ -484,8 +484,8 @@ class ImageAnnotationController extends Controller
      * Perform Approximate Nearest Neighbor (ANN) search using the HNSW iterative index scan with Post-Filtering (PF).
      *
      * The search uses the HNSW iterative index scan to find the top K nearest neighbors of the input feature vector,
-     * and then applies post filtering based on the label_tree_id values. If the filtering removes all results, 
-     * the iterative scan will automatically scan more of the index until enough results are found 
+     * and then applies post filtering based on the label_tree_id values. If the filtering removes all results,
+     * the iterative scan will automatically scan more of the index until enough results are found
      * (or it reaches hnsw.max_scan_tuples, which is 20,000 by default), finally if no results are found, an empty array is returned.
      *
      * @param Vector $featureVector The input feature vector to search for nearest neighbors.
