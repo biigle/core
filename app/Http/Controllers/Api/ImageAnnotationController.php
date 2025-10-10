@@ -475,7 +475,7 @@ class ImageAnnotationController extends Controller
             ->whereIn('label_tree_id', $trees)
             ->groupBy('label_id')
             ->orderByRaw('MIN(distance)')
-            ->limit(config('labelbot.N')) // N = 3
+            ->limit(config('labelbot.N'))
             ->pluck('label_id')
             ->toArray();
     }
