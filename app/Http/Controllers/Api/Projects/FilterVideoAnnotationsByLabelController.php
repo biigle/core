@@ -24,6 +24,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter videos
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} volume_id Array of volume ids to use to filter annotations
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs.
