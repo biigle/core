@@ -7,8 +7,8 @@ use Biigle\Tests\ShapeTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
-use Biigle\Tests\VolumeTest;
 use Biigle\Tests\VideoTest;
+use Biigle\Tests\VolumeTest;
 
 class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 {
