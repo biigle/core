@@ -46,6 +46,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'user_id.*' => 'integer',
             'filename' => 'array',
             'filename.*' => 'string',
+            'volume_id' => 'array',
+            'volume_id.*' => 'integer',
             'union' => 'boolean',
         ]);
 
@@ -54,6 +56,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'shape_id' => $request->input('shape_id'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
+            'volume_id' => $request->input('volume_id'),
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
