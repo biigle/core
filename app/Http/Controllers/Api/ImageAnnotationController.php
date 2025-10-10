@@ -513,7 +513,7 @@ class ImageAnnotationController extends Controller
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->whereIn('label_tree_id', $trees) // Filtering in the subquery is required otherwise the iterative scan would not work.
             ->orderBy('distance')
-            ->limit(config('labelbot.K')); // K = 100
+            ->limit($k);
 
         return DB::query()->fromSub($subquery, 'subquery')
             ->groupBy('label_id')
