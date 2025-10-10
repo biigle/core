@@ -469,7 +469,7 @@ class ImageAnnotationController extends Controller
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
-            ->limit($k); // K = 100
+            ->limit($k);
         
         return DB::query()->fromSub($subquery, 'subquery')
             ->whereIn('label_tree_id', $trees)
