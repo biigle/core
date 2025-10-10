@@ -183,7 +183,6 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 
     public function testVolumeFilter()
     {
-
         $project = $this->project();
         $volume1 = $this->volume();
 

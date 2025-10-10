@@ -123,12 +123,12 @@ export default {
             filterValues: {
                 Shape: availableShapes,
                 User: {},
-                Filename: {},
+                Filename: {}
             },
             filterToKeyMapping: {
                 Shape: "shape_id",
                 User: "user_id",
-                Filename: "filename",
+                Filename: "filename"
             },
             selectedFilter: "Shape",
             selectedFilterValue: null,
