@@ -511,7 +511,7 @@ class ImageAnnotationController extends Controller
 
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
-            ->whereIn('label_tree_id', $trees) // Apply label tree ID filter in the subquery to use hnsw iterative scan to get more results (this could be slower)
+            ->whereIn('label_tree_id', $trees) // Filtering in the subquery is required otherwise the iterative scan would not work.
             ->orderBy('distance')
             ->limit(config('labelbot.K')); // K = 100
 
