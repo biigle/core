@@ -7,6 +7,7 @@ use Biigle\Tests\ShapeTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VolumeTest;
 use Biigle\Tests\VideoTest;
 
 class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
@@ -178,5 +179,47 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         // Test union mode with filename patterns
         $this->get("/api/v1/projects/{$pid}/video-annotations/filter/label/{$l1->label_id}?filename[]=test_video_001.mp4&filename[]=another_file.webm&union=1")
             ->assertExactJson([$a3->id => $video3->uuid, $a1->id => $video1->uuid]);
+    }
+
+    public function testVolumeFilter()
+    {
+
+        $project = $this->project();
+        $volume1 = $this->volume();
+
+        $volume2 = VolumeTest::create();
+        $project->volumes()->save($volume2);
+        $volume3 = VolumeTest::create();
+        $project->volumes()->save($volume3);
+
+        $video1 = VideoTest::create(['volume_id' => $volume1->id]);
+        $video2 = VideoTest::create(['volume_id' => $volume2->id]);
+        $video3 = VideoTest::create(['volume_id' => $volume3->id]);
+
+        $a1 = VideoAnnotationTest::create(['video_id' => $video1->id]);
+        $a2 = VideoAnnotationTest::create(['video_id' => $video2->id]);
+        $a3 = VideoAnnotationTest::create(['video_id' => $video3->id]);
+
+        $l1 = VideoAnnotationLabelTest::create(['annotation_id' => $a1->id]);
+        $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id]);
+        $l3 = VideoAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $l1->label_id]);
+
+        $this->beEditor();
+
+        // Case 1: Video annotations from volume 1
+        $this->get("/api/v1/projects/{$project->id}/video-annotations/filter/label/{$l1->label_id}?volume_id[]={$volume1->id}")
+            ->assertExactJson([$a1->id => $video1->uuid]);
+
+        // Case 2: Video from volume 1 or 2
+        $this->get("/api/v1/projects/{$project->id}/video-annotations/filter/label/{$l1->label_id}?volume_id[]={$volume1->id}&volume_id[]={$volume2->id}&union=1")
+            ->assertExactJson([$a1->id => $video1->uuid, $a2->id => $video2->uuid]);
+
+        // Case 3: Bad filter, from volume 1 and 2
+        $this->get("/api/v1/projects/{$project->id}/video-annotations/filter/label/{$l1->label_id}?volume_id[]={$volume1->id}&volume_id[]={$volume2->id}")
+            ->assertExactJson([]);
+
+        // Case 4: Negative filter, not from volume 1 or 2
+        $this->get("/api/v1/projects/{$project->id}/video-annotations/filter/label/{$l1->label_id}?volume_id[]=-{$volume1->id}&volume_id[]=-{$volume2->id}")
+            ->assertExactJson([$a3->id => $video3->uuid]);
     }
 }
