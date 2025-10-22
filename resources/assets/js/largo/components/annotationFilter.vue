@@ -98,7 +98,8 @@
     </div>
 </template>
 <script>
-import ProjectsApi from "../api/projects.js";
+import LargoProjectsApi from "../api/projects.js";
+import ProjectsApi from "../../core/api/projects.js";
 import VolumesApi from "../api/volumes.js";
 import { handleErrorResponse } from "@/core/messages/store.js";
 
@@ -118,7 +119,7 @@ export default {
         //TODO: add more filters here. See https://github.com/biigle/largo/issues/66
         let availableShapes = biigle.$require("largo.availableShapes");
 
-        return {
+        let data = {
             filterValues: {
                 Shape: availableShapes,
                 User: {},
@@ -134,6 +135,14 @@ export default {
             filenamePattern: '',
             negate: false,
         };
+
+        //Project-specific filters
+        let volumeId = biigle.$require("largo.volumeId");
+        if (typeof volumeId !== "number") {
+            data.filterValues["Volume"] = {};
+            data.filterToKeyMapping["Volume"] = "volume_id";
+        }
+        return data
     },
 
     computed: {
@@ -181,10 +190,23 @@ export default {
                     });
             } else {
                 let projectId = biigle.$require("largo.projectId");
+
                 usersWithAnnotationsPromise =
-                    ProjectsApi.getUsersWithAnnotations({
+                    LargoProjectsApi.getUsersWithAnnotations({
                         id: projectId
                     });
+
+                ProjectsApi.queryVolumes({
+                        id: projectId
+                    }).then(
+                    (response) =>
+                        response.data.forEach(
+                            (volume) =>
+                                (this.filterValues.Volume[volume.id] =
+                                    volume.name)
+                            ),
+                    handleErrorResponse
+                );
             }
 
             usersWithAnnotationsPromise.then(
@@ -196,6 +218,7 @@ export default {
                     ),
                 handleErrorResponse
             );
+
         },
         addFilter() {
             let filterName;
