@@ -7,7 +7,7 @@ PyExcelerate==0.6.7
 Pillow==10.3.0
 Shapely==2.0.*
 pandas==2.2.*
-torch==2.6.*
+torch==2.7.*
 torchvision==0.21.*
 # Only works on a GPU.
 #xformers==0.0.23
