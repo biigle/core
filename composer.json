@@ -40,6 +40,7 @@
         "biigle/metrics": "dev-main",
         "biigle/module": "dev-main",
         "biigle/newsletter": "dev-master",
+        "biigle/ptp": "dev-main",
         "biigle/user-disks": "dev-main",
         "biigle/user-storage": "dev-master",
         "duncan3dc/bom-string": "^1.1",

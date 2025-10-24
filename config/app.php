@@ -177,6 +177,7 @@ return [
         Biigle\Modules\Maia\MaiaServiceProvider::class,
         Biigle\Modules\UserStorage\UserStorageServiceProvider::class,
         Biigle\Modules\Newsletter\NewsletterServiceProvider::class,
+        Biigle\Modules\Ptp\PtpServiceProvider::class,
 
     ])->replace([
         Illuminate\Queue\QueueServiceProvider::class => Biigle\Providers\QueueServiceProvider::class,
