@@ -84,7 +84,8 @@ return [
 
         'redis' => [
             'driver' => 'custom',
-            'level' => env('LOG_REDIS_LEVEL', 'debug'),
+            // Keep LOG_REDIS_LEVEL for backwards compatibility.
+            'level' => env('LOG_LEVEL', env('LOG_REDIS_LEVEL', 'debug')),
             'connection' => 'log',
             'capSize' => env('LOG_REDIS_CAP_SIZE', 1000),
             'via' => CreateRedisLogger::class,
