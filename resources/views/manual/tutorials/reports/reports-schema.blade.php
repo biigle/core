@@ -195,7 +195,7 @@
         <h4><a name="annotation-extended-report"></a>Extended</h4>
 
         <p>
-            The extended image annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user.
+            The extended image annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user. If these worksheets are over 5000 lines long, the worksheet will be split in multiple worksheets to allow it to be managable by spreadsheet programs such as Excel and Calc.
         </p>
         <p>
             For a single worksheet (not separated by label tree or user) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree or user. The second line always contains the column headers. The columns are as follows:
