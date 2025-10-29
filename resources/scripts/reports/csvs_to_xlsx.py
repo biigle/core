@@ -18,17 +18,24 @@ for path in csvs:
     f = open(path, 'r')
     rows = list(csv.reader(f))
     f.close()
+
     # Volume name is the first row, column titles are in the second row.
     # So if we only have two rows, the volume is empty.
     if len(rows) == 2:
         continue
+
+    header = rows[:2]
+    body = rows[2:]
     numSheets += 1
 
     # rows have the content: image_filename, label_name, label_count
-    for i in range(0, len(rows), ROW_LIMIT):
+    for i in range(0, len(body), ROW_LIMIT):
         sheet_number = i // ROW_LIMIT
         # Excel does not permit worksheet names longer than 31 characters
-        ws = workbook.new_sheet(f"sheet {str(numSheets)}-{str(sheet_number)}", data=rows[i:i+ROW_LIMIT])
+        ws = workbook.new_sheet(
+            f"sheet {str(numSheets)}-{str(sheet_number)}",
+            data=header+body[i:i+ROW_LIMIT],
+        )
 
         # bold font for titles
         ws.set_row_style(1, Style(font=Font(bold=True)))
