@@ -19,6 +19,7 @@ import VideoTimeline from './components/videoTimeline.vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {markRaw} from 'vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
+import {AUTO_PAUSE_INDEFINITE} from './components/settingsTab.vue';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
@@ -65,6 +66,7 @@ export default {
                 annotationOpacity: 1,
                 showMinimap: true,
                 autoplayDraw: 0,
+                autoPause: 0,
                 showLabelTooltip: false,
                 showMousePosition: false,
                 playbackRate: 1.0,
@@ -111,6 +113,8 @@ export default {
             // This is used to enable selecting labels via keyboard shortcut from the
             // video popout window.
             selectedFavouriteLabel: undefined,
+            autoPauseTimeout: 0,
+            autoPauseTimeoutId: undefined,
         };
     },
     computed: {
@@ -788,10 +792,38 @@ export default {
         },
         togglePlaying() {
             if (this.video.paused) {
-                this.video.play();
+                if (this.autoPauseTimeout) {
+                    this.cancelAutoPlay();
+                } else {
+                    this.video.play();
+                }
             } else {
                 this.video.pause();
             }
+        },
+        handleReachedAnnotation(frame) {
+            if (!this.video.paused && this.settings.autoPause > 0) {
+                this.video.pause();
+                // Set this before calling seek() to avoid a flashing "timer-button" in
+                // the videoScreen.
+                if (this.settings.autoPause < AUTO_PAUSE_INDEFINITE) {
+                    this.autoPauseTimeout = this.settings.autoPause * 1000;
+                }
+                this.seek(frame).then(() => {
+                    // Check autoPauseTimeout again because the timeout could have been
+                    // cancelled while the video was still seeking.
+                    if (this.autoPauseTimeout > 0 && this.settings.autoPause < AUTO_PAUSE_INDEFINITE) {
+                        this.autoPauseTimeoutId = window.setTimeout(() => {
+                            this.video.play();
+                            this.autoPauseTimeout = 0;
+                        }, this.autoPauseTimeout);
+                    }
+                });
+            }
+        },
+        cancelAutoPlay() {
+            window.clearTimeout(this.autoPauseTimeoutId);
+            this.autoPauseTimeout = 0;
         },
     },
     watch: {

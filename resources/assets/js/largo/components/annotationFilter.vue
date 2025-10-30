@@ -63,7 +63,19 @@
         </div>
         <div class="filter-form__selects">
             <div class="form-group largo-filter-select">
-                <select class="form-control" v-model="selectedFilterValue">
+                <input
+                    v-if="selectedFilenameFilter"
+                    type="text"
+                    class="form-control"
+                    v-model="filenamePattern"
+                    placeholder="Filename pattern (use * for wildcards)"
+                    title="Enter a filename pattern. Use * as wildcard to match any characters."
+                    >
+                <select
+                    v-else
+                    class="form-control"
+                    v-model="selectedFilterValue"
+                    >
                     <option
                         v-for="(filter_name, filter_id) in activeFilterValue"
                         :value="[filter_name, filter_id]"
@@ -74,7 +86,7 @@
             <div class="form-group filter-select largo-filter-select">
                 <button
                     type="button"
-                    :disabled="!selectedFilterValue || null"
+                    :disabled="!canAddFilter"
                     class="btn btn-default btn-block"
                     title="Add the selected filter rule"
                     @click="addFilter"
@@ -86,7 +98,8 @@
     </div>
 </template>
 <script>
-import ProjectsApi from "../api/projects.js";
+import LargoProjectsApi from "../api/projects.js";
+import ProjectsApi from "../../core/api/projects.js";
 import VolumesApi from "../api/volumes.js";
 import { handleErrorResponse } from "@/core/messages/store.js";
 
@@ -106,25 +119,49 @@ export default {
         //TODO: add more filters here. See https://github.com/biigle/largo/issues/66
         let availableShapes = biigle.$require("largo.availableShapes");
 
-        return {
+        let data = {
             filterValues: {
                 Shape: availableShapes,
-                User: {}
+                User: {},
+                Filename: {}
             },
             filterToKeyMapping: {
                 Shape: "shape_id",
-                User: "user_id"
+                User: "user_id",
+                Filename: "filename"
             },
             selectedFilter: "Shape",
             selectedFilterValue: null,
+            filenamePattern: '',
             negate: false,
         };
+
+        //Project-specific filters
+        let volumeId = biigle.$require("largo.volumeId");
+        if (typeof volumeId !== "number") {
+            data.filterValues["Volume"] = {};
+            data.filterToKeyMapping["Volume"] = "volume_id";
+        }
+        return data
     },
 
     computed: {
         activeFilterValue() {
             return this.filterValues[this.selectedFilter];
-        }
+        },
+        canAddFilter() {
+            if (this.selectedFilenameFilter) {
+                return this.cleanFilenamePattern.length > 0;
+            }
+
+            return this.selectedFilterValue !== null;
+        },
+        cleanFilenamePattern() {
+            return this.filenamePattern.trim();
+        },
+        selectedFilenameFilter() {
+            return this.selectedFilter === 'Filename';
+        },
     },
 
     methods: {
@@ -139,6 +176,7 @@ export default {
         },
         resetSelectedFilter() {
             this.selectedFilterValue = null;
+            this.filenamePattern = '';
         },
         loadApiFilters() {
             //Load here filters that should be loaded AFTER the page is rendered
@@ -152,10 +190,23 @@ export default {
                     });
             } else {
                 let projectId = biigle.$require("largo.projectId");
+
                 usersWithAnnotationsPromise =
-                    ProjectsApi.getUsersWithAnnotations({
+                    LargoProjectsApi.getUsersWithAnnotations({
                         id: projectId
                     });
+
+                ProjectsApi.queryVolumes({
+                        id: projectId
+                    }).then(
+                    (response) =>
+                        response.data.forEach(
+                            (volume) =>
+                                (this.filterValues.Volume[volume.id] =
+                                    volume.name)
+                            ),
+                    handleErrorResponse
+                );
             }
 
             usersWithAnnotationsPromise.then(
@@ -167,39 +218,40 @@ export default {
                     ),
                 handleErrorResponse
             );
+
         },
         addFilter() {
-            if (!this.selectedFilterValue) {
-                return;
-            }
-
+            let filterName;
+            let filterValue;
             let logicalString;
 
-            //Avoid changing directly the value of selectedFilterValue
-            //This can cause weird bugs on the frontend otherwise
-            let selectedFilterValue = [...this.selectedFilterValue];
+            if (this.selectedFilenameFilter) {
+                if (!this.cleanFilenamePattern) {
+                    return;
+                }
 
-            //convert to integer
-            selectedFilterValue[1] = +selectedFilterValue[1];
+                filterName = this.cleanFilenamePattern;
+                filterValue = this.cleanFilenamePattern;
+                logicalString = this.negate ? 'does not match' : 'matches';
+                this.filenamePattern = '';
+            } else {
+                if (!this.selectedFilterValue) {
+                    return;
+                }
+
+                [filterName, filterValue] = this.selectedFilterValue;
+                logicalString = this.negate ? 'is not' : 'is';
+                this.selectedFilterValue = null;
+            }
 
             if (this.negate) {
-                logicalString = "is not";
-                if (selectedFilterValue[1] > 0) {
-                    selectedFilterValue[1] = -selectedFilterValue[1];
-                }
-            } else {
-                logicalString = "is";
+                filterValue = '-' + filterValue;
             }
 
             let filterToAdd = {
-                name:
-                    this.selectedFilter +
-                    " " +
-                    logicalString +
-                    " " +
-                    selectedFilterValue[0],
+                name: this.selectedFilter + " " + logicalString + " " + filterName,
                 filter: this.filterToKeyMapping[this.selectedFilter],
-                value: selectedFilterValue[1]
+                value: filterValue,
             };
             this.$emit('add-filter', filterToAdd);
         }

@@ -11,34 +11,27 @@ trait CompileFilters
     * @param bool $union Whether filters are considered inclusive (OR) or exclusive (AND)
     * @param array $filters Array of filters to add to the query in the form `filterName => filterValue`
     */
-    private function compileFilterConditions(Builder $query, bool $union, array $filters): void
+    protected function compileFilterConditions(Builder $query, bool $union, array $filters): void
     {
-        if ($union) {
-            $query->where(function ($q) use ($filters) {
-                foreach ($filters as $filterName => $filterValues) {
-                    $toInclude = array_filter($filterValues, fn ($num) => $num > 0);
+        $boolean = $union ? 'or' : 'and';
 
-                    $toExclude = array_map('abs', array_filter($filterValues, fn ($num) => $num < 0));
-
-                    foreach ($toInclude as $valueToInclude) {
-                        $q->orWhere($filterName, $valueToInclude);
-                    }
-
-                    foreach ($toExclude as $valueToExclude) {
-                        $q->orWhereNot($filterName, $valueToExclude);
-                    }
-                }
-            });
-        } else {
+        $query->where(function ($q) use ($filters, $boolean) {
             foreach ($filters as $filterName => $filterValues) {
+                if ($filterName === 'filename') {
+                    $operator = 'ilike';
+                    $filterValues = array_map(fn ($v) => str_replace('*', '%', $v), $filterValues);
+                } else {
+                    $operator = '=';
+                }
+
                 foreach ($filterValues as $value) {
-                    if ($value < 0) {
-                        $query->whereNot($filterName, abs($value));
+                    if (str_starts_with($value, '-')) {
+                        $q->whereNot($filterName, $operator, substr($value, 1), $boolean);
                     } else {
-                        $query->where($filterName, $value);
+                        $q->where($filterName, $operator, $value, $boolean);
                     }
                 }
             }
-        }
+        });
     }
 }

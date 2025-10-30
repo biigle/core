@@ -4,6 +4,8 @@ namespace Biigle\Tests\Jobs;
 
 use Biigle\Image;
 use Biigle\Jobs\ImportVolumeMetadata;
+use Biigle\Jobs\ProcessAnnotatedImage;
+use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\Label as DbLabel;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
@@ -19,6 +21,7 @@ use Biigle\User as DbUser;
 use Biigle\Video;
 use Biigle\Volume;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Queue;
 use TestCase;
 
 class ImportVolumeMetadataTest extends TestCase
@@ -76,6 +79,7 @@ class ImportVolumeMetadataTest extends TestCase
         $this->assertEquals($dbLabel->id, $fileLabels[0]->label_id);
 
         $this->assertNull($pv->fresh());
+        Queue::assertPushed(ProcessAnnotatedImage::class);
     }
 
     public function testHandleVideo()
@@ -133,6 +137,7 @@ class ImportVolumeMetadataTest extends TestCase
         $this->assertEquals($dbLabel->id, $fileLabels[0]->label_id);
 
         $this->assertNull($pv->fresh());
+        Queue::assertPushed(ProcessAnnotatedVideo::class);
     }
 
     public function testHandleMatchByUuid()
@@ -288,6 +293,7 @@ class ImportVolumeMetadataTest extends TestCase
 
         $this->assertFalse($image->annotations()->exists());
         $this->assertTrue($image->labels()->exists());
+        Queue::assertNotPushed(ProcessAnnotatedImage::class);
     }
 
     public function testHandleIgnoreFileLabels()

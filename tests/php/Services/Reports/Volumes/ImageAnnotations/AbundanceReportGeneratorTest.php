@@ -55,8 +55,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_id' => $child->id,
         ]);
 
-        $this->assertEmpty($i3->annotations()->get());
-
         $mock = Mockery::mock();
 
         $mock->shouldReceive('put')
@@ -101,8 +99,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $i1 = ImageTest::create();
         $i2 = ImageTest::create(['volume_id' => $i1->volume_id, 'filename' => 'b.jpg']);
         $i3 = ImageTest::create(['volume_id' => $i1->volume_id, 'filename' => 'c.jpg']);
-
-        $this->assertEmpty($i3->annotations()->get());
 
         $mock = Mockery::mock();
 
@@ -1125,8 +1121,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'label_id' => $root->id,
         ]);
 
-        $this->assertEmpty($i3->annotations()->get());
-
         $mock = Mockery::mock();
 
         $mock->shouldReceive('put')
@@ -1264,12 +1258,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'filename' => 'a.jpg',
         ]);
 
-        // Empty images should be included in the report
-        $image2 = ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $image->volume_id
-        ]);
-
         $a = ImageAnnotationTest::create(['image_id' => $image]);
         $al = ImageAnnotationLabelTest::create([
             'annotation_id' => $a,
@@ -1279,11 +1267,9 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $generator->setSource($image->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(2, $results);
+        $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
         $this->assertSame($al->id, $results[0]->id);
-        $this->assertNull($results[1]->id);
     }
 
     public function testInitQueryAnnotationWithMultipleLabels()
@@ -1313,37 +1299,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $this->assertSame($al2->label_id, $results[1]->id);
     }
 
-    public function testInitQueryDuplicatedRecords()
-    {
-        $image = ImageTest::create([
-            'filename' => 'a.jpg',
-        ]);
-
-        // Use this id to deselect both annotation labels
-        $labelId = -1;
-
-        $a = ImageAnnotationTest::create(['image_id' => $image]);
-
-        $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a,
-        ]);
-
-        $al2 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a,
-        ]);
-
-        $generator = new AbundanceReportGenerator([
-            'onlyLabels' => [$labelId]
-        ]);
-
-        $generator->setSource($image->volume);
-        $results = $generator->initQuery(['images.filename', 'labels.id'])->get();
-        // Duplicate null records will be reduced to one record
-        $this->assertCount(1, $results);
-        $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertNull($results[0]->id);
-    }
-
     public function testInitQueryAnnotationSession()
     {
         $user = UserTest::create();
@@ -1354,13 +1309,13 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume
         ]);
 
-        // Empty images should be included
+        // Empty images should not be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $volume
         ]);
 
-        // Images without selected labels should be included
+        // Images without selected labels should not be included
         $image3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $volume
@@ -1416,25 +1371,15 @@ class AbundanceReportGeneratorTest extends TestCase
 
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(3, $results);
+        $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($image3->filename, $results[2]->filename);
         $this->assertSame($al->id, $results[0]->id);
-        $this->assertNull($results[1]->id);
-        $this->assertNull($results[2]->id);
     }
 
     public function testInitQueryRestrictToNewestLabelQuery()
     {
         $image = ImageTest::create([
             'filename' => 'a.jpg',
-        ]);
-
-        // Empty images should be included
-        $image2 = ImageTest::create([
-            'filename' => 'b.jpg',
-            'volume_id' => $image->volume->id
         ]);
 
         $a = ImageAnnotationTest::create(['image_id' => $image]);
@@ -1461,11 +1406,9 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($a->image->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(2, $results);
+        $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
         $this->assertSame($al3->id, $results[0]->id);
-        $this->assertNull($results[1]->id);
     }
 
     public function testInitQueryRestrictToLabels()
@@ -1474,13 +1417,13 @@ class AbundanceReportGeneratorTest extends TestCase
             'filename' => 'a.jpg',
         ]);
 
-        // Images without selected labels should be included
+        // Images without selected labels should not be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $image->volume_id
         ]);
 
-        // Empty images should be included
+        // Empty images should not be included
         $image3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $image->volume_id
@@ -1500,13 +1443,9 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($a1->image->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(3, $results);
+        $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($image3->filename, $results[2]->filename);
         $this->assertSame($al1->id, $results[0]->id);
-        $this->assertNull($results[1]->id);
-        $this->assertNull($results[2]->id);
     }
 
     public function testInitQueryAnnotationSessionNewestLabelRestrictedLabel()
@@ -1518,13 +1457,13 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
-        // Empty images should be included
+        // Empty images should not be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $volume->id
         ]);
 
-        // Images without selected labels should be included
+        // Images without selected labels should not be included
         $image3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $volume->id
@@ -1599,13 +1538,9 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(3, $results);
+        $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($image3->filename, $results[2]->filename);
         $this->assertSame($al2->id, $results[0]->id);
-        $this->assertNull($results[1]->id);
-        $this->assertNull($results[2]->id);
     }
 
     public function testInitQueryAnnotationSessionNewestLabel()
@@ -1617,13 +1552,13 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
-        // Empty images should be included
+        // Empty images should not be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $volume->id
         ]);
 
-        // Images without selected labels should be included
+        // Images without selected labels should not be included
         $image3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $volume->id
@@ -1686,15 +1621,11 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(4, $results);
+        $this->assertCount(2, $results);
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertSame($image->filename, $results[1]->filename);
-        $this->assertSame($image2->filename, $results[2]->filename);
-        $this->assertSame($image3->filename, $results[3]->filename);
         $this->assertSame($al2->id, $results[0]->id);
         $this->assertSame($al3->id, $results[1]->id);
-        $this->assertNull($results[2]->id);
-        $this->assertNull($results[3]->id);
     }
 
     public function testInitQueryAnnotationSessionRestrictedLabel()
@@ -1706,13 +1637,13 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
-        // Empty images should be included
+        // Empty images should not be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $volume->id
         ]);
 
-        // Images without selected labels should be included
+        // Images without selected labels should not be included
         $image3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $volume->id
@@ -1775,13 +1706,9 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(3, $results);
+        $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($image3->filename, $results[2]->filename);
         $this->assertSame($al1->id, $results[0]->id);
-        $this->assertNull($results[1]->id);
-        $this->assertNull($results[2]->id);
     }
 
     public function testInitQueryNewestLabelRestrictedLabel()
@@ -1792,13 +1719,13 @@ class AbundanceReportGeneratorTest extends TestCase
             'volume_id' => $volume->id
         ]);
 
-        // Empty images should be included
+        // Empty images should not be included
         $image2 = ImageTest::create([
             'filename' => 'b.jpg',
             'volume_id' => $volume->id
         ]);
 
-        // Images without selected labels should be included
+        // Images without selected labels should noz be included
         $image3 = ImageTest::create([
             'filename' => 'c.jpg',
             'volume_id' => $volume->id
@@ -1834,13 +1761,9 @@ class AbundanceReportGeneratorTest extends TestCase
         ]);
         $generator->setSource($volume);
         $results = $generator->initQuery(['images.filename', 'image_annotation_labels.id'])->get();
-        $this->assertCount(3, $results);
+        $this->assertCount(1, $results);
         $this->assertSame($image->filename, $results[0]->filename);
-        $this->assertSame($image2->filename, $results[1]->filename);
-        $this->assertSame($image3->filename, $results[2]->filename);
         $this->assertSame($al2->id, $results[0]->id);
-        $this->assertNull($results[1]->id);
-        $this->assertNull($results[2]->id);
     }
 
     public function testInitQueryRestrictToExportAreaQuery()
@@ -1853,11 +1776,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $image = ImageTest::create([
             'volume_id' => $volume->id,
             'filename' => '1.jpg',
-        ]);
-
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
         ]);
 
         $annotations = [
@@ -1897,9 +1815,7 @@ class AbundanceReportGeneratorTest extends TestCase
             ImageAnnotationLabelTest::create(['annotation_id' => $a->id]);
         }, $annotations);
 
-        $emptyAnnotationId = 0;
-
-        $inside = [$annotations[0]->id, $annotations[1]->id, $annotations[4]->id, $emptyAnnotationId];
+        $inside = [$annotations[0]->id, $annotations[1]->id, $annotations[4]->id];
         $outside = [$annotations[2]->id, $annotations[3]->id, $annotations[5]->id];
 
         $generator = new AbundanceReportGenerator([
@@ -1910,13 +1826,11 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotations.id as annotation_id'])->get();
         $ids = $res->pluck('annotation_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyAnnotation = $res->last()->toArray();
 
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'annotation_id' => null], $emptyAnnotation);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -1933,11 +1847,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $image = ImageTest::create([
             'volume_id' => $volume->id,
             'filename' => '1.jpg',
-        ]);
-
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
         ]);
 
         $session = AnnotationSessionTest::create([
@@ -1996,9 +1905,7 @@ class AbundanceReportGeneratorTest extends TestCase
             ]);
         }, $annotations);
 
-        $emptyAnnotationId = 0;
-
-        $inside = [$annotations[0]->id, $annotations[4]->id, $emptyAnnotationId];
+        $inside = [$annotations[0]->id, $annotations[4]->id];
         $outside = [$annotations[1]->id, $annotations[2]->id, $annotations[3]->id, $annotations[5]->id];
 
         $generator = new AbundanceReportGenerator([
@@ -2010,13 +1917,11 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotations.id as annotation_id'])->get();
         $ids = $res->pluck('annotation_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyAnnotation = $res->last()->toArray();
 
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'annotation_id' => null], $emptyAnnotation);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -2035,11 +1940,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'filename' => '1.jpg',
         ]);
 
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
-        ]);
-
         $session = AnnotationSessionTest::create([
             'starts_at' => '2016-10-05',
             'ends_at' => '2016-10-06',
@@ -2099,9 +1999,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $emptyLabelId = 0;
-
-        $inside = [$newestLabel->label_id, $labels[4]->label_id, $emptyLabelId];
+        $inside = [$newestLabel->label_id, $labels[4]->label_id];
         $outside = [$labels[0]->label_id, $labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
 
         $generator = new AbundanceReportGenerator([
@@ -2114,13 +2012,11 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyLabel = $res->last()->toArray();
 
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'label_id' => null], $emptyLabel);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -2139,11 +2035,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'filename' => '1.jpg',
         ]);
 
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
-        ]);
-
         $session = AnnotationSessionTest::create([
             'starts_at' => '2016-10-05',
             'ends_at' => '2016-10-06',
@@ -2198,9 +2089,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $user->id,
         ]), $annotations);
 
-        $emptyLabelId = 0;
-
-        $inside = [$labels[0]->label_id, $labels[4]->label_id, $emptyLabelId];
+        $inside = [$labels[0]->label_id, $labels[4]->label_id];
         $outside = [$labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
 
         $generator = new AbundanceReportGenerator([
@@ -2213,13 +2102,10 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyLabel = $res->last()->toArray();
-
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'label_id' => null], $emptyLabel);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -2238,11 +2124,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'filename' => '1.jpg',
         ]);
 
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
-        ]);
-
         $annotations = [
             ImageAnnotationTest::create([
                 'shape_id' => Shape::pointId(),
@@ -2285,9 +2166,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'created_at' => '2025-10-5',
         ]);
 
-        $emptyLabelId = 0;
-
-        $inside = [$newestLabel->label_id, $labels[1]->label_id, $labels[4]->label_id, $emptyLabelId];
+        $inside = [$newestLabel->label_id, $labels[1]->label_id, $labels[4]->label_id];
         $outside = [$labels[0]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
 
         $generator = new AbundanceReportGenerator([
@@ -2299,13 +2178,11 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyLabel = $res->last()->toArray();
 
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'label_id' => null], $emptyLabel);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -2324,11 +2201,6 @@ class AbundanceReportGeneratorTest extends TestCase
             'filename' => '1.jpg',
         ]);
 
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
-        ]);
-
         $annotations = [
             ImageAnnotationTest::create([
                 'shape_id' => Shape::pointId(),
@@ -2371,9 +2243,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'created_at' => '2025-10-5',
         ]);
 
-        $emptyLabelId = 0;
-
-        $inside = [$newestLabel->label_id, $labels[1]->label_id, $emptyLabelId];
+        $inside = [$newestLabel->label_id, $labels[1]->label_id];
         $outside = [$labels[0]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[4]->label_id, $labels[5]->label_id];
 
         $generator = new AbundanceReportGenerator([
@@ -2386,13 +2256,11 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyLabel = $res->last()->toArray();
 
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'label_id' => null], $emptyLabel);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -2409,11 +2277,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $image = ImageTest::create([
             'volume_id' => $volume->id,
             'filename' => '1.jpg',
-        ]);
-
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
         ]);
 
         $annotations = [
@@ -2453,9 +2316,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'annotation_id' => $a->id,
         ]), $annotations);
 
-        $emptyLabelId = 0;
-
-        $inside = [$labels[1]->label_id, $labels[4]->label_id, $emptyLabelId];
+        $inside = [$labels[1]->label_id, $labels[4]->label_id];
         $outside = [$labels[0]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
 
         $generator = new AbundanceReportGenerator([
@@ -2467,13 +2328,11 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyLabel = $res->last()->toArray();
 
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'label_id' => null], $emptyLabel);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
@@ -2490,11 +2349,6 @@ class AbundanceReportGeneratorTest extends TestCase
         $image = ImageTest::create([
             'volume_id' => $volume->id,
             'filename' => '1.jpg',
-        ]);
-
-        $image2 = ImageTest::create([
-            'volume_id' => $volume->id,
-            'filename' => '2.jpg',
         ]);
 
         $session = AnnotationSessionTest::create([
@@ -2557,9 +2411,7 @@ class AbundanceReportGeneratorTest extends TestCase
             'user_id' => $user->id
         ]);
 
-        $emptyLabelId = 0;
-
-        $inside = [$newestLabel->label_id, $labels[4]->label_id, $emptyLabelId];
+        $inside = [$newestLabel->label_id, $labels[4]->label_id];
         $outside = [$labels[0]->label_id, $labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
 
         $generator = new AbundanceReportGenerator([
@@ -2573,13 +2425,11 @@ class AbundanceReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        $emptyLabel = $res->last()->toArray();
 
         sort($inside);
         sort($ids);
 
         $this->assertSame($inside, $ids);
-        $this->assertSame(['id' => $image2->id, 'label_id' => null], $emptyLabel);
 
         foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);

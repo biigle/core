@@ -169,8 +169,16 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
             }
 
             ImageAnnotationLabel::insert($annotationLabels);
+            // afterCommit is important because all new annotations are inserted in
+            // one big transaction. They can be processed only after the transaction
+            // was committed.
+            ProcessAnnotatedImage::dispatch($file, only: $ids)->afterCommit();
         } else {
             VideoAnnotationLabel::insert($annotationLabels);
+            // afterCommit is important because all new annotations are inserted in
+            // one big transaction. They can be processed only after the transaction
+            // was committed.
+            ProcessAnnotatedVideo::dispatch($file, only: $ids)->afterCommit();
         }
     }
 
