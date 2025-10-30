@@ -121,9 +121,10 @@ class CsvReportGenerator extends AnnotationReportGenerator
      */
     protected function createCsv($query)
     {
+
         $csv = CsvFile::makeTmp();
         // column headers
-        $csv->putCsv([
+        $header = [
             'annotation_label_id',
             'label_id',
             'label_name',
@@ -138,13 +139,19 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'shape_id',
             'shape_name',
             'points',
-            'attributes',
-            'annotation_id',
-            'created_at',
-        ]);
+        ];
+
+        if ($this->getAttributes()) {
+            $header[] = 'attributes';
+        }
+
+        #Keep order of csv
+        $header = array_merge($header, ['annotation_id','created_at']);
+
+        $csv->putCsv($header);
 
         $query->eachById(function ($row) use ($csv) {
-            $csv->putCsv([
+            $body = [
                 $row->annotation_label_id,
                 $row->label_id,
                 $row->label_name,
@@ -159,10 +166,17 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->shape_id,
                 $row->shape_name,
                 $row->points,
-                $row->attrs,
                 $row->annotation_id,
                 $row->created_at,
-            ]);
+            ];
+
+            if ($this->getAttributes()) {
+                $body[] = $row->attrs;
+            }
+
+            #Keep order of csv
+            $body = array_merge($body, [$row->annotation_id, $row->created_at]);
+            $csv->putCsv($body);
         }, column: 'image_annotation_labels.id', alias: 'annotation_label_id');
 
         $csv->close();
