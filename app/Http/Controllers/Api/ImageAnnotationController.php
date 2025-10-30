@@ -439,11 +439,10 @@ class ImageAnnotationController extends Controller
         // Perform ANN search.
         $topNLabels = $this->performAnnSearch($featureVector, $trees);
 
-        // TODO DISABLED BECAUSE IT REPEATEDLY KILLED OUR DATABASE DURING BACKUPS
-        // Perform KNN search as a fallback if ANN search returns no results.
-        // if (empty($topNLabels)) {
-        //     $topNLabels = $this->performKnnSearch($featureVector, $trees);
-        // }
+        // Perform ANN search with iterative index scan + post filtering as a fallback if ANN search returns no results.
+        if (empty($topNLabels)) {
+            $topNLabels = $this->performAnnSearchWithIterativeIndexScan($featureVector, $trees);
+        }
 
         return $topNLabels;
     }
@@ -470,61 +469,60 @@ class ImageAnnotationController extends Controller
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
-            ->limit($k); // K = 100
+            ->limit($k);
         
         return DB::query()->fromSub($subquery, 'subquery')
             ->whereIn('label_tree_id', $trees)
             ->groupBy('label_id')
             ->orderByRaw('MIN(distance)')
-            ->limit(config('labelbot.N')) // N = 3
+            ->limit(config('labelbot.N'))
             ->pluck('label_id')
             ->toArray();
     }
 
     /**
-     * Perform exact KNN search using the B-Tree index for filtering.
+     * Perform Approximate Nearest Neighbor (ANN) search using the HNSW iterative index
+     * scan.
      *
-     * This search filters the data based on label_tree_id using the B-Tree index,
-     * and then performs the vector search to find the nearest neighbors of the input feature vector.
-     * This method is used as a fallback when the ANN search does not return results.
+     * The search uses the HNSW iterative index scan to find the top K nearest neighbors
+     * of the input feature vector, and then applies filtering based on the label_tree_id
+     * values. If the filtering removes all results, the iterative scan will
+     * automatically scan more of the index until enough results are found (or it reaches
+     * hnsw.max_scan_tuples, which is 20,000 by default), finally if no results are
+     * found, an empty array is returned.
      *
      * @param Vector $featureVector The input feature vector to search for nearest neighbors.
      * @param int[] $trees The label tree IDs to filter the data by.
      *
      * @return array The array of label IDs representing the top nearest neighbors.
     */
-    protected function performKnnSearch($featureVector, $trees)
+    protected function performAnnSearchWithIterativeIndexScan($featureVector, $trees)
     {
-        // Drop HNSW index temporarily
-        DB::beginTransaction();
-        $this->dropHNSWIndex();
+
+        // Size of the dynamic candidate list during the search process.
+        // K is always bounded by this value so we set it to K.
+        $k = config('labelbot.K');
+        DB::statement("SET hnsw.ef_search = $k");
+
+        # Iterative scans can use strict or relaxed ordering.
+        # Strict ensures results are in the exact order by distance
+        # Relaxed allows results to be slightly out of order by distance, but provides better recall
+        # See https://github.com/pgvector/pgvector?tab=readme-ov-file#iterative-index-scans for more details
+        #
+        # We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
+        DB::statement("SET hnsw.iterative_scan = relaxed_order");
 
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
-            ->whereIn('label_tree_id', $trees) // Apply label tree ID filter in the subquery to use the B-Tree index for faster filtering
+            ->whereIn('label_tree_id', $trees) // Filtering in the subquery is required otherwise the iterative scan would not work.
             ->orderBy('distance')
-            ->limit(config('labelbot.K')); // K = 100
+            ->limit($k);
 
-        // Save results.
-        $topNLabels = DB::query()->fromSub($subquery, 'subquery')
+        return DB::query()->fromSub($subquery, 'subquery')
             ->groupBy('label_id')
             ->orderByRaw('MIN(distance)')
-            ->limit(config('labelbot.N')) // N = 3
+            ->limit(config('labelbot.N'))
             ->pluck('label_id')
             ->toArray();
-
-        // Rollback the HNSW index drop
-        DB::rollback();
-
-        return $topNLabels;
-    }
-
-    /**
-     * Drop the HNSW index if exists. This step is necessary to perform exact KNN search
-     * because the planner almost always prioritize the HNSW index to perform vector search.
-     */
-    protected function dropHNSWIndex()
-    {
-        DB::statement("DROP INDEX IF EXISTS image_annotation_label_feature_vectors_vector_idx");
     }
 }

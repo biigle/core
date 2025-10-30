@@ -114,7 +114,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
     public function handle()
     {
-        DB::transaction(function () {
+        $copy = DB::transaction(function () {
             $project = $this->project;
             $volume = $this->volume;
             $onlyFiles = $this->onlyFiles;
@@ -141,9 +141,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     $this->copyVideoLabels($volume, $copy, $onlyFiles, $onlyFileLabels);
                 }
             }
-            if ($copy->files()->exists()) {
-                ProcessCloneVolumeFiles::dispatch($copy, $this->uuidMap, []);
-            }
 
             if ($volume->hasMetadata()) {
                 $this->copyMetadataFile($volume, $copy);
@@ -152,9 +149,16 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
             $copy->save();
 
-            VolumeCloned::dispatch($copy);
+            return $copy;
         });
 
+        // Dispatch job and event after the transaction so the new volume and files are
+        // available when they are handled.
+        if ($copy->files()->exists()) {
+            ProcessCloneVolumeFiles::dispatch($copy, $this->uuidMap, []);
+        }
+
+        VolumeCloned::dispatch($copy);
     }
 
     /**

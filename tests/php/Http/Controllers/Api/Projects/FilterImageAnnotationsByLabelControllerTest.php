@@ -8,6 +8,7 @@ use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ShapeTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
 
 class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 {
@@ -178,5 +179,46 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         // Test union mode with filename patterns
         $this->get("/api/v1/projects/{$pid}/image-annotations/filter/label/{$l1->label_id}?filename[]=test_image_001.jpg&filename[]=another_file.png&union=1")
             ->assertExactJson([$a3->id => $image3->uuid, $a1->id => $image1->uuid]);
+    }
+
+    public function testVolumeFilter()
+    {
+        $project = $this->project();
+        $volume1 = $this->volume();
+
+        $volume2 = VolumeTest::create();
+        $project->volumes()->save($volume2);
+        $volume3 = VolumeTest::create();
+        $project->volumes()->save($volume3);
+
+        $image1 = ImageTest::create(['volume_id' => $volume1->id]);
+        $image2 = ImageTest::create(['volume_id' => $volume2->id]);
+        $image3 = ImageTest::create(['volume_id' => $volume3->id]);
+
+        $a1 = ImageAnnotationTest::create(['image_id' => $image1->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image2->id]);
+        $a3 = ImageAnnotationTest::create(['image_id' => $image3->id]);
+
+        $l1 = ImageAnnotationLabelTest::create(['annotation_id' => $a1->id]);
+        $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id]);
+        $l3 = ImageAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $l1->label_id]);
+
+        $this->beEditor();
+
+        // Case 1: Video annotations from volume 1
+        $this->get("/api/v1/projects/{$project->id}/image-annotations/filter/label/{$l1->label_id}?volume_id[]={$volume1->id}")
+            ->assertExactJson([$a1->id => $image1->uuid]);
+
+        // Case 2: Video from volume 1 or 2
+        $this->get("/api/v1/projects/{$project->id}/image-annotations/filter/label/{$l1->label_id}?volume_id[]={$volume1->id}&volume_id[]={$volume2->id}&union=1")
+            ->assertExactJson([$a1->id => $image1->uuid, $a2->id => $image2->uuid]);
+
+        // Case 3: Bad filter, from volume 1 and 2
+        $this->get("/api/v1/projects/{$project->id}/image-annotations/filter/label/{$l1->label_id}?volume_id[]={$volume1->id}&volume_id[]={$volume2->id}")
+            ->assertExactJson([]);
+
+        // Case 4: Negative filter, not from volume 1 or 2
+        $this->get("/api/v1/projects/{$project->id}/image-annotations/filter/label/{$l1->label_id}?volume_id[]=-{$volume1->id}&volume_id[]=-{$volume2->id}")
+            ->assertExactJson([$a3->id => $image3->uuid]);
     }
 }
