@@ -210,7 +210,7 @@ class Images {
                 resolve(imageWrapper);
             };
 
-            img.onerror = function (e) {
+            img.onerror = function () {
                 // If the image is loaded without CORS and decoding failed, it may be
                 // a TIFF.
                 if (imageWrapper.crossOrigin) {
