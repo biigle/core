@@ -19,7 +19,7 @@ import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import VolumeImageAreaApi from './api/volumes.js';
 import {defineAsyncComponent} from 'vue'
-import {CrossOriginError} from './stores/images.js';
+import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
@@ -90,7 +90,7 @@ export default {
             userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
-            isTiff: false,
+            maybeCorsTiffError: false,
             imageFilenames: {},
         };
     },
@@ -158,12 +158,11 @@ export default {
             return imagesIds;
         },
         hasCrossOriginError() {
-            return !this.loading && this.crossOriginError && !this.isTiff;
+            return !this.loading && this.crossOriginError;
         },
-        hasCrossOriginErrorTiff() {
-            return !this.loading && this.crossOriginError && this.isTiff;
+        hasCrossOriginTiffError() {
+            return !this.loading && this.maybeCorsTiffError;
         },
-
         annotationsHiddenByFilter() {
             return this.annotations.length !== this.filteredAnnotations.length;
         },
@@ -650,7 +649,7 @@ export default {
             }
 
             this.startLoading();
-            this.crossOriginError = false;
+            this.maybeCorsTiffError = false;
 
             try {
                 let [image, annotations] = await Promise.all(this.getImageAndAnnotationsPromises(id));
@@ -659,11 +658,12 @@ export default {
                 this.maybeUpdateAnnotationMode();
                 this.maybeShowTilingInProgressMessage();
             } catch (e) {
-                if (e instanceof CrossOriginError) {
-                    this.crossOriginError = true;
+                this.image = null;
+                this.annotations = [];
+
+                if (e instanceof CrossOriginTiffError) {
+                    this.maybeCorsTiffError = true;
                 } else {
-                    this.image = null;
-                    this.annotations = [];
                     Messages.danger(e);
                 }
             } finally {
@@ -710,7 +710,6 @@ export default {
         },
         image(image) {
             this.crossOriginError = image?.crossOrigin;
-            this.isTiff = image?.isTiff;  
         },
         supportsColorAdjustment(value) {
             if (!value && this.openTab === 'color-adjustment') {

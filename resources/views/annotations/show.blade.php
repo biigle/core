@@ -66,10 +66,10 @@
                 <button type="button" class="btn btn-default" v-on:click="dismissCrossOriginError">Continue at own risk</button>
             </div>
         </message-curtain>
-        <message-curtain v-if="hasCrossOriginErrorTiff" v-cloak>
+        <message-curtain v-if="hasCrossOriginTiffError" v-cloak>
             <div class="message-curtain--text text-danger">
                 <div class="lead">
-                Image can't be displayed.<br>Please configure <a href="/manual/tutorials/volumes/remote-volumes#cors">cross origin resource sharing</a> on your remote image location.
+                    Image cannot be displayed.<br>This might be fixed by configuring <a href="/manual/tutorials/volumes/remote-volumes#cors">cross origin resource sharing</a> on your remote image location.
                 </div>
             </div>
         </message-curtain>

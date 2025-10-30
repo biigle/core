@@ -344,11 +344,14 @@ export default {
             this.mapSize = this.map.getSize();
         },
         updateMapView(e) {
-            let view = e.target.getView();
-            this.$emit('moveend', {
-                center: view.getCenter(),
-                resolution: view.getResolution(),
-            });
+            // If no image is set, the center and viewport would be NaN.
+            if (this.image) {
+                let view = e.target.getView();
+                this.$emit('moveend', {
+                    center: view.getCenter(),
+                    resolution: view.getResolution(),
+                });
+            }
         },
         invertPointsYAxis(points) {
             // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
@@ -739,14 +742,14 @@ export default {
                     this.map.addLayer(this.tiledImageLayer);
                 }
 
-                this.handleTiledImage(image, oldImage);
+                this.handleTiledImage(image);
             } else {
                 if (!oldImage || oldImage.tiled === true) {
                     this.map.removeLayer(this.tiledImageLayer);
                     this.map.addLayer(this.imageLayer);
                 }
 
-                this.handleRegularImage(image, oldImage);
+                this.handleRegularImage(image);
             }
         },
         annotations: {

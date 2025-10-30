@@ -1,9 +1,9 @@
+import * as UTIF from 'utif2';
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
 import {ref} from 'vue';
-import * as UTIF from 'utif2';
 
-export class CrossOriginError extends Error {}
+export class CrossOriginTiffError extends Error {}
 
 const COLOR_ADJUSTMENT_DEFAULTS = {
     brightnessContrast: [0, 0],
@@ -173,7 +173,6 @@ class Images {
             height: 0,
             canvas: canvas,
             crossOrigin: false,
-            isTiff: false,
         };
 
         // Disable auto-rotation based on image metadata. This only works when the
@@ -211,8 +210,14 @@ class Images {
                 resolve(imageWrapper);
             };
 
-            img.onerror = function () {
-                reject(`Failed to load image ${id}!`);
+            img.onerror = function (e) {
+                // If the image is loaded without CORS and decoding failed, it may be
+                // a TIFF.
+                if (imageWrapper.crossOrigin) {
+                    reject(new CrossOriginTiffError());
+                } else {
+                    reject(`Failed to load image ${id}!`);
+                }
             };
         });
 
@@ -228,12 +233,14 @@ class Images {
         // See: https://github.com/laravel/echo/issues/152
         let url = this.imageFileUri.replace(':id', id);
 
-        return fetch(url).then((response) => {
+        return fetch(url)
+            .then((response) => {
                 if (!response.ok) {
                     throw new Error();
                 }
 
                 let type = response.headers.get('content-type');
+
                 if (type === 'application/json') {
                     return response.json().then((body) => {
                         let uuid = body.uuid;
@@ -243,43 +250,35 @@ class Images {
                     });
                 }
 
-            if (type === 'image/tiff' || type === 'image/tif') {
-                return response
-                    .arrayBuffer().then((buffer) =>
-                        this.loadSmallTiffs(buffer, imageWrapper))
-                    .then((wrapper) => {
-                        document.body.appendChild(wrapper.canvas);
-                        return wrapper;
-                    });
-            }
+                let blob;
+                if (type === 'image/tiff' || type === 'image/tif') {
+                    blob = response.arrayBuffer()
+                        .then(this.getTiffBlob)
+                        .catch(e => Promise.reject(e));
+                } else {
+                    blob = response.blob();
+                }
 
-                response.blob().then(function (blob) {
+                blob.then(function (blob) {
                     let urlCreator = window.URL || window.webkitURL;
                     img.src = urlCreator.createObjectURL(blob);
                 });
 
-                return promise;
+                return blob;
             })
+            // createImage should return this promise but we want to handle any errors
+            // on the blob promise chain above in the catch block below.
+            .then(() => promise)
             .catch((error) => {
                 // fetch() will throw a TypeError if CORS is not allowed. Retry with
                 // the plain img fallback.
-                // Remote image without CORS support will be dropped in a future
-                // release. See: https://github.com/biigle/core/issues/351
                 if (error instanceof TypeError) {
                     imageWrapper.crossOrigin = true;
+                    // Regular images can still be displayed without CORS but they may
+                    // be rotated wrong (i.e. inconsistently in different browsers).
                     img.src = url;
 
-                    return promise.catch(() => {
-                        // Fallback dummy image
-                        imageWrapper.source = new Image();
-                        imageWrapper.width = 1;
-                        imageWrapper.height = 1;
-                        imageWrapper.canvas.width = 1;
-                        imageWrapper.canvas.height = 1;
-                        imageWrapper.isTiff = true;
-
-                        return Promise.resolve(imageWrapper);
-                    });
+                    return promise;
                 }
 
                 return Promise.reject(`Failed to load image ${id}!`);
@@ -410,40 +409,19 @@ class Images {
         this.maxCacheSize = size;
     }
 
-    loadSmallTiffs(arrayBuffer, imageWrapper) {
-        return new Promise(function (resolve, reject) {
-                try {
-                    let ifds = UTIF.decode(arrayBuffer);
-                    UTIF.decodeImage(arrayBuffer, ifds[0]);
-                    let rgba = UTIF.toRGBA8(ifds[0]);
-                    let width = ifds[0].width;
-                    let height = ifds[0].height;
+    getTiffBlob(arrayBuffer) {
+        const ifds = UTIF.decode(arrayBuffer);
+        UTIF.decodeImage(arrayBuffer, ifds[0]);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = ifds[0].width;
+        canvas.height = ifds[0].height;
 
-                    imageWrapper.width = width;
-                    imageWrapper.height = height;
-                    imageWrapper.canvas.width = width;
-                    imageWrapper.canvas.height = height;
+        const imgData = ctx.createImageData(canvas.width, canvas.height);
+        imgData.data.set(UTIF.toRGBA8(ifds[0]));
+        ctx.putImageData(imgData, 0, 0);
 
-                    let ctx = imageWrapper.canvas.getContext('2d');
-                    let imgData = ctx.createImageData(width, height);
-                    imgData.data.set(rgba);
-                    ctx.putImageData(imgData, 0, 0);
-                    imageWrapper.source = imageWrapper.canvas;
-                    imageWrapper.canvas._dirty = false;
-                    imageWrapper.canvas.toBlob((blob) => {
-                        let url = URL.createObjectURL(blob);
-                        let img = new Image();
-                        img.onload = () => {
-                            URL.revokeObjectURL(url);
-                            imageWrapper.source = img;
-                            resolve(imageWrapper);
-                        };
-                        img.src = url;
-                    }, "image/png"); 
-                } catch (err) {
-                    reject('TIFF decode error: ' + err.message);
-                }
-        });
+        return new Promise(resolve => canvas.toBlob(blob => resolve(blob)));
     }
 }
 
