@@ -10,7 +10,7 @@ class VolumeClonedListener
 {
     public function handle(VolumeCloned $event): void
     {
-        // Give the ProcessNewVolumeFiles job (from CloneImagesorVideos) a head start so
+        // Give the ProcessCloneVolumeFiles job (from CloneImagesOrVideos) a head start so
         // the file thumbnails are generated (mostly) before the annotation thumbnails.
         $delay = now()->addSeconds(30);
 

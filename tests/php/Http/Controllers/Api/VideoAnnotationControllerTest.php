@@ -602,13 +602,13 @@ class VideoAnnotationControllerTest extends ApiTestCase
             ])
             ->assertSuccessful();
 
-        $this->assertSame(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertSame(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor()->id)));
     }
 
     public function testStoreAndTrackRestrictRateLimit()
     {
         config(['videos.track_object_max_jobs_per_user' => 3]);
-        Cache::put(TrackObject::getRateLimitCacheKey($this->editor()), 3);
+        Cache::put(TrackObject::getRateLimitCacheKey($this->editor()->id), 3);
         $this->beEditor();
         $this
             ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
@@ -635,10 +635,10 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'track' => true,
             ])->assertSuccessful();
 
-        $this->assertSame(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertSame(1, Cache::get(TrackObject::getRateLimitCacheKey($this->editor()->id)));
         $this->assertFalse($res->json()['trackingJobLimitReached']);
 
-        Cache::set(TrackObject::getRateLimitCacheKey($this->editor()), 9);
+        Cache::set(TrackObject::getRateLimitCacheKey($this->editor()->id), 9);
         $res = $this
             ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
@@ -648,7 +648,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'track' => true,
             ])->assertSuccessful();
         
-        $this->assertSame(10, Cache::get(TrackObject::getRateLimitCacheKey($this->editor())));
+        $this->assertSame(10, Cache::get(TrackObject::getRateLimitCacheKey($this->editor()->id)));
         $this->assertTrue($res->json()['trackingJobLimitReached']);
     }
 
