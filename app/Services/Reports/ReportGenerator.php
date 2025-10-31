@@ -300,8 +300,8 @@ class ReportGenerator
      *
      * @return bool
      */
-    protected function getAttributes()
+    protected function skipAttributes()
     {
-        return !empty($this->options->get('getAttributes', true));
+        return !empty($this->options->get('skipAttributes', false));
     }
 }

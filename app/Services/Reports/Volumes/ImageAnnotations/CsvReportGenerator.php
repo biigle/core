@@ -6,7 +6,6 @@ use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
 use Biigle\User;
-use DB;
 
 class CsvReportGenerator extends AnnotationReportGenerator
 {
@@ -32,6 +31,8 @@ class CsvReportGenerator extends AnnotationReportGenerator
      * @var string
      */
     public $extension = 'zip';
+
+    public $skip_attributes = false;
 
     /**
      * Generate the report.
@@ -170,7 +171,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->created_at,
             ];
 
-            if ($this->getAttributes()) {
+            if ($this->skipAttributes()) {
                 $body[] = $row->attrs;
             }
 
