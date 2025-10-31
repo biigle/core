@@ -204,7 +204,7 @@ class VideoAnnotationController extends Controller
     {
         if ($request->shouldTrack()) {
             $maxJobs = config('videos.track_object_max_jobs_per_user');
-            $currentJobs = Cache::get(TrackObject::getRateLimitCacheKey($request->user()), 0);
+            $currentJobs = Cache::get(TrackObject::getRateLimitCacheKey($request->user()->id), 0);
 
             if ($currentJobs >= $maxJobs) {
                 throw new TooManyRequestsHttpException(message: "You already have {$currentJobs} object tracking jobs running. Please wait for one to finish until you submit a new one.");
@@ -243,7 +243,7 @@ class VideoAnnotationController extends Controller
         if ($request->shouldTrack()) {
             $queue = config('videos.track_object_queue');
             Queue::pushOn($queue, new TrackObject($annotation, $request->user()));
-            Cache::increment(TrackObject::getRateLimitCacheKey($request->user()));
+            Cache::increment(TrackObject::getRateLimitCacheKey($request->user()->id));
             /** @phpstan-ignore property.notFound */
             $annotation->trackingJobLimitReached = $currentJobs === ($maxJobs - 1);
         }

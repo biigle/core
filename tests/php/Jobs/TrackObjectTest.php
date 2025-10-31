@@ -64,12 +64,12 @@ class TrackObjectTest extends TestCase
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
-        Cache::put(TrackObjectStub::getRateLimitCacheKey($user), 1);
+        Cache::put(TrackObjectStub::getRateLimitCacheKey($user->id), 1);
 
         $job = new TrackObjectStub($annotation, $user);
         $job->handle();
 
-        $this->assertFalse(Cache::has(TrackObjectStub::getRateLimitCacheKey($user)));
+        $this->assertFalse(Cache::has(TrackObjectStub::getRateLimitCacheKey($user->id)));
     }
 
     public function testHandleCacheKeyMany()
@@ -84,12 +84,50 @@ class TrackObjectTest extends TestCase
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
         ]);
 
-        Cache::put(TrackObjectStub::getRateLimitCacheKey($user), 2);
+        Cache::put(TrackObjectStub::getRateLimitCacheKey($user->id), 2);
 
         $job = new TrackObjectStub($annotation, $user);
         $job->handle();
 
-        $this->assertSame(1, Cache::get(TrackObjectStub::getRateLimitCacheKey($user)));
+        $this->assertSame(1, Cache::get(TrackObjectStub::getRateLimitCacheKey($user->id)));
+    }
+
+    public function testHandleCachKeyMissingAnnotation()
+    {
+        $user = User::factory()->create();
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'frames' => [0.5],
+            'points' => [[0, 0]],
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
+        ]);
+
+        Cache::put(TrackObjectStub::getRateLimitCacheKey($user->id), 1);
+
+        $job = new TrackObjectStub($annotation, $user);
+        $annotation->delete();
+        $job->handle();
+
+        $this->assertFalse(Cache::has(TrackObjectStub::getRateLimitCacheKey($user->id)));
+    }
+
+    public function testHandleCachKeyMissingUser()
+    {
+        $user = User::factory()->create();
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'frames' => [0.5],
+            'points' => [[0, 0]],
+            'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
+        ]);
+
+        Cache::put(TrackObjectStub::getRateLimitCacheKey($user->id), 1);
+
+        $job = new TrackObjectStub($annotation, $user);
+        $user->delete();
+        $job->handle();
+
+        $this->assertFalse(Cache::has(TrackObjectStub::getRateLimitCacheKey($user->id)));
     }
 
     public function testHandlePoint()
@@ -226,6 +264,6 @@ class TrackObjectStub extends TrackObject
 
     protected function python($command)
     {
-        File::put($this->getOutputJsonPath($this->annotation), $this->keyframes);
+        File::put($this->getOutputJsonPath($this->annotationId), $this->keyframes);
     }
 }
