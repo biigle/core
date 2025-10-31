@@ -252,23 +252,18 @@ class Images {
 
                 let blob;
                 if (type === 'image/tiff' || type === 'image/tif') {
-                    blob = response.arrayBuffer()
-                        .then(this.getTiffBlob)
-                        .catch(e => Promise.reject(e));
+                    blob = response.arrayBuffer().then(this.getTiffBlob);
                 } else {
                     blob = response.blob();
                 }
 
-                blob.then(function (blob) {
-                    let urlCreator = window.URL || window.webkitURL;
-                    img.src = urlCreator.createObjectURL(blob);
-                });
-
-                return blob;
+                return blob
+                    .then(function (blob) {
+                        let urlCreator = window.URL || window.webkitURL;
+                        img.src = urlCreator.createObjectURL(blob);
+                    })
+                    .then(() => promise);
             })
-            // createImage should return this promise but we want to handle any errors
-            // on the blob promise chain above in the catch block below.
-            .then(() => promise)
             .catch((error) => {
                 // fetch() will throw a TypeError if CORS is not allowed. Retry with
                 // the plain img fallback.
