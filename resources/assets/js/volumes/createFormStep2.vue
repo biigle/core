@@ -45,9 +45,6 @@ export default {
         };
     },
     computed: {
-        showFilenameWarning() {
-            return this.filenames.includes('.tif');
-        },
         hasDirectories() {
             return this.currentDirectories.length > 0;
         },

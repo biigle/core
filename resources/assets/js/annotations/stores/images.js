@@ -1,8 +1,9 @@
+import * as UTIF from 'utif2';
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
 import {ref} from 'vue';
 
-export class CrossOriginError extends Error {}
+export class CrossOriginTiffError extends Error {}
 
 const COLOR_ADJUSTMENT_DEFAULTS = {
     brightnessContrast: [0, 0],
@@ -210,7 +211,13 @@ class Images {
             };
 
             img.onerror = function () {
-                reject(`Failed to load image ${id}!`);
+                // If the image is loaded without CORS and decoding failed, it may be
+                // a TIFF.
+                if (imageWrapper.crossOrigin) {
+                    reject(new CrossOriginTiffError());
+                } else {
+                    reject(`Failed to load image ${id}!`);
+                }
             };
         });
 
@@ -226,12 +233,14 @@ class Images {
         // See: https://github.com/laravel/echo/issues/152
         let url = this.imageFileUri.replace(':id', id);
 
-        return fetch(url).then((response) => {
+        return fetch(url)
+            .then((response) => {
                 if (!response.ok) {
                     throw new Error();
                 }
 
                 let type = response.headers.get('content-type');
+
                 if (type === 'application/json') {
                     return response.json().then((body) => {
                         let uuid = body.uuid;
@@ -241,20 +250,32 @@ class Images {
                     });
                 }
 
-                response.blob().then(function (blob) {
+                let blob;
+                if (type === 'image/tiff' || type === 'image/tif') {
+                    blob = response.arrayBuffer()
+                        .then(this.getTiffBlob)
+                        .catch(e => Promise.reject(e));
+                } else {
+                    blob = response.blob();
+                }
+
+                blob.then(function (blob) {
                     let urlCreator = window.URL || window.webkitURL;
                     img.src = urlCreator.createObjectURL(blob);
                 });
 
-                return promise;
+                return blob;
             })
+            // createImage should return this promise but we want to handle any errors
+            // on the blob promise chain above in the catch block below.
+            .then(() => promise)
             .catch((error) => {
                 // fetch() will throw a TypeError if CORS is not allowed. Retry with
                 // the plain img fallback.
-                // Remote image without CORS support will be dropped in a future
-                // release. See: https://github.com/biigle/core/issues/351
                 if (error instanceof TypeError) {
                     imageWrapper.crossOrigin = true;
+                    // Regular images can still be displayed without CORS but they may
+                    // be rotated wrong (i.e. inconsistently in different browsers).
                     img.src = url;
 
                     return promise;
@@ -386,6 +407,21 @@ class Images {
 
     setMaxCacheSize(size) {
         this.maxCacheSize = size;
+    }
+
+    getTiffBlob(arrayBuffer) {
+        const ifds = UTIF.decode(arrayBuffer);
+        UTIF.decodeImage(arrayBuffer, ifds[0]);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = ifds[0].width;
+        canvas.height = ifds[0].height;
+
+        const imgData = ctx.createImageData(canvas.width, canvas.height);
+        imgData.data.set(UTIF.toRGBA8(ifds[0]));
+        ctx.putImageData(imgData, 0, 0);
+
+        return new Promise(resolve => canvas.toBlob(blob => resolve(blob)));
     }
 }
 
