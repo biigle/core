@@ -4,6 +4,7 @@
 /public/storage
 /public/assets/scripts
 /public/assets/styles
+/public/assets/*.onnx
 /public/mix-manifest.json
 /public/vendor
 /public/build
