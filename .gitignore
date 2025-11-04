@@ -16,6 +16,9 @@
 /storage/pending-metadata
 /storage/imports
 /storage/reports
+/storage/magic_sam
+/storage/ptp
+/storage/user-storage
 /vendor
 .env
 .env.backup
