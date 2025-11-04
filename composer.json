@@ -109,7 +109,8 @@
         "post-create-project-cmd": [
             "@pull-modules",
             "@php artisan key:generate --ansi",
-            "@php artisan vendor:publish --ansi --tag=public"
+            "@php artisan vendor:publish --ansi --tag=public",
+            "@php -r \"copy('https://github.com/biigle/core/releases/download/v3.106.0/dinov2_vits14.onnx', 'public/assets/dinov2_vits14.onnx');\""
         ],
         "test": [
             "docker compose run --rm worker php vendor/bin/phpunit --colors=always --random-order"
