@@ -1,4 +1,5 @@
 <?php
+
 namespace Biigle\Http\Requests;
 
 use Biigle\Image;
