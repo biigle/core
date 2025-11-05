@@ -466,7 +466,6 @@ class VolumeImport extends Import
                 // Save volumes only after all of them have validated their URLs.
                 /** @phpstan-ignore property.notFound */
                 $oldId = $volume->old_id;
-                /** @phpstan-ignore property.notFound */
                 unset($volume->old_id);
                 $volume->save();
                 /** @phpstan-ignore property.notFound */
