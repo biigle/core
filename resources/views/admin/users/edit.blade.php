@@ -20,7 +20,7 @@
             @endif
         </div>
 
-        <div class="col-sm-3 form-group{{ $errors->has('role_id') ? ' has-error' : '' }}">
+        <div class="col-sm-2 form-group{{ $errors->has('role_id') ? ' has-error' : '' }}">
             <label for="role_id">Role*</label>
             <select class="form-control" name="role_id" id="role_id" required>
                 @foreach ($roles as $role)
@@ -31,7 +31,7 @@
                 <span class="help-block">{{ $errors->first('role_id') }}</span>
             @endif
         </div>
-        <div class="col-sm-3 form-group{{ $errors->has('can_review') ? ' has-error' : '' }}">
+        <div class="col-sm-2 form-group{{ $errors->has('can_review') ? ' has-error' : '' }}">
             <label for="can_review">Can review</label>
             <select class="form-control" name="can_review" id="can_review" @if ($affectedUser->role_id === \Biigle\Role::editorId()) required @else disabled title="Only editors can have this attribute" @endif>
                 <option value="1" @selected($affectedUser->can_review)>Yes</option>
@@ -39,6 +39,16 @@
             </select>
             @if($errors->has('can_review'))
                 <span class="help-block">{{ $errors->first('can_review') }}</span>
+            @endif
+        </div>
+        <div class="col-sm-2 form-group{{ $errors->has('rate_limit') ? ' has-error' : '' }}">
+            <label for="rate_limit">Rate limit</label>
+            <select class="form-control" name="rate_limit" id="rate_limit" @if ($affectedUser->role_id === \Biigle\Role::editorId()) required @else disabled title="Only editors can have this attribute" @endif>
+                <option value="1" @selected(!$affectedUser->hasNoRateLimit)>Yes</option>
+                <option value="0" @selected($affectedUser->hasNoRateLimit)>No</option>
+            </select>
+            @if($errors->has('rate_limit'))
+                <span class="help-block">{{ $errors->first('rate_limit') }}</span>
             @endif
         </div>
 
