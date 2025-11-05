@@ -270,7 +270,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $row->created_at,
             ];
 
-            if (!$this->shouldGetAttributeColumn()) {
+            if ($this->shouldGetAttributeColumn()) {
                 $body[] = $row->attrs;
             }
             $csv->putCsv($body);
