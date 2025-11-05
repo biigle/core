@@ -4,6 +4,7 @@
 /public/storage
 /public/assets/scripts
 /public/assets/styles
+/public/assets/*.onnx
 /public/mix-manifest.json
 /public/vendor
 /public/build
@@ -12,6 +13,8 @@
 /storage/largo_cache
 /storage/metadata
 /storage/pending-metadata
+/storage/imports
+/storage/reports
 /vendor
 .env
 .env.backup
