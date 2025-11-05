@@ -120,11 +120,8 @@ class CocoReportGenerator extends AnnotationReportGenerator
             'image_latitude',
             'shape_name',
             'points',
+            'attributes',
         ];
-
-        if ($this->getAttributes()) {
-            $header[] = 'attributes';
-        }
 
         $csv->putCsv($header);
 
@@ -139,11 +136,8 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->latitude,
                 $row->shape_name,
                 $row->points,
+                $row->attrs,
             ];
-
-            if ($this->getAttributes()) {
-                $toInsert[] = $row->attrs;
-            }
 
             $csv->putCsv($toInsert);
         }
