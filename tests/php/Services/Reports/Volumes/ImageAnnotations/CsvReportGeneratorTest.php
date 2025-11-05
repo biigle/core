@@ -485,6 +485,7 @@ class CsvReportGeneratorTest extends TestCase
             ->once()
             ->with($this->columnsSkipAttributes);
 
+        //Note that here the attribute element is not present
         $mock->shouldReceive('putCsv')
             ->once()
             ->with([
