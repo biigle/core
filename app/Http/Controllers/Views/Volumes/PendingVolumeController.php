@@ -209,7 +209,7 @@ class PendingVolumeController extends Controller
 
         $metadata = $pv->getMetadata();
 
-        $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
+        $onlyLabels = ($pv->only_annotation_labels ?? []) + ($pv->only_file_labels ?? []);
         $labelMap = collect($metadata->getMatchingLabels(onlyLabels: $onlyLabels));
 
         if ($labelMap->isEmpty()) {
@@ -285,7 +285,7 @@ class PendingVolumeController extends Controller
 
         $metadata = $pv->getMetadata();
 
-        $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
+        $onlyLabels = ($pv->only_annotation_labels ?? []) + ($pv->only_file_labels ?? []);
         $userMap = collect($metadata->getMatchingUsers(onlyLabels: $onlyLabels));
 
         if ($userMap->isEmpty()) {
@@ -331,7 +331,7 @@ class PendingVolumeController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $onlyLabels = $pv->only_annotation_labels + $pv->only_file_labels;
+        $onlyLabels = ($pv->only_annotation_labels ?? []) + ($pv->only_file_labels ?? []);
 
         $labelMap = $metadata->getMatchingLabels($pv->label_map, $onlyLabels);
         $labelMapOk = !empty($labelMap) && array_search(null, $labelMap) === false;
