@@ -621,5 +621,4 @@ class CsvReportGeneratorTest extends TestCase
         $generator->setSource($volume);
         $generator->generateReport('my/path');
     }
-
 }

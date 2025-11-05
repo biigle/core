@@ -145,7 +145,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
         }
 
         #Keep order of csv. annotation_id and created_at were set after the attributes column
-        $header = array_merge($header, ['annotation_id','created_at']);
+        $header = array_merge($header, ['annotation_id', 'created_at']);
 
         $csv->putCsv($header);
 
