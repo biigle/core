@@ -110,7 +110,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
     {
         $csv = CsvFile::makeTmp();
         // column headers
-        $header = [
+        $csv->putCsv([
             'annotation_label_id',
             'label_id',
             'label_name',
@@ -121,12 +121,10 @@ class CocoReportGenerator extends AnnotationReportGenerator
             'shape_name',
             'points',
             'attributes',
-        ];
-
-        $csv->putCsv($header);
+        ]);
 
         foreach ($rows as $row) {
-            $toInsert = [
+            $csv->putCsv([
                 $row->annotation_label_id,
                 $row->label_id,
                 $row->label_name,
@@ -137,9 +135,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->shape_name,
                 $row->points,
                 $row->attrs,
-            ];
-
-            $csv->putCsv($toInsert);
+            ]);
         }
 
         $csv->close();
