@@ -51,6 +51,7 @@ class UpdateUser extends FormRequest
             'affiliation' => 'nullable|max:255',
             'super_user_mode' => 'filled|bool',
             'can_review' => 'filled|bool',
+            'rate_limit' => 'filled|bool',
         ];
     }
 

@@ -8,8 +8,9 @@ csv.field_size_limit(sys.maxsize)
 target_file = sys.argv[2]
 csvs = sys.argv[3:]
 
-#Arbitrary limit of rows for a single sheet. See https://github.com/biigle/core/issues/1040
-ROW_LIMIT = 5000
+# Split sheets if they would have too many rows.
+# See: https://github.com/biigle/core/issues/1040
+ROW_LIMIT = 100_000
 
 workbook = Workbook()
 numSheets = 0

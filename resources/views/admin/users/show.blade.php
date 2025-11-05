@@ -12,7 +12,10 @@
         {{$shownUser->email}}
         <span class="label label-{{$roleClass}}">{{ucfirst($shownUser->role->name)}}</span>
         @if ($shownUser->canReview)
-            <span class="label label-warning" title="This user can review">R</span>
+            <span class="label label-info" title="This user can review">R</span>
+        @endif
+        @if ($shownUser->hasNoRateLimit)
+            <span class="label label-info" title="This user has no API rate limit">L</span>
         @endif
     </small>
 </h2>
