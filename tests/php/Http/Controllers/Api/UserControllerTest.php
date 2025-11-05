@@ -355,6 +355,69 @@ class UserControllerTest extends ApiTestCase
         $this->assertFalse($user->fresh()->canReview);
     }
 
+    public function testUpdateRateLimit()
+    {
+        // 'adminpassword', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$Cwx.818Z0GgxhFxF3JN4Rejpuu9M0vBChtZTRCcgSASN.xl0TmM8a';
+        $this->globalAdmin()->save();
+        $this->beGlobalAdmin();
+
+        $user = $this->guest();
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
+                'rate_limit' => '0',
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        // Ignored because it is a guest.
+        $this->assertFalse($user->canReview);
+
+        $user = $this->user();
+        $this->assertFalse($user->canReview);
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
+                'rate_limit' => '0',
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+
+        $this->assertTrue($user->fresh()->hasNoRateLimit);
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
+                'rate_limit' => '1',
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertFalse($user->fresh()->hasNoRateLimit);
+    }
+
+    public function testDowngradeRoleWithRateLimit()
+    {
+        // 'adminpassword', hashed with 4 rounds as defined in phpunit.xml
+        $this->globalAdmin()->password = '$2y$04$Cwx.818Z0GgxhFxF3JN4Rejpuu9M0vBChtZTRCcgSASN.xl0TmM8a';
+        $this->globalAdmin()->save();
+        $this->beGlobalAdmin();
+        $user = $this->user();
+        $user->hasNoRateLimit = true;
+        $user->save();
+
+        // This sets hasNoRateLimit to false, too.
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::guestId(),
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+
+        $this
+            ->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::editorId(),
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertFalse($user->fresh()->hasNoRateLimit);
+    }
+
     public function testUpdateOwnWithToken()
     {
         // api key authentication is not allowed for this route

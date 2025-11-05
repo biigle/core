@@ -271,4 +271,25 @@ class UserTest extends ModelTestCase
         $model->users()->attach($this->model);
         $this->assertTrue($this->model->federatedSearchModels()->exists());
     }
+
+    public function testHasNoLateLimitAttribute()
+    {
+        $this->model->role_id = Role::guestId();
+        $this->assertFalse($this->model->hasNoRateLimit);
+        $this->model->hasNoRateLimit = true;
+        $this->assertFalse($this->model->hasNoRateLimit);
+
+        $this->model->role_id = Role::editorId();
+        $this->assertTrue($this->model->hasNoRateLimit);
+        $this->assertNotNull($this->model->attrs);
+        $this->model->hasNoRateLimit = false;
+        $this->assertFalse($this->model->hasNoRateLimit);
+        $this->assertNull($this->model->attrs);
+
+        $this->model->role_id = Role::adminId();
+        $this->model->hasNoRateLimit = false;
+        $this->assertTrue($this->model->hasNoRateLimit);
+        $this->model->isInSuperUserMode = false;
+        $this->assertFalse($this->model->hasNoRateLimit);
+    }
 }
