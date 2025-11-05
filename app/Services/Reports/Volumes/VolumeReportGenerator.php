@@ -152,4 +152,14 @@ class VolumeReportGenerator extends ReportGenerator
     {
         return $query->whereIn("{$table}.label_id", $this->getOnlyLabels());
     }
+
+    /**
+     * Determines if this report should skip the attributes column.
+     *
+     * @return bool
+     */
+    protected function shouldGetAttributeColumn()
+    {
+        return !$this->options->get('skipAttributes', false);
+    }
 }

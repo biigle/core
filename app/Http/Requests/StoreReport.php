@@ -24,7 +24,8 @@ class StoreReport extends FormRequest
             'aggregate_child_labels' => "nullable|boolean|prohibited_if:all_labels,true",
             'disable_notifications' => "nullable|boolean",
             'strip_ifdo' => "nullable|boolean",
-            'all_labels' => 'nullable|boolean'
+            'all_labels' => 'nullable|boolean',
+            'skip_attributes' => 'nullable|boolean'
         ];
     }
 
@@ -93,6 +94,10 @@ class StoreReport extends FormRequest
             $options['allLabels'] = boolval($this->input('all_labels', false));
         }
 
+        if ($this->isAllowedForSkipAttributes()) {
+            $options['skipAttributes'] = boolval($this->input('skip_attributes', false));
+        }
+
         return $options;
     }
 
@@ -128,6 +133,19 @@ class StoreReport extends FormRequest
             ReportType::imageAnnotationsExtendedId(),
             ReportType::imageAnnotationsFullId(),
             ReportType::imageAnnotationsAbundanceId(),
+        ]);
+    }
+
+    /**
+     * Check if skip_attributes may be configured for the requested report type.
+     *
+     * @return boolean
+     */
+    protected function isAllowedForSkipAttributes()
+    {
+        return $this->isType([
+            ReportType::imageAnnotationsCsvId(),
+            ReportType::videoAnnotationsCsvId(),
         ]);
     }
 

@@ -32,8 +32,6 @@ class CsvReportGenerator extends AnnotationReportGenerator
      */
     public $extension = 'zip';
 
-    public $skip_attributes = false;
-
     /**
      * Generate the report.
      *
@@ -142,11 +140,11 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'points',
         ];
 
-        if ($this->getAttributes()) {
+        if ($this->shouldGetAttributeColumn()) {
             $header[] = 'attributes';
         }
 
-        #Keep order of csv
+        #Keep order of csv. annotation_id and created_at were set after the attributes column
         $header = array_merge($header, ['annotation_id','created_at']);
 
         $csv->putCsv($header);
@@ -167,11 +165,9 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->shape_id,
                 $row->shape_name,
                 $row->points,
-                $row->annotation_id,
-                $row->created_at,
             ];
 
-            if ($this->skipAttributes()) {
+            if ($this->shouldGetAttributeColumn()) {
                 $body[] = $row->attrs;
             }
 

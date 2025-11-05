@@ -117,7 +117,6 @@ class CsvReportGenerator extends VolumeReportGenerator
                 ->select('user_id')
                 ->distinct()
                 ->pluck('user_id');
-
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
@@ -228,7 +227,7 @@ class CsvReportGenerator extends VolumeReportGenerator
     {
         $csv = CsvFile::makeTmp();
         // column headers
-        $csv->putCsv([
+        $header = [
             'video_annotation_label_id',
             'label_id',
             'label_name',
@@ -244,11 +243,16 @@ class CsvReportGenerator extends VolumeReportGenerator
             'frames',
             'annotation_id',
             'created_at',
-            'attributes',
-        ]);
+        ];
+
+        if ($this->shouldGetAttributeColumn()) {
+            $header[] = 'attributes';
+        }
+
+        $csv->putCsv($header);
 
         $query->eachById(function ($row) use ($csv) {
-            $csv->putCsv([
+            $body = [
                 $row->video_annotation_label_id,
                 $row->label_id,
                 $row->label_name,
@@ -264,8 +268,12 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $row->frames,
                 $row->annotation_id,
                 $row->created_at,
-                $row->attrs,
-            ]);
+            ];
+
+            if (!$this->shouldGetAttributeColumn()) {
+                $body[] = $row->attrs;
+            }
+            $csv->putCsv($body);
         }, column: 'video_annotation_labels.id', alias: 'video_annotation_label_id');
 
         $csv->close();

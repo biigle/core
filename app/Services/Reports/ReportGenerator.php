@@ -294,14 +294,4 @@ class ReportGenerator
     {
         return $this->options->get('allLabels', false);
     }
-
-    /**
-     * Determines if this report should get attributes
-     *
-     * @return bool
-     */
-    protected function skipAttributes()
-    {
-        return !empty($this->options->get('skipAttributes', false));
-    }
 }

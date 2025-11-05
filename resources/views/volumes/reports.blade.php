@@ -127,7 +127,7 @@
                 <div v-cloak v-if="hasOption('separate_label_trees')" class="form-group" :class="{'has-error': errors.separate_label_trees}">
                     <div class="row">
                         <div class="col-xs-6">
-                            <div class="checkbox">
+                <div class="checkbox">
                                 <label>
                                     <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
                                 </label>
@@ -168,6 +168,16 @@
                     <div v-if="errors.all_labels" v-cloak class="help-block" v-text="getError('all_labels')"></div>
                     <div v-else class="help-block">
                         Include all labels that can be used in a volume.
+                    </div>
+                </div>
+                <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Csv') || wantsCombination('VideoAnnotations', 'Csv')" class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.skip_attributes"> Skip attribute column
+                        </label>
+                    </div>
+                    <div v-else class="help-block">
+                        Skip the attribute column in the CSV report
                     </div>
                 </div>
                 <div class="alert alert-success" v-if="success" v-cloak>
