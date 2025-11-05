@@ -127,7 +127,7 @@
                 <div v-cloak v-if="hasOption('separate_label_trees')" class="form-group" :class="{'has-error': errors.separate_label_trees}">
                     <div class="row">
                         <div class="col-xs-6">
-                <div class="checkbox">
+                            <div class="checkbox">
                                 <label>
                                     <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
                                 </label>
