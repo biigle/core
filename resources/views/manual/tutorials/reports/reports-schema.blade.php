@@ -67,6 +67,10 @@
         </ol>
 
         <p>
+            Reports with more than 100,000 rows are split into multiple worksheets.
+        </p>
+
+        <p>
             If "aggregate child labels" was enabled for this report, the abundances of all child labels will be added to the abundance of the highest parent label and the child labels will be excluded from the report.
         </p>
 
@@ -139,6 +143,10 @@
             <li><strong>Annotation area (px²)</strong></li>
         </ol>
 
+        <p>
+             Reports with more than 100,000 rows are split into multiple worksheets.
+        </p>
+
         <h4><a name="annotation-basic-report"></a>Basic</h4>
         <p>
             The basic image annotation report contains a graphical plot of abundances of the different annotation labels (annotations can have multiple labels by different users). If the annotations should be separated by label tree or user, there will be one plot for each label tree or user.
@@ -195,7 +203,7 @@
         <h4><a name="annotation-extended-report"></a>Extended</h4>
 
         <p>
-            The extended image annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user.
+            The extended image annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree or user, there will be one worksheet for each label tree or user. Reports with more than 100,000 rows are also split into multiple worksheets.
         </p>
         <p>
             For a single worksheet (not separated by label tree or user) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree or user. The second line always contains the column headers. The columns are as follows:

@@ -516,6 +516,10 @@ $router->group([
         'uses' => 'Filters\AnnotationUserController@index',
     ]);
 
+    $router->get('{id}/annotations', [
+        'uses' => 'VolumeAnnotationController@index',
+    ]);
+
     $router->get('{id}/annotation-labels', [
         'uses' => 'VolumeAnnotationLabelController@index',
     ]);
