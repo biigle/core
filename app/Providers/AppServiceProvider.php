@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
         $cache = Cache::store('array');
         View::composer('*', function ($view) use ($cache) {
             // Make some variables available in any view.
-            $user = $cache->rememberForever('view-user', fn () => Auth::user());
+            $user = Auth::user();
             $view->with('user', $user);
             if ($user instanceof User) {
                 $hasNotifications = $cache->rememberForever('view-notifications', fn () => $user->unreadNotifications()->exists());
