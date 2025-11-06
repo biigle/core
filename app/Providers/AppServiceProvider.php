@@ -8,6 +8,7 @@ use Biigle\Support\FilesystemManager;
 use Biigle\User;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
@@ -35,14 +36,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('*', function ($view) {
+        // The view callback below is executed for each blade file (also include,
+        // component etc.), so it can be called lots of times during a request. It is
+        // essential to cache the values!
+        $cache = Cache::store('array');
+        View::composer('*', function ($view) use ($cache) {
             // Make some variables available in any view.
-            $user = Auth::user();
+            $user = $cache->rememberForever('view-user', fn () => Auth::user());
             $view->with('user', $user);
             if ($user instanceof User) {
-                $view->with('hasNotification', $user->unreadNotifications()->exists());
+                $hasNotifications = $cache->rememberForever('view-notifications', fn () => $user->unreadNotifications()->exists());
+                $view->with('hasNotification', $hasNotifications);
             }
-            $view->with('announcement', Announcement::getActive());
+            $view->with('announcement', $cache->rememberForever('view-announcements', fn () => Announcement::getActive()));
         });
 
         // Configure global proxy settings for readfile() and the likes.
