@@ -23,6 +23,21 @@
                 ></typeahead>
         </div>
         <div class="label-trees__body">
+
+                <!-- TODO: fix this -->
+                <select
+                    class="form-control"
+                    selected="All"
+                    v-model="selectedProjectSorting"
+                    title="Select according to which project's sorting to sort label trees with"
+                    @change="changeCustomOrder"
+                >
+                    <option
+                        v-for="value in projects"
+                        :value="value"
+                        v-text="value"
+                    ></option>
+                </select>
             <label-tree
                 v-if="hasFavourites"
                 name="Favourites"
@@ -36,7 +51,7 @@
                 @remove-favourite="handleRemoveFavourite"
                 ></label-tree>
             <label-tree
-                v-for="tree in trees"
+                v-for="tree in sortedTrees"
                 :key="tree.id"
                 :name="tree.versionedName"
                 :labels="tree.labels"
@@ -49,6 +64,7 @@
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
+                @move-label-tree="moveLabelTree"
                 ></label-tree>
         </div>
     </div>
@@ -79,8 +95,13 @@ export default {
         labelTree: LabelTree,
     },
     data() {
+        let projectIds = ["All"].concat(biigle.$require('volumes.projectIds')).concat(biigle.$require('annotations.projectIds'));
         return {
             favourites: [],
+            customOrder: [],
+            sortedTrees: [],
+            projects: projectIds,
+            selectedProjectSorting: [],
         };
     },
     props: {
@@ -114,6 +135,11 @@ export default {
         showFavourites: {
             type: Boolean,
             default: false,
+        },
+        //TODO: remember to change this in other JS scripts and set to false as default
+        showCustomOrder: {
+            type: Boolean,
+            default: true,
         },
         collapsible: {
             type: Boolean,
@@ -175,6 +201,9 @@ export default {
         hasFavourites() {
             return this.favourites.length > 0;
         },
+        hasCustomOrder() {
+            return this.customOrder.length > 0;
+        },
         ownId() {
             if (this.id) {
                 return this.id;
@@ -189,11 +218,22 @@ export default {
                 ids.push(this.trees[prop].id);
             }
 
-            return ids.join('-');
+            return ids.sort().join('-');
         },
         favouriteStorageKey() {
             return `biigle.label-trees.${this.ownId}.favourites`;
         },
+
+        customOrderStorageKey() {
+            return `biigle.label-trees.${this.selectedProjectSorting}.custom-order`;
+        },
+
+        treeIds() {
+            return this.trees.reduce((els, obj) =>{
+                els.push(obj.id);
+                return els;
+            }, [])
+        }
     },
     methods: {
         handleSelect(label, e) {
@@ -242,6 +282,37 @@ export default {
         on(key, fn) {
             this.events.on(key, fn);
         },
+        moveLabelTree(labelTree, pushDown) {
+            //TODO: move this to the project label tree view
+            // If there is no data in local storage, add it
+            let idx = this.trees.findIndex((tree) => tree.name == labelTree)
+
+            if (pushDown) {
+                if (idx == this.trees.length - 1) {
+                    return;
+                }
+
+                this.customOrder = this.swapElements(this.treeIds, idx, idx + 1)
+            } else {
+                if (idx == 0) {
+                    return;
+                }
+
+                this.customOrder = this.swapElements(this.treeIds, idx - 1, idx)
+            }
+
+            localStorage.setItem(this.customOrderStorageKey, JSON.stringify(this.customOrder));
+        },
+        swapElements(array, idx1, idx2) {
+            array[idx1] = array.splice(idx2, 1, array[idx1])[0];
+            return array;
+        },
+        changeCustomOrder() {
+            let customOrder = JSON.parse(localStorage.getItem(this.customOrderStorageKey));
+            if (customOrder) {
+                this.customOrder = customOrder;
+            }
+        },
     },
     watch: {
         trees: {
@@ -269,11 +340,23 @@ export default {
         selectedFavouriteLabel(index) {
             this.selectFavourite(index);
         },
+        customOrder: {
+            immediate: true,
+            deep: true,
+            handler(customOrder) {
+                this.sortedTrees.sort(
+                    function (a, b) {
+                        return customOrder.findIndex((val) => val == a.id) > customOrder.findIndex((val) => val == b.id);
+                    }
+                )
+            }
+        },
     },
     created() {
         this.events = mitt();
     },
     mounted() {
+
         if (this.showFavourites) {
             let favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
             if (favouriteIds) {
@@ -302,6 +385,18 @@ export default {
             }
             bindFavouriteKey('0', 9);
         }
+
+      this.sortedTrees = this.trees
+      if (this.showCustomOrder) {
+            //TODO: merge all projects label trees so that we have one order.
+            //TODO: what strategy should we use here? e.g. create a custom stored order for a volume if it is custom done?
+            let customOrder = JSON.parse(localStorage.getItem(this.customOrderStorageKey));
+            if (customOrder) {
+                //Filter out non-existent label trees
+                customOrder = customOrder.filter((el) => this.treeIds.includes(el));
+                this.customOrder = customOrder;
+            }
+      }
     },
 };
 </script>

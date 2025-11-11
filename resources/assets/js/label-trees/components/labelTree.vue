@@ -18,6 +18,21 @@
                     ></span>
                 <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
             </button>
+            <button
+                type="button"
+                class="btn btn-default btn-xs pull-right"
+                @click="emitMoveLabelTree(name, false)"
+                title="Move the label tree up"
+                >
+                <span class="fa fa-arrow-up" aria-hidden="true"></span>
+            </button>
+            <button
+                type="button"
+                class="btn btn-default btn-xs pull-right"
+                @click="emitMoveLabelTree(name, true)"
+                title="Move the label tree down"
+                >
+                <span class="fa fa-arrow-down" aria-hidden="true"></span> </button>
             {{name}}
         </h4>
         <ul
@@ -61,6 +76,7 @@ export default {
         'remove-favourite',
         'save',
         'select',
+        'move-label-tree',
     ],
     data() {
         return {
@@ -346,6 +362,9 @@ export default {
             if (this.hasLabel(label.id)) {
                 label.favourite = false;
             }
+        },
+        emitMoveLabelTree(labelTree, pushDown) {
+            this.$emit('move-label-tree', labelTree, pushDown)
         },
     },
     created() {

@@ -10,6 +10,7 @@
     @endcan
     biigle.$declare('annotations.imageId', {!! $image->id !!});
     biigle.$declare('annotations.volumeId', {!! $image->volume_id !!});
+    biigle.$declare('annotations.projectIds', {!! $volume->projects()->pluck('id') !!});
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});
