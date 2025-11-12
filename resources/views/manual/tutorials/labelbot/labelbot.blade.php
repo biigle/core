@@ -19,7 +19,7 @@
         </p>
 
         <p>
-            Whenever a new annotation is created while LabelBOT is active, it will start <b class="text-info">computing</b>. Once finished, an overlay will be shown with the top three suggested labels for the annotation. The first suggested label is automatically selected for the new annotation. If left alone for a while, the first suggested label will automatically be confirmed and the overlay will close. If the first suggested label is not correct, you can also select the second or third label with a click or keyboard shortcut. If none of the suggested labels are correct, you can choose a different label from the typeahead at the bottom of the overlay.
+            Whenever a new annotation is created while LabelBOT is active, it will start <b class="text-info">computing</b>. Once finished, an overlay will be shown with the top three suggested labels for the annotation. The first suggested label is automatically preselected for the new annotation. If left alone for a while, the preselected label will automatically be confirmed and the overlay will close. If the preselected label is not correct, you can also select the second or third label with a click or keyboard shortcut. If none of the suggested labels are correct, you can choose a different label from the typeahead at the bottom of the overlay.
         </p>
 
         <p class="text-center">
