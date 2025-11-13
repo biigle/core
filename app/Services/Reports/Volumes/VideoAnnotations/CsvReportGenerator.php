@@ -192,24 +192,30 @@ class CsvReportGenerator extends VolumeReportGenerator
      */
     protected function query()
     {
+
+        $itemsToSelect = [
+            'video_annotation_labels.id as video_annotation_label_id',
+            'video_annotation_labels.label_id',
+            'labels.name as label_name',
+            'users.id as user_id',
+            'users.firstname',
+            'users.lastname',
+            'videos.id as video_id',
+            'videos.filename as video_filename',
+            'shapes.id as shape_id',
+            'shapes.name as shape_name',
+            'video_annotations.points',
+            'video_annotations.frames',
+            'video_annotations.id as annotation_id',
+            'video_annotation_labels.created_at',
+        ];
+
+        if ($this->shouldGetAttributeColumn()) {
+            $itemsToSelect[] = 'videos.attrs';
+        }
+
         $query = $this
-            ->initQuery([
-                'video_annotation_labels.id as video_annotation_label_id',
-                'video_annotation_labels.label_id',
-                'labels.name as label_name',
-                'users.id as user_id',
-                'users.firstname',
-                'users.lastname',
-                'videos.id as video_id',
-                'videos.filename as video_filename',
-                'videos.attrs',
-                'shapes.id as shape_id',
-                'shapes.name as shape_name',
-                'video_annotations.points',
-                'video_annotations.frames',
-                'video_annotations.id as annotation_id',
-                'video_annotation_labels.created_at',
-            ])
+            ->initQuery($itemsToSelect)
             ->join('shapes', 'video_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'video_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('video_annotation_labels.id');

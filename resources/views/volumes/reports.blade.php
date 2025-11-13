@@ -173,11 +173,11 @@
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Csv') || wantsCombination('VideoAnnotations', 'Csv')" class="form-group">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" v-model="options.skip_attributes"> Skip attribute column
+                            <input type="checkbox" v-model="options.skip_attributes"> Hide attribute column
                         </label>
                     </div>
                     <div class="help-block">
-                        Skip the attribute column
+                        Hide the attributes column
                     </div>
                 </div>
                 <div class="alert alert-success" v-if="success" v-cloak>

@@ -86,25 +86,29 @@ class CsvReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
+        $itemsToSelect = [
+            'image_annotation_labels.id as annotation_label_id',
+            'image_annotation_labels.label_id',
+            'labels.name as label_name',
+            'users.id as user_id',
+            'users.firstname',
+            'users.lastname',
+            'images.id as image_id',
+            'images.filename',
+            'images.lng as longitude',
+            'images.lat as latitude',
+            'shapes.id as shape_id',
+            'shapes.name as shape_name',
+            'image_annotations.points',
+            'image_annotations.id as annotation_id',
+            'image_annotation_labels.created_at',
+        ];
+
+        if ($this->shouldGetAttributeColumn()) {
+            $itemsToSelect[] = 'images.attrs';
+        }
         $query = $this
-            ->initQuery([
-                'image_annotation_labels.id as annotation_label_id',
-                'image_annotation_labels.label_id',
-                'labels.name as label_name',
-                'users.id as user_id',
-                'users.firstname',
-                'users.lastname',
-                'images.id as image_id',
-                'images.filename',
-                'images.lng as longitude',
-                'images.lat as latitude',
-                'shapes.id as shape_id',
-                'shapes.name as shape_name',
-                'image_annotations.points',
-                'images.attrs',
-                'image_annotations.id as annotation_id',
-                'image_annotation_labels.created_at',
-            ])
+            ->initQuery($itemsToSelect)
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
