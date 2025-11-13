@@ -158,7 +158,7 @@
                             <input type="checkbox" v-model="options.skip_attributes"> Skip attribute column
                         </label>
                     </div>
-                    <div v-else class="help-block">
+                    <div class="help-block">
                         Skip the attribute column
                     </div>
                 </div>
