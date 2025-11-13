@@ -159,7 +159,7 @@
                         </label>
                     </div>
                     <div v-else class="help-block">
-                        Skip the attribute column in the CSV report
+                        Skip the attribute column
                     </div>
                 </div>
                 @include('partials.restrictLabels')
