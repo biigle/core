@@ -24,6 +24,7 @@ export default {
                 'only_labels',
                 'aggregate_child_labels',
                 'all_labels',
+                'skip_attributes',
             ],
             'ImageLabels': [
                 'separate_label_trees',
@@ -37,6 +38,7 @@ export default {
                 'separate_users',
                 'annotation_session_id',
                 'only_labels',
+                'skip_attributes',
             ],
             'VideoLabels': [
                 'separate_label_trees',

@@ -1657,7 +1657,7 @@ class AnnotationReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        
+
 
         sort($inside);
         sort($ids);
@@ -1731,7 +1731,7 @@ class AnnotationReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        
+
 
         sort($inside);
         sort($ids);
@@ -1815,7 +1815,7 @@ class AnnotationReportGeneratorTest extends TestCase
             'created_at' => '2025-10-5',
             'user_id' => $user->id
         ]);
-        
+
 
         $inside = [$newestLabel->label_id, $labels[4]->label_id];
         $outside = [$labels[0]->label_id, $labels[1]->label_id, $labels[2]->label_id, $labels[3]->label_id, $labels[5]->label_id];
@@ -1831,7 +1831,7 @@ class AnnotationReportGeneratorTest extends TestCase
         $res = $generator->initQuery(['images.id', 'image_annotation_labels.label_id'])->get();
         $ids = $res->pluck('label_id')->toArray();
         $ids = array_map('intval', $ids);
-        
+
         sort($inside);
         sort($ids);
 

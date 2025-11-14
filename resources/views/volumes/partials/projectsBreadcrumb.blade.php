@@ -9,6 +9,8 @@
             </template>
         </dropdown>
     </span>
+@elseif (($firstProject = $projects->first()))
+    <a href="{{route('project', $firstProject->id)}}" class="navbar-link" title="Show project {{$firstProject->name}}">{{$firstProject->name}}</a>
 @else
-    <a href="{{route('project', $projects->first()->id)}}" class="navbar-link" title="Show project {{$projects->first()->name}}">{{$projects->first()->name}}</a>
+    <span class="text-muted">no project</span>
 @endif
