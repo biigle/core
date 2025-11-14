@@ -6,7 +6,6 @@ use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
 use Biigle\User;
-use DB;
 
 class CsvReportGenerator extends AnnotationReportGenerator
 {
@@ -87,25 +86,29 @@ class CsvReportGenerator extends AnnotationReportGenerator
      */
     protected function query()
     {
+        $itemsToSelect = [
+            'image_annotation_labels.id as annotation_label_id',
+            'image_annotation_labels.label_id',
+            'labels.name as label_name',
+            'users.id as user_id',
+            'users.firstname',
+            'users.lastname',
+            'images.id as image_id',
+            'images.filename',
+            'images.lng as longitude',
+            'images.lat as latitude',
+            'shapes.id as shape_id',
+            'shapes.name as shape_name',
+            'image_annotations.points',
+            'image_annotations.id as annotation_id',
+            'image_annotation_labels.created_at',
+        ];
+
+        if ($this->shouldGetAttributeColumn()) {
+            $itemsToSelect[] = 'images.attrs';
+        }
         $query = $this
-            ->initQuery([
-                'image_annotation_labels.id as annotation_label_id',
-                'image_annotation_labels.label_id',
-                'labels.name as label_name',
-                'users.id as user_id',
-                'users.firstname',
-                'users.lastname',
-                'images.id as image_id',
-                'images.filename',
-                'images.lng as longitude',
-                'images.lat as latitude',
-                'shapes.id as shape_id',
-                'shapes.name as shape_name',
-                'image_annotations.points',
-                'images.attrs',
-                'image_annotations.id as annotation_id',
-                'image_annotation_labels.created_at',
-            ])
+            ->initQuery($itemsToSelect)
             ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
@@ -121,9 +124,10 @@ class CsvReportGenerator extends AnnotationReportGenerator
      */
     protected function createCsv($query)
     {
+
         $csv = CsvFile::makeTmp();
         // column headers
-        $csv->putCsv([
+        $header = [
             'annotation_label_id',
             'label_id',
             'label_name',
@@ -138,13 +142,19 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'shape_id',
             'shape_name',
             'points',
-            'attributes',
-            'annotation_id',
-            'created_at',
-        ]);
+        ];
+
+        if ($this->shouldGetAttributeColumn()) {
+            $header[] = 'attributes';
+        }
+
+        #Keep order of csv. annotation_id and created_at were set after the attributes column
+        $header = array_merge($header, ['annotation_id', 'created_at']);
+
+        $csv->putCsv($header);
 
         $query->eachById(function ($row) use ($csv) {
-            $csv->putCsv([
+            $body = [
                 $row->annotation_label_id,
                 $row->label_id,
                 $row->label_name,
@@ -159,10 +169,15 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->shape_id,
                 $row->shape_name,
                 $row->points,
-                $row->attrs,
-                $row->annotation_id,
-                $row->created_at,
-            ]);
+            ];
+
+            if ($this->shouldGetAttributeColumn()) {
+                $body[] = $row->attrs;
+            }
+
+            #Keep order of csv
+            $body = array_merge($body, [$row->annotation_id, $row->created_at]);
+            $csv->putCsv($body);
         }, column: 'image_annotation_labels.id', alias: 'annotation_label_id');
 
         $csv->close();
