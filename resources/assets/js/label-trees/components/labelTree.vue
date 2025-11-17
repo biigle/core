@@ -1,5 +1,16 @@
 <template>
-    <div class="label-tree">
+    <div class="label-tree"
+        @mouseover="setDraggableVisible($event, true)"
+        @mouseleave="setDraggableVisible($event, false)"
+        droppable=true
+        @drop.prevent="dropLabel($event, name)"
+        @dragenter.prevent
+        @dragover.prevent="setDragHovering($event, true)"
+        @dragleave.prevent="setDragHovering($event, false)"
+        >
+        <div v-if="dragHovering">
+            <h5>{{labelTreeToBeMoved}}</h5>
+        </div>
         <h4
             v-if="showTitle"
             class="label-tree__title"
@@ -18,21 +29,24 @@
                     ></span>
                 <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
             </button>
-            <button
-                type="button"
-                class="btn btn-default btn-xs pull-right"
-                @click="emitMoveLabelTree(name, false)"
-                title="Move the label tree up"
-                >
-                <span class="fa fa-arrow-up" aria-hidden="true"></span>
-            </button>
-            <button
-                type="button"
-                class="btn btn-default btn-xs pull-right"
-                @click="emitMoveLabelTree(name, true)"
-                title="Move the label tree down"
-                >
-                <span class="fa fa-arrow-down" aria-hidden="true"></span> </button>
+                <!--TODO: move style - draggable should not be present for favourites - hint: it  should be in the properties-->
+                <!--TODO: behaviour should be so:
+                1. if moved over an item, a visual cue suggests that the label tree will be placed before the item it is dropping on
+                2. if moved after all items, will append to the end-->
+            <div
+                class="draggable"
+                draggable=true
+                @dragstart="startDrag($event, name)" >
+                <button
+                    type="button"
+                    class="btn btn-default btn-xs pull-left"
+                    v-if="draggableIsVisible"
+                    title="Move the label tree"
+                    style="margin-right: 0.5em"
+                    >
+                    <span class="fas fa-grip-vertical" aria-hidden="true"></span>
+                </button>
+                </div>
             {{name}}
         </h4>
         <ul
@@ -76,11 +90,14 @@ export default {
         'remove-favourite',
         'save',
         'select',
-        'move-label-tree',
+        'switch-label-trees',
     ],
     data() {
         return {
-            collapsed: false
+            collapsed: false,
+            draggableIsVisible: false,
+            dragHovering: false,
+            labelTreeToBeMoved: "",
         };
     },
     components: {
@@ -197,6 +214,16 @@ export default {
         },
     },
     methods: {
+        setDragHovering(evt, val) {
+            if (!val) {
+                this.labelTreeToBeMoved = "";
+            } else {
+                let labelTreeToMove = evt.dataTransfer.getData('labelTree');
+                if (labelTreeToMove !== this.name) {
+                    this.labelTreeToBeMoved = labelTreeToMove;
+                }
+            }
+        },
         hasLabel(id) {
             return this.labelMap.hasOwnProperty(id);
         },
@@ -363,8 +390,17 @@ export default {
                 label.favourite = false;
             }
         },
-        emitMoveLabelTree(labelTree, pushDown) {
-            this.$emit('move-label-tree', labelTree, pushDown)
+        setDraggableVisible(evt, val) {
+            this.draggableIsVisible = val;
+        },
+        startDrag(evt, name) {
+              evt.dataTransfer.setData('labelTree', name)
+        },
+        dropLabel(evt, name) {
+            let labelTreeToMove = evt.dataTransfer.getData('labelTree');
+            //should emit
+            this.$emit('switch-label-trees', labelTreeToMove, name);
+            this.setDragHovering("", false);
         },
     },
     created() {

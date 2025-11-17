@@ -24,20 +24,6 @@
         </div>
         <div class="label-trees__body">
 
-                <!-- TODO: fix this -->
-                <select
-                    class="form-control"
-                    selected="All"
-                    v-model="selectedProjectSorting"
-                    title="Select according to which project's sorting to sort label trees with"
-                    @change="changeCustomOrder"
-                >
-                    <option
-                        v-for="value in projects"
-                        :value="value"
-                        v-text="value"
-                    ></option>
-                </select>
             <label-tree
                 v-if="hasFavourites"
                 name="Favourites"
@@ -51,8 +37,9 @@
                 @remove-favourite="handleRemoveFavourite"
                 ></label-tree>
             <label-tree
-                v-for="tree in sortedTrees"
+                v-for="(tree, index) in sortedTrees"
                 :key="tree.id"
+                :class="{ 'drag-hover': hoverIndex === index }"
                 :name="tree.versionedName"
                 :labels="tree.labels"
                 :multiselect="multiselect"
@@ -64,8 +51,9 @@
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
-                @move-label-tree="moveLabelTree"
+                @switch-label-trees="switchLabelTrees"
                 ></label-tree>
+
         </div>
     </div>
 </template>
@@ -95,13 +83,16 @@ export default {
         labelTree: LabelTree,
     },
     data() {
-        let projectIds = ["All"].concat(biigle.$require('volumes.projectIds')).concat(biigle.$require('annotations.projectIds'));
+        //Since this can cause empty arrays to be here, filter only number values.
+        let projectIds = biigle.$require('volumes.projectIds').concat(biigle.$require('annotations.projectIds')).filter(Number);
+        let customOrderStorageKeys = []
+        projectIds.forEach((el) => customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`))
         return {
             favourites: [],
             customOrder: [],
             sortedTrees: [],
-            projects: projectIds,
-            selectedProjectSorting: [],
+            customOrderStorageKeys: customOrderStorageKeys,
+            hoverIndex: null,
         };
     },
     props: {
@@ -223,11 +214,6 @@ export default {
         favouriteStorageKey() {
             return `biigle.label-trees.${this.ownId}.favourites`;
         },
-
-        customOrderStorageKey() {
-            return `biigle.label-trees.${this.selectedProjectSorting}.custom-order`;
-        },
-
         treeIds() {
             return this.trees.reduce((els, obj) =>{
                 els.push(obj.id);
@@ -282,30 +268,23 @@ export default {
         on(key, fn) {
             this.events.on(key, fn);
         },
-        moveLabelTree(labelTree, pushDown) {
-            //TODO: move this to the project label tree view
+        switchLabelTrees(labelTree1, labelTree2) {
+            console.log("Switching " + labelTree1 + " with " +labelTree2);
             // If there is no data in local storage, add it
-            let idx = this.trees.findIndex((tree) => tree.name == labelTree)
+            let idx1 = this.trees.findIndex((tree) => tree.name == labelTree1)
+            let idx2 = this.trees.findIndex((tree) => tree.name == labelTree2)
 
-            if (pushDown) {
-                if (idx == this.trees.length - 1) {
-                    return;
-                }
+            this.customOrder = this.swapElements(this.treeIds, idx1, idx2)
 
-                this.customOrder = this.swapElements(this.treeIds, idx, idx + 1)
-            } else {
-                if (idx == 0) {
-                    return;
-                }
 
-                this.customOrder = this.swapElements(this.treeIds, idx - 1, idx)
-            }
-
-            localStorage.setItem(this.customOrderStorageKey, JSON.stringify(this.customOrder));
+            //this.customOrderStorageKeys.forEach(function (storageKey) {
+                //localStorage.setItem(storageKey, JSON.stringify(this.customOrder));
+            //})
         },
-        swapElements(array, idx1, idx2) {
-            array[idx1] = array.splice(idx2, 1, array[idx1])[0];
-            return array;
+        swapElements(arr, idx1, idx2) {
+            let element = arr.splice(idx1, 1)[0];
+            arr.splice(idx2, 0, element);
+            return arr;
         },
         changeCustomOrder() {
             let customOrder = JSON.parse(localStorage.getItem(this.customOrderStorageKey));
