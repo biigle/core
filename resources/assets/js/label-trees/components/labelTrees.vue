@@ -84,8 +84,10 @@ export default {
         labelTree: LabelTree,
     },
     data() {
-        //Since this can cause empty arrays to be here, filter only number values.
-        let projectIds = biigle.$require('volumes.projectIds').concat(biigle.$require('annotations.projectIds')).filter(Number);
+        let projectIds = biigle.$require('volumes.projectIds');
+        if (Object.keys(projectIds).length == 0) {
+            projectIds = biigle.$require('annotations.projectIds');
+        }
         let customOrderStorageKeys = []
         projectIds.forEach((el) => customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`))
         return {
@@ -198,8 +200,7 @@ export default {
         },
         ownId() {
             if (this.id) {
-                return this.id;
-            }
+                return this.id; }
 
             let ids = [];
             for (let prop in this.trees) {
@@ -325,7 +326,15 @@ export default {
             handler(customOrder) {
                 this.sortedTrees.sort(
                     function (a, b) {
-                        return customOrder.findIndex((val) => val == a.id) > customOrder.findIndex((val) => val == b.id);
+                        let idxa = customOrder.findIndex((val) => val == a.id);
+                        let idxb = customOrder.findIndex((val) => val == b.id);
+                        if (idxa && idxb) {
+                            return idxa > idxb
+                        } else if (idxa) {
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
                 )
             }
@@ -367,13 +376,17 @@ export default {
 
       this.sortedTrees = this.trees
       if (this.showCustomOrder) {
-            //TODO: merge all projects label trees so that we have one order.
-            //TODO: what strategy should we use here? e.g. create a custom stored order for a volume if it is custom done?
-            let customOrder = JSON.parse(localStorage.getItem(this.customOrderStorageKey));
-            if (customOrder) {
-                //Filter out non-existent label trees
-                customOrder = customOrder.filter((el) => this.treeIds.includes(el));
-                this.customOrder = customOrder;
+          //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
+          //the projects with the lower ID will be given priority. The user can just sort the new view.
+          //This sorting will affect all the projects where the volume belongs to.
+          //TODO: in the future, if a better way to organise the access of project information is found, find a more elegant solution
+          for (let storageKey of this.customOrderStorageKeys) {
+                    let partialCustomOrder = JSON.parse(localStorage.getItem(storageKey));
+                    if (partialCustomOrder) {
+                        //Filter out deleted label trees
+                        partialCustomOrder = partialCustomOrder.filter((el) => this.treeIds.includes(el) && !this.customOrder.includes(el))
+                        this.customOrder.push(...partialCustomOrder);
+                }
             }
       }
     },
