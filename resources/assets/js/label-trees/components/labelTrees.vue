@@ -39,7 +39,8 @@
             <label-tree
                 v-for="(tree, index) in sortedTrees"
                 :key="tree.id"
-                :class="{ 'drag-hover': hoverIndex === index }"
+                :treeId="tree.id"
+                :treeIndex="index"
                 :name="tree.versionedName"
                 :labels="tree.labels"
                 :multiselect="multiselect"
@@ -269,17 +270,16 @@ export default {
             this.events.on(key, fn);
         },
         switchLabelTrees(labelTree1, labelTree2) {
-            console.log("Switching " + labelTree1 + " with " +labelTree2);
             // If there is no data in local storage, add it
-            let idx1 = this.trees.findIndex((tree) => tree.name == labelTree1)
-            let idx2 = this.trees.findIndex((tree) => tree.name == labelTree2)
+            let idx1 = this.trees.findIndex((tree) => tree.id == labelTree1)
+            let idx2 = this.trees.findIndex((tree) => tree.id == labelTree2)
 
-            this.customOrder = this.swapElements(this.treeIds, idx1, idx2)
+            let customOrder = this.swapElements(this.treeIds, idx1, idx2)
+            this.customOrder = customOrder;
 
-
-            //this.customOrderStorageKeys.forEach(function (storageKey) {
-                //localStorage.setItem(storageKey, JSON.stringify(this.customOrder));
-            //})
+            this.customOrderStorageKeys.forEach(function (storageKey) {
+                localStorage.setItem(storageKey, JSON.stringify(customOrder));
+            })
         },
         swapElements(arr, idx1, idx2) {
             let element = arr.splice(idx1, 1)[0];
