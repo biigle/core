@@ -10,7 +10,7 @@ on:
       - 'resources/scripts/**'
       - 'storage/**'
       - 'package.json'
-      - 'package.lock'
+      - 'package-lock.json'
   pull_request:
     paths-ignore:
       - '.docker/**'
@@ -18,7 +18,7 @@ on:
       - 'resources/scripts/**'
       - 'storage/**'
       - 'package.json'
-      - 'package.lock'
+      - 'package-lock.json'
 
 jobs:
   test-current:
