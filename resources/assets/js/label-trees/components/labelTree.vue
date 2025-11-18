@@ -38,7 +38,7 @@
                 <button
                     type="button"
                     class="btn btn-default btn-xs drag-button pull-left"
-                    v-if="draggableIsVisible && name != 'Favourites'"
+                    v-if="showCustomOrder && draggableIsVisible && name != 'Favourites'"
                     title="Drag to move the label tree"
                 >
                     <span
@@ -156,6 +156,11 @@ export default {
             type: Boolean,
             default: false
         },
+        // Indicates whether labels can be sorted.
+        showCustomOrder: {
+            type: Boolean,
+            default: false
+        },
         // Indicates whether the labels should be displayed in a flat list instead of a tree.
         flat: {
             type: Boolean,
@@ -237,6 +242,7 @@ export default {
                 }
 
                 let labelTreeIndex = evt.dataTransfer.getData("labelTreeIndex");
+                //Simply: if a label tree is dragged from below, it will be placed before the other label trees, after if dragged from above
                 this.dragHovering =
                     labelTreeIndex > this.treeIndex ? "before" : "after";
             }

@@ -4,7 +4,7 @@
         :show-example-annotations="showExampleAnnotations"
         v-on:select="handleSelectedLabel"
         v-on:open="openSidebarLabels"
-        v-on:update-labelbot-state="updateLabelbotState" 
+        v-on:update-labelbot-state="updateLabelbotState"
         v-cloak
         ></labels-tab>
 </sidebar-tab>
@@ -51,7 +51,7 @@
             </div>
         @endif
         <div class="labels-tab__trees">
-            <label-trees ref="labelTrees" :trees="labelTrees" :show-favourites="true" :focus-input="focusInputFindlabel" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
+            <label-trees ref="labelTrees" :trees="labelTrees" :show-favourites="true" :show-custom-order="true" :focus-input="focusInputFindlabel" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </div>
         <div class="labels-tab__plugins">
             <example-annotations

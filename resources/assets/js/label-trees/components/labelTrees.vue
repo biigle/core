@@ -25,6 +25,7 @@
                 name="Favourites"
                 :labels="favourites"
                 :show-favourites="showFavourites"
+                :show-custom-order=false
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
@@ -43,6 +44,7 @@
                 :allow-select-siblings="allowSelectSiblings"
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
+                :show-custom-order="showCustomOrder"
                 :collapsible="collapsible"
                 @select="handleSelect"
                 @deselect="handleDeselect"
@@ -73,14 +75,24 @@ export default {
         labelTree: LabelTree
     },
     data() {
-        let projectIds = biigle.$require("volumes.projectIds");
-        if (Object.keys(projectIds).length == 0) {
-            projectIds = biigle.$require("annotations.projectIds");
-        }
+        let volumeProjectIds = biigle.$require("volumes.projectIds");
+        let annotationProjectIds = biigle.$require("annotations.projectIds");
+        let largoProjectIds = biigle.$require("largo.projectIds");
+        let largoProject = [biigle.$require("largo.projectId")];
+        let videoProjectIds = biigle.$require("videos.projectIds");
+
+        let projectIds = [volumeProjectIds, annotationProjectIds, largoProjectIds, largoProject, videoProjectIds]
+            .flat()
+
         let customOrderStorageKeys = [];
-        projectIds.forEach((el) =>
-            customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
+        projectIds.forEach(
+            function (el) {
+                if (Number.isInteger(el)) {
+                    return customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
+                }
+            }
         );
+
         return {
             favourites: [],
             customOrder: [],
@@ -121,10 +133,9 @@ export default {
             type: Boolean,
             default: false
         },
-        //TODO: remember to change this in other JS scripts and set to false as default
         showCustomOrder: {
             type: Boolean,
-            default: true
+            default: false
         },
         collapsible: {
             type: Boolean,

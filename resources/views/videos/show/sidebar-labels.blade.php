@@ -5,6 +5,7 @@
                 :trees="labelTrees"
                 :focus-input="focusInputFindlabel"
                 :show-favourites="true"
+                :show-custom-order="true"
                 :selected-favourite-label="selectedFavouriteLabel"
                 v-on:select="handleSelectedLabel"
                 v-on:deselect="handleDeselectedLabel"
