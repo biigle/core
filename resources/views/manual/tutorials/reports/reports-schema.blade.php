@@ -193,7 +193,7 @@
             <li>
                 <strong>Additional attributes of the image</strong>
                 <p>
-                    The additional attributes of the image are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the operations performed on the image (e.g. a laser point detection to calculate the area of an image).
+                    The additional attributes of the image are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the operations performed on the image (e.g. a laser point detection to calculate the area of an image). This column can be hidden via the <code>Hide the attributes column</code> checkbox.
                 </p>
             </li>
             <li><strong>Annotation ID</strong></li>
@@ -372,7 +372,7 @@ Animalia
             <li>
                 <strong>Additional attributes of the video</strong>
                 <p>
-                    The additional attributes of the video are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the available metadata for the video. (e.g. MIME type, size, width and height).
+                    The additional attributes of the video are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the available metadata for the video. (e.g. MIME type, size, width and height). This column can be hidden via the <code>Hide the attributes column</code> checkbox.
                 </p>
             </li>
         </ol>
