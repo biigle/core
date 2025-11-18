@@ -20,7 +20,7 @@
         </p>
 
         <p>
-            Label trees can be sorted locally by using the button <button class="btn btn-default"><i class="fas fa-grip-vertical"></i></button> to drag the label tree above and below.
+            Label trees can be sorted locally by using the button <button class="btn btn-default"><i class="fas fa-grip-vertical"></i></button> to drag the label tree above and below. This sorting is applied on the Volume, Largo and Annotation views.
         </p>
 
         <h3><a name="visibility"></a>Visibility</h3>
