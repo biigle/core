@@ -1,53 +1,55 @@
 <template>
-    <div class="label-tree"
+    <div
+        class="label-tree"
         @mouseover="setDraggableVisible(true)"
         @mouseleave="setDraggableVisible(false)"
-        droppable=true
+        droppable="true"
         @drop.prevent="emitSwitchLabelTrees($event)"
         @dragenter.prevent
         @dragover.prevent="setDragHovering($event, true)"
         @dragleave.prevent="setDragHovering($event, false)"
+    >
+        <div
+            class="label-to-be-moved"
+            v-if="dragHovering == 'before' && name != 'Favourites'"
         >
-        <div class="label-to-be-moved" v-if="dragHovering == 'before' && name != 'Favourites'">
-            <h5>{{labelTreeToBeMoved}}</h5>
+            <h5>{{ labelTreeToBeMoved }}</h5>
         </div>
-        <h4
-            v-if="showTitle"
-            class="label-tree__title"
-            >
+        <h4 v-if="showTitle" class="label-tree__title">
             <button
                 v-if="collapsible"
                 @click.stop="collapse"
                 class="btn btn-default btn-xs pull-right"
                 :title="collapseTitle"
                 type="button"
-                >
+            >
                 <span
                     v-if="collapsed"
                     class="fa fa-chevron-down"
                     aria-hidden="true"
-                    ></span>
+                ></span>
                 <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
             </button>
             <div
                 class="draggable"
-                draggable=true
-                @dragstart="startLabelTreeDrag($event)" >
+                draggable="true"
+                @dragstart="startLabelTreeDrag($event)"
+            >
                 <button
                     type="button"
                     class="btn btn-default btn-xs drag-button pull-left"
                     v-if="draggableIsVisible && name != 'Favourites'"
                     title="Drag to move the label tree"
-                    >
-                    <span class="fas fa-grip-vertical" aria-hidden="true"></span>
+                >
+                    <span
+                        class="fas fa-grip-vertical"
+                        aria-hidden="true"
+                    ></span>
                 </button>
-                </div>
-            {{name}}
+            </div>
+            {{ name }}
         </h4>
-        <ul
-            v-if="!collapsed"
-            class="label-tree__list"
-            >
+        <ul v-if="!collapsed" class="label-tree__list">
             <label-tree-label
                 v-for="(label, index) in rootLabels"
                 :key="label.id"
@@ -63,18 +65,21 @@
                 @delete="emitDelete"
                 @add-favourite="emitAddFavourite"
                 @remove-favourite="emitRemoveFavourite"
-                ></label-tree-label>
+            ></label-tree-label>
             <li v-if="hasNoLabels" class="text-muted">No labels</li>
         </ul>
 
-        <div class="label-to-be-moved" v-if="dragHovering == 'after' && name != 'Favourites'">
-            <h5>{{labelTreeToBeMoved}}</h5>
+        <div
+            class="label-to-be-moved"
+            v-if="dragHovering == 'after' && name != 'Favourites'"
+        >
+            <h5>{{ labelTreeToBeMoved }}</h5>
         </div>
     </div>
 </template>
 
 <script>
-import LabelTreeLabel from './labelTreeLabel.vue';
+import LabelTreeLabel from "./labelTreeLabel.vue";
 
 /**
  * A component that displays a label tree. The labels can be searched and selected.
@@ -83,92 +88,92 @@ import LabelTreeLabel from './labelTreeLabel.vue';
  */
 export default {
     emits: [
-        'add-favourite',
-        'delete',
-        'deselect',
-        'remove-favourite',
-        'save',
-        'select',
-        'switch-label-trees',
+        "add-favourite",
+        "delete",
+        "deselect",
+        "remove-favourite",
+        "save",
+        "select",
+        "switch-label-trees"
     ],
     data() {
         return {
             collapsed: false,
             draggableIsVisible: false,
             labelTreeToBeMoved: "",
-            dragHovering: "",
+            dragHovering: ""
         };
     },
     components: {
-        labelTreeLabel: LabelTreeLabel,
+        labelTreeLabel: LabelTreeLabel
     },
     props: {
         name: {
             type: String,
-            required: true,
+            required: true
         },
         labels: {
             type: Array,
-            required: true,
+            required: true
         },
         showTitle: {
             type: Boolean,
-            default: true,
+            default: true
         },
         // If false the label tree assumes it is used in a label-trees component.
         standalone: {
             type: Boolean,
-            default: false,
+            default: false
         },
         collapsible: {
             type: Boolean,
-            default: true,
+            default: true
         },
         // Indicates whether multiple labels can be selected at the same time.
         multiselect: {
             type: Boolean,
-            default: false,
+            default: false
         },
         // Indicates whether labels can be selected with Alt to select all sibling
         // labels, too.
         allowSelectSiblings: {
             type: Boolean,
-            default: false,
+            default: false
         },
         // Indicates whether labels can be selected with Crtl to select all child
         // labels, too.
         allowSelectChildren: {
             type: Boolean,
-            default: false,
+            default: false
         },
         // Indicates whether labels can be edited.
         editable: {
             type: Boolean,
-            default: false,
+            default: false
         },
         // Indicates whether labels can be selected as favourites.
         showFavourites: {
             type: Boolean,
-            default: false,
+            default: false
         },
         // Indicates whether the labels should be displayed in a flat list instead of a tree.
         flat: {
             type: Boolean,
-            default: false,
+            default: false
         },
         // Indicates whether shortcuts of favourites are shown.
         showFavouriteShortcuts: {
             type: Boolean,
-            default: false,
+            default: false
         },
         treeId: {
             type: Number,
-            default: -1,
+            default: -1
         },
         treeIndex: {
             type: Number,
-            default: -1,
-        },
+            default: -1
+        }
     },
     computed: {
         labelMap() {
@@ -180,7 +185,7 @@ export default {
             return map;
         },
         compiledLabels() {
-            let compiled = {null: []};
+            let compiled = { null: [] };
 
             if (this.flat) {
                 this.labels.forEach(function (label) {
@@ -214,11 +219,11 @@ export default {
             return this.compiledLabels[null];
         },
         collapseTitle() {
-            return this.collapsed ? 'Expand' : 'Collapse';
+            return this.collapsed ? "Expand" : "Collapse";
         },
         hasNoLabels() {
             return this.rootLabels.length === 0;
-        },
+        }
     },
     methods: {
         setDragHovering(evt, val) {
@@ -226,13 +231,14 @@ export default {
                 this.labelTreeToBeMoved = "";
                 this.dragHovering = "";
             } else {
-                let labelTreeToMove = evt.dataTransfer.getData('labelTree');
+                let labelTreeToMove = evt.dataTransfer.getData("labelTree");
                 if (labelTreeToMove !== this.name) {
                     this.labelTreeToBeMoved = labelTreeToMove;
                 }
 
-                let labelTreeIndex = evt.dataTransfer.getData('labelTreeIndex');
-                this.dragHovering = (labelTreeIndex > this.treeIndex) ? "before" : "after" ;
+                let labelTreeIndex = evt.dataTransfer.getData("labelTreeIndex");
+                this.dragHovering =
+                    labelTreeIndex > this.treeIndex ? "before" : "after";
             }
         },
         hasLabel(id) {
@@ -286,22 +292,22 @@ export default {
             }
         },
         emitSelect(label, e) {
-            this.$emit('select', label, e);
+            this.$emit("select", label, e);
             if (this.standalone) {
-                this.selectLabel({label, e});
+                this.selectLabel({ label, e });
             }
         },
         emitDeselect(label, e) {
-            this.$emit('deselect', label, e);
+            this.$emit("deselect", label, e);
             if (this.standalone) {
-                this.deselectLabel({label, e});
+                this.deselectLabel({ label, e });
             }
         },
         emitSave(label, reject) {
-            this.$emit('save', label, reject);
+            this.$emit("save", label, reject);
         },
         emitDelete(label) {
-            this.$emit('delete', label);
+            this.$emit("delete", label);
         },
         conditionSelectSiblings(e) {
             if (!e) {
@@ -316,7 +322,7 @@ export default {
             return this.allowSelectChildren && e.ctrlKey;
         },
         selectLabel(args) {
-            const {label, e} = args;
+            const { label, e } = args;
             if (!this.multiselect) {
                 this.clearSelectedLabels();
             }
@@ -340,7 +346,9 @@ export default {
                             this.selectChildren(label);
 
                             if (this.conditionSelectSiblings(e)) {
-                                this.getSiblings(label).forEach(this.selectChildren);
+                                this.getSiblings(label).forEach(
+                                    this.selectChildren
+                                );
                             }
                         }
                     }
@@ -348,7 +356,7 @@ export default {
             }
         },
         deselectLabel(args) {
-            const {label, e} = args;
+            const { label, e } = args;
             if (this.hasLabel(label.id)) {
                 label.selected = false;
 
@@ -386,10 +394,10 @@ export default {
             }
         },
         emitAddFavourite(label) {
-            this.$emit('add-favourite', label);
+            this.$emit("add-favourite", label);
         },
         emitRemoveFavourite(label) {
-            this.$emit('remove-favourite', label);
+            this.$emit("remove-favourite", label);
         },
         addFavouriteLabel(label) {
             if (this.hasLabel(label.id)) {
@@ -405,34 +413,38 @@ export default {
             this.draggableIsVisible = val;
         },
         startLabelTreeDrag(evt) {
-          if (this.name != 'Favourites') {
-              evt.dataTransfer.setData('labelTreeId', this.treeId);
-              evt.dataTransfer.setData('labelTree', this.name);
-              evt.dataTransfer.setData('labelTreeIndex', this.treeIndex);
-          }
+            if (this.name != "Favourites") {
+                evt.dataTransfer.setData("labelTreeId", this.treeId);
+                evt.dataTransfer.setData("labelTree", this.name);
+                evt.dataTransfer.setData("labelTreeIndex", this.treeIndex);
+            }
         },
         emitSwitchLabelTrees(evt) {
-            if (this.name != 'Favourites') {
-                let labelTreeToMoveId = evt.dataTransfer.getData('labelTreeId');
+            if (this.name != "Favourites") {
+                let labelTreeToMoveId = evt.dataTransfer.getData("labelTreeId");
                 if (this.treeId != labelTreeToMoveId) {
-                    this.$emit('switch-label-trees', labelTreeToMoveId, this.treeId);
+                    this.$emit(
+                        "switch-label-trees",
+                        labelTreeToMoveId,
+                        this.treeId
+                    );
                     this.setDragHovering("", false);
                 }
             }
-        },
+        }
     },
     created() {
         // Set the reactive label properties
         this.labels.forEach(function (label) {
-            if (!label.hasOwnProperty('open')) {
+            if (!label.hasOwnProperty("open")) {
                 label.open = false;
             }
 
-            if (!label.hasOwnProperty('selected')) {
+            if (!label.hasOwnProperty("selected")) {
                 label.selected = false;
             }
 
-            if (!label.hasOwnProperty('favourite')) {
+            if (!label.hasOwnProperty("favourite")) {
                 label.favourite = false;
             }
         });
@@ -442,13 +454,13 @@ export default {
         // trees so the parent handles the event. A single label tree handles the event
         // by itself.
         if (!this.standalone) {
-            this.$parent.on('select', this.selectLabel);
-            this.$parent.on('deselect', this.deselectLabel);
-            this.$parent.on('clear', this.clearSelectedLabels);
+            this.$parent.on("select", this.selectLabel);
+            this.$parent.on("deselect", this.deselectLabel);
+            this.$parent.on("clear", this.clearSelectedLabels);
             // Label favourites only work with the label-trees component.
-            this.$parent.on('add-favourite', this.addFavouriteLabel);
-            this.$parent.on('remove-favourite', this.removeFavouriteLabel);
+            this.$parent.on("add-favourite", this.addFavouriteLabel);
+            this.$parent.on("remove-favourite", this.removeFavouriteLabel);
         }
-    },
+    }
 };
 </script>
