@@ -36,6 +36,11 @@ jobs:
     - name: Copy .env
       run: cp .env.example .env
 
+    - name: Update .env
+      run: |
+        echo USER_ID=$(id -u) >> .env
+        echo GROUP_ID=$(id -g) >> .env
+
     - name: Set testing key
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
@@ -57,7 +62,7 @@ jobs:
         sleep 5
 
     - name: Run tests
-      run: docker compose run --rm -u 1001 worker php artisan test --parallel
+      run: docker compose run --rm worker php artisan test --parallel
 
   test-modules:
 
@@ -74,6 +79,11 @@ jobs:
 
     - name: Copy .env
       run: cp .env.example .env
+
+    - name: Update .env
+      run: |
+        echo USER_ID=$(id -u) >> .env
+        echo GROUP_ID=$(id -g) >> .env
 
     - name: Set testing key
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
@@ -99,4 +109,4 @@ jobs:
         sleep 5
 
     - name: Run tests
-      run: docker compose run --rm -u 1001 worker php artisan test --parallel
+      run: docker compose run --rm worker php artisan test --parallel
