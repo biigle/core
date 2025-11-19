@@ -54,6 +54,7 @@
 @push('scripts')
 <script type="module">
     biigle.$declare('videos.volumeId', {{$volume->id}});
+    biigle.$declare('videos.projectIds', {{$volume->projects()->pluck('id')}});
     biigle.$declare('videos.id', {{$video->id}});
     biigle.$declare('videos.errors', {!!$errors!!});
     biigle.$declare('videos.videoFileUri', '{!! url('api/v1/videos/:id/file') !!}');
