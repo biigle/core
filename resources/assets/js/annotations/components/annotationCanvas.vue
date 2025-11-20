@@ -19,6 +19,7 @@ import LineString from '@biigle/ol/geom/LineString';
 import MagicWandInteraction from './annotationCanvas/magicWandInteraction.vue';
 import Map from '@biigle/ol/Map';
 import MeasureInteraction from './annotationCanvas/measureInteraction.vue';
+import Messages from '@/core/messages/store.js';
 import Minimap from './minimap.vue';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition.vue';
@@ -537,7 +538,7 @@ export default {
 
             return this.convertPointsFromOlToDb(points);
         },
-        handleNewFeature(e) {
+        async handleNewFeature(e) {
             if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                 this.annotationSource.removeFeature(e.feature);
                 return;
@@ -570,7 +571,21 @@ export default {
             } else {
                 e.feature.set('color', this.selectedLabel.color);
             }
-
+            
+            const points = this.getPoints(geometry);
+            let selectionCanvas = null;
+            if(this.labelbotIsActive)
+            {
+                try {
+                    selectionCanvas = await this.createSelectionCanvas(points);
+                } 
+                catch(error) {
+                    this.annotationSource.removeFeature(e.feature);
+                    Messages.danger(error.message);
+                    return;
+                }
+            }
+            
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
             let removeCallback = () => {
@@ -581,10 +596,11 @@ export default {
                     // Do nothing in this case.
                 }
             };
-
+            
             this.$emit('new', {
                 shape: geometry.getType(),
-                points: this.getPoints(geometry),
+                points: points,
+                selectionCanvas: selectionCanvas
             }, removeCallback);
         },
         deleteSelectedAnnotations() {
