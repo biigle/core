@@ -112,9 +112,8 @@ export default {
             topLeftX = clamp(topLeftX, 0, this.image.width);
             topLeftY = this.image.height - clamp(topLeftY, 0, this.image.height);
             
-            let [bottomRightX, bottomRightY] = this.map.getCoordinateFromPixel(this.map.getSize());
+            let bottomRightX = this.map.getCoordinateFromPixel(this.map.getSize())[0];
             bottomRightX = clamp(bottomRightX, 0, this.image.width);
-            bottomRightY = this.image.height - clamp(bottomRightY, 0, this.image.height);
             
             const mapScreenshot = await this.makeMapScreenshot();
             const visibleImagePartWidth = bottomRightX - topLeftX;
