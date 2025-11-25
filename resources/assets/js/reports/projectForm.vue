@@ -28,6 +28,8 @@ export default {
                 'only_labels',
                 'aggregate_child_labels',
                 'all_labels',
+                'yolo_image_path',
+                'yolo_split_ratio',
             ],
             'ImageLabels': [
                 'separate_label_trees',

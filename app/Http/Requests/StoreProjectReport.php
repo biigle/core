@@ -37,6 +37,21 @@ class StoreProjectReport extends StoreReport
     {
         return array_merge(parent::rules(), [
             'type_id' => 'required|integer|exists:report_types,id',
+            'yolo_image_path' => 'nullable|string',
+            'yolo_split_ratio' => 'nullable|string|regex:/^\d+(\.\d+)? \d+(\.\d+)? \d+(\.\d+)?$/',
+        ]);
+    }
+
+    /**
+     * Get the options for the new report.
+     *
+     * @return array
+     */
+    public function getOptions()
+    {
+        return array_merge(parent::getOptions(), [
+            'yoloImagePath' => $this->input('yolo_image_path'),
+            'yoloSplitRatio' => $this->input('yolo_split_ratio'),
         ]);
     }
 

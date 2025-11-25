@@ -29,11 +29,22 @@ export default {
                 separate_users: false,
                 only_labels: [],
                 aggregate_child_labels: false,
-                all_labels: false
+                all_labels: false,
+                yolo_image_path: '',
+                yolo_split_ratio: '0.7 0.2 0.1',
             },
+            splitTrain: 0.7,
+            splitVal: 0.2,
+            splitTest: 0.1,
         };
     },
     computed: {
+        splitSum() {
+            return parseFloat((this.splitTrain + this.splitVal + this.splitTest).toFixed(2));
+        },
+        isValidSplit() {
+            return this.splitSum === 1.0;
+        },
         flatLabels() {
             let labels = [];
             this.labelTrees.forEach(function (tree) {
@@ -104,11 +115,14 @@ export default {
         }
     },
     methods: {
+        updateSplitRatio() {
+            this.options.yolo_split_ratio = `${this.splitTrain} ${this.splitVal} ${this.splitTest}`;
+        },
         request(id, resource) {
             if (this.loading) return;
             this.success = false;
             this.startLoading();
-            resource.save({id: id}, this.selectedOptions)
+            resource.save({ id: id }, this.selectedOptions)
                 .then(this.submitted, this.handleError)
                 .finally(this.finishLoading);
         },
@@ -182,7 +196,10 @@ export default {
         },
         selectedVariant() {
             this.options.all_labels = false;
-        }
+        },
+        splitTrain() { this.updateSplitRatio(); },
+        splitVal() { this.updateSplitRatio(); },
+        splitTest() { this.updateSplitRatio(); },
     },
     created() {
         this.reportTypes = biigle.$require('reports.reportTypes');

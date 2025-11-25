@@ -124,19 +124,19 @@
                         Aggregate the abundance of child labels to their parent label.
                     </div>
                 </div>
-                <div v-cloak v-if="hasOption('separate_label_trees')" class="form-group" :class="{'has-error': errors.separate_label_trees}">
+                <div v-cloak v-if="hasOption('separate_label_trees') && !wantsVariant('Yolo')" class="form-group" :class="{'has-error': errors.separate_label_trees}">
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
+                                <label :class="{'text-muted': options.separate_users}">
+                                    <input type="checkbox" v-model="options.separate_label_trees" :disabled="options.separate_users"> Separate label trees
                                 </label>
                             </div>
                         </div>
                         <div class="col-xs-6">
                             <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" v-model="options.separate_users"> Separate users
+                                <label :class="{'text-muted': options.separate_label_trees}">
+                                    <input type="checkbox" v-model="options.separate_users" :disabled="options.separate_label_trees"> Separate users
                                 </label>
                             </div>
                         </div>
@@ -170,12 +170,50 @@
                         Include all labels that can be used in a volume.
                     </div>
                 </div>
+                <div v-cloak v-if="wantsVariant('Yolo')" class="form-group" :class="{'has-error': errors.yolo_image_path}">
+                    <label for="yolo-image-path">Local Image Path</label>
+                    <input type="text" id="yolo-image-path" class="form-control" v-model="options.yolo_image_path" placeholder="/path/to/images">
+                    <div v-if="errors.yolo_image_path" class="help-block" v-text="getError('yolo_image_path')"></div>
+                    <div v-else class="help-block">
+                        The path to the directory containing the images on your local machine.
+                    </div>
+                </div>
+                <div v-cloak v-if="wantsVariant('Yolo')" class="form-group" :class="{'has-error': errors.yolo_split_ratio || !isValidSplit}">
+                    <label>Split Ratio (Train / Val / Test)</label>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">Train</span>
+                                <input type="number" class="form-control" v-model.number="splitTrain" step="0.1" min="0" max="1">
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">Val</span>
+                                <input type="number" class="form-control" v-model.number="splitVal" step="0.1" min="0" max="1">
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">Test</span>
+                                <input type="number" class="form-control" v-model.number="splitTest" step="0.1" min="0" max="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="errors.yolo_split_ratio" class="help-block" v-text="getError('yolo_split_ratio')"></div>
+                    <div v-else-if="!isValidSplit" class="help-block">
+                        The sum of the splits (@{{ splitSum }}) must be exactly 1.0.
+                    </div>
+                    <div v-else class="help-block">
+                        The ratio to split the dataset into training, validation and test sets. Sum: @{{ splitSum }}
+                    </div>
+                </div>
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.
                 </div>
                 <div class="form-group">
                     <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="btn btn-default">back</a>
-                    <button class="btn btn-success pull-right" type="submit" :disabled="loading || null">Request this report</button>
+                    <button class="btn btn-success pull-right" type="submit" :disabled="loading || (wantsVariant('Yolo') && !isValidSplit) || null">Request this report</button>
                 </div>
             </form>
             <p class="text-muted">

@@ -42,6 +42,7 @@ class StoreVolumeReport extends StoreReport
                 ReportType::imageAnnotationsCsvId(),
                 ReportType::imageAnnotationsExtendedId(),
                 ReportType::imageAnnotationsCocoId(),
+                ReportType::imageAnnotationsYoloId(),
                 ReportType::imageAnnotationsFullId(),
                 ReportType::imageAnnotationsAbundanceId(),
                 ReportType::imageAnnotationsImageLocationId(),
@@ -62,6 +63,8 @@ class StoreVolumeReport extends StoreReport
         return array_merge(parent::rules(), [
             'type_id' => ['required', Rule::in($types)],
             'annotation_session_id' => "nullable|integer|exists:annotation_sessions,id,volume_id,{$this->volume->id}",
+            'yolo_image_path' => 'nullable|string',
+            'yolo_split_ratio' => 'nullable|string|regex:/^\d+(\.\d+)? \d+(\.\d+)? \d+(\.\d+)?$/',
         ]);
     }
 
@@ -119,8 +122,13 @@ class StoreVolumeReport extends StoreReport
      */
     public function getOptions()
     {
-        return array_merge(parent::getOptions(), [
+        \Log::info('StoreVolumeReport input:', $this->all());
+        $options = array_merge(parent::getOptions(), [
             'annotationSession' => $this->input('annotation_session_id'),
+            'yoloImagePath' => $this->input('yolo_image_path'),
+            'yoloSplitRatio' => $this->input('yolo_split_ratio'),
         ]);
+        \Log::info('StoreVolumeReport options:', $options);
+        return $options;
     }
 }
