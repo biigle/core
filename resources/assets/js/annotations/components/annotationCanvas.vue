@@ -310,6 +310,20 @@ export default {
                 opacity: this.annotationOpacity,
             });
 
+            // Layer for independent features (e.g. LabelBOT popup connector line)
+            this.independentAnnotationFeatures = new Collection();
+            this.independentAnnotationSource = new VectorSource({
+                features: this.independentAnnotationFeatures
+            });
+            this.independentAnnotationLayer = new VectorLayer({
+                source: this.independentAnnotationSource,
+                zIndex: 101, // above annotationLayer
+                updateWhileAnimating: true,
+                updateWhileInteracting: true,
+                style: Styles.features,
+                opacity: 1, // opacity not configurable
+            });
+
             this.selectInteraction = new SelectInteraction({
                 // Use click instead of default singleclick because the latter is
                 // delayed 250ms to ensure the event is no doubleclick. But we want
@@ -859,6 +873,8 @@ export default {
         // The name can be used for layer filters, e.g. with forEachFeatureAtPixel.
         this.annotationLayer.set('name', 'annotations');
         this.map.addLayer(this.annotationLayer);
+        
+        this.map.addLayer(this.independentAnnotationLayer);
 
         // These names are required by the minimap component.
         this.imageLayer.set('name', 'imageRegular');
