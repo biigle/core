@@ -170,6 +170,16 @@
                         Include all labels that can be used in a volume.
                     </div>
                 </div>
+                <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Csv') || wantsCombination('VideoAnnotations', 'Csv')" class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.skip_attributes"> Hide attribute column
+                        </label>
+                    </div>
+                    <div class="help-block">
+                        Hide the attributes column
+                    </div>
+                </div>
                 <div class="alert alert-success" v-if="success" v-cloak>
                     The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.
                 </div>

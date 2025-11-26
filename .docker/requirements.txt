@@ -17,4 +17,4 @@ albumentations
 scikit-image
 git+https://github.com/facebookresearch/segment-anything.git
 # Included directly in the Dockerfile.
-#xformers==0.0.13
+#xformers==0.0.23

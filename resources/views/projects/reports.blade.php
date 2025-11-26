@@ -116,6 +116,7 @@
                         Aggregate the abundance of child labels to their parent label.
                     </div>
                 </div>
+
                 <div v-cloak v-if="hasOption('separate_label_trees')" class="form-group" :class="{'has-error': errors.separate_label_trees}">
                     <div class="row">
                         <div class="col-xs-6">
@@ -148,6 +149,17 @@
                     <div v-if="errors.strip_ifdo" v-cloak class="help-block" v-text="getError('strip_ifdo')"></div>
                     <div v-else class="help-block">
                         Only include BIIGLE annotations in the iFDO files.
+                    </div>
+                </div>
+
+                <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Csv') || wantsCombination('VideoAnnotations', 'Csv')" class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="options.skip_attributes"> Hide attribute column
+                        </label>
+                    </div>
+                    <div class="help-block">
+                        Hide the attributes column
                     </div>
                 </div>
                 @include('partials.restrictLabels')
