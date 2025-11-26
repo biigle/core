@@ -26,6 +26,7 @@
                     <li><a href="#annotation-csv-report">CSV</a></li>
                     <li><a href="#annotation-extended-report">Extended</a></li>
                     <li><a href="#annotation-coco-report">Coco</a></li>
+                    <li><a href="#annotation-yolo-report">YOLO</a></li>
                     <li><a href="#annotation-full-report">Full</a></li>
                     <li><a href="#annotation-image-location-report">ImageLocation</a></li>
                 </ul>
@@ -221,6 +222,38 @@ Animalia
         <h4><a name="annotation-coco-report"></a>Coco</h4>
         <p>
             The Coco file format is a common format for machine learning applications. The data is stored in a JSON file, which is readable by most deep learning frameworks. For more information please have a look at <a href="https://towardsdatascience.com/how-to-work-with-object-detection-datasets-in-coco-format-9bf4fb5848a4" target="_blank">this article</a>. Point annotations are incompatible and will not be included in this report. All remaining annotations will be transformed to polygons which might cause slight changes in their appearance.
+        </p>
+
+        <h4><a name="annotation-yolo-report"></a>YOLO</h4>
+        <p>
+            The YOLO file format is a standard format for training object detection models (e.g., YOLOv5, YOLOv8, YOLO11). The data is organized into a directory structure with images and text files containing normalized bounding box coordinates. This report generates a ZIP file containing the dataset split into train, validation, and test sets, along with a <code>data.yaml</code> configuration file. Point annotations are incompatible and will not be included in this report. All remaining annotations will be converted to bounding boxes.
+        </p>
+        <p>
+            You can optionally provide a local path to the images on your hard drive. If provided, the report will create symlinks to the images in the generated directory structure, allowing you to use the dataset without duplicating the image files. If no local path is provided, you must manually move or copy the images into the respective <code>images/train</code>, <code>images/val</code>, and <code>images/test</code> directories to match the structure below.
+        </p>
+        <p>
+            The generated ZIP file has the following structure:
+<pre>
+data.yaml
+classes.txt
+README.txt
+images/
+├─ train/
+│  ├─ image1.jpg
+│  └─ ...
+├─ val/
+│  └─ ...
+└─ test/
+   └─ ...
+labels/
+├─ train/
+│  ├─ image1.txt
+│  └─ ...
+├─ val/
+│  └─ ...
+└─ test/
+   └─ ...
+</pre>
         </p>
 
         <h4><a name="annotation-full-report"></a>Full</h4>

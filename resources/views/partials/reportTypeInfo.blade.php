@@ -7,6 +7,9 @@
 <div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'Coco')">
     The Coco image annotation report lists all annotations as (approximated polygons). Point annotations will not be included. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-coco-report">report schema</a>.
 </div>
+<div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'Yolo')">
+    The YOLO image annotation report exports annotations in the standard YOLO format (normalized bounding boxes in .txt files), organized into train/val/test splits. Point annotations will not be included. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-yolo-report">report schema</a>.
+</div>
 <div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')">
     The abundance image annotation report lists the abundances of annotation labels for each image (as XLSX). Abundances can be aggregated to parent labels. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-abundance-report">report schema</a>.
 </div>
