@@ -360,7 +360,7 @@ export default {
             };
             this.lineFeature._updateCoordinates();
 
-            annotationCanvas.independentAnnotationSource.addFeature(this.lineFeature);
+            annotationCanvas.labelbotSource.addFeature(this.lineFeature);
 
             this.listenerKeys.push(annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateCoordinates));
             this.listenerKeys.push(annotationGeometry.on('change', this.lineFeature._updateCoordinates));
@@ -420,7 +420,7 @@ export default {
     },
     beforeUnmount() {
         this.$parent.map.removeOverlay(this.overlay);
-        this.$parent.independentAnnotationSource.removeFeature(this.lineFeature);
+        this.$parent.labelbotSource.removeFeature(this.lineFeature);
         this.listenerKeys.forEach(unByKey);
 
         Keyboard.off('Escape', this.handleEsc, 'labelbot');

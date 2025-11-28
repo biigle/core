@@ -32,6 +32,12 @@ export default {
         labelbotPopup: LabelbotPopup,
         labelbotIndicator: LabelbotIndicator
     },
+    data() {
+        return  {
+            labelbotSource: null,
+            labelbotLayer: null,
+        }
+    },
     computed: {
         labelbotIsActive() {
             return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;

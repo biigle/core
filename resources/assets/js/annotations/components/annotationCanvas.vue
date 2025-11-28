@@ -310,13 +310,12 @@ export default {
                 opacity: this.annotationOpacity,
             });
 
-            // Layer for independent features (e.g. LabelBOT popup connector line)
-            this.independentAnnotationFeatures = new Collection();
-            this.independentAnnotationSource = new VectorSource({
-                features: this.independentAnnotationFeatures
+            // Layer for labelBOT features (e.g. LabelBOT popup dashed line and editing annotation)
+            this.labelbotSource = new VectorSource({
+                features: new Collection()
             });
-            this.independentAnnotationLayer = new VectorLayer({
-                source: this.independentAnnotationSource,
+            this.labelbotLayer = new VectorLayer({
+                source: this.labelbotSource,
                 zIndex: 101, // above annotationLayer
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
@@ -589,7 +588,11 @@ export default {
             // failed, to remove the temporary feature.
             let removeCallback = () => {
                 try {
-                    this.annotationSource.removeFeature(e.feature);
+                    if (this.labelbotIsActive) {
+                        this.labelbotSource.removeFeature(e.feature);
+                    } else {
+                        this.annotationSource.removeFeature(e.feature);
+                    }
                 } catch (e) {
                     // If this failed, the feature was already removed.
                     // Do nothing in this case.
@@ -874,7 +877,7 @@ export default {
         this.annotationLayer.set('name', 'annotations');
         this.map.addLayer(this.annotationLayer);
         
-        this.map.addLayer(this.independentAnnotationLayer);
+        this.map.addLayer(this.labelbotLayer);
 
         // These names are required by the minimap component.
         this.imageLayer.set('name', 'imageRegular');
