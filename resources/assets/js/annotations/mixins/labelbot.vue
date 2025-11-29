@@ -4,10 +4,6 @@ import Keyboard from '@/core/keyboard.js';
 import LabelbotWorker from '../workers/labelbot.js?worker';
 import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
 import Messages from '@/core/messages/store.js';
-import { getBoundingBox } from '../utils.js';
-
-// DINOv2 image input size.
-const INPUT_SIZE = 224;
 
 // This used to be higher to allow multiple popups at the same time but we found that
 // only a single popup at a time supports a more efficient workflow.
@@ -20,7 +16,6 @@ export const LABELBOT_STATES = {
     BUSY: 'busy',
     NOLABELS: 'nolabels',
     CORSERROR: 'corserror',
-    TILEDIMAGE: 'tiledimage',
     OFF: 'off'
 };
 
@@ -33,6 +28,7 @@ export default {
             focusedPopupKey: -1,
             labelbotRequestsInFlight: 0,
             labelbotMaxRequests: 1,
+            labelbotMessageID: 0,
             labelbotWorker: null,
             labelBotWorkerListeners: [],
             labelbotTimeout: 1,
@@ -114,36 +110,16 @@ export default {
 
             this.labelbotWorker.postMessage({type: 'init', url: modelUrl});
         },
-        generateFeatureVector(points, selectionCanvas) {
-            const box = getBoundingBox(this.image, points);
-
-            // Create a temporary canvas for processing the selected region
-            if (!this.tempLabelbotCanvas) {
-                this.tempLabelbotCanvas = document.createElement('canvas');
-                this.tempLabelbotCanvas.width = INPUT_SIZE;
-                this.tempLabelbotCanvas.height = INPUT_SIZE;
-                this.tempLabelbotCanvasCtx = this.tempLabelbotCanvas.getContext('2d', {
-                    willReadFrequently: true,
-                });
-            }
-            
-            const ctx = this.tempLabelbotCanvasCtx;
-            ctx.clearRect(0, 0, INPUT_SIZE, INPUT_SIZE);
-            
-            ctx.drawImage(selectionCanvas, 0, 0, selectionCanvas.width, selectionCanvas.height, 0, 0, INPUT_SIZE, INPUT_SIZE);
-            
-            const annotationData = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
-
+        generateFeatureVector(labelbotImage) {
+            const labelbotMessageID = this.labelbotMessageID++;
             const promise = this.addLabelbotWorkerListener(
-                e => box.every((v, i) => v === e.data?.box[i])
+                e => labelbotMessageID === e.data?.labelbotMessageID
             ).then(e => e.data.vector);
 
             this.labelbotWorker.postMessage({
                 type: 'run',
-                image: annotationData,
-                // Send the box as a means to identify which received vector belongs to
-                // which sent message.
-                box: box,
+                image: labelbotImage,
+                labelbotMessageID: labelbotMessageID
             });
 
             return promise;
@@ -189,7 +165,7 @@ export default {
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
 
-            return this.generateFeatureVector(annotation.points, annotation.selectionCanvas)
+            return this.generateFeatureVector(annotation.labelbotImage)
                 .then(featureVector =>  annotation.feature_vector = featureVector)
                 .then(() => this.labelbotRequestsInFlight += 1)
                 .then(() => AnnotationsStore.create(currentImageId, annotation))
@@ -230,11 +206,7 @@ export default {
         image(image) {
             if (image?.crossOrigin) {
                 this.updateLabelbotState(LABELBOT_STATES.CORSERROR);
-            } else if (image?.tiled) {
-                this.updateLabelbotState(LABELBOT_STATES.TILEDIMAGE);
             } else if (this.labelbotState === LABELBOT_STATES.CORSERROR) {
-                this.updateLabelbotState(LABELBOT_STATES.OFF);
-            } else if (this.labelbotState === LABELBOT_STATES.TILEDIMAGE) {
                 this.updateLabelbotState(LABELBOT_STATES.OFF);
             }
         },

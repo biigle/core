@@ -56,7 +56,7 @@ export default {
             return plugins;
         },
         labelbotIsActive() {
-            return this.labelbotState !== LABELBOT_STATES.TILEDIMAGE && this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;
+            return this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;
         },
         labelbotIsDisabled() {
             return this.labelbotState === LABELBOT_STATES.NOLABELS || this.labelbotState === LABELBOT_STATES.CORSERROR;
@@ -64,7 +64,6 @@ export default {
         labelbotToggleTitle() {
             switch (this.labelbotState) {
                 case LABELBOT_STATES.OFF:
-                case LABELBOT_STATES.TILEDIMAGE:
                     return 'Enable LabelBOT';
                 case LABELBOT_STATES.CORSERROR:
                     return 'The remote image must have a proper CORS configuration';

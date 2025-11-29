@@ -37,46 +37,85 @@ function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
 }
 
-function getBoundingBox(image, points) {
-    let minX = image.width;
-    let minY = image.height;
-    let maxX = 0;
-    let maxY = 0;
-    // Point
-    if (points.length === 2) {
-        // TODO: maybe use SAM or PTP module to convert point to shape
-        const tempRadius = 64; // Same radius than used for Largo thumbnails.
-        const [x, y] = points;
-        minX = Math.max(0, x - tempRadius);
-        minY = Math.max(0, y - tempRadius);
-        maxX = Math.min(image.width, x + tempRadius);
-        maxY = Math.min(image.height, y + tempRadius);
-    } else if (points.length === 3) { // Circle
-        const [centerX, centerY, radius] = points;
-        minX = Math.max(0, centerX - radius);
-        minY = Math.max(0, centerY - radius);
-        maxX = Math.min(image.width, centerX + radius);
-        maxY = Math.min(image.height, centerY + radius);
-    } else {
-        for (let i = 0; i < points.length; i += 2) {
-            const x = points[i];
-            const y = points[i + 1];
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
-            maxX = Math.max(maxX, x);
-            maxY = Math.max(maxY, y);
+function trimCanvas(canvas) {
+    let ctx = canvas.getContext('2d');
+    let copy = document.createElement('canvas').getContext('2d');
+    let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let l = pixels.data.length;
+    let i, x, y;
+    let bound = {
+        top: null,
+        left: null,
+        right: null,
+        bottom: null
+    };
+
+    for (i = 0; i < l; i += 4) {
+        if (pixels.data[i + 3] !== 0) {
+            x = (i / 4) % canvas.width;
+            y = ~~((i / 4) / canvas.width);
+
+            if (bound.top === null) {
+                bound.top = y;
+            }
+
+            if (bound.left === null) {
+                bound.left = x;
+            } else if (x < bound.left) {
+                bound.left = x;
+            }
+
+            if (bound.right === null) {
+                bound.right = x;
+            } else if (bound.right < x) {
+                bound.right = x;
+            }
+
+            if (bound.bottom === null) {
+                bound.bottom = y;
+            } else if (bound.bottom < y) {
+                bound.bottom = y;
+            }
         }
-        // Ensure the bounding box is within the image dimensions
-        minX = Math.max(0, minX);
-        minY = Math.max(0, minY);
-        maxX = Math.min(image.width, maxX);
-        maxY = Math.min(image.height, maxY);
+    }
+    
+    let trimHeight = bound.bottom - bound.top;
+    let trimWidth = bound.right - bound.left;
+    let trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+
+    copy.canvas.width = trimWidth;
+    copy.canvas.height = trimHeight;
+    copy.putImageData(trimmed, 0, 0);
+
+    return copy.canvas;
+}
+        
+let makeBlob = function(canvas) {
+    try {
+        canvas = trimCanvas(canvas);
+    } catch (error) {
+        return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
     }
 
-    const width = maxX - minX;
-    const height = maxY - minY;
+    let type = 'image/png';
+    if (!HTMLCanvasElement.prototype.toBlob) {
+        // fallback if toBlob is not implemented see 'Polyfill':
+        // https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/toBlob
+        let binStr = atob(canvas.toDataURL(type).split(',')[1]);
+        let len = binStr.length;
+        let arr = new Uint8Array(len);
+        for (let i = 0; i < len; i++ ) {
+            arr[i] = binStr.charCodeAt(i);
+        }
 
-    return [minX, minY, width, height];
+        return new Promise(function (resolve) {
+            resolve(new Blob([arr], {type: type}));
+        });
+    } else {
+        return new Promise(function (resolve) {
+            canvas.toBlob(resolve, type);
+        });
+    }
 }
 
-export {isInvalidShape, clamp, getBoundingBox};
+export {isInvalidShape, clamp, makeBlob};

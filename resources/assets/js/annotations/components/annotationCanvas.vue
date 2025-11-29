@@ -573,11 +573,11 @@ export default {
             }
             
             const points = this.getPoints(geometry);
-            let selectionCanvas = null;
+            let labelbotImage = null;
             if(this.labelbotIsActive)
             {
                 try {
-                    selectionCanvas = await this.createSelectionCanvas(points);
+                    labelbotImage = await this.createLabelbotImage(points);
                 } 
                 catch(error) {
                     this.annotationSource.removeFeature(e.feature);
@@ -585,7 +585,7 @@ export default {
                     return;
                 }
             }
-            
+
             // This callback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
             let removeCallback = () => {
@@ -596,11 +596,11 @@ export default {
                     // Do nothing in this case.
                 }
             };
-            
+
             this.$emit('new', {
                 shape: geometry.getType(),
                 points: points,
-                selectionCanvas: selectionCanvas
+                labelbotImage: labelbotImage
             }, removeCallback);
         },
         deleteSelectedAnnotations() {
