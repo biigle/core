@@ -58,7 +58,10 @@
     biigle.$declare('videos.errors', {!!$errors!!});
     biigle.$declare('videos.videoFileUri', '{!! url('api/v1/videos/:id/file') !!}');
     @can('addAnnotation', $video)
+        // TODO Difference bewteen videos.labelTrees and annotations.labelTrees?
         biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
+        biigle.$declare('annotations.labelTrees', {!! $labelTrees !!});
+        biigle.$declare('labelbot.onnxUrl', '{{config('labelbot.onnx_url')}}'); // This is the right place right?
     @endcan
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});

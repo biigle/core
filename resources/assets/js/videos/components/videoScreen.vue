@@ -350,6 +350,7 @@
                 v-if="selectedLabel"
                 :label="selectedLabel"
                 ></label-indicator>
+            <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
         </div>
     </div>
 </template>
@@ -362,6 +363,7 @@ import DrawInteractions from './videoScreen/drawInteractions.vue';
 import Indicators from './videoScreen/indicators.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelIndicator from '@/annotations/components/labelIndicator.vue';
+import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
 import Map from '@biigle/ol/Map';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
@@ -401,6 +403,7 @@ export default {
         Tooltips,
         Indicators,
         PolygonBrushInteractions,
+        LabelBot
     ],
     components: {
         controlButton: ControlButton,

@@ -4,6 +4,8 @@ import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
+import LabelBot from '@/annotations/mixins/labelbot.vue';
+import LabelsTab from '@/annotations/components/labelsTab.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
@@ -34,12 +36,13 @@ class VideoTooLargeError extends VideoError {}
 const URL_CURRENT_TIME_DIVISOR = 1e4
 
 export default {
-    mixins: [LoaderMixin],
+    mixins: [LoaderMixin, LabelBot],
     components: {
         videoScreen: VideoScreen,
         videoTimeline: VideoTimeline,
         sidebar: Sidebar,
         sidebarTab: SidebarTab,
+        labelsTab: LabelsTab,
         labelTrees: LabelTrees,
         settingsTab: SettingsTab,
         annotationsTab: AnnotationsTab,
@@ -911,9 +914,9 @@ export default {
         this.loadVideo(this.videoId);
 
         // See: https://github.com/biigle/core/issues/391
-        if (navigator.userAgent.toLowerCase().includes('firefox')) {
+        /*if (navigator.userAgent.toLowerCase().includes('firefox')) {
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
-        }
+        }*/
     },
 };
 </script>
