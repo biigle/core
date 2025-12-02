@@ -48,7 +48,7 @@ jobs:
       run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
 
     - name: Install aws dependency
-      run: composer require league/flysystem-aws-s3-v3
+      run: composer require symfony/event-dispatcher:^7.0 league/flysystem-aws-s3-v3
 
     - name: Fetch base images
       run: |
