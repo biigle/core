@@ -35,8 +35,10 @@ export default {
         labelbotPopup: LabelbotPopup,
         labelbotIndicator: LabelbotIndicator
     },
-    data: {
-        labelBotLayerAdded: false,
+    data() {
+        return {
+            labelBotLayerAdded: false,
+        };
     },
     computed: {
         labelbotIsActive() {
