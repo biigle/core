@@ -310,19 +310,6 @@ export default {
                 opacity: this.annotationOpacity,
             });
 
-            // Layer for labelBOT features (e.g. LabelBOT popup dashed line and editing annotation)
-            this.labelbotSource = new VectorSource({
-                features: new Collection()
-            });
-            this.labelbotLayer = new VectorLayer({
-                source: this.labelbotSource,
-                zIndex: 101, // above annotationLayer
-                updateWhileAnimating: true,
-                updateWhileInteracting: true,
-                style: Styles.features,
-                opacity: 1, // opacity not configurable
-            });
-
             this.selectInteraction = new SelectInteraction({
                 // Use click instead of default singleclick because the latter is
                 // delayed 250ms to ensure the event is no doubleclick. But we want
@@ -576,10 +563,17 @@ export default {
             // This is observed by a filter in the select interaction.
             e.feature.set('unselectable', true);
 
+            let removeSource = this.annotationSource;
             if (this.labelbotIsActive) {
                 // The "info" color.
                 e.feature.set('color', '5bc0de');
                 e.feature.setStyle(Styles.editing);
+
+                // Move feature to the LabelBOT layer so it has opacity=1 while LabelBOT
+                // is computing.
+                this.labelbotSource.addFeature(e.feature);
+                this.annotationSource.removeFeature(e.feature);
+                removeSource = this.labelbotSource;
             } else {
                 e.feature.set('color', this.selectedLabel.color);
             }
@@ -588,11 +582,7 @@ export default {
             // failed, to remove the temporary feature.
             let removeCallback = () => {
                 try {
-                    if (this.labelbotIsActive) {
-                        this.labelbotSource.removeFeature(e.feature);
-                    } else {
-                        this.annotationSource.removeFeature(e.feature);
-                    }
+                    removeSource.removeFeature(e.feature);
                 } catch (e) {
                     // If this failed, the feature was already removed.
                     // Do nothing in this case.
@@ -876,8 +866,6 @@ export default {
         // The name can be used for layer filters, e.g. with forEachFeatureAtPixel.
         this.annotationLayer.set('name', 'annotations');
         this.map.addLayer(this.annotationLayer);
-        
-        this.map.addLayer(this.labelbotLayer);
 
         // These names are required by the minimap component.
         this.imageLayer.set('name', 'imageRegular');

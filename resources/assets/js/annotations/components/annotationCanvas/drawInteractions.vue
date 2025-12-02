@@ -85,7 +85,7 @@ export default {
 
             if (this.isDrawing) {
                 drawInteraction = new DrawInteraction({
-                    source: this.labelbotIsActive ? this.labelbotSource : this.annotationSource,
+                    source: this.annotationSource,
                     type: mode.slice(4), // remove 'draw' prefix
                     style: Styles.editing,
                     freehandCondition: this.getFreehandCondition(mode),
@@ -146,12 +146,6 @@ export default {
         },
         interactionMode(mode) {
             this.maybeUpdateDrawInteractionMode(mode)
-        },
-        labelbotIsActive() {
-            // Update only if drawing
-            if (this.isDrawing) {
-                this.maybeUpdateDrawInteractionMode(this.interactionMode);
-            }
         },
     },
     created() {
