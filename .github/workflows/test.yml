@@ -45,7 +45,7 @@ jobs:
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Install Dependencies
-      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip
+      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis
 
     - name: Install aws dependency
       run: composer require league/flysystem-aws-s3-v3
@@ -89,13 +89,13 @@ jobs:
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis
 
     - name: Remove BIIGLE modules
       run: rm -r vendor/biigle
 
     - name: Update BIIGLE modules from source
-      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip biigle/*
+      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis biigle/*
 
     - name: Fetch base images
       run: |
