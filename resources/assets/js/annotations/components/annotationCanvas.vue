@@ -574,7 +574,6 @@ export default {
             // This is observed by a filter in the select interaction.
             e.feature.set('unselectable', true);
 
-            let removeSource = this.annotationSource;
             if (this.labelbotIsActive) {
                 // The "info" color.
                 e.feature.set('color', '5bc0de');
