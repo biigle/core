@@ -45,10 +45,7 @@ jobs:
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Install Dependencies
-      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
-
-    - name: Install aws dependency
-      run: composer require league/flysystem-aws-s3-v3
+      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis
 
     - name: Fetch base images
       run: |
