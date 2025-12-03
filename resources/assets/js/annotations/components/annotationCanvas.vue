@@ -539,19 +539,30 @@ export default {
             return this.convertPointsFromOlToDb(points);
         },
         async handleNewFeature(e) {
+            let removeCallback = () => {
+                try {
+                    this.annotationSource.removeFeature(e.feature);
+                } catch (e) {
+                    // If this failed, the feature was already removed.
+                    // Do nothing in this case.
+                }
+            };
+
+            // The feature is added to the source only after this event is handled, so
+            // removal in case of an error here has to happen after the addfeature event.
+            // Once the original drawend event that called handleNewFeature() was
+            // processed the plain removeCallback() can be used to remove the feature.
+            let cancelCallback = () => {
+                this.annotationSource.once('addfeature', removeCallback);
+            };
+
             if (!this.hasSelectedLabel && !this.labelbotIsActive) {
-                this.annotationSource.removeFeature(e.feature);
+                cancelCallback();
                 return;
             }
 
             if (isInvalidShape(e.feature)) {
-                // This must be done in the change event handler.
-                // Not exactly sure why.
-                this.annotationSource.once('change', () => {
-                    if (this.annotationSource.hasFeature(e.feature)) {
-                        this.annotationSource.removeFeature(e.feature);
-                    }
-                });
+                cancelCallback();
                 this.$emit('is-invalid-shape', e.feature.getGeometry().getType());
                 return;
             }
@@ -564,39 +575,43 @@ export default {
             // This is observed by a filter in the select interaction.
             e.feature.set('unselectable', true);
 
+            const points = this.getPoints(geometry);
+            let labelbotImage = null;
+
             if (this.labelbotIsActive) {
                 // The "info" color.
                 e.feature.set('color', '5bc0de');
                 e.feature.setStyle(Styles.editing);
+
+                // Move feature to the LabelBOT layer so it has opacity=1 while LabelBOT
+                // is computing.
+                this.labelbotSource.addFeature(e.feature);
+                cancelCallback();
+                removeCallback = () => {
+                    try {
+                        this.labelbotSource.removeFeature(e.feature);
+                    } catch (e) {
+                        // If this failed, the feature was already removed.
+                        // Do nothing in this case.
+                    }
+                };
+
+                // Do this below the switching between sources above, otherwise there
+                // would be an ugly style flickering of the feature while the
+                // labelbotImage is computed.
+                try {
+                    labelbotImage = await this.createLabelbotImage(points);
+                } catch (error) {
+                    removeCallback();
+                    Messages.danger(error.message);
+                    return;
+                }
             } else {
                 e.feature.set('color', this.selectedLabel.color);
             }
 
-            const points = this.getPoints(geometry);
-            let labelbotImage = null;
-            if(this.labelbotIsActive)
-            {
-                try {
-                    labelbotImage = await this.createLabelbotImage(points);
-                } 
-                catch(error) {
-                    this.annotationSource.removeFeature(e.feature);
-                    Messages.danger(error.message);
-                    return;
-                }
-            }
-
-            // This callback is called when saving the annotation succeeded or
+            // The removeCallback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
-            let removeCallback = () => {
-                try {
-                    this.annotationSource.removeFeature(e.feature);
-                } catch (e) {
-                    // If this failed, the feature was already removed.
-                    // Do nothing in this case.
-                }
-            };
-
             this.$emit('new', {
                 shape: geometry.getType(),
                 points: points,

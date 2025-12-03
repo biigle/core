@@ -1,6 +1,9 @@
 <script>
 import LabelbotIndicator from '../labelbotIndicator.vue';
 import LabelbotPopup from '../labelbotPopup.vue';
+import Styles from '../../stores/styles.js';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
 import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
 import { clamp, makeBlob } from '../../utils.js'
 
@@ -35,6 +38,11 @@ export default {
     components: {
         labelbotPopup: LabelbotPopup,
         labelbotIndicator: LabelbotIndicator
+    },
+    data() {
+        return {
+            labelBotLayerAdded: false,
+        };
     },
     computed: {
         labelbotIsActive() {
@@ -184,6 +192,26 @@ export default {
                 this.resetInteractionMode();
             }
         },
+        labelbotIsActive(active) {
+            if (active && !this.labelBotLayerAdded) {
+                this.map.addLayer(this.labelbotLayer);
+                this.labelBotLayerAdded = true;
+            }
+        }
+    },
+    created() {
+        // Layer for LabelBOT popup dashed line and editing annotation with opacity=1.
+        // These variables should not be reactive.
+        this.labelbotSource = new VectorSource();
+
+        this.labelbotLayer = new VectorLayer({
+            source: this.labelbotSource,
+            zIndex: 101, // above annotationLayer
+            updateWhileAnimating: true,
+            updateWhileInteracting: true,
+            style: Styles.features,
+            opacity: 1, // opacity not configurable
+        });
     },
 };
 </script>

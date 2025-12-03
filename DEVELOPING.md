@@ -6,7 +6,7 @@ To develop BIIGLE on your local machine you can use Docker containers. This way 
 
 First, install the following software:
 
-- PHP >= 8.0
+- PHP >= 8.2 with the XML extension
 - [Docker Engine](https://docs.docker.com/engine/install/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos)
