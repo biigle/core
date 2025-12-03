@@ -1,10 +1,11 @@
 /**
  * This function checks for invalid annotation shapes.
- * 
+ *
  * @param feature containing the video annotation to check
  * @returns true, if a video annotation has an invalid shape, otherwise false.
- * 
- * **/
+ *
+ *
+ **/
 let isInvalidShape = function (feature) {
     let geometry = feature.getGeometry();
     let points = [];
@@ -78,7 +79,7 @@ function trimCanvas(canvas) {
             }
         }
     }
-    
+
     let trimHeight = bound.bottom - bound.top;
     let trimWidth = bound.right - bound.left;
     let trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
@@ -89,7 +90,7 @@ function trimCanvas(canvas) {
 
     return copy.canvas;
 }
-        
+
 let makeBlob = function(canvas) {
     try {
         canvas = trimCanvas(canvas);

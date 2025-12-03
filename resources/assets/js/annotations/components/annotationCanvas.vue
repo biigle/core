@@ -571,7 +571,7 @@ export default {
             } else {
                 e.feature.set('color', this.selectedLabel.color);
             }
-            
+
             const points = this.getPoints(geometry);
             let labelbotImage = null;
             if(this.labelbotIsActive)

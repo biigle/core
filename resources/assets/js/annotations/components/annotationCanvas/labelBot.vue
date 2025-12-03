@@ -103,9 +103,9 @@ export default {
                     });
                 });
             });
-            
+
             this.map.render();
-            
+
             return promise;
         },
         calculateRectangleIntersection(r1, r2) {
@@ -126,46 +126,46 @@ export default {
                 this.tempCanvas.height = INPUT_SIZE;
                 this.tempCanvasCtx = this.tempCanvas.getContext('2d', { willReadFrequently: true });
             }
-            
+
             // Find rectangular intersection of selection and image
             [x, y, width, height] = this.calculateRectangleIntersection(
                 [x, y, width, height], 
                 [0, 0, image.width, image.height]
             ); 
-            
+
             if(width === 0 || height === 0) {
                 throw new Error("Selection was outside of the image");
             }
-            
+
             this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
-            
+
             return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
         createLabelbotImageFromRegularImage(points) {
             const [x, y, width, height] = this.getBoundingBox(this.image.source, points);
-            
+
             return this.getScaledImageSelection(this.image.source, x, y, width, height);
         },
         async createLabelbotImageFromTiledImage(points) {
             // Coordinates in image coordinates
             let [x, y, width, height] = this.getBoundingBox(this.image, points);
-            
+
             // Image coordinates of the top left and bottom right corner shown in the map
             let [topLeftX, topLeftY] = this.map.getCoordinateFromPixel([0, 0]);
             topLeftX = clamp(topLeftX, 0, this.image.width);
             topLeftY = this.image.height - clamp(topLeftY, 0, this.image.height);
-            
+
             let bottomRightX = this.map.getCoordinateFromPixel(this.map.getSize())[0];
             bottomRightX = clamp(bottomRightX, 0, this.image.width);
-            
+
             const mapScreenshot = await this.makeMapScreenshot();
             const visibleImagePartWidth = bottomRightX - topLeftX;
-            
+
             const scale = mapScreenshot.width / visibleImagePartWidth;
-            
+
             // Coordinates in screenshot coordinates
             [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
-            
+
             return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
         },
         async createLabelbotImage(points) {
