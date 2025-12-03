@@ -2,8 +2,10 @@
 import LabelbotIndicator from '../labelbotIndicator.vue';
 import LabelbotPopup from '../labelbotPopup.vue';
 import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
-import { makeBlob } from '../../makeBlobFromCanvas.js';
-import { clamp, getBoundingBox } from '../../utils.js';
+import { clamp, makeBlob } from '../../utils.js'
+
+// DINOv2 image input size.
+const INPUT_SIZE = 224;
 
 export default {
     emits: [
@@ -52,7 +54,48 @@ export default {
         handleDeleteLabelbotAnnotation(annotation) {
             this.$emit('delete', [annotation]);
         },
-        async makeMapScreenshot() {
+        getBoundingBox(image, points) {
+            let minX = image.width;
+            let minY = image.height;
+            let maxX = 0;
+            let maxY = 0;
+            // Point
+            if (points.length === 2) {
+                // TODO: maybe use SAM or PTP module to convert point to shape
+                const tempRadius = 64; // Same radius than used for Largo thumbnails.
+                const [x, y] = points;
+                minX = Math.max(0, x - tempRadius);
+                minY = Math.max(0, y - tempRadius);
+                maxX = Math.min(image.width, x + tempRadius);
+                maxY = Math.min(image.height, y + tempRadius);
+            } else if (points.length === 3) { // Circle
+                const [centerX, centerY, radius] = points;
+                minX = Math.max(0, centerX - radius);
+                minY = Math.max(0, centerY - radius);
+                maxX = Math.min(image.width, centerX + radius);
+                maxY = Math.min(image.height, centerY + radius);
+            } else {
+                for (let i = 0; i < points.length; i += 2) {
+                    const x = points[i];
+                    const y = points[i + 1];
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                }
+                // Ensure the bounding box is within the image dimensions
+                minX = Math.max(0, minX);
+                minY = Math.max(0, minY);
+                maxX = Math.min(image.width, maxX);
+                maxY = Math.min(image.height, maxY);
+            }
+
+            const width = maxX - minX;
+            const height = maxY - minY;
+
+            return [minX, minY, width, height];
+        },
+        makeMapScreenshot() {
             const promise = new Promise(resolve => {
                 this.tiledImageLayer.once('postrender', event => {
                     makeBlob(event.context.canvas).then(blob => {
@@ -76,10 +119,11 @@ export default {
 
             return [left, top, Math.max(0, right - left), Math.max(0, bottom - top)];
         },
-        drawImageSelectionToTempCanvas(image, x, y, width, height) {
-            if(!this.tempCanvas) 
-            {
+        getScaledImageSelection(image, x, y, width, height) {
+            if(!this.tempCanvas) {
                 this.tempCanvas = document.createElement('canvas');
+                this.tempCanvas.width = INPUT_SIZE;
+                this.tempCanvas.height = INPUT_SIZE;
                 this.tempCanvasCtx = this.tempCanvas.getContext('2d', { willReadFrequently: true });
             }
             
@@ -89,23 +133,22 @@ export default {
                 [0, 0, image.width, image.height]
             ); 
             
-            if(width === 0 || height === 0)
+            if(width === 0 || height === 0) {
                 throw new Error("Selection was outside of the image");
+            }
             
-            this.tempCanvas.width = width;
-            this.tempCanvas.height = height;
-            this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, width, height);
+            this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
             
-            return this.tempCanvas;
+            return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
-        createSelectionCanvasFromRegularImage(points) {
-            const [x, y, width, height] = getBoundingBox(this.image.source, points);
+        createLabelbotImageFromRegularImage(points) {
+            const [x, y, width, height] = this.getBoundingBox(this.image.source, points);
             
-            return this.drawImageSelectionToTempCanvas(this.image.source, x, y, width, height);
+            return this.getScaledImageSelection(this.image.source, x, y, width, height);
         },
-        async createSelectionCanvasFromTiledImage(points) {
+        async createLabelbotImageFromTiledImage(points) {
             // Coordinates in image coordinates
-            let [x, y, width, height] = getBoundingBox(this.image, points);
+            let [x, y, width, height] = this.getBoundingBox(this.image, points);
             
             // Image coordinates of the top left and bottom right corner shown in the map
             let [topLeftX, topLeftY] = this.map.getCoordinateFromPixel([0, 0]);
@@ -123,16 +166,13 @@ export default {
             // Coordinates in screenshot coordinates
             [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
             
-            return this.drawImageSelectionToTempCanvas(mapScreenshot, x, y, width, height);
+            return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
         },
-        async createSelectionCanvas(points) {
-            if(!this.image)
-                throw new Error("No image available");
-            
+        async createLabelbotImage(points) {
             if(!this.image.tiled)
-                return this.createSelectionCanvasFromRegularImage(points);
+                return this.createLabelbotImageFromRegularImage(points);
             else 
-                return await this.createSelectionCanvasFromTiledImage(points);
+                return await this.createLabelbotImageFromTiledImage(points);
         },
     },
     watch: {
