@@ -1,54 +1,36 @@
 <template>
     <div
         class="label-tree"
-        @mouseover="setDraggableVisible(true)"
-        @mouseleave="setDraggableVisible(false)"
-        droppable="true"
-        @drop.prevent="emitSwitchLabelTrees($event)"
-        @dragenter.prevent
-        @dragover.prevent="setDragHovering($event, true)"
-        @dragleave.prevent="setDragHovering($event, false)"
+        @mouseover="doHover"
+        @mouseleave="dontHover"
     >
-        <div
-            class="label-to-be-moved"
-            v-if="dragHovering == 'before' && name != 'Favourites'"
-        >
-            <h5>{{ labelTreeToBeMoved }}</h5>
-        </div>
-        <h4 v-if="showTitle" class="label-tree__title">
-            <button
-                v-if="collapsible"
-                @click.stop="collapse"
-                class="btn btn-default btn-xs pull-right"
-                :title="collapseTitle"
-                type="button"
-            >
-                <span
-                    v-if="collapsed"
-                    class="fa fa-chevron-down"
-                    aria-hidden="true"
-                ></span>
-                <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
-            </button>
-            <div
-                class="draggable"
-                draggable="true"
-                @dragstart="startLabelTreeDrag($event)"
-            >
-                <button
-                    type="button"
-                    class="btn btn-default btn-xs drag-button pull-left"
-                    v-if="showCustomOrder && draggableIsVisible && name != 'Favourites'"
-                    title="Drag to move the label tree"
-                >
+                <h4 v-if="showTitle" class="label-tree__title">
                     <span
-                        class="fas fa-grip-vertical"
-                        aria-hidden="true"
-                    ></span>
+                        @click.stop="collapse"
+                        :title="collapseTitle"
+                        :style="{ cursor: cursorLabelTree }"
+                    >
+                        {{ name }}
+                    </span>
+                    <button
+                        v-if="showMoveButtonUp"
+                        type="button"
+                        class="btn btn-default btn-xs pull-right"
+                        @click="emitMoveLabelTree(true)"
+                        title="Move the label tree up"
+                        >
+                        <span class="fa fa-arrow-up" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        v-if="showMoveButtonDown"
+                        type="button"
+                        class="btn btn-default btn-xs pull-right"
+                        @click="emitMoveLabelTree(false)"
+                        title="Move the label tree down"
+                        >
+                    <span class="fa fa-arrow-down" aria-hidden="true"></span>
                 </button>
-            </div>
-            {{ name }}
-        </h4>
+                </h4>
         <ul v-if="!collapsed" class="label-tree__list">
             <label-tree-label
                 v-for="(label, index) in rootLabels"
@@ -68,13 +50,6 @@
             ></label-tree-label>
             <li v-if="hasNoLabels" class="text-muted">No labels</li>
         </ul>
-
-        <div
-            class="label-to-be-moved"
-            v-if="dragHovering == 'after' && name != 'Favourites'"
-        >
-            <h5>{{ labelTreeToBeMoved }}</h5>
-        </div>
     </div>
 </template>
 
@@ -94,14 +69,13 @@ export default {
         "remove-favourite",
         "save",
         "select",
-        "switch-label-trees"
+        "move-label-trees",
     ],
     data() {
         return {
             collapsed: false,
-            draggableIsVisible: false,
             labelTreeToBeMoved: "",
-            dragHovering: ""
+            hover: false,
         };
     },
     components: {
@@ -171,16 +145,20 @@ export default {
             type: Boolean,
             default: false
         },
-        treeId: {
+        treeIndex: {
             type: Number,
             default: -1
         },
-        treeIndex: {
+        maxTreeIndex: {
             type: Number,
             default: -1
         }
     },
     computed: {
+        cursorLabelTree() {
+            let cursor = this.collapsible ? 'pointer' : 'default';
+            return cursor;
+        },
         labelMap() {
             let map = {};
             for (let i = this.labels.length - 1; i >= 0; i--) {
@@ -224,28 +202,27 @@ export default {
             return this.compiledLabels[null];
         },
         collapseTitle() {
-            return this.collapsed ? "Expand" : "Collapse";
+            if (this.collapsible) {
+                return this.collapsed ? "Expand" : "Collapse";
+            }
+            return ""
         },
         hasNoLabels() {
             return this.rootLabels.length === 0;
-        }
+        },
+        showMoveButtonUp() {
+            return this.name != "Favourites" && this.hover && this.treeIndex != 0;
+        },
+        showMoveButtonDown() {
+            return this.name != "Favourites" && this.hover && this.treeIndex != this.maxTreeIndex;
+        },
     },
     methods: {
-        setDragHovering(evt, val) {
-            if (!val) {
-                this.labelTreeToBeMoved = "";
-                this.dragHovering = "";
-            } else {
-                let labelTreeToMove = evt.dataTransfer.getData("labelTree");
-                if (labelTreeToMove !== this.name) {
-                    this.labelTreeToBeMoved = labelTreeToMove;
-                }
-
-                let labelTreeIndex = evt.dataTransfer.getData("labelTreeIndex");
-                //Simply: if a label tree is dragged from below, it will be placed before the other label trees, after if dragged from above
-                this.dragHovering =
-                    labelTreeIndex > this.treeIndex ? "before" : "after";
-            }
+        doHover() {
+            this.hover = true;
+        },
+        dontHover() {
+            this.hover = false;
         },
         hasLabel(id) {
             return this.labelMap.hasOwnProperty(id);
@@ -415,27 +392,14 @@ export default {
                 label.favourite = false;
             }
         },
-        setDraggableVisible(val) {
-            this.draggableIsVisible = val;
-        },
-        startLabelTreeDrag(evt) {
+        emitMoveLabelTree(moveUp) {
             if (this.name != "Favourites") {
-                evt.dataTransfer.setData("labelTreeId", this.treeId);
-                evt.dataTransfer.setData("labelTree", this.name);
-                evt.dataTransfer.setData("labelTreeIndex", this.treeIndex);
-            }
-        },
-        emitSwitchLabelTrees(evt) {
-            if (this.name != "Favourites") {
-                let labelTreeToMoveId = evt.dataTransfer.getData("labelTreeId");
-                if (this.treeId != labelTreeToMoveId) {
-                    this.$emit(
-                        "switch-label-trees",
-                        labelTreeToMoveId,
-                        this.treeId
-                    );
-                    this.setDragHovering("", false);
-                }
+                let targetIdx = moveUp ? this.treeIndex - 1 : this.treeIndex + 1;
+                this.$emit(
+                    "move-label-trees",
+                    this.treeIndex,
+                    targetIdx,
+                );
             }
         }
     },

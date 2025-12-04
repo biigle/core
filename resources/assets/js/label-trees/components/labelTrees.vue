@@ -36,8 +36,8 @@
             <label-tree
                 v-for="(tree, index) in sortedTrees"
                 :key="tree.id"
-                :treeId="tree.id"
                 :treeIndex="index"
+                :maxTreeIndex="sortedTrees.length - 1"
                 :name="tree.versionedName"
                 :labels="tree.labels"
                 :multiselect="multiselect"
@@ -50,7 +50,7 @@
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
-                @switch-label-trees="switchLabelTrees"
+                @move-label-trees="moveLabelTrees"
             ></label-tree>
         </div>
     </div>
@@ -279,12 +279,10 @@ export default {
         on(key, fn) {
             this.events.on(key, fn);
         },
-        switchLabelTrees(labelTree1, labelTree2) {
-            // If there is no data in local storage, add it
-            let idx1 = this.trees.findIndex((tree) => tree.id == labelTree1);
-            let idx2 = this.trees.findIndex((tree) => tree.id == labelTree2);
+        moveLabelTrees(treeIdx, targetIdx) {
 
-            let customOrder = this.swapElements(this.treeIds, idx1, idx2);
+            // If there is no data in local storage, add it
+            let customOrder = this.swapElements(this.treeIds, treeIdx, targetIdx);
             this.customOrder = customOrder;
 
             this.customOrderStorageKeys.forEach(function (storageKey) {
