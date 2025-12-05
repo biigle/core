@@ -8,6 +8,7 @@
                     <span
                         @click.stop="collapse"
                         :title="collapseTitle"
+                        :class="titleClass"
                         :style="{ cursor: cursorLabelTree }"
                     >
                         {{ name }}
@@ -74,7 +75,6 @@ export default {
     data() {
         return {
             collapsed: false,
-            labelTreeToBeMoved: "",
             hover: false,
         };
     },
@@ -155,9 +155,8 @@ export default {
         }
     },
     computed: {
-        cursorLabelTree() {
-            let cursor = this.collapsible ? 'pointer' : 'default';
-            return cursor;
+        titleClass() {
+            return this.collapsible && this.hover ? 'label-tree__title-hovering' : '';
         },
         labelMap() {
             let map = {};

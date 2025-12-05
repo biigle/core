@@ -8,18 +8,13 @@
     }
 }
 
-
-.label-to-be-moved {
-    color: #00AAFF;
-}
-
-.drag-button {
-    margin-right: 0.5em;
-}
-
-.label-tree
 .label-tree__title {
     margin-top: 0;
+}
+
+.label-tree__title-hovering {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .label-tree__list {
