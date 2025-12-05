@@ -4,34 +4,34 @@
         @mouseover="doHover"
         @mouseleave="dontHover"
     >
-                <h4 v-if="showTitle" class="label-tree__title">
-                    <span
-                        @click.stop="collapse"
-                        :title="collapseTitle"
-                        :class="titleClass"
-                        :style="{ cursor: cursorLabelTree }"
-                    >
-                        {{ name }}
-                    </span>
-                    <button
-                        v-if="showMoveButtonUp"
-                        type="button"
-                        class="btn btn-default btn-xs pull-right"
-                        @click="emitMoveLabelTree(true)"
-                        title="Move the label tree up"
-                        >
-                        <span class="fa fa-arrow-up" aria-hidden="true"></span>
-                    </button>
-                    <button
-                        v-if="showMoveButtonDown"
-                        type="button"
-                        class="btn btn-default btn-xs pull-right"
-                        @click="emitMoveLabelTree(false)"
-                        title="Move the label tree down"
-                        >
-                    <span class="fa fa-arrow-down" aria-hidden="true"></span>
-                </button>
-                </h4>
+        <h4 v-if="showTitle" class="label-tree__title">
+            <span
+                @click.stop="collapse"
+                :title="collapseTitle"
+                :class="titleClass"
+                :style="{ cursor: cursorLabelTree }"
+            >
+                {{ name }}
+            </span>
+            <button
+                v-if="showMoveButtonUp"
+                type="button"
+                class="btn btn-default btn-xs pull-right"
+                @click="emitMoveLabelTree(true)"
+                title="Move the label tree up"
+                >
+                <span class="fa fa-arrow-up" aria-hidden="true"></span>
+            </button>
+            <button
+                v-if="showMoveButtonDown"
+                type="button"
+                class="btn btn-default btn-xs pull-right"
+                @click="emitMoveLabelTree(false)"
+                title="Move the label tree down"
+                >
+                <span class="fa fa-arrow-down" aria-hidden="true"></span>
+            </button>
+        </h4>
         <ul v-if="!collapsed" class="label-tree__list">
             <label-tree-label
                 v-for="(label, index) in rootLabels"
