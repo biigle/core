@@ -309,6 +309,11 @@ $router->resource('shapes', 'ShapeController', [
     'parameters' => ['shapes' => 'id'],
 ]);
 
+$router->resource('reports', 'ReportsController', [
+    'only' => ['index'],
+    'parameters' => ['reports' => 'id'],
+]);
+
 $router->get('videos/{id}/file', 'VideoFileController@show');
 
 $router->resource('videos', 'VideoController', [
