@@ -84,7 +84,7 @@ class ReportsController extends Controller
      *
      * @api {list} list all available reports
      * @apiGroup Reports
-     * @return
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index()
     {
