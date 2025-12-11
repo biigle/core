@@ -403,6 +403,8 @@ export default {
                 this.treeIndex,
                 targetIdx,
             );
+            //avoid visual bug; if we move the label tree, mouseleave may not triggered
+            this.hover = false;
         }
     },
     created() {
