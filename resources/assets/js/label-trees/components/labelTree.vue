@@ -64,13 +64,13 @@ import LabelTreeLabel from "./labelTreeLabel.vue";
  */
 export default {
     emits: [
-        "add-favourite",
-        "delete",
-        "deselect",
-        "remove-favourite",
-        "save",
-        "select",
-        "move-label-trees",
+        'add-favourite',
+        'delete',
+        'deselect',
+        'remove-favourite',
+        'save',
+        'select',
+        'move-label-trees',
     ],
     data() {
         return {
@@ -84,74 +84,74 @@ export default {
     props: {
         name: {
             type: String,
-            required: true
+            required: true,
         },
         labels: {
             type: Array,
-            required: true
+            required: true,
         },
         showTitle: {
             type: Boolean,
-            default: true
+            default: true,
         },
         // If false the label tree assumes it is used in a label-trees component.
         standalone: {
             type: Boolean,
-            default: false
+            default: false,
         },
         collapsible: {
             type: Boolean,
-            default: true
+            default: true,
         },
         // Indicates whether multiple labels can be selected at the same time.
         multiselect: {
             type: Boolean,
-            default: false
+            default: false,
         },
         // Indicates whether labels can be selected with Alt to select all sibling
         // labels, too.
         allowSelectSiblings: {
             type: Boolean,
-            default: false
+            default: false,
         },
         // Indicates whether labels can be selected with Crtl to select all child
         // labels, too.
         allowSelectChildren: {
             type: Boolean,
-            default: false
+            default: false,
         },
         // Indicates whether labels can be edited.
         editable: {
             type: Boolean,
-            default: false
+            default: false,
         },
         // Indicates whether labels can be selected as favourites.
         showFavourites: {
             type: Boolean,
-            default: false
+            default: false,
         },
         // Indicates whether labels can be sorted.
         showCustomOrder: {
             type: Boolean,
-            default: false
+            default: false,
         },
         // Indicates whether the labels should be displayed in a flat list instead of a tree.
         flat: {
             type: Boolean,
-            default: false
+            default: false,
         },
         // Indicates whether shortcuts of favourites are shown.
         showFavouriteShortcuts: {
             type: Boolean,
-            default: false
+            default: false,
         },
         treeIndex: {
             type: Number,
-            default: -1
+            default: -1,
         },
         maxTreeIndex: {
             type: Number,
-            default: -1
+            default: -1,
         }
     },
     computed: {
@@ -167,7 +167,7 @@ export default {
             return map;
         },
         compiledLabels() {
-            let compiled = { null: [] };
+            let compiled = {null: []};
 
             if (this.flat) {
                 this.labels.forEach(function (label) {
@@ -274,22 +274,22 @@ export default {
             }
         },
         emitSelect(label, e) {
-            this.$emit("select", label, e);
+            this.$emit('select', label, e);
             if (this.standalone) {
                 this.selectLabel({ label, e });
             }
         },
         emitDeselect(label, e) {
-            this.$emit("deselect", label, e);
+            this.$emit('deselect', label, e);
             if (this.standalone) {
                 this.deselectLabel({ label, e });
             }
         },
         emitSave(label, reject) {
-            this.$emit("save", label, reject);
+            this.$emit('save', label, reject);
         },
         emitDelete(label) {
-            this.$emit("delete", label);
+            this.$emit('delete', label);
         },
         conditionSelectSiblings(e) {
             if (!e) {
@@ -338,7 +338,7 @@ export default {
             }
         },
         deselectLabel(args) {
-            const { label, e } = args;
+            const {label, e} = args;
             if (this.hasLabel(label.id)) {
                 label.selected = false;
 
@@ -376,10 +376,10 @@ export default {
             }
         },
         emitAddFavourite(label) {
-            this.$emit("add-favourite", label);
+            this.$emit('add-favourite', label);
         },
         emitRemoveFavourite(label) {
-            this.$emit("remove-favourite", label);
+            this.$emit('remove-favourite', label);
         },
         addFavouriteLabel(label) {
             if (this.hasLabel(label.id)) {
@@ -392,10 +392,10 @@ export default {
             }
         },
         emitMoveLabelTree(moveUp) {
-            if (this.name != "Favourites") {
+            if (this.name != 'Favourites') {
                 let targetIdx = moveUp ? this.treeIndex - 1 : this.treeIndex + 1;
                 this.$emit(
-                    "move-label-trees",
+                    'move-label-trees',
                     this.treeIndex,
                     targetIdx,
                 );
@@ -405,15 +405,15 @@ export default {
     created() {
         // Set the reactive label properties
         this.labels.forEach(function (label) {
-            if (!label.hasOwnProperty("open")) {
+            if (!label.hasOwnProperty('open')) {
                 label.open = false;
             }
 
-            if (!label.hasOwnProperty("selected")) {
+            if (!label.hasOwnProperty('selected')) {
                 label.selected = false;
             }
 
-            if (!label.hasOwnProperty("favourite")) {
+            if (!label.hasOwnProperty('favourite')) {
                 label.favourite = false;
             }
         });
@@ -423,12 +423,12 @@ export default {
         // trees so the parent handles the event. A single label tree handles the event
         // by itself.
         if (!this.standalone) {
-            this.$parent.on("select", this.selectLabel);
-            this.$parent.on("deselect", this.deselectLabel);
-            this.$parent.on("clear", this.clearSelectedLabels);
+            this.$parent.on('select', this.selectLabel);
+            this.$parent.on('deselect', this.deselectLabel);
+            this.$parent.on('clear', this.clearSelectedLabels);
             // Label favourites only work with the label-trees component.
-            this.$parent.on("add-favourite", this.addFavouriteLabel);
-            this.$parent.on("remove-favourite", this.removeFavouriteLabel);
+            this.$parent.on('add-favourite', this.addFavouriteLabel);
+            this.$parent.on('remove-favourite', this.removeFavouriteLabel);
         }
     }
 };

@@ -1,13 +1,16 @@
 <template>
     <div class="label-trees">
-        <div v-if="typeahead || clearable" class="label-trees__head">
+        <div
+            v-if="typeahead || clearable"
+            class="label-trees__head"
+            >
             <button
                 v-if="clearable"
                 @click="clear"
                 class="btn btn-default"
                 title="Clear selected labels"
                 type="button"
-            >
+                >
                 <span class="fa fa-times fa-fw" aria-hidden="true"></span>
             </button>
             <typeahead
@@ -17,7 +20,7 @@
                 placeholder="Find label"
                 :items="labels"
                 @select="handleSelect"
-            ></typeahead>
+                ></typeahead>
         </div>
         <div class="label-trees__body">
             <label-tree
@@ -32,7 +35,7 @@
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
-            ></label-tree>
+                ></label-tree>
             <label-tree
                 v-for="(tree, index) in sortedTrees"
                 :key="tree.id"
@@ -51,17 +54,17 @@
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
                 @move-label-trees="moveLabelTrees"
-            ></label-tree>
+                ></label-tree>
         </div>
     </div>
 </template>
 
 <script>
-import Keyboard from "@/core/keyboard.js";
-import LabelTree from "./labelTree.vue";
-import mitt from "mitt";
-import Typeahead from "./labelTypeahead.vue";
-import { MAX_FAVOURITES } from "../constants.js";
+import Keyboard from '@/core/keyboard.js';
+import LabelTree from './labelTree.vue';
+import mitt from 'mitt';
+import Typeahead from './labelTypeahead.vue';
+import { MAX_FAVOURITES } from '../constants.js';
 
 /**
  * A component that displays a list of label trees.
@@ -69,17 +72,23 @@ import { MAX_FAVOURITES } from "../constants.js";
  * @type {Object}
  */
 export default {
-    emits: ["add-favourite", "clear", "deselect", "remove-favourite", "select"],
+    emits: [
+        'add-favourite',
+        'clear',
+        'deselect',
+        'remove-favourite',
+        'select',
+    ],
     components: {
         typeahead: Typeahead,
         labelTree: LabelTree
     },
     data() {
-        let volumeProjectIds = biigle.$require("volumes.projectIds");
-        let annotationProjectIds = biigle.$require("annotations.projectIds");
-        let largoProjectIds = biigle.$require("largo.projectIds");
-        let largoProject = [biigle.$require("largo.projectId")];
-        let videoProjectIds = biigle.$require("videos.projectIds");
+        let volumeProjectIds = biigle.$require('volumes.projectIds');
+        let annotationProjectIds = biigle.$require('annotations.projectIds');
+        let largoProjectIds = biigle.$require('largo.projectIds');
+        let largoProject = [biigle.$require('largo.projectId')];
+        let videoProjectIds = biigle.$require('videos.projectIds');
 
         let projectIds = [volumeProjectIds, annotationProjectIds, largoProjectIds, largoProject, videoProjectIds]
             .flat()
@@ -104,64 +113,64 @@ export default {
     props: {
         trees: {
             type: Array,
-            required: true
+            required: true,
         },
         id: {
-            type: String
+            type: String,
         },
         typeahead: {
             type: Boolean,
-            default: true
+            default: true,
         },
         clearable: {
             type: Boolean,
-            default: true
+            default: true,
         },
         multiselect: {
             type: Boolean,
-            default: false
+            default: false,
         },
         allowSelectSiblings: {
             type: Boolean,
-            default: false
+            default: false,
         },
         allowSelectChildren: {
             type: Boolean,
-            default: false
+            default: false,
         },
         showFavourites: {
             type: Boolean,
-            default: false
+            default: false,
         },
         showCustomOrder: {
             type: Boolean,
-            default: false
+            default: false,
         },
         collapsible: {
             type: Boolean,
-            default: true
+            default: true,
         },
         // Keyboard event listener set to use (in case there are other components using
         // the same shortcut keys on the same page).
         listenerSet: {
             type: String,
-            default: "default"
+            default: 'default',
         },
         focusInput: {
             type: Boolean,
-            default: false
+            default: false,
         },
         selectedFavouriteLabel: {
             type: Number,
-            default: undefined
+            default: undefined,
         }
     },
     computed: {
         localeCompareSupportsLocales() {
             try {
-                "foo".localeCompare("bar", "i");
+                'foo'.localeCompare('bar', 'i');
             } catch (e) {
-                return e.name === "RangeError";
+                return e.name === 'RangeError';
             }
 
             return false;
@@ -178,7 +187,7 @@ export default {
                 // modern browsers, though.
                 let collator = new Intl.Collator(undefined, {
                     numeric: true,
-                    sensitivity: "base"
+                    sensitivity: 'base',
                 });
                 labels.sort(function (a, b) {
                     return collator.compare(a.name, b.name);
@@ -217,7 +226,7 @@ export default {
                 ids.push(this.trees[prop].id);
             }
 
-            return ids.sort().join("-");
+            return ids.sort().join('-');
         },
         favouriteStorageKey() {
             return `biigle.label-trees.${this.ownId}.favourites`;
@@ -232,29 +241,29 @@ export default {
     methods: {
         handleSelect(label, e) {
             if (label) {
-                this.$emit("select", label, e);
-                this.events.emit("select", { label, e });
+                this.$emit('select', label, e);
+                this.events.emit('select', { label, e });
             }
         },
         handleDeselect(label, e) {
-            this.$emit("deselect", label, e);
-            this.events.emit("deselect", { label, e });
+            this.$emit('deselect', label, e);
+            this.events.emit('deselect', { label, e });
         },
         clear() {
-            this.$emit("clear");
-            this.events.emit("clear");
+            this.$emit('clear');
+            this.events.emit('clear');
         },
         handleAddFavourite(label) {
             if (this.canHaveMoreFavourites) {
-                this.$emit("add-favourite", label);
-                this.events.emit("add-favourite", label);
+                this.$emit('add-favourite', label);
+                this.events.emit('add-favourite', label);
                 this.favourites.push(label);
                 this.updateFavouriteStorage();
             }
         },
         handleRemoveFavourite(label) {
-            this.$emit("remove-favourite", label);
-            this.events.emit("remove-favourite", label);
+            this.$emit('remove-favourite', label);
+            this.events.emit('remove-favourite', label);
             let index = this.favourites.indexOf(label);
             if (index !== -1) {
                 this.favourites.splice(index, 1);
@@ -263,10 +272,7 @@ export default {
         },
         updateFavouriteStorage() {
             if (this.hasFavourites) {
-                localStorage.setItem(
-                    this.favouriteStorageKey,
-                    JSON.stringify(this.favouriteIds)
-                );
+                localStorage.setItem(this.favouriteStorageKey, JSON.stringify(this.favouriteIds));
             } else {
                 localStorage.removeItem(this.favouriteStorageKey);
             }
@@ -310,8 +316,7 @@ export default {
             handler(trees) {
                 trees.forEach(function (tree) {
                     if (tree.version) {
-                        tree.versionedName =
-                            tree.name + " @ " + tree.version.name;
+                        tree.versionedName = tree.name + ' @ ' + tree.version.name;
                     } else {
                         tree.versionedName = tree.name;
                     }
@@ -324,7 +329,7 @@ export default {
         },
         focusInput() {
             if (this.focusInput) {
-                this.$refs.typeaheadInput.$el.querySelector("input").focus();
+                this.$refs.typeaheadInput.$el.querySelector('input').focus();
             }
         },
         selectedFavouriteLabel(index) {
@@ -353,9 +358,7 @@ export default {
     },
     mounted() {
         if (this.showFavourites) {
-            let favouriteIds = JSON.parse(
-                localStorage.getItem(this.favouriteStorageKey)
-            );
+            let favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
             if (favouriteIds) {
                 // Keep the ordering of the favourites!
                 let favouriteLabels = [];
@@ -372,20 +375,15 @@ export default {
             }
 
             let bindFavouriteKey = (key, index) => {
-                Keyboard.on(
-                    key,
-                    () => {
+                Keyboard.on(key, () => {
                         this.selectFavourite(index);
-                    },
-                    0,
-                    this.listenerSet
-                );
+                    }, 0, this.listenerSet);
             };
 
             for (let i = 1; i <= 9; i++) {
                 bindFavouriteKey(i.toString(), i - 1);
             }
-            bindFavouriteKey("0", 9);
+            bindFavouriteKey('0', 9);
         }
 
         this.sortedTrees = this.trees;
