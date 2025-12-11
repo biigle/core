@@ -20,7 +20,7 @@
         </p>
 
         <p>
-            Label trees can be sorted locally by using the <button class="btn btn-default"><i class="fa fa-arrow-up"></i></button><button class="btn btn-default"><i class="fa fa-arrow-down"></i></button> buttons to move the label tree up and down. This sorting is applied on the Volume, Largo and Annotation views.
+            The order of label trees can be changed using the <button class="btn btn-default"><i class="fa fa-arrow-up"></i></button><button class="btn btn-default"><i class="fa fa-arrow-down"></i></button> buttons to move the label tree up and down. The buttons appear when hovering the mouse over the label tree title. The new order is only applied on the local machine and does not affect the order of other users.
         </p>
 
         <h3><a name="visibility"></a>Visibility</h3>
