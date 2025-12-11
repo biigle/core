@@ -63,7 +63,7 @@ import Keyboard from '@/core/keyboard.js';
 import LabelTree from './labelTree.vue';
 import mitt from 'mitt';
 import Typeahead from './labelTypeahead.vue';
-import { MAX_FAVOURITES } from '../constants.js';
+import {MAX_FAVOURITES} from '../constants.js';
 
 /**
  * A component that displays a list of label trees.
@@ -80,7 +80,7 @@ export default {
     ],
     components: {
         typeahead: Typeahead,
-        labelTree: LabelTree
+        labelTree: LabelTree,
     },
     data() {
 
@@ -133,10 +133,6 @@ export default {
             type: Boolean,
             default: false,
         },
-        showCustomOrder: {
-            type: Boolean,
-            default: true,
-        },
         collapsible: {
             type: Boolean,
             default: true,
@@ -180,10 +176,7 @@ export default {
             if (this.localeCompareSupportsLocales) {
                 // Use this to sort label names "natuarally". This is only supported in
                 // modern browsers, though.
-                let collator = new Intl.Collator(undefined, {
-                    numeric: true,
-                    sensitivity: 'base',
-                });
+                let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
                 labels.sort(function (a, b) {
                     return collator.compare(a.name, b.name);
                 });
@@ -237,12 +230,12 @@ export default {
         handleSelect(label, e) {
             if (label) {
                 this.$emit('select', label, e);
-                this.events.emit('select', { label, e });
+                this.events.emit('select', {label, e});
             }
         },
         handleDeselect(label, e) {
             this.$emit('deselect', label, e);
-            this.events.emit('deselect', { label, e });
+            this.events.emit('deselect', {label, e});
         },
         clear() {
             this.$emit('clear');
@@ -320,7 +313,7 @@ export default {
                         label.tree = tree;
                     });
                 });
-            }
+            },
         },
         focusInput() {
             if (this.focusInput) {
@@ -371,8 +364,8 @@ export default {
 
             let bindFavouriteKey = (key, index) => {
                 Keyboard.on(key, () => {
-                        this.selectFavourite(index);
-                    }, 0, this.listenerSet);
+                    this.selectFavourite(index);
+                }, 0, this.listenerSet);
             };
 
             for (let i = 1; i <= 9; i++) {

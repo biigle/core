@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="label-tree"
-    >
+    <div class="label-tree">
         <div
             class="label-tree__title-container"
             @mouseover="doHover"
@@ -60,7 +58,7 @@
 </template>
 
 <script>
-import LabelTreeLabel from "./labelTreeLabel.vue";
+import LabelTreeLabel from './labelTreeLabel.vue';
 
 /**
  * A component that displays a label tree. The labels can be searched and selected.
@@ -84,7 +82,7 @@ export default {
         };
     },
     components: {
-        labelTreeLabel: LabelTreeLabel
+        labelTreeLabel: LabelTreeLabel,
     },
     props: {
         name: {
@@ -207,9 +205,9 @@ export default {
         },
         collapseTitle() {
             if (this.collapsible) {
-                return this.collapsed ? "Expand" : "Collapse";
+                return this.collapsed ? 'Expand' : 'Collapse';
             }
-            return ""
+            return "";
         },
         hasNoLabels() {
             return this.rootLabels.length === 0;
@@ -281,13 +279,13 @@ export default {
         emitSelect(label, e) {
             this.$emit('select', label, e);
             if (this.standalone) {
-                this.selectLabel({ label, e });
+                this.selectLabel({label, e});
             }
         },
         emitDeselect(label, e) {
             this.$emit('deselect', label, e);
             if (this.standalone) {
-                this.deselectLabel({ label, e });
+                this.deselectLabel({label, e});
             }
         },
         emitSave(label, reject) {
@@ -309,7 +307,7 @@ export default {
             return this.allowSelectChildren && e.ctrlKey;
         },
         selectLabel(args) {
-            const { label, e } = args;
+            const {label, e} = args;
             if (!this.multiselect) {
                 this.clearSelectedLabels();
             }
@@ -333,9 +331,7 @@ export default {
                             this.selectChildren(label);
 
                             if (this.conditionSelectSiblings(e)) {
-                                this.getSiblings(label).forEach(
-                                    this.selectChildren
-                                );
+                                this.getSiblings(label).forEach(this.selectChildren);
                             }
                         }
                     }
@@ -435,6 +431,6 @@ export default {
             this.$parent.on('add-favourite', this.addFavouriteLabel);
             this.$parent.on('remove-favourite', this.removeFavouriteLabel);
         }
-    }
+    },
 };
 </script>
