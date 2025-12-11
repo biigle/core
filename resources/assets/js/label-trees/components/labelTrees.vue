@@ -28,7 +28,7 @@
                 name="Favourites"
                 :labels="favourites"
                 :show-favourites="showFavourites"
-                :show-custom-order=false
+                :show-sorting-arrows="false"
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
@@ -47,7 +47,6 @@
                 :allow-select-siblings="allowSelectSiblings"
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
-                :show-custom-order="showCustomOrder"
                 :collapsible="collapsible"
                 @select="handleSelect"
                 @deselect="handleDeselect"
@@ -84,20 +83,12 @@ export default {
         labelTree: LabelTree
     },
     data() {
-        let volumeProjectIds = biigle.$require('volumes.projectIds');
-        let annotationProjectIds = biigle.$require('annotations.projectIds');
-        let largoProjectIds = biigle.$require('largo.projectIds');
-        let largoProject = [biigle.$require('largo.projectId')];
-        let videoProjectIds = biigle.$require('videos.projectIds');
-
-        let projectIds = [volumeProjectIds, annotationProjectIds, largoProjectIds, largoProject, videoProjectIds]
-            .flat()
 
         let customOrderStorageKeys = [];
-        projectIds.forEach(
+        this.projectIds.forEach(
             function (el) {
                 if (Number.isInteger(el)) {
-                    return customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
+                    customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
                 }
             }
         );
@@ -144,7 +135,7 @@ export default {
         },
         showCustomOrder: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         collapsible: {
             type: Boolean,
@@ -162,6 +153,10 @@ export default {
         },
         selectedFavouriteLabel: {
             type: Number,
+            default: undefined,
+        },
+        projectIds: {
+            type: Array,
             default: undefined,
         }
     },
@@ -387,24 +382,22 @@ export default {
         }
 
         this.sortedTrees = this.trees;
-        if (this.showCustomOrder) {
-            //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
-            //the projects with the lower ID will be given priority. The user can just sort the new view.
-            //This sorting will affect all the projects where the volume belongs to.
-            //TODO: in the future, if a better way to organise the access of project information is found, find a more elegant solution
-            for (let storageKey of this.customOrderStorageKeys) {
-                let partialCustomOrder = JSON.parse(
-                    localStorage.getItem(storageKey)
+        //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
+        //the projects with the lower ID will be given priority. The user can just sort the new view.
+        //This sorting will affect all the projects where the volume belongs to.
+        //TODO: in the future, if a better way to organise the access of project information is found, find a more elegant solution
+        for (let storageKey of this.customOrderStorageKeys) {
+            let partialCustomOrder = JSON.parse(
+                localStorage.getItem(storageKey)
+            );
+            if (partialCustomOrder) {
+                //Filter out deleted label trees
+                partialCustomOrder = partialCustomOrder.filter(
+                    (el) =>
+                        this.treeIds.includes(el) &&
+                        !this.customOrder.includes(el)
                 );
-                if (partialCustomOrder) {
-                    //Filter out deleted label trees
-                    partialCustomOrder = partialCustomOrder.filter(
-                        (el) =>
-                            this.treeIds.includes(el) &&
-                            !this.customOrder.includes(el)
-                    );
-                    this.customOrder.push(...partialCustomOrder);
-                }
+                this.customOrder.push(...partialCustomOrder);
             }
         }
     }

@@ -1,37 +1,42 @@
 <template>
     <div
         class="label-tree"
-        @mouseover="doHover"
-        @mouseleave="dontHover"
     >
-        <h4 v-if="showTitle" class="label-tree__title">
-            <span
-                @click.stop="collapse"
-                :title="collapseTitle"
-                :class="titleClass"
-                :style="{ cursor: cursorLabelTree }"
+        <div
+            class="label-tree__title-container"
+            @mouseover="doHover"
+            @mouseleave="dontHover"
             >
-                {{ name }}
-            </span>
-            <button
-                v-if="showMoveButtonUp"
-                type="button"
-                class="btn btn-default btn-xs pull-right"
-                @click="emitMoveLabelTree(true)"
-                title="Move the label tree up"
+            <h4 v-if="showTitle" class="label-tree__title">
+                <span
+                    @click.stop="collapse"
+                    :title="collapseTitle"
+                    :class="titleClass"
                 >
-                <span class="fa fa-arrow-up" aria-hidden="true"></span>
-            </button>
-            <button
-                v-if="showMoveButtonDown"
-                type="button"
-                class="btn btn-default btn-xs pull-right"
-                @click="emitMoveLabelTree(false)"
-                title="Move the label tree down"
-                >
-                <span class="fa fa-arrow-down" aria-hidden="true"></span>
-            </button>
-        </h4>
+                    {{ name }}
+                </span>
+            </h4>
+            <div class="label-tree__move-buttons">
+                <button
+                    v-if="showMoveButtonUp"
+                    type="button"
+                    class="btn btn-default btn-xs pull-right"
+                    @click="emitMoveLabelTree(true)"
+                    title="Move the label tree up"
+                    >
+                    <span class="fa fa-arrow-up" aria-hidden="true"></span>
+                </button>
+                <button
+                    v-if="showMoveButtonDown"
+                    type="button"
+                    class="btn btn-default btn-xs pull-right"
+                    @click="emitMoveLabelTree(false)"
+                    title="Move the label tree down"
+                    >
+                    <span class="fa fa-arrow-down" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
         <ul v-if="!collapsed" class="label-tree__list">
             <label-tree-label
                 v-for="(label, index) in rootLabels"
@@ -131,9 +136,9 @@ export default {
             default: false,
         },
         // Indicates whether labels can be sorted.
-        showCustomOrder: {
+        showSortingArrows: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         // Indicates whether the labels should be displayed in a flat list instead of a tree.
         flat: {
@@ -210,10 +215,10 @@ export default {
             return this.rootLabels.length === 0;
         },
         showMoveButtonUp() {
-            return this.name != "Favourites" && this.hover && this.treeIndex != 0;
+            return this.showSortingArrows && this.hover && this.treeIndex != 0;
         },
         showMoveButtonDown() {
-            return this.name != "Favourites" && this.hover && this.treeIndex != this.maxTreeIndex;
+            return this.showSortingArrows && this.hover && this.treeIndex != this.maxTreeIndex;
         },
     },
     methods: {
@@ -392,14 +397,12 @@ export default {
             }
         },
         emitMoveLabelTree(moveUp) {
-            if (this.name != 'Favourites') {
-                let targetIdx = moveUp ? this.treeIndex - 1 : this.treeIndex + 1;
-                this.$emit(
-                    'move-label-trees',
-                    this.treeIndex,
-                    targetIdx,
-                );
-            }
+            let targetIdx = moveUp ? this.treeIndex - 1 : this.treeIndex + 1;
+            this.$emit(
+                'move-label-trees',
+                this.treeIndex,
+                targetIdx,
+            );
         }
     },
     created() {

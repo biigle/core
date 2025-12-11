@@ -10,11 +10,25 @@
 
 .label-tree__title {
     margin-top: 0;
+    padding-right: 0.5em;
+}
+
+.label-tree__title-container {
+      position: relative; /* Establishes a positioning context for the absolute button */
+      width: 100%; /* Adjust as needed */
+      height: auto; /* Adjust as needed */
 }
 
 .label-tree__title-hovering {
     text-decoration: underline;
     cursor: pointer;
+    padding-right: 2em;
+}
+
+.label-tree__move-buttons {
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 .label-tree__list {
