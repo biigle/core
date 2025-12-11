@@ -291,7 +291,7 @@ $router->get('public-export/label-trees/{id}', [
 
 
 $router->resource('reports', 'ReportsController', [
-    'only' => ['show', 'destroy'],
+    'only' => ['show', 'destroy', 'index'],
     'parameters' => ['reports' => 'id'],
     'names' => [
         'show' => 'show-reports',
@@ -307,11 +307,6 @@ $router->resource('roles', 'RoleController', [
 $router->resource('shapes', 'ShapeController', [
     'only' => ['index', 'show'],
     'parameters' => ['shapes' => 'id'],
-]);
-
-$router->resource('reports', 'ReportsController', [
-    'only' => ['index'],
-    'parameters' => ['reports' => 'id'],
 ]);
 
 $router->get('videos/{id}/file', 'VideoFileController@show');
