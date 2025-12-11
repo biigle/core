@@ -82,7 +82,7 @@ class ReportsController extends Controller
     /**
      * List all available report types.
      *
-     * @api {list} list all available reports
+     * @api {get} reports List all available report types
      * @apiGroup Reports
      * @return \Illuminate\Database\Eloquent\Collection
      */
