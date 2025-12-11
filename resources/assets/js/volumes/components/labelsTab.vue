@@ -13,6 +13,7 @@
     </div>
     <label-trees
         :trees="labelTrees"
+        :project-ids="projectIds"
         :show-favourites="true"
         :show-custom-order="true"
         v-on:select="handleSelectedLabel"
@@ -62,6 +63,7 @@ export default {
     data() {
         return {
             labelTrees: [],
+            projectIds: [],
         };
     },
     methods: {
@@ -80,6 +82,7 @@ export default {
     },
     created() {
         this.labelTrees = biigle.$require('volumes.labelTrees');
+        this.projectIds = biigle.$require('volumes.projectIds');
     },
 };
 </script>

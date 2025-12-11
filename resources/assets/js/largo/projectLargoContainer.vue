@@ -47,7 +47,7 @@ export default {
         },
     },
     created() {
-        this.projectId = biigle.$require('largo.projectId');
+        this.projectIds = biigle.$require('largo.projectIds');
         this.labelTrees = biigle.$require('largo.labelTrees');
     },
 };

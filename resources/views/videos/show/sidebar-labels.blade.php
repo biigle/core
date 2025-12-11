@@ -3,6 +3,7 @@
         <div class="labels-tab__trees">
             <label-trees
                 :trees="labelTrees"
+                :project-ids="projectIds"
                 :focus-input="focusInputFindlabel"
                 :show-favourites="true"
                 :show-custom-order="true"

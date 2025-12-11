@@ -60,6 +60,7 @@ export default {
             labels: [],
             filtersCache: {},
             fetchedLabelCount: false,
+            projectIds: [],
         };
     },
     provide() {
@@ -682,6 +683,7 @@ export default {
     },
     created() {
         this.user = biigle.$require('largo.user');
+        this.projectIds = biigle.$require("largo.projectIds");
 
         window.addEventListener('beforeunload', (e) => {
             if (this.hasDismissedAnnotations) {
