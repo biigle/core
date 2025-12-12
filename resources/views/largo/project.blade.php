@@ -5,7 +5,7 @@
 @push('scripts')
     <script type="module">
         biigle.$declare('largo.user', {!! $user !!});
-        biigle.$declare('largo.projectIds', [{!! $project->id !!}]);
+        biigle.$declare('largo.projectId', {!! $project->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
         biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '/') }}/');
         biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '/') }}/');
