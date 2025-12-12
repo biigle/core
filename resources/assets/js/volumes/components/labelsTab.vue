@@ -15,7 +15,6 @@
         :trees="labelTrees"
         :project-ids="projectIds"
         :show-favourites="true"
-        :show-custom-order="true"
         v-on:select="handleSelectedLabel"
         v-on:deselect="handleDeselectedLabel"
         v-on:clear="handleDeselectedLabel"
