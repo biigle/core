@@ -274,8 +274,6 @@ export default {
             this.events.on(key, fn);
         },
         moveLabelTrees(treeIdx, targetIdx) {
-
-            // If there is no data in local storage, add it
             let customOrder = this.swapElements(this.treeIds, treeIdx, targetIdx);
             this.customOrder = customOrder;
 
