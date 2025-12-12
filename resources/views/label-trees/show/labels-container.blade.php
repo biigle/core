@@ -1,5 +1,4 @@
 <div id="label-trees-labels">
-
     <div class="row">
         <div class="col-xs-6">
             <div v-cloak class="panel panel-default">
@@ -15,9 +14,7 @@
                     v-on:delete="deleteLabel"
                     v-on:select="selectLabel"
                     v-on:deselect="deselectLabel"
-
                     ></label-tree>
-
             </div>
         </div>
         @can('create-label', $tree)

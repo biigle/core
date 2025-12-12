@@ -4,7 +4,6 @@
 
 @push('scripts')
     <script type="module">
-
         biigle.$declare('volumes.projectIds', {!! $projects->pluck('id') !!});
         biigle.$declare('volumes.volumeId', {!! $volume->id !!});
         biigle.$declare('volumes.type', '{!! $type !!}');

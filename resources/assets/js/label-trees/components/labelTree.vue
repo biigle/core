@@ -51,7 +51,7 @@
                 @delete="emitDelete"
                 @add-favourite="emitAddFavourite"
                 @remove-favourite="emitRemoveFavourite"
-            ></label-tree-label>
+                ></label-tree-label>
             <li v-if="hasNoLabels" class="text-muted">No labels</li>
         </ul>
     </div>
