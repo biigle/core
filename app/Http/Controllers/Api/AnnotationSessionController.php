@@ -52,7 +52,7 @@ class AnnotationSessionController extends Controller
                 ->tz(config('app.timezone'));
 
             if (!$request->input('force') && $session->annotations()->where('created_at', '<', $newStartsAt)->exists()) {
-                abort(400, 'Some annotations would no longer belong to this annotation session if the start date was updated. Use the force attribute to update anyway.');
+                abort(400, 'Some annotations would no longer belong to this annotation session if the start date was updated. The annotations will not be deleted.');
             }
 
             $session->starts_at = $newStartsAt;
@@ -63,7 +63,7 @@ class AnnotationSessionController extends Controller
                 ->tz(config('app.timezone'));
 
             if (!$request->input('force') && $session->annotations()->where('created_at', '>=', $newEndsAt)->exists()) {
-                abort(400, 'Some annotations would no longer belong to this annotation session if the end date was updated. Use the force attribute to update anyway.');
+                abort(400, 'Some annotations would no longer belong to this annotation session if the end date was updated. The annotations will not be deleted.');
             }
 
             $session->ends_at = $newEndsAt;
@@ -108,7 +108,7 @@ class AnnotationSessionController extends Controller
                         ->exists();
 
                     if ($wouldLooseAnnotations) {
-                        abort(400, 'Some annotations would no longer belong to this annotation session if the users were updated. Use the force attribute to update anyway.');
+                        abort(400, 'Some annotations would no longer belong to this annotation session if the users were updated. The annotations will not be deleted.');
                     }
                 }
             }
@@ -160,7 +160,7 @@ class AnnotationSessionController extends Controller
     public function destroy(DestroyAnnotationSession $request, $id)
     {
         if (!$request->input('force') && $request->annotationSession->annotations()->exists()) {
-            abort(400, 'There are annotations belonging to this annotation session. Use the force attribute to delete it anyway (the annotations will not be deleted).');
+            abort(400, 'There are annotations belonging to this annotation session. No annotation will be deleted if the session is deleted.');
         }
 
         $request->annotationSession->delete();

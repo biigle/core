@@ -94,7 +94,7 @@ export default {
 
                 SessionsApi.update(params, this.packSession(session))
                     .then(() => this.sessionUpdated(session))
-                    .catch(this.handleConfirm('Use the Force and update the annotation session?', this.submit))
+                    .catch(this.handleConfirm('Update the annotation session?', this.submit))
                     .finally(this.finishLoading);
             }
         },
@@ -168,7 +168,7 @@ export default {
 
                 SessionsApi.delete(params)
                     .then(() => this.sessionDeleted(id))
-                    .catch(this.handleConfirm('Use the Force and delete the annotation session?', this.deleteSession))
+                    .catch(this.handleConfirm('Force delete the annotation session?', this.deleteSession))
                     .finally(this.finishLoading);
             }
         },
