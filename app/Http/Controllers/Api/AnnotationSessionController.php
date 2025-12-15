@@ -108,7 +108,7 @@ class AnnotationSessionController extends Controller
                         ->exists();
 
                     if ($wouldLooseAnnotations) {
-                        abort(400, 'Some annotations would no longer belong to this annotation session if the users were updated. The annotations will not be deleted.');
+                        abort(400, 'Some annotations would no longer belong to this annotation session if the users were updated.');
                     }
                 }
             }
