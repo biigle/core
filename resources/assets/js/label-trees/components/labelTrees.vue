@@ -83,21 +83,10 @@ export default {
         labelTree: LabelTree,
     },
     data() {
-
-        let customOrderStorageKeys = [];
-        this.projectIds.forEach(
-            function (el) {
-                if (Number.isInteger(el)) {
-                    customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
-                }
-            }
-        );
-
         return {
             favourites: [],
             customOrder: [],
             sortedTrees: [],
-            customOrderStorageKeys: customOrderStorageKeys,
             hoverIndex: null
         };
     },
@@ -157,6 +146,18 @@ export default {
         }
     },
     computed: {
+
+        customOrderStorageKeys() {
+            let customOrderStorageKeys = [];
+            this.projectIds.forEach(
+                function (el) {
+                    if (Number.isInteger(el)) {
+                        customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
+                    }
+                }
+            );
+            return customOrderStorageKeys;
+        },
         localeCompareSupportsLocales() {
             try {
                 'foo'.localeCompare('bar', 'i');
