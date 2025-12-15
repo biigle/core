@@ -160,7 +160,7 @@ class AnnotationSessionController extends Controller
     public function destroy(DestroyAnnotationSession $request, $id)
     {
         if (!$request->input('force') && $request->annotationSession->annotations()->exists()) {
-            abort(400, 'There are annotations belonging to this annotation session. No annotation will be deleted if the session is deleted.');
+            abort(400, 'There are annotations belonging to this annotation session.');
         }
 
         $request->annotationSession->delete();
