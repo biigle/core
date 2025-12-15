@@ -240,6 +240,7 @@ export default {
             this.events.emit('clear');
         },
         handleAddFavourite(label) {
+            //TODO: here label.favourite does not get set to true. THIS MIGHT BE BECAUSE WE DONT USE A PROP ANYMORE TO CREATE LABELTREES
             if (this.canHaveMoreFavourites) {
                 this.$emit('add-favourite', label);
                 this.events.emit('add-favourite', label);
@@ -339,6 +340,26 @@ export default {
     },
     created() {
         this.events = mitt();
+        this.sortedTrees = this.trees;
+
+        //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
+        //the projects with the lower ID will be given priority. The user can just sort the new view.
+        //This sorting will affect all the projects where the volume belongs to.
+        //TODO: in the future, if a better way to organise the access of project information is found, find a more elegant solution
+        for (let storageKey of this.customOrderStorageKeys) {
+            let partialCustomOrder = JSON.parse(
+                localStorage.getItem(storageKey)
+            );
+            if (partialCustomOrder) {
+                //Filter out deleted label trees
+                partialCustomOrder = partialCustomOrder.filter(
+                    (el) =>
+                        this.treeIds.includes(el) &&
+                        !this.customOrder.includes(el)
+                );
+                this.customOrder.push(...partialCustomOrder);
+            }
+        }
     },
     mounted() {
         if (this.showFavourites) {
@@ -368,26 +389,6 @@ export default {
                 bindFavouriteKey(i.toString(), i - 1);
             }
             bindFavouriteKey('0', 9);
-        }
-
-        this.sortedTrees = this.trees;
-        //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
-        //the projects with the lower ID will be given priority. The user can just sort the new view.
-        //This sorting will affect all the projects where the volume belongs to.
-        //TODO: in the future, if a better way to organise the access of project information is found, find a more elegant solution
-        for (let storageKey of this.customOrderStorageKeys) {
-            let partialCustomOrder = JSON.parse(
-                localStorage.getItem(storageKey)
-            );
-            if (partialCustomOrder) {
-                //Filter out deleted label trees
-                partialCustomOrder = partialCustomOrder.filter(
-                    (el) =>
-                        this.treeIds.includes(el) &&
-                        !this.customOrder.includes(el)
-                );
-                this.customOrder.push(...partialCustomOrder);
-            }
         }
     }
 };
