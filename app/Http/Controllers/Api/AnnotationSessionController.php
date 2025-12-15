@@ -63,7 +63,7 @@ class AnnotationSessionController extends Controller
                 ->tz(config('app.timezone'));
 
             if (!$request->input('force') && $session->annotations()->where('created_at', '>=', $newEndsAt)->exists()) {
-                abort(400, 'Some annotations would no longer belong to this annotation session if the end date was updated. The annotations will not be deleted.');
+                abort(400, 'Some annotations would no longer belong to this annotation session if the end date was updated.');
             }
 
             $session->ends_at = $newEndsAt;
