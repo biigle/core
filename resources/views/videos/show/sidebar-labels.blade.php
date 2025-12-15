@@ -54,7 +54,6 @@
                 :trees="labelTrees"
                 :focus-input="focusInputFindlabel"
                 :show-favourites="true"
-                :selected-favourite-label="selectedFavouriteLabel"
                 v-on:select="handleSelectedLabel"
                 v-on:deselect="handleDeselectedLabel"
                 v-on:clear="handleDeselectedLabel"

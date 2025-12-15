@@ -293,6 +293,13 @@ export default {
                 });
             }
         },
+        queryLabelbot(points) {
+            // TODO State must be updated
+            if(!this.labelbotIsActive) {
+                return;
+            }
+            console.log(points);
+        },
         updatePendingAnnotation(pendingAnnotation) {
             if (pendingAnnotation) {
                 let data = Object.assign({}, pendingAnnotation, {

@@ -23,6 +23,7 @@ export default {
         'create-annotation',
         'is-invalid-shape',
         'pending-annotation',
+        'new-annotation',
         'requires-selected-label',
         'track-annotation',
     ],
@@ -221,10 +222,14 @@ export default {
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
+            const annotationIsNew = lastFrame === undefined || lastFrame < this.video.currentTime;
 
-            if (lastFrame === undefined || lastFrame < this.video.currentTime) {
+            if (annotationIsNew) {
                 this.pendingAnnotation.frames.push(this.video.currentTime);
-                this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
+
+                const points = this.getPointsFromGeometry(e.feature.getGeometry());
+                this.pendingAnnotation.points.push(points);
+                this.$emit("new-annotation", points);
 
                 if (!this.video.ended && this.autoplayDraw > 0) {
                     this.play();
