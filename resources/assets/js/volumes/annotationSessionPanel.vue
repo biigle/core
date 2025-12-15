@@ -168,7 +168,7 @@ export default {
 
                 SessionsApi.delete(params)
                     .then(() => this.sessionDeleted(id))
-                    .catch(this.handleConfirm('Force delete the annotation session?', this.deleteSession))
+                    .catch(this.handleConfirm('Delete the annotation session anyway? No annotations will be deleted.', this.deleteSession))
                     .finally(this.finishLoading);
             }
         },
