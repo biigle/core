@@ -146,7 +146,6 @@ export default {
         }
     },
     computed: {
-
         customOrderStorageKeys() {
             let customOrderStorageKeys = [];
             this.projectIds.forEach(
