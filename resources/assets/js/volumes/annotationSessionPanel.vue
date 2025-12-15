@@ -94,7 +94,7 @@ export default {
 
                 SessionsApi.update(params, this.packSession(session))
                     .then(() => this.sessionUpdated(session))
-                    .catch(this.handleConfirm('Update the annotation session?', this.submit))
+                    .catch(this.handleConfirm('Update the annotation session anyway? No annotations will be deleted.', this.submit))
                     .finally(this.finishLoading);
             }
         },
