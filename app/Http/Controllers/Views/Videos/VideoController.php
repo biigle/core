@@ -94,6 +94,7 @@ class VideoController extends Controller
                 'spritesThumbnailInterval',
                 'spritesMaxThumbnails',
                 'spritesMinThumbnails',
+                'projectIds',
             )
         );
     }
