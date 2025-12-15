@@ -9,7 +9,7 @@
                 <span
                     @click.stop="collapse"
                     :title="collapseTitle"
-                    :class="titleClass"
+                    :class="{'label-tree__title-hovering': hoveringTitle, 'text-muted': collapsed}"
                 >
                     {{ name }}
                 </span>
@@ -158,8 +158,8 @@ export default {
         }
     },
     computed: {
-        titleClass() {
-            return this.collapsible && this.hover ? 'label-tree__title-hovering' : '';
+        hoveringTitle() {
+            return this.collapsible && this.hover;
         },
         labelMap() {
             let map = {};
