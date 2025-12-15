@@ -220,10 +220,7 @@ export default {
             return `biigle.label-trees.${this.ownId}.favourites`;
         },
         treeIds() {
-            return this.trees.reduce((els, obj) => {
-                els.push(obj.id);
-                return els;
-            }, []);
+            return this.trees.map(tree => tree.id);
         }
     },
     methods: {
