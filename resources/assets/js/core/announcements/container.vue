@@ -12,9 +12,11 @@ export default {
         };
     },
     methods: {
+        handleShow() {
+            window.localStorage.setItem('seen-announcement', this.id);
+        },
         handleHide() {
             this.expand = false;
-            window.localStorage.setItem('seen-announcement', this.id);
         },
     },
     mounted() {
