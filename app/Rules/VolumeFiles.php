@@ -107,6 +107,12 @@ class VolumeFiles implements Rule
 
                 return false;
             }
+
+            if (preg_match('/(\/|\\\\)*(\.\.)+(\/|\\\\)*(.)*/', urldecode($filename)) !== 0) {
+                $this->message = 'Traversing directories is not allowed. Insert a valid path within the volume.';
+
+                return false;
+            }
         }
 
         if ($this->typeId === MediaType::imageId()) {
