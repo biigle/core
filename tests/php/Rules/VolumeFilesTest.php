@@ -96,26 +96,30 @@ class VolumeFilesTest extends TestCase
 
     public function testRouteTraversalsAreBlocked()
     {
-        $validator = new VolumeFilesStub('', MediaType::imageId());
-        $this->assertFalse($validator->passes(null, ['../somefile.png']));
-        $this->assertStringContainsString('Traversing directories is not allowed. Insert a valid path.', $validator->message());
+        $traversalAttempts = [
+            '../somefile.png',
+            '../../somefile.png',
+            '..//somefile.png',
+            '..//../somefile.png',
+            '..//..//somefile.png',
+            'somedir/../somefile.png',
+            'somedir/somefile.png/..',
+            'somedir/somefile.png/../someotherfile.png',
+            'somedir/somefile.png/../../someotherfile.png',
+            'somedir/somefile.png//..//someotherfile.png',
+            '../../..\somedir/somefile.png',
 
+            //URL encoded traversals, null bytes etc.
+            '%2e%2e%2fsomefile.png',
+            '%2e%2e%2f%2e%2e%2fsomefile.png',
+            '..%2f..%2f..%5csomefile.png',
+            '%2e%2e%2f%2e%2e%2fsomefile%00.png',
+        ];
         $validator = new VolumeFilesStub('', MediaType::imageId());
-        $this->assertFalse($validator->passes(null, ['../../somefile.png']));
-        $this->assertStringContainsString('Traversing directories is not allowed. Insert a valid path.', $validator->message());
-
-        $validator = new VolumeFilesStub('', MediaType::imageId());
-        $this->assertFalse($validator->passes(null, ['somedir/../somefile.png']));
-        $this->assertStringContainsString('Traversing directories is not allowed. Insert a valid path.', $validator->message());
-
-        //URL-encoded
-        $validator = new VolumeFilesStub('', MediaType::imageId());
-        $this->assertFalse($validator->passes(null, ['%2e%2e%2fsomefile.png']));
-        $this->assertStringContainsString('Traversing directories is not allowed. Insert a valid path.', $validator->message());
-
-        $validator = new VolumeFilesStub('', MediaType::imageId());
-        $this->assertFalse($validator->passes(null, ['%252e%252e%252fsomefile.png']));
-        $this->assertStringContainsString('Traversing directories is not allowed. Insert a valid path.', $validator->message());
+        foreach ($traversalAttempts as $attempt) {
+            $this->assertFalse($validator->passes(null, [$attempt]));
+            $this->assertStringContainsString('Traversing directories is not allowed. Insert a valid path within the volume.', $validator->message());
+        }
     }
 }
 
