@@ -68,7 +68,6 @@
       v-on:split-annotation="splitAnnotation"
       v-on:link-annotations="linkAnnotations"
       v-on:pending-annotation="updatePendingAnnotation"
-      v-on:new-annotation="queryLabelbot"
       v-on:attach-label="attachAnnotationLabel"
       v-on:swap-label="swapAnnotationLabel"
       v-on:force-swap-label="forceSwapAnnotationLabel"

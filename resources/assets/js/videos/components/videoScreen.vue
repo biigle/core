@@ -665,6 +665,15 @@ export default {
         extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
         },
+        async makeLabelbotSuggestions(feature) {
+            // TODO Uncomment once manual labels are deactivated for labelbot in videos
+            /*if(!this.labelbotIsActive) {
+                return;
+            }*/
+           const points = this.getPointsFromGeometry(feature.getGeometry());
+           // TODO How to access the video to get a screenshot
+           const labelbotImage = await this.createLabelbotImage(points);
+        },
         handleFeatureSelect(e) {
             let selected = this.selectInteraction.getFeatures()
                 .getArray()

@@ -96,9 +96,16 @@ export default {
             return [minX, minY, width, height];
         },
         makeMapScreenshot() {
+            let layer = this.tiledImageLayer;
+            if(!layer) {
+                layer = this.videoLayer;
+            }
+
             const promise = new Promise(resolve => {
-                this.tiledImageLayer.once('postrender', event => {
+                layer.once('postrender', event => {
                     makeBlob(event.context.canvas).then(blob => {
+                        const url = URL.createObjectURL(blob);
+                        window.open(url, '_blank');
                         resolve(createImageBitmap(blob));
                     });
                 });
@@ -168,7 +175,14 @@ export default {
             
             return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
         },
+        async createLabelbotImageFromVideo(points) {
+            const mapScreenshot = await this.makeMapScreenshot();
+        },
         async createLabelbotImage(points) {
+            if(this.video) {
+                return this.createLabelbotImageFromVideo(points);
+            }
+            
             if(!this.image.tiled)
                 return this.createLabelbotImageFromRegularImage(points);
             else 
