@@ -12,6 +12,7 @@
 import Events from '@/core/events.js';
 import Messages from '@/core/messages/store.js';
 import Keyboard from '@/core/keyboard.js';
+import { trimCanvas } from '../utils';
 
 /**
  * A button that produces a screenshot of the map
