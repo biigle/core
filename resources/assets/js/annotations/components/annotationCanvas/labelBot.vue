@@ -128,7 +128,7 @@ export default {
             return [left, top, Math.max(0, right - left), Math.max(0, bottom - top)];
         },
         getScaledImageSelection(image, x, y, width, height) {
-            if(!this.tempCanvas) {
+            if (!this.tempCanvas) {
                 this.tempCanvas = document.createElement('canvas');
                 this.tempCanvas.width = INPUT_SIZE;
                 this.tempCanvas.height = INPUT_SIZE;
