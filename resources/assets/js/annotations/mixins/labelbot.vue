@@ -190,7 +190,7 @@ export default {
                     throw e;
                 })
                 .finally((annotation) => {
-                    if(this.labelbotRequestsInFlight > 0) {
+                    if (this.labelbotRequestsInFlight > 0) {
                         this.labelbotRequestsInFlight -= 1;
                     }
 
