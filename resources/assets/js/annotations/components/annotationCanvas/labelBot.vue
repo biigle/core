@@ -5,7 +5,7 @@ import Styles from '../../stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
-import { clamp, makeBlob } from '../../utils.js'
+import { clamp, trimCanvas } from '../../utils.js'
 
 // DINOv2 image input size.
 const INPUT_SIZE = 224;
@@ -106,9 +106,7 @@ export default {
         makeMapScreenshot() {
             const promise = new Promise(resolve => {
                 this.tiledImageLayer.once('postrender', event => {
-                    makeBlob(event.context.canvas).then(blob => {
-                        resolve(createImageBitmap(blob));
-                    });
+                    resolve(trimCanvas(event.context.canvas));
                 });
             });
 
