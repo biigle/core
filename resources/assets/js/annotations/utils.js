@@ -40,6 +40,11 @@ function clamp(value, min, max) {
 
 function trimCanvas(canvas) {
     let ctx = canvas.getContext('2d');
+    let topLeft = ctx.getImageData(0, 0, 1, 1);
+    let bottomRight = ctx.getImageData(canvas.width - 1, canvas.height - 1, 1, 1);
+    if (topLeft.data[3] !== 0 && bottomRight.data[3] !== 0) {
+        return canvas;
+    }
     let copy = document.createElement('canvas').getContext('2d');
     let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let l = pixels.data.length;
