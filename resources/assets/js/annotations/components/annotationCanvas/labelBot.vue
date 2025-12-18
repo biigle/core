@@ -158,7 +158,6 @@ export default {
             const promise = new Promise((resolve, reject) => {
                 this.tiledImageLayer.once('postrender', event => {
                     const mapScreenshot = trimCanvas(event.context.canvas);
-
                     const scale = mapScreenshot.width / visibleImagePartWidth;
 
                     // Coordinates in screenshot coordinates
