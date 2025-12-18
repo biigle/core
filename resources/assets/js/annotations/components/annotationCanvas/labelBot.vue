@@ -177,10 +177,11 @@ export default {
             return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
         },
         async createLabelbotImage(points) {
-            if(!this.image.tiled)
+            if (!this.image.tiled) {
                 return this.createLabelbotImageFromRegularImage(points);
-            else 
+            } else { 
                 return await this.createLabelbotImageFromTiledImage(points);
+            }
         },
     },
     watch: {
