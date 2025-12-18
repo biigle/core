@@ -141,7 +141,7 @@ export default {
                 [0, 0, image.width, image.height]
             ); 
 
-            if(width === 0 || height === 0) {
+            if (width === 0 || height === 0) {
                 throw new Error("Selection was outside of the image");
             }
 
