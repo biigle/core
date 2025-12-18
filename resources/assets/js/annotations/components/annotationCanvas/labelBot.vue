@@ -103,17 +103,6 @@ export default {
 
             return [minX, minY, width, height];
         },
-        makeMapScreenshot() {
-            const promise = new Promise(resolve => {
-                this.tiledImageLayer.once('postrender', event => {
-                    resolve(trimCanvas(event.context.canvas));
-                });
-            });
-
-            this.map.render();
-
-            return promise;
-        },
         calculateRectangleIntersection(r1, r2) {
             const [x1, y1, w1, h1] = r1;
             const [x2, y2, w2, h2] = r2;
@@ -144,7 +133,7 @@ export default {
             }
 
             this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
-
+            
             return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
         createLabelbotImageFromRegularImage(points) {
@@ -163,16 +152,29 @@ export default {
 
             let bottomRightX = this.map.getCoordinateFromPixel(this.map.getSize())[0];
             bottomRightX = clamp(bottomRightX, 0, this.image.width);
-
-            const mapScreenshot = await this.makeMapScreenshot();
+            
             const visibleImagePartWidth = bottomRightX - topLeftX;
 
-            const scale = mapScreenshot.width / visibleImagePartWidth;
+            const promise = new Promise((resolve, reject) => {
+                this.tiledImageLayer.once('postrender', event => {
+                    const mapScreenshot = trimCanvas(event.context.canvas);
 
-            // Coordinates in screenshot coordinates
-            [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
+                    const scale = mapScreenshot.width / visibleImagePartWidth;
 
-            return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
+                    // Coordinates in screenshot coordinates
+                    [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
+
+                    try {
+                        resolve(this.getScaledImageSelection(mapScreenshot, x, y, width, height));
+                    } catch(error) {
+                        reject(error);
+                    }
+                });
+            });
+
+            this.map.render();
+            
+            return promise;
         },
         async createLabelbotImage(points) {
             if (!this.image.tiled) {

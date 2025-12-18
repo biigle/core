@@ -96,32 +96,4 @@ function trimCanvas(canvas) {
     return copy.canvas;
 }
 
-let makeBlob = function(canvas) {
-    try {
-        canvas = trimCanvas(canvas);
-    } catch (error) {
-        return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
-    }
-
-    let type = 'image/png';
-    if (!HTMLCanvasElement.prototype.toBlob) {
-        // fallback if toBlob is not implemented see 'Polyfill':
-        // https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/toBlob
-        let binStr = atob(canvas.toDataURL(type).split(',')[1]);
-        let len = binStr.length;
-        let arr = new Uint8Array(len);
-        for (let i = 0; i < len; i++ ) {
-            arr[i] = binStr.charCodeAt(i);
-        }
-
-        return new Promise(function (resolve) {
-            resolve(new Blob([arr], {type: type}));
-        });
-    } else {
-        return new Promise(function (resolve) {
-            canvas.toBlob(resolve, type);
-        });
-    }
-}
-
-export {isInvalidShape, clamp, makeBlob};
+export {isInvalidShape, clamp, trimCanvas};
