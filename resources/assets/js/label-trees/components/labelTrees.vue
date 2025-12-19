@@ -87,7 +87,6 @@ export default {
             favourites: [],
             customOrder: [],
             sortedTrees: [],
-            hoverIndex: null
         };
     },
     props: {
