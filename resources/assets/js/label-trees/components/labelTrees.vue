@@ -28,6 +28,7 @@
                 name="Favourites"
                 :labels="favourites"
                 :show-favourites="showFavourites"
+                :show-sorting-arrows="false"
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
@@ -36,8 +37,10 @@
                 @remove-favourite="handleRemoveFavourite"
                 ></label-tree>
             <label-tree
-                v-for="tree in trees"
+                v-for="(tree, index) in sortedTrees"
                 :key="tree.id"
+                :treeIndex="index"
+                :maxTreeIndex="sortedTrees.length - 1"
                 :name="tree.versionedName"
                 :labels="tree.labels"
                 :multiselect="multiselect"
@@ -49,6 +52,7 @@
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
+                @move-label-trees="moveLabelTrees"
                 ></label-tree>
         </div>
     </div>
@@ -81,6 +85,8 @@ export default {
     data() {
         return {
             favourites: [],
+            customOrder: [],
+            sortedTrees: [],
         };
     },
     props: {
@@ -125,7 +131,7 @@ export default {
             type: String,
             default: 'default',
         },
-        focusInput:{
+        focusInput: {
             type: Boolean,
             default: false,
         },
@@ -133,11 +139,26 @@ export default {
             type: Number,
             default: undefined,
         },
+        projectIds: {
+            type: Array,
+            default: undefined,
+        }
     },
     computed: {
+        customOrderStorageKeys() {
+            let customOrderStorageKeys = [];
+            this.projectIds.forEach(
+                function (el) {
+                    if (Number.isInteger(el)) {
+                        customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
+                    }
+                }
+            );
+            return customOrderStorageKeys;
+        },
         localeCompareSupportsLocales() {
             try {
-              'foo'.localeCompare('bar', 'i');
+                'foo'.localeCompare('bar', 'i');
             } catch (e) {
                 return e.name === 'RangeError';
             }
@@ -175,6 +196,9 @@ export default {
         hasFavourites() {
             return this.favourites.length > 0;
         },
+        hasCustomOrder() {
+            return this.customOrder.length > 0;
+        },
         ownId() {
             if (this.id) {
                 return this.id;
@@ -189,11 +213,14 @@ export default {
                 ids.push(this.trees[prop].id);
             }
 
-            return ids.join('-');
+            return ids.sort().join('-');
         },
         favouriteStorageKey() {
             return `biigle.label-trees.${this.ownId}.favourites`;
         },
+        treeIds() {
+            return this.trees.map(tree => tree.id);
+        }
     },
     methods: {
         handleSelect(label, e) {
@@ -211,6 +238,7 @@ export default {
             this.events.emit('clear');
         },
         handleAddFavourite(label) {
+            //TODO: here label.favourite does not get set to true. THIS MIGHT BE BECAUSE WE DONT USE A PROP ANYMORE TO CREATE LABELTREES
             if (this.canHaveMoreFavourites) {
                 this.$emit('add-favourite', label);
                 this.events.emit('add-favourite', label);
@@ -242,6 +270,27 @@ export default {
         on(key, fn) {
             this.events.on(key, fn);
         },
+        moveLabelTrees(treeIdx, targetIdx) {
+            let customOrder = this.swapElements(this.treeIds, treeIdx, targetIdx);
+            this.customOrder = customOrder;
+
+            this.customOrderStorageKeys.forEach(function (storageKey) {
+                localStorage.setItem(storageKey, JSON.stringify(customOrder));
+            });
+        },
+        swapElements(arr, idx1, idx2) {
+            let element = arr.splice(idx1, 1)[0];
+            arr.splice(idx2, 0, element);
+            return arr;
+        },
+        changeCustomOrder() {
+            let customOrder = JSON.parse(
+                localStorage.getItem(this.customOrderStorageKey)
+            );
+            if (customOrder) {
+                this.customOrder = customOrder;
+            }
+        }
     },
     watch: {
         trees: {
@@ -269,9 +318,46 @@ export default {
         selectedFavouriteLabel(index) {
             this.selectFavourite(index);
         },
+        customOrder: {
+            immediate: true,
+            deep: true,
+            handler(customOrder) {
+                this.sortedTrees.sort(function (a, b) {
+                    let idxa = customOrder.findIndex((val) => val == a.id);
+                    let idxb = customOrder.findIndex((val) => val == b.id);
+                    if (idxa && idxb) {
+                        return idxa > idxb;
+                    } else if (idxa) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+            }
+        }
     },
     created() {
         this.events = mitt();
+        this.sortedTrees = this.trees;
+
+        //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
+        //the projects with the lower ID will be given priority. The user can just sort the new view.
+        //This sorting will affect all the projects where the volume belongs to.
+        //TODO: in the future, if a better way to organise the access of project information is found, find a more elegant solution
+        for (let storageKey of this.customOrderStorageKeys) {
+            let partialCustomOrder = JSON.parse(
+                localStorage.getItem(storageKey)
+            );
+            if (partialCustomOrder) {
+                //Filter out deleted label trees
+                partialCustomOrder = partialCustomOrder.filter(
+                    (el) =>
+                        this.treeIds.includes(el) &&
+                        !this.customOrder.includes(el)
+                );
+                this.customOrder.push(...partialCustomOrder);
+            }
+        }
     },
     mounted() {
         if (this.showFavourites) {
@@ -302,6 +388,6 @@ export default {
             }
             bindFavouriteKey('0', 9);
         }
-    },
+    }
 };
 </script>

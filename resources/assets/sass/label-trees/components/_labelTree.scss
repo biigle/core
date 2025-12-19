@@ -10,6 +10,31 @@
 
 .label-tree__title {
     margin-top: 0;
+    padding-right: 44px;
+
+    &.collapsible:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    &:hover {
+        .label-tree__move-buttons {
+            display: block;
+        }
+    }
+}
+
+.label-tree__title-container {
+      position: relative;
+      width: 100%;
+      height: auto;
+}
+
+.label-tree__move-buttons {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 .label-tree__list {

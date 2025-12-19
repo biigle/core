@@ -74,6 +74,7 @@ class AnnotationToolController extends Controller
             'shapes' => $shapes,
             'annotationSessions' => $annotationSessions,
             'tilesUriTemplate' => $tilesUriTemplate,
+            'projectIds' => $projectIds,
         ]);
     }
 }

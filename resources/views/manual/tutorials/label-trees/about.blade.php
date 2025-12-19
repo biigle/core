@@ -19,6 +19,10 @@
             Every user is allowed to create label trees. To create a label tree, click on the <button class="btn btn-default btn-xs"><i class="fa fa-tags"></i> Create Label Tree</button> button on the <a href="{{route('home')}}">dashboard</a> (or <a href="{{route('label-trees-create')}}">here</a>). When you successfully created a label tree you will be redirected to the label tree overview. The overview shows you lists of all labels, projects and users in several tabs that are associated with the label tree, as well as controls to modify the label tree.
         </p>
 
+        <p>
+            The order of label trees can be changed using the <button class="btn btn-default"><i class="fa fa-arrow-up"></i></button><button class="btn btn-default"><i class="fa fa-arrow-down"></i></button> buttons to move the label tree up and down. The buttons appear when hovering the mouse over the label tree title. The new order is only applied on the local machine and does not affect the order of other users.
+        </p>
+
         <h3><a name="visibility"></a>Visibility</h3>
 
         <p>

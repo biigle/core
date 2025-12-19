@@ -1,29 +1,39 @@
 <template>
     <div class="label-tree">
-        <h4
-            v-if="showTitle"
-            class="label-tree__title"
+        <div
+            class="label-tree__title-container"
             >
-            <button
-                v-if="collapsible"
-                @click.stop="collapse"
-                class="btn btn-default btn-xs pull-right"
+            <h4
+                v-if="showTitle"
+                @click="collapse"
+                class="label-tree__title"
                 :title="collapseTitle"
-                type="button"
+                :class="titleClass"
                 >
-                <span
-                    v-if="collapsed"
-                    class="fa fa-chevron-down"
-                    aria-hidden="true"
-                    ></span>
-                <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
-            </button>
-            {{name}}
-        </h4>
-        <ul
-            v-if="!collapsed"
-            class="label-tree__list"
-            >
+                {{ name }}
+                <div v-if="showSortingArrows" class="btn-group label-tree__move-buttons">
+                    <button
+                        v-if="showMoveButtonUp"
+                        type="button"
+                        class="btn btn-default btn-xs"
+                        @click.stop="emitMoveLabelTree(true)"
+                        title="Move the label tree up"
+                        >
+                        <span class="fa fa-arrow-up" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        v-if="showMoveButtonDown"
+                        type="button"
+                        class="btn btn-default btn-xs"
+                        @click.stop="emitMoveLabelTree(false)"
+                        title="Move the label tree down"
+                        >
+                        <span class="fa fa-arrow-down" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </h4>
+        </div>
+        <ul v-if="!collapsed" class="label-tree__list">
             <label-tree-label
                 v-for="(label, index) in rootLabels"
                 :key="label.id"
@@ -61,10 +71,11 @@ export default {
         'remove-favourite',
         'save',
         'select',
+        'move-label-trees',
     ],
     data() {
         return {
-            collapsed: false
+            collapsed: false,
         };
     },
     components: {
@@ -119,6 +130,11 @@ export default {
             type: Boolean,
             default: false,
         },
+        // Indicates whether to show buttons for sorting trees.
+        showSortingArrows: {
+            type: Boolean,
+            default: true,
+        },
         // Indicates whether the labels should be displayed in a flat list instead of a tree.
         flat: {
             type: Boolean,
@@ -129,6 +145,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        treeIndex: {
+            type: Number,
+            default: -1,
+        },
+        maxTreeIndex: {
+            type: Number,
+            default: -1,
+        }
     },
     computed: {
         labelMap() {
@@ -174,10 +198,25 @@ export default {
             return this.compiledLabels[null];
         },
         collapseTitle() {
-            return this.collapsed ? 'Expand' : 'Collapse';
+            if (this.collapsible) {
+                return this.collapsed ? 'Expand' : 'Collapse';
+            }
+            return "";
         },
         hasNoLabels() {
             return this.rootLabels.length === 0;
+        },
+        showMoveButtonUp() {
+            return this.treeIndex !== 0;
+        },
+        showMoveButtonDown() {
+            return this.treeIndex !== this.maxTreeIndex;
+        },
+        titleClass() {
+            return {
+                'text-muted': this.collapsed,
+                'collapsible': this.collapsible,
+            };
         },
     },
     methods: {
@@ -347,6 +386,14 @@ export default {
                 label.favourite = false;
             }
         },
+        emitMoveLabelTree(moveUp) {
+            let targetIdx = moveUp ? this.treeIndex - 1 : this.treeIndex + 1;
+            this.$emit(
+                'move-label-trees',
+                this.treeIndex,
+                targetIdx,
+            );
+        }
     },
     created() {
         // Set the reactive label properties
