@@ -130,7 +130,7 @@ export default {
             type: Boolean,
             default: false,
         },
-        // Indicates whether labels can be sorted.
+        // Indicates whether to show buttons for sorting trees.
         showSortingArrows: {
             type: Boolean,
             default: true,
