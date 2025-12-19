@@ -213,7 +213,10 @@ export default {
             return this.treeIndex !== this.maxTreeIndex;
         },
         titleClass() {
-            return this.collapsed ? 'text-muted' : '';
+            return {
+                'text-muted': this.collapsed,
+                'collapsible': this.collapsible,
+            };
         },
     },
     methods: {
