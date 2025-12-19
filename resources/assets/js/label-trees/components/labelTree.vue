@@ -2,38 +2,36 @@
     <div class="label-tree">
         <div
             class="label-tree__title-container"
-            @mouseover="doHover"
-            @mouseleave="dontHover"
             >
-            <h4 v-if="showTitle" class="label-tree__title">
-                <span
-                    @click.stop="collapse"
-                    :title="collapseTitle"
-                    :class="{'label-tree__title-hovering': hoveringTitle, 'text-muted': collapsed}"
+            <h4
+                v-if="showTitle"
+                @click="collapse"
+                class="label-tree__title"
+                :title="collapseTitle"
+                :class="titleClass"
                 >
-                    {{ name }}
-                </span>
+                {{ name }}
+                <div v-if="showSortingArrows" class="btn-group label-tree__move-buttons">
+                    <button
+                        v-if="showMoveButtonUp"
+                        type="button"
+                        class="btn btn-default btn-xs"
+                        @click.stop="emitMoveLabelTree(true)"
+                        title="Move the label tree up"
+                        >
+                        <span class="fa fa-arrow-up" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        v-if="showMoveButtonDown"
+                        type="button"
+                        class="btn btn-default btn-xs"
+                        @click.stop="emitMoveLabelTree(false)"
+                        title="Move the label tree down"
+                        >
+                        <span class="fa fa-arrow-down" aria-hidden="true"></span>
+                    </button>
+                </div>
             </h4>
-            <div class="label-tree__move-buttons">
-                <button
-                    v-if="showMoveButtonUp"
-                    type="button"
-                    class="btn btn-default btn-xs pull-right"
-                    @click="emitMoveLabelTree(true)"
-                    title="Move the label tree up"
-                    >
-                    <span class="fa fa-arrow-up" aria-hidden="true"></span>
-                </button>
-                <button
-                    v-if="showMoveButtonDown"
-                    type="button"
-                    class="btn btn-default btn-xs pull-right"
-                    @click="emitMoveLabelTree(false)"
-                    title="Move the label tree down"
-                    >
-                    <span class="fa fa-arrow-down" aria-hidden="true"></span>
-                </button>
-            </div>
         </div>
         <ul v-if="!collapsed" class="label-tree__list">
             <label-tree-label
@@ -78,7 +76,6 @@ export default {
     data() {
         return {
             collapsed: false,
-            hover: false,
         };
     },
     components: {
@@ -158,9 +155,6 @@ export default {
         }
     },
     computed: {
-        hoveringTitle() {
-            return this.collapsible && this.hover;
-        },
         labelMap() {
             let map = {};
             for (let i = this.labels.length - 1; i >= 0; i--) {
@@ -213,19 +207,16 @@ export default {
             return this.rootLabels.length === 0;
         },
         showMoveButtonUp() {
-            return this.showSortingArrows && this.hover && this.treeIndex != 0;
+            return this.treeIndex !== 0;
         },
         showMoveButtonDown() {
-            return this.showSortingArrows && this.hover && this.treeIndex != this.maxTreeIndex;
+            return this.treeIndex !== this.maxTreeIndex;
+        },
+        titleClass() {
+            return this.collapsed ? 'text-muted' : '';
         },
     },
     methods: {
-        doHover() {
-            this.hover = true;
-        },
-        dontHover() {
-            this.hover = false;
-        },
         hasLabel(id) {
             return this.labelMap.hasOwnProperty(id);
         },
@@ -399,8 +390,6 @@ export default {
                 this.treeIndex,
                 targetIdx,
             );
-            //avoid visual bug; if we move the label tree, mouseleave may not triggered
-            this.hover = false;
         }
     },
     created() {

@@ -10,7 +10,16 @@
 
 .label-tree__title {
     margin-top: 0;
-    padding-right: 3em;
+    padding-right: 44px;
+
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+
+        .label-tree__move-buttons {
+            display: block;
+        }
+    }
 }
 
 .label-tree__title-container {
@@ -19,14 +28,10 @@
       height: auto;
 }
 
-.label-tree__title-hovering {
-    text-decoration: underline;
-    cursor: pointer;
-}
-
 .label-tree__move-buttons {
+    display: none;
     position: absolute;
-    right: 0.5em;
+    right: 0;
     top: 0;
 }
 
