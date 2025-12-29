@@ -54,9 +54,9 @@ export default {
         handleDeleteLabelbotAnnotation(annotation) {
             this.$emit('delete', [annotation]);
         },
-        getBoundingBox(image, points) {
-            let minX = image.width;
-            let minY = image.height;
+        getBoundingBox(imageWidth, imageHeight, points) {
+            let minX = imageWidth;
+            let minY = imageHeight;
             let maxX = 0;
             let maxY = 0;
             // Point
@@ -66,14 +66,14 @@ export default {
                 const [x, y] = points;
                 minX = Math.max(0, x - tempRadius);
                 minY = Math.max(0, y - tempRadius);
-                maxX = Math.min(image.width, x + tempRadius);
-                maxY = Math.min(image.height, y + tempRadius);
+                maxX = Math.min(imageWidth, x + tempRadius);
+                maxY = Math.min(imageHeight, y + tempRadius);
             } else if (points.length === 3) { // Circle
                 const [centerX, centerY, radius] = points;
                 minX = Math.max(0, centerX - radius);
                 minY = Math.max(0, centerY - radius);
-                maxX = Math.min(image.width, centerX + radius);
-                maxY = Math.min(image.height, centerY + radius);
+                maxX = Math.min(imageWidth, centerX + radius);
+                maxY = Math.min(imageHeight, centerY + radius);
             } else {
                 for (let i = 0; i < points.length; i += 2) {
                     const x = points[i];
@@ -86,8 +86,8 @@ export default {
                 // Ensure the bounding box is within the image dimensions
                 minX = Math.max(0, minX);
                 minY = Math.max(0, minY);
-                maxX = Math.min(image.width, maxX);
-                maxY = Math.min(image.height, maxY);
+                maxX = Math.min(imageWidth, maxX);
+                maxY = Math.min(imageHeight, maxY);
             }
 
             const width = maxX - minX;
@@ -104,8 +104,6 @@ export default {
             const promise = new Promise(resolve => {
                 layer.once('postrender', event => {
                     makeBlob(event.context.canvas).then(blob => {
-                        const url = URL.createObjectURL(blob);
-                        window.open(url, '_blank');
                         resolve(createImageBitmap(blob));
                     });
                 });
@@ -146,16 +144,21 @@ export default {
             
             this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
             
+            /*this.tempCanvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+            }, "image/png");*/
+            
             return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
         createLabelbotImageFromRegularImage(points) {
-            const [x, y, width, height] = this.getBoundingBox(this.image.source, points);
+            const [x, y, width, height] = this.getBoundingBox(this.image.source.width, this.image.source.height, points);
             
             return this.getScaledImageSelection(this.image.source, x, y, width, height);
         },
         async createLabelbotImageFromTiledImage(points) {
             // Coordinates in image coordinates
-            let [x, y, width, height] = this.getBoundingBox(this.image, points);
+            let [x, y, width, height] = this.getBoundingBox(this.image.width, this.image.height, points);
             
             // Image coordinates of the top left and bottom right corner shown in the map
             let [topLeftX, topLeftY] = this.map.getCoordinateFromPixel([0, 0]);
@@ -177,10 +180,28 @@ export default {
         },
         async createLabelbotImageFromVideo(points) {
             const mapScreenshot = await this.makeMapScreenshot();
+            
+            // Coordinates in image coordinates
+            let [x, y, width, height] = this.getBoundingBox(this.video.videoWidth, this.video.videoHeight, points);
+            
+            let [topLeftX, topLeftY] = this.map.getCoordinateFromPixel([0, 0]);
+            topLeftX = clamp(topLeftX, 0, this.video.videoWidth);
+            topLeftY = this.video.videoHeight - clamp(topLeftY, 0, this.video.videoHeight);
+            
+            let bottomRightX = this.map.getCoordinateFromPixel(this.map.getSize())[0];
+            bottomRightX = clamp(bottomRightX, 0, this.video.videoWidth);
+            
+            const visibleImagePartWidth = bottomRightX - topLeftX;
+            const scale = mapScreenshot.width / visibleImagePartWidth;
+            
+            // Coordinates in screenshot coordinates
+            [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
+            
+            return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
         },
         async createLabelbotImage(points) {
             if(this.video) {
-                return this.createLabelbotImageFromVideo(points);
+                return await this.createLabelbotImageFromVideo(points);
             }
             
             if(!this.image.tiled)
