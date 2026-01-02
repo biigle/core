@@ -11,7 +11,7 @@
                 :class="titleClass"
                 >
                 {{ name }}
-                <div v-if="showSortingArrows" class="btn-group label-tree__move-buttons">
+                <div v-if="showMoveButtonUp || showMoveButtonDown" class="btn-group label-tree__move-buttons">
                     <button
                         v-if="showMoveButtonUp"
                         type="button"
@@ -130,11 +130,6 @@ export default {
         showFavourites: {
             type: Boolean,
             default: false,
-        },
-        // Indicates whether to show buttons for sorting trees.
-        showSortingArrows: {
-            type: Boolean,
-            default: true,
         },
         // Indicates whether the labels should be displayed in a flat list instead of a tree.
         flat: {
