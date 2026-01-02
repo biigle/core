@@ -268,16 +268,16 @@ export default {
         moveLabelTreesUp(id) {
             let treeIdx = this.sortedTrees.findIndex(tree => id === tree.id);
 
-            this.swapElementsCustomOrder(treeIdx, treeIdx - 1);
+            this.swapCustomOrderElements(treeIdx, treeIdx - 1);
             this.updateCustomOrderLocalStorage(this.customOrder);
         },
         moveLabelTreesDown(id) {
             let treeIdx = this.sortedTrees.findIndex(tree => id === tree.id);
 
-            this.swapElementsCustomOrder(treeIdx, treeIdx + 1);
+            this.swapCustomOrderElements(treeIdx, treeIdx + 1);
             this.updateCustomOrderLocalStorage(this.customOrder);
         },
-        swapElementsCustomOrder(idx1, idx2) {
+        swapCustomOrderElements(idx1, idx2) {
             this.customOrder[idx2] = this.customOrder.splice(idx1, 1, this.customOrder[idx2])[0];
         },
         updateCustomOrderLocalStorage(newCustomOrder){
