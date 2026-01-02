@@ -16,7 +16,7 @@
                         v-if="showMoveButtonUp"
                         type="button"
                         class="btn btn-default btn-xs"
-                        @click.stop="emitMoveLabelTree(true)"
+                        @click.stop="emitMoveLabelTreeUp()"
                         title="Move the label tree up"
                         >
                         <span class="fa fa-arrow-up" aria-hidden="true"></span>
@@ -25,7 +25,7 @@
                         v-if="showMoveButtonDown"
                         type="button"
                         class="btn btn-default btn-xs"
-                        @click.stop="emitMoveLabelTree(false)"
+                        @click.stop="emitMoveLabelTreeDown()"
                         title="Move the label tree down"
                         >
                         <span class="fa fa-arrow-down" aria-hidden="true"></span>
@@ -71,7 +71,8 @@ export default {
         'remove-favourite',
         'save',
         'select',
-        'move-label-trees',
+        'move-up',
+        'move-down',
     ],
     data() {
         return {
@@ -145,14 +146,14 @@ export default {
             type: Boolean,
             default: false,
         },
-        treeIndex: {
-            type: Number,
-            default: -1,
+        showMoveButtonUp: {
+            type: Boolean,
+            default: false,
         },
-        maxTreeIndex: {
-            type: Number,
-            default: -1,
-        }
+        showMoveButtonDown: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         labelMap() {
@@ -205,12 +206,6 @@ export default {
         },
         hasNoLabels() {
             return this.rootLabels.length === 0;
-        },
-        showMoveButtonUp() {
-            return this.treeIndex !== 0;
-        },
-        showMoveButtonDown() {
-            return this.treeIndex !== this.maxTreeIndex;
         },
         titleClass() {
             return {
@@ -386,13 +381,11 @@ export default {
                 label.favourite = false;
             }
         },
-        emitMoveLabelTree(moveUp) {
-            let targetIdx = moveUp ? this.treeIndex - 1 : this.treeIndex + 1;
-            this.$emit(
-                'move-label-trees',
-                this.treeIndex,
-                targetIdx,
-            );
+        emitMoveLabelTreeUp() {
+            this.$emit('move-up');
+        },
+        emitMoveLabelTreeDown() {
+            this.$emit('move-down');
         }
     },
     created() {

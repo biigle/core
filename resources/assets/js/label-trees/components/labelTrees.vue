@@ -39,8 +39,8 @@
             <label-tree
                 v-for="(tree, index) in sortedTrees"
                 :key="tree.id"
-                :treeIndex="index"
-                :maxTreeIndex="sortedTrees.length - 1"
+                :showMoveButtonUp="index != 0"
+                :showMoveButtonDown="index != sortedTrees.length - 1"
                 :name="tree.versionedName"
                 :labels="tree.labels"
                 :multiselect="multiselect"
@@ -52,7 +52,8 @@
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
                 @remove-favourite="handleRemoveFavourite"
-                @move-label-trees="moveLabelTrees"
+                @move-up="moveLabelTreesUp(tree.id)"
+                @move-down="moveLabelTreesDown(tree.id)"
                 ></label-tree>
         </div>
     </div>
@@ -86,7 +87,6 @@ export default {
         return {
             favourites: [],
             customOrder: [],
-            sortedTrees: [],
         };
     },
     props: {
@@ -146,15 +146,10 @@ export default {
     },
     computed: {
         customOrderStorageKeys() {
-            let customOrderStorageKeys = [];
-            this.projectIds.forEach(
-                function (el) {
-                    if (Number.isInteger(el)) {
-                        customOrderStorageKeys.push(`biigle.label-trees.${el}.custom-order`)
-                    }
-                }
-            );
-            return customOrderStorageKeys;
+            return this.projectIds.map(id => `biigle.projects.${id}.label-trees.custom-order`)
+        },
+        sortedTrees() {
+            return this.customOrder.map(id => this.trees.find(tree => id === tree.id));
         },
         localeCompareSupportsLocales() {
             try {
@@ -238,7 +233,6 @@ export default {
             this.events.emit('clear');
         },
         handleAddFavourite(label) {
-            //TODO: here label.favourite does not get set to true. THIS MIGHT BE BECAUSE WE DONT USE A PROP ANYMORE TO CREATE LABELTREES
             if (this.canHaveMoreFavourites) {
                 this.$emit('add-favourite', label);
                 this.events.emit('add-favourite', label);
@@ -270,26 +264,25 @@ export default {
         on(key, fn) {
             this.events.on(key, fn);
         },
-        moveLabelTrees(treeIdx, targetIdx) {
-            let customOrder = this.swapElements(this.treeIds, treeIdx, targetIdx);
-            this.customOrder = customOrder;
+        moveLabelTreesUp(id) {
+            let treeIdx = this.sortedTrees.findIndex(tree => id === tree.id);
 
+            this.swapElementsCustomOrder(treeIdx, treeIdx - 1);
+            this.updateCustomOrderLocalStorage(this.customOrder);
+        },
+        moveLabelTreesDown(id) {
+            let treeIdx = this.sortedTrees.findIndex(tree => id === tree.id);
+
+            this.swapElementsCustomOrder(treeIdx, treeIdx + 1);
+            this.updateCustomOrderLocalStorage(this.customOrder);
+        },
+        swapElementsCustomOrder(idx1, idx2) {
+            this.customOrder[idx2] = this.customOrder.splice(idx1, 1, this.customOrder[idx2])[0];
+        },
+        updateCustomOrderLocalStorage(newCustomOrder){
             this.customOrderStorageKeys.forEach(function (storageKey) {
-                localStorage.setItem(storageKey, JSON.stringify(customOrder));
+                localStorage.setItem(storageKey, JSON.stringify(newCustomOrder));
             });
-        },
-        swapElements(arr, idx1, idx2) {
-            let element = arr.splice(idx1, 1)[0];
-            arr.splice(idx2, 0, element);
-            return arr;
-        },
-        changeCustomOrder() {
-            let customOrder = JSON.parse(
-                localStorage.getItem(this.customOrderStorageKey)
-            );
-            if (customOrder) {
-                this.customOrder = customOrder;
-            }
         }
     },
     watch: {
@@ -318,27 +311,9 @@ export default {
         selectedFavouriteLabel(index) {
             this.selectFavourite(index);
         },
-        customOrder: {
-            immediate: true,
-            deep: true,
-            handler(customOrder) {
-                this.sortedTrees.sort(function (a, b) {
-                    let idxa = customOrder.findIndex((val) => val == a.id);
-                    let idxb = customOrder.findIndex((val) => val == b.id);
-                    if (idxa && idxb) {
-                        return idxa > idxb;
-                    } else if (idxa) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-            }
-        }
     },
     created() {
         this.events = mitt();
-        this.sortedTrees = this.trees;
 
         //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
         //the projects with the lower ID will be given priority. The user can just sort the new view.
@@ -357,6 +332,10 @@ export default {
                 );
                 this.customOrder.push(...partialCustomOrder);
             }
+        }
+
+        if (this.customOrder.length == 0) {
+            this.customOrder = this.treeIds;
         }
     },
     mounted() {
