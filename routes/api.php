@@ -291,7 +291,7 @@ $router->get('public-export/label-trees/{id}', [
 
 
 $router->resource('reports', 'ReportsController', [
-    'only' => ['show', 'destroy'],
+    'only' => ['show', 'destroy', 'index'],
     'parameters' => ['reports' => 'id'],
     'names' => [
         'show' => 'show-reports',
