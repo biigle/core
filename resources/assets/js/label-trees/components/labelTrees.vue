@@ -280,7 +280,7 @@ export default {
         swapCustomOrderElements(idx1, idx2) {
             this.customOrder[idx2] = this.customOrder.splice(idx1, 1, this.customOrder[idx2])[0];
         },
-        updateCustomOrderLocalStorage(newCustomOrder){
+        updateCustomOrderLocalStorage(newCustomOrder) {
             this.customOrderStorageKeys.forEach(function (storageKey) {
                 localStorage.setItem(storageKey, JSON.stringify(newCustomOrder));
             });
