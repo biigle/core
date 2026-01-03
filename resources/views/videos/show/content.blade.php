@@ -86,6 +86,7 @@
       v-on:is-invalid-shape="handleInvalidShape"
       v-on:popout="handleVideoPopout"
       v-on:cancel-auto-play="cancelAutoPlay"
+      v-on:labelbot-image="getFeatureVectorFromImage"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

@@ -365,6 +365,7 @@ import Keyboard from '@/core/keyboard.js';
 import LabelIndicator from '@/annotations/components/labelIndicator.vue';
 import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
 import Map from '@biigle/ol/Map';
+import Messages from '@/core/messages/store.js';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
@@ -671,8 +672,18 @@ export default {
                 return;
             }*/
            const points = this.getPointsFromGeometry(feature.getGeometry());
-           // TODO How to access the video to get a screenshot
-           const labelbotImage = await this.createLabelbotImage(points);
+           let labelbotImage = null;
+           
+           try {
+                labelbotImage = await this.createLabelbotImage(points);
+            } 
+            catch(error) {
+                // TODO Removing doesn't work this way
+                this.annotationSource.removeFeature(feature);
+                Messages.danger(error.message);
+                return;
+            }
+            this.$emit("labelbot-image", labelbotImage);
         },
         handleFeatureSelect(e) {
             let selected = this.selectInteraction.getFeatures()

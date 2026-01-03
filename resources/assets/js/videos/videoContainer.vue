@@ -4,7 +4,7 @@ import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
-import LabelBot from '@/annotations/mixins/labelbot.vue';
+import Labelbot from '@/annotations/mixins/labelbot.vue';
 import LabelsTab from '@/annotations/components/labelsTab.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
@@ -36,7 +36,7 @@ class VideoTooLargeError extends VideoError {}
 const URL_CURRENT_TIME_DIVISOR = 1e4
 
 export default {
-    mixins: [LoaderMixin, LabelBot],
+    mixins: [LoaderMixin, Labelbot],
     components: {
         videoScreen: VideoScreen,
         videoTimeline: VideoTimeline,
@@ -118,6 +118,7 @@ export default {
             selectedFavouriteLabel: undefined,
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
+            featureVector: undefined
         };
     },
     computed: {
@@ -912,6 +913,7 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
+        this.initLabelbotWorker();
 
         // See: https://github.com/biigle/core/issues/391
         /*if (navigator.userAgent.toLowerCase().includes('firefox')) {

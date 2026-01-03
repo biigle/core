@@ -222,47 +222,47 @@ export default {
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
             const annotationIsNew = lastFrame === undefined || lastFrame < this.video.currentTime;
-
-            if (annotationIsNew) {
-                this.makeLabelbotSuggestions(e.feature);
-                
-                this.pendingAnnotation.frames.push(this.video.currentTime);
-                this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
-
-                if (!this.video.ended && this.autoplayDraw > 0) {
-                    this.play();
-                    window.clearTimeout(this.autoplayDrawTimeout);
-                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
-                }
-
-                if (this.singleAnnotation) {
-                    if (this.isDrawingPoint) {
-                        if (this.isPointDoubleClick(e)) {
-                            // The feature is added to the source only after this event
-                            // is handled, so remove has to happen after the addfeature
-                            // event.
-                            this.pendingAnnotationSource.once('addfeature', function (e) {
-                                this.removeFeature(e.feature);
-                            });
-                            this.resetPendingAnnotation(this.pendingAnnotation.shape);
-                            return;
-                        }
-                        this.lastDrawnPointTime = new Date().getTime();
-                        this.lastDrawnPoint = e.feature.getGeometry();
-                    }
-                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-                }
-            } else {
+            
+            if(!annotationIsNew) {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
                 // to remove it.
                 this.pendingAnnotationSource.once('addfeature', function (e) {
                     this.removeFeature(e.feature);
                 });
+                this.$emit('pending-annotation', this.pendingAnnotation);
+                return;
             }
 
-            this.$emit('pending-annotation', this.pendingAnnotation);
+            this.makeLabelbotSuggestions(e.feature);
+            
+            this.pendingAnnotation.frames.push(this.video.currentTime);
+            this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
 
+            if (!this.video.ended && this.autoplayDraw > 0) {
+                this.play();
+                window.clearTimeout(this.autoplayDrawTimeout);
+                this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+            }
+
+            if (this.singleAnnotation) {
+                if (this.isDrawingPoint) {
+                    if (this.isPointDoubleClick(e)) {
+                        // The feature is added to the source only after this event
+                        // is handled, so remove has to happen after the addfeature
+                        // event.
+                        this.pendingAnnotationSource.once('addfeature', function (e) {
+                            this.removeFeature(e.feature);
+                        });
+                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                        return;
+                    }
+                    this.lastDrawnPointTime = new Date().getTime();
+                    this.lastDrawnPoint = e.feature.getGeometry();
+                }
+                this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
+            }
+            this.$emit('pending-annotation', this.pendingAnnotation);
         },
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
