@@ -234,8 +234,6 @@ export default {
                 return;
             }
 
-            this.makeLabelbotSuggestions(e.feature);
-            
             this.pendingAnnotation.frames.push(this.video.currentTime);
             this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
 
@@ -262,7 +260,12 @@ export default {
                 }
                 this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
             }
-            this.$emit('pending-annotation', this.pendingAnnotation);
+
+            // emitLabelbotImage sends a signal that will set the feature vector in videoContainer
+            // This needs to happen before the annotation is saved
+            this.emitLabelbotImage(e.feature).then(() => {
+                this.$emit('pending-annotation', this.pendingAnnotation);
+            });
         },
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN

@@ -238,7 +238,6 @@ class ImageAnnotationController extends Controller
             $cacheKey = "labelbot-requests-{$request->user()->id}";
             $currentRequests = Cache::get($cacheKey, 0);
 
-
             if ($currentRequests >= $maxRequests) {
                 throw new TooManyRequestsHttpException(message: "You already have {$maxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
             }

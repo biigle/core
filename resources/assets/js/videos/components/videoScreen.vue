@@ -395,6 +395,7 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
+        'labelbot-image'
     ],
     mixins: [
         VideoPlayback,
@@ -666,7 +667,7 @@ export default {
         extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
         },
-        async makeLabelbotSuggestions(feature) {
+        async emitLabelbotImage(feature) {
             // TODO Uncomment once manual labels are deactivated for labelbot in videos
             /*if(!this.labelbotIsActive) {
                 return;

@@ -330,7 +330,17 @@ export default {
             });
 
             delete annotation.shape;
-
+            
+            if(this.featureVector) {
+                return this.featureVector.then(featureVector => {
+                    annotation.feature_vector = featureVector;
+                    return this.saveVideoAnnotation(annotation, tmpAnnotation);
+                });
+            }
+            
+            return this.saveVideoAnnotation(annotation, tmpAnnotation);
+        },
+        saveVideoAnnotation(annotation, tmpAnnotation) {
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
                 .then((res) => {
                     if (tmpAnnotation.track) {
@@ -829,6 +839,9 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
+        getFeatureVectorFromImage(image) {
+            this.featureVector = this.generateFeatureVector(image);
+        }
     },
     watch: {
         'settings.playbackRate'(rate) {
