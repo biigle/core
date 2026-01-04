@@ -16,19 +16,19 @@ use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class LabelBotService 
 {
-    public function predictLabelForImage(Image $image, StoreImageAnnotation $request)
+    public function predictLabelForImage($volumeId, $user, $featureVector)
     {
         // LabelBOT
         $topNLabels = [];
-        $cacheKey = $this->enforceRateLimit($request);
+        $cacheKey = $this->enforceRateLimit($user);
 
         // Get label tree id(s).
-        $treeIds = $this->getLabelTreeIds($request->user(), $image->volume_id);
+        $treeIds = $this->getLabelTreeIds($user, $volumeId);
         $ignoreIds = array_map('intval', config('labelbot.ignore_label_trees'));
         $treeIds = array_diff($treeIds, $ignoreIds);
 
         // Convert the feature vector into a Vector object for compatibility with the query.
-        $featureVector = new Vector($request->input('feature_vector'));
+        $featureVector = new Vector($featureVector);
 
         Cache::increment($cacheKey);
         try {
@@ -53,9 +53,9 @@ class LabelBotService
         ];
     }
     
-    protected function enforceRateLimit(StoreImageAnnotation $request)
+    protected function enforceRateLimit($user)
     {
-        $cacheKey = "labelbot-requests-{$request->user()->id}";
+        $cacheKey = "labelbot-requests-{$user->id}";
         $maxRequests = config('labelbot.max_requests');
         $currentRequests = Cache::get($cacheKey, 0);
 

@@ -225,7 +225,7 @@ class ImageAnnotationController extends Controller
         $labelId = $request->input('label_id');
 
         if (is_null($labelId) && $request->has('feature_vector')) {
-            $prediction = $labelBotService->predictLabelForImage($image, $request);
+            $prediction = $labelBotService->predictLabelForImage($image->volume_id, $request->user(), $request->input('feature_vector'));
 
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels'); 

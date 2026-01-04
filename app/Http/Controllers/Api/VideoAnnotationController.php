@@ -6,6 +6,7 @@ use Biigle\Http\Requests\StoreVideoAnnotation;
 use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Biigle\Jobs\TrackObject;
 use Biigle\Label;
+use Biigle\Services\LabelBot\LabelBotService;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
@@ -15,8 +16,6 @@ use Exception;
 use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Log;
-use Pgvector\Laravel\Vector;
 use Queue;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -202,7 +201,7 @@ class VideoAnnotationController extends Controller
      * @param StoreVideoAnnotation $request
      * @return VideoAnnotation
      */
-    public function store(StoreVideoAnnotation $request)
+    public function store(StoreVideoAnnotation $request, LabelBotService $labelBotService)
     {
         if ($request->shouldTrack()) {
             $maxJobs = config('videos.track_object_max_jobs_per_user');
@@ -230,46 +229,16 @@ class VideoAnnotationController extends Controller
         
         $labelId = $request->input('label_id');
         
-        if($request->has('feature_vector')) {
-            // LabelBOT
-            $topNLabels = [];
-            $maxRequests = config('labelbot.max_requests');
-            $cacheKey = "labelbot-requests-{$request->user()->id}";
-            $currentRequests = Cache::get($cacheKey, 0);
+        if(/*is_null($labelId) && */$request->has('feature_vector')) {
+            $prediction = $labelBotService->predictLabelForImage($request->video->volume_id, $request->user(), $request->input('feature_vector'));
 
-            if ($currentRequests >= $maxRequests) {
-                throw new TooManyRequestsHttpException(message: "You already have {$maxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
+            $label = $prediction['label'];
+            $labelId = $label->id;
+
+            $annotation->append('labelBOTLabels'); 
+            if(isset($prediction['alternatives'])) {
+                $annotation->labelBOTLabels = $prediction['alternatives'];
             }
-
-            // Add labelBOTlabels attribute to the response.
-            $annotation->append('labelBOTLabels');
-
-            // Get label tree id(s).
-            $treeIds = $this->getLabelTreeIds($request->user(), $video->volume_id);
-            $ignoreIds = array_map('intval', config('labelbot.ignore_label_trees'));
-            $treeIds = array_diff($treeIds, $ignoreIds);
-
-            // Convert the feature vector into a Vector object for compatibility with the query.
-            $featureVector = new Vector($request->input('feature_vector'));
-
-            Cache::increment($cacheKey);
-            try {
-                $topNLabels = $this->performVectorSearch($featureVector, $treeIds, $topNLabels);
-            } finally {
-                $count = Cache::decrement($cacheKey);
-                if ($count <= 0) {
-                    Cache::forget($cacheKey);
-                }
-            }
-
-            if (empty($topNLabels)) {
-                throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
-            }
-            // Get labels sorted by their top N order.
-            $labelModels = Label::whereIn('id', $topNLabels)->get()->keyBy('id');
-            $labelBotLabels = array_map(fn ($id) => $labelModels->get($id), $topNLabels);
-
-            $label = array_shift($labelBotLabels);
         } else {
             $label = Label::findOrFail($labelId);
         }
