@@ -177,7 +177,6 @@ export default {
             });
 
             this.map.render();
-            
             return promise;
         },
         async createLabelbotImageFromVideo(points) {
@@ -208,6 +207,9 @@ export default {
                     }
                 });
             });
+            
+            this.map.render();
+            return promise;
         },
         async createLabelbotImage(points) {
             if (this.video) {
