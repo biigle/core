@@ -10,7 +10,7 @@ on:
       - 'resources/scripts/**'
       - 'storage/**'
       - 'package.json'
-      - 'package.lock'
+      - 'package-lock.json'
   pull_request:
     paths-ignore:
       - '.docker/**'
@@ -18,7 +18,7 @@ on:
       - 'resources/scripts/**'
       - 'storage/**'
       - 'package.json'
-      - 'package.lock'
+      - 'package-lock.json'
 
 jobs:
   test-current:
@@ -36,14 +36,19 @@ jobs:
     - name: Copy .env
       run: cp .env.example .env
 
+    - name: Update .env
+      run: |
+        echo USER_ID=$(id -u) >> .env
+        echo GROUP_ID=$(id -g) >> .env
+
     - name: Set testing key
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Install Dependencies
-      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-reqs
+      run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --prefer-dist --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis
 
     - name: Install aws dependency
-      run: composer require league/flysystem-aws-s3-v3
+      run: composer require --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis league/flysystem-aws-s3-v3
 
     - name: Fetch base images
       run: |
@@ -57,7 +62,7 @@ jobs:
         sleep 5
 
     - name: Run tests
-      run: docker compose run --rm -u 1001 worker php artisan test --parallel
+      run: docker compose run --rm worker php artisan test --parallel
 
   test-modules:
 
@@ -75,17 +80,22 @@ jobs:
     - name: Copy .env
       run: cp .env.example .env
 
+    - name: Update .env
+      run: |
+        echo USER_ID=$(id -u) >> .env
+        echo GROUP_ID=$(id -g) >> .env
+
     - name: Set testing key
       run: echo "APP_KEY=base64:STZFA4bQKDjE2mlpRPmsJ/okG0eCh4RHd9BghtZeYmQ=" >> .env
 
     - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-reqs
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis
 
     - name: Remove BIIGLE modules
       run: rm -r vendor/biigle
 
     - name: Update BIIGLE modules from source
-      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-reqs biigle/*
+      run: composer update --no-ansi --no-interaction --no-scripts --no-suggest --prefer-source --ignore-platform-req=ext-pgsql --ignore-platform-req=ext-soap --ignore-platform-req=ext-zip --ignore-platform-req=ext-redis biigle/*
 
     - name: Fetch base images
       run: |
@@ -99,4 +109,4 @@ jobs:
         sleep 5
 
     - name: Run tests
-      run: docker compose run --rm -u 1001 worker php artisan test --parallel
+      run: docker compose run --rm worker php artisan test --parallel

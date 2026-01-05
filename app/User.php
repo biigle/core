@@ -211,4 +211,26 @@ class User extends Authenticatable
     {
         $this->setSettings(['can_review' => boolval($value) ? true : null]);
     }
+
+    /**
+     * Determines if the API rate limit applies to the user.
+     *
+     * @return bool
+     */
+    public function getHasNoRateLimitAttribute()
+    {
+        return $this->isInSuperUserMode ||
+            ($this->role_id === Role::editorId() &&
+                $this->getSettings('disable_rate_limit', false));
+    }
+
+    /**
+     * Enable or disable the API rate limit for (editor) users.
+     *
+     * @param bool $value
+     */
+    public function setHasNoRateLimitAttribute($value)
+    {
+        $this->setSettings(['disable_rate_limit' => boolval($value) ? true : null]);
+    }
 }

@@ -53,7 +53,7 @@ class RouteServiceProvider extends ServiceProvider
             // Check User class because a FederatedSearchInstance could be a user here,
             // too. The relaxeed rate limiting should only apply to actual users.
             if ($request->user() instanceof User) {
-                if ($request->user()->can('sudo')) {
+                if ($request->user()->hasNoRateLimit) {
                     return Limit::none();
                 }
 

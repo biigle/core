@@ -12,7 +12,7 @@
 import Events from '@/core/events.js';
 import Messages from '@/core/messages/store.js';
 import Keyboard from '@/core/keyboard.js';
-import { makeBlob } from '../utils.js';
+import { trimCanvas } from '../utils';
 
 /**
  * A button that produces a screenshot of the map
@@ -73,6 +73,33 @@ export default {
                 this.map.renderSync();
             }
         },
+        makeBlob(canvas) {
+            try {
+                canvas = trimCanvas(canvas);
+            } catch (error) {
+                return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+            }
+
+            let type = 'image/png';
+            if (!HTMLCanvasElement.prototype.toBlob) {
+                // fallback if toBlob is not implemented see 'Polyfill':
+                // https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/toBlob
+                let binStr = atob(canvas.toDataURL(type).split(',')[1]);
+                let len = binStr.length;
+                let arr = new Uint8Array(len);
+                for (let i = 0; i < len; i++ ) {
+                    arr[i] = binStr.charCodeAt(i);
+                }
+
+                return new Promise(function (resolve) {
+                    resolve(new Blob([arr], {type: type}));
+                });
+            } else {
+                return new Promise(function (resolve) {
+                    canvas.toBlob(resolve, type);
+                });
+            }
+        },
         handleRenderComplete(e) {
             // See: https://openlayers.org/en/v6.15.1/examples/export-map.html
             // This version is modified/simplified because we want the screenshot
@@ -81,7 +108,7 @@ export default {
                 .getViewport()
                 .querySelector('.ol-layer canvas, canvas.ol-layer');
 
-            makeBlob(canvas).then(this.download).catch(this.handleError);
+            this.makeBlob(canvas).then(this.download).catch(this.handleError);
         },
         handleError(message) {
             Messages.danger(message);

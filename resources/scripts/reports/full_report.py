@@ -8,9 +8,11 @@ csv.field_size_limit(sys.maxsize)
 
 target_file = sys.argv[2]
 csvs = sys.argv[3:]
-
 workbook = Workbook()
-numSheets = 0
+
+# Split sheets if they would have too many rows.
+# See: https://github.com/biigle/core/issues/1040
+ROW_LIMIT = 100_000
 
 def add_sheet(csv_path, index):
     with open(csv_path, 'r') as f:
@@ -43,7 +45,7 @@ def add_sheet(csv_path, index):
 
     # rows have the content: image_filename, annotation_id, label_name, shape_name, points, image area
     celldata = [[csv_title], csv_column_labels]
-
+    sheet_idx = 0
     for filename in sorted(images):
         image = images[filename]
         for annotation_id, annotation in image['annotations'].items():
@@ -52,10 +54,18 @@ def add_sheet(csv_path, index):
             celldata.append([filename, annotation_id, annotation['shape'], next(points), next(points), labels, image['area']])
             for point in points:
                 celldata.append(['', '', '', point, next(points, ''), '', ''])
+            if len(celldata) // ROW_LIMIT >= 1:
+                ws = workbook.new_sheet(f"sheet {index}-{sheet_idx}", data=celldata)
+                ws.set_row_style(1, Style(font=Font(bold=True)))
+                ws.set_row_style(2, Style(font=Font(bold=True)))
+                celldata = [[csv_title], csv_column_labels]
+                sheet_idx += 1
 
-    ws = workbook.new_sheet("sheet {}".format(index), data=celldata)
-    ws.set_row_style(1, Style(font=Font(bold=True)))
-    ws.set_row_style(2, Style(font=Font(bold=True)))
+    # Avoid edge case where there is only the title and column labels
+    if len(celldata) > 2:
+        ws = workbook.new_sheet(f"sheet {index}-{sheet_idx}", data=celldata)
+        ws.set_row_style(1, Style(font=Font(bold=True)))
+        ws.set_row_style(2, Style(font=Font(bold=True)))
 
 for i, csv_path in enumerate(csvs):
     add_sheet(csv_path, i)

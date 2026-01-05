@@ -20,6 +20,7 @@ class NotificationsController extends Controller
         $notifications = $notifications->get();
 
         foreach ($notifications as $n) {
+            /** @phpstan-ignore property.notFound */
             $n->created_at_diff = $n->created_at->diffForHumans();
         }
 

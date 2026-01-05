@@ -291,7 +291,7 @@ $router->get('public-export/label-trees/{id}', [
 
 
 $router->resource('reports', 'ReportsController', [
-    'only' => ['show', 'destroy'],
+    'only' => ['show', 'destroy', 'index'],
     'parameters' => ['reports' => 'id'],
     'names' => [
         'show' => 'show-reports',
@@ -514,6 +514,10 @@ $router->group([
 
     $router->get('{id}/files/filter/annotation-user/{id2}', [
         'uses' => 'Filters\AnnotationUserController@index',
+    ]);
+
+    $router->get('{id}/annotations', [
+        'uses' => 'VolumeAnnotationController@index',
     ]);
 
     $router->get('{id}/annotation-labels', [

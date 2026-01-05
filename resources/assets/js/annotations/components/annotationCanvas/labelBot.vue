@@ -1,8 +1,11 @@
 <script>
 import LabelbotIndicator from '../labelbotIndicator.vue';
 import LabelbotPopup from '../labelbotPopup.vue';
+import Styles from '../../stores/styles.js';
+import VectorLayer from '@biigle/ol/layer/Vector';
+import VectorSource from '@biigle/ol/source/Vector';
 import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
-import { clamp, makeBlob } from '../../utils.js'
+import { clamp, trimCanvas } from '../../utils.js'
 
 // DINOv2 image input size.
 const INPUT_SIZE = 224;
@@ -35,6 +38,11 @@ export default {
     components: {
         labelbotPopup: LabelbotPopup,
         labelbotIndicator: LabelbotIndicator
+    },
+    data() {
+        return {
+            labelBotLayerAdded: false,
+        };
     },
     computed: {
         labelbotIsActive() {
@@ -95,24 +103,6 @@ export default {
 
             return [minX, minY, width, height];
         },
-        makeMapScreenshot() {
-            let layer = this.tiledImageLayer;
-            if(!layer) {
-                layer = this.videoLayer;
-            }
-
-            const promise = new Promise(resolve => {
-                layer.once('postrender', event => {
-                    makeBlob(event.context.canvas).then(blob => {
-                        resolve(createImageBitmap(blob));
-                    });
-                });
-            });
-            
-            this.map.render();
-            
-            return promise;
-        },
         calculateRectangleIntersection(r1, r2) {
             const [x1, y1, w1, h1] = r1;
             const [x2, y2, w2, h2] = r2;
@@ -125,62 +115,72 @@ export default {
             return [left, top, Math.max(0, right - left), Math.max(0, bottom - top)];
         },
         getScaledImageSelection(image, x, y, width, height) {
-            if(!this.tempCanvas) {
+            if (!this.tempCanvas) {
                 this.tempCanvas = document.createElement('canvas');
                 this.tempCanvas.width = INPUT_SIZE;
                 this.tempCanvas.height = INPUT_SIZE;
                 this.tempCanvasCtx = this.tempCanvas.getContext('2d', { willReadFrequently: true });
             }
-            
+
             // Find rectangular intersection of selection and image
             [x, y, width, height] = this.calculateRectangleIntersection(
                 [x, y, width, height], 
                 [0, 0, image.width, image.height]
             ); 
-            
-            if(width === 0 || height === 0) {
+
+            if (width === 0 || height === 0) {
                 throw new Error("Selection was outside of the image");
             }
-            
+
             this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
             
-            /*this.tempCanvas.toBlob(blob => {
+            this.tempCanvas.toBlob(blob => {
                 const url = URL.createObjectURL(blob);
                 window.open(url, '_blank');
-            }, "image/png");*/
+            }, "image/png");
             
             return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
         createLabelbotImageFromRegularImage(points) {
             const [x, y, width, height] = this.getBoundingBox(this.image.source.width, this.image.source.height, points);
-            
+
             return this.getScaledImageSelection(this.image.source, x, y, width, height);
         },
         async createLabelbotImageFromTiledImage(points) {
             // Coordinates in image coordinates
             let [x, y, width, height] = this.getBoundingBox(this.image.width, this.image.height, points);
-            
+
             // Image coordinates of the top left and bottom right corner shown in the map
             let [topLeftX, topLeftY] = this.map.getCoordinateFromPixel([0, 0]);
             topLeftX = clamp(topLeftX, 0, this.image.width);
             topLeftY = this.image.height - clamp(topLeftY, 0, this.image.height);
-            
+
             let bottomRightX = this.map.getCoordinateFromPixel(this.map.getSize())[0];
             bottomRightX = clamp(bottomRightX, 0, this.image.width);
             
-            const mapScreenshot = await this.makeMapScreenshot();
             const visibleImagePartWidth = bottomRightX - topLeftX;
+
+            const promise = new Promise((resolve, reject) => {
+                this.tiledImageLayer.once('postrender', event => {
+                    const mapScreenshot = trimCanvas(event.context.canvas);
+                    const scale = mapScreenshot.width / visibleImagePartWidth;
+
+                    // Coordinates in screenshot coordinates
+                    [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
+
+                    try {
+                        resolve(this.getScaledImageSelection(mapScreenshot, x, y, width, height));
+                    } catch(error) {
+                        reject(error);
+                    }
+                });
+            });
+
+            this.map.render();
             
-            const scale = mapScreenshot.width / visibleImagePartWidth;
-            
-            // Coordinates in screenshot coordinates
-            [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
-            
-            return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
+            return promise;
         },
         async createLabelbotImageFromVideo(points) {
-            const mapScreenshot = await this.makeMapScreenshot();
-            
             // Coordinates in image coordinates
             let [x, y, width, height] = this.getBoundingBox(this.video.videoWidth, this.video.videoHeight, points);
             
@@ -192,22 +192,33 @@ export default {
             bottomRightX = clamp(bottomRightX, 0, this.video.videoWidth);
             
             const visibleImagePartWidth = bottomRightX - topLeftX;
-            const scale = mapScreenshot.width / visibleImagePartWidth;
             
-            // Coordinates in screenshot coordinates
-            [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
-            
-            return this.getScaledImageSelection(mapScreenshot, x, y, width, height);
+            const promise = new Promise((resolve, reject) => {
+                this.videoLayer.once('postrender', event => {
+                    const mapScreenshot = trimCanvas(event.context.canvas);
+                    const scale = mapScreenshot.width / visibleImagePartWidth;
+
+                    // Coordinates in screenshot coordinates
+                    [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
+
+                    try {
+                        resolve(this.getScaledImageSelection(mapScreenshot, x, y, width, height));
+                    } catch(error) {
+                        reject(error);
+                    }
+                });
+            });
         },
         async createLabelbotImage(points) {
-            if(this.video) {
+            if (this.video) {
                 return await this.createLabelbotImageFromVideo(points);
             }
             
-            if(!this.image.tiled)
+            if (!this.image.tiled) {
                 return this.createLabelbotImageFromRegularImage(points);
-            else 
+            } else { 
                 return await this.createLabelbotImageFromTiledImage(points);
+            }
         },
     },
     watch: {
@@ -219,6 +230,26 @@ export default {
                 this.resetInteractionMode();
             }
         },
+        labelbotIsActive(active) {
+            if (active && !this.labelBotLayerAdded) {
+                this.map.addLayer(this.labelbotLayer);
+                this.labelBotLayerAdded = true;
+            }
+        }
+    },
+    created() {
+        // Layer for LabelBOT popup dashed line and editing annotation with opacity=1.
+        // These variables should not be reactive.
+        this.labelbotSource = new VectorSource();
+
+        this.labelbotLayer = new VectorLayer({
+            source: this.labelbotSource,
+            zIndex: 101, // above annotationLayer
+            updateWhileAnimating: true,
+            updateWhileInteracting: true,
+            style: Styles.features,
+            opacity: 1, // opacity not configurable
+        });
     },
 };
 </script>

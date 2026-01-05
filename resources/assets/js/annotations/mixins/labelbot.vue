@@ -186,14 +186,14 @@ export default {
                     } else if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
-                    
+
                     throw e;
                 })
                 .finally((annotation) => {
-                    if(this.labelbotRequestsInFlight > 0) {
+                    if (this.labelbotRequestsInFlight > 0) {
                         this.labelbotRequestsInFlight -= 1;
                     }
-                    
+
                     return annotation;
                 });
         },

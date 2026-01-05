@@ -40,6 +40,24 @@ class CsvReportGeneratorTest extends TestCase
         'attributes',
     ];
 
+    private $columnsSkipAttributes = [
+        'video_annotation_label_id',
+        'label_id',
+        'label_name',
+        'label_hierarchy',
+        'user_id',
+        'firstname',
+        'lastname',
+        'video_id',
+        'video_filename',
+        'shape_id',
+        'shape_name',
+        'points',
+        'frames',
+        'annotation_id',
+        'created_at',
+    ];
+
     public function testProperties()
     {
         $generator = new CsvReportGenerator;
@@ -441,7 +459,7 @@ class CsvReportGeneratorTest extends TestCase
         $volName = Str::slug($video->volume->name);
 
         $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
-        
+
         $al1 = VideoAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => null // deleted user
@@ -523,6 +541,85 @@ class CsvReportGeneratorTest extends TestCase
 
         $generator = new CsvReportGenerator;
         $generator->setSource($video->volume);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSkipAttributes()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+            'media_type_id' => MediaType::videoId(),
+        ]);
+
+        $video = VideoTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
+        $al = VideoAnnotationLabelTest::create(['label_id' => $child->id]);
+        $al->annotation->video_id = $video->id;
+        $al->annotation->video->attrs = $video->attrs;
+        $al->annotation->save();
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with($this->columnsSkipAttributes);
+
+        //Note that here the attribute element is not present
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $al->id,
+                $child->id,
+                $child->name,
+                "{$root->name} > {$child->name}",
+                $al->user_id,
+                $al->user->firstname,
+                $al->user->lastname,
+                $al->annotation->video_id,
+                $al->annotation->video->filename,
+                $al->annotation->shape->id,
+                $al->annotation->shape->name,
+                json_encode($al->annotation->points),
+                json_encode($al->annotation->frames),
+                $al->annotation->id,
+                $al->created_at,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$volume->id}-my-cool-volume.csv");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, fn () => $mock);
+
+        $generator = new CsvReportGenerator([
+            'skipAttributes' => true
+        ]);
+        $generator->setSource($volume);
         $generator->generateReport('my/path');
     }
 }

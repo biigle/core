@@ -13,6 +13,8 @@
 /storage/largo_cache
 /storage/metadata
 /storage/pending-metadata
+/storage/imports
+/storage/reports
 /vendor
 .env
 .env.backup
