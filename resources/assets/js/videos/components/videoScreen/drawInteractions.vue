@@ -242,6 +242,13 @@ export default {
                 window.clearTimeout(this.autoplayDrawTimeout);
                 this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
             }
+            
+            // emitLabelbotImage sends a signal that will set the feature vector in videoContainer
+            // This needs to happen before the annotation is saved, so this code has to run first 
+            // before adding the finishDrawAnnotation callback
+            this.emitLabelbotImage(e.feature).then(() => {
+                this.$emit('pending-annotation', this.pendingAnnotation);
+            });
 
             if (this.singleAnnotation) {
                 if (this.isDrawingPoint) {
@@ -260,12 +267,6 @@ export default {
                 }
                 this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
             }
-
-            // emitLabelbotImage sends a signal that will set the feature vector in videoContainer
-            // This needs to happen before the annotation is saved
-            this.emitLabelbotImage(e.feature).then(() => {
-                this.$emit('pending-annotation', this.pendingAnnotation);
-            });
         },
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
