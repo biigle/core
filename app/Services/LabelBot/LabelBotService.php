@@ -16,9 +16,13 @@ use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class LabelBotService 
 {
-    public function predictLabelForImage($volumeId, $user, $featureVector)
+    public function predictLabelForImage($volumeId, $request, $annotation)
     {
-        // LabelBOT
+        if(!$request->has('feature_vector')) {
+            return Label::findOrFail($request->input('label_id'));
+        }
+        
+        $user = $request->user();
         $topNLabels = [];
         $cacheKey = $this->enforceRateLimit($user);
 
@@ -28,7 +32,7 @@ class LabelBotService
         $treeIds = array_diff($treeIds, $ignoreIds);
 
         // Convert the feature vector into a Vector object for compatibility with the query.
-        $featureVector = new Vector($featureVector);
+        $featureVector = new Vector($request->input('feature_vector'));
 
         Cache::increment($cacheKey);
         try {
@@ -46,11 +50,16 @@ class LabelBotService
         // Get labels sorted by their top N order.
         $labelModels = Label::whereIn('id', $topNLabels)->get()->keyBy('id');
         $labelBotLabels = array_map(fn ($id) => $labelModels->get($id), $topNLabels);
-
-        return [
-            'label' => array_shift($labelBotLabels),
-            'alternatives' => $labelBotLabels,
-        ];
+        
+        // Add labelBOTlabels attribute to the response.
+        $annotation->append('labelBOTLabels'); 
+        $label = array_shift($labelBotLabels);
+        if(!empty($labelBotLabels)) {
+            // Attach the remaining labels (if any).
+            $annotation->labelBOTLabels = $labelBotLabels;
+        }
+        
+        return $label;
     }
     
     protected function enforceRateLimit($user)

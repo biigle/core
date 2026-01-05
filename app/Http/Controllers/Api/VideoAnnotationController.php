@@ -227,28 +227,14 @@ class VideoAnnotationController extends Controller
             throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
         }
         
-        $labelId = $request->input('label_id');
-        
-        if(/*is_null($labelId) && */$request->has('feature_vector')) {
-            $prediction = $labelBotService->predictLabelForImage($request->video->volume_id, $request->user(), $request->input('feature_vector'));
-
-            $label = $prediction['label'];
-            $labelId = $label->id;
-
-            $annotation->append('labelBOTLabels'); 
-            if(isset($prediction['alternatives'])) {
-                $annotation->labelBOTLabels = $prediction['alternatives'];
-            }
-        } else {
-            $label = Label::findOrFail($labelId);
-        }
+        $label = $labelBotService->predictLabelForImage($request->video->volume_id, $request, $annotation);
 
         $this->authorize('attach-label', [$annotation, $label]);
 
-        $annotation = DB::transaction(function () use ($annotation, $request) {
+        $annotation = DB::transaction(function () use ($annotation, $request, $label) {
             $annotation->save();
             VideoAnnotationLabel::create([
-                'label_id' => $request->input('label_id'),
+                'label_id' => $label->id,
                 'user_id' => $request->user()->id,
                 'annotation_id' => $annotation->id,
             ]);

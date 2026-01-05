@@ -222,21 +222,8 @@ class ImageAnnotationController extends Controller
         }
 
         $annotation->points = $points;
-        $labelId = $request->input('label_id');
-
-        if (is_null($labelId) && $request->has('feature_vector')) {
-            $prediction = $labelBotService->predictLabelForImage($image->volume_id, $request->user(), $request->input('feature_vector'));
-
-            // Add labelBOTlabels attribute to the response.
-            $annotation->append('labelBOTLabels'); 
-            $label = $prediction['label'];
-            if(isset($prediction['alternatives'])) {
-                // Attach the remaining labels (if any).
-                $annotation->labelBOTLabels = $prediction['alternatives'];
-            }
-        } else {
-            $label = Label::findOrFail($labelId);
-        }
+        
+        $label = $labelBotService->predictLabelForImage($image->volume_id, $request, $annotation);
 
         $this->authorize('attach-label', [$annotation, $label]);
 
