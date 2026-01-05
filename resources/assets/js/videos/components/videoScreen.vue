@@ -350,6 +350,7 @@
                 v-if="selectedLabel"
                 :label="selectedLabel"
                 ></label-indicator>
+            <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
         </div>
     </div>
 </template>
@@ -362,7 +363,9 @@ import DrawInteractions from './videoScreen/drawInteractions.vue';
 import Indicators from './videoScreen/indicators.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelIndicator from '@/annotations/components/labelIndicator.vue';
+import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
 import Map from '@biigle/ol/Map';
+import Messages from '@/core/messages/store.js';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
@@ -392,6 +395,7 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
+        'labelbot-image'
     ],
     mixins: [
         VideoPlayback,
@@ -401,6 +405,7 @@ export default {
         Tooltips,
         Indicators,
         PolygonBrushInteractions,
+        LabelBot
     ],
     components: {
         controlButton: ControlButton,
@@ -661,6 +666,25 @@ export default {
         },
         extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
+        },
+        async emitLabelbotImage(feature) {
+            // TODO Uncomment once manual labels are deactivated for labelbot in videos
+            /*if(!this.labelbotIsActive) {
+                return;
+            }*/
+           const points = this.getPointsFromGeometry(feature.getGeometry());
+           let labelbotImage = null;
+           
+           try {
+                labelbotImage = await this.createLabelbotImage(points);
+            } 
+            catch(error) {
+                // TODO Removing doesn't work this way
+                this.annotationSource.removeFeature(feature);
+                Messages.danger(error.message);
+                return;
+            }
+            this.$emit("labelbot-image", labelbotImage);
         },
         handleFeatureSelect(e) {
             let selected = this.selectInteraction.getFeatures()

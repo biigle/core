@@ -166,7 +166,7 @@ export default {
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
 
             return this.generateFeatureVector(annotation.labelbotImage)
-                .then(featureVector =>  annotation.feature_vector = featureVector)
+                .then(featureVector => annotation.feature_vector = featureVector)
                 .then(() => this.labelbotRequestsInFlight += 1)
                 .then(() => AnnotationsStore.create(currentImageId, annotation))
                 .then((annotation) => {
