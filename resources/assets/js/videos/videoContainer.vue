@@ -299,7 +299,7 @@ export default {
                 let data = Object.assign({}, pendingAnnotation, {
                     shape_id: this.shapes[pendingAnnotation.shape],
                     labels: [{
-                        label_id: this.selectedLabel.id,
+                        label_id: this.selectedLabel?.id,
                         label: this.selectedLabel,
                         user: this.user,
                     }],

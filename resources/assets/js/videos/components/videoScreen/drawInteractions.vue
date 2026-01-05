@@ -104,7 +104,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (this.hasNoSelectedLabel) {
+            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -137,7 +137,7 @@ export default {
                 this.drawInteraction = undefined;
             }
 
-            if (this.isDrawing && this.hasSelectedLabel) {
+            if (this.isDrawing && (this.hasSelectedLabel || this.labelbotIsActive)) {
                 this.pause();
 
                 if (this.isDrawingWholeFrame) {
