@@ -5,6 +5,8 @@ import {ref} from 'vue';
 
 export class CrossOriginTiffError extends Error {}
 
+export class DecodeTiffError extends Error {}
+
 const COLOR_ADJUSTMENT_DEFAULTS = {
     brightnessContrast: [0, 0],
     brightnessRGB: [0, 0, 0],
@@ -274,6 +276,8 @@ class Images {
                     img.src = url;
 
                     return promise;
+                } else if (error instanceof DecodeTiffError) {
+                    return Promise.reject(`Could not decode the TIFF file (image ${id})!`);
                 }
 
                 return Promise.reject(`Failed to load image ${id}!`);
@@ -406,7 +410,16 @@ class Images {
 
     getTiffBlob(arrayBuffer) {
         const ifds = UTIF.decode(arrayBuffer);
-        UTIF.decodeImage(arrayBuffer, ifds[0]);
+        if (ifds.length === 0) {
+            throw new DecodeTiffError();
+        }
+
+        try {
+            UTIF.decodeImage(arrayBuffer, ifds[0]);
+        } catch (e) {
+            throw new DecodeTiffError();
+        }
+
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = ifds[0].width;
