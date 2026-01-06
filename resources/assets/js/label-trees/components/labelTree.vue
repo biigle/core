@@ -1,29 +1,39 @@
 <template>
     <div class="label-tree">
-        <h4
-            v-if="showTitle"
-            class="label-tree__title"
+        <div
+            class="label-tree__title-container"
             >
-            <button
-                v-if="collapsible"
-                @click.stop="collapse"
-                class="btn btn-default btn-xs pull-right"
+            <h4
+                v-if="showTitle"
+                @click="collapse"
+                class="label-tree__title"
                 :title="collapseTitle"
-                type="button"
+                :class="titleClass"
                 >
-                <span
-                    v-if="collapsed"
-                    class="fa fa-chevron-down"
-                    aria-hidden="true"
-                    ></span>
-                <span v-else class="fa fa-chevron-up" aria-hidden="true"></span>
-            </button>
-            {{name}}
-        </h4>
-        <ul
-            v-if="!collapsed"
-            class="label-tree__list"
-            >
+                {{ name }}
+                <div v-if="showMoveButtonUp || showMoveButtonDown" class="btn-group label-tree__move-buttons">
+                    <button
+                        v-if="showMoveButtonUp"
+                        type="button"
+                        class="btn btn-default btn-xs"
+                        @click.stop="emitMoveLabelTreeUp()"
+                        title="Move the label tree up"
+                        >
+                        <span class="fa fa-arrow-up" aria-hidden="true"></span>
+                    </button>
+                    <button
+                        v-if="showMoveButtonDown"
+                        type="button"
+                        class="btn btn-default btn-xs"
+                        @click.stop="emitMoveLabelTreeDown()"
+                        title="Move the label tree down"
+                        >
+                        <span class="fa fa-arrow-down" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </h4>
+        </div>
+        <ul v-if="!collapsed" class="label-tree__list">
             <label-tree-label
                 v-for="(label, index) in rootLabels"
                 :key="label.id"
@@ -61,10 +71,12 @@ export default {
         'remove-favourite',
         'save',
         'select',
+        'move-up',
+        'move-down',
     ],
     data() {
         return {
-            collapsed: false
+            collapsed: false,
         };
     },
     components: {
@@ -129,6 +141,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        showMoveButtonUp: {
+            type: Boolean,
+            default: false,
+        },
+        showMoveButtonDown: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         labelMap() {
@@ -174,10 +194,19 @@ export default {
             return this.compiledLabels[null];
         },
         collapseTitle() {
-            return this.collapsed ? 'Expand' : 'Collapse';
+            if (this.collapsible) {
+                return this.collapsed ? 'Expand the label tree' : 'Collapse the label tree';
+            }
+            return "";
         },
         hasNoLabels() {
             return this.rootLabels.length === 0;
+        },
+        titleClass() {
+            return {
+                'text-muted': this.collapsed,
+                'collapsible': this.collapsible,
+            };
         },
     },
     methods: {
@@ -347,6 +376,12 @@ export default {
                 label.favourite = false;
             }
         },
+        emitMoveLabelTreeUp() {
+            this.$emit('move-up');
+        },
+        emitMoveLabelTreeDown() {
+            this.$emit('move-down');
+        }
     },
     created() {
         // Set the reactive label properties
