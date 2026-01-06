@@ -192,9 +192,6 @@ export default {
         hasFavourites() {
             return this.favourites.length > 0;
         },
-        hasCustomOrder() {
-            return this.customOrder.length > 0;
-        },
         ownId() {
             if (this.id) {
                 return this.id;
