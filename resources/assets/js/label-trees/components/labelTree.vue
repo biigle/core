@@ -195,7 +195,7 @@ export default {
         },
         collapseTitle() {
             if (this.collapsible) {
-                return this.collapsed ? 'Expand' : 'Collapse';
+                return this.collapsed ? 'Expand the label tree' : 'Collapse the label tree';
             }
             return "";
         },
