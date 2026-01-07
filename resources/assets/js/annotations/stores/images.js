@@ -1,4 +1,4 @@
-import * as UTIF from 'utif2';
+import {fromArrayBuffer} from 'geotiff';
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
 import {ref} from 'vue';
@@ -408,28 +408,44 @@ class Images {
         this.maxCacheSize = size;
     }
 
-    getTiffBlob(arrayBuffer) {
-        const ifds = UTIF.decode(arrayBuffer);
-        if (ifds.length === 0) {
-            throw new DecodeTiffError();
-        }
-
+    async getTiffBlob(arrayBuffer) {
         try {
-            UTIF.decodeImage(arrayBuffer, ifds[0]);
+            const tiff = await fromArrayBuffer(arrayBuffer);
+            const image = await tiff.getImage();
+
+            const width = image.getWidth();
+            const height = image.getHeight();
+
+            if (width === 0 || height === 0) {
+                throw new DecodeTiffError();
+            }
+
+            const rgbData = await image.readRGB();
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+
+            const imgData = ctx.createImageData(width, height);
+            const data = imgData.data;
+            const pixelCount = width * height;
+
+            // Convert RGB to RGBA by adding alpha channel
+            for (let i = 0; i < pixelCount; i++) {
+                data[i * 4] = rgbData[i * 3];         // R
+                data[i * 4 + 1] = rgbData[i * 3 + 1]; // G
+                data[i * 4 + 2] = rgbData[i * 3 + 2]; // B
+                data[i * 4 + 3] = 255;                // A (opaque)
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+
+            // JPEG is much faster than default PNG encoding.
+            return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
         } catch (e) {
             throw new DecodeTiffError();
         }
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = ifds[0].width;
-        canvas.height = ifds[0].height;
-
-        const imgData = ctx.createImageData(canvas.width, canvas.height);
-        imgData.data.set(UTIF.toRGBA8(ifds[0]));
-        ctx.putImageData(imgData, 0, 0);
-
-        return new Promise(resolve => canvas.toBlob(blob => resolve(blob)));
     }
 }
 
