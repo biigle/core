@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Report;
+use Biigle\ReportType;
 use Illuminate\Http\Response;
 use Storage;
 
@@ -76,5 +77,18 @@ class ReportsController extends Controller
                 ->with('message', 'Report deleted.')
                 ->with('messageType', 'success');
         }
+    }
+
+    /**
+     * List all available report types.
+     *
+     * @api {get} reports List all available report types
+     * @apiGroup Reports
+     * @apiName IndexReports
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function index()
+    {
+        return ReportType::all();
     }
 }

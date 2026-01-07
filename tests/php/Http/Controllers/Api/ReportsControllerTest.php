@@ -48,4 +48,16 @@ class ReportsControllerTest extends ApiTestCase
 
         $this->assertNull($report->fresh());
     }
+
+    public function testIndex()
+    {
+        $this->doTestApiRoute('GET', '/api/v1/reports');
+
+        $this->beUser();
+        $response = $this->get('/api/v1/reports');
+        $content = $response->getContent();
+        $response->assertStatus(200);
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
+    }
 }
