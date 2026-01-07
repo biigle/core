@@ -46,7 +46,9 @@
 import CurrentTime from './currentTime.vue';
 import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
-import { computed } from 'vue'
+import { computed } from 'vue';
+
+const UNLABELED = '__unlabeled__';
 
 export default {
     emits: [
@@ -138,7 +140,14 @@ export default {
     },
     computed: {
         labelMap() {
-            let map = {};
+            // Non-breaking space (NBSP) for empty labels to prevent div from collapsing
+            let map = {
+                [UNLABELED]: {
+                    'id': UNLABELED,
+                    'name': '\u00A0',
+                    'color': '5bc0de'
+                }
+            };
             let annotations = this.annotations;
 
             if (this.pendingAnnotation) {
@@ -157,7 +166,8 @@ export default {
             return map;
         },
         annotationTracks() {
-            let map = {};
+            // Unlabeled annotations for labelbot are grouped together
+            let map = {[UNLABELED]: []};
             let annotations = this.annotations;
 
             if (this.pendingAnnotation) {
@@ -166,13 +176,17 @@ export default {
             }
 
             annotations.forEach(function (annotation) {
-                annotation.labels.forEach(function (label) {
-                    if (!map.hasOwnProperty(label.label_id)) {
-                        map[label.label_id] = [];
-                    }
+                if (annotation.labels.length === 0) {
+                    map[UNLABELED].push(annotation);
+                } else {
+                    annotation.labels.forEach(function (label) {
+                        if (!map.hasOwnProperty(label.label_id)) {
+                            map[label.label_id] = [];
+                        }
 
-                    map[label.label_id].push(annotation);
-                });
+                        map[label.label_id].push(annotation);
+                    });
+                }
             });
 
             return Object.keys(map).map((labelId) => {

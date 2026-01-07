@@ -295,21 +295,28 @@ export default {
             }
         },
         updatePendingAnnotation(pendingAnnotation) {
-            if (pendingAnnotation) {
-                let data = Object.assign({}, pendingAnnotation, {
-                    shape_id: this.shapes[pendingAnnotation.shape],
-                    labels: [{
-                        label_id: this.selectedLabel?.id,
-                        label: this.selectedLabel,
-                        user: this.user,
-                    }],
-                    pending: true,
-                });
-
-                this.pendingAnnotation = markRaw(new Annotation(data));
-            } else {
+            if(!pendingAnnotation)
+            {
                 this.pendingAnnotation = null;
+                return;
             }
+            
+            let labels = []; 
+            if(this.selectedLabel) {
+                labels = [{
+                    label_id: this.selectedLabel.id,
+                    label: this.selectedLabel,
+                    user: this.user,
+                }];
+            }
+            
+            let data = Object.assign({}, pendingAnnotation, {
+                shape_id: this.shapes[pendingAnnotation.shape],
+                labels: labels,
+                pending: true,
+            });
+
+            this.pendingAnnotation = markRaw(new Annotation(data));
         },
         createAnnotation(pendingAnnotation) {
             this.updatePendingAnnotation(pendingAnnotation);
