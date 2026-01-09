@@ -74,46 +74,46 @@ export default {
                 return this.fileIds;
             }
 
-            let only = {};
-            let except = {};
-            let negatedRules = 0;
-            let nonNegatedRules = 0;
+            let filteredFiles = {};
+            let exceptionFiles = {};
+            let filterRulesCount = 0;
+            let negativeFilterRulesCount = 0;
 
             this.rules.forEach(function (rule) {
                 if (rule.negate) {
-                    negatedRules++;
-                    rule.sequence.forEach(function (id) {
-                        except[id] = (except[id] + 1) || 1;
+                    negativeFilterRulesCount++;
+                    rule.toExclude.forEach(function (id) {
+                        exceptionFiles[id] = (exceptionFiles[id] + 1) || 1;
                     });
                 } else {
-                    nonNegatedRules++;
+                    filterRulesCount++;
                     rule.sequence.forEach(function (id) {
-                        only[id] = (only[id] + 1) || 1;
+                        filteredFiles[id] = (filteredFiles[id] + 1) || 1;
                     });
                 }
             });
 
             if (this.operator === 'and') {
-                if (nonNegatedRules > 0) {
-                    // All IDs that occur in every non-negated rule and not in a negated
+                if (filterRulesCount > 0) {
+                    // All IDs that occur in every rule and not in a negated
                     // rule. Example: a && b && !c && !d === a && b && !(c || d)
                     return this.fileIds.filter(
-                        id => only[id] === nonNegatedRules && !except.hasOwnProperty(id)
+                        id => filteredFiles[id] === filterRulesCount && !exceptionFiles.hasOwnProperty(id)
                     );
                 } else {
                     // All IDs that don't occur in a negated rule.
-                    return this.fileIds.filter((id) => !except.hasOwnProperty(id));
+                    return this.fileIds.filter((id) => !exceptionFiles.hasOwnProperty(id));
                 }
             } else {
-                if (negatedRules > 0) {
-                    // All IDs that occur in a non-negated rule or not in every negated
+                if (negativeFilterRulesCount > 0) {
+                    // All IDs that occur in a rule or not in every negated
                     // rule. Example: a || b || !c || !d === a || b || !(c && d)
                     return this.fileIds.filter(
-                        (id) => only.hasOwnProperty(id) || except[id] !== negatedRules
+                        (id) => filteredFiles.hasOwnProperty(id) || exceptionFiles[id] !== negativeFilterRulesCount
                     );
                 } else {
-                    // All IDs that occur in a non-negated rule.
-                    return this.fileIds.filter((id) => only.hasOwnProperty(id));
+                    // All IDs that occur in a rule.
+                    return this.fileIds.filter((id) => filteredFiles.hasOwnProperty(id));
                 }
             }
         },
@@ -208,11 +208,20 @@ export default {
             this.startLoading();
             filter.getSequence(this.volumeId, rule.data)
                 .catch(handleErrorResponse)
-                .then((response) => rule.sequence = response.data)
+                .then((response) => this.setRuleSequence(rule, response.data))
                 .finally(this.finishLoading);
         },
+        setRuleSequence(rule, sequence) {
+            if (rule.negate) {
+                //rule.sequence is used to display the number of values in the filter.
+                //toExclude is used to exclude values in the computed proprty this.sequence
+                rule.toExclude = sequence;
+                sequence = this.fileIds.filter((id) => !sequence.includes(id));
+            }
+            rule.sequence = sequence;
+        },
         ruleAdded(rule, response) {
-            rule.sequence = response.data;
+            this.setRuleSequence(rule, response.data);
             this.rules.push(rule);
         },
         removeRule(index) {
