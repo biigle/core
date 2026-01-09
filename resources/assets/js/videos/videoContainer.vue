@@ -115,6 +115,7 @@ export default {
             selectedFavouriteLabel: undefined,
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
+            projectIds: [],
         };
     },
     computed: {
@@ -858,6 +859,7 @@ export default {
         this.errors = biigle.$require('videos.errors');
         this.user = biigle.$require('videos.user');
         this.videoFilenames = biigle.$require('videos.videoFilenames');
+        this.projectIds = biigle.$require('videos.projectIds');
 
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;

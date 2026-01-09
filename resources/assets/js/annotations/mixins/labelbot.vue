@@ -5,9 +5,6 @@ import LabelbotWorker from '../workers/labelbot.js?worker';
 import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
 import Messages from '@/core/messages/store.js';
 
-// DINOv2 image input size.
-const INPUT_SIZE = 224;
-
 // This used to be higher to allow multiple popups at the same time but we found that
 // only a single popup at a time supports a more efficient workflow.
 const MAX_OVERLAY_COUNT = 1;
@@ -19,7 +16,6 @@ export const LABELBOT_STATES = {
     BUSY: 'busy',
     NOLABELS: 'nolabels',
     CORSERROR: 'corserror',
-    TILEDIMAGE: 'tiledimage',
     OFF: 'off'
 };
 
@@ -32,6 +28,7 @@ export default {
             focusedPopupKey: -1,
             labelbotRequestsInFlight: 0,
             labelbotMaxRequests: 1,
+            labelbotMessageID: 0,
             labelbotWorker: null,
             labelBotWorkerListeners: [],
             labelbotTimeout: 1,
@@ -113,77 +110,16 @@ export default {
 
             this.labelbotWorker.postMessage({type: 'init', url: modelUrl});
         },
-        getBoundingBox(points) {
-            let minX = this.image.width;
-            let minY = this.image.height;
-            let maxX = 0;
-            let maxY = 0;
-            // Point
-            if (points.length === 2) {
-                // TODO: maybe use SAM or PTP module to convert point to shape
-                const tempRadius = 64; // Same radius than used for Largo thumbnails.
-                const [x, y] = points;
-                minX = Math.max(0, x - tempRadius);
-                minY = Math.max(0, y - tempRadius);
-                maxX = Math.min(this.image.width, x + tempRadius);
-                maxY = Math.min(this.image.height, y + tempRadius);
-            } else if (points.length === 3) { // Circle
-                const [centerX, centerY, radius] = points;
-                minX = Math.max(0, centerX - radius);
-                minY = Math.max(0, centerY - radius);
-                maxX = Math.min(this.image.width, centerX + radius);
-                maxY = Math.min(this.image.height, centerY + radius);
-            } else {
-                for (let i = 0; i < points.length; i += 2) {
-                    const x = points[i];
-                    const y = points[i + 1];
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                }
-                // Ensure the bounding box is within the image dimensions
-                minX = Math.max(0, minX);
-                minY = Math.max(0, minY);
-                maxX = Math.min(this.image.width, maxX);
-                maxY = Math.min(this.image.height, maxY);
-            }
-
-            const width = maxX - minX;
-            const height = maxY - minY;
-
-            return [minX, minY, width, height];
-        },
-        generateFeatureVector(points) {
-            const box = this.getBoundingBox(points);
-            const [x, y, width, height] = box;
-
-            // Create a temporary canvas for processing the selected region
-            if (!this.tempLabelbotCanvas) {
-                this.tempLabelbotCanvas = document.createElement('canvas');
-                this.tempLabelbotCanvas.width = INPUT_SIZE;
-                this.tempLabelbotCanvas.height = INPUT_SIZE;
-                this.tempLabelbotCanvasCtx = this.tempLabelbotCanvas.getContext('2d', {
-                    willReadFrequently: true,
-                });
-            }
-            const ctx = this.tempLabelbotCanvasCtx;
-
-            ctx.clearRect(0, 0, INPUT_SIZE, INPUT_SIZE);
-            ctx.drawImage(this.image.source, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
-
-            const annotationData = ctx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
-
+        generateFeatureVector(labelbotImage) {
+            const labelbotMessageID = this.labelbotMessageID++;
             const promise = this.addLabelbotWorkerListener(
-                e => box.every((v, i) => v === e.data?.box[i])
+                e => labelbotMessageID === e.data?.labelbotMessageID
             ).then(e => e.data.vector);
 
             this.labelbotWorker.postMessage({
                 type: 'run',
-                image: annotationData,
-                // Send the box as a means to identify which received vector belongs to
-                // which sent message.
-                box: box,
+                image: labelbotImage,
+                labelbotMessageID: labelbotMessageID
             });
 
             return promise;
@@ -229,7 +165,7 @@ export default {
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
 
-            return this.generateFeatureVector(annotation.points)
+            return this.generateFeatureVector(annotation.labelbotImage)
                 .then(featureVector =>  annotation.feature_vector = featureVector)
                 .then(() => this.labelbotRequestsInFlight += 1)
                 .then(() => AnnotationsStore.create(currentImageId, annotation))
@@ -250,10 +186,13 @@ export default {
                     } else if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
+
                     throw e;
                 })
                 .finally((annotation) => {
-                    this.labelbotRequestsInFlight -= 1;
+                    if (this.labelbotRequestsInFlight > 0) {
+                        this.labelbotRequestsInFlight -= 1;
+                    }
 
                     return annotation;
                 });
@@ -268,11 +207,7 @@ export default {
         image(image) {
             if (image?.crossOrigin) {
                 this.updateLabelbotState(LABELBOT_STATES.CORSERROR);
-            } else if (image?.tiled) {
-                this.updateLabelbotState(LABELBOT_STATES.TILEDIMAGE);
             } else if (this.labelbotState === LABELBOT_STATES.CORSERROR) {
-                this.updateLabelbotState(LABELBOT_STATES.OFF);
-            } else if (this.labelbotState === LABELBOT_STATES.TILEDIMAGE) {
                 this.updateLabelbotState(LABELBOT_STATES.OFF);
             }
         },

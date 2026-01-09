@@ -12,6 +12,7 @@ export default {
             volumeId: null,
             labelTrees: [],
             mediaType: '',
+            projectIds: [],
         };
     },
     methods: {
@@ -60,6 +61,7 @@ export default {
         this.volumeId = biigle.$require('largo.volumeId');
         this.labelTrees = biigle.$require('largo.labelTrees');
         this.mediaType = biigle.$require('largo.mediaType');
+        this.projectIds = biigle.$require("largo.projectIds");
     },
 };
 </script>

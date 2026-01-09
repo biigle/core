@@ -1,9 +1,11 @@
-import * as UTIF from 'utif2';
+import {fromArrayBuffer} from 'geotiff';
 import Events from '@/core/events.js';
 import fx from '../vendor/glfx.js';
 import {ref} from 'vue';
 
 export class CrossOriginTiffError extends Error {}
+
+export class DecodeTiffError extends Error {}
 
 const COLOR_ADJUSTMENT_DEFAULTS = {
     brightnessContrast: [0, 0],
@@ -274,6 +276,8 @@ class Images {
                     img.src = url;
 
                     return promise;
+                } else if (error instanceof DecodeTiffError) {
+                    return Promise.reject(`Could not decode the TIFF file (image ${id})!`);
                 }
 
                 return Promise.reject(`Failed to load image ${id}!`);
@@ -404,19 +408,44 @@ class Images {
         this.maxCacheSize = size;
     }
 
-    getTiffBlob(arrayBuffer) {
-        const ifds = UTIF.decode(arrayBuffer);
-        UTIF.decodeImage(arrayBuffer, ifds[0]);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = ifds[0].width;
-        canvas.height = ifds[0].height;
+    async getTiffBlob(arrayBuffer) {
+        try {
+            const tiff = await fromArrayBuffer(arrayBuffer);
+            const image = await tiff.getImage();
 
-        const imgData = ctx.createImageData(canvas.width, canvas.height);
-        imgData.data.set(UTIF.toRGBA8(ifds[0]));
-        ctx.putImageData(imgData, 0, 0);
+            const width = image.getWidth();
+            const height = image.getHeight();
 
-        return new Promise(resolve => canvas.toBlob(blob => resolve(blob)));
+            if (width === 0 || height === 0) {
+                throw new DecodeTiffError();
+            }
+
+            const rgbData = await image.readRGB();
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+
+            const imgData = ctx.createImageData(width, height);
+            const data = imgData.data;
+            const pixelCount = width * height;
+
+            // Convert RGB to RGBA by adding alpha channel
+            for (let i = 0; i < pixelCount; i++) {
+                data[i * 4] = rgbData[i * 3];         // R
+                data[i * 4 + 1] = rgbData[i * 3 + 1]; // G
+                data[i * 4 + 2] = rgbData[i * 3 + 2]; // B
+                data[i * 4 + 3] = 255;                // A (opaque)
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+
+            // JPEG is much faster than default PNG encoding.
+            return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+        } catch (e) {
+            throw new DecodeTiffError();
+        }
     }
 }
 

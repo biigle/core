@@ -19,6 +19,7 @@ import LineString from '@biigle/ol/geom/LineString';
 import MagicWandInteraction from './annotationCanvas/magicWandInteraction.vue';
 import Map from '@biigle/ol/Map';
 import MeasureInteraction from './annotationCanvas/measureInteraction.vue';
+import Messages from '@/core/messages/store.js';
 import Minimap from './minimap.vue';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import MousePosition from './annotationCanvas/mousePosition.vue';
@@ -537,7 +538,7 @@ export default {
 
             return this.convertPointsFromOlToDb(points);
         },
-        handleNewFeature(e) {
+        async handleNewFeature(e) {
             let removeCallback = () => {
                 try {
                     this.annotationSource.removeFeature(e.feature);
@@ -574,6 +575,9 @@ export default {
             // This is observed by a filter in the select interaction.
             e.feature.set('unselectable', true);
 
+            const points = this.getPoints(geometry);
+            let labelbotImage = null;
+
             if (this.labelbotIsActive) {
                 // The "info" color.
                 e.feature.set('color', '5bc0de');
@@ -591,6 +595,17 @@ export default {
                         // Do nothing in this case.
                     }
                 };
+
+                // Do this below the switching between sources above, otherwise there
+                // would be an ugly style flickering of the feature while the
+                // labelbotImage is computed.
+                try {
+                    labelbotImage = await this.createLabelbotImage(points);
+                } catch (error) {
+                    removeCallback();
+                    Messages.danger(error.message);
+                    return;
+                }
             } else {
                 e.feature.set('color', this.selectedLabel.color);
             }
@@ -599,7 +614,8 @@ export default {
             // failed, to remove the temporary feature.
             this.$emit('new', {
                 shape: geometry.getType(),
-                points: this.getPoints(geometry),
+                points: points,
+                labelbotImage: labelbotImage
             }, removeCallback);
         },
         deleteSelectedAnnotations() {

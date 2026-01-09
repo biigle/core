@@ -682,7 +682,6 @@ export default {
     },
     created() {
         this.user = biigle.$require('largo.user');
-
         window.addEventListener('beforeunload', (e) => {
             if (this.hasDismissedAnnotations) {
                 e.preventDefault();

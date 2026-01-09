@@ -53,13 +53,13 @@ self.onmessage = function(event) {
             .then((output) => {
                 self.postMessage({
                     type: 'run',
-                    box: event.data.box,
+                    labelbotMessageID: event.data.labelbotMessageID,
                     vector: output[Object.keys(output)[0]].data,
                 });
             }, (error) => {
                 self.postMessage({
                     type: 'run',
-                    box: event.data.box,
+                    labelbotMessageID: event.data.labelbotMessageID,
                     error: error,
                 });
             });
