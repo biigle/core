@@ -109,7 +109,7 @@ class VolumeFiles implements Rule
             }
 
             if (preg_match('/(\/|\\\\)*(\.\.)+(\/|\\\\)*(.)*/', urldecode($filename)) !== 0) {
-                $this->message = 'Traversing directories is not allowed. Insert a valid path within the volume.';
+                $this->message = 'Filenames with path traversal instructions are not allowed..';
 
                 return false;
             }
