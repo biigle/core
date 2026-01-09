@@ -74,46 +74,46 @@ export default {
                 return this.fileIds;
             }
 
-            let filteredValues = {};
-            let exceptions = {};
+            let filteredFiles = {};
+            let exceptionFiles = {};
             let filterRuleCount = 0;
             let negativeFilterRulesCount = 0;
 
             this.rules.forEach(function (rule) {
                 if (rule.negate) {
                     negativeFilterRulesCount++;
-                    rule.sequence.forEach(function (id) {
-                        exceptions[id] = (exceptions[id] + 1) || 1;
+                    rule.toExclude.forEach(function (id) {
+                        exceptionFiles[id] = (exceptionFiles[id] + 1) || 1;
                     });
                 } else {
                     filterRuleCount++;
                     rule.sequence.forEach(function (id) {
-                        filteredValues[id] = (filteredValues[id] + 1) || 1;
+                        filteredFiles[id] = (filteredFiles[id] + 1) || 1;
                     });
                 }
             });
 
             if (this.operator === 'and') {
-                if (negativeFilterRulesCount > 0) {
+                if (filterRuleCount > 0) {
                     // All IDs that occur in every rule and not in a negated
                     // rule. Example: a && b && !c && !d === a && b && !(c || d)
                     return this.fileIds.filter(
-                        id => filteredValues[id] === filterRuleCount && !exceptions.hasOwnProperty(id)
+                        id => filteredFiles[id] === filterRuleCount && !exceptionFiles.hasOwnProperty(id)
                     );
                 } else {
                     // All IDs that don't occur in a negated rule.
-                    return this.fileIds.filter((id) => !exceptions.hasOwnProperty(id));
+                    return this.fileIds.filter((id) => !exceptionFiles.hasOwnProperty(id));
                 }
             } else {
                 if (negativeFilterRulesCount > 0) {
                     // All IDs that occur in a rule or not in every negated
                     // rule. Example: a || b || !c || !d === a || b || !(c && d)
                     return this.fileIds.filter(
-                        (id) => filteredValues.hasOwnProperty(id) || exceptions[id] !== negativeFilterRulesCount
+                        (id) => filteredFiles.hasOwnProperty(id) || exceptionFiles[id] !== negativeFilterRulesCount
                     );
                 } else {
                     // All IDs that occur in a rule.
-                    return this.fileIds.filter((id) => filteredValues.hasOwnProperty(id));
+                    return this.fileIds.filter((id) => filteredFiles.hasOwnProperty(id));
                 }
             }
         },
@@ -208,11 +208,20 @@ export default {
             this.startLoading();
             filter.getSequence(this.volumeId, rule.data)
                 .catch(handleErrorResponse)
-                .then((response) => rule.sequence = response.data)
+                .then((response) => this.setRuleSequence(rule, response.data))
                 .finally(this.finishLoading);
         },
+        setRuleSequence(rule, sequence) {
+            if (rule.negate) {
+                //rule.sequence is used to display the number of values in the filter.
+                //toExclude is used to exclude values in the computed proprty this.sequence
+                rule.toExclude = sequence;
+                sequence = this.fileIds.filter((id) => !sequence.includes(id));
+            }
+            rule.sequence = sequence;
+        },
         ruleAdded(rule, response) {
-            rule.sequence = response.data;
+            this.setRuleSequence(rule, response.data);
             this.rules.push(rule);
         },
         removeRule(index) {
