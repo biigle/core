@@ -5,7 +5,6 @@ namespace Biigle\Rules;
 use Biigle\FileCache\GenericFile;
 use Biigle\MediaType;
 use Biigle\Volume;
-use Biigle\Rules\VolumeUrl;
 use Exception;
 use FileCache;
 use Illuminate\Contracts\Validation\Rule;
