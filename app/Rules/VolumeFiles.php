@@ -5,6 +5,7 @@ namespace Biigle\Rules;
 use Biigle\FileCache\GenericFile;
 use Biigle\MediaType;
 use Biigle\Volume;
+use Biigle\Rules\VolumeUrl;
 use Exception;
 use FileCache;
 use Illuminate\Contracts\Validation\Rule;
@@ -108,8 +109,8 @@ class VolumeFiles implements Rule
                 return false;
             }
 
-            if (preg_match('/(\/|\\\\)*(\.\.)+(\/|\\\\)*(.)*/', urldecode($filename)) !== 0) {
-                $this->message = 'Filenames with path traversal instructions are not allowed..';
+            if (VolumeUrl::pathHasDirectoryTraversal($filename)) {
+                $this->message = 'Filenames with path traversal instructions are not allowed.';
 
                 return false;
             }

@@ -84,7 +84,7 @@ class VolumeUrl implements Rule
             return false;
         }
 
-        if (!$this->pathIsValid($value)) {
+        if ($this::pathHasDirectoryTraversal($value)) {
             $this->message = 'Volume URLs with path traversal instructions are not allowed.';
             return false;
         }
@@ -132,7 +132,7 @@ class VolumeUrl implements Rule
         $diskName = $url[0];
         $path = $url[1];
 
-        if (!$this->pathIsValid($path)) {
+        if ($this::pathHasDirectoryTraversal($path)) {
             $this->message = "Volume URLs with path traversal instructions are not allowed.";
             return false;
         }
@@ -188,17 +188,17 @@ class VolumeUrl implements Rule
     }
 
     /**
-     * Determine if the given path is valid
+     * Determine if the given path has a directory traversal
      *
      * @param string $path
      *
      * @return boolean
      */
-    protected function pathIsValid($path)
+    public static function pathHasDirectoryTraversal($path)
     {
-        if (preg_match('/(\/|\\\\)*(\.\.)+(\/|\\\\)*(.)*/', urldecode($path)) !== 0) {
-            return false;
+        if (preg_match('/\.\.(\/|$)/', urldecode($path)) !== 0) {
+            return true;
         }
-        return true;
+        return false;
     }
 }

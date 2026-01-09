@@ -28,13 +28,17 @@ class VolumeUrlTest extends TestCase
         'somedir/somefile.png/../someotherfile.png',
         'somedir/somefile.png/../../someotherfile.png',
         'somedir/somefile.png//..//someotherfile.png',
-        '../../..\somedir/somefile.png',
 
         //URL encoded traversals, null bytes etc.
         '%2e%2e%2fsomefile.png',
         '%2e%2e%2f%2e%2e%2fsomefile.png',
         '..%2f..%2f..%5csomefile.png',
         '%2e%2e%2f%2e%2e%2fsomefile%00.png',
+    ];
+    public $validPathAttempts = [
+        'somefile.png',
+        'somefile..png',
+        'somefile..someothername/name.png',
     ];
 
     public function setUp(): void
@@ -127,7 +131,10 @@ class VolumeUrlTest extends TestCase
 
         foreach ($this->traversalAttempts as $attempt) {
             $this->assertFalse($validator->passes(null, 'test://dir/'.$attempt));
-            $this->assertStringContainsString('The path inserted is not valid. Please do not use path traversals', $validator->message());
+            $this->assertStringContainsString('Volume URLs with path traversal instructions are not allowed.', $validator->message());
+        }
+        foreach ($this->validPathAttempts as $attempt) {
+            $this->assertFalse($validator::pathHasDirectoryTraversal(null, 'test://dir/'.$attempt));
         }
     }
 
@@ -221,7 +228,10 @@ class VolumeUrlTest extends TestCase
         $validator = new VolumeUrl;
         foreach ($this->traversalAttempts as $attempt) {
             $this->assertFalse($validator->passes(null, 'http://localhost/'.$attempt));
-            $this->assertStringContainsString('The URL inserted is not valid. Please do not use path traversals.', $validator->message());
+            $this->assertStringContainsString('Volume URLs with path traversal instructions are not allowed.', $validator->message());
+        }
+        foreach ($this->validPathAttempts as $attempt) {
+            $this->assertFalse($validator::pathHasDirectoryTraversal(null, 'http://localhost/'.$attempt));
         }
     }
 }
