@@ -107,6 +107,12 @@ class VolumeFiles implements Rule
 
                 return false;
             }
+
+            if (VolumeUrl::pathHasDirectoryTraversal($filename)) {
+                $this->message = 'Filenames with path traversal instructions are not allowed.';
+
+                return false;
+            }
         }
 
         if ($this->typeId === MediaType::imageId()) {

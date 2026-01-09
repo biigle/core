@@ -17,6 +17,30 @@ use TestCase;
 
 class VolumeUrlTest extends TestCase
 {
+    public $traversalAttempts = [
+        '../somefile.png',
+        '../../somefile.png',
+        '..//somefile.png',
+        '..//../somefile.png',
+        '..//..//somefile.png',
+        'somedir/../somefile.png',
+        'somedir/somefile.png/..',
+        'somedir/somefile.png/../someotherfile.png',
+        'somedir/somefile.png/../../someotherfile.png',
+        'somedir/somefile.png//..//someotherfile.png',
+
+        //URL encoded traversals, null bytes etc.
+        '%2e%2e%2fsomefile.png',
+        '%2e%2e%2f%2e%2e%2fsomefile.png',
+        '..%2f..%2f..%5csomefile.png',
+        '%2e%2e%2f%2e%2e%2fsomefile%00.png',
+    ];
+    public $validPathAttempts = [
+        'somefile.png',
+        'somefile..png',
+        'somefile..someothername/name.png',
+    ];
+
     public function setUp(): void
     {
         parent::setUp();
@@ -98,6 +122,22 @@ class VolumeUrlTest extends TestCase
         $this->assertTrue($validator->passes(null, 'test://dir'));
     }
 
+    public function testDiskTraversals()
+    {
+        $disk = Storage::fake('test');
+        $disk->put('dir/elif.txt', 'abc');
+
+        $validator = new VolumeUrl;
+
+        foreach ($this->traversalAttempts as $attempt) {
+            $this->assertFalse($validator->passes(null, 'test://dir/'.$attempt));
+            $this->assertStringContainsString('Volume URLs with path traversal instructions are not allowed.', $validator->message());
+        }
+        foreach ($this->validPathAttempts as $attempt) {
+            $this->assertFalse($validator::pathHasDirectoryTraversal(null, 'test://dir/'.$attempt));
+        }
+    }
+
     public function testRemoteError()
     {
         $mock = new MockHandler([new RequestException('Error Communicating with Server', new Request('HEAD', 'test'))]);
@@ -168,5 +208,30 @@ class VolumeUrlTest extends TestCase
         $this->assertFalse($validator->passes(null, 'https://onedrive.com'));
         $this->assertFalse($validator->passes(null, 'http://drive.google.com'));
         $this->assertFalse($validator->passes(null, 'https://drive.google.com'));
+    }
+
+    public function testRemoteProviderTraversals()
+    {
+        $mock = new MockHandler([
+            new Response(404),
+            new Response(200),
+        ]);
+
+        $container = [];
+        $history = Middleware::history($container);
+
+        $handler = HandlerStack::create($mock);
+        $handler->push($history);
+        $client = new Client(['handler' => $handler]);
+        app()->bind(Client::class, fn () => $client);
+
+        $validator = new VolumeUrl;
+        foreach ($this->traversalAttempts as $attempt) {
+            $this->assertFalse($validator->passes(null, 'http://localhost/'.$attempt));
+            $this->assertStringContainsString('Volume URLs with path traversal instructions are not allowed.', $validator->message());
+        }
+        foreach ($this->validPathAttempts as $attempt) {
+            $this->assertFalse($validator::pathHasDirectoryTraversal(null, 'http://localhost/'.$attempt));
+        }
     }
 }
