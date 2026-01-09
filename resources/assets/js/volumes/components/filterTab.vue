@@ -76,7 +76,7 @@ export default {
 
             let filteredFiles = {};
             let exceptionFiles = {};
-            let filterRuleCount = 0;
+            let filterRulesCount = 0;
             let negativeFilterRulesCount = 0;
 
             this.rules.forEach(function (rule) {
@@ -86,7 +86,7 @@ export default {
                         exceptionFiles[id] = (exceptionFiles[id] + 1) || 1;
                     });
                 } else {
-                    filterRuleCount++;
+                    filterRulesCount++;
                     rule.sequence.forEach(function (id) {
                         filteredFiles[id] = (filteredFiles[id] + 1) || 1;
                     });
@@ -94,11 +94,11 @@ export default {
             });
 
             if (this.operator === 'and') {
-                if (filterRuleCount > 0) {
+                if (filterRulesCount > 0) {
                     // All IDs that occur in every rule and not in a negated
                     // rule. Example: a && b && !c && !d === a && b && !(c || d)
                     return this.fileIds.filter(
-                        id => filteredFiles[id] === filterRuleCount && !exceptionFiles.hasOwnProperty(id)
+                        id => filteredFiles[id] === filterRulesCount && !exceptionFiles.hasOwnProperty(id)
                     );
                 } else {
                     // All IDs that don't occur in a negated rule.
