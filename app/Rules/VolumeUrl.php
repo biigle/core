@@ -85,7 +85,7 @@ class VolumeUrl implements Rule
         }
 
         if (!$this->pathIsValid($value)) {
-            $this->message = 'The URL inserted is not valid. Please do not use path traversals.';
+            $this->message = 'Volume URLs with path traversal instructions are not allowed.';
             return false;
         }
 
