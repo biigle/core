@@ -118,7 +118,7 @@ export default {
             selectedFavouriteLabel: undefined,
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
-            featureVector: undefined
+            screenshotPromise: undefined
         };
     },
     computed: {
@@ -333,13 +333,19 @@ export default {
 
             let annotation = Object.assign({}, pendingAnnotation, {
                 shape_id: this.shapes[pendingAnnotation.shape],
-                label_id: this.selectedLabel ? this.selectedLabel.id : 0,
+                label_id: this.selectedLabel ? this.selectedLabel.id : undefined,
             });
 
             delete annotation.shape;
             
-            if(this.featureVector) {
-                return this.featureVector.then(featureVector => {
+            if(!this.selectedLabel && this.screenshotPromise) {
+                // TODO Group pending annotations using the dashed info color style
+                // TODO Labelbot needs to be trained with manual label data
+                // TODO Labelbot indicator needs to show it's working
+                // TODO Show labelbot popup
+                return this.screenshotPromise.then(screenshot => {
+                    return this.generateFeatureVector(screenshot);
+                }).then(featureVector => {
                     annotation.feature_vector = featureVector;
                     return this.saveVideoAnnotation(annotation, tmpAnnotation);
                 });
@@ -846,8 +852,10 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
-        getFeatureVectorFromImage(image) {
-            this.featureVector = this.generateFeatureVector(image);
+        getFeatureVectorFromImage(screenshotPromise) {
+            // We use a promise to wait for the screenshot so that the user can't finish creating the annotation 
+            // before the screenshot was taken 
+            this.screenshotPromise = screenshotPromise;
         }
     },
     watch: {

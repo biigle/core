@@ -167,7 +167,7 @@ export default {
         },
         annotationTracks() {
             // Unlabeled annotations for labelbot are grouped together
-            let map = {[UNLABELED]: []};
+            let map = {};
             let annotations = this.annotations;
 
             if (this.pendingAnnotation) {
@@ -177,6 +177,9 @@ export default {
 
             annotations.forEach(function (annotation) {
                 if (annotation.labels.length === 0) {
+                    if(!map.hasOwnProperty(UNLABELED)) {
+                        map[UNLABELED] = [];
+                    }
                     map[UNLABELED].push(annotation);
                 } else {
                     annotation.labels.forEach(function (label) {

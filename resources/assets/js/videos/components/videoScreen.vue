@@ -668,23 +668,9 @@ export default {
             return feature.get('annotation');
         },
         async emitLabelbotImage(feature) {
-            // TODO Uncomment once manual labels are deactivated for labelbot in videos
-            /*if(!this.labelbotIsActive) {
-                return;
-            }*/
-           const points = this.getPointsFromGeometry(feature.getGeometry());
-           let labelbotImage = null;
-           
-           try {
-                labelbotImage = await this.createLabelbotImage(points);
-            } 
-            catch(error) {
-                // TODO Removing doesn't work this way
-                this.annotationSource.removeFeature(feature);
-                Messages.danger(error.message);
-                return;
-            }
-            this.$emit("labelbot-image", labelbotImage);
+            const points = this.getPointsFromGeometry(feature.getGeometry());
+
+            this.$emit('labelbot-image', this.createLabelbotImage(points));
         },
         handleFeatureSelect(e) {
             let selected = this.selectInteraction.getFeatures()
