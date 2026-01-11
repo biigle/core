@@ -146,80 +146,51 @@ export default {
 
             return this.getScaledImageSelection(this.image.source, x, y, width, height);
         },
-        async createLabelbotImageFromTiledImage(points) {
+        createLabelbotImageFromLayer(points, { width, height, layer }) {
             // Coordinates in image coordinates
-            let [x, y, width, height] = this.getBoundingBox(this.image.width, this.image.height, points);
+            let [x, y, w, h] = this.getBoundingBox(width, height, points);
 
             // Image coordinates of the top left and bottom right corner shown in the map
             let [topLeftX, topLeftY] = this.map.getCoordinateFromPixel([0, 0]);
-            topLeftX = clamp(topLeftX, 0, this.image.width);
-            topLeftY = this.image.height - clamp(topLeftY, 0, this.image.height);
+            topLeftX = clamp(topLeftX, 0, width);
+            topLeftY = height - clamp(topLeftY, 0, height);
 
             let bottomRightX = this.map.getCoordinateFromPixel(this.map.getSize())[0];
-            bottomRightX = clamp(bottomRightX, 0, this.image.width);
-            
+            bottomRightX = clamp(bottomRightX, 0, width);
+
             const visibleImagePartWidth = bottomRightX - topLeftX;
 
-            const promise = new Promise((resolve, reject) => {
-                this.tiledImageLayer.once('postrender', event => {
+            return new Promise(resolve => {
+                layer.once('postrender', event => {
                     const mapScreenshot = trimCanvas(event.context.canvas);
                     const scale = mapScreenshot.width / visibleImagePartWidth;
 
                     // Coordinates in screenshot coordinates
-                    [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
+                    [x, y, w, h] = [(x - topLeftX) * scale, (y - topLeftY) * scale, w * scale, h * scale];
 
-                    try {
-                        resolve(this.getScaledImageSelection(mapScreenshot, x, y, width, height));
-                    } catch(error) {
-                        reject(error);
-                    }
+                    resolve(this.getScaledImageSelection(mapScreenshot, x, y, w, h));
                 });
+
+                this.map.render();
             });
-
-            this.map.render();
-            return promise;
-        },
-        async createLabelbotImageFromVideo(points) {
-            // Coordinates in image coordinates
-            let [x, y, width, height] = this.getBoundingBox(this.video.videoWidth, this.video.videoHeight, points);
-            
-            let [topLeftX, topLeftY] = this.map.getCoordinateFromPixel([0, 0]);
-            topLeftX = clamp(topLeftX, 0, this.video.videoWidth);
-            topLeftY = this.video.videoHeight - clamp(topLeftY, 0, this.video.videoHeight);
-            
-            let bottomRightX = this.map.getCoordinateFromPixel(this.map.getSize())[0];
-            bottomRightX = clamp(bottomRightX, 0, this.video.videoWidth);
-            
-            const visibleImagePartWidth = bottomRightX - topLeftX;
-            
-            const promise = new Promise((resolve, reject) => {
-                this.videoLayer.once('postrender', event => {
-                    const mapScreenshot = trimCanvas(event.context.canvas);
-                    const scale = mapScreenshot.width / visibleImagePartWidth;
-
-                    // Coordinates in screenshot coordinates
-                    [x, y, width, height] = [(x - topLeftX) * scale, (y - topLeftY) * scale, width * scale, height * scale];
-
-                    try {
-                        resolve(this.getScaledImageSelection(mapScreenshot, x, y, width, height));
-                    } catch(error) {
-                        reject(error);
-                    }
-                });
-            });
-            
-            this.map.render();
-            return promise;
         },
         async createLabelbotImage(points) {
             if (this.video) {
-                return await this.createLabelbotImageFromVideo(points);
+                return await this.createLabelbotImageFromLayer(points, {
+                    width: this.video.videoWidth,
+                    height: this.video.videoHeight,
+                    layer: this.videoLayer
+                });
             }
             
             if (!this.image.tiled) {
                 return this.createLabelbotImageFromRegularImage(points);
             } else { 
-                return await this.createLabelbotImageFromTiledImage(points);
+                return await this.createLabelbotImageFromLayer(points, {
+                    width: this.image.width,
+                    height: this.image.height,
+                    layer: this.tiledImageLayer
+                });
             }
         },
     },
