@@ -340,9 +340,9 @@ export default {
             
             if(!this.selectedLabel && this.screenshotPromise) {
                 // TODO Group pending annotations using the dashed info color style
-                // TODO Labelbot needs to be trained with manual label data
                 // TODO Labelbot indicator needs to show it's working
                 // TODO Show labelbot popup
+                // TODO Labelbot needs to be trained with manual label data
                 return this.screenshotPromise.then(screenshot => {
                     return this.generateFeatureVector(screenshot);
                 }).then(featureVector => {

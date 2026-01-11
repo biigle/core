@@ -67,9 +67,14 @@ export default {
             const g = this.laneCache[i];
             lane.forEach((a) => this.drawAnnotation(a, g));
         },
+        keyFor(annotation) {
+            return annotation.id? annotation.id : annotation.randomId;
+        },
         drawAnnotation(annotation, group) {
-            if (this.annotationCache[annotation.id]) {
-                this.annotationCache[annotation.id].addTo(group);
+            const key = this.keyFor(annotation);
+
+            if (this.annotationCache[key]) {
+                this.annotationCache[key].addTo(group);
             } else {
                 const a = new SvgAnnotation({
                     annotation: annotation,
@@ -80,7 +85,7 @@ export default {
                     onDeselect: this.emitDeselect,
                 });
                 a.draw();
-                this.annotationCache[annotation.id] = a;
+                this.annotationCache[key] = a;
             }
         },
     },
@@ -97,7 +102,7 @@ export default {
         lanes() {
             if (this.annotationCount < Object.keys(this.annotationCache).length) {
                 const annotationMap = {};
-                this.lanes.forEach(l => l.forEach(a => annotationMap[a.id] = true));
+                this.lanes.forEach(l => l.forEach(a => annotationMap[this.keyFor(a)] = true));
                 Object.keys(this.annotationCache)
                     .filter(k => !annotationMap[k])
                     .forEach((k) => {

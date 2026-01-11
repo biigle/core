@@ -9,6 +9,7 @@ let SHAPE_CACHE;
 export default class Annotation {
     constructor(args) {
         this.id = args.id;
+        this.randomId = `${Date.now()}${Math.random()}`;
         this._frames = ref(args.frames);
         this._points = args.points;
         this.video_id = args.video_id;
