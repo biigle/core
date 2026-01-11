@@ -146,7 +146,7 @@ export default {
 
             return this.getScaledImageSelection(this.image.source, x, y, width, height);
         },
-        createLabelbotImageFromLayer(points, { width, height, layer }) {
+        async createLabelbotImageFromLayer(points, { width, height, layer }) {
             // Coordinates in image coordinates
             let [x, y, w, h] = this.getBoundingBox(width, height, points);
 
@@ -160,19 +160,25 @@ export default {
 
             const visibleImagePartWidth = bottomRightX - topLeftX;
 
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 layer.once('postrender', event => {
                     const mapScreenshot = trimCanvas(event.context.canvas);
                     const scale = mapScreenshot.width / visibleImagePartWidth;
 
                     // Coordinates in screenshot coordinates
                     [x, y, w, h] = [(x - topLeftX) * scale, (y - topLeftY) * scale, w * scale, h * scale];
-
-                    resolve(this.getScaledImageSelection(mapScreenshot, x, y, w, h));
+                    
+                    try {
+                        resolve(this.getScaledImageSelection(mapScreenshot, x, y, w, h));
+                    } catch(err) {
+                        reject(err);
+                    }
                 });
 
                 this.map.render();
-            });
+            })
+                .then(screenshot => ({success: true, screenshot: screenshot}))
+                .catch(error => ({success: false, error: error}));
         },
         async createLabelbotImage(points) {
             if (this.video) {

@@ -5,6 +5,7 @@ import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
 import Labelbot from '@/annotations/mixins/labelbot.vue';
+import { LABELBOT_STATES } from '@/annotations/mixins/labelbot.vue';
 import LabelsTab from '@/annotations/components/labelsTab.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
@@ -338,17 +339,39 @@ export default {
 
             delete annotation.shape;
             
-            if(!this.selectedLabel && this.screenshotPromise) {
-                // TODO Group pending annotations using the dashed info color style
-                // TODO Labelbot indicator needs to show it's working
+            if (!this.selectedLabel && this.screenshotPromise) {
                 // TODO Show labelbot popup
                 // TODO Labelbot needs to be trained with manual label data
-                return this.screenshotPromise.then(screenshot => {
-                    return this.generateFeatureVector(screenshot);
-                }).then(featureVector => {
-                    annotation.feature_vector = featureVector;
-                    return this.saveVideoAnnotation(annotation, tmpAnnotation);
-                });
+                // TODO LabelbotRequestsInFlight necessary? The API checks as well?
+                // TODO Reject if any annotation is outside of image and not just the first?
+                if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
+                    Messages.danger('LabelBOT is not finished initializing.');
+                    this.removeAnnotation(tmpAnnotation);
+                    return Promise.resolve(); 
+                }
+
+                this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
+
+                return this.screenshotPromise
+                    .then(result => {
+                        if(result.success) {
+                            return this.generateFeatureVector(result.screenshot);
+                        } else {
+                            throw result.error;
+                        }
+                    })
+                    .then(featureVector => {
+                        annotation.feature_vector = featureVector;
+                        return this.saveVideoAnnotation(annotation, tmpAnnotation);
+                    })
+                    .catch(err => {
+                        Messages.danger(err?.body?.message ?? err?.message ?? 'LabelBOT failed.');
+                        this.removeAnnotation(tmpAnnotation);
+                    })
+                    .finally(() => {
+                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                        this.screenshotPromise = null;
+                    })
             }
             
             return this.saveVideoAnnotation(annotation, tmpAnnotation);
@@ -365,10 +388,7 @@ export default {
                     this.disableJobTracking = res.status === 429;
                 })
                 .finally(() => {
-                    let index = this.annotations.indexOf(tmpAnnotation);
-                    if (index !== -1) {
-                        this.annotations.splice(index, 1);
-                    }
+                    this.removeAnnotation(tmpAnnotation);
                 });
         },
         trackAnnotation(pendingAnnotation) {
@@ -855,7 +875,9 @@ export default {
         getFeatureVectorFromImage(screenshotPromise) {
             // We use a promise to wait for the screenshot so that the user can't finish creating the annotation 
             // before the screenshot was taken 
-            this.screenshotPromise = screenshotPromise;
+            if(!this.screenshotPromise) {
+                this.screenshotPromise = screenshotPromise;
+            }
         }
     },
     watch: {
@@ -941,7 +963,7 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
-        this.initLabelbotWorker();
+        // this.initLabelbotWorker();
 
         // See: https://github.com/biigle/core/issues/391
         /*if (navigator.userAgent.toLowerCase().includes('firefox')) {
