@@ -22,4 +22,3 @@ scikit-image
 git+https://github.com/facebookresearch/segment-anything.git
 # Included directly in the Dockerfile.
 #xformers==0.0.13
-git+https://github.com/Gy920/segment-anything-2-real-time

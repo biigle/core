@@ -26,14 +26,30 @@ RUN apt-get update \
         build-essential \
         git \
         libvips \
-    && pip3 install --no-cache-dir numpy==2.1.* \
+        wget \
+    && wget -qO /tmp/cuda-keyring.deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb \
+    && dpkg -i /tmp/cuda-keyring.deb \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        cuda-nvcc-11-8 \
+        libcusparse-dev-11-8 \
+        libcublas-dev-11-8 \
+        libcusolver-dev-11-8 \
+    && export CUDA_HOME=/usr/local/cuda \
+    && export TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6;8.9" \
     && pip3 install --no-cache-dir -r /tmp/requirements.txt \
+    && pip3 install --no-cache-dir --no-build-isolation git+https://github.com/Gy920/segment-anything-2-real-time \
     # Use --no-dependencies so torch is not installed again.
     # Uncomment this if you have an actual GPU.
     # && pip3 install --no-dependencies --index-url https://download.pytorch.org/whl/cu118 xformers==0.0.23 \
     && apt-get purge -y \
         build-essential \
         git \
+        wget \
+        cuda-nvcc-11-8 \
+        libcusparse-dev-11-8 \
+        libcublas-dev-11-8 \
+        libcusolver-dev-11-8 \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -r /var/lib/apt/lists/* \
