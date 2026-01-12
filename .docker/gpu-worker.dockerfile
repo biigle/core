@@ -26,6 +26,7 @@ RUN apt-get update \
         build-essential \
         git \
         libvips \
+    && pip3 install --no-cache-dir numpy==2.1.* \
     && pip3 install --no-cache-dir -r /tmp/requirements.txt \
     # Use --no-dependencies so torch is not installed again.
     # Uncomment this if you have an actual GPU.
