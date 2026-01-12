@@ -407,6 +407,7 @@ export default {
         'initMap',
         'cancel-auto-play',
         'labelbot-image',
+        'swap'
     ],
     mixins: [
         VideoPlayback,

@@ -340,47 +340,53 @@ export default {
 
             delete annotation.shape;
             
-            if (!this.selectedLabel && this.screenshotPromise) {
-                // TODO Show labelbot popup
-                // TODO Labelbot needs to be trained with manual label data
-                // TODO LabelbotRequestsInFlight necessary? The API checks as well?
-                // TODO Reject if any annotation is outside of image and not just the first?
-                if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
-                    Messages.danger('LabelBOT is not finished initializing.');
-                    this.removeAnnotation(tmpAnnotation);
-                    return Promise.resolve(); 
-                }
-
-                this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-
-                return this.screenshotPromise
-                    .then(result => {
-                        if(result.success) {
-                            return this.generateFeatureVector(result.screenshot);
-                        } else {
-                            throw result.error;
-                        }
-                    })
-                    .then(featureVector => {
-                        annotation.feature_vector = featureVector;
-                        return this.saveVideoAnnotation(annotation, tmpAnnotation);
-                    })
-                    .then(annotation => {
-                        this.showLabelbotPopup(annotation);
-                    })
-                    .catch(err => {
-                        Messages.danger(err?.body?.message ?? err?.message ?? 'LabelBOT failed.');
-                        this.removeAnnotation(tmpAnnotation);
-                    })
-                    .finally(() => {
-                        this.updateLabelbotState(LABELBOT_STATES.READY);
-                        this.screenshotPromise = null;
-                    })
-            }
-            
             return this.saveVideoAnnotation(annotation, tmpAnnotation);
         },
         saveVideoAnnotation(annotation, tmpAnnotation) {
+            if (this.labelbotIsActive) {
+                return this.saveLabelbotVideoAnnotation(annotation, tmpAnnotation);
+            }
+            return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
+        },
+        saveLabelbotVideoAnnotation(annotation, tmpAnnotation) {
+            // TODO Labelbot needs to be trained with manual label data
+            // TODO LabelbotRequestsInFlight necessary? The API checks as well?
+            // TODO Reject if any annotation is outside of image and not just the first?
+            // TODO Don't show popup if the user scrolled to the next video
+            // TODO Don't allow swapping labels if the popup is there / close the popup if it is clicked?
+            if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
+                Messages.danger('LabelBOT is not finished initializing.');
+                this.removeAnnotation(tmpAnnotation);
+                return Promise.resolve();
+            }
+
+            this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
+
+            const screenshotPromise = this.screenshotPromise;
+            this.screenshotPromise = null;
+
+            return screenshotPromise
+                .then(result => {
+                    if(result.success) {
+                        return this.generateFeatureVector(result.screenshot);
+                    } else {
+                        throw result.error;
+                    }
+                })
+                .then(featureVector => {
+                    annotation.feature_vector = featureVector;
+                    return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
+                })
+                .then(this.showLabelbotPopup)
+                .catch(err => {
+                    Messages.danger(err?.body?.message ?? err?.message ?? 'LabelBOT failed.');
+                    this.removeAnnotation(tmpAnnotation);
+                })
+                .finally(() => {
+                    this.updateLabelbotState(LABELBOT_STATES.READY);
+                });
+        },
+        saveVideoAnnotationDirectly(annotation, tmpAnnotation) {
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
                 .then((res) => {
                     if (tmpAnnotation.track) {
@@ -882,6 +888,16 @@ export default {
             if(!this.screenshotPromise) {
                 this.screenshotPromise = screenshotPromise;
             }
+        },
+        handleSwapLabel(annotation, label) {
+            if(annotation.labels.length != 1) {
+                return; // This method should only be called via the labelbot popup where the annotation has only one label
+            }
+            const oldLabel = annotation.labels[0];
+
+            annotation.attachAnnotationLabel(label).then(() => {
+                annotation.detachAnnotationLabel(oldLabel);
+            });
         }
     },
     watch: {

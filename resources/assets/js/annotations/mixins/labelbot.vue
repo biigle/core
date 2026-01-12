@@ -142,7 +142,6 @@ export default {
                     Keyboard.setActiveSet('default');
                 }
             }
-
         },
         closeAllLabelbotPopups() {
             this.labelbotOverlays = [];
