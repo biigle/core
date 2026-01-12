@@ -17,6 +17,7 @@ export default class Annotation {
         this.created_at = args.created_at;
         this.updated_at = args.updated_at;
         this._labels = ref(args.labels);
+        this._labelBOTLabels = ref(args.labelBOTLabels);
 
         this._pending = ref(args.pending || false);
         this._selected = ref(false);
@@ -62,6 +63,10 @@ export default class Annotation {
 
     set labels(value) {
         this._labels.value = value;
+    }
+    
+    get labelBOTLabels() {
+        return this._labelBOTLabels.value;
     }
 
     get color() {

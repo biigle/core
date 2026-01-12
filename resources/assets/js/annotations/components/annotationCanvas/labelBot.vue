@@ -176,27 +176,31 @@ export default {
                 });
 
                 this.map.render();
-            })
-                .then(screenshot => ({success: true, screenshot: screenshot}))
-                .catch(error => ({success: false, error: error}));
+            });
         },
         async createLabelbotImage(points) {
-            if (this.video) {
-                return await this.createLabelbotImageFromLayer(points, {
-                    width: this.video.videoWidth,
-                    height: this.video.videoHeight,
-                    layer: this.videoLayer
-                });
-            }
+            let screenshot = null;
             
-            if (!this.image.tiled) {
-                return this.createLabelbotImageFromRegularImage(points);
-            } else { 
-                return await this.createLabelbotImageFromLayer(points, {
-                    width: this.image.width,
-                    height: this.image.height,
-                    layer: this.tiledImageLayer
-                });
+            try {
+                if (this.video) {
+                    screenshot = await this.createLabelbotImageFromLayer(points, {
+                        width: this.video.videoWidth,
+                        height: this.video.videoHeight,
+                        layer: this.videoLayer
+                    });
+                } else if (!this.image.tiled) {
+                    screenshot = this.createLabelbotImageFromRegularImage(points);
+                } else {
+                    screenshot = await this.createLabelbotImageFromLayer(points, {
+                        width: this.image.width,
+                        height: this.image.height,
+                        layer: this.tiledImageLayer
+                    });
+                }
+
+                return {success: true, screenshot: screenshot};
+            } catch(error) {
+                return {success: false, error: error};
             }
         },
     },

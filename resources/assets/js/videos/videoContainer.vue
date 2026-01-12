@@ -5,7 +5,6 @@ import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
 import Labelbot from '@/annotations/mixins/labelbot.vue';
-import { LABELBOT_STATES } from '@/annotations/mixins/labelbot.vue';
 import LabelsTab from '@/annotations/components/labelsTab.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
@@ -23,6 +22,8 @@ import {handleErrorResponse} from '@/core/messages/store.js';
 import {markRaw} from 'vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
 import {AUTO_PAUSE_INDEFINITE} from './components/settingsTab.vue';
+
+import { LABELBOT_STATES } from '@/annotations/mixins/labelbot.vue';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
@@ -363,6 +364,9 @@ export default {
                     .then(featureVector => {
                         annotation.feature_vector = featureVector;
                         return this.saveVideoAnnotation(annotation, tmpAnnotation);
+                    })
+                    .then(annotation => {
+                        this.showLabelbotPopup(annotation);
                     })
                     .catch(err => {
                         Messages.danger(err?.body?.message ?? err?.message ?? 'LabelBOT failed.');
@@ -963,7 +967,7 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
-        // this.initLabelbotWorker();
+        this.initLabelbotWorker();
 
         // See: https://github.com/biigle/core/issues/391
         /*if (navigator.userAgent.toLowerCase().includes('firefox')) {

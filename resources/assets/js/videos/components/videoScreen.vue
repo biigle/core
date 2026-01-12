@@ -352,6 +352,17 @@
                 ></label-indicator>
             <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
         </div>
+        <labelbot-popup
+            v-for="annotation in labelbotOverlays"
+            :key="annotation.id"
+            :focused-popup-key="focusedPopupKey"
+            :annotation="annotation"
+            :timeout="labelbotTimeout"
+            @update="updateLabelbotLabel"
+            @close="closeLabelbotPopup"
+            @delete="handleDeleteLabelbotAnnotation"
+            @focus="handleLabelbotPopupFocused"
+        ></labelbot-popup>
     </div>
 </template>
 
@@ -364,8 +375,8 @@ import Indicators from './videoScreen/indicators.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelIndicator from '@/annotations/components/labelIndicator.vue';
 import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
+import LabelbotPopup from '@/annotations/components/labelbotPopup.vue';
 import Map from '@biigle/ol/Map';
-import Messages from '@/core/messages/store.js';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
@@ -395,7 +406,7 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
-        'labelbot-image'
+        'labelbot-image',
     ],
     mixins: [
         VideoPlayback,
@@ -412,6 +423,7 @@ export default {
         minimap: Minimap,
         labelIndicator: LabelIndicator,
         timerButton: TimerButton,
+        labelbotPopup: LabelbotPopup
     },
     props: {
         annotations: {
@@ -536,6 +548,18 @@ export default {
         autoPauseTimeout: {
             type: Number,
             default: 0,
+        },
+        labelbotOverlays: { 
+            type: Array, 
+            default: () => [] 
+        },
+        focusedPopupKey: { 
+            type: Number, 
+            default: -1 
+        },
+        labelbotTimeout: { 
+            type: Number, 
+            default: 1 
         },
     },
     data() {
@@ -747,7 +771,7 @@ export default {
         },
         emitCancelAutoPlay() {
             this.$emit('cancel-auto-play');
-        },
+        }
     },
     watch: {
         selectedAnnotations: {

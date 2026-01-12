@@ -2,8 +2,6 @@
 
 namespace Biigle\Services\LabelBot;
 
-use Biigle\Http\Requests\StoreImageAnnotation;
-use Biigle\Image;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
 use Biigle\Project;
