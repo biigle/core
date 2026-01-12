@@ -141,14 +141,15 @@ export default {
             type: Number,
             default: undefined,
         },
-        projectIds: {
+        // Sorting is disabled if IDs are not provided.
+        sortingProjectIds: {
             type: Array,
             default: undefined,
-        }
+        },
     },
     computed: {
         customOrderStorageKeys() {
-            return this.projectIds.map(id => `biigle.projects.${id}.label-trees.custom-order`)
+            return this.sortingProjectIds.map(id => `biigle.projects.${id}.label-trees.custom-order`)
         },
         sortedTrees() {
             return this.customOrder.map(id => this.trees.find(tree => id === tree.id));
@@ -314,7 +315,7 @@ export default {
     created() {
         this.events = mitt();
 
-        this.sortable = this.projectIds !== undefined;
+        this.sortable = this.sortingProjectIds !== undefined;
 
         if (this.sortable) {
             //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,

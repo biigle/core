@@ -51,7 +51,7 @@
             </div>
         @endif
         <div class="labels-tab__trees">
-            <label-trees ref="labelTrees" :trees="labelTrees" :project-ids="projectIds" :show-favourites="true" :focus-input="focusInputFindlabel" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
+            <label-trees ref="labelTrees" :trees="labelTrees" :sorting-project-ids="projectIds" :show-favourites="true" :focus-input="focusInputFindlabel" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </div>
         <div class="labels-tab__plugins">
             <example-annotations
