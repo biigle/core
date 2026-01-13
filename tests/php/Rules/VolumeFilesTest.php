@@ -9,6 +9,30 @@ use TestCase;
 
 class VolumeFilesTest extends TestCase
 {
+    public $traversalAttempts = [
+        '../somefile.png',
+        '../../somefile.png',
+        '..//somefile.png',
+        '..//../somefile.png',
+        '..//..//somefile.png',
+        'somedir/../somefile.png',
+        'somedir/somefile.png/..',
+        'somedir/somefile.png/../someotherfile.png',
+        'somedir/somefile.png/../../someotherfile.png',
+        'somedir/somefile.png//..//someotherfile.png',
+
+        //URL encoded traversals, null bytes etc.
+        '%2e%2e%2fsomefile.png',
+        '%2e%2e%2f%2e%2e%2fsomefile.png',
+        '..%2f..%2f..%5csomefile.png',
+        '%2e%2e%2f%2e%2e%2fsomefile%00.png',
+    ];
+    public $validPathAttempts = [
+        'somefile.png',
+        'somefile..png',
+        'somefile..someothername/name.png',
+    ];
+
     public function testImageFormatOk()
     {
         $validator = new VolumeFilesStub('', MediaType::imageId());
@@ -92,6 +116,18 @@ class VolumeFilesTest extends TestCase
     {
         $validator = new VolumeFilesStub('', MediaType::imageId());
         $this->assertTrue($validator->passes(null, ["my image.jpg"]));
+    }
+
+    public function testRouteTraversalsAreBlocked()
+    {
+        $validator = new VolumeFilesStub('', MediaType::imageId());
+        foreach ($this->traversalAttempts as $attempt) {
+            $this->assertFalse($validator->passes(null, [$attempt]));
+            $this->assertStringContainsString('Filenames with path traversal instructions are not allowed.', $validator->message());
+        }
+        foreach ($this->validPathAttempts as $attempt) {
+            $this->assertTrue($validator->passes(null, [$attempt]));
+        }
     }
 }
 

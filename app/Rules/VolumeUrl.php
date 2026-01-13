@@ -84,6 +84,11 @@ class VolumeUrl implements Rule
             return false;
         }
 
+        if ($this::pathHasDirectoryTraversal($value)) {
+            $this->message = 'Volume URLs with path traversal instructions are not allowed.';
+            return false;
+        }
+
         try {
             $response = $client->head($value);
         } catch (ServerException $e) {
@@ -124,14 +129,22 @@ class VolumeUrl implements Rule
             return false;
         }
 
-        if (Gate::denies('use-disk', $url[0])) {
+        $diskName = $url[0];
+        $path = $url[1];
+
+        if ($this::pathHasDirectoryTraversal($path)) {
+            $this->message = "Volume URLs with path traversal instructions are not allowed.";
+            return false;
+        }
+
+        if (Gate::denies('use-disk', $diskName)) {
             $this->message = "Not authorized to access this storage disk.";
 
             return false;
         }
 
         try {
-            $disk = Storage::disk($url[0]);
+            $disk = Storage::disk($diskName);
         } catch (InvalidArgumentException $e) {
             $this->message = $e->getMessage();
 
@@ -140,7 +153,7 @@ class VolumeUrl implements Rule
 
         // Access the adapter directly to check for contents without loading the full
         // file/directory listing.
-        $iterable = $disk->getAdapter()->listContents($url[1], false);
+        $iterable = $disk->getAdapter()->listContents($path, false);
         $hasContent = false;
         foreach ($iterable as $item) {
             $hasContent = true;
@@ -148,7 +161,7 @@ class VolumeUrl implements Rule
         }
 
         if (!$hasContent) {
-            $this->message = "Unable to access '{$url[1]}'. Does it exist and you have access permissions?";
+            $this->message = "Unable to access '{$path}'. Does it exist and you have access permissions?";
 
             return false;
         }
@@ -171,6 +184,21 @@ class VolumeUrl implements Rule
             }
         }
 
+        return false;
+    }
+
+    /**
+     * Determine if the given path has a directory traversal
+     *
+     * @param string $path
+     *
+     * @return boolean
+     */
+    public static function pathHasDirectoryTraversal($path)
+    {
+        if (preg_match('/\.\.(\/|$)/', urldecode($path)) !== 0) {
+            return true;
+        }
         return false;
     }
 }
