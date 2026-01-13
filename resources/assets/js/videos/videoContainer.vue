@@ -350,10 +350,11 @@ export default {
         },
         saveLabelbotVideoAnnotation(annotation, tmpAnnotation) {
             // TODO Labelbot needs to be trained with manual label data
-            // TODO LabelbotRequestsInFlight necessary? The API checks as well?
-            // TODO Reject if any annotation is outside of image and not just the first?
+            // TODO Use LabelbotRequestsInFlight for videos
             // TODO Don't show popup if the user scrolled to the next video
             // TODO Don't allow swapping labels if the popup is there / close the popup if it is clicked?
+            // TODO Where to put the labelbot popup when annotation is made and video is played again before labelbot is done
+            // TODO track labels to the top for labelbot annotations
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
                 Messages.danger('LabelBOT is not finished initializing.');
                 this.removeAnnotation(tmpAnnotation);
@@ -890,6 +891,7 @@ export default {
             }
         },
         handleSwapLabel(annotation, label) {
+            // TODO Re-use existing swap label methods
             if(annotation.labels.length != 1) {
                 return; // This method should only be called via the labelbot popup where the annotation has only one label
             }

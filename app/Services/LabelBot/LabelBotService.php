@@ -149,6 +149,7 @@ class LabelBotService
         $k = config('labelbot.K');
         DB::statement("SET hnsw.ef_search = $k");
 
+        // TODO Query VideoAnnotationLabelFeatureVector
         $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
