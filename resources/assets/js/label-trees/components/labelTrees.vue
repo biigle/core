@@ -336,7 +336,7 @@ export default {
             // project.
             customOrderSet.forEach((id) => {
                 if (!this.treeIds.includes(id)) {
-                    customOrder.delete(id);
+                    customOrderSet.delete(id);
                 }
             });
         }
