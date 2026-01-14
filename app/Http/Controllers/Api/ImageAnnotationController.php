@@ -6,7 +6,6 @@ use Biigle\Http\Requests\StoreImageAnnotation;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
-use Biigle\Label;
 use Biigle\Services\LabelBot\LabelBotService;
 use DB;
 use Exception;

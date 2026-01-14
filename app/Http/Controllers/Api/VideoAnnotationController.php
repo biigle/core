@@ -5,7 +5,6 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StoreVideoAnnotation;
 use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Biigle\Jobs\TrackObject;
-use Biigle\Label;
 use Biigle\Services\LabelBot\LabelBotService;
 use Biigle\Video;
 use Biigle\VideoAnnotation;

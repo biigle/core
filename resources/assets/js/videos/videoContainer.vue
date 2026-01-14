@@ -342,49 +342,31 @@ export default {
             
             return this.saveVideoAnnotation(annotation, tmpAnnotation);
         },
-        saveVideoAnnotation(annotation, tmpAnnotation) {
-            if (this.labelbotIsActive) {
-                return this.saveLabelbotVideoAnnotation(annotation, tmpAnnotation);
-            }
-            return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
-        },
-        saveLabelbotVideoAnnotation(annotation, tmpAnnotation) {
-            // TODO Use LabelbotRequestsInFlight for videos
-            // TODO Don't show popup if the user scrolled to the next video
-            // TODO Don't allow swapping labels if the popup is there / close the popup if it is clicked?
-            // TODO Where to put the labelbot popup when annotation is made and video is played again before labelbot is done
-            // TODO track labels to the top for labelbot annotations
-            if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
-                Messages.danger('LabelBOT is not finished initializing.');
-                this.removeAnnotation(tmpAnnotation);
-                return Promise.resolve();
-            }
-
-            this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-
+        takeScreenshotPromise() {
             const screenshotPromise = this.screenshotPromise;
             this.screenshotPromise = null;
-
-            return screenshotPromise
-                .then(result => {
-                    if(result.success) {
-                        return this.generateFeatureVector(result.screenshot);
-                    } else {
-                        throw result.error;
-                    }
-                })
-                .then(featureVector => {
-                    annotation.feature_vector = featureVector;
-                    return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
-                })
-                .then(this.showLabelbotPopup)
-                .catch(err => {
-                    Messages.danger(err?.body?.message ?? err?.message ?? 'LabelBOT failed.');
-                    this.removeAnnotation(tmpAnnotation);
-                })
-                .finally(() => {
-                    this.updateLabelbotState(LABELBOT_STATES.READY);
-                });
+            return screenshotPromise;
+        },
+        async saveVideoAnnotation(annotation, tmpAnnotation) {
+            if(!this.labelbotIsActive) {
+                return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
+            }
+            
+            const errorHandler = (error) => {
+                Messages.danger(error?.body?.message ?? error?.message ?? 'LabelBOT failed.');
+                this.removeAnnotation(tmpAnnotation);
+            }
+            
+            const result = await this.takeScreenshotPromise();
+            if(result.success) {
+                annotation.labelbotImage = result.screenshot;
+            } else {
+                errorHandler(result.error);
+                return;
+            }
+            
+            return this.saveLabelbotAnnotation(annotation, tmpAnnotation)
+                .catch(errorHandler);
         },
         saveVideoAnnotationDirectly(annotation, tmpAnnotation) {
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
@@ -396,6 +378,7 @@ export default {
                 }, (res) => {
                     handleErrorResponse(res);
                     this.disableJobTracking = res.status === 429;
+                    throw res;
                 })
                 .finally(() => {
                     this.removeAnnotation(tmpAnnotation);
@@ -882,12 +865,10 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
-        getFeatureVectorFromImage(screenshotPromise) {
+        setScreenshotPromise(screenshotPromise) {
             // We use a promise to wait for the screenshot so that the user can't finish creating the annotation 
             // before the screenshot was taken 
-            if(!this.screenshotPromise) {
-                this.screenshotPromise = screenshotPromise;
-            }
+            this.screenshotPromise = screenshotPromise;
         },
         handleSwapLabel(annotation, label) {
             // TODO Re-use existing swap label methods
