@@ -317,30 +317,35 @@ export default {
 
         this.sortable = this.sortingProjectIds !== undefined;
 
+        // Use a set so duplicate inserts are handled automatically.
+        let customOrderSet = new Set();
+
         if (this.sortable) {
-            //If multiple label trees appear in multiple projects, and a volume is attached to multiple projects,
-            //the projects with the lower ID will be given priority. The user can just sort the new view.
-            //This sorting will affect all the projects where the volume belongs to.
-            //TODO: in the future, if a better way to organise the access of project information is found, find a more elegant solution
+            // If multiple label trees appear in multiple projects, and a volume is
+            // attached to multiple projects, the projects with the lower ID will be
+            // given priority. The user can just sort the new view. This sorting will
+            // affect all the projects where the volume belongs to.
             for (let storageKey of this.customOrderStorageKeys) {
-                let partialCustomOrder = JSON.parse(
-                    localStorage.getItem(storageKey)
-                );
+                let partialCustomOrder = JSON.parse(localStorage.getItem(storageKey));
                 if (partialCustomOrder) {
-                    //Filter out deleted label trees
-                    partialCustomOrder = partialCustomOrder.filter(
-                        (el) =>
-                            this.treeIds.includes(el) &&
-                            !this.customOrder.includes(el)
-                    );
-                    this.customOrder.push(...partialCustomOrder);
+                    partialCustomOrder.forEach(t => customOrderSet.add(t));
                 }
             }
+
+            // Remove label trees that were stored but are no longer attached to the
+            // project.
+            customOrderSet.forEach((id) => {
+                if (!this.treeIds.includes(id)) {
+                    customOrderSet.delete(id);
+                }
+            });
         }
 
-        if (this.customOrder.length == 0) {
-            this.customOrder = this.treeIds;
-        }
+        // Add label trees that might have been added after the custom order was
+        // stored to local storage. Adds all IDs if no order was stored at all.
+        this.treeIds.forEach(t => customOrderSet.add(t));
+
+        this.customOrder = Array.from(customOrderSet);
     },
     mounted() {
         if (this.showFavourites) {
