@@ -349,7 +349,6 @@ export default {
             return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
         },
         saveLabelbotVideoAnnotation(annotation, tmpAnnotation) {
-            // TODO Labelbot needs to be trained with manual label data
             // TODO Use LabelbotRequestsInFlight for videos
             // TODO Don't show popup if the user scrolled to the next video
             // TODO Don't allow swapping labels if the popup is there / close the popup if it is clicked?

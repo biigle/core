@@ -2,12 +2,16 @@
 
 namespace Biigle\Services\LabelBot;
 
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabelFeatureVector;
+use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
 use Biigle\Project;
 use Biigle\Role;
 use Cache;
 use DB;
+use InvalidArgumentException;
 use Pgvector\Laravel\Vector;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -31,10 +35,11 @@ class LabelBotService
 
         // Convert the feature vector into a Vector object for compatibility with the query.
         $featureVector = new Vector($request->input('feature_vector'));
+        $model = $this->getFeatureVectorModelFor($annotation);
 
         Cache::increment($cacheKey);
         try {
-            $topNLabels = $this->performVectorSearch($featureVector, $treeIds, $topNLabels);
+            $topNLabels = $this->performVectorSearch($featureVector, $treeIds, $model);
         } finally {
             $count = Cache::decrement($cacheKey);
             if ($count <= 0) {
@@ -117,14 +122,14 @@ class LabelBotService
      *
      * @return array The array of top N labels that are the closest to the input feature vector.
      */
-    protected function performVectorSearch($featureVector, $trees, $topNLabels)
+    protected function performVectorSearch($featureVector, $trees, $model)
     {
         // Perform ANN search.
-        $topNLabels = $this->performAnnSearch($featureVector, $trees);
+        $topNLabels = $this->performAnnSearch($featureVector, $trees, $model);
 
         // Perform ANN search with iterative index scan + post filtering as a fallback if ANN search returns no results.
         if (empty($topNLabels)) {
-            $topNLabels = $this->performAnnSearchWithIterativeIndexScan($featureVector, $trees);
+            $topNLabels = $this->performAnnSearchWithIterativeIndexScan($featureVector, $trees, $model);
         }
 
         return $topNLabels;
@@ -142,15 +147,14 @@ class LabelBotService
      *
      * @return array The array of label IDs representing the top nearest neighbors.
     */
-    protected function performAnnSearch($featureVector, $trees)
+    protected function performAnnSearch($featureVector, $trees, $model)
     {
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
         $k = config('labelbot.K');
         DB::statement("SET hnsw.ef_search = $k");
 
-        // TODO Query VideoAnnotationLabelFeatureVector
-        $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
+        $subquery = $model::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
             ->limit($k);
@@ -180,7 +184,7 @@ class LabelBotService
      *
      * @return array The array of label IDs representing the top nearest neighbors.
     */
-    protected function performAnnSearchWithIterativeIndexScan($featureVector, $trees)
+    protected function performAnnSearchWithIterativeIndexScan($featureVector, $trees, $model)
     {
 
         // Size of the dynamic candidate list during the search process.
@@ -196,7 +200,7 @@ class LabelBotService
         # We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
         DB::statement("SET hnsw.iterative_scan = relaxed_order");
 
-        $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
+        $subquery = $model::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->whereIn('label_tree_id', $trees) // Filtering in the subquery is required otherwise the iterative scan would not work.
             ->orderBy('distance')
@@ -208,5 +212,15 @@ class LabelBotService
             ->limit(config('labelbot.N'))
             ->pluck('label_id')
             ->toArray();
+    }
+    
+    protected function getFeatureVectorModelFor($annotation) {
+        if($annotation instanceof ImageAnnotation) {
+            return ImageAnnotationLabelFeatureVector::class;
+        } else if($annotation instanceof VideoAnnotation) {
+            return VideoAnnotationLabelFeatureVector::class;
+        } 
+        
+        throw new InvalidArgumentException("Invalid annotation passed to labelbot service");
     }
 }
