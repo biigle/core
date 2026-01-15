@@ -191,8 +191,11 @@ export default {
                     });
                 }
             });
+            
+            const keys = Object.keys(map);
+            this.moveElementToFront(keys, UNLABELED);
 
-            return Object.keys(map).map((labelId) => {
+            return keys.map((labelId) => {
                 return {
                     id: labelId,
                     label: this.labelMap[labelId],
@@ -318,6 +321,15 @@ export default {
             this.scrollTop = 0;
             this.hoverTime = 0;
             this.$refs.scrollStrip.reset();
+        },
+        moveElementToFront(array, element) {
+            const i = array.indexOf(element);
+            if(i > 0) {
+                array.splice(i, 1);
+                array.unshift(element);
+            }
+            
+            return array;
         },
     },
     watch: {

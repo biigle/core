@@ -154,8 +154,7 @@ export default {
         saveLabelbotAnnotation(annotation, tmpAnnotation) {
             // TODO Creating an invalid annotation while labelbot is working doesn't remove the annotation even though removeAnnotation is called
             // this.disableJobTracking = res.status === 429; ??? Why only on 429? What does it mean? Current bug
-            // TODO Where to put the labelbot popup when annotation is made and video is played again before labelbot is done
-            // TODO track labels to the top for labelbot annotations
+            // TODO Forbid playing the video if labelbot is calculating
             const originalId = tmpAnnotation? this.videoId : this.imageId;
 
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
@@ -199,7 +198,7 @@ export default {
                     throw e;
                 })
                 .finally((annotation) => {
-                    this.labelbotRequestsInFlight = Math.max(0, this.labelbotRequestsInFlight - 1);
+                    this.labelbotRequestsInFlight--;
 
                     return annotation;
                 });
