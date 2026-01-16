@@ -292,8 +292,26 @@ export default {
             }
         },
         updatePendingAnnotation(pendingAnnotation) {
-            if (pendingAnnotation) {
-                let data = Object.assign({}, pendingAnnotation, {
+            if (!pendingAnnotation) {
+                this.pendingAnnotation = null;
+                return;
+            }
+
+            // The frames and points arrays are copied for two reasons:
+            // 1: To create raw arrays instead of refs.
+            // 2. To create objects of this window if the pending annotation was sent
+            // from the videoContainerProxy popup window. If objects of the other window
+            // are used, watchers for these properties will not fire when updated.
+            const frames = Array.from(pendingAnnotation.frames);
+            const points = Array.from(pendingAnnotation.points);
+
+            if (this.pendingAnnotation) {
+                this.pendingAnnotation.frames = frames;
+                this.pendingAnnotation.points = points;
+            } else {
+                let data = {
+                    points: points,
+                    frames: frames,
                     shape_id: this.shapes[pendingAnnotation.shape],
                     labels: [{
                         label_id: this.selectedLabel.id,
@@ -301,11 +319,9 @@ export default {
                         user: this.user,
                     }],
                     pending: true,
-                });
+                };
 
                 this.pendingAnnotation = markRaw(new Annotation(data));
-            } else {
-                this.pendingAnnotation = null;
             }
         },
         createAnnotation(pendingAnnotation) {
