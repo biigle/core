@@ -377,8 +377,7 @@ export default {
                     return this.addCreatedAnnotation(res);
                 }, (res) => {
                     handleErrorResponse(res);
-                    // TODO Why only on 429? What does it mean? Current bug: If API returns error, the small loop doesn't
-                    this.disableJobTracking = res.status === 429;
+                    this.disableJobTracking = false;
                     throw res;
                 })
                 .finally(() => {
