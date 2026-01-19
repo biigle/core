@@ -32,7 +32,7 @@ export default {
     computed: {
         fileCount() {
             let typeForm = this.rule.sequence.length === 1 ? `${this.type}` : `${this.type}s`;
-            return `(${this.rule.sequence.length} ${typeForm})`;
+            return `(${this.rule.matchedFilesCount} ${typeForm})`;
         },
         dataName() {
             if (this.rule.data) {
@@ -40,7 +40,7 @@ export default {
                     return this.rule.data.name;
                 }
             }
-            
+
             return '';
         },
     },
