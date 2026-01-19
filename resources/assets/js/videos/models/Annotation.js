@@ -78,7 +78,7 @@ export default class Annotation {
 
     get color() {
         // If no color, return the info color as a default
-        if(this.labels && this.labels.length === 0) {
+        if (this.labels && this.labels.length === 0) {
             return '5bc0de';
         }
         return this.labels?.[0].label.color;

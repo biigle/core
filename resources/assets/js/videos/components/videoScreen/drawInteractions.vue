@@ -221,7 +221,7 @@ export default {
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
-            if(!(lastFrame === undefined || lastFrame < this.video.currentTime)) {
+            if (!(lastFrame === undefined || lastFrame < this.video.currentTime)) {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
                 // to remove it.

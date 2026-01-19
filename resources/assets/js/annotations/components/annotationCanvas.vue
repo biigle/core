@@ -601,7 +601,7 @@ export default {
                 // labelbotImage is computed.
                 try {
                     const result = await this.createLabelbotImage(points);
-                    if(result.success) {
+                    if (result.success) {
                         labelbotImage = result.screenshot;
                     } else {
                         throw result.error;

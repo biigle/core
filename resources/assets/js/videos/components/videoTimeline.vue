@@ -177,7 +177,7 @@ export default {
 
             annotations.forEach(function (annotation) {
                 if (annotation.labels.length === 0) {
-                    if(!map.hasOwnProperty(UNLABELED)) {
+                    if (!map.hasOwnProperty(UNLABELED)) {
                         map[UNLABELED] = [];
                     }
                     map[UNLABELED].push(annotation);
@@ -324,7 +324,7 @@ export default {
         },
         moveElementToFront(array, element) {
             const i = array.indexOf(element);
-            if(i > 0) {
+            if (i > 0) {
                 array.splice(i, 1);
                 array.unshift(element);
             }

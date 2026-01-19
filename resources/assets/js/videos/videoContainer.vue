@@ -295,14 +295,14 @@ export default {
             }
         },
         updatePendingAnnotation(pendingAnnotation) {
-            if(!pendingAnnotation)
+            if (!pendingAnnotation)
             {
                 this.pendingAnnotation = null;
                 return;
             }
             
             let labels = []; 
-            if(this.selectedLabel) {
+            if (this.selectedLabel) {
                 labels = [{
                     label_id: this.selectedLabel.id,
                     label: this.selectedLabel,
@@ -346,7 +346,7 @@ export default {
             return screenshotPromise;
         },
         async saveVideoAnnotation(annotation, tmpAnnotation) {
-            if(!this.labelbotIsActive) {
+            if (!this.labelbotIsActive) {
                 return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
             }
             
@@ -356,7 +356,7 @@ export default {
             }
             
             const result = await this.takeScreenshotPromise();
-            if(result.success) {
+            if (result.success) {
                 annotation.labelbotImage = result.screenshot;
             } else {
                 errorHandler(result.error);
@@ -870,7 +870,7 @@ export default {
         },
         handleSwapLabel(annotation, label) {
             // TODO Re-use existing swap label methods
-            if(annotation.labels.length != 1) {
+            if (annotation.labels.length != 1) {
                 return; // This method should only be called via the labelbot popup where the annotation has only one label
             }
             const oldLabel = annotation.labels[0];

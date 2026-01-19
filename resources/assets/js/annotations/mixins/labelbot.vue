@@ -168,7 +168,7 @@ export default {
                 .then(() => this.generateFeatureVector(annotation.labelbotImage))
                 .then(featureVector => annotation.feature_vector = featureVector)
                 .then(() => {
-                    if(tmpAnnotation) {
+                    if (tmpAnnotation) {
                         return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
                     } else {
                         return AnnotationsStore.create(originalId, annotation);
