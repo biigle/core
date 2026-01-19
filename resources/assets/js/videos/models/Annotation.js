@@ -8,8 +8,8 @@ let SHAPE_CACHE;
 
 export default class Annotation {
     constructor(args) {
-        this.id = args.id;
-        this.randomId = `${Date.now()}${Math.random()}`;
+        this._id = args.id;
+        this._randomId = `${Date.now()}${Math.random()}`;
         this._frames = ref(args.frames);
         this._points = args.points;
         this.video_id = args.video_id;
@@ -23,6 +23,13 @@ export default class Annotation {
         this._selected = ref(false);
         this._revision = ref(1);
         this._tracking = ref(false);
+    }
+    
+    get id() {
+        // TODO This was needed because with labelbot there can be multiple tmpAnnotations without
+        // their own ids which may need to be removed
+        // But it may cause issues if anywhere in the code the random id will accessed and stored, and later the actual id will be accessed instead
+        return this._id ?? this._randomId;
     }
 
     get pending() {

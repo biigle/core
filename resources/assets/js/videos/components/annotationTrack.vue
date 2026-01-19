@@ -68,7 +68,7 @@ export default {
             lane.forEach((a) => this.drawAnnotation(a, g));
         },
         keyFor(annotation) {
-            return annotation.id? annotation.id : annotation.randomId;
+            return annotation.id;
         },
         drawAnnotation(annotation, group) {
             const key = this.keyFor(annotation);
