@@ -48,6 +48,9 @@ export default {
         labelbotIsActive() {
             return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;
         },
+        labelbotIsComputing() {
+            return this.labelbotState === LABELBOT_STATES.COMPUTING;
+        }
     },
     methods: {
         updateLabelbotLabel(event) {

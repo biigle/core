@@ -55,7 +55,7 @@
                     icon="fa-play"
                     title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
                     :disabled="hasError || null"
-                    @click="play"
+                    @click="playVideoIfLabelbotIsNotComputing"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
@@ -377,6 +377,7 @@ import LabelIndicator from '@/annotations/components/labelIndicator.vue';
 import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
 import LabelbotPopup from '@/annotations/components/labelbotPopup.vue';
 import Map from '@biigle/ol/Map';
+import Messages from '@/core/messages/store.js';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
@@ -772,6 +773,14 @@ export default {
         },
         emitCancelAutoPlay() {
             this.$emit('cancel-auto-play');
+        },
+        playVideoIfLabelbotIsNotComputing() {
+            if  (this.labelbotIsComputing) {
+                Messages.info('Video playback is disabled while LabelBOT is working');
+                return;
+            }
+            
+            this.play();
         }
     },
     watch: {
