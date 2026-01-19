@@ -1,14 +1,14 @@
-<?php 
+<?php
 
 namespace Biigle\Services\LabelBot;
 
-use Biigle\VideoAnnotation;
-use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
 use Biigle\Project;
 use Biigle\Role;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabelFeatureVector;
 use Cache;
 use DB;
 use InvalidArgumentException;
@@ -16,11 +16,11 @@ use Pgvector\Laravel\Vector;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
-class LabelBotService 
+class LabelBotService
 {
     public function predictLabelForImage($volumeId, $request, $annotation)
     {
-        if(!$request->has('feature_vector')) {
+        if (!$request->has('feature_vector')) {
             return Label::findOrFail($request->input('label_id'));
         }
         
@@ -55,9 +55,9 @@ class LabelBotService
         $labelBotLabels = array_map(fn ($id) => $labelModels->get($id), $topNLabels);
         
         // Add labelBOTlabels attribute to the response.
-        $annotation->append('labelBOTLabels'); 
+        $annotation->append('labelBOTLabels');
         $label = array_shift($labelBotLabels);
-        if(!empty($labelBotLabels)) {
+        if (!empty($labelBotLabels)) {
             // Attach the remaining labels (if any).
             $annotation->labelBOTLabels = $labelBotLabels;
         }
@@ -214,12 +214,13 @@ class LabelBotService
             ->toArray();
     }
     
-    protected function getFeatureVectorModelFor($annotation) {
-        if($annotation instanceof ImageAnnotation) {
+    protected function getFeatureVectorModelFor($annotation)
+    {
+        if ($annotation instanceof ImageAnnotation) {
             return ImageAnnotationLabelFeatureVector::class;
-        } else if($annotation instanceof VideoAnnotation) {
+        } elseif ($annotation instanceof VideoAnnotation) {
             return VideoAnnotationLabelFeatureVector::class;
-        } 
+        }
         
         throw new InvalidArgumentException("Invalid annotation passed to labelbot service");
     }
