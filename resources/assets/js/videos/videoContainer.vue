@@ -520,16 +520,16 @@ export default {
                 .attachAnnotationLabel(this.selectedLabel)
                 .catch(handleErrorResponse);
         },
-        swapAnnotationLabel(annotation, force) {
+        swapAnnotationLabelTo(annotation, newLabel, force) {
             let labels = annotation.labels.slice();
             if (!force) {
                 labels = labels.filter(l => l.user_id === this.user.id);
             }
-            let lastLabel = labels.sort((a, b) => a.id - b.id).pop();
+            const lastLabel = labels.sort((a, b) => a.id - b.id).pop();
 
             // Can't use this.attachAnnotationLabel() because detachAnnotationLabel()
             // should not be called on error.
-            annotation.attachAnnotationLabel(this.selectedLabel)
+            return annotation.attachAnnotationLabel(newLabel)
                 .then(() => {
                     if (lastLabel) {
                         this.detachAnnotationLabel(annotation, lastLabel);
@@ -537,8 +537,14 @@ export default {
                 })
                 .catch(handleErrorResponse);
         },
+        swapAnnotationLabel(annotation, force) {
+            return this.swapAnnotationLabelTo(annotation, this.selectedLabel, force);
+        },
         forceSwapAnnotationLabel(annotation) {
             this.swapAnnotationLabel(annotation, true);
+        },
+        handleSwapLabel(annotation, label) {
+            return this.swapAnnotationLabelTo(annotation, label, true);
         },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
@@ -868,17 +874,6 @@ export default {
             // before the screenshot was taken 
             this.screenshotPromise = screenshotPromise;
         },
-        handleSwapLabel(annotation, label) {
-            // TODO Re-use existing swap label methods
-            if (annotation.labels.length != 1) {
-                return; // This method should only be called via the labelbot popup where the annotation has only one label
-            }
-            const oldLabel = annotation.labels[0];
-
-            annotation.attachAnnotationLabel(label).then(() => {
-                annotation.detachAnnotationLabel(oldLabel);
-            });
-        }
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -963,7 +958,6 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
-        this.initLabelbotWorker();
 
         // See: https://github.com/biigle/core/issues/391
         /*if (navigator.userAgent.toLowerCase().includes('firefox')) {

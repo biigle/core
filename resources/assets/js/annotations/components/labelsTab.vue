@@ -92,6 +92,7 @@ export default {
             this.$emit('select', label);
         },
         handleDeselectedLabel() {
+            // TODO Make deselecting impossible at all times? Only disable when user activates labelbot
             this.selectedLabel = null;
             this.$emit('select', null);
         },
