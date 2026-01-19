@@ -2,7 +2,7 @@ import Messages from '@/core/messages/store.js';
 import VideoAnnotationApi from '../api/videoAnnotations.js';
 import {getRoundToPrecision} from '../utils.js';
 import {interpolate} from 'polymorph-js';
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
 
 let SHAPE_CACHE;
 
@@ -21,6 +21,16 @@ export default class Annotation {
         this._selected = ref(false);
         this._revision = ref(1);
         this._tracking = ref(false);
+
+        // The startFrame and endFrame are used for overlapsTime(). This is used each time
+        // for all annotations whenever an annotation is updated, to determine the timeline
+        // annotation tracks. If we just take the refs from this.frames naively, this triggers
+        // a huge cascade of Vue getters and produces a significant lag starting with a couple
+        // of thousand annotations. The watcher eliminates this inefficiency.
+        watch(this._revision, () => {
+            this.startFrame = this.frames[0];
+            this.endFrame = this.frames[this.frames.length - 1];
+        }, { immediate: true });
     }
 
     get pending() {
@@ -73,14 +83,6 @@ export default class Annotation {
 
     set frames(value) {
         this._frames.value = value;
-    }
-
-    get startFrame() {
-        return this.frames[0];
-    }
-
-    get endFrame() {
-        return this.frames[this.frames.length - 1];
     }
 
     get interpolationPoints() {

@@ -13,7 +13,7 @@
     </div>
     <label-trees
         :trees="labelTrees"
-        :project-ids="projectIds"
+        :sorting-project-ids="projectIds"
         :show-favourites="true"
         v-on:select="handleSelectedLabel"
         v-on:deselect="handleDeselectedLabel"

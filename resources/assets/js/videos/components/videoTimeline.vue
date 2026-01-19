@@ -129,6 +129,8 @@ export default {
             hoverTime: 0,
             watchForCrossedFrame: false,
             nextAnnotationStartFrame: 0,
+            annotationTracks: [],
+            annotationStartFrames: [],
         };
     },
     provide() {
@@ -137,6 +139,9 @@ export default {
         };
     },
     computed: {
+        // In contrast to the properties that are updated based on the annotation revision
+        // (see below), the labelMap can be a computed property because the labels do not
+        // change frequently and watching their reactive properties is not expensive.
         labelMap() {
             let map = {};
             let annotations = this.annotations;
@@ -156,7 +161,29 @@ export default {
 
             return map;
         },
-        annotationTracks() {
+        styleObject() {
+            if (this.heightOffset !== 0 && !this.fullHeight && !this.collapsed) {
+                return `height: calc(35% + ${this.heightOffset}px);`;
+            }
+
+            return '';
+        },
+        classObject() {
+            return {
+                'full-height': this.fullHeight,
+            };
+        },
+        annotationRevision() {
+            let revision = this.annotations.reduce((acc, ann) => acc + ann.revision, 0);
+            if (this.pendingAnnotation) {
+                revision += this.pendingAnnotation.revision;
+            }
+
+            return revision;
+        },
+    },
+    methods: {
+        updateAnnotationTracks() {
             let map = {};
             let annotations = this.annotations;
 
@@ -175,7 +202,7 @@ export default {
                 });
             });
 
-            return Object.keys(map).map((labelId) => {
+            this.annotationTracks = Object.keys(map).map((labelId) => {
                 return {
                     id: labelId,
                     label: this.labelMap[labelId],
@@ -183,24 +210,10 @@ export default {
                 };
             });
         },
-        styleObject() {
-            if (this.heightOffset !== 0 && !this.fullHeight && !this.collapsed) {
-                return `height: calc(35% + ${this.heightOffset}px);`;
-            }
-
-            return '';
-        },
-        classObject() {
-            return {
-                'full-height': this.fullHeight,
-            };
-        },
-        annotationStartFrames() {
-            return [...new Set(this.annotations.map(a => a.startFrame))]
+        updateAnnotationStartFrames() {
+            this.annotationStartFrames = [...new Set(this.annotations.map(a => a.startFrame))]
                 .sort((a, b) => a - b);
         },
-    },
-    methods: {
         findNextAnnotationStartFrame(currentFrame) {
             currentFrame = this.roundTime(currentFrame > 0 ? currentFrame : this.currentTime);
 
@@ -307,8 +320,23 @@ export default {
         heightOffset() {
             this.$refs.scrollStrip.updateHeight();
         },
-        annotations() {
+        annotationRevision() {
+            // The annotation revision is an efficient way to watch all annotations for
+            // changes without having any expensive reactive watchers on arrays etc.
+            // That is why the below methods are not implemented as computed properties.
+            this.updateAnnotationTracks();
+            this.updateAnnotationStartFrames();
             this.findNextAnnotationStartFrame();
+        },
+        pendingAnnotation(newPending, oldPending) {
+            // The pending annotation is replaced on update and the revision would not
+            // change, so we have to add an extra watcher for this. This only has to be
+            // executed when the pending annotation is updated, i.e. not when the pending
+            // annotations is created or deleted (because the revision will change in
+            // this case).
+            if (newPending && oldPending) {
+                this.updateAnnotationTracks();
+            }
         },
     },
     created() {
