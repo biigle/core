@@ -23,8 +23,6 @@ import {markRaw} from 'vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
 import {AUTO_PAUSE_INDEFINITE} from './components/settingsTab.vue';
 
-import { LABELBOT_STATES } from '@/annotations/mixins/labelbot.vue';
-
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
 class VideoNotFoundError extends VideoError {}
