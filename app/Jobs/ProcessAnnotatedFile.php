@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
@@ -298,59 +299,109 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function generateFeatureVectors(Collection $annotations, array|string $filePath): void
     {
+        // TODO generate [x, y, w, h] with square boxes
         $boxes = $this->generateFileInput($this->file, $annotations);
+
 
         if (empty($boxes)) {
             return;
         }
+
+        $annotationCount = $annotations->count();
 
         // A test output CSV with 1000 entries was about 8 MB so fewer annotations should
         // safely fit within the (faster) 64 MB of shared memory in a Docker container.
         // We allow another option for more than 10k annotations (although they are
         // chunked by 10k in the image/video subclasses) because this class may be used
         // elsewhere with more annotations, too.
-        if ($annotations->count() <= 1000) {
-            $inputPath = tempnam('/dev/shm', 'largo_feature_vector_input');
-            $outputPath = tempnam('/dev/shm', 'largo_feature_vector_output');
-        } else {
-            $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
-            $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
+        // if ($annotations->count() <= 1000) {
+        //     $inputPath = tempnam('/dev/shm', 'largo_feature_vector_input');
+        //     $outputPath = tempnam('/dev/shm', 'largo_feature_vector_output');
+        // } else {
+        //     $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
+        //     $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
+        // }
+
+        $input = [];
+        $options = [];
+        // Optimize for extracting only a single patch.
+        if ($annotationCount === 1) {
+            $options['access'] = 'sequential';
         }
 
-        try {
-            if (is_array($filePath)) {
-                $input = [];
-                foreach ($boxes as $id => $box) {
-                    // This can happen for individual video frames that could not be
-                    // extracted.
-                    if (!array_key_exists($id, $filePath)) {
-                        continue;
-                    }
+        // TODO: May be multiple files if it's a video!
+        // Make sure the generated crop is in RGB format.
+        $image = Image::newFromFile($filePath, $options)->colourspace('srgb');
+        if ($image->hasAlpha()) {
+            $image = $image->flatten();
+        }
 
-                    $path = $filePath[$id];
-                    if (array_key_exists($path, $input)) {
-                        $input[$path][$id] = $box;
-                    } else {
-                        $input[$path] = [$id => $box];
-                    }
+        $generator = function () use ($image, $boxes) {
+            foreach ($boxes as $id => $box) {
+                // Convert right and bottom back to width and height.
+                // TODO get the box like this from the start.
+                $box[2] -= $box[0];
+                $box[3] -= $box[1];
+
+                // TODO magic number
+                $factor = 224 / max($box[2], $box[3]);
+                $crop = $image->crop(...$box)->resize($factor);
+
+                try {
+                    $buffer = $crop->writeToBuffer('.png');
+                } catch (VipsException $e) {
+                    // Sometimes Vips can't write the crop because the image is corrupt.
+                    // This annotation will be skipped.
+                    continue;
                 }
-            } else {
-                $input = [$filePath => $boxes];
-            }
 
-            // The "continue" above could result in an empty array.
-            if (empty($input)) {
-                return;
+                $response = Http::withBody($buffer, 'image/png')->post('http://pyworker');
+                if ($response->successful()) {
+                    yield [$id, $response->json()];
+                }
             }
+        };
 
-            File::put($inputPath, json_encode($input));
-            $this->python($inputPath, $outputPath);
-            $output = $this->readOutputCsv($outputPath);
-            $this->updateOrCreateFeatureVectors($annotations, $output);
-        } finally {
-            File::delete($outputPath);
-            File::delete($inputPath);
-        }
+        $this->updateOrCreateFeatureVectors($annotations, $generator());
+
+        // File::put($inputPath, json_encode($input));
+        // $this->python($inputPath, $outputPath);
+        // $output = $this->readOutputCsv($outputPath);
+
+        // try {
+        //     if (is_array($filePath)) {
+        //         $input = [];
+        //         foreach ($boxes as $id => $box) {
+        //             // This can happen for individual video frames that could not be
+        //             // extracted.
+        //             if (!array_key_exists($id, $filePath)) {
+        //                 continue;
+        //             }
+
+        //             $path = $filePath[$id];
+        //             if (array_key_exists($path, $input)) {
+        //                 $input[$path][$id] = $box;
+        //             } else {
+        //                 $input[$path] = [$id => $box];
+        //             }
+        //         }
+        //     } else {
+        //         $input = [$filePath => $boxes];
+        //     }
+
+        //     // The "continue" above could result in an empty array.
+        //     if (empty($input)) {
+        //         return;
+        //     }
+
+        //     File::put($inputPath, json_encode($input));
+        //     $this->python($inputPath, $outputPath);
+        //     $output = $this->readOutputCsv($outputPath);
+        //     $this->updateOrCreateFeatureVectors($annotations, $output);
+        // } finally {
+        //     File::delete($outputPath);
+        //     File::delete($inputPath);
+        // }
     }
 
     /**

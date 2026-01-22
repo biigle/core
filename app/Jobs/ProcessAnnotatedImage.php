@@ -99,6 +99,8 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
             return;
         }
 
+        // TODO no need for extra handling with pyworker?
+
         $boxes = $this->generateFileInput($this->file, $annotations);
 
         if (empty($boxes)) {
@@ -112,15 +114,15 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
         // We allow another option for more than 10k annotations (although they are
         // chunked by 10k above) because this class may be used elsewhere with more
         // annotations, too.
-        if ($annotationCount <= 1000) {
-            $inputPath = tempnam('/dev/shm', 'largo_feature_vector_input');
-            $outputPath = tempnam('/dev/shm', 'largo_feature_vector_output');
-        } else {
-            $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
-            $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
-        }
+        // if ($annotationCount <= 1000) {
+        //     $inputPath = tempnam('/dev/shm', 'largo_feature_vector_input');
+        //     $outputPath = tempnam('/dev/shm', 'largo_feature_vector_output');
+        // } else {
+        //     $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
+        //     $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
+        // }
 
-        $tmpFiles = [$inputPath, $outputPath];
+        // $tmpFiles = [$inputPath, $outputPath];
 
         try {
             $input = [];
@@ -139,8 +141,8 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
                 // The factor is <1 if the box is larger than the maximum size.
                 $factor = self::CROP_MAX_EDGE_PX / max($box[2], $box[3]);
 
-                $path = tempnam(sys_get_temp_dir(), 'largo_feature_vector_patch');
-                $tmpFiles[] = $path;
+                // $path = tempnam(sys_get_temp_dir(), 'largo_feature_vector_patch');
+                // $tmpFiles[] = $path;
                 $crop = $image->crop(...$box);
 
                 // Scale the crop and box to the maximum size.
@@ -151,22 +153,26 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
                 }
 
                 try {
-                    $crop->pngsave($path);
+                    $buffer = $crop->writeToBuffer('.png');
                 } catch (VipsException $e) {
                     // Sometimes Vips can't write the crop because the image is corrupt.
                     // This annotation will be skipped.
                     continue;
                 }
 
+                $response = Http::withBody($buffer, 'image/png')->post('http://pyworker');
+                $data = $response->json();
+                echo "$id: $data";
+
                 $input[$path] = [$id => [0, 0, $box[2], $box[3]]];
             }
 
-            File::put($inputPath, json_encode($input));
-            $this->python($inputPath, $outputPath);
-            $output = $this->readOutputCsv($outputPath);
-            $this->updateOrCreateFeatureVectors($annotations, $output);
+            // File::put($inputPath, json_encode($input));
+            // $this->python($inputPath, $outputPath);
+            // $output = $this->readOutputCsv($outputPath);
+            // $this->updateOrCreateFeatureVectors($annotations, $output);
         } finally {
-            File::delete($tmpFiles);
+            // File::delete($tmpFiles);
         }
     }
 
