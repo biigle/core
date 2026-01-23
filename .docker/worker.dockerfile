@@ -75,8 +75,8 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     # Install torch first to get the CPU nversion. It is also present in
     # requirements.txt but this is only for automatic vulnerability checks.
     && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
-        torch==2.6.* \
-        torchvision==0.21.* \
+        torch==2.9.* \
+        torchvision==0.24.* \
     && pip3 install --no-cache-dir --break-system-packages -r /tmp/requirements.txt \
     && apt-get purge -y \
         python3-pip \
