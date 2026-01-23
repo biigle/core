@@ -40,10 +40,12 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(result, separators=(',', ':')).encode())
         else:
-            # TODO: Return exception so it can be logged by PHP
             traceback.print_exception(request_item.exception)
+            tb = traceback.TracebackException.from_exception(request_item.exception)
             self.send_response(500)
+            self.send_header('Content-type', 'text/plain')
             self.end_headers()
+            self.wfile.write(''.join(tb.format()).encode())
 
 def worker():
     # See: https://stackoverflow.com/a/23575424/1796523

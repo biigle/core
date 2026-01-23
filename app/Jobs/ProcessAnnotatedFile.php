@@ -377,6 +377,9 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                     $response = Http::withBody($buffer, 'image/png')->post($url);
                     if ($response->successful()) {
                         yield [$id, $response->json()];
+                    } else {
+                        $pyException = $response->body();
+                        throw new Exception("Error in pyworker:\n {$pyException}");
                     }
                 }
             }
