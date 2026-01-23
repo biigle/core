@@ -41,26 +41,8 @@ return [
     'apply_session_queue' => env('LARGO_APPLY_SESSION_QUEUE', 'default'),
 
     /*
-    | Path to the extract features script.
+    | URL to the ExtractFeaturesWorker service. This should be set to the name of the
+    | Docker Compose service running this script.
     */
-    'extract_features_script' => __DIR__.'/../resources/scripts/ExtractFeatures.py',
-
-    /*
-    | Path to the directory to use as Torch Hub cache.
-    */
-    'torch_hub_path' => storage_path('largo_cache'),
-
-    /*
-    | Path to the Python executable.
-    */
-    'python' => env('LARGO_PYTHON', '/usr/bin/python3'),
-
-    /*
-    | This sets the OMP_NUM_THREADS environment variable of the Python process to generate
-    | feature vectors. It is ignored with CUDA but it dramatically increases the inference
-    | speed on a CPU.
-    |
-    | See also: https://pytorch.org/tutorials/intermediate/torchserve_with_ipex.html
-    */
-    'omp_num_threads' => env('LARGO_OMP_NUM_THREADS', 2),
+    'extract_features_worker_url' => env('LARGO_EXTRACT_FEATURES_WORKER_URL', 'http://pyworker'),
 ];

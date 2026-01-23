@@ -16,9 +16,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Jcupitt\Vips\Image;
+use Jcupitt\Vips\Exception as VipsException;
+use Jcupitt\Vips\Image as VipsImage;
 use Str;
 use SVG\Nodes\Shapes\SVGCircle;
 use SVG\Nodes\Shapes\SVGEllipse;
@@ -296,61 +298,95 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * @param Collection $annotations
      * @param array|string $filePath If a string, a file path to the local image to use for feature vector generation. If an array, a map of annotation IDs to a local image file path.
      */
-    protected function generateFeatureVectors(Collection $annotations, array|string $filePath): void
-    {
-        $boxes = $this->generateFileInput($this->file, $annotations);
+    protected function generateFeatureVectors(
+        Collection $annotations,
+        array|string $filePath,
+    ): void {
+        $boxes = $this->generateAnnotationBoxes($this->file, $annotations);
 
         if (empty($boxes)) {
             return;
         }
 
-        // A test output CSV with 1000 entries was about 8 MB so fewer annotations should
-        // safely fit within the (faster) 64 MB of shared memory in a Docker container.
-        // We allow another option for more than 10k annotations (although they are
-        // chunked by 10k in the image/video subclasses) because this class may be used
-        // elsewhere with more annotations, too.
-        if ($annotations->count() <= 1000) {
-            $inputPath = tempnam('/dev/shm', 'largo_feature_vector_input');
-            $outputPath = tempnam('/dev/shm', 'largo_feature_vector_output');
+        $input = [];
+
+        if (is_array($filePath)) {
+            $input = [];
+            foreach ($boxes as $id => $box) {
+                // This can happen for individual video frames that could not be
+                // extracted.
+                if (!array_key_exists($id, $filePath)) {
+                    continue;
+                }
+
+                $path = $filePath[$id];
+                if (array_key_exists($path, $input)) {
+                    $input[$path][$id] = $box;
+                } else {
+                    $input[$path] = [$id => $box];
+                }
+            }
         } else {
-            $inputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_input');
-            $outputPath = tempnam(sys_get_temp_dir(), 'largo_feature_vector_output');
+            $input = [$filePath => $boxes];
         }
 
-        try {
-            if (is_array($filePath)) {
-                $input = [];
-                foreach ($boxes as $id => $box) {
-                    // This can happen for individual video frames that could not be
-                    // extracted.
-                    if (!array_key_exists($id, $filePath)) {
+        // The "continue" above could result in an empty array.
+        if (empty($input)) {
+            return;
+        }
+
+
+        $generator = function () use ($input) {
+            $url = config('largo.extract_features_worker_url');
+
+            // May be multiple file paths for individual video frames if a video is
+            // processed.
+            foreach ($input as $singleFilePath => $fileBoxes) {
+                $options = [];
+                // Optimize for extracting only a single patch.
+                if (count($fileBoxes) === 1) {
+                    $options['access'] = 'sequential';
+                }
+
+                // Make sure the image is in RGB format before sending it to the pyworker.
+                $image = $this->getVipsImage($singleFilePath, $options)->colourspace('srgb');
+                if ($image->hasAlpha()) {
+                    $image = $image->flatten();
+                }
+
+                foreach ($fileBoxes as $id => $box) {
+                    $factor = static::DINO_PATCH_SIZE / max($box[2], $box[3]);
+                    $crop = $image->crop(...$box)->resize($factor);
+
+                    try {
+                        $buffer = $crop->writeToBuffer('.png');
+                    } catch (VipsException $e) {
+                        // Sometimes Vips can't write the crop because the image is
+                        // corrupt. This annotation will be skipped.
                         continue;
                     }
 
-                    $path = $filePath[$id];
-                    if (array_key_exists($path, $input)) {
-                        $input[$path][$id] = $box;
+                    /*
+                     * Feature vectors are generated with a separate worker service that
+                     * runs a continuous Python process. It accepts an image patch and
+                     * returns the DINO feature vector. This is significantly faster than
+                     * calling a Python script in this job because calling Python has an
+                     * overhead and also newly loading the DINO model each time is very
+                     * slow. The separate Python worker is 20-30x faster than calling
+                     * the Python script here.
+                     */
+                    $response = Http::withBody($buffer, 'image/png')->post($url);
+                    if ($response->successful()) {
+                        yield [$id, $response->json()];
                     } else {
-                        $input[$path] = [$id => $box];
+                        $pyException = $response->body();
+                        throw new Exception("Error in pyworker:\n {$pyException}");
                     }
                 }
-            } else {
-                $input = [$filePath => $boxes];
             }
+        };
 
-            // The "continue" above could result in an empty array.
-            if (empty($input)) {
-                return;
-            }
-
-            File::put($inputPath, json_encode($input));
-            $this->python($inputPath, $outputPath);
-            $output = $this->readOutputCsv($outputPath);
-            $this->updateOrCreateFeatureVectors($annotations, $output);
-        } finally {
-            File::delete($outputPath);
-            File::delete($inputPath);
-        }
+        $this->updateOrCreateFeatureVectors($annotations, $generator());
     }
 
     /**
@@ -546,5 +582,13 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             $this->targetDisk,
             $this->redispatchTries + 1
         )->onConnection($this->connection)->onQueue($this->queue)->delay(60);
+    }
+
+    /**
+     * Get the vips image instance.
+     */
+    protected function getVipsImage(string $path, array $options = [])
+    {
+        return VipsImage::newFromFile($path, $options);
     }
 }
