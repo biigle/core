@@ -40,6 +40,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(result, separators=(',', ':')).encode())
         else:
+            # TODO: Return exception so it can be logged by PHP
             traceback.print_exception(request_item.exception)
             self.send_response(500)
             self.end_headers()
@@ -86,10 +87,5 @@ if __name__ == '__main__':
     worker_thread = Thread(target=worker, daemon=True)
     worker_thread.start()
 
-    # worker_thread = Thread(target=worker, daemon=True)
-    # worker_thread.start()
-
-    server_address = ('', 80)
-    httpd = ThreadingHTTPServer(server_address, RequestHandler)
-    print("Starting server on port 80")
+    httpd = ThreadingHTTPServer(('', 80), RequestHandler)
     httpd.serve_forever()
