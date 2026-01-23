@@ -2,15 +2,12 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\Contracts\Annotation;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image as VipsImage;
 
 class ProcessAnnotatedImage extends ProcessAnnotatedFile
@@ -75,15 +72,6 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
                 );
             }
         }
-    }
-
-    /**
-     * Get the vips image instance.
-     */
-    protected function getVipsImage(string $path, array $options = [])
-    {
-        // Must not use sequential access because multiple patches could be extracted.
-        return VipsImage::newFromFile($path, $options);
     }
 
     /**

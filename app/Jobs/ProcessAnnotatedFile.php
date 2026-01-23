@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Jcupitt\Vips\Image;
+use Jcupitt\Vips\Exception as VipsException;
+use Jcupitt\Vips\Image as VipsImage;
 use Str;
 use SVG\Nodes\Shapes\SVGCircle;
 use SVG\Nodes\Shapes\SVGEllipse;
@@ -348,7 +349,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                 }
 
                 // Make sure the image is in RGB format before sending it to the pyworker.
-                $image = Image::newFromFile($singleFilePath, $options)->colourspace('srgb');
+                $image = $this->getVipsImage($singleFilePath, $options)->colourspace('srgb');
                 if ($image->hasAlpha()) {
                     $image = $image->flatten();
                 }
@@ -361,7 +362,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                         $buffer = $crop->writeToBuffer('.png');
                     } catch (VipsException $e) {
                         // Sometimes Vips can't write the crop because the image is
-                        //  corrupt. This annotation will be skipped.
+                        // corrupt. This annotation will be skipped.
                         continue;
                     }
 
@@ -581,5 +582,13 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             $this->targetDisk,
             $this->redispatchTries + 1
         )->onConnection($this->connection)->onQueue($this->queue)->delay(60);
+    }
+
+    /**
+     * Get the vips image instance.
+     */
+    protected function getVipsImage(string $path, array $options = [])
+    {
+        return VipsImage::newFromFile($path, $options);
     }
 }

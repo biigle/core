@@ -7,8 +7,6 @@ use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Process;
-use SplFileObject;
 
 abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 {
@@ -192,28 +190,30 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     /**
      * Generate the input for the python script.
      *
+     * TODO: Remove this?
+     *
      * @param array $files VolumeFile instances of the files to which the annotations
      * belong.
      * @param array $paths Paths of locally cached files.
      * @param \Illuminate\Support\Collection $annotations Annotations grouped by their
      * file ID (e.g. image_id).
      */
-    // protected function generateInput(array $files, array $paths, Collection $annotations): array
-    // {
-    //     $input = [];
+    protected function generateInput(array $files, array $paths, Collection $annotations): array
+    {
+        $input = [];
 
-    //     foreach ($files as $index => $file) {
-    //         $path = $paths[$index];
-    //         $fileAnnotations = $annotations[$file->id];
-    //         $boxes = $this->generateFileInput($file, $fileAnnotations);
+        foreach ($files as $index => $file) {
+            $path = $paths[$index];
+            $fileAnnotations = $annotations[$file->id];
+            $boxes = $this->generateAnnotationBoxes($file, $fileAnnotations);
 
-    //         if (!empty($boxes)) {
-    //             $input[$path] = $boxes;
-    //         }
-    //     }
+            if (!empty($boxes)) {
+                $input[$path] = $boxes;
+            }
+        }
 
-    //     return $input;
-    // }
+        return $input;
+    }
 
     protected function generateAnnotationBoxes(VolumeFile $file, Collection $annotations): array
     {
@@ -229,13 +229,11 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
                 $box = $this->getAnnotationBoundingBox($points, $a->getShape());
                 $box = $this->makeBoxContained($box, $file->width, $file->height);
             }
-        }
 
-        $zeroSize = $box[2] === 0 && $box[3] === 0;
-        if (!$zeroSize) {
-            $boxes[$a->id] = $box;
+            if ($box[2] !== 0 && $box[3] !== 0) {
+                $boxes[$a->id] = $box;
+            }
         }
-
 
         return $boxes;
     }
