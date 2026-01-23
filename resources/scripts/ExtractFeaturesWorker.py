@@ -60,8 +60,7 @@ def worker():
     dinov2_vits14.to(dev)
 
     transform = T.Compose([
-        # Input is expected to be 224x224 already.
-        # T.Resize((224, 224), interpolation=T.InterpolationMode.BICUBIC),
+        T.Resize((224, 224), interpolation=T.InterpolationMode.BICUBIC),
         T.ToTensor(),
         T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
     ])

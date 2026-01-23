@@ -13,6 +13,13 @@ use SplFileObject;
 abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 {
     /**
+     * Size of a square input patch for generating feature vectors with DINO.
+     *
+     * @var int
+     */
+    const DINO_PATCH_SIZE = 224;
+
+    /**
      * Get the bounding box of an annotation
      *
      * @param int $pointPadding The default is half the patch size of 224 that is expected by DINO.
@@ -21,7 +28,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     public function getAnnotationBoundingBox(
         array $points,
         Shape $shape,
-        int $pointPadding = 112,
+        int $pointPadding = self::DINO_PATCH_SIZE / 2,
         int $boxPadding = 0,
         int $minSize = 32
     ): array {
@@ -191,24 +198,24 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
      * @param \Illuminate\Support\Collection $annotations Annotations grouped by their
      * file ID (e.g. image_id).
      */
-    protected function generateInput(array $files, array $paths, Collection $annotations): array
-    {
-        $input = [];
+    // protected function generateInput(array $files, array $paths, Collection $annotations): array
+    // {
+    //     $input = [];
 
-        foreach ($files as $index => $file) {
-            $path = $paths[$index];
-            $fileAnnotations = $annotations[$file->id];
-            $boxes = $this->generateFileInput($file, $fileAnnotations);
+    //     foreach ($files as $index => $file) {
+    //         $path = $paths[$index];
+    //         $fileAnnotations = $annotations[$file->id];
+    //         $boxes = $this->generateFileInput($file, $fileAnnotations);
 
-            if (!empty($boxes)) {
-                $input[$path] = $boxes;
-            }
-        }
+    //         if (!empty($boxes)) {
+    //             $input[$path] = $boxes;
+    //         }
+    //     }
 
-        return $input;
-    }
+    //     return $input;
+    // }
 
-    protected function generateFileInput(VolumeFile $file, Collection $annotations): array
+    protected function generateAnnotationBoxes(VolumeFile $file, Collection $annotations): array
     {
         $boxes = [];
         foreach ($annotations as $a) {
@@ -222,52 +229,14 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
                 $box = $this->getAnnotationBoundingBox($points, $a->getShape());
                 $box = $this->makeBoxContained($box, $file->width, $file->height);
             }
-
-            $zeroSize = $box[2] === 0 && $box[3] === 0;
-
-            if (!$zeroSize) {
-                // Convert width and height to "right" and "bottom" coordinates.
-                $box[2] += $box[0];
-                $box[3] += $box[1];
-
-                $boxes[$a->id] = $box;
-            }
         }
+
+        $zeroSize = $box[2] === 0 && $box[3] === 0;
+        if (!$zeroSize) {
+            $boxes[$a->id] = $box;
+        }
+
 
         return $boxes;
-    }
-
-    /**
-     * Run the Python command.
-     *
-     * @param string $inputPath
-     * @param string $outputPath
-     */
-    protected function python(string $inputPath, string $outputPath)
-    {
-        $python = config('largo.python');
-        $script = config('largo.extract_features_script');
-        $result = Process::forever()
-            ->env([
-                # TODO
-                'TORCH_HOME' => config('largo.torch_hub_path'),
-                'OMP_NUM_THREADS' => config('largo.omp_num_threads'),
-            ])
-            ->run("{$python} -u {$script} {$inputPath} {$outputPath}")
-            ->throw();
-    }
-
-    /**
-     * Generator to read the output CSV row by row.
-     */
-    protected function readOutputCsv(string $path): \Generator
-    {
-        $file = new SplFileObject($path);
-        while (!$file->eof()) {
-            $csv = $file->fgetcsv();
-            if (count($csv) === 2) {
-                yield $csv;
-            }
-        }
     }
 }
