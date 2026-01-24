@@ -408,7 +408,8 @@ export default {
         'initMap',
         'cancel-auto-play',
         'labelbot-image',
-        'swap'
+        'swap',
+        'labelbot-is-computing'
     ],
     mixins: [
         VideoPlayback,
@@ -821,7 +822,7 @@ export default {
                     // Ignore a==null because the selected annotation may not exist in the
                     // current video frame.
                     .forEach(a => a && features.push(a));
-            },
+            }
         },
         isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
@@ -843,6 +844,12 @@ export default {
                 this.initLayersAndInteractions(this.map);
                 this.initInitialCenterAndResolution(this.map);
             },
+        },
+        labelbotIsComputing: {
+            immediate: true,
+            handler(v) {
+                this.$emit("labelbot-is-computing", v);
+            }
         },
     },
     created() {

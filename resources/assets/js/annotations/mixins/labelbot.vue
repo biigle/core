@@ -152,6 +152,8 @@ export default {
             this.focusedPopupKey = annotation.id;
         },
         saveLabelbotAnnotation(annotation, tmpAnnotation) {
+            // TODO Disable play button when labelbot is working, no playback with space
+            // TODO Turn the labelbot button into a component
             const originalId = tmpAnnotation? this.videoId : this.imageId;
 
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {

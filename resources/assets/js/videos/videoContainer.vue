@@ -118,7 +118,8 @@ export default {
             selectedFavouriteLabel: undefined,
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
-            screenshotPromise: undefined
+            screenshotPromise: undefined,
+            labelbotIsComputing: false
         };
     },
     computed: {
@@ -690,7 +691,7 @@ export default {
             }
         },
         showPreviousVideo() {
-            if (!this.hasSiblingVideos) {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
             this.reset();
@@ -700,7 +701,7 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         showNextVideo() {
-            if (!this.hasSiblingVideos) {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
             this.reset();
@@ -874,6 +875,9 @@ export default {
             // before the screenshot was taken 
             this.screenshotPromise = screenshotPromise;
         },
+        setLabelbotIsComputing(value) {
+            this.labelbotIsComputing = value;
+        }
     },
     watch: {
         'settings.playbackRate'(rate) {

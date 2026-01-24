@@ -92,6 +92,7 @@
       v-on:popout="handleVideoPopout"
       v-on:cancel-auto-play="cancelAutoPlay"
       v-on:labelbot-image="setScreenshotPromise"
+      v-on:labelbot-is-computing="setLabelbotIsComputing"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"
