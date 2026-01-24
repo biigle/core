@@ -13,21 +13,33 @@
             <div v-if="showPrevNext" class="btn-group">
                 <control-button
                     icon="fa-step-backward"
-                    :title="enableJumpByFrame ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    :title="labelbotIsComputing
+                        ? 'Can’t change video while labelbot is computing'
+                        : (enableJumpByFrame
+                            ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'
+                            : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄')"
+                    :disabled="labelbotIsComputing"
                     @click="emitPrevious"
                     ></control-button>
                 <control-button
                     icon="fa-step-forward"
-                    :title="enableJumpByFrame ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    :title="labelbotIsComputing
+                        ? 'Can’t change video while labelbot is computing'
+                        : (enableJumpByFrame
+                            ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'
+                            : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄')"
+                    :disabled="labelbotIsComputing"
                     @click="emitNext"
                     ></control-button>
             </div>
             <div class="btn-group">
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking || null"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-backward"
-                    :title="jumpBackwardMessage"
+                    :title="labelbotIsComputing
+                        ? 'Can’t seek while labelbot is computing'
+                        : jumpBackwardMessage"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
@@ -53,9 +65,11 @@
                 <control-button
                     v-else
                     icon="fa-play"
-                    title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
-                    :disabled="hasError || null"
-                    @click="playVideoIfLabelbotIsNotComputing"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t play the video while labelbot is computing'
+                        : 'Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿'"
+                    :disabled="hasError || labelbotIsComputing || null"
+                    @click="play"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
@@ -66,9 +80,11 @@
                     ></control-button>
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking || null"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-forward"
-                    :title="jumpForwardMessage"
+                    :title="labelbotIsComputing
+                        ? 'Can’t seek while labelbot is computing'
+                        : jumpForwardMessage"
                     @click="jumpForward"
                     ></control-button>
             </div>
@@ -377,7 +393,6 @@ import LabelIndicator from '@/annotations/components/labelIndicator.vue';
 import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
 import LabelbotPopup from '@/annotations/components/labelbotPopup.vue';
 import Map from '@biigle/ol/Map';
-import Messages from '@/core/messages/store.js';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
 import PolygonBrushInteractions from './videoScreen/polygonBrushInteractions.vue';
@@ -775,14 +790,6 @@ export default {
         emitCancelAutoPlay() {
             this.$emit('cancel-auto-play');
         },
-        playVideoIfLabelbotIsNotComputing() {
-            if  (this.labelbotIsComputing) {
-                Messages.info('Video playback is disabled while LabelBOT is working');
-                return;
-            }
-            
-            this.play();
-        }
     },
     watch: {
         selectedAnnotations: {
@@ -860,6 +867,8 @@ export default {
 
         this.adaptKeyboardShortcuts();
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
+        
+        // TODO Control+... shortcuts don't work on MacOS
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },

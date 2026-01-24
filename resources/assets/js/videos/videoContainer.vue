@@ -225,7 +225,7 @@ export default {
             return annotation;
         },
         seek(time, force) {
-            if (this.seeking) {
+            if (this.seeking || this.labelbotIsComputing) {
                 return Promise.resolve();
             }
 
@@ -836,6 +836,10 @@ export default {
             Events.emit('videos.map.init', map);
         },
         togglePlaying() {
+            if(this.labelbotIsComputing) {
+                return;
+            }
+            
             if (this.video.paused) {
                 if (this.autoPauseTimeout) {
                     this.cancelAutoPlay();
