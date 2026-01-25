@@ -858,6 +858,11 @@ export default {
                 this.$emit("labelbot-is-computing", v);
             }
         },
+        selectedLabel(newLabel) {
+            if(!newLabel && this.interactionMode !== 'default') {
+                this.resetInteractionMode();
+            }
+        }
     },
     created() {
         // markRaw is essential here!

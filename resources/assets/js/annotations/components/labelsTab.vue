@@ -50,6 +50,10 @@ export default {
             type: String,
             required: true,
         },
+        disableDeselect: {
+            type: Boolean,
+            default: false
+        }
     },
     computed: {
         plugins() {
@@ -92,12 +96,18 @@ export default {
             this.$emit('select', label);
         },
         handleDeselectedLabel() {
-            // TODO Make deselecting impossible at all times? Only disable when user activates labelbot
+            if(this.disableDeselect) {
+                return;
+            }
+
             this.selectedLabel = null;
             this.$emit('select', null);
         },
         toggleLabelBot() {
             if (this.labelbotIsActive) {
+                if(this.disableDeselect) {
+                    return; // The user can only deactivate labelbot by selecting a label manually
+                }
                 this.handleLabelbotOff();
             } else {
                 this.handleLabelbotOn();

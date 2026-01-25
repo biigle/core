@@ -133,6 +133,10 @@ export default {
             type: Number,
             default: undefined,
         },
+        disableDeselect: {
+            type: Boolean,
+            default: false
+        }
     },
     computed: {
         localeCompareSupportsLocales() {
@@ -203,6 +207,9 @@ export default {
             }
         },
         handleDeselect(label, e) {
+            if(this.disableDeselect) {
+                return;
+            }
             this.$emit('deselect', label, e);
             this.events.emit('deselect', {label, e});
         },

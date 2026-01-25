@@ -152,8 +152,8 @@ export default {
             this.focusedPopupKey = annotation.id;
         },
         saveLabelbotAnnotation(annotation, tmpAnnotation) {
-            // TODO Prevent manual deselection of labels if the user is currently creating an annotation (the user either uses labelbot or has to have a label selected)
             // TODO Turn the labelbot button into a component
+            // TODO Bug: Enable labelbot, quickly select a label, label will be deselected and labelbot will be active once it finishes loading. Minor issue: If an annotation is started in the small window where labelbot is initializing, the annotation will have the selected label
             const originalId = tmpAnnotation? this.videoId : this.imageId;
 
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
