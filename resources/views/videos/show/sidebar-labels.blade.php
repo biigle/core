@@ -1,7 +1,7 @@
 <sidebar-tab name="labels" icon="tags" title="Label trees">
     <labels-tab
         :labelbot-state="labelbotState"
-        :disable-deselect="!!pendingAnnotation"
+        :has-pending-annotation="!!pendingAnnotation"
         v-on:select="handleSelectedLabel"
         v-on:open="openSidebarLabels"
         v-on:update-labelbot-state="updateLabelbotState" 
@@ -55,7 +55,7 @@
                 :trees="labelTrees"
                 :focus-input="focusInputFindlabel"
                 :show-favourites="true"
-                :disable-deselect="disableDeselect"
+                :has-pending-annotation="hasPendingAnnotation"
                 v-on:select="handleSelectedLabel"
                 v-on:deselect="handleDeselectedLabel"
                 v-on:clear="handleDeselectedLabel"

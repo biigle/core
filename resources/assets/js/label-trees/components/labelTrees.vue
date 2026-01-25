@@ -133,7 +133,7 @@ export default {
             type: Number,
             default: undefined,
         },
-        disableDeselect: {
+        hasPendingAnnotation: {
             type: Boolean,
             default: false
         }
@@ -207,7 +207,7 @@ export default {
             }
         },
         handleDeselect(label, e) {
-            if(this.disableDeselect) {
+            if(this.hasPendingAnnotation) {
                 return;
             }
             this.$emit('deselect', label, e);

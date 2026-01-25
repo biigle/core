@@ -50,7 +50,7 @@ export default {
             type: String,
             required: true,
         },
-        disableDeselect: {
+        hasPendingAnnotation: {
             type: Boolean,
             default: false
         }
@@ -96,7 +96,7 @@ export default {
             this.$emit('select', label);
         },
         handleDeselectedLabel() {
-            if(this.disableDeselect) {
+            if(this.hasPendingAnnotation) {
                 return;
             }
 
@@ -105,8 +105,10 @@ export default {
         },
         toggleLabelBot() {
             if (this.labelbotIsActive) {
-                if(this.disableDeselect) {
-                    return; // The user can only deactivate labelbot by selecting a label manually
+                if(this.hasPendingAnnotation) {
+                    // Disabling labelbot leads to no label being selected, 
+                    // which we can't have if an annotation is being created
+                    return; 
                 }
                 this.handleLabelbotOff();
             } else {
