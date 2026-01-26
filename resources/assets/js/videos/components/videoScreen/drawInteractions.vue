@@ -186,9 +186,11 @@ export default {
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
-                    // Pause the video and skip to the last frame of the annotation so that the popup can show
-                    // TODO Only do this if labelbot is active?
-                    this.skipToLastFrame(this.pendingAnnotation);                   
+                    if (this.labelbotIsActive) {
+                        // If we don't skip to the last frame, no annotation would be visible as an anchor for the 
+                        // labelbot popup
+                        this.skipToLastFrame(this.pendingAnnotation);                   
+                    }
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
                         this.pendingAnnotation.frames.push(this.video.currentTime);
                     }

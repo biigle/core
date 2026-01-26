@@ -152,8 +152,9 @@ export default {
             this.focusedPopupKey = annotation.id;
         },
         saveLabelbotAnnotation(annotation, tmpAnnotation) {
-            // TODO Turn the labelbot button into a component
-            // TODO Bug: Enable labelbot, quickly select a label, label will be deselected and labelbot will be active once it finishes loading. Minor issue: If an annotation is started in the small window where labelbot is initializing, the annotation will have the selected label
+            // TODO If the user the user starts with labelbot/with a label, and then switches to a label/labelbot, 
+            // should the timeline immediately reflect that? 
+            // TODO Start labelbot and quickly select a label, should the initialized callback take the selected label away?
             const originalId = tmpAnnotation? this.videoId : this.imageId;
 
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
