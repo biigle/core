@@ -207,7 +207,7 @@ export default {
             }
         },
         handleDeselect(label, e) {
-            if(this.hasPendingAnnotation) {
+            if (this.hasPendingAnnotation) {
                 return;
             }
             this.$emit('deselect', label, e);

@@ -836,7 +836,7 @@ export default {
             Events.emit('videos.map.init', map);
         },
         togglePlaying() {
-            if(this.labelbotIsComputing) {
+            if (this.labelbotIsComputing) {
                 return;
             }
             

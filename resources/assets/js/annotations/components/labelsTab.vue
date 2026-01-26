@@ -96,7 +96,7 @@ export default {
             this.$emit('select', label);
         },
         handleDeselectedLabel() {
-            if(this.hasPendingAnnotation) {
+            if (this.hasPendingAnnotation) {
                 return;
             }
 
@@ -105,7 +105,7 @@ export default {
         },
         toggleLabelBot() {
             if (this.labelbotIsActive) {
-                if(this.hasPendingAnnotation) {
+                if (this.hasPendingAnnotation) {
                     // Disabling labelbot leads to no label being selected, 
                     // which we can't have if an annotation is being created
                     return; 
