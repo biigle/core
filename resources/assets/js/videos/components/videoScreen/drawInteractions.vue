@@ -170,9 +170,25 @@ export default {
                 }
             }
         },
+        skipToLastFrame(pendingAnnotation) {
+            const lastFrame = pendingAnnotation.frames[pendingAnnotation.frames.length - 1];
+            if (lastFrame === undefined) {
+                return;
+            }
+            
+            const r4 = t => Math.round(t * 10000) / 10000;
+            const target = r4(lastFrame);
+            this.pause();
+            if (r4(this.video.currentTime) !== target) {
+                this.video.currentTime = target;
+            }
+        },
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
+                    // Pause the video and skip to the last frame of the annotation so that the popup can show
+                    // TODO Only do this if labelbot is active?
+                    this.skipToLastFrame(this.pendingAnnotation);                   
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
                         this.pendingAnnotation.frames.push(this.video.currentTime);
                     }
