@@ -401,7 +401,6 @@ export default {
             }
             
             this.pendingAnnotation.labels = this.getCurrentLabels();
-            this.pendingAnnotation.revision++;
         },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
