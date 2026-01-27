@@ -95,8 +95,8 @@ export default {
             this.selectedLabel = label;
             this.$emit('select', label);
         },
-        handleDeselectedLabel() {
-            if (this.hasPendingAnnotation) {
+        handleDeselectedLabel({force = false} = {}) {
+            if (!force && this.hasPendingAnnotation) {
                 return;
             }
 
@@ -116,9 +116,10 @@ export default {
             }
         },
         handleLabelbotOn() {
-            // Deselect the selected label when LabelBOT is on
+            // The user can't manually deselect a label when an annotation is being created,
+            // but LabelBOT needs to force the deselection
             if (this.selectedLabel) {
-                this.handleDeselectedLabel();
+                this.handleDeselectedLabel({force: true});
             }
             this.$emit('update-labelbot-state', LABELBOT_STATES.READY);
         },

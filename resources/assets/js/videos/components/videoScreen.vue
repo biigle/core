@@ -859,7 +859,7 @@ export default {
             }
         },
         selectedLabel(newLabel) {
-            if(!newLabel && this.interactionMode !== 'default') {
+            if(!newLabel && !this.labelbotIsActive && this.interactionMode !== 'default') {
                 this.resetInteractionMode();
             }
         }

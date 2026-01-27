@@ -152,9 +152,6 @@ export default {
             this.focusedPopupKey = annotation.id;
         },
         saveLabelbotAnnotation(annotation, tmpAnnotation) {
-            // TODO If the user the user starts with labelbot/with a label, and then switches to a label/labelbot, 
-            // should the timeline immediately reflect that? 
-            // TODO Start labelbot and quickly select a label, should the initialized callback take the selected label away?
             const originalId = tmpAnnotation? this.videoId : this.imageId;
 
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {

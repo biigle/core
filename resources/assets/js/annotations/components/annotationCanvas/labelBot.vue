@@ -137,11 +137,6 @@ export default {
 
             this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
             
-            /*this.tempCanvas.toBlob(blob => {
-                const url = URL.createObjectURL(blob);
-                window.open(url, '_blank');
-            }, "image/png");*/
-            
             return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
         createLabelbotImageFromRegularImage(points) {

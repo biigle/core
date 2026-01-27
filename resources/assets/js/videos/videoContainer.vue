@@ -302,18 +302,9 @@ export default {
                 return;
             }
             
-            let labels = []; 
-            if (this.selectedLabel) {
-                labels = [{
-                    label_id: this.selectedLabel.id,
-                    label: this.selectedLabel,
-                    user: this.user,
-                }];
-            }
-            
             let data = Object.assign({}, pendingAnnotation, {
                 shape_id: this.shapes[pendingAnnotation.shape],
-                labels: labels,
+                labels: this.getCurrentLabels(),
                 pending: true,
             });
 
@@ -393,11 +384,31 @@ export default {
                 annotation.startTracking();
             }
         },
+        getCurrentLabels() {
+            if (!this.selectedLabel) {
+                return [];
+            }
+            
+            return [{
+                label_id: this.selectedLabel.id,
+                label: this.selectedLabel,
+                user: this.user
+            }];
+        },
+        syncPendingAnnotationLabel() {
+            if (!this.pendingAnnotation) {
+                return;
+            }
+            
+            this.pendingAnnotation.labels = this.getCurrentLabels();
+            this.pendingAnnotation.revision++;
+        },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
+            this.syncPendingAnnotationLabel();
         },
         handleDeselectedLabel() {
-            this.selectedLabel = null;
+            this.handleSelectedLabel(null);
         },
         deleteSelectedAnnotationsOrKeyframes(force) {
             if (this.selectedAnnotations.length === 0) {
@@ -895,7 +906,7 @@ export default {
             handler(params) {
                 UrlParams.set(params);
             },
-        },
+        }
     },
     created() {
         let shapes = biigle.$require('annotations.shapes');
@@ -968,9 +979,9 @@ export default {
         this.loadVideo(this.videoId);
 
         // See: https://github.com/biigle/core/issues/391
-        /*if (navigator.userAgent.toLowerCase().includes('firefox')) {
+        if (navigator.userAgent.toLowerCase().includes('firefox')) {
             Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
-        }*/
+        }
     },
 };
 </script>

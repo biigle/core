@@ -67,11 +67,8 @@ export default {
             const g = this.laneCache[i];
             lane.forEach((a) => this.drawAnnotation(a, g));
         },
-        keyFor(annotation) {
-            return annotation.id;
-        },
         drawAnnotation(annotation, group) {
-            const key = this.keyFor(annotation);
+            const key = annotation.id;
 
             if (this.annotationCache[key]) {
                 this.annotationCache[key].addTo(group);
@@ -102,7 +99,7 @@ export default {
         lanes() {
             if (this.annotationCount < Object.keys(this.annotationCache).length) {
                 const annotationMap = {};
-                this.lanes.forEach(l => l.forEach(a => annotationMap[this.keyFor(a)] = true));
+                this.lanes.forEach(l => l.forEach(a => annotationMap[a.id] = true));
                 Object.keys(this.annotationCache)
                     .filter(k => !annotationMap[k])
                     .forEach((k) => {
