@@ -22,8 +22,6 @@ class VolumeObserver
         if ($volume->creator_id === null) {
             throw new Exception('Volume creator must not be null when creating a new volume.');
         }
-
-        return true;
     }
 
     /**
@@ -50,8 +48,6 @@ class VolumeObserver
         }
 
         $volume->deleteMetadata(true);
-
-        return true;
     }
 
     /**

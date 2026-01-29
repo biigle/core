@@ -28,8 +28,6 @@ abstract class AnnotationObserver
     {
         $this->getDeletingDispatch($annotation)
             ->onQueue(config('largo.remove_annotation_patches_queue'));
-
-        return true;
     }
 
     /**

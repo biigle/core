@@ -24,7 +24,5 @@ class ImageObserver
         if ($image->volume->thumbnails->pluck('id')->contains($image->id)) {
             $image->volume->flushThumbnailCache();
         }
-
-        return true;
     }
 }

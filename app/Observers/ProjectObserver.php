@@ -20,8 +20,6 @@ class ProjectObserver
         if ($project->creator_id === null) {
             throw new Exception('Project creator must not be null when creating a new project.');
         }
-
-        return true;
     }
 
     /**
