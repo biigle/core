@@ -25,22 +25,22 @@ return [
     ],
 
     'lifesciencelogin' => [
-       'client_id' => env('LSLOGIN_CLIENT_ID'),
-       'client_secret' => env('LSLOGIN_CLIENT_SECRET'),
-       'redirect' => '/auth/lslogin/callback',
+        'client_id' => env('LSLOGIN_CLIENT_ID'),
+        'client_secret' => env('LSLOGIN_CLIENT_SECRET'),
+        'redirect' => '/auth/lslogin/callback',
     ],
 
     'nfdilogin' => [
-       'client_id' => env('NFDILOGIN_CLIENT_ID'),
-       'client_secret' => env('NFDILOGIN_CLIENT_SECRET'),
-       'redirect' => '/auth/iam4nfdi/callback',
-   ],
+        'client_id' => env('NFDILOGIN_CLIENT_ID'),
+        'client_secret' => env('NFDILOGIN_CLIENT_SECRET'),
+        'redirect' => '/auth/iam4nfdi/callback',
+    ],
 
-   'haai' => [
-       'client_id' => env('HAAI_CLIENT_ID'),
-       'client_secret' => env('HAAI_CLIENT_SECRET'),
-       'redirect' => '/auth/haai/callback',
-   ],
+    'haai' => [
+        'client_id' => env('HAAI_CLIENT_ID'),
+        'client_secret' => env('HAAI_CLIENT_SECRET'),
+        'redirect' => '/auth/haai/callback',
+    ],
 
     'resend' => [
         'key' => env('RESEND_KEY'),
