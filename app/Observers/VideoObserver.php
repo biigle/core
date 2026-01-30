@@ -11,7 +11,7 @@ class VideoObserver
      * Handle the event of deleting a single video.
      *
      * @param Video $video
-     * @return bool
+     *
      */
     public function deleting(Video $video)
     {

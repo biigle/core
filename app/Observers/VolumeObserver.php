@@ -15,7 +15,7 @@ class VolumeObserver
      * A volume must not be created without having a creator.
      *
      * @param Volume $volume
-     * @return bool
+     *
      */
     public function creating(Volume $volume)
     {
@@ -28,7 +28,7 @@ class VolumeObserver
      * Handle the deletion of a volume.
      *
      * @param Volume $volume
-     * @return bool
+     *
      */
     public function deleting(Volume $volume)
     {

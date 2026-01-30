@@ -22,7 +22,7 @@ abstract class AnnotationObserver
      * Handle the event of deleting a single annotation.
      *
      * @param Annotation $annotation
-     * @return bool
+     *
      */
     public function deleting(Annotation $annotation)
     {

@@ -12,7 +12,7 @@ class ImageObserver
      * Handle the event of deleting a single image.
      *
      * @param Image $image
-     * @return bool
+     *
      */
     public function deleting(Image $image)
     {

@@ -13,7 +13,7 @@ class ProjectObserver
     /**
      * A project must not be created without having a creator.
      * @param \Biigle\Project $project
-     * @return bool
+     *
      */
     public function creating($project)
     {
