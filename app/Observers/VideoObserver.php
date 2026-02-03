@@ -11,7 +11,7 @@ class VideoObserver
      * Handle the event of deleting a single video.
      *
      * @param Video $video
-     * @return bool
+     *
      */
     public function deleting(Video $video)
     {
@@ -20,7 +20,5 @@ class VideoObserver
         if ($video->volume->thumbnails->pluck('id')->contains($video->id)) {
             $video->volume->flushThumbnailCache();
         }
-
-        return true;
     }
 }
