@@ -124,11 +124,13 @@ class TrackObject extends Job implements ShouldQueue
     {
         return FileCache::get($annotation->video, function ($video, $path) use ($annotation) {
             $script = config('videos.object_tracker_script');
-
+            $checkpointUrl = config('videos.model_url');
+            $checkpointPath = config('videos.model_path');
+            $this->maybeDownloadCheckpoint($checkpointUrl, $checkpointPath);
             try {
                 $inputPath = $this->createInputJson($annotation, $path);
                 $outputPath = $this->getOutputJsonPath($annotation->id);
-                $output = $this->python("{$script} {$inputPath} {$outputPath}");
+                $output = $this->python("{$script} {$inputPath} {$outputPath} {$checkpointPath}");
                 $keyframes = json_decode(File::get($outputPath), true);
             } catch (Exception $e) {
                 $input = File::get($inputPath);
@@ -145,6 +147,26 @@ class TrackObject extends Job implements ShouldQueue
 
             return $keyframes;
         });
+    }
+
+    /**
+     * Downloads the model checkpoint if they weren't downloaded yet.
+     *
+     * @param string $from
+     * @param string $to
+     */
+    protected function maybeDownloadCheckpoint($from, $to)
+    {
+        if (!File::exists($to)) {
+            if (!File::exists(dirname($to))) {
+                File::makeDirectory(dirname($to), 0700, true, true);
+            }
+            $success = @copy($from, $to);
+
+            if (!$success) {
+                throw new Exception("Failed to download checkpoint from '{$from}'.");
+            }
+        }
     }
 
     /**

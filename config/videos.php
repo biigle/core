@@ -15,7 +15,20 @@ return [
     /*
     | Path to the object tracking script.
     */
-    'object_tracker_script' => __DIR__ . '/../resources/scripts/ObjectTracker.py',
+    // 'object_tracker_script' => __DIR__ . '/../resources/scripts/ObjectTracker_new.py',
+    'object_tracker_script' => __DIR__ . '/../resources/scripts/ObjectTracker_new.py',
+
+    /*
+    | URL from which to download the model checkpoint.
+    |
+    | See: https://github.com/facebookresearch/segment-anything#model-checkpoints
+    */
+    'model_url' => env('SAM2_MODEL_URL', 'https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_small.pt'),
+
+    /*
+    | Path to store the model checkpoint to.
+    */
+    'model_path' => storage_path('videos').'/sam_checkpoint.pt',
 
     /*
     | Distance in pixels between the annotation center positions or circle radii of two
@@ -44,7 +57,7 @@ return [
      | Specifies which queue should be used for which job.
      */
     'process_new_video_queue' => env('VIDEOS_PROCESS_NEW_VIDEO_QUEUE', 'default'),
-    'track_object_queue' => env('VIDEOS_TRACK_OBJECT_QUEUE', 'high'),
+    'track_object_queue' => 'gpu',
 
     /*
      | Specifies the maximum number of running object tracking jobs per user. If the user
