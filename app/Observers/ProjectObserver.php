@@ -13,15 +13,13 @@ class ProjectObserver
     /**
      * A project must not be created without having a creator.
      * @param \Biigle\Project $project
-     * @return bool
+     *
      */
     public function creating($project)
     {
         if ($project->creator_id === null) {
             throw new Exception('Project creator must not be null when creating a new project.');
         }
-
-        return true;
     }
 
     /**

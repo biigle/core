@@ -3,6 +3,7 @@
         <div class="labels-tab__trees">
             <label-trees
                 :trees="labelTrees"
+                :sorting-project-ids="projectIds"
                 :focus-input="focusInputFindlabel"
                 :show-favourites="true"
                 :selected-favourite-label="selectedFavouriteLabel"

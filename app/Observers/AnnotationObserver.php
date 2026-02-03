@@ -22,14 +22,12 @@ abstract class AnnotationObserver
      * Handle the event of deleting a single annotation.
      *
      * @param Annotation $annotation
-     * @return bool
+     *
      */
     public function deleting(Annotation $annotation)
     {
         $this->getDeletingDispatch($annotation)
             ->onQueue(config('largo.remove_annotation_patches_queue'));
-
-        return true;
     }
 
     /**

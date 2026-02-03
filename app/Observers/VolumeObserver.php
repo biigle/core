@@ -15,22 +15,20 @@ class VolumeObserver
      * A volume must not be created without having a creator.
      *
      * @param Volume $volume
-     * @return bool
+     *
      */
     public function creating(Volume $volume)
     {
         if ($volume->creator_id === null) {
             throw new Exception('Volume creator must not be null when creating a new volume.');
         }
-
-        return true;
     }
 
     /**
      * Handle the deletion of a volume.
      *
      * @param Volume $volume
-     * @return bool
+     *
      */
     public function deleting(Volume $volume)
     {
@@ -50,8 +48,6 @@ class VolumeObserver
         }
 
         $volume->deleteMetadata(true);
-
-        return true;
     }
 
     /**

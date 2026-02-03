@@ -32,6 +32,7 @@ export default {
     data() {
         return {
             labelTrees: [],
+            projectIds: [],
             selectedLabel: null,
             focusInputFindlabel: false,
             showLabelbotInfo: false,
@@ -125,6 +126,7 @@ export default {
     },
     created() {
         this.labelTrees = biigle.$require('annotations.labelTrees');
+        this.projectIds = biigle.$require('annotations.projectIds');
 
         Keyboard.on('control+k', this.setFocusInputFindLabel, 0, this.listenerSet);
         Keyboard.on('Backquote', this.toggleLabelBot, 0, this.listenerSet);

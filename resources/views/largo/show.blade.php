@@ -6,6 +6,7 @@
     <script type="module">
         biigle.$declare('largo.user', {!! $user !!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
+        biigle.$declare('largo.projectIds', {!! $projects->pluck('id') !!});
         biigle.$declare('largo.mediaType', @if ($volume->isImageVolume()) 'image' @else 'video' @endif);
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
         biigle.$declare('largo.showImageAnnotationRoute', '{{ route('show-image-annotation', '/') }}/');

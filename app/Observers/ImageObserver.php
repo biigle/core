@@ -12,7 +12,7 @@ class ImageObserver
      * Handle the event of deleting a single image.
      *
      * @param Image $image
-     * @return bool
+     *
      */
     public function deleting(Image $image)
     {
@@ -24,7 +24,5 @@ class ImageObserver
         if ($image->volume->thumbnails->pluck('id')->contains($image->id)) {
             $image->volume->flushThumbnailCache();
         }
-
-        return true;
     }
 }
