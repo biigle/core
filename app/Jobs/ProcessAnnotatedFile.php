@@ -337,8 +337,6 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
 
         $generator = function () use ($input) {
-            $url = config('largo.extract_features_worker_url');
-
             // May be multiple file paths for individual video frames if a video is
             // processed.
             foreach ($input as $singleFilePath => $fileBoxes) {
@@ -348,18 +346,11 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                     $options['access'] = 'sequential';
                 }
 
-                // Make sure the image is in RGB format before sending it to the pyworker.
-                $image = $this->getVipsImage($singleFilePath, $options)->colourspace('srgb');
-                if ($image->hasAlpha()) {
-                    $image = $image->flatten();
-                }
+                $image = $this->getVipsImageForPyworker($singleFilePath, $options);
 
                 foreach ($fileBoxes as $id => $box) {
-                    $factor = static::DINO_PATCH_SIZE / max($box[2], $box[3]);
-                    $crop = $image->crop(...$box)->resize($factor);
-
                     try {
-                        $buffer = $crop->writeToBuffer('.png');
+                        $buffer = $this->getCropBufferForPyworker($image, $box);
                     } catch (VipsException $e) {
                         // Sometimes Vips can't write the crop because the image is
                         // corrupt. This annotation will be skipped.
@@ -375,13 +366,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
                      * slow. The separate Python worker is 20-30x faster than calling
                      * the Python script here.
                      */
-                    $response = Http::withBody($buffer, 'image/png')->post($url);
-                    if ($response->successful()) {
-                        yield [$id, $response->json()];
-                    } else {
-                        $pyException = $response->body();
-                        throw new Exception("Error in pyworker:\n {$pyException}");
-                    }
+                    $featureVector = $this->sendPyworkerRequest($buffer);
+                    yield [$id, $featureVector];
                 }
             }
         };
@@ -585,10 +571,17 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     }
 
     /**
-     * Get the vips image instance.
+     * Get the vips image instance for submission to the Python worker for feature
+     * vectors.
      */
-    protected function getVipsImage(string $path, array $options = [])
+    protected function getVipsImageForPyworker(string $path, array $options = [])
     {
-        return VipsImage::newFromFile($path, $options);
+        // Make sure the image is in RGB format before sending it to the pyworker.
+        $image = VipsImage::newFromFile($path, $options)->colourspace('srgb');
+        if ($image->hasAlpha()) {
+            $image = $image->flatten();
+        }
+
+        return $image;
     }
 }

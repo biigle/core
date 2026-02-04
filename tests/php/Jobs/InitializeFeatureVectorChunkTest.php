@@ -26,15 +26,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al = ImageAnnotationLabel::factory()->create();
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
-
-        $input = $job->input;
-        $this->assertCount(1, $input);
-        $path = array_keys($input)[0];
-        $this->assertFalse(File::exists($path));
-        $item = $input[$path];
-        $this->assertArrayHasKey($al->annotation_id, $item);
 
         $model = ImageAnnotationLabelFeatureVector::find($al->id);
         $this->assertNotNull($model);
@@ -53,7 +45,6 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al = VideoAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([], [$al->annotation_id]);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
 
         $model = VideoAnnotationLabelFeatureVector::find($al->id);
@@ -72,7 +63,6 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al = ImageAnnotationLabel::factory()->create();
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $al->delete();
         $job->handle();
         $this->assertNull(ImageAnnotationLabelFeatureVector::find($al->id));
@@ -88,7 +78,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'vector' => range(0, 383),
         ]);
         $job = new InitializeFeatureVectorChunkStub([$v->annotation_id], []);
-        $job->output = $v->annotation_id.',"'.json_encode(range(1, 384)).'"';
+        $job->featureVector = range(1, 384);
         $job->handle();
 
         $this->assertSame(range(0, 383), $v->fresh()->vector->toArray());
@@ -99,7 +89,6 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $disk = Storage::fake(config('largo.patch_storage_disk'));
         $al = ImageAnnotationLabel::factory()->create();
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
         $this->assertNull(ImageAnnotationLabelFeatureVector::find($al->id));
     }
@@ -111,7 +100,6 @@ class InitializeFeatureVectorChunkTest extends TestCase
         Storage::shouldReceive('disk')->andReturn($mock);
         $al = ImageAnnotationLabel::factory()->create();
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
         $this->assertNull(ImageAnnotationLabelFeatureVector::find($al->id));
     }
@@ -125,7 +113,6 @@ class InitializeFeatureVectorChunkTest extends TestCase
         ]);
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
 
         $model = ImageAnnotationLabelFeatureVector::find($al->id);
@@ -161,13 +148,10 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
 
-        $input = $job->input;
-        $path = array_keys($input)[0];
-        $item = $input[$path];
-        $this->assertSame([23, 0, 158, 135], $item[$a->id]);
+        $box = $job->capturedCropBoxes[0];
+        $this->assertSame([23, 0, 135, 135], $box);
     }
 
     public function testHandleCircle()
@@ -184,13 +168,10 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
 
-        $input = $job->input;
-        $path = array_keys($input)[0];
-        $item = $input[$path];
-        $this->assertSame([70, 47, 110, 87], $item[$a->id]);
+        $box = $job->capturedCropBoxes[0];
+        $this->assertSame([70, 47, 40, 40], $box);
     }
 
     public function testHandlePolygon()
@@ -207,13 +188,10 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
 
-        $input = $job->input;
-        $path = array_keys($input)[0];
-        $item = $input[$path];
-        $this->assertSame([70, 47, 110, 87], $item[$a->id]);
+        $box = $job->capturedCropBoxes[0];
+        $this->assertSame([70, 47, 40, 40], $box);
     }
 
     public function testHandleWholeFrame()
@@ -229,24 +207,33 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
         $disk->put(ProcessAnnotatedFile::getTargetPath($al->annotation), 'abc');
         $job = new InitializeFeatureVectorChunkStub([$al->annotation_id], []);
-        $job->output = $al->annotation_id.',"'.json_encode(range(0, 383)).'"';
         $job->handle();
 
-        $input = $job->input;
-        $path = array_keys($input)[0];
-        $item = $input[$path];
-        $this->assertSame([0, 0, 180, 135], $item[$a->id]);
+        $box = $job->capturedCropBoxes[0];
+        $this->assertSame([0, 0, 180, 135], $box);
     }
 }
 
 class InitializeFeatureVectorChunkStub extends InitializeFeatureVectorChunk
 {
-    public array $input = [];
-    public string $output = '';
+    public $featureVector;
+    public $capturedCropBoxes = [];
 
-    protected function python(string $inputPath, string $outputPath)
+    protected function getVipsImageForPyworker(string $buffer)
     {
-        $this->input = json_decode(File::get($inputPath), true);
-        File::put($outputPath, $this->output);
+        return (object) [];
+    }
+
+    protected function getCropBufferForPyworker($image, array $box): string
+    {
+        // Capture the bounding box for test assertions
+        $this->capturedCropBoxes[] = $box;
+        // Return a fake PNG buffer
+        return 'fake-png-buffer';
+    }
+
+    protected function sendPyworkerRequest(string $buffer): array
+    {
+        return $this->featureVector ?: range(0, 383);
     }
 }

@@ -14,6 +14,7 @@ use Bus;
 use Exception;
 use File;
 use FileCache;
+use Jcupitt\Vips\Image as VipsImage;
 use Log;
 use Mockery;
 use Storage;
@@ -467,15 +468,10 @@ class ProcessAnnotatedImageTest extends TestCase
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
-        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handle();
 
-        $input = $job->input;
-        $this->assertCount(1, $input);
-        $filename = array_keys($input)[0];
-        $this->assertArrayHasKey($annotation->id, $input[$filename]);
-        $box = $input[$filename][$annotation->id];
-        $this->assertSame([88, 88, 312, 312], $box);
+        $box = $job->capturedCropBoxes[0];
+        $this->assertSame([88, 88, 224, 224], $box);
 
         $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(1, $vectors);
@@ -504,7 +500,6 @@ class ProcessAnnotatedImageTest extends TestCase
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
-        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handle();
 
         $vectors = ImageAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
@@ -548,7 +543,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->featureVector = range(1, 384);
         $job->handle();
 
         $count = ImageAnnotationLabelFeatureVector::count();
@@ -575,7 +570,6 @@ class ProcessAnnotatedImageTest extends TestCase
             skipSvgs: true
         );
         $job->mock = $image;
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
@@ -597,7 +591,6 @@ class ProcessAnnotatedImageTest extends TestCase
             skipPatches: true,
             skipSvgs: true
         );
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
@@ -621,7 +614,6 @@ class ProcessAnnotatedImageTest extends TestCase
             skipFeatureVectors: true,
             skipPatches: true
         );
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
@@ -647,10 +639,6 @@ class ProcessAnnotatedImageTest extends TestCase
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
 
         $job = new ProcessAnnotatedImageStub($annotation1->image);
-        $job->output = [
-            [$annotation1->id, '"'.json_encode(range(1, 384)).'"'],
-            [$annotation2->id, '"'.json_encode(range(1, 384)).'"'],
-        ];
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -684,7 +672,6 @@ class ProcessAnnotatedImageTest extends TestCase
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
 
         $job = new ProcessAnnotatedImageStub($annotation1->image, only: [$annotation1->id]);
-        $job->output = [[$annotation1->id, '"'.json_encode(range(1, 384)).'"']];
         $job->mock = $image;
 
         $image->shouldReceive('crop')
@@ -729,11 +716,6 @@ class ProcessAnnotatedImageTest extends TestCase
     public function testHandleFeatureVectorTiledImage()
     {
         $vipsImage = $this->getImageMock(0);
-        $vipsImage->shouldReceive('crop')
-            ->once()
-            ->with(19888, 19888, 224, 224)
-            ->andReturn($vipsImage);
-        $vipsImage->shouldReceive('pngsave')->once()->andReturn($vipsImage);
 
         $disk = Storage::fake('test');
         $image = Image::factory()->create([
@@ -751,34 +733,20 @@ class ProcessAnnotatedImageTest extends TestCase
             skipPatches: true,
             skipSvgs: true
         );
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
         $job->mock = $vipsImage;
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $this->assertSame(1, ImageAnnotationLabelFeatureVector::count());
 
-        $input = $job->input;
-        $this->assertCount(1, $input);
-        $filename = array_keys($input)[0];
-        $this->assertArrayHasKey($annotation->id, $input[$filename]);
-        $box = $input[$filename][$annotation->id];
+        $box = $job->capturedCropBoxes[0];
         // These are the coordinates of the cropped image.
-        $this->assertSame([0, 0, 224, 224], $box);
+        $this->assertSame([19888, 19888, 224, 224], $box);
     }
 
     public function testHandleFeatureVectorTiledImageLargePatch()
     {
         $vipsImage = $this->getImageMock(0);
-        $vipsImage->shouldReceive('crop')
-            ->once()
-            ->with(0, 0, 10000, 10000)
-            ->andReturn($vipsImage);
-        $vipsImage->shouldReceive('resize')
-            ->once()
-            ->with(0.5)
-            ->andReturn($vipsImage);
-        $vipsImage->shouldReceive('pngsave')->once()->andReturn($vipsImage);
 
         $disk = Storage::fake('test');
         $image = Image::factory()->create([
@@ -796,20 +764,15 @@ class ProcessAnnotatedImageTest extends TestCase
             skipPatches: true,
             skipSvgs: true
         );
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
         $job->mock = $vipsImage;
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $this->assertSame(1, ImageAnnotationLabelFeatureVector::count());
 
-        $input = $job->input;
-        $this->assertCount(1, $input);
-        $filename = array_keys($input)[0];
-        $this->assertArrayHasKey($annotation->id, $input[$filename]);
-        $box = $input[$filename][$annotation->id];
+        $box = $job->capturedCropBoxes[0];
         // These are the coordinates of the cropped image.
-        $this->assertSame([0, 0, 5000, 5000], $box);
+        $this->assertSame([0, 0, 10000, 10000], $box);
     }
 
     public function testHandleFlatLineStringVector()
@@ -824,11 +787,9 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $job->handle();
 
-        $input = $job->input;
-        $filename = array_keys($input)[0];
-        $box = $input[$filename][$annotation->id];
+        $box = $job->capturedCropBoxes[0];
         // The height is padded to ensure a minimum size of 32 px.
-        $this->assertSame([300, 284, 400, 316], $box);
+        $this->assertSame([300, 284, 100, 32], $box);
     }
 
     protected function getImageMock($times = 1)
@@ -846,20 +807,31 @@ class ProcessAnnotatedImageTest extends TestCase
 
 class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
 {
-    public $input;
-    public $outputPath;
-    public $output = [];
+    public $mock;
+    public $featureVector;
+    public $capturedCropBoxes = [];
 
     public function getVipsImage(string $path, array $options = [])
     {
         return $this->mock;
     }
 
-    protected function python(string $inputPath, string $outputPath)
+    protected function getVipsImageForPyworker(string $path, array $options = [])
     {
-        $this->input = json_decode(File::get($inputPath), true);
-        $this->outputPath = $outputPath;
-        $csv = implode("\n", array_map(fn ($row) => implode(',', $row), $this->output));
-        File::put($outputPath, $csv);
+        // Return the mock directly, skipping RGB conversion
+        return $this->getVipsImage($path, $options);
+    }
+
+    protected function getCropBufferForPyworker($image, array $box): string
+    {
+        // Capture the bounding box for test assertions
+        $this->capturedCropBoxes[] = $box;
+        // Return a fake PNG buffer
+        return 'fake-png-buffer';
+    }
+
+    protected function sendPyworkerRequest(string $buffer): array
+    {
+        return $this->featureVector ?: range(0, 383);
     }
 }

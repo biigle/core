@@ -74,7 +74,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 
         foreach ($this->getFeatureVectors($models) as $row) {
             $annotation = $models->get($row[0]);
-            $vector = $row[1];
+            $vector = json_encode($row[1]);
             $i = $annotation->labels
                 ->map(fn ($annotationLabel) => [
                     'id' => $annotationLabel->id,
@@ -102,7 +102,6 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
         }
 
         $disk = Storage::disk(config('largo.patch_storage_disk'));
-        $url = config('largo.extract_features_worker_url');
         $thumbWidth = config('thumbnails.width');
         $thumbHeight = config('thumbnails.height');
         $padding = config('largo.patch_padding');
@@ -122,11 +121,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
                 continue;
             }
 
-            // Make sure the image is in RGB format before sending it to the pyworker.
-            $image = Image::newFromBuffer($thumbnail)->colourspace('srgb');
-            if ($image->hasAlpha()) {
-                $image = $image->flatten();
-            }
+            $image = $this->getVipsImageForPyworker($thumbnail);
 
             // Compute the crop box for the annotation within the thumbnail.
             if ($a->shape_id === Shape::wholeFrameId()) {
@@ -162,26 +157,31 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
                 }
             }
 
-            // Crop and resize the thumbnail to DINO patch size.
-            $factor = static::DINO_PATCH_SIZE / max($box[2], $box[3]);
-            $crop = $image->crop(...$box)->resize($factor);
-
             try {
-                $buffer = $crop->writeToBuffer('.png');
+                $buffer = $this->getCropBufferForPyworker($image, $box);
             } catch (VipsException $e) {
                 // Sometimes Vips can't write the crop because the image is corrupt.
                 // This annotation will be skipped.
                 continue;
             }
 
-            // See the ProcessAnnotatedFile job for an explanation of this.
-            $response = Http::withBody($buffer, 'image/png')->post($url);
-            if ($response->successful()) {
-                yield [$a->id, $response->json()];
-            } else {
-                $pyException = $response->body();
-                throw new Exception("Error in pyworker:\n {$pyException}");
-            }
+            $featureVector = $this->sendPyworkerRequest($buffer);
+            yield [$a->id, $featureVector];
         }
+    }
+
+    /**
+     * Get the vips image instance for submission to the Python worker for feature
+     * vectors.
+     */
+    protected function getVipsImageForPyworker(string $buffer)
+    {
+        // Make sure the image is in RGB format before sending it to the pyworker.
+        $image = VipsImage::newFromBuffer($buffer)->colourspace('srgb');
+        if ($image->hasAlpha()) {
+            $image = $image->flatten();
+        }
+
+        return $image;
     }
 }

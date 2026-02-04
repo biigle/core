@@ -75,6 +75,15 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     }
 
     /**
+     * Get the vips image instance.
+     */
+    protected function getVipsImage(string $path, array $options = [])
+    {
+        // Must not use sequential access because multiple patches could be extracted.
+        return VipsImage::newFromFile($path, $options);
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @return Builder<ImageAnnotation>

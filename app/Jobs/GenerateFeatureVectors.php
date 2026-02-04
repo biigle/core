@@ -5,8 +5,11 @@ namespace Biigle\Jobs;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
+use Jcupitt\Vips\Image as VipsImage;
 
 abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 {
@@ -236,5 +239,31 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         }
 
         return $boxes;
+    }
+
+    /**
+     * Get the byte string of the cropped and resizd patch for the Python worker.
+     */
+    protected function getCropBufferForPyworker(VipsImage $image, array $box): string
+    {
+        $factor = static::DINO_PATCH_SIZE / max($box[2], $box[3]);
+        $crop = $image->crop(...$box)->resize($factor);
+
+        return $crop->writeToBuffer('.png');
+    }
+
+    /**
+     * Send the PNG image crop to the Python worker and return the feature vector array.
+     */
+    protected function sendPyworkerRequest(string $buffer): array
+    {
+        $url = config('largo.extract_features_worker_url');
+        $response = Http::withBody($buffer, 'image/png')->post($url);
+        if ($response->successful()) {
+            return $response->json();
+        } else {
+            $pyException = $response->body();
+            throw new Exception("Error in pyworker:\n {$pyException}");
+        }
     }
 }
