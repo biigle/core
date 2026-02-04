@@ -190,34 +190,6 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         return array_map(fn ($v) => intval(round($v)), $box);
     }
 
-    /**
-     * Generate the input for the python script.
-     *
-     * TODO: Remove this?
-     *
-     * @param array $files VolumeFile instances of the files to which the annotations
-     * belong.
-     * @param array $paths Paths of locally cached files.
-     * @param \Illuminate\Support\Collection $annotations Annotations grouped by their
-     * file ID (e.g. image_id).
-     */
-    protected function generateInput(array $files, array $paths, Collection $annotations): array
-    {
-        $input = [];
-
-        foreach ($files as $index => $file) {
-            $path = $paths[$index];
-            $fileAnnotations = $annotations[$file->id];
-            $boxes = $this->generateAnnotationBoxes($file, $fileAnnotations);
-
-            if (!empty($boxes)) {
-                $input[$path] = $boxes;
-            }
-        }
-
-        return $input;
-    }
-
     protected function generateAnnotationBoxes(VolumeFile $file, Collection $annotations): array
     {
         $boxes = [];
