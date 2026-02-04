@@ -111,16 +111,15 @@ class VolumeController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
         $user = $request->user();
-        $volume->load(['projects' => function ($query) use ($user) {
-            $query
-                ->when(
-                    !$user->can('sudo'),
-                    fn ($query) =>
-                        $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
-                            ->where('project_user.user_id', $user->id)
-                )
-                ->select('projects.id', 'projects.name', 'projects.description');
-        }]);
+        if ($user->can('sudo')) {
+            $volume->load('projects');
+        } else {
+            $volume->load(['projects' => fn ($query) =>
+                $query->join('project_user', 'project_user.project_id', '=', 'projects.id')
+                    ->where('project_user.user_id', $user->id)
+                    ->select('projects.id', 'projects.name', 'projects.description')
+            ]);
+        }
 
         return $volume;
     }
