@@ -13,7 +13,6 @@ use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
 use Exception;
 use FFMpeg\Media\Video;
-use File;
 use FileCache;
 use Log;
 use Mockery;

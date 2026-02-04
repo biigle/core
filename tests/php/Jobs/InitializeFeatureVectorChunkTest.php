@@ -12,7 +12,6 @@ use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoAnnotationLabelFeatureVector;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\UnableToReadFile;
 use Mockery;
