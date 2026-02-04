@@ -52,7 +52,7 @@ services:
       # Services should share the cache directory.
       - TORCH_HOME=storage/largo_cache
       # This is required for much faster CPU processing.
-      # See: See also: https://pytorch.org/tutorials/intermediate/torchserve_with_ipex.html
+      # See: https://pytorch.org/tutorials/intermediate/torchserve_with_ipex.html
       - OMP_NUM_THREADS=2
     command: "python resources/scripts/ExtractFeaturesWorker.py"
 

@@ -310,7 +310,6 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $input = [];
 
         if (is_array($filePath)) {
-            $input = [];
             foreach ($boxes as $id => $box) {
                 // This can happen for individual video frames that could not be
                 // extracted.

@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from PIL import Image, ImageFile
-from queue import Queue
+from queue import Queue, Empty
 from threading import Thread, Event
 from torch import device, no_grad
 from torch.cuda import is_available as cuda_is_available
@@ -74,7 +74,7 @@ def worker():
         try:
             # Use timeout to periodically check shutdown_event
             request_item = request_queue.get(timeout=1)
-        except:
+        except Empty:
             # Timeout occurred, continue to check shutdown_event
             continue
 

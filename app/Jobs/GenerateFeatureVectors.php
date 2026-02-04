@@ -214,7 +214,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     }
 
     /**
-     * Get the byte string of the cropped and resizd patch for the Python worker.
+     * Get the byte string of the cropped and resized patch for the Python worker.
      */
     protected function getCropBufferForPyworker(VipsImage $image, array $box): string
     {
