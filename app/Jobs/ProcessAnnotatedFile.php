@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
-use Jcupitt\Vips\Image as VipsImage;
+use Jcupitt\Vips\Image;
 use Str;
 use SVG\Nodes\Shapes\SVGCircle;
 use SVG\Nodes\Shapes\SVGEllipse;
@@ -577,7 +577,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     protected function getVipsImageForPyworker(string $path, array $options = [])
     {
         // Make sure the image is in RGB format before sending it to the pyworker.
-        $image = VipsImage::newFromFile($path, $options)->colourspace('srgb');
+        $image = Image::newFromFile($path, $options)->colourspace('srgb');
         if ($image->hasAlpha()) {
             $image = $image->flatten();
         }

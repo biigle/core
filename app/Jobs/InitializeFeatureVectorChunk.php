@@ -177,7 +177,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
     protected function getVipsImageForPyworker(string $buffer)
     {
         // Make sure the image is in RGB format before sending it to the pyworker.
-        $image = VipsImage::newFromBuffer($buffer)->colourspace('srgb');
+        $image = Image::newFromBuffer($buffer)->colourspace('srgb');
         if ($image->hasAlpha()) {
             $image = $image->flatten();
         }
