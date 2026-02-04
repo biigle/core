@@ -118,7 +118,7 @@ class LabelBotService
      *
      * @param vector $featureVector The input feature vector to search for nearest neighbors.
      * @param int[] $trees The label tree IDs to filter the data by.
-     * @param int[] $topNLabels The array to store the top N labels based on the search results.
+     * @param string $model Class name of the feature vector model to use
      *
      * @return array The array of top N labels that are the closest to the input feature vector.
      */
