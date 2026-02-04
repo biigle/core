@@ -38,7 +38,7 @@ class ImageIfdoReportGenerator extends IfdoReportGenerator
     /**
      * Assemble a new DB query for the volume of this report.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<\Biigle\Image>
      */
     protected function query()
     {

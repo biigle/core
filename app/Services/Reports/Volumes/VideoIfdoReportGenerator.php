@@ -38,7 +38,7 @@ class VideoIfdoReportGenerator extends IfdoReportGenerator
     /**
      * Assemble a new DB query for the volume of this report.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return \Illuminate\Database\Eloquent\Builder<\Biigle\Video>
      */
     protected function query()
     {

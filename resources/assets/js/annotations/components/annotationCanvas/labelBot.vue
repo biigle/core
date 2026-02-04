@@ -9,6 +9,7 @@ import { clamp, trimCanvas } from '../../utils.js'
 
 // DINOv2 image input size.
 const INPUT_SIZE = 224;
+const HALF_INPUT_SIZE = 112;
 
 export default {
     emits: [
@@ -69,13 +70,11 @@ export default {
             let maxY = 0;
             // Point
             if (points.length === 2) {
-                // TODO: maybe use SAM or PTP module to convert point to shape
-                const tempRadius = 64; // Same radius than used for Largo thumbnails.
                 const [x, y] = points;
-                minX = Math.max(0, x - tempRadius);
-                minY = Math.max(0, y - tempRadius);
-                maxX = Math.min(image.width, x + tempRadius);
-                maxY = Math.min(image.height, y + tempRadius);
+                minX = Math.max(0, x - HALF_INPUT_SIZE);
+                minY = Math.max(0, y - HALF_INPUT_SIZE);
+                maxX = Math.min(image.width, x + HALF_INPUT_SIZE);
+                maxY = Math.min(image.height, y + HALF_INPUT_SIZE);
             } else if (points.length === 3) { // Circle
                 const [centerX, centerY, radius] = points;
                 minX = Math.max(0, centerX - radius);

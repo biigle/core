@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
-use Jcupitt\Vips\Image as VipsImage;
+use Jcupitt\Vips\Image;
 
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 {
@@ -133,7 +133,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      * @param float $time
      * @param int $trySeek
      *
-     * @return VipsImage
+     * @return Image
      */
     protected function getVideoFrame(Video $video, float $time, int $trySeek = 60)
     {
@@ -152,7 +152,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             $time = max(0, $time - 0.033333333);
         } while (empty($buffer) && $trySeek > 0);
 
-        return VipsImage::newFromBuffer($buffer);
+        return Image::newFromBuffer($buffer);
     }
 
     /**

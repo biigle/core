@@ -5,13 +5,21 @@ namespace Biigle\Jobs;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Process;
-use SplFileObject;
+use Illuminate\Support\Facades\Http;
+use Jcupitt\Vips\Image as VipsImage;
 
 abstract class GenerateFeatureVectors extends Job implements ShouldQueue
 {
+    /**
+     * Size of a square input patch for generating feature vectors with DINO.
+     *
+     * @var int
+     */
+    const DINO_PATCH_SIZE = 224;
+
     /**
      * Get the bounding box of an annotation
      *
@@ -21,7 +29,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     public function getAnnotationBoundingBox(
         array $points,
         Shape $shape,
-        int $pointPadding = 112,
+        int $pointPadding = self::DINO_PATCH_SIZE / 2,
         int $boxPadding = 0,
         int $minSize = 32
     ): array {
@@ -182,33 +190,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         return array_map(fn ($v) => intval(round($v)), $box);
     }
 
-    /**
-     * Generate the input for the python script.
-     *
-     * @param array $files VolumeFile instances of the files to which the annotations
-     * belong.
-     * @param array $paths Paths of locally cached files.
-     * @param \Illuminate\Support\Collection $annotations Annotations grouped by their
-     * file ID (e.g. image_id).
-     */
-    protected function generateInput(array $files, array $paths, Collection $annotations): array
-    {
-        $input = [];
-
-        foreach ($files as $index => $file) {
-            $path = $paths[$index];
-            $fileAnnotations = $annotations[$file->id];
-            $boxes = $this->generateFileInput($file, $fileAnnotations);
-
-            if (!empty($boxes)) {
-                $input[$path] = $boxes;
-            }
-        }
-
-        return $input;
-    }
-
-    protected function generateFileInput(VolumeFile $file, Collection $annotations): array
+    protected function generateAnnotationBoxes(VolumeFile $file, Collection $annotations): array
     {
         $boxes = [];
         foreach ($annotations as $a) {
@@ -223,13 +205,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
                 $box = $this->makeBoxContained($box, $file->width, $file->height);
             }
 
-            $zeroSize = $box[2] === 0 && $box[3] === 0;
-
-            if (!$zeroSize) {
-                // Convert width and height to "right" and "bottom" coordinates.
-                $box[2] += $box[0];
-                $box[3] += $box[1];
-
+            if ($box[2] !== 0 && $box[3] !== 0) {
                 $boxes[$a->id] = $box;
             }
         }
@@ -238,35 +214,28 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     }
 
     /**
-     * Run the Python command.
-     *
-     * @param string $inputPath
-     * @param string $outputPath
+     * Get the byte string of the cropped and resized patch for the Python worker.
      */
-    protected function python(string $inputPath, string $outputPath)
+    protected function getCropBufferForPyworker(VipsImage $image, array $box): string
     {
-        $python = config('largo.python');
-        $script = config('largo.extract_features_script');
-        $result = Process::forever()
-            ->env([
-                'TORCH_HOME' => config('largo.torch_hub_path'),
-                'OMP_NUM_THREADS' => config('largo.omp_num_threads'),
-            ])
-            ->run("{$python} -u {$script} {$inputPath} {$outputPath}")
-            ->throw();
+        $factor = static::DINO_PATCH_SIZE / max($box[2], $box[3]);
+        $crop = $image->crop(...$box)->resize($factor);
+
+        return $crop->writeToBuffer('.png');
     }
 
     /**
-     * Generator to read the output CSV row by row.
+     * Send the PNG image crop to the Python worker and return the feature vector array.
      */
-    protected function readOutputCsv(string $path): \Generator
+    protected function sendPyworkerRequest(string $buffer): array
     {
-        $file = new SplFileObject($path);
-        while (!$file->eof()) {
-            $csv = $file->fgetcsv();
-            if (count($csv) === 2) {
-                yield $csv;
-            }
+        $url = config('largo.extract_features_worker_url');
+        $response = Http::withBody($buffer, 'image/png')->post($url);
+        if ($response->successful()) {
+            return $response->json();
+        } else {
+            $pyException = $response->body();
+            throw new Exception("Error in pyworker:\n {$pyException}");
         }
     }
 }
