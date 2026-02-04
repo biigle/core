@@ -36,6 +36,26 @@ services:
     init: true
     command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0 --memory=0"
 
+  pyworker:
+    image: ghcr.io/biigle/pyworker
+    user: ${USER_ID}:${GROUP_ID}
+    build:
+      context: ./
+      dockerfile: .docker/pyworker.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    tmpfs:
+      - /tmp
+    init: true
+    environment:
+      # Services should share the cache directory.
+      - TORCH_HOME=storage/largo_cache
+      # This is required for much faster CPU processing.
+      # See: https://pytorch.org/tutorials/intermediate/torchserve_with_ipex.html
+      - OMP_NUM_THREADS=2
+    command: "python resources/scripts/ExtractFeaturesWorker.py"
+
   websockets:
     image: quay.io/soketi/soketi:1.4-16-alpine
     environment:

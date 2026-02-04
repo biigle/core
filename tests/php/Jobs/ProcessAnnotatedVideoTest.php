@@ -13,7 +13,6 @@ use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
 use Exception;
 use FFMpeg\Media\Video;
-use File;
 use FileCache;
 use Log;
 use Mockery;
@@ -510,15 +509,10 @@ class ProcessAnnotatedVideoTest extends TestCase
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
-        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handle();
 
-        $input = $job->input;
-        $this->assertCount(1, $input);
-        $filename = array_keys($input)[0];
-        $this->assertArrayHasKey($annotation->id, $input[$filename]);
-        $box = $input[$filename][$annotation->id];
-        $this->assertSame([88, 88, 312, 312], $box);
+        $box = $job->capturedCropBoxes[0];
+        $this->assertSame([88, 88, 224, 224 ], $box);
 
         $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
         $this->assertCount(1, $vectors);
@@ -548,7 +542,6 @@ class ProcessAnnotatedVideoTest extends TestCase
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
-        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handle();
 
         $vectors = VideoAnnotationLabelFeatureVector::where('annotation_id', $annotation->id)->get();
@@ -593,7 +586,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
+        $job->featureVector = range(1, 384);
         $job->handle();
 
         $count = VideoAnnotationLabelFeatureVector::count();
@@ -623,14 +616,9 @@ class ProcessAnnotatedVideoTest extends TestCase
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $videoMock;
-        $job->output = [[$annotation->id, '"'.json_encode(range(0, 383)).'"']];
         $job->handleFile($video, 'abc');
 
-        $input = $job->input;
-        $this->assertCount(1, $input);
-        $filename = array_keys($input)[0];
-        $this->assertArrayHasKey($annotation->id, $input[$filename]);
-        $box = $input[$filename][$annotation->id];
+        $box = $job->capturedCropBoxes[0];
         $this->assertSame([0, 0, 1000, 750], $box);
     }
 
@@ -653,7 +641,6 @@ class ProcessAnnotatedVideoTest extends TestCase
             skipSvgs: true
         );
         $job->mock = $video;
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
@@ -678,7 +665,6 @@ class ProcessAnnotatedVideoTest extends TestCase
             skipSvgs: true
         );
         $job->mock = $video;
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
@@ -704,7 +690,6 @@ class ProcessAnnotatedVideoTest extends TestCase
             skipPatches: true
         );
         $job->mock = $video;
-        $job->output = [[$annotation->id, '"'.json_encode(range(1, 384)).'"']];
 
         $job->handle();
         $prefix = fragment_uuid_path($annotation->video->uuid);
@@ -732,10 +717,6 @@ class ProcessAnnotatedVideoTest extends TestCase
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
 
         $job = new ProcessAnnotatedVideoStub($annotation1->video);
-        $job->output = [
-            [$annotation1->id, '"'.json_encode(range(1, 384)).'"'],
-            [$annotation2->id, '"'.json_encode(range(1, 384)).'"'],
-        ];
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -771,7 +752,6 @@ class ProcessAnnotatedVideoTest extends TestCase
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
 
         $job = new ProcessAnnotatedVideoStub($annotation1->video, only: [$annotation1->id]);
-        $job->output = [[$annotation1->id, '"'.json_encode(range(1, 384)).'"']];
         $job->mock = $video;
 
         $video->shouldReceive('crop')
@@ -829,7 +809,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $video->shouldReceive('crop')->never();
         $video->shouldReceive('writeToBuffer')->never();
         $job->handle();
-        $this->assertNull($job->input);
+        $this->assertEmpty($job->capturedCropBoxes);
     }
 
     public function testHandleVipsException()
@@ -848,7 +828,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $video->shouldReceive('crop')->never();
         $video->shouldReceive('writeToBuffer')->never();
         $job->handle();
-        $this->assertNull($job->input);
+        $this->assertEmpty($job->capturedCropBoxes);
     }
 
     public function testHandleFlatLineStringVector()
@@ -866,10 +846,8 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $videoMock;
         $job->handleFile($annotation->video, 'abc');
 
-        $input = $job->input;
-        $filename = array_keys($input)[0];
-        $box = $input[$filename][$annotation->id];
-        $this->assertSame([300, 284, 400, 316], $box);
+        $box = $job->capturedCropBoxes[0];
+        $this->assertSame([300, 284, 100, 32], $box);
     }
 
     protected function getFrameMock($times = 1)
@@ -888,10 +866,10 @@ class ProcessAnnotatedVideoTest extends TestCase
 
 class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 {
+    public $mock;
+    public $featureVector;
+    public $capturedCropBoxes = [];
     public $times = [];
-    public $input;
-    public $outputPath;
-    public $output = [];
     public $throwGetFrame = false;
 
     public function getVideo($path)
@@ -910,11 +888,22 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
         return $this->mock;
     }
 
-    protected function python(string $inputPath, string $outputPath)
+    protected function getVipsImageForPyworker(string $path, array $options = [])
     {
-        $this->input = json_decode(File::get($inputPath), true);
-        $this->outputPath = $outputPath;
-        $csv = implode("\n", array_map(fn ($row) => implode(',', $row), $this->output));
-        File::put($outputPath, $csv);
+        // Return the mock directly, skipping RGB conversion
+        return $this->getVideo($path);
+    }
+
+    protected function getCropBufferForPyworker($image, array $box): string
+    {
+        // Capture the bounding box for test assertions
+        $this->capturedCropBoxes[] = $box;
+        // Return a fake PNG buffer
+        return 'fake-png-buffer';
+    }
+
+    protected function sendPyworkerRequest(string $buffer): array
+    {
+        return $this->featureVector ?: range(0, 383);
     }
 }
