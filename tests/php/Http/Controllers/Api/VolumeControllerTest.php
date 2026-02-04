@@ -81,6 +81,23 @@ class VolumeControllerTest extends ApiTestCase
             ->assertJsonMissing(['name' => $project->name]);
     }
 
+    public function testShowGlobalAdmin()
+    {
+        $project = ProjectTest::create();
+        $id = $this->volume()->id;
+        $project->addVolumeId($id);
+
+        $this->beGlobalAdmin();
+        $this
+            ->get("/api/v1/volumes/{$id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $this->volume()->id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['name' => $this->project()->name])
+            // Global admins should see all projects.
+            ->assertJsonFragment(['name' => $project->name]);
+    }
+
     public function testUpdate()
     {
         $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
