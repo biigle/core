@@ -13,21 +13,33 @@
             <div v-if="showPrevNext" class="btn-group">
                 <control-button
                     icon="fa-step-backward"
-                    :title="enableJumpByFrame ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    :title="labelbotIsComputing
+                        ? 'Can’t change video while labelbot is computing'
+                        : (enableJumpByFrame
+                            ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'
+                            : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄')"
+                    :disabled="labelbotIsComputing"
                     @click="emitPrevious"
                     ></control-button>
                 <control-button
                     icon="fa-step-forward"
-                    :title="enableJumpByFrame ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    :title="labelbotIsComputing
+                        ? 'Can’t change video while labelbot is computing'
+                        : (enableJumpByFrame
+                            ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'
+                            : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄')"
+                    :disabled="labelbotIsComputing"
                     @click="emitNext"
                     ></control-button>
             </div>
             <div class="btn-group">
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking || null"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-backward"
-                    :title="jumpBackwardMessage"
+                    :title="labelbotIsComputing
+                        ? 'Can’t seek while labelbot is computing'
+                        : jumpBackwardMessage"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
@@ -53,8 +65,10 @@
                 <control-button
                     v-else
                     icon="fa-play"
-                    title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
-                    :disabled="hasError || null"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t play the video while labelbot is computing'
+                        : 'Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿'"
+                    :disabled="hasError || labelbotIsComputing || null"
                     @click="play"
                     ></control-button>
                 <control-button
@@ -66,9 +80,11 @@
                     ></control-button>
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking || null"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-forward"
-                    :title="jumpForwardMessage"
+                    :title="labelbotIsComputing
+                        ? 'Can’t seek while labelbot is computing'
+                        : jumpForwardMessage"
                     @click="jumpForward"
                     ></control-button>
             </div>
@@ -350,7 +366,19 @@
                 v-if="selectedLabel"
                 :label="selectedLabel"
                 ></label-indicator>
+            <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
         </div>
+        <labelbot-popup
+            v-for="annotation in labelbotOverlays"
+            :key="annotation.id"
+            :focused-popup-key="focusedPopupKey"
+            :annotation="annotation"
+            :timeout="labelbotTimeout"
+            @update="updateLabelbotLabel"
+            @close="closeLabelbotPopup"
+            @delete="handleDeleteLabelbotAnnotation"
+            @focus="handleLabelbotPopupFocused"
+        ></labelbot-popup>
     </div>
 </template>
 
@@ -362,6 +390,8 @@ import DrawInteractions from './videoScreen/drawInteractions.vue';
 import Indicators from './videoScreen/indicators.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelIndicator from '@/annotations/components/labelIndicator.vue';
+import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
+import LabelbotPopup from '@/annotations/components/labelbotPopup.vue';
 import Map from '@biigle/ol/Map';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
@@ -392,6 +422,9 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
+        'labelbot-image',
+        'swap',
+        'labelbot-is-computing'
     ],
     mixins: [
         VideoPlayback,
@@ -401,12 +434,14 @@ export default {
         Tooltips,
         Indicators,
         PolygonBrushInteractions,
+        LabelBot
     ],
     components: {
         controlButton: ControlButton,
         minimap: Minimap,
         labelIndicator: LabelIndicator,
         timerButton: TimerButton,
+        labelbotPopup: LabelbotPopup
     },
     props: {
         annotations: {
@@ -531,6 +566,18 @@ export default {
         autoPauseTimeout: {
             type: Number,
             default: 0,
+        },
+        labelbotOverlays: { 
+            type: Array, 
+            default: () => [] 
+        },
+        focusedPopupKey: { 
+            type: Number, 
+            default: -1 
+        },
+        labelbotTimeout: { 
+            type: Number, 
+            default: 1 
         },
     },
     data() {
@@ -662,6 +709,11 @@ export default {
         extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
         },
+        async emitLabelbotImage(feature) {
+            const points = this.getPointsFromGeometry(feature.getGeometry());
+
+            this.$emit('labelbot-image', this.createLabelbotImage(points));
+        },
         handleFeatureSelect(e) {
             let selected = this.selectInteraction.getFeatures()
                 .getArray()
@@ -715,7 +767,7 @@ export default {
             this.resetInteractionMode();
         },
         adaptKeyboardShortcuts() {
-            if(this.enableJumpByFrame) {
+            if (this.enableJumpByFrame) {
                 Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
@@ -777,7 +829,7 @@ export default {
                     // Ignore a==null because the selected annotation may not exist in the
                     // current video frame.
                     .forEach(a => a && features.push(a));
-            },
+            }
         },
         isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
@@ -800,6 +852,17 @@ export default {
                 this.initInitialCenterAndResolution(this.map);
             },
         },
+        labelbotIsComputing: {
+            immediate: true,
+            handler(v) {
+                this.$emit("labelbot-is-computing", v);
+            }
+        },
+        selectedLabel(newLabel) {
+            if(!newLabel && !this.labelbotIsActive && this.interactionMode !== 'default') {
+                this.resetInteractionMode();
+            }
+        }
     },
     created() {
         // markRaw is essential here!
@@ -809,6 +872,8 @@ export default {
 
         this.adaptKeyboardShortcuts();
         Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
+        
+        // TODO Control+... shortcuts don't work on MacOS
         Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },

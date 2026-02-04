@@ -1,6 +1,6 @@
 <template>
     <div class="track-headers">
-        <div class="track-header" v-for="track in tracks">
+        <div class="track-header" v-for="track in labeledTracks">
             <div
                 class="label-name"
                 v-text="track.label.name"
@@ -23,6 +23,11 @@ export default {
             type: Number,
             default: 0,
         },
+    },
+    computed: {
+        labeledTracks() {
+            return (this.tracks || []).filter(t => t?.label);
+        }
     },
     watch: {
         scrollTop(scrollTop) {

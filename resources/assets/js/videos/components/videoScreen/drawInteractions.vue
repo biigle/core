@@ -104,7 +104,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (this.hasNoSelectedLabel) {
+            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -137,7 +137,7 @@ export default {
                 this.drawInteraction = undefined;
             }
 
-            if (this.isDrawing && this.hasSelectedLabel) {
+            if (this.isDrawing && (this.hasSelectedLabel || this.labelbotIsActive)) {
                 this.pause();
 
                 if (this.isDrawingWholeFrame) {
@@ -170,9 +170,27 @@ export default {
                 }
             }
         },
+        skipToLastFrame(pendingAnnotation) {
+            const lastFrame = pendingAnnotation.frames[pendingAnnotation.frames.length - 1];
+            if (lastFrame === undefined) {
+                return;
+            }
+            
+            const r4 = t => Math.round(t * 10000) / 10000;
+            const target = r4(lastFrame);
+            this.pause();
+            if (r4(this.video.currentTime) !== target) {
+                this.video.currentTime = target;
+            }
+        },
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
+                    if (this.labelbotIsActive) {
+                        // If we don't skip to the last frame, no annotation would be visible as an anchor for the 
+                        // labelbot popup
+                        this.skipToLastFrame(this.pendingAnnotation);                   
+                    }
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
                         this.pendingAnnotation.frames.push(this.video.currentTime);
                     }
@@ -221,45 +239,50 @@ export default {
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
-
-            if (lastFrame === undefined || lastFrame < this.video.currentTime) {
-                this.pendingAnnotation.frames.push(this.video.currentTime);
-                this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
-
-                if (!this.video.ended && this.autoplayDraw > 0) {
-                    this.play();
-                    window.clearTimeout(this.autoplayDrawTimeout);
-                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
-                }
-
-                if (this.singleAnnotation) {
-                    if (this.isDrawingPoint) {
-                        if (this.isPointDoubleClick(e)) {
-                            // The feature is added to the source only after this event
-                            // is handled, so remove has to happen after the addfeature
-                            // event.
-                            this.pendingAnnotationSource.once('addfeature', function (e) {
-                                this.removeFeature(e.feature);
-                            });
-                            this.resetPendingAnnotation(this.pendingAnnotation.shape);
-                            return;
-                        }
-                        this.lastDrawnPointTime = new Date().getTime();
-                        this.lastDrawnPoint = e.feature.getGeometry();
-                    }
-                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-                }
-            } else {
+            if (!(lastFrame === undefined || lastFrame < this.video.currentTime)) {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
                 // to remove it.
                 this.pendingAnnotationSource.once('addfeature', function (e) {
                     this.removeFeature(e.feature);
                 });
+                this.$emit('pending-annotation', this.pendingAnnotation);
+                return;
             }
 
-            this.$emit('pending-annotation', this.pendingAnnotation);
+            this.pendingAnnotation.frames.push(this.video.currentTime);
+            this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
 
+            if (!this.video.ended && this.autoplayDraw > 0) {
+                this.play();
+                window.clearTimeout(this.autoplayDrawTimeout);
+                this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+            }
+            
+            // emitLabelbotImage sends a signal that will set the feature vector in videoContainer
+            // This needs to happen before the annotation is saved, so this code has to run first 
+            // before adding the finishDrawAnnotation callback
+            this.emitLabelbotImage(e.feature).then(() => {
+                this.$emit('pending-annotation', this.pendingAnnotation);
+            });
+
+            if (this.singleAnnotation) {
+                if (this.isDrawingPoint) {
+                    if (this.isPointDoubleClick(e)) {
+                        // The feature is added to the source only after this event
+                        // is handled, so remove has to happen after the addfeature
+                        // event.
+                        this.pendingAnnotationSource.once('addfeature', function (e) {
+                            this.removeFeature(e.feature);
+                        });
+                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                        return;
+                    }
+                    this.lastDrawnPointTime = new Date().getTime();
+                    this.lastDrawnPoint = e.feature.getGeometry();
+                }
+                this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
+            }
         },
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN

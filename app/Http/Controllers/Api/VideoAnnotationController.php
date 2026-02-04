@@ -5,7 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StoreVideoAnnotation;
 use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Biigle\Jobs\TrackObject;
-use Biigle\Label;
+use Biigle\Services\LabelBot\LabelBotService;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
@@ -200,7 +200,7 @@ class VideoAnnotationController extends Controller
      * @param StoreVideoAnnotation $request
      * @return VideoAnnotation
      */
-    public function store(StoreVideoAnnotation $request)
+    public function store(StoreVideoAnnotation $request, LabelBotService $labelBotService)
     {
         if ($request->shouldTrack()) {
             $maxJobs = config('videos.track_object_max_jobs_per_user');
@@ -225,14 +225,15 @@ class VideoAnnotationController extends Controller
         } catch (Exception $e) {
             throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
         }
+        
+        $label = $labelBotService->predictLabelForImage($request->video->volume_id, $request, $annotation);
 
-        $label = Label::findOrFail($request->input('label_id'));
         $this->authorize('attach-label', [$annotation, $label]);
 
-        $annotation = DB::transaction(function () use ($annotation, $request) {
+        $annotation = DB::transaction(function () use ($annotation, $request, $label) {
             $annotation->save();
             VideoAnnotationLabel::create([
-                'label_id' => $request->input('label_id'),
+                'label_id' => $label->id,
                 'user_id' => $request->user()->id,
                 'annotation_id' => $annotation->id,
             ]);

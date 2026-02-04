@@ -4,6 +4,8 @@ import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
+import Labelbot from '@/annotations/mixins/labelbot.vue';
+import LabelsTab from '@/annotations/components/labelsTab.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
@@ -34,12 +36,13 @@ class VideoTooLargeError extends VideoError {}
 const URL_CURRENT_TIME_DIVISOR = 1e4
 
 export default {
-    mixins: [LoaderMixin],
+    mixins: [LoaderMixin, Labelbot],
     components: {
         videoScreen: VideoScreen,
         videoTimeline: VideoTimeline,
         sidebar: Sidebar,
         sidebarTab: SidebarTab,
+        labelsTab: LabelsTab,
         labelTrees: LabelTrees,
         settingsTab: SettingsTab,
         annotationsTab: AnnotationsTab,
@@ -116,6 +119,8 @@ export default {
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
             projectIds: [],
+            screenshotPromise: undefined,
+            labelbotIsComputing: false,
         };
     },
     computed: {
@@ -221,7 +226,7 @@ export default {
             return annotation;
         },
         seek(time, force) {
-            if (this.seeking) {
+            if (this.seeking || this.labelbotIsComputing) {
                 return Promise.resolve();
             }
 
@@ -313,11 +318,7 @@ export default {
                     points: points,
                     frames: frames,
                     shape_id: this.shapes[pendingAnnotation.shape],
-                    labels: [{
-                        label_id: this.selectedLabel.id,
-                        label: this.selectedLabel,
-                        user: this.user,
-                    }],
+                    labels: this.getCurrentLabels(),
                     pending: true,
                 };
 
@@ -339,11 +340,40 @@ export default {
 
             let annotation = Object.assign({}, pendingAnnotation, {
                 shape_id: this.shapes[pendingAnnotation.shape],
-                label_id: this.selectedLabel ? this.selectedLabel.id : 0,
+                label_id: this.selectedLabel ? this.selectedLabel.id : undefined,
             });
 
             delete annotation.shape;
 
+            return this.saveVideoAnnotation(annotation, tmpAnnotation);
+        },
+        takeScreenshotPromise() {
+            const screenshotPromise = this.screenshotPromise;
+            this.screenshotPromise = null;
+            return screenshotPromise;
+        },
+        async saveVideoAnnotation(annotation, tmpAnnotation) {
+            if (!this.labelbotIsActive) {
+                return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
+            }
+
+            const errorHandler = (error) => {
+                Messages.danger(error?.body?.message ?? error?.message ?? 'LabelBOT failed.');
+                this.removeAnnotation(tmpAnnotation);
+            }
+
+            const result = await this.takeScreenshotPromise();
+            if (result.success) {
+                annotation.labelbotImage = result.screenshot;
+            } else {
+                errorHandler(result.error);
+                return;
+            }
+
+            return this.saveLabelbotAnnotation(annotation, tmpAnnotation)
+                .catch(errorHandler);
+        },
+        saveVideoAnnotationDirectly(annotation, tmpAnnotation) {
             return VideoAnnotationApi.save({id: this.videoId}, annotation)
                 .then((res) => {
                     if (tmpAnnotation.track) {
@@ -352,13 +382,11 @@ export default {
                     return this.addCreatedAnnotation(res);
                 }, (res) => {
                     handleErrorResponse(res);
-                    this.disableJobTracking = res.status === 429;
+                    this.disableJobTracking = false;
+                    throw res;
                 })
                 .finally(() => {
-                    let index = this.annotations.indexOf(tmpAnnotation);
-                    if (index !== -1) {
-                        this.annotations.splice(index, 1);
-                    }
+                    this.removeAnnotation(tmpAnnotation);
                 });
         },
         trackAnnotation(pendingAnnotation) {
@@ -371,11 +399,30 @@ export default {
                 annotation.startTracking();
             }
         },
+        getCurrentLabels() {
+            if (!this.selectedLabel) {
+                return [];
+            }
+
+            return [{
+                label_id: this.selectedLabel.id,
+                label: this.selectedLabel,
+                user: this.user
+            }];
+        },
+        syncPendingAnnotationLabel() {
+            if (!this.pendingAnnotation) {
+                return;
+            }
+
+            this.pendingAnnotation.labels = this.getCurrentLabels();
+        },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
+            this.syncPendingAnnotationLabel();
         },
         handleDeselectedLabel() {
-            this.selectedLabel = null;
+            this.handleSelectedLabel(null);
         },
         deleteSelectedAnnotationsOrKeyframes(force) {
             if (this.selectedAnnotations.length === 0) {
@@ -499,16 +546,16 @@ export default {
                 .attachAnnotationLabel(this.selectedLabel)
                 .catch(handleErrorResponse);
         },
-        swapAnnotationLabel(annotation, force) {
+        swapAnnotationLabelTo(annotation, newLabel, force) {
             let labels = annotation.labels.slice();
             if (!force) {
                 labels = labels.filter(l => l.user_id === this.user.id);
             }
-            let lastLabel = labels.sort((a, b) => a.id - b.id).pop();
+            const lastLabel = labels.sort((a, b) => a.id - b.id).pop();
 
             // Can't use this.attachAnnotationLabel() because detachAnnotationLabel()
             // should not be called on error.
-            annotation.attachAnnotationLabel(this.selectedLabel)
+            return annotation.attachAnnotationLabel(newLabel)
                 .then(() => {
                     if (lastLabel) {
                         this.detachAnnotationLabel(annotation, lastLabel);
@@ -516,8 +563,14 @@ export default {
                 })
                 .catch(handleErrorResponse);
         },
+        swapAnnotationLabel(annotation, force) {
+            return this.swapAnnotationLabelTo(annotation, this.selectedLabel, force);
+        },
         forceSwapAnnotationLabel(annotation) {
             this.swapAnnotationLabel(annotation, true);
+        },
+        handleSwapLabel(annotation, label) {
+            return this.swapAnnotationLabelTo(annotation, label, true);
         },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
@@ -663,7 +716,7 @@ export default {
             }
         },
         showPreviousVideo() {
-            if (!this.hasSiblingVideos) {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
             this.reset();
@@ -673,7 +726,7 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         showNextVideo() {
-            if (!this.hasSiblingVideos) {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
             this.reset();
@@ -808,6 +861,10 @@ export default {
             Events.emit('videos.map.init', map);
         },
         togglePlaying() {
+            if (this.labelbotIsComputing) {
+                return;
+            }
+
             if (this.video.paused) {
                 if (this.autoPauseTimeout) {
                     this.cancelAutoPlay();
@@ -842,6 +899,14 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
+        setScreenshotPromise(screenshotPromise) {
+            // We use a promise to wait for the screenshot so that the user can't finish creating the annotation
+            // before the screenshot was taken
+            this.screenshotPromise = screenshotPromise;
+        },
+        setLabelbotIsComputing(value) {
+            this.labelbotIsComputing = value;
+        }
     },
     watch: {
         'settings.playbackRate'(rate) {
@@ -855,7 +920,7 @@ export default {
             handler(params) {
                 UrlParams.set(params);
             },
-        },
+        }
     },
     created() {
         let shapes = biigle.$require('annotations.shapes');

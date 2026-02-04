@@ -46,7 +46,9 @@
 import CurrentTime from './currentTime.vue';
 import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
-import { computed } from 'vue'
+import { computed } from 'vue';
+
+const UNLABELED = '__unlabeled__';
 
 export default {
     emits: [
@@ -143,7 +145,14 @@ export default {
         // (see below), the labelMap can be a computed property because the labels do not
         // change frequently and watching their reactive properties is not expensive.
         labelMap() {
-            let map = {};
+            // Non-breaking space (NBSP) for empty labels to prevent div from collapsing
+            let map = {
+                [UNLABELED]: {
+                    'id': UNLABELED,
+                    'name': '\u00A0',
+                    'color': '5bc0de'
+                }
+            };
             let annotations = this.annotations;
 
             if (this.pendingAnnotation) {
@@ -184,6 +193,7 @@ export default {
     },
     methods: {
         updateAnnotationTracks() {
+            // Unlabeled annotations for labelbot are grouped together
             let map = {};
             let annotations = this.annotations;
 
@@ -193,16 +203,26 @@ export default {
             }
 
             annotations.forEach(function (annotation) {
-                annotation.labels.forEach(function (label) {
-                    if (!map.hasOwnProperty(label.label_id)) {
-                        map[label.label_id] = [];
+                if (annotation.labels.length === 0) {
+                    if (!map.hasOwnProperty(UNLABELED)) {
+                        map[UNLABELED] = [];
                     }
+                    map[UNLABELED].push(annotation);
+                } else {
+                    annotation.labels.forEach(function (label) {
+                        if (!map.hasOwnProperty(label.label_id)) {
+                            map[label.label_id] = [];
+                        }
 
-                    map[label.label_id].push(annotation);
-                });
+                        map[label.label_id].push(annotation);
+                    });
+                }
             });
 
-            this.annotationTracks = Object.keys(map).map((labelId) => {
+            const keys = Object.keys(map);
+            this.moveElementToFront(keys, UNLABELED);
+
+            this.annotationTracks = keys.map((labelId) => {
                 return {
                     id: labelId,
                     label: this.labelMap[labelId],
@@ -314,6 +334,15 @@ export default {
             this.scrollTop = 0;
             this.hoverTime = 0;
             this.$refs.scrollStrip.reset();
+        },
+        moveElementToFront(array, element) {
+            const i = array.indexOf(element);
+            if (i > 0) {
+                array.splice(i, 1);
+                array.unshift(element);
+            }
+
+            return array;
         },
     },
     watch: {

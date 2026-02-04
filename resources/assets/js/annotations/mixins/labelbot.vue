@@ -142,7 +142,6 @@ export default {
                     Keyboard.setActiveSet('default');
                 }
             }
-
         },
         closeAllLabelbotPopups() {
             this.labelbotOverlays = [];
@@ -152,8 +151,8 @@ export default {
         changeLabelbotFocusedPopup(annotation) {
             this.focusedPopupKey = annotation.id;
         },
-        storeLabelbotAnnotation(annotation) {
-            const currentImageId = this.imageId;
+        saveLabelbotAnnotation(annotation, tmpAnnotation) {
+            const originalId = tmpAnnotation? this.videoId : this.imageId;
 
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
                 return Promise.reject({body: {message: 'LabelBOT is not finished initializing.'}});
@@ -164,13 +163,19 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-
-            return this.generateFeatureVector(annotation.labelbotImage)
-                .then(featureVector =>  annotation.feature_vector = featureVector)
-                .then(() => this.labelbotRequestsInFlight += 1)
-                .then(() => AnnotationsStore.create(currentImageId, annotation))
-                .then((annotation) => {
-                    if (currentImageId === this.imageId) {
+            return Promise.resolve()
+                .then(() => this.labelbotRequestsInFlight++)
+                .then(() => this.generateFeatureVector(annotation.labelbotImage))
+                .then(featureVector => annotation.feature_vector = featureVector)
+                .then(() => {
+                    if (tmpAnnotation) {
+                        return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
+                    } else {
+                        return AnnotationsStore.create(originalId, annotation);
+                    }
+                })
+                .then(annotation => {
+                    if (originalId === (tmpAnnotation? this.videoId : this.imageId)) {
                         this.showLabelbotPopup(annotation);
                     }
 
@@ -190,9 +195,7 @@ export default {
                     throw e;
                 })
                 .finally((annotation) => {
-                    if (this.labelbotRequestsInFlight > 0) {
-                        this.labelbotRequestsInFlight -= 1;
-                    }
+                    this.labelbotRequestsInFlight--;
 
                     return annotation;
                 });

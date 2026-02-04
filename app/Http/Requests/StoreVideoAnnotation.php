@@ -35,7 +35,6 @@ class StoreVideoAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'label_id' => 'required|integer|exists:labels,id',
             'shape_id' => 'required|integer|exists:shapes,id',
             'points' => [
                 'required_unless:shape_id,'.Shape::wholeFrameId(),
@@ -43,6 +42,7 @@ class StoreVideoAnnotation extends FormRequest
             ],
             'points.*' => 'array',
             'points.*.*' => 'numeric',
+            'label_id' => 'integer|exists:labels,id',
             'frames' => 'required|array',
             'frames.*' => 'required|numeric|min:0|max:'.$this->video->duration,
             'track' => 'filled|boolean',

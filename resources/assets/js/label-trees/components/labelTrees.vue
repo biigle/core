@@ -146,6 +146,10 @@ export default {
             type: Array,
             default: undefined,
         },
+        hasPendingAnnotation: {
+            type: Boolean,
+            default: false
+        },
     },
     computed: {
         customOrderStorageKeys() {
@@ -225,6 +229,9 @@ export default {
             }
         },
         handleDeselect(label, e) {
+            if (this.hasPendingAnnotation) {
+                return;
+            }
             this.$emit('deselect', label, e);
             this.events.emit('deselect', {label, e});
         },

@@ -51,6 +51,10 @@ export default {
             type: String,
             required: true,
         },
+        hasPendingAnnotation: {
+            type: Boolean,
+            default: false
+        }
     },
     computed: {
         plugins() {
@@ -92,21 +96,31 @@ export default {
             this.selectedLabel = label;
             this.$emit('select', label);
         },
-        handleDeselectedLabel() {
+        handleDeselectedLabel({force = false} = {}) {
+            if (!force && this.hasPendingAnnotation) {
+                return;
+            }
+
             this.selectedLabel = null;
             this.$emit('select', null);
         },
         toggleLabelBot() {
             if (this.labelbotIsActive) {
+                if (this.hasPendingAnnotation) {
+                    // Disabling labelbot leads to no label being selected, 
+                    // which we can't have if an annotation is being created
+                    return; 
+                }
                 this.handleLabelbotOff();
             } else {
                 this.handleLabelbotOn();
             }
         },
         handleLabelbotOn() {
-            // Deselect the selected label when LabelBOT is on
+            // The user can't manually deselect a label when an annotation is being created,
+            // but LabelBOT needs to force the deselection
             if (this.selectedLabel) {
-                this.handleDeselectedLabel();
+                this.handleDeselectedLabel({force: true});
             }
             this.$emit('update-labelbot-state', LABELBOT_STATES.READY);
         },
