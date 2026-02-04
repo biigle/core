@@ -7,6 +7,8 @@ from torch.cuda import is_available as cuda_is_available
 from torch.hub import load as hub_load
 import io
 import json
+import signal
+import sys
 import torchvision.transforms as T
 import traceback
 
@@ -18,6 +20,7 @@ class RequestItem:
         self.exception = None
 
 request_queue = Queue()
+shutdown_event = Event()
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -67,8 +70,13 @@ def worker():
         T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
     ])
 
-    while True:
-        request_item = request_queue.get()
+    while not shutdown_event.is_set():
+        try:
+            # Use timeout to periodically check shutdown_event
+            request_item = request_queue.get(timeout=1)
+        except:
+            # Timeout occurred, continue to check shutdown_event
+            continue
 
         try:
             # The image is expected to arrive as RGB.
@@ -85,8 +93,31 @@ def worker():
         request_queue.task_done()
 
 if __name__ == '__main__':
-    worker_thread = Thread(target=worker, daemon=True)
+    httpd = ThreadingHTTPServer(('', 80), RequestHandler)
+
+    def signal_handler(signum, frame):
+        shutdown_event.set()
+        # shutdown() must be called from a different thread than serve_forever()
+        Thread(target=httpd.shutdown).start()
+
+    # Register signal handlers for graceful shutdown
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+
+    worker_thread = Thread(target=worker, daemon=False)
     worker_thread.start()
 
-    httpd = ThreadingHTTPServer(('', 80), RequestHandler)
-    httpd.serve_forever()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print('Shutting down HTTP server...', file=sys.stderr)
+        shutdown_event.set()
+        httpd.shutdown()
+        httpd.server_close()
+
+        worker_thread.join(timeout=5)
+
+        print('Shutdown complete.', file=sys.stderr)
+        sys.exit(0)
