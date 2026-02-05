@@ -222,7 +222,7 @@ class ImageAnnotationController extends Controller
 
         $annotation->points = $points;
         
-        $label = $labelBotService->predictLabelForImage($image->volume_id, $request, $annotation);
+        $label = $labelBotService->getLabelForAnnotation($image->volume_id, $request, $annotation);
 
         $this->authorize('attach-label', [$annotation, $label]);
 

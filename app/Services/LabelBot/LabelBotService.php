@@ -8,6 +8,8 @@ use Biigle\Label;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\VideoAnnotation;
+use Biigle\Annotation;
+use Illuminate\Http\Request;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Cache;
 use DB;
@@ -18,12 +20,20 @@ use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class LabelBotService
 {
-    public function predictLabelForImage($volumeId, $request, $annotation)
+    /**
+     * Get the label of a new annotation either by using a label_id or a feature_vector
+     * from the request.
+     */
+    public function getLabelForAnnotation(
+        int $volumeId,
+        Request $request,
+        Annotation $annotation
+    ): Label
     {
         if (!$request->has('feature_vector')) {
             return Label::findOrFail($request->input('label_id'));
         }
-        
+
         $user = $request->user();
         $topNLabels = [];
         $cacheKey = $this->enforceRateLimit($user);
@@ -53,7 +63,7 @@ class LabelBotService
         // Get labels sorted by their top N order.
         $labelModels = Label::whereIn('id', $topNLabels)->get()->keyBy('id');
         $labelBotLabels = array_map(fn ($id) => $labelModels->get($id), $topNLabels);
-        
+
         // Add labelBOTlabels attribute to the response.
         $annotation->append('labelBOTLabels');
         $label = array_shift($labelBotLabels);
@@ -61,10 +71,10 @@ class LabelBotService
             // Attach the remaining labels (if any).
             $annotation->labelBOTLabels = $labelBotLabels;
         }
-        
+
         return $label;
     }
-    
+
     protected function enforceRateLimit($user)
     {
         $cacheKey = "labelbot-requests-{$user->id}";
@@ -74,10 +84,10 @@ class LabelBotService
         if ($currentRequests >= $maxRequests) {
             throw new TooManyRequestsHttpException(message: "You already have {$maxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
         }
-        
+
         return $cacheKey;
     }
-    
+
     /**
      * Get all label trees that are used by all projects which are visible to the user.
      *
@@ -151,14 +161,14 @@ class LabelBotService
     {
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
-        $k = config('labelbot.K');
+        $k = (int) config('labelbot.K');
         DB::statement("SET hnsw.ef_search = $k");
 
         $subquery = $model::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
             ->orderBy('distance')
             ->limit($k);
-        
+
         return DB::query()->fromSub($subquery, 'subquery')
             ->whereIn('label_tree_id', $trees)
             ->groupBy('label_id')
@@ -189,7 +199,7 @@ class LabelBotService
 
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
-        $k = config('labelbot.K');
+        $k = (int) config('labelbot.K');
         DB::statement("SET hnsw.ef_search = $k");
 
         # Iterative scans can use strict or relaxed ordering.
@@ -213,7 +223,7 @@ class LabelBotService
             ->pluck('label_id')
             ->toArray();
     }
-    
+
     protected function getFeatureVectorModelFor($annotation)
     {
         if ($annotation instanceof ImageAnnotation) {
@@ -221,7 +231,7 @@ class LabelBotService
         } elseif ($annotation instanceof VideoAnnotation) {
             return VideoAnnotationLabelFeatureVector::class;
         }
-        
+
         throw new InvalidArgumentException("Invalid annotation passed to labelbot service");
     }
 }

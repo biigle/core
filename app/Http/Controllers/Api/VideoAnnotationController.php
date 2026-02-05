@@ -226,7 +226,7 @@ class VideoAnnotationController extends Controller
             throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
         }
         
-        $label = $labelBotService->predictLabelForImage($request->video->volume_id, $request, $annotation);
+        $label = $labelBotService->getLabelForAnnotation($request->video->volume_id, $request, $annotation);
 
         $this->authorize('attach-label', [$annotation, $label]);
 
