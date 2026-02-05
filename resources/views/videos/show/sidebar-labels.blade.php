@@ -1,5 +1,7 @@
 <sidebar-tab name="labels" icon="tags" title="Label trees">
     <labels-tab
+        :label-trees="labelTrees"
+        :project-ids="projectIds"
         :labelbot-state="labelbotState"
         :has-pending-annotation="!!pendingAnnotation"
         v-on:select="handleSelectedLabel"

@@ -51,7 +51,7 @@ export default {
         },
         labelbotIsComputing() {
             return this.labelbotState === LABELBOT_STATES.COMPUTING;
-        }
+        },
     },
     methods: {
         updateLabelbotLabel(event) {
@@ -135,7 +135,7 @@ export default {
             }
 
             this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
-            
+
             return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
         createLabelbotImageFromRegularImage(points) {

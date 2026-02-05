@@ -200,6 +200,14 @@ export default {
                     return annotation;
                 });
         },
+        initLabelBot() {
+            // Label trees may not be set if the user can't annotate.
+            if (!this.labelTrees.some(t => t.labels.length > 0)) {
+                this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
+            }
+
+            this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');
+        },
     },
     watch: {
         labelbotIsActive(active) {
@@ -224,15 +232,6 @@ export default {
                 this.closeLabelbotPopup(this.labelbotOverlays[0]);
             }
         },
-    },
-    created() {
-        const labelTrees = biigle.$require('annotations.labelTrees');
-        // Label trees may not be set if the user can't annotate.
-        if (!Array.isArray(labelTrees) || !labelTrees.some(t => t.labels.length > 0)) {
-            this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
-        }
-
-        this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');
     },
 };
 </script>

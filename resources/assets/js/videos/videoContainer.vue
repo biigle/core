@@ -121,6 +121,10 @@ export default {
             projectIds: [],
             screenshotPromise: undefined,
             labelbotIsComputing: false,
+    },
+    provide() {
+        return {
+            labelTrees: this.labelTrees,
         };
     },
     computed: {
@@ -987,6 +991,8 @@ export default {
                 this.videoPopout.close();
             }
         });
+
+        this.initLabelBot();
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before

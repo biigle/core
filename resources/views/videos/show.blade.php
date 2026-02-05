@@ -54,13 +54,12 @@
 @push('scripts')
 <script type="module">
     biigle.$declare('videos.volumeId', {{$volume->id}});
-    biigle.$declare('videos.projectIds', {{$projectIds}});
     biigle.$declare('videos.id', {{$video->id}});
     biigle.$declare('videos.errors', {!!$errors!!});
     biigle.$declare('videos.videoFileUri', '{!! url('api/v1/videos/:id/file') !!}');
     @can('addAnnotation', $video)
         biigle.$declare('videos.labelTrees', {!! $labelTrees !!});
-        biigle.$declare('annotations.labelTrees', {!! $labelTrees !!});
+        biigle.$declare('videos.projectIds', {{$projectIds}});
         biigle.$declare('labelbot.onnxUrl', '{{config('labelbot.onnx_url')}}');
     @endcan
     biigle.$declare('annotations.shapes', {!! $shapes !!});
