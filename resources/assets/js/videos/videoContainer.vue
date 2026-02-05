@@ -119,7 +119,6 @@ export default {
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
             projectIds: [],
-            labelbotIsComputing: false,
         };
     },
     provide() {
@@ -901,9 +900,6 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
-        setLabelbotIsComputing(value) {
-            this.labelbotIsComputing = value;
-        }
     },
     watch: {
         'settings.playbackRate'(rate) {

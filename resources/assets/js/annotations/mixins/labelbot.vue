@@ -38,6 +38,9 @@ export default {
         labelbotIsActive() {
             return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;
         },
+        labelbotIsComputing() {
+            return this.labelbotState === LABELBOT_STATES.COMPUTING;
+        },
         labelbotOverlayCount() {
             return this.labelbotOverlays.length;
         },
@@ -152,7 +155,7 @@ export default {
             this.focusedPopupKey = annotation.id;
         },
         saveLabelbotAnnotation(annotation, tmpAnnotation) {
-            const originalId = tmpAnnotation? this.videoId : this.imageId;
+            const originalId = tmpAnnotation ? this.videoId : this.imageId;
 
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
                 return Promise.reject({body: {message: 'LabelBOT is not finished initializing.'}});

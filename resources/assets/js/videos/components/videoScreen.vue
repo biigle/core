@@ -423,7 +423,6 @@ export default {
         'initMap',
         'cancel-auto-play',
         'swap',
-        'labelbot-is-computing'
     ],
     mixins: [
         VideoPlayback,
@@ -845,12 +844,6 @@ export default {
                 this.initLayersAndInteractions(this.map);
                 this.initInitialCenterAndResolution(this.map);
             },
-        },
-        labelbotIsComputing: {
-            immediate: true,
-            handler(v) {
-                this.$emit("labelbot-is-computing", v);
-            }
         },
         selectedLabel(newLabel) {
             if(!newLabel && !this.labelbotIsActive && this.interactionMode !== 'default') {

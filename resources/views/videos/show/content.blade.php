@@ -91,7 +91,6 @@
       v-on:is-invalid-shape="handleInvalidShape"
       v-on:popout="handleVideoPopout"
       v-on:cancel-auto-play="cancelAutoPlay"
-      v-on:labelbot-is-computing="setLabelbotIsComputing"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

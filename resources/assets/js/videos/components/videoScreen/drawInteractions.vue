@@ -187,9 +187,9 @@ export default {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
                     if (this.labelbotIsActive) {
-                        // If we don't skip to the last frame, no annotation would be visible as an anchor for the 
-                        // labelbot popup
-                        this.skipToLastFrame(this.pendingAnnotation);                   
+                        // If we don't skip to the last frame, no annotation would be
+                        // visible as an anchor for the  labelbot popup.
+                        this.skipToLastFrame(this.pendingAnnotation);
                     }
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
                         this.pendingAnnotation.frames.push(this.video.currentTime);
