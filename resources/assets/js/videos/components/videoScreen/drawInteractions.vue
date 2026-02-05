@@ -218,6 +218,7 @@ export default {
                 shape: shape,
                 frames: [],
                 points: [],
+                screenshotPromise: null,
             };
             this.$emit('pending-annotation', null);
         },
@@ -239,7 +240,7 @@ export default {
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
-            if (!(lastFrame === undefined || lastFrame < this.video.currentTime)) {
+            if (lastFrame !== undefined && lastFrame >= this.video.currentTime) {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
                 // to remove it.
@@ -249,22 +250,6 @@ export default {
                 this.$emit('pending-annotation', this.pendingAnnotation);
                 return;
             }
-
-            this.pendingAnnotation.frames.push(this.video.currentTime);
-            this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
-
-            if (!this.video.ended && this.autoplayDraw > 0) {
-                this.play();
-                window.clearTimeout(this.autoplayDrawTimeout);
-                this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
-            }
-            
-            // emitLabelbotImage sends a signal that will set the feature vector in videoContainer
-            // This needs to happen before the annotation is saved, so this code has to run first 
-            // before adding the finishDrawAnnotation callback
-            this.emitLabelbotImage(e.feature).then(() => {
-                this.$emit('pending-annotation', this.pendingAnnotation);
-            });
 
             if (this.singleAnnotation) {
                 if (this.isDrawingPoint) {
@@ -283,6 +268,27 @@ export default {
                 }
                 this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
             }
+
+            this.pendingAnnotation.frames.push(this.video.currentTime);
+            const points = this.getPointsFromGeometry(e.feature.getGeometry());
+            this.pendingAnnotation.points.push(points);
+
+            // The LabelBOT image is always created because the user could decide to
+            // enable LabelBOT while they draw the pending annotation.
+            if (!this.pendingAnnotation.screenshotPromise) {
+                this.pendingAnnotation.screenshotPromise = this.createLabelbotImage(points);
+            }
+
+            // Wait for the LabelBOT image before playing the video again.
+            if (!this.video.ended && this.autoplayDraw > 0) {
+                this.pendingAnnotation.screenshotPromise.then(() => {
+                    this.play();
+                    window.clearTimeout(this.autoplayDrawTimeout);
+                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                });
+            }
+
+            this.$emit('pending-annotation', this.pendingAnnotation);
         },
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN

@@ -119,8 +119,8 @@ export default {
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
             projectIds: [],
-            screenshotPromise: undefined,
             labelbotIsComputing: false,
+        };
     },
     provide() {
         return {
@@ -328,6 +328,8 @@ export default {
 
                 this.pendingAnnotation = markRaw(new Annotation(data));
             }
+
+            this.pendingAnnotation.screenshotPromise = pendingAnnotation.screenshotPromise;
         },
         createAnnotation(pendingAnnotation) {
             this.updatePendingAnnotation(pendingAnnotation);
@@ -342,19 +344,14 @@ export default {
                 tmpAnnotation.frames[frameCount - 1] = this.videoDuration;
             }
 
-            let annotation = Object.assign({}, pendingAnnotation, {
+            let annotation = {
+                points: pendingAnnotation.points,
+                frames: pendingAnnotation.frames,
                 shape_id: this.shapes[pendingAnnotation.shape],
                 label_id: this.selectedLabel ? this.selectedLabel.id : undefined,
-            });
-
-            delete annotation.shape;
+            };
 
             return this.saveVideoAnnotation(annotation, tmpAnnotation);
-        },
-        takeScreenshotPromise() {
-            const screenshotPromise = this.screenshotPromise;
-            this.screenshotPromise = null;
-            return screenshotPromise;
         },
         async saveVideoAnnotation(annotation, tmpAnnotation) {
             if (!this.labelbotIsActive) {
@@ -366,7 +363,8 @@ export default {
                 this.removeAnnotation(tmpAnnotation);
             }
 
-            const result = await this.takeScreenshotPromise();
+            // TODO: fix error handling
+            const result = await tmpAnnotation.screenshotPromise;
             if (result.success) {
                 annotation.labelbotImage = result.screenshot;
             } else {
@@ -902,11 +900,6 @@ export default {
         cancelAutoPlay() {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
-        },
-        setScreenshotPromise(screenshotPromise) {
-            // We use a promise to wait for the screenshot so that the user can't finish creating the annotation
-            // before the screenshot was taken
-            this.screenshotPromise = screenshotPromise;
         },
         setLabelbotIsComputing(value) {
             this.labelbotIsComputing = value;

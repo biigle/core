@@ -163,10 +163,14 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            return Promise.resolve()
-                .then(() => this.labelbotRequestsInFlight++)
-                .then(() => this.generateFeatureVector(annotation.labelbotImage))
+            // Make sure the LabelBOT image is not sent in the API request to create the
+            // annotation.
+            const labelbotImage = annotation.labelbotImage;
+            delete annotation.labelbotImage;
+
+            return this.generateFeatureVector(labelbotImage)
                 .then(featureVector => annotation.feature_vector = featureVector)
+                .then(() => this.labelbotRequestsInFlight += 1)
                 .then(() => {
                     if (tmpAnnotation) {
                         return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
@@ -195,7 +199,9 @@ export default {
                     throw e;
                 })
                 .finally((annotation) => {
-                    this.labelbotRequestsInFlight--;
+                    if (this.labelbotRequestsInFlight > 0) {
+                        this.labelbotRequestsInFlight -= 1;
+                    }
 
                     return annotation;
                 });

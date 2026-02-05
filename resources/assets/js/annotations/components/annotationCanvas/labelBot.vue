@@ -185,14 +185,14 @@ export default {
                         height: this.video.videoHeight,
                         layer: this.videoLayer
                     });
-                } else if (!this.image.tiled) {
-                    screenshot = this.createLabelbotImageFromRegularImage(points);
-                } else {
+                } else if (this.image.tiled) {
                     screenshot = await this.createLabelbotImageFromLayer(points, {
                         width: this.image.width,
                         height: this.image.height,
                         layer: this.tiledImageLayer
                     });
+                } else {
+                    screenshot = this.createLabelbotImageFromRegularImage(points);
                 }
 
                 return {success: true, screenshot: screenshot};

@@ -422,7 +422,6 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
-        'labelbot-image',
         'swap',
         'labelbot-is-computing'
     ],
@@ -434,7 +433,7 @@ export default {
         Tooltips,
         Indicators,
         PolygonBrushInteractions,
-        LabelBot
+        LabelBot,
     ],
     components: {
         controlButton: ControlButton,
@@ -708,11 +707,6 @@ export default {
         },
         extractAnnotationFromFeature(feature) {
             return feature.get('annotation');
-        },
-        async emitLabelbotImage(feature) {
-            const points = this.getPointsFromGeometry(feature.getGeometry());
-
-            this.$emit('labelbot-image', this.createLabelbotImage(points));
         },
         handleFeatureSelect(e) {
             let selected = this.selectInteraction.getFeatures()
