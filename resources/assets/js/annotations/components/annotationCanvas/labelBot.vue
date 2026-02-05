@@ -116,7 +116,7 @@ export default {
 
             return [left, top, Math.max(0, right - left), Math.max(0, bottom - top)];
         },
-        getScaledImageSelection(image, x, y, width, height) {
+        getScaledImageSelection(source, x, y, width, height) {
             if (!this.tempCanvas) {
                 this.tempCanvas = document.createElement('canvas');
                 this.tempCanvas.width = INPUT_SIZE;
@@ -127,21 +127,26 @@ export default {
             // Find rectangular intersection of selection and image
             [x, y, width, height] = this.calculateRectangleIntersection(
                 [x, y, width, height], 
-                [0, 0, image.width, image.height]
+                [0, 0, source.width || source.videoWidth, source.height || source.videoHeight]
             ); 
 
             if (width === 0 || height === 0) {
-                throw new Error("Selection was outside of the image");
+                throw new Error("Selection was outside of the source");
             }
 
-            this.tempCanvasCtx.drawImage(image, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
+            this.tempCanvasCtx.drawImage(source, x, y, width, height, 0, 0, INPUT_SIZE, INPUT_SIZE);
 
             return this.tempCanvasCtx.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
         },
-        createLabelbotImageFromRegularImage(points) {
+        createLabelbotImageFromImage(points) {
             const [x, y, width, height] = this.getBoundingBox(this.image.source.width, this.image.source.height, points);
 
             return this.getScaledImageSelection(this.image.source, x, y, width, height);
+        },
+        createLabelbotImageFromVideo(points) {
+            const [x, y, width, height] = this.getBoundingBox(this.video.videoWidth, this.video.videoHeight, points);
+
+            return this.getScaledImageSelection(this.video, x, y, width, height);
         },
         async createLabelbotImageFromLayer(points, { width, height, layer }) {
             // Coordinates in image coordinates
@@ -180,11 +185,7 @@ export default {
 
             try {
                 if (this.video) {
-                    screenshot = await this.createLabelbotImageFromLayer(points, {
-                        width: this.video.videoWidth,
-                        height: this.video.videoHeight,
-                        layer: this.videoLayer
-                    });
+                    screenshot = this.createLabelbotImageFromVideo(points);
                 } else if (this.image.tiled) {
                     screenshot = await this.createLabelbotImageFromLayer(points, {
                         width: this.image.width,
@@ -192,7 +193,7 @@ export default {
                         layer: this.tiledImageLayer
                     });
                 } else {
-                    screenshot = this.createLabelbotImageFromRegularImage(points);
+                    screenshot = this.createLabelbotImageFromImage(points);
                 }
 
                 return {success: true, screenshot: screenshot};
