@@ -439,7 +439,17 @@ export default {
             let promise;
 
             if (this.labelbotIsActive) {
-                promise = this.saveLabelbotAnnotation(annotation);
+                let imageId = this.imageId;
+                promise = this.saveLabelbotAnnotation(
+                    annotation,
+                    (annotation) => AnnotationsStore.create(imageId, annotation)
+                );
+
+                promise.then((annotation) => {
+                    if (imageId === this.imageId) {
+                        this.showLabelbotPopup(annotation);
+                    }
+                });
             } else {
                 annotation.label_id = this.selectedLabel.id;
                 promise = AnnotationsStore.create(this.imageId, annotation);

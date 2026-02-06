@@ -600,12 +600,7 @@ export default {
                 // would be an ugly style flickering of the feature while the
                 // labelbotImage is computed.
                 try {
-                    const result = await this.createLabelbotImage(points);
-                    if (result.success) {
-                        labelbotImage = result.screenshot;
-                    } else {
-                        throw result.error;
-                    }
+                    labelbotImage = await this.createLabelbotImage(points);
                 } catch (error) {
                     removeCallback();
                     Messages.danger(error.message);

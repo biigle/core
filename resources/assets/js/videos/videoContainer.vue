@@ -317,77 +317,81 @@ export default {
                 this.pendingAnnotation.frames = frames;
                 this.pendingAnnotation.points = points;
             } else {
-                let data = {
+                this.pendingAnnotation = markRaw(new Annotation({
                     points: points,
                     frames: frames,
                     shape_id: this.shapes[pendingAnnotation.shape],
                     labels: this.getCurrentLabels(),
                     pending: true,
-                };
-
-                this.pendingAnnotation = markRaw(new Annotation(data));
+                    screenshotPromise: pendingAnnotation.screenshotPromise,
+                }));
             }
-
-            this.pendingAnnotation.screenshotPromise = pendingAnnotation.screenshotPromise;
         },
-        createAnnotation(pendingAnnotation) {
+        async createAnnotation(pendingAnnotation) {
             this.updatePendingAnnotation(pendingAnnotation);
-            let tmpAnnotation = this.pendingAnnotation;
-            this.annotations.push(tmpAnnotation);
+            // Save this because it is still  required when there may already be another
+            // this.pendingAnnotation.
+            pendingAnnotation = this.pendingAnnotation;
+            this.annotations.push(pendingAnnotation);
 
             // Catch an edge case where the time of the last key frame is greater than
             // the actual video duration.
             // See: https://github.com/biigle/core/issues/305
-            let frameCount = tmpAnnotation.frames.length;
-            if (this.videoDuration > 0 && frameCount > 0 && tmpAnnotation.frames[frameCount - 1] > this.videoDuration) {
-                tmpAnnotation.frames[frameCount - 1] = this.videoDuration;
+            let frameCount = pendingAnnotation.frames.length;
+            if (this.videoDuration > 0 && frameCount > 0 && pendingAnnotation.frames[frameCount - 1] > this.videoDuration) {
+                pendingAnnotation.frames[frameCount - 1] = this.videoDuration;
             }
 
-            let annotation = {
+            let newAnnotation = {
                 points: pendingAnnotation.points,
                 frames: pendingAnnotation.frames,
                 shape_id: this.shapes[pendingAnnotation.shape],
-                label_id: this.selectedLabel ? this.selectedLabel.id : undefined,
             };
 
-            return this.saveVideoAnnotation(annotation, tmpAnnotation);
-        },
-        async saveVideoAnnotation(annotation, tmpAnnotation) {
             if (!this.labelbotIsActive) {
-                return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
+                newAnnotation.label_id = this.selectedLabel.id;
+
+                return this.saveAnnotation(newAnnotation, pendingAnnotation);
             }
 
-            const errorHandler = (error) => {
-                Messages.danger(error?.body?.message ?? error?.message ?? 'LabelBOT failed.');
-                this.removeAnnotation(tmpAnnotation);
-            }
+            try {
+                newAnnotation.labelbotImage = await pendingAnnotation.screenshotPromise;
+            } catch (e) {
+                Messages.danger(e.message);
+                this.removeAnnotation(pendingAnnotation);
 
-            // TODO: fix error handling
-            const result = await tmpAnnotation.screenshotPromise;
-            if (result.success) {
-                annotation.labelbotImage = result.screenshot;
-            } else {
-                errorHandler(result.error);
                 return;
             }
 
-            return this.saveLabelbotAnnotation(annotation, tmpAnnotation)
-                .catch(errorHandler);
+            const promise = this.saveLabelbotAnnotation(
+                newAnnotation,
+                (annotation) => this.saveAnnotation(annotation, pendingAnnotation)
+            );
+
+            const videoId = this.videoId;
+            promise.then((annotation) => {
+                if (videoId === this.videoId) {
+                    this.showLabelbotPopup(annotation);
+                }
+            });
+
+            return promise;
+
         },
-        saveVideoAnnotationDirectly(annotation, tmpAnnotation) {
-            return VideoAnnotationApi.save({id: this.videoId}, annotation)
+        saveAnnotation(newAnnotation, pendingAnnotation) {
+            return VideoAnnotationApi.save({id: this.videoId}, newAnnotation)
                 .then((res) => {
-                    if (tmpAnnotation.track) {
+                    if (pendingAnnotation.track) {
                         this.disableJobTracking = res.body.trackingJobLimitReached;
                     }
                     return this.addCreatedAnnotation(res);
                 }, (res) => {
                     handleErrorResponse(res);
-                    this.disableJobTracking = false;
+                    this.disableJobTracking = res.status === 429;
                     throw res;
                 })
                 .finally(() => {
-                    this.removeAnnotation(tmpAnnotation);
+                    this.removeAnnotation(pendingAnnotation);
                 });
         },
         trackAnnotation(pendingAnnotation) {

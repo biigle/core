@@ -183,23 +183,19 @@ export default {
         async createLabelbotImage(points) {
             let screenshot = null;
 
-            try {
-                if (this.video) {
-                    screenshot = this.createLabelbotImageFromVideo(points);
-                } else if (this.image.tiled) {
-                    screenshot = await this.createLabelbotImageFromLayer(points, {
-                        width: this.image.width,
-                        height: this.image.height,
-                        layer: this.tiledImageLayer
-                    });
-                } else {
-                    screenshot = this.createLabelbotImageFromImage(points);
-                }
-
-                return {success: true, screenshot: screenshot};
-            } catch(error) {
-                return {success: false, error: error};
+            if (this.video) {
+                screenshot = this.createLabelbotImageFromVideo(points);
+            } else if (this.image.tiled) {
+                screenshot = await this.createLabelbotImageFromLayer(points, {
+                    width: this.image.width,
+                    height: this.image.height,
+                    layer: this.tiledImageLayer
+                });
+            } else {
+                screenshot = this.createLabelbotImageFromImage(points);
             }
+
+            return screenshot;
         },
     },
     watch: {

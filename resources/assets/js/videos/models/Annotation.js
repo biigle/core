@@ -16,6 +16,7 @@ export default class Annotation {
         this.shape_id = args.shape_id;
         this.created_at = args.created_at;
         this.updated_at = args.updated_at;
+        this.screenshotPromise = args.screenshotPromise;
         this._labels = ref(args.labels);
         this._labelBOTLabels = ref(args.labelBOTLabels);
 

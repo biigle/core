@@ -154,9 +154,7 @@ export default {
         changeLabelbotFocusedPopup(annotation) {
             this.focusedPopupKey = annotation.id;
         },
-        saveLabelbotAnnotation(annotation, tmpAnnotation) {
-            const originalId = tmpAnnotation ? this.videoId : this.imageId;
-
+        saveLabelbotAnnotation(annotation, saveCallback) {
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
                 return Promise.reject({body: {message: 'LabelBOT is not finished initializing.'}});
             }
@@ -172,20 +170,13 @@ export default {
             delete annotation.labelbotImage;
 
             return this.generateFeatureVector(labelbotImage)
-                .then(featureVector => annotation.feature_vector = featureVector)
-                .then(() => this.labelbotRequestsInFlight += 1)
-                .then(() => {
-                    if (tmpAnnotation) {
-                        return this.saveVideoAnnotationDirectly(annotation, tmpAnnotation);
-                    } else {
-                        return AnnotationsStore.create(originalId, annotation);
-                    }
+                .then((featureVector) => {
+                    this.labelbotRequestsInFlight += 1;
+                    annotation.feature_vector = featureVector;
+
+                    return saveCallback(annotation);
                 })
                 .then(annotation => {
-                    if (originalId === (tmpAnnotation? this.videoId : this.imageId)) {
-                        this.showLabelbotPopup(annotation);
-                    }
-
                     if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
