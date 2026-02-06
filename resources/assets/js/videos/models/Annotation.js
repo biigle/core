@@ -5,11 +5,13 @@ import {interpolate} from 'polymorph-js';
 import {ref, watch} from 'vue';
 
 let SHAPE_CACHE;
+let PENDING_ID_COUNTER = 0;
 
 export default class Annotation {
     constructor(args) {
-        this._id = args.id;
-        this._randomId = `${Date.now()}${Math.random()}`;
+        // With LabelBOT, multiple pending annotations could be created, so they need
+        // unique IDs (that don't clash with the database IDs).
+        this.id = args.id || 'pending-' + PENDING_ID_COUNTER++;
         this._frames = ref(args.frames);
         this._points = args.points;
         this.video_id = args.video_id;
@@ -36,13 +38,6 @@ export default class Annotation {
         }, { immediate: true });
     }
     
-    get id() {
-        // TODO This was needed because with labelbot there can be multiple tmpAnnotations without
-        // their own ids which may need to be removed
-        // But it may cause issues if anywhere in the code the random id will accessed and stored, and later the actual id will be accessed instead
-        return this._id ?? this._randomId;
-    }
-
     get pending() {
         return this._pending.value;
     }
