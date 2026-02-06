@@ -2,17 +2,17 @@
 
 namespace Biigle\Services\LabelBot;
 
+use Biigle\Annotation;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\VideoAnnotation;
-use Biigle\Annotation;
-use Illuminate\Http\Request;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Cache;
 use DB;
+use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Pgvector\Laravel\Vector;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -28,8 +28,7 @@ class LabelBotService
         int $volumeId,
         Request $request,
         Annotation $annotation
-    ): Label
-    {
+    ): Label {
         if (!$request->has('feature_vector')) {
             return Label::findOrFail($request->input('label_id'));
         }
