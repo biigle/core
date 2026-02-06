@@ -877,7 +877,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $response->assertSuccessful();
         $response->assertJsonPath('labelBOTLabels.0.id', $label2->id);
-        $response->assertJsonMissingPath('labelBOTLabels.1.id', $label3->id);
+        $response->assertJsonMissingPath('labelBOTLabels.1');
     }
 
     public function testUpdate()
