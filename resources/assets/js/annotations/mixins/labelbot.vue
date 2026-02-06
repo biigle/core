@@ -1,5 +1,4 @@
 <script>
-import AnnotationsStore from '../stores/annotations.js';
 import Keyboard from '@/core/keyboard.js';
 import LabelbotWorker from '../workers/labelbot.js?worker';
 import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
