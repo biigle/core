@@ -127,7 +127,10 @@ export default {
             // Find rectangular intersection of selection and image
             [x, y, width, height] = this.calculateRectangleIntersection(
                 [x, y, width, height], 
-                [0, 0, source.width || source.videoWidth, source.height || source.videoHeight]
+                // Look for videoWidth and videoHeight first because a video also
+                // has width and height but they are 0. We only want to use width and
+                // height if the source is an image.
+                [0, 0, source.videoWidth ?? source.width, source.videoHeight ?? source.height]
             ); 
 
             if (width === 0 || height === 0) {
@@ -162,7 +165,7 @@ export default {
 
             const visibleImagePartWidth = bottomRightX - topLeftX;
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 layer.once('postrender', event => {
                     const mapScreenshot = trimCanvas(event.context.canvas);
                     const scale = mapScreenshot.width / visibleImagePartWidth;
@@ -170,11 +173,7 @@ export default {
                     // Coordinates in screenshot coordinates
                     [x, y, w, h] = [(x - topLeftX) * scale, (y - topLeftY) * scale, w * scale, h * scale];
 
-                    try {
-                        resolve(this.getScaledImageSelection(mapScreenshot, x, y, w, h));
-                    } catch(err) {
-                        reject(err);
-                    }
+                    resolve(this.getScaledImageSelection(mapScreenshot, x, y, w, h));
                 });
 
                 this.map.render();

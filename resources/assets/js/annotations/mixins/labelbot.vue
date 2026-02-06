@@ -166,6 +166,7 @@ export default {
             // Make sure the LabelBOT image is not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
+            annotation.labelbotImage = undefined;
             delete annotation.labelbotImage;
 
             return this.generateFeatureVector(labelbotImage)
