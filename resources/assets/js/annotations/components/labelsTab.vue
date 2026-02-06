@@ -31,17 +31,19 @@ export default {
     },
     data() {
         return {
-            labelTrees: [],
-            projectIds: [],
             selectedLabel: null,
             focusInputFindlabel: false,
             showLabelbotInfo: false,
         };
     },
     props: {
-        focusInput:{
-            type: Boolean,
-            default: false,
+        labelTrees: {
+            type: Array,
+            required: true,
+        },
+        projectIds: {
+            type: Array,
+            required: true,
         },
         showExampleAnnotations: {
             type: Boolean,
@@ -104,7 +106,6 @@ export default {
             }
         },
         handleLabelbotOn() {
-            // Deselect the selected label when LabelBOT is on
             if (this.selectedLabel) {
                 this.handleDeselectedLabel();
             }
@@ -125,9 +126,6 @@ export default {
         },
     },
     created() {
-        this.labelTrees = biigle.$require('annotations.labelTrees');
-        this.projectIds = biigle.$require('annotations.projectIds');
-
         Keyboard.on('control+k', this.setFocusInputFindLabel, 0, this.listenerSet);
         Keyboard.on('Backquote', this.toggleLabelBot, 0, this.listenerSet);
     },

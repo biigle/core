@@ -1,6 +1,5 @@
 <script>
 import AttachLabelInteraction from '@/annotations/ol/AttachLabelInteraction.js';
-import Keyboard from '@/core/keyboard.js';
 import ModifyInteraction from '@biigle/ol/interaction/Modify';
 import TranslateInteraction from '@/annotations/ol/TranslateInteraction.js';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
@@ -126,8 +125,8 @@ export default {
             }
         },
         emitDelete() {
-            if (this.canDelete) {
-                this.$emit('delete');
+            if (this.canDelete && this.selectedAnnotations.length > 0 && confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                this.$emit('delete', this.selectedAnnotations);
             }
         },
         toggleTranslating() {
@@ -273,10 +272,11 @@ export default {
             this.$watch('hasNoSelectedLabel', this.maybeResetAttaching);
             this.$watch('hasNoSelectedLabel', this.maybeResetSwapping);
             this.$watch('hasNoSelectedLabel', this.maybeResetForceSwapping);
-            Keyboard.on('m', this.toggleTranslating, 0, this.listenerSet);
-            Keyboard.on('Escape', this.resetTranslating, 0, this.listenerSet);
-            Keyboard.on('l', this.toggleAttaching, 0, this.listenerSet);
-            Keyboard.on('Shift+l', this.toggleSwapping, 0, this.listenerSet);
+            this.keyboardOn('m', this.toggleTranslating, 0, this.listenerSet);
+            this.keyboardOn('Escape', this.resetTranslating, 0, this.listenerSet);
+            this.keyboardOn('l', this.toggleAttaching, 0, this.listenerSet);
+            this.keyboardOn('Shift+l', this.toggleSwapping, 0, this.listenerSet);
+            this.keyboardOn('Delete', this.emitDelete, 0, this.listenerSet);
         }
     },
 };

@@ -36,7 +36,6 @@ export default {
             default: true,
         }
     },
-    inject: ['fullHeight'],
     data() {
         return {
             thumbnailPreview: null,

@@ -13,28 +13,42 @@
             <div v-if="showPrevNext" class="btn-group">
                 <control-button
                     icon="fa-step-backward"
-                    :title="enableJumpByFrame ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t change video while LabelBOT is computing'
+                        : (enableJumpByFrame
+                            ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'
+                            : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄')"
+                    :disabled="labelbotIsComputing"
                     @click="emitPrevious"
                     ></control-button>
                 <control-button
                     icon="fa-step-forward"
-                    :title="enableJumpByFrame ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄' : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t change video while LabelBOT is computing'
+                        : (enableJumpByFrame
+                            ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'
+                            : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄')"
+                    :disabled="labelbotIsComputing"
                     @click="emitNext"
                     ></control-button>
             </div>
             <div class="btn-group">
                 <control-button
-                    v-if="jumpStep!=0"
-                    :disabled="seeking || null"
+                    v-if="jumpStep != 0"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-backward"
-                    :title="jumpBackwardMessage"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t seek while LabelBOT is computing'
+                        : jumpBackwardMessage"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking || null"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-caret-square-left"
-                    title="Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t seek while LabelBOT is computing'
+                        : 'Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     v-on:click="emitPreviousFrame"
                     ></control-button>
                 <timer-button
@@ -53,22 +67,28 @@
                 <control-button
                     v-else
                     icon="fa-play"
-                    title="Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿"
-                    :disabled="hasError || null"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t play the video while LabelBOT is computing'
+                        : 'Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿'"
+                    :disabled="hasError || labelbotIsComputing || null"
                     @click="play"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking || null"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-caret-square-right"
-                    title="Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t seek while LabelBOT is computing'
+                        : 'Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     v-on:click="emitNextFrame"
                     ></control-button>
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking || null"
+                    :disabled="seeking || labelbotIsComputing || null"
                     icon="fa-forward"
-                    :title="jumpForwardMessage"
+                    :title="labelbotIsComputing
+                        ? 'Can\'t seek while LabelBOT is computing'
+                        : jumpForwardMessage"
                     @click="jumpForward"
                     ></control-button>
             </div>
@@ -350,7 +370,19 @@
                 v-if="selectedLabel"
                 :label="selectedLabel"
                 ></label-indicator>
+            <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
         </div>
+        <labelbot-popup
+            v-for="annotation in labelbotOverlays"
+            :key="annotation.id"
+            :focused-popup-key="focusedPopupKey"
+            :annotation="annotation"
+            :timeout="labelbotTimeout"
+            @update="updateLabelbotLabel"
+            @close="closeLabelbotPopup"
+            @delete="handleDeleteLabelbotAnnotation"
+            @focus="handleLabelbotPopupFocused"
+        ></labelbot-popup>
     </div>
 </template>
 
@@ -362,6 +394,7 @@ import DrawInteractions from './videoScreen/drawInteractions.vue';
 import Indicators from './videoScreen/indicators.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelIndicator from '@/annotations/components/labelIndicator.vue';
+import LabelBot from '@/annotations/components/annotationCanvas/labelBot.vue';
 import Map from '@biigle/ol/Map';
 import Minimap from '@/annotations/components/minimap.vue';
 import ModifyInteractions from './videoScreen/modifyInteractions.vue';
@@ -401,6 +434,7 @@ export default {
         Tooltips,
         Indicators,
         PolygonBrushInteractions,
+        LabelBot,
     ],
     components: {
         controlButton: ControlButton,
@@ -540,6 +574,7 @@ export default {
             mousePosition: [0, 0],
             mapReadyRevision: 0,
             map: null,
+            keyboardOffCallbacks: [],
         };
     },
     computed: {
@@ -580,7 +615,7 @@ export default {
                 label: '\uf066'
             });
 
-            Keyboard.on('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
+            this.keyboardOn('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
 
             let map = new Map({
                 controls: [
@@ -602,7 +637,7 @@ export default {
                 label: '\uf065'
             });
 
-            Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
+            this.keyboardOn('+', control.zoomToNative.bind(control), 0, this.listenerSet);
 
             map.addControl(control);
 
@@ -715,21 +750,20 @@ export default {
             this.resetInteractionMode();
         },
         adaptKeyboardShortcuts() {
-            if(this.enableJumpByFrame) {
+            if (this.enableJumpByFrame) {
                 Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-            }
-            else {
+                this.keyboardOn('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                this.keyboardOn('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                this.keyboardOn('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                this.keyboardOn('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+            } else {
                 Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                this.keyboardOn('ArrowRight', this.emitNext, 0, this.listenerSet);
+                this.keyboardOn('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
         },
         handlePopout() {
@@ -737,6 +771,9 @@ export default {
         },
         emitCancelAutoPlay() {
             this.$emit('cancel-auto-play');
+        },
+        keyboardOn() {
+            this.keyboardOffCallbacks.push(Keyboard.on.apply(Keyboard, arguments));
         },
     },
     watch: {
@@ -800,6 +837,11 @@ export default {
                 this.initInitialCenterAndResolution(this.map);
             },
         },
+        selectedLabel(newLabel) {
+            if (!newLabel && !this.labelbotIsActive) {
+                this.resetInteractionMode();
+            }
+        }
     },
     created() {
         // markRaw is essential here!
@@ -808,13 +850,18 @@ export default {
         this.map.on('moveend', this.emitMoveend);
 
         this.adaptKeyboardShortcuts();
-        Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
-        Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
+        this.keyboardOn('Escape', this.resetInteractionMode, 0, this.listenerSet);
+        this.keyboardOn('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
+        this.keyboardOn('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);
         this.$emit('initMap', this.map);
     },
+    beforeUnmount() {
+        // Release keyboard handlers when the component is destroyed (e.g. by opening
+        // a video popout).
+        this.keyboardOffCallbacks.forEach(off => off());
+    }
 };
 </script>
