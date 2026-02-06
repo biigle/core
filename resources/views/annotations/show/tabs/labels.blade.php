@@ -35,6 +35,8 @@
                 empty-src="{{ asset(config('thumbnails.empty_url')) }}"
                 url-template="{{Storage::disk(config('largo.patch_storage_disk'))->url(':prefix/:id.'.config('largo.patch_format'))}}"
                 ></example-annotations>
+
+            @mixin('annotationsLabelsTab')
         </div>
     </div>
 </script>

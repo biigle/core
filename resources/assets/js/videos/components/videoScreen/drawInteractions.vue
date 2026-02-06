@@ -103,7 +103,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive && this.canAdd) {
+            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -169,26 +169,21 @@ export default {
                 }
             }
         },
-        skipToLastFrame(pendingAnnotation) {
+        seekToLastFrame(pendingAnnotation) {
             const lastFrame = pendingAnnotation.frames[pendingAnnotation.frames.length - 1];
             if (lastFrame === undefined) {
                 return;
             }
-            
-            const r4 = t => Math.round(t * 10000) / 10000;
-            const target = r4(lastFrame);
-            this.pause();
-            if (r4(this.video.currentTime) !== target) {
-                this.video.currentTime = target;
-            }
+
+            this.$emit('seek', lastFrame);
         },
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
                     if (this.labelbotIsActive) {
-                        // If we don't skip to the last frame, no annotation would be
+                        // If we don't seek to the last frame, no annotation would be
                         // visible as an anchor for the  labelbot popup.
-                        this.skipToLastFrame(this.pendingAnnotation);
+                        this.seekToLastFrame(this.pendingAnnotation);
                     }
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
                         this.pendingAnnotation.frames.push(this.video.currentTime);

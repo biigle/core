@@ -65,7 +65,7 @@
       :labelbot-overlays="labelbotOverlays"
       :focused-popup-key="focusedPopupKey"
       :labelbot-timeout="labelbotTimeout"
-      v-on:swap="handleSwapLabel"
+      v-on:swap="swapAnnotationLabelTo"
       v-on:close-labelbot-popup="closeLabelbotPopup"
       v-on:init-map="handleInitMap"
       v-on:create-annotation="createAnnotation"

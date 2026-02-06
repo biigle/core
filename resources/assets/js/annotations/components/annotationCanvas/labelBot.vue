@@ -15,6 +15,7 @@ export default {
     emits: [
         'change-labelbot-focused-popup',
         'close-labelbot-popup',
+        'swap',
     ],
     props: {
         labelbotState: {

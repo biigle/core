@@ -20,7 +20,7 @@ export default class Annotation {
         this.updated_at = args.updated_at;
         this.screenshotPromise = args.screenshotPromise;
         this._labels = ref(args.labels);
-        this._labelBOTLabels = ref(args.labelBOTLabels);
+        this.labelBOTLabels = args.labelBOTLabels;
 
         this._pending = ref(args.pending || false);
         this._selected = ref(false);
@@ -37,7 +37,7 @@ export default class Annotation {
             this.endFrame = this.frames[this.frames.length - 1];
         }, { immediate: true });
     }
-    
+
     get pending() {
         return this._pending.value;
     }
@@ -77,17 +77,11 @@ export default class Annotation {
     set labels(value) {
         this._labels.value = value;
     }
-    
-    get labelBOTLabels() {
-        return this._labelBOTLabels.value;
-    }
 
     get color() {
-        // If no color, return the info color as a default
-        if (this.labels && this.labels.length === 0) {
-            return '5bc0de';
-        }
-        return this.labels?.[0].label.color;
+        // The annotation could have no color if it is created with LabelBOT. Use the
+        // info color in this case.
+        return this.labels?.[0]?.label.color || '5bc0de';
     }
 
     get frames() {

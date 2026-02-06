@@ -321,7 +321,7 @@ export default {
                     points: points,
                     frames: frames,
                     shape_id: this.shapes[pendingAnnotation.shape],
-                    labels: this.getCurrentLabels(),
+                    labels: this.getCurrentLabelsArray(),
                     pending: true,
                     screenshotPromise: pendingAnnotation.screenshotPromise,
                 }));
@@ -388,7 +388,6 @@ export default {
                 }, (res) => {
                     handleErrorResponse(res);
                     this.disableJobTracking = res.status === 429;
-                    throw res;
                 })
                 .finally(() => {
                     this.removeAnnotation(pendingAnnotation);
@@ -404,7 +403,7 @@ export default {
                 annotation.startTracking();
             }
         },
-        getCurrentLabels() {
+        getCurrentLabelsArray() {
             if (!this.selectedLabel) {
                 return [];
             }
@@ -415,16 +414,11 @@ export default {
                 user: this.user
             }];
         },
-        syncPendingAnnotationLabel() {
-            if (!this.pendingAnnotation) {
-                return;
-            }
-
-            this.pendingAnnotation.labels = this.getCurrentLabels();
-        },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
-            this.syncPendingAnnotationLabel();
+            if (this.pendingAnnotation) {
+                this.pendingAnnotation.labels = this.getCurrentLabelsArray();
+            }
         },
         handleDeselectedLabel() {
             this.handleSelectedLabel(null);
@@ -555,16 +549,17 @@ export default {
                 .attachAnnotationLabel(this.selectedLabel)
                 .catch(handleErrorResponse);
         },
-        swapAnnotationLabelTo(annotation, newLabel, force) {
+        swapAnnotationLabel(annotation, options) {
+            const newLabel = options?.label || this.selectedLabel;
             let labels = annotation.labels.slice();
-            if (!force) {
+            if (options?.force !== true) {
                 labels = labels.filter(l => l.user_id === this.user.id);
             }
             const lastLabel = labels.sort((a, b) => a.id - b.id).pop();
 
             // Can't use this.attachAnnotationLabel() because detachAnnotationLabel()
             // should not be called on error.
-            return annotation.attachAnnotationLabel(newLabel)
+            annotation.attachAnnotationLabel(newLabel)
                 .then(() => {
                     if (lastLabel) {
                         this.detachAnnotationLabel(annotation, lastLabel);
@@ -572,14 +567,11 @@ export default {
                 })
                 .catch(handleErrorResponse);
         },
-        swapAnnotationLabel(annotation, force) {
-            return this.swapAnnotationLabelTo(annotation, this.selectedLabel, force);
-        },
         forceSwapAnnotationLabel(annotation) {
-            this.swapAnnotationLabel(annotation, true);
+            this.swapAnnotationLabel(annotation, {force: true});
         },
-        handleSwapLabel(annotation, label) {
-            return this.swapAnnotationLabelTo(annotation, label, true);
+        swapAnnotationLabelTo(annotation, label) {
+            this.swapAnnotationLabel(annotation, {label});
         },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;

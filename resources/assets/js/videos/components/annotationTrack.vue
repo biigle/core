@@ -68,10 +68,8 @@ export default {
             lane.forEach((a) => this.drawAnnotation(a, g));
         },
         drawAnnotation(annotation, group) {
-            const key = annotation.id;
-
-            if (this.annotationCache[key]) {
-                this.annotationCache[key].addTo(group);
+            if (this.annotationCache[annotation.id]) {
+                this.annotationCache[annotation.id].addTo(group);
             } else {
                 const a = new SvgAnnotation({
                     annotation: annotation,
@@ -82,7 +80,7 @@ export default {
                     onDeselect: this.emitDeselect,
                 });
                 a.draw();
-                this.annotationCache[key] = a;
+                this.annotationCache[annotation.id] = a;
             }
         },
     },

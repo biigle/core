@@ -210,7 +210,10 @@ class LabelBotService
             ->toArray();
     }
 
-    protected function getFeatureVectorModelFor($annotation)
+    /**
+     * Get the correct model class for the annotation type.
+     */
+    protected function getFeatureVectorModelFor(Annotation $annotation): string
     {
         if ($annotation instanceof ImageAnnotation) {
             return ImageAnnotationLabelFeatureVector::class;
