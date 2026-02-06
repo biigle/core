@@ -33,6 +33,7 @@
             :videoUuid="videoUuid"
             :has-error="hasError"
             :collapsed="collapsed"
+            :full-height="fullHeight"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -46,7 +47,6 @@
 import CurrentTime from './currentTime.vue';
 import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
-import { computed } from 'vue';
 
 const UNLABELED = '__unlabeled__';
 
@@ -133,11 +133,6 @@ export default {
             nextAnnotationStartFrame: 0,
             annotationTracks: [],
             annotationStartFrames: [],
-        };
-    },
-    provide() {
-        return {
-            fullHeight: computed(() => this.fullHeight),
         };
     },
     computed: {
