@@ -1,7 +1,6 @@
 <script>
 import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '@/core/keyboard.js';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
 
@@ -311,7 +310,7 @@ export default {
         // event listener and switch to actual fullscreen mode instead of allowing the
         // "F11 fullscreen" mode of Firefox which cannot be reliably detected.
         if (this.showClosePopoutButton && navigator.userAgent.toLowerCase().includes('firefox')) {
-            Keyboard.on('F11', this.toggleFirefoxFullscreen, 0, this.listenerSet);
+            this.keyboardOn('F11', this.toggleFirefoxFullscreen, 0, this.listenerSet);
             document.addEventListener("fullscreenchange", this.handleFirefoxFullscreenChange);
         }
 

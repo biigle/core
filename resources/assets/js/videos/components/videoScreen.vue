@@ -585,6 +585,7 @@ export default {
             mousePosition: [0, 0],
             mapReadyRevision: 0,
             map: null,
+            keyboardOffCallbacks: [],
         };
     },
     computed: {
@@ -625,7 +626,7 @@ export default {
                 label: '\uf066'
             });
 
-            Keyboard.on('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
+            this.keyboardOn('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
 
             let map = new Map({
                 controls: [
@@ -647,7 +648,7 @@ export default {
                 label: '\uf065'
             });
 
-            Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
+            this.keyboardOn('+', control.zoomToNative.bind(control), 0, this.listenerSet);
 
             map.addControl(control);
 
@@ -763,18 +764,17 @@ export default {
             if (this.enableJumpByFrame) {
                 Keyboard.off('ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-            }
-            else {
+                this.keyboardOn('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
+                this.keyboardOn('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                this.keyboardOn('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
+                this.keyboardOn('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
+            } else {
                 Keyboard.off('Shift+ArrowRight', this.emitNext, 0, this.listenerSet);
                 Keyboard.off('Shift+ArrowLeft', this.emitPrevious, 0, this.listenerSet);
                 Keyboard.off('ArrowRight', this.emitNextFrame, 0, this.listenerSet);
                 Keyboard.off('ArrowLeft', this.emitPreviousFrame, 0, this.listenerSet);
-                Keyboard.on('ArrowRight', this.emitNext, 0, this.listenerSet);
-                Keyboard.on('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
+                this.keyboardOn('ArrowRight', this.emitNext, 0, this.listenerSet);
+                this.keyboardOn('ArrowLeft', this.emitPrevious, 0, this.listenerSet);
             }
         },
         handlePopout() {
@@ -782,6 +782,9 @@ export default {
         },
         emitCancelAutoPlay() {
             this.$emit('cancel-auto-play');
+        },
+        keyboardOn() {
+            this.keyboardOffCallbacks.push(Keyboard.on.apply(Keyboard, arguments));
         },
     },
     watch: {
@@ -858,15 +861,20 @@ export default {
         this.map.on('moveend', this.emitMoveend);
 
         this.adaptKeyboardShortcuts();
-        Keyboard.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
-        
+        this.keyboardOn('Escape', this.resetInteractionMode, 0, this.listenerSet);
+
         // TODO Control+... shortcuts don't work on MacOS
-        Keyboard.on('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
-        Keyboard.on('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
+        this.keyboardOn('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
+        this.keyboardOn('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
     },
     mounted() {
         this.map.setTarget(this.$el);
         this.$emit('initMap', this.map);
     },
+    beforeUnmount() {
+        // Release keyboard handlers when the component is destroyed (e.g. by opening
+        // a video popout).
+        this.keyboardOffCallbacks.forEach(off => off());
+    }
 };
 </script>

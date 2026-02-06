@@ -429,16 +429,20 @@ export default {
         handleDeselectedLabel() {
             this.handleSelectedLabel(null);
         },
-        deleteSelectedAnnotationsOrKeyframes(force) {
+        // This is used when the video popout is open and no videoScreen with the delete
+        // event handler exists in this window.
+        deleteSelectedAnnotationsOrKeyframes() {
             if (this.selectedAnnotations.length === 0) {
                 return;
             }
 
-            if (force === true || confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
-                this.selectedAnnotations
-                    .map(a => ({annotation: a, time: this.video.currentTime}))
-                    .forEach(this.deleteAnnotationOrKeyframe);
+            if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                this.deleteAnnotationsOrKeyframes(this.selectedAnnotations);
             }
+        },
+        deleteAnnotationsOrKeyframes(selectedAnnotations) {
+            selectedAnnotations.map(a => ({annotation: a, time: this.video.currentTime}))
+                .forEach(this.deleteAnnotationOrKeyframe);
         },
         deleteAnnotationOrKeyframe(event) {
             let annotation = event.annotation;
@@ -917,7 +921,17 @@ export default {
             handler(params) {
                 UrlParams.set(params);
             },
-        }
+        },
+        videoPopout(popout) {
+            // When the popout is open, no delete event handler is active in the parent
+            // window any more but the user should still be able to delete annotations
+            // selected in the timeline.
+            if (popout) {
+                Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+            } else {
+                Keyboard.off('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+            }
+        },
     },
     created() {
         let shapes = biigle.$require('annotations.shapes');
@@ -976,7 +990,6 @@ export default {
 
         Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
-        Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
         Keyboard.on(' ', this.togglePlaying, 0, this.listenerSet);
 
         window.addEventListener('beforeunload', () => {

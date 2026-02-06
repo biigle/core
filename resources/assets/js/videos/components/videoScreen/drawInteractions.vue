@@ -1,7 +1,6 @@
 <script>
 import * as preventDoubleclick from '@/prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '@/core/keyboard.js';
 import snapInteraction from "./snapInteraction.vue";
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
@@ -317,14 +316,14 @@ export default {
     created() {
         if (this.canAdd) {
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
-            Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
-            Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
-            Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
-            Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
-            Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
-            Keyboard.on('h', this.drawWholeFrame, 0, this.listenerSet);
-            Keyboard.on('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
-            Keyboard.on('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
+            this.keyboardOn('a', this.drawPoint, 0, this.listenerSet);
+            this.keyboardOn('s', this.drawRectangle, 0, this.listenerSet);
+            this.keyboardOn('d', this.drawCircle, 0, this.listenerSet);
+            this.keyboardOn('f', this.drawLineString, 0, this.listenerSet);
+            this.keyboardOn('g', this.drawPolygon, 0, this.listenerSet);
+            this.keyboardOn('h', this.drawWholeFrame, 0, this.listenerSet);
+            this.keyboardOn('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
+            this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
     },
 };
