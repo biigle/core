@@ -6,6 +6,7 @@ use Biigle\Http\Requests\StoreImageAnnotation;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
+use Biigle\Label;
 use Biigle\Services\LabelBot\LabelBotService;
 use DB;
 use Exception;
@@ -221,8 +222,19 @@ class ImageAnnotationController extends Controller
         }
 
         $annotation->points = $points;
-        
-        $label = $labelBotService->getLabelForAnnotation($image->volume_id, $request, $annotation);
+
+        if ($request->has('label_id')) {
+            $label = Label::findOrFail($request->input('label_id'));
+        } else {
+            $labels = $labelBotService->getLabelsForAnnotation($annotation, $image->volume_id, $request);
+            // Add labelBOTlabels attribute to the response.
+            $annotation->append('labelBOTLabels');
+            $label = array_shift($labels);
+            if (!empty($labels)) {
+                // Attach the remaining labels (if any).
+                $annotation->labelBOTLabels = $labels;
+            }
+        }
 
         $this->authorize('attach-label', [$annotation, $label]);
 

@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StoreVideoAnnotation;
 use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Biigle\Jobs\TrackObject;
+use Biigle\Label;
 use Biigle\Services\LabelBot\LabelBotService;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
@@ -150,7 +151,8 @@ class VideoAnnotationController extends Controller
      * @apiParam {Number} id The video ID.
      *
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
-     * @apiParam (Required arguments) {Number} label_id ID of the initial label to be attached to the new annotation.
+     * @apiParam (Required arguments) {Number} label_id ID of the initial label of the new annotation. Required if 'feature_vector' is not provided.
+     * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction. Required if 'label_id' is not provided.
      * @apiParam (Required arguments) {Number[]} frames Array of the key frame times. Each key frame corresponds to one entry in the points array.
      * @apiParam (Required arguments) {Number[]} points Array of the initial points for each key frame of the annotation. The points array of each key frame is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
@@ -225,8 +227,19 @@ class VideoAnnotationController extends Controller
         } catch (Exception $e) {
             throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
         }
-        
-        $label = $labelBotService->getLabelForAnnotation($request->video->volume_id, $request, $annotation);
+
+        if ($request->has('label_id')) {
+            $label = Label::findOrFail($request->input('label_id'));
+        } else {
+            $labels = $labelBotService->getLabelsForAnnotation($annotation, $request->video->volume_id, $request);
+            // Add labelBOTlabels attribute to the response.
+            $annotation->append('labelBOTLabels');
+            $label = array_shift($labels);
+            if (!empty($labels)) {
+                // Attach the remaining labels (if any).
+                $annotation->labelBOTLabels = $labels;
+            }
+        }
 
         $this->authorize('attach-label', [$annotation, $label]);
 

@@ -21,18 +21,14 @@ use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 class LabelBotService
 {
     /**
-     * Get the label of a new annotation either by using a label_id or a feature_vector
-     * from the request.
+     * Get the suggested labels of a new annotation either by using a label_id or a
+     * feature_vector from the request.
      */
-    public function getLabelForAnnotation(
+    public function getLabelsForAnnotation(
+        Annotation $annotation,
         int $volumeId,
         Request $request,
-        Annotation $annotation
-    ): Label {
-        if (!$request->has('feature_vector')) {
-            return Label::findOrFail($request->input('label_id'));
-        }
-
+    ): array {
         $user = $request->user();
         $topNLabels = [];
         $cacheKey = $this->enforceRateLimit($user);
@@ -59,19 +55,10 @@ class LabelBotService
         if (empty($topNLabels)) {
             throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
         }
-        // Get labels sorted by their top N order.
         $labelModels = Label::whereIn('id', $topNLabels)->get()->keyBy('id');
-        $labelBotLabels = array_map(fn ($id) => $labelModels->get($id), $topNLabels);
 
-        // Add labelBOTlabels attribute to the response.
-        $annotation->append('labelBOTLabels');
-        $label = array_shift($labelBotLabels);
-        if (!empty($labelBotLabels)) {
-            // Attach the remaining labels (if any).
-            $annotation->labelBOTLabels = $labelBotLabels;
-        }
-
-        return $label;
+        // Get labels sorted by their top N order.
+        return array_map(fn ($id) => $labelModels->get($id), $topNLabels);
     }
 
     protected function enforceRateLimit($user)
