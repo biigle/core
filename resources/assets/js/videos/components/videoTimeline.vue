@@ -48,7 +48,7 @@ import CurrentTime from './currentTime.vue';
 import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
 
-const UNLABELED = '__unlabeled__';
+const UNLABELED = Symbol();
 
 export default {
     emits: [
@@ -143,9 +143,10 @@ export default {
             // Non-breaking space (NBSP) for empty labels to prevent div from collapsing
             let map = {
                 [UNLABELED]: {
-                    'id': UNLABELED,
-                    'name': '\u00A0',
-                    'color': '5bc0de'
+                    id: UNLABELED,
+                    name: 'label pending',
+                    color: '5bc0de',
+                    pending: true,
                 }
             };
             let annotations = this.annotations;
@@ -214,9 +215,12 @@ export default {
                 }
             });
 
+            // The UNLABELED symbol is not returned by Object.keys().
             const keys = Object.keys(map);
-            this.moveElementToFront(keys, UNLABELED);
-
+            if (map.hasOwnProperty(UNLABELED)) {
+                // LabelBOT pending annotations are always shown at the top.
+                keys.unshift(UNLABELED);
+            }
             this.annotationTracks = keys.map((labelId) => {
                 return {
                     id: labelId,
@@ -329,15 +333,6 @@ export default {
             this.scrollTop = 0;
             this.hoverTime = 0;
             this.$refs.scrollStrip.reset();
-        },
-        moveElementToFront(array, element) {
-            const i = array.indexOf(element);
-            if (i > 0) {
-                array.splice(i, 1);
-                array.unshift(element);
-            }
-
-            return array;
         },
     },
     watch: {
