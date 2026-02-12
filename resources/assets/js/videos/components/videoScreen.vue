@@ -281,6 +281,20 @@
                             @click="togglePolygonFill"
                             @active="onActive"
                             ></control-button>
+                        <control-button
+                            v-if="video.paused"
+                            icon="fa-magic"
+                            title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
+                            :active="isMagicWanding"
+                            v-on:click="toggleMagicWand"
+                            v-on:active="onActive"
+                            ></control-button>
+                        <control-button
+                            v-else
+                            icon="fa-magic"
+                            title="The magic wand tool is only available for a still image"
+                            :disabled="true"
+                        ></control-button>
                 </control-button>
                 <control-button
                     icon="icon-wholeframe"
@@ -414,6 +428,7 @@ import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
 import TimerButton from './timerButton.vue';
 import Tooltips from './videoScreen/tooltips.vue';
+import MagicWandInteraction from './videoScreen/magicWandInteraction.vue';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import VideoPlayback from './videoScreen/videoPlayback.vue';
@@ -445,6 +460,7 @@ export default {
         Indicators,
         PolygonBrushInteractions,
         LabelBot,
+        MagicWandInteraction,
     ],
     components: {
         controlButton: ControlButton,
@@ -585,6 +601,7 @@ export default {
             mapReadyRevision: 0,
             map: null,
             keyboardOffCallbacks: [],
+            initialized: false,
         };
     },
     computed: {
@@ -699,6 +716,7 @@ export default {
 
             map.addLayer(this.annotationLayer);
             map.addInteraction(this.selectInteraction);
+            this.initialized = true;
         },
 
         resetInteractionMode() {
@@ -863,7 +881,13 @@ export default {
         this.keyboardOn('Escape', this.resetInteractionMode, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-    },
+
+        this.video.addEventListener('play', () => {
+            if(this.interactionMode === 'magicWand') {
+                this.resetInteractionMode()
+            }
+        })
+     },
     mounted() {
         this.map.setTarget(this.$el);
         this.$emit('initMap', this.map);
