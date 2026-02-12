@@ -61,6 +61,14 @@
             <a href="{{asset('assets/images/manual/creating_annotations_rectangle_4.jpg')}}"><img src="{{asset('assets/images/manual/creating_annotations_rectangle_4.jpg')}}" width="24%"></a>
         </p>
 
+        <h4><a name="box"></a><i class="fa fa-vector-square"></i> Axis-Aligned Box</h4>
+        <p>
+            In addition to the regular mode to draw rectangles, there is the axis-aligned box tool. The button to activate the box tool appears when you hover your cursor over the button of the rectangle tool. You can also press <kbd>Shift</kbd>+<kbd>S</kbd> to activate it.
+        </p>
+        <p>
+            An axis-aligned box is a rectangle that is always aligned with the image axes (i.e. its edges are always horizontal and vertical). It is drawn with two mouse clicks. The first click specifies one corner of the box. The second click specifies the opposite corner, completing the box. This is a quick and convenient way to draw bounding boxes around objects in the image.
+        </p>
+
         <h3><a name="circle"></a><i class="icon icon-circle"></i> Circle</h3>
         <p>
             A circle consists of a center point and a radius and covers a specific area on the image. Two mouse clicks are required to draw a new circle. The first click determines the center point of the circle similar to a point annotation. The second click sets the radius of the circle which is the distance between the two points of the first and the second click.

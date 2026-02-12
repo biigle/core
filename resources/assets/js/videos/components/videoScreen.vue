@@ -116,27 +116,37 @@
                 <control-button
                     icon="icon-rectangle"
                     :title="(singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') + ' 𝗦'"
-                    :hover="false"
-                    :open="isDrawingRectangle"
+                    :open="isDrawingRectangle || isDrawingBox"
                     :active="isDrawingRectangle"
                     :disabled="hasError || null"
                     @click="drawRectangle"
                     v-slot="{onActive}"
                     >
                         <control-button
-                        v-if="singleAnnotation"
-                            icon="fa-check"
-                            title="Disable the single-frame annotation option to create multi-frame annotations"
-                            :disabled="true"
-                            ></control-button>
-                        <control-button
-                            v-else
-                            icon="fa-check"
-                            title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
-                            :disabled="cantFinishDrawAnnotation || null"
-                            @click="finishDrawAnnotation"
+                            icon="fa-vector-square"
+                            :title="(singleAnnotation ? 'Draw an axis-aligned box' : 'Start an axis-aligned box annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦'"
+                            :active="isDrawingBox"
+                            @click="drawBox"
                             @active="onActive"
                             ></control-button>
+                        <template v-if="singleAnnotation">
+                            <control-button
+                                v-show="isDrawingRectangle || isDrawingBox"
+                                icon="fa-check"
+                                title="Disable the single-frame annotation option to create multi-frame annotations"
+                                :disabled="true"
+                                ></control-button>
+                        </template>
+                        <template v-else>
+                            <control-button
+                                v-show="isDrawingRectangle || isDrawingBox"
+                                icon="fa-check"
+                                title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
+                                :disabled="cantFinishDrawAnnotation || null"
+                                @click="finishDrawAnnotation"
+                                @active="onActive"
+                                ></control-button>
+                        </template>
                 </control-button>
                 <control-button
                     icon="icon-circle"
