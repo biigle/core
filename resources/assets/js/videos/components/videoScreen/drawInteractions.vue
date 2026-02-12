@@ -226,10 +226,11 @@ export default {
                 this.pendingAnnotation.frames.push(this.video.currentTime);
                 this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
 
-                if (!this.video.ended && this.autoplayDraw > 0) {
+                if (!this.video.ended && this.autoplayDraw > 0 && this.video.playbackRate > 0) {
                     this.play();
                     window.clearTimeout(this.autoplayDrawTimeout);
-                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                    const elapsedVideoTime = (this.autoplayDraw / this.video.playbackRate) * 1000;
+                    this.autoplayDrawTimeout = window.setTimeout(this.pause, elapsedVideoTime);
                 }
 
                 if (this.singleAnnotation) {
