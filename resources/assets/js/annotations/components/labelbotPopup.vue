@@ -99,13 +99,13 @@ export default {
             default: 1,
         },
     },
+    inject: ['labelTrees'],
     data() {
         return {
             shouldHaveProgressBar: true,
             maybeGetsAttention: false,
             typeaheadFocused: false,
             selectedLabel: null,
-            trees: [],
             overlay: null,
             lineFeature: null,
             listenerKeys: [],
@@ -126,7 +126,7 @@ export default {
         },
         allLabels() {
             let labels = [];
-            this.trees.forEach(function (tree) {
+            this.labelTrees.forEach(function (tree) {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
@@ -398,8 +398,6 @@ export default {
         if (this.timeout === (TIMEOUTS.length - 1)) {
             this.shouldHaveProgressBar = false;
         }
-
-        this.trees = biigle.$require('annotations.labelTrees');
 
         Keyboard.on('Escape', this.handleEsc, 0, 'labelbot');
         Keyboard.on('Backspace', this.deleteLabelAnnotation, 0, 'labelbot');

@@ -1,7 +1,6 @@
 <script>
 import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
-import Keyboard from '@/core/keyboard.js';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
 
@@ -144,14 +143,14 @@ export default {
         },
         // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
         async emitPreviousFrame() {
-            if(this.video.currentTime == 0 || this.seekingFrame) return;
+            if (this.video.currentTime == 0 || this.seekingFrame) return;
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showPreviousFrame();
             this.seekingFrame = false;
         },
         async emitNextFrame() {
-            if(this.video.duration - this.video.currentTime == 0 || this.seekingFrame) return;
+            if (this.video.duration - this.video.currentTime == 0 || this.seekingFrame) return;
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showNextFrame();
@@ -311,7 +310,7 @@ export default {
         // event listener and switch to actual fullscreen mode instead of allowing the
         // "F11 fullscreen" mode of Firefox which cannot be reliably detected.
         if (this.showClosePopoutButton && navigator.userAgent.toLowerCase().includes('firefox')) {
-            Keyboard.on('F11', this.toggleFirefoxFullscreen, 0, this.listenerSet);
+            this.keyboardOn('F11', this.toggleFirefoxFullscreen, 0, this.listenerSet);
             document.addEventListener("fullscreenchange", this.handleFirefoxFullscreenChange);
         }
 

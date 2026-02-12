@@ -5,17 +5,22 @@ import {interpolate} from 'polymorph-js';
 import {ref, watch} from 'vue';
 
 let SHAPE_CACHE;
+let PENDING_ID_COUNTER = 0;
 
 export default class Annotation {
     constructor(args) {
-        this.id = args.id;
+        // With LabelBOT, multiple pending annotations could be created, so they need
+        // unique IDs (that don't clash with the database IDs).
+        this.id = args.id || 'pending-' + PENDING_ID_COUNTER++;
         this._frames = ref(args.frames);
         this._points = args.points;
         this.video_id = args.video_id;
         this.shape_id = args.shape_id;
         this.created_at = args.created_at;
         this.updated_at = args.updated_at;
+        this.screenshotPromise = args.screenshotPromise;
         this._labels = ref(args.labels);
+        this.labelBOTLabels = args.labelBOTLabels;
 
         this._pending = ref(args.pending || false);
         this._selected = ref(false);
@@ -74,7 +79,9 @@ export default class Annotation {
     }
 
     get color() {
-        return this.labels?.[0].label.color;
+        // The annotation could have no color if it is created with LabelBOT. Use the
+        // info color in this case.
+        return this.labels?.[0]?.label.color || '5bc0de';
     }
 
     get frames() {

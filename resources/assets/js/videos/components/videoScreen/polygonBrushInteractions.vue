@@ -1,5 +1,4 @@
 <script>
-import Keyboard from '@/core/keyboard.js';
 import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPolygonBrush.js';
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
@@ -133,7 +132,7 @@ export default {
     created() {
         if (this.canAdd) {
             this.$watch('isUsingPolygonBrush', this.togglePolygonBrushInteraction);
-            Keyboard.on('e', this.togglePolygonBrush, 0, this.listenerSet);
+            this.keyboardOn('e', this.togglePolygonBrush, 0, this.listenerSet);
         }
 
         if (this.canModify) {
@@ -145,9 +144,9 @@ export default {
             });
 
             this.$watch('isUsingPolygonEraser', this.togglePolygonEraserInteraction);
-            Keyboard.on('r', this.togglePolygonEraser, 0, this.listenerSet);
+            this.keyboardOn('r', this.togglePolygonEraser, 0, this.listenerSet);
             this.$watch('isUsingPolygonFill', this.togglePolygonFillInteraction);
-            Keyboard.on('t', this.togglePolygonFill, 0, this.listenerSet);
+            this.keyboardOn('t', this.togglePolygonFill, 0, this.listenerSet);
         }
     },
 };

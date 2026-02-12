@@ -5,6 +5,7 @@
                 class="label-name"
                 v-text="track.label.name"
                 :title="track.label.name"
+                :class="{'text-muted': track.label.pending}"
                 ></div>
             <!-- eslint-disable-next-line vue/no-unused-vars -->
             <div class="lane-dummy" v-for="lane in track.lanes"></div>

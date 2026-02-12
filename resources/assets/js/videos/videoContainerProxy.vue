@@ -8,6 +8,8 @@ import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
 import VideoContainer from './videoContainer.vue';
 import VideoScreen from './components/videoScreen.vue';
 import VideoTimeline from './components/videoTimeline.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import LabelbotMixin from '@/annotations/mixins/labelbot.vue';
 
 const proxy = {
     components: {
@@ -19,11 +21,22 @@ const proxy = {
     },
     data() {
         const data = VideoContainer.data();
-        Object.keys(VideoContainer.computed).forEach(k => data[k] = null);
+        Object.keys(VideoContainer.computed)
+            .concat(Object.keys(LoaderMixin.data()))
+            .concat(Object.keys(LoaderMixin.computed))
+            .concat(Object.keys(LabelbotMixin.data()))
+            .concat(Object.keys(LabelbotMixin.computed))
+            .forEach(k => data[k] = null);
+
         data.loading = false;
         data.isVideoPopout = true;
 
         return data;
+    },
+    provide() {
+        return {
+            labelTrees: this.labelTrees,
+        };
     },
     computed: {},
     methods: {
@@ -35,7 +48,9 @@ const proxy = {
             ];
 
             Object.keys(data)
-                .concat(['loading']) // Comes from mixin which is not visible here.
+                .concat(Object.keys(LoaderMixin.data()))
+                .concat(Object.keys(LabelbotMixin.data()))
+                .concat(Object.keys(LabelbotMixin.computed))
                 .concat(Object.keys(VideoContainer.computed))
                 .filter(a => !ignoreAttributes.includes(a))
                 .forEach((attribute) => {
@@ -72,17 +87,6 @@ const proxy = {
             this.$refs.videoTimeline.reset();
             this.$refs.videoScreen.reset();
         },
-        deleteSelectedAnnotationsOrKeyframes() {
-            if (this.selectedAnnotations.length === 0) {
-                return;
-            }
-
-            // Override this method to show the confirmation dialog in the window the
-            // deletion was requested.
-            if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
-                this.parent.deleteSelectedAnnotationsOrKeyframes(true);
-            }
-        },
         forwardKeypress(e) {
             window.opener.document.body.dispatchEvent(new KeyboardEvent('keydown', {
                 key: e.key,
@@ -94,7 +98,6 @@ const proxy = {
             window.opener.document.body.dispatchEvent(new KeyboardEvent('keyup', {key: e.key}));
         },
         bindProxyShortcuts() {
-            Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
             Keyboard.on('C', this.forwardKeypress, 0, this.listenerSet);
             Keyboard.on(' ', this.forwardKeypress, 0, this.listenerSet);
             Keyboard.on('1', this.forwardKeypress, 0, this.listenerSet);
@@ -110,23 +113,6 @@ const proxy = {
             Keyboard.on('Tab', this.forwardKeypress, 0, this.listenerSet);
             Keyboard.on('o', this.forwardKeypress, 0, this.listenerSet);
         },
-        releaseProxyShortcuts() {
-            Keyboard.off('Delete', this.deleteSelectedAnnotationsOrKeyframes, this.listenerSet);
-            Keyboard.off('C', this.forwardKeypress, this.listenerSet);
-            Keyboard.off(' ', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('1', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('2', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('3', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('4', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('5', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('6', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('7', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('8', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('9', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('0', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('Tab', this.forwardKeypress, this.listenerSet);
-            Keyboard.on('o', this.forwardKeypress, this.listenerSet);
-        },
         handleInitMap(map) {
             Events.emit('videos.map.init', map);
             this.parent.handleInitMap(map);
@@ -134,6 +120,15 @@ const proxy = {
         handleReachedAnnotation() {
             // Ignore this event from the timeline of the popup. The event from the
             // timeline of the main window will be handled.
+        },
+    },
+    watch: {
+        labelbotOverlayCount(count) {
+            if (count > 0) {
+                Keyboard.setActiveSet('labelbot');
+            } else {
+                Keyboard.setActiveSet('default');
+            }
         },
     },
     created() {
@@ -145,16 +140,12 @@ const proxy = {
             Messages.danger('This page must be called from the video annotation tool.');
         }
     },
-    beforeUnmount() {
-        if (this.parent) {
-            this.releaseProxyShortcuts();
-        }
-    },
 };
 
 Object.keys(VideoContainer.methods)
     // Comes from mixin which is not visible here.
-    .concat(['startLoading', 'finishLoading', 'handleErrorResponse'])
+    .concat(Object.keys(LoaderMixin.methods))
+    .concat(Object.keys(LabelbotMixin.methods))
     .filter(method => !proxy.methods.hasOwnProperty(method))
     .forEach(function (method) {
         proxy.methods[method] = function () {

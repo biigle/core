@@ -33,6 +33,7 @@
             :videoUuid="videoUuid"
             :has-error="hasError"
             :collapsed="collapsed"
+            :full-height="fullHeight"
             @seek="emitSeek"
             @select="emitSelect"
             @deselect="emitDeselect"
@@ -46,7 +47,8 @@
 import CurrentTime from './currentTime.vue';
 import ScrollStrip from './scrollStrip.vue';
 import TrackHeaders from './trackHeaders.vue';
-import { computed } from 'vue'
+
+const UNLABELED = Symbol();
 
 export default {
     emits: [
@@ -133,17 +135,20 @@ export default {
             annotationStartFrames: [],
         };
     },
-    provide() {
-        return {
-            fullHeight: computed(() => this.fullHeight),
-        };
-    },
     computed: {
         // In contrast to the properties that are updated based on the annotation revision
         // (see below), the labelMap can be a computed property because the labels do not
         // change frequently and watching their reactive properties is not expensive.
         labelMap() {
-            let map = {};
+            // Non-breaking space (NBSP) for empty labels to prevent div from collapsing
+            let map = {
+                [UNLABELED]: {
+                    id: UNLABELED,
+                    name: 'label pending',
+                    color: '5bc0de',
+                    pending: true,
+                }
+            };
             let annotations = this.annotations;
 
             if (this.pendingAnnotation) {
@@ -184,6 +189,7 @@ export default {
     },
     methods: {
         updateAnnotationTracks() {
+            // Unlabeled annotations for labelbot are grouped together
             let map = {};
             let annotations = this.annotations;
 
@@ -193,16 +199,29 @@ export default {
             }
 
             annotations.forEach(function (annotation) {
-                annotation.labels.forEach(function (label) {
-                    if (!map.hasOwnProperty(label.label_id)) {
-                        map[label.label_id] = [];
+                if (annotation.labels.length === 0) {
+                    if (!map.hasOwnProperty(UNLABELED)) {
+                        map[UNLABELED] = [];
                     }
+                    map[UNLABELED].push(annotation);
+                } else {
+                    annotation.labels.forEach(function (label) {
+                        if (!map.hasOwnProperty(label.label_id)) {
+                            map[label.label_id] = [];
+                        }
 
-                    map[label.label_id].push(annotation);
-                });
+                        map[label.label_id].push(annotation);
+                    });
+                }
             });
 
-            this.annotationTracks = Object.keys(map).map((labelId) => {
+            // The UNLABELED symbol is not returned by Object.keys().
+            const keys = Object.keys(map);
+            if (map.hasOwnProperty(UNLABELED)) {
+                // LabelBOT pending annotations are always shown at the top.
+                keys.unshift(UNLABELED);
+            }
+            this.annotationTracks = keys.map((labelId) => {
                 return {
                     id: labelId,
                     label: this.labelMap[labelId],

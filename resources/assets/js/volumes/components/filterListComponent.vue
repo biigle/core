@@ -36,7 +36,7 @@ export default {
         },
         dataName() {
             if (this.rule.data) {
-                if(this.rule.data.name) {
+                if (this.rule.data.name) {
                     return this.rule.data.name;
                 }
             }

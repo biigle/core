@@ -1,7 +1,6 @@
 <script>
 import * as preventDoubleclick from '@/prevent-doubleclick';
 import DrawInteraction from '@biigle/ol/interaction/Draw';
-import Keyboard from '@/core/keyboard.js';
 import snapInteraction from "./snapInteraction.vue";
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
@@ -104,7 +103,7 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (this.hasNoSelectedLabel) {
+            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
@@ -137,7 +136,7 @@ export default {
                 this.drawInteraction = undefined;
             }
 
-            if (this.isDrawing && this.hasSelectedLabel) {
+            if (this.isDrawing && (this.hasSelectedLabel || this.labelbotIsActive)) {
                 this.pause();
 
                 if (this.isDrawingWholeFrame) {
@@ -170,9 +169,22 @@ export default {
                 }
             }
         },
+        seekToLastFrame(pendingAnnotation) {
+            const lastFrame = pendingAnnotation.frames[pendingAnnotation.frames.length - 1];
+            if (lastFrame === undefined) {
+                return;
+            }
+
+            this.$emit('seek', lastFrame);
+        },
         finishDrawAnnotation() {
             if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
+                    if (this.labelbotIsActive) {
+                        // If we don't seek to the last frame, no annotation would be
+                        // visible as an anchor for the  labelbot popup.
+                        this.seekToLastFrame(this.pendingAnnotation);
+                    }
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
                         this.pendingAnnotation.frames.push(this.video.currentTime);
                     }
@@ -200,6 +212,7 @@ export default {
                 shape: shape,
                 frames: [],
                 points: [],
+                screenshotPromise: null,
             };
             this.$emit('pending-annotation', null);
         },
@@ -221,45 +234,55 @@ export default {
             }
 
             let lastFrame = this.pendingAnnotation.frames[this.pendingAnnotation.frames.length - 1];
-
-            if (lastFrame === undefined || lastFrame < this.video.currentTime) {
-                this.pendingAnnotation.frames.push(this.video.currentTime);
-                this.pendingAnnotation.points.push(this.getPointsFromGeometry(e.feature.getGeometry()));
-
-                if (!this.video.ended && this.autoplayDraw > 0) {
-                    this.play();
-                    window.clearTimeout(this.autoplayDrawTimeout);
-                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
-                }
-
-                if (this.singleAnnotation) {
-                    if (this.isDrawingPoint) {
-                        if (this.isPointDoubleClick(e)) {
-                            // The feature is added to the source only after this event
-                            // is handled, so remove has to happen after the addfeature
-                            // event.
-                            this.pendingAnnotationSource.once('addfeature', function (e) {
-                                this.removeFeature(e.feature);
-                            });
-                            this.resetPendingAnnotation(this.pendingAnnotation.shape);
-                            return;
-                        }
-                        this.lastDrawnPointTime = new Date().getTime();
-                        this.lastDrawnPoint = e.feature.getGeometry();
-                    }
-                    this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
-                }
-            } else {
+            if (lastFrame !== undefined && lastFrame >= this.video.currentTime) {
                 // If the pending annotation (time) is invalid, remove it again.
                 // We have to wait for this feature to be added to the source to be able
                 // to remove it.
                 this.pendingAnnotationSource.once('addfeature', function (e) {
                     this.removeFeature(e.feature);
                 });
+                this.$emit('pending-annotation', this.pendingAnnotation);
+                return;
+            }
+
+            if (this.singleAnnotation) {
+                if (this.isDrawingPoint) {
+                    if (this.isPointDoubleClick(e)) {
+                        // The feature is added to the source only after this event
+                        // is handled, so remove has to happen after the addfeature
+                        // event.
+                        this.pendingAnnotationSource.once('addfeature', function (e) {
+                            this.removeFeature(e.feature);
+                        });
+                        this.resetPendingAnnotation(this.pendingAnnotation.shape);
+                        return;
+                    }
+                    this.lastDrawnPointTime = new Date().getTime();
+                    this.lastDrawnPoint = e.feature.getGeometry();
+                }
+                this.pendingAnnotationSource.once('addfeature', this.finishDrawAnnotation);
+            }
+
+            this.pendingAnnotation.frames.push(this.video.currentTime);
+            const points = this.getPointsFromGeometry(e.feature.getGeometry());
+            this.pendingAnnotation.points.push(points);
+
+            // The LabelBOT image is always created because the user could decide to
+            // enable LabelBOT while they draw the pending annotation.
+            if (!this.pendingAnnotation.screenshotPromise) {
+                this.pendingAnnotation.screenshotPromise = this.createLabelbotImage(points);
+            }
+
+            // Wait for the LabelBOT image before playing the video again.
+            if (!this.video.ended && this.autoplayDraw > 0) {
+                this.pendingAnnotation.screenshotPromise.then(() => {
+                    this.play();
+                    window.clearTimeout(this.autoplayDrawTimeout);
+                    this.autoplayDrawTimeout = window.setTimeout(this.pause, this.autoplayDraw * 1000);
+                });
             }
 
             this.$emit('pending-annotation', this.pendingAnnotation);
-
         },
         isPointDoubleClick(e) {
             return new Date().getTime() - this.lastDrawnPointTime < preventDoubleclick.POINT_CLICK_COOLDOWN
@@ -288,14 +311,14 @@ export default {
     created() {
         if (this.canAdd) {
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
-            Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
-            Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
-            Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
-            Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
-            Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
-            Keyboard.on('h', this.drawWholeFrame, 0, this.listenerSet);
-            Keyboard.on('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
-            Keyboard.on('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
+            this.keyboardOn('a', this.drawPoint, 0, this.listenerSet);
+            this.keyboardOn('s', this.drawRectangle, 0, this.listenerSet);
+            this.keyboardOn('d', this.drawCircle, 0, this.listenerSet);
+            this.keyboardOn('f', this.drawLineString, 0, this.listenerSet);
+            this.keyboardOn('g', this.drawPolygon, 0, this.listenerSet);
+            this.keyboardOn('h', this.drawWholeFrame, 0, this.listenerSet);
+            this.keyboardOn('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
+            this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
     },
 };

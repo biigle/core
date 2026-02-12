@@ -4,6 +4,8 @@ import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
+import Labelbot from '@/annotations/mixins/labelbot.vue';
+import LabelsTab from '@/annotations/components/labelsTab.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
@@ -34,12 +36,13 @@ class VideoTooLargeError extends VideoError {}
 const URL_CURRENT_TIME_DIVISOR = 1e4
 
 export default {
-    mixins: [LoaderMixin],
+    mixins: [LoaderMixin, Labelbot],
     components: {
         videoScreen: VideoScreen,
         videoTimeline: VideoTimeline,
         sidebar: Sidebar,
         sidebarTab: SidebarTab,
+        labelsTab: LabelsTab,
         labelTrees: LabelTrees,
         settingsTab: SettingsTab,
         annotationsTab: AnnotationsTab,
@@ -116,6 +119,11 @@ export default {
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
             projectIds: [],
+        };
+    },
+    provide() {
+        return {
+            labelTrees: this.labelTrees,
         };
     },
     computed: {
@@ -221,7 +229,7 @@ export default {
             return annotation;
         },
         seek(time, force) {
-            if (this.seeking) {
+            if (this.seeking || this.labelbotIsComputing) {
                 return Promise.resolve();
             }
 
@@ -309,44 +317,71 @@ export default {
                 this.pendingAnnotation.frames = frames;
                 this.pendingAnnotation.points = points;
             } else {
-                let data = {
+                this.pendingAnnotation = markRaw(new Annotation({
                     points: points,
                     frames: frames,
                     shape_id: this.shapes[pendingAnnotation.shape],
-                    labels: [{
-                        label_id: this.selectedLabel.id,
-                        label: this.selectedLabel,
-                        user: this.user,
-                    }],
+                    labels: this.getCurrentLabelsArray(),
                     pending: true,
-                };
-
-                this.pendingAnnotation = markRaw(new Annotation(data));
+                    screenshotPromise: pendingAnnotation.screenshotPromise,
+                }));
             }
         },
-        createAnnotation(pendingAnnotation) {
+        async createAnnotation(pendingAnnotation) {
             this.updatePendingAnnotation(pendingAnnotation);
-            let tmpAnnotation = this.pendingAnnotation;
-            this.annotations.push(tmpAnnotation);
+            // Save this because it is still  required when there may already be another
+            // this.pendingAnnotation.
+            pendingAnnotation = this.pendingAnnotation;
+            this.annotations.push(pendingAnnotation);
 
             // Catch an edge case where the time of the last key frame is greater than
             // the actual video duration.
             // See: https://github.com/biigle/core/issues/305
-            let frameCount = tmpAnnotation.frames.length;
-            if (this.videoDuration > 0 && frameCount > 0 && tmpAnnotation.frames[frameCount - 1] > this.videoDuration) {
-                tmpAnnotation.frames[frameCount - 1] = this.videoDuration;
+            let frameCount = pendingAnnotation.frames.length;
+            if (this.videoDuration > 0 && frameCount > 0 && pendingAnnotation.frames[frameCount - 1] > this.videoDuration) {
+                pendingAnnotation.frames[frameCount - 1] = this.videoDuration;
             }
 
-            let annotation = Object.assign({}, pendingAnnotation, {
+            let newAnnotation = {
+                points: pendingAnnotation.points,
+                frames: pendingAnnotation.frames,
                 shape_id: this.shapes[pendingAnnotation.shape],
-                label_id: this.selectedLabel ? this.selectedLabel.id : 0,
+            };
+
+            if (!this.labelbotIsActive) {
+                newAnnotation.label_id = this.selectedLabel.id;
+
+                return this.saveAnnotation(newAnnotation, pendingAnnotation);
+            }
+
+            try {
+                newAnnotation.labelbotImage = await pendingAnnotation.screenshotPromise;
+            } catch (e) {
+                Messages.danger(e.message);
+                this.removeAnnotation(pendingAnnotation);
+
+                return;
+            }
+
+            const promise = this.saveLabelbotAnnotation(
+                newAnnotation,
+                (annotation) => this.saveAnnotation(annotation, pendingAnnotation)
+            );
+
+            const videoId = this.videoId;
+            promise.then((annotation) => {
+                if (videoId === this.videoId) {
+                    this.showLabelbotPopup(annotation);
+                }
             });
 
-            delete annotation.shape;
+            return promise;
 
-            return VideoAnnotationApi.save({id: this.videoId}, annotation)
+        },
+        saveAnnotation(newAnnotation, pendingAnnotation) {
+            return VideoAnnotationApi.save({id: this.videoId}, newAnnotation)
                 .then((res) => {
-                    if (tmpAnnotation.track) {
+                    if (pendingAnnotation.track) {
                         this.disableJobTracking = res.body.trackingJobLimitReached;
                     }
                     return this.addCreatedAnnotation(res);
@@ -355,10 +390,7 @@ export default {
                     this.disableJobTracking = res.status === 429;
                 })
                 .finally(() => {
-                    let index = this.annotations.indexOf(tmpAnnotation);
-                    if (index !== -1) {
-                        this.annotations.splice(index, 1);
-                    }
+                    this.removeAnnotation(pendingAnnotation);
                 });
         },
         trackAnnotation(pendingAnnotation) {
@@ -371,22 +403,40 @@ export default {
                 annotation.startTracking();
             }
         },
+        getCurrentLabelsArray() {
+            if (!this.selectedLabel) {
+                return [];
+            }
+
+            return [{
+                label_id: this.selectedLabel.id,
+                label: this.selectedLabel,
+                user: this.user
+            }];
+        },
         handleSelectedLabel(label) {
             this.selectedLabel = label;
+            if (this.pendingAnnotation) {
+                this.pendingAnnotation.labels = this.getCurrentLabelsArray();
+            }
         },
         handleDeselectedLabel() {
-            this.selectedLabel = null;
+            this.handleSelectedLabel(null);
         },
-        deleteSelectedAnnotationsOrKeyframes(force) {
+        // This is used when the video popout is open and no videoScreen with the delete
+        // event handler exists in this window.
+        deleteSelectedAnnotationsOrKeyframes() {
             if (this.selectedAnnotations.length === 0) {
                 return;
             }
 
-            if (force === true || confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
-                this.selectedAnnotations
-                    .map(a => ({annotation: a, time: this.video.currentTime}))
-                    .forEach(this.deleteAnnotationOrKeyframe);
+            if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
+                this.deleteAnnotationsOrKeyframes(this.selectedAnnotations);
             }
+        },
+        deleteAnnotationsOrKeyframes(selectedAnnotations) {
+            selectedAnnotations.map(a => ({annotation: a, time: this.video.currentTime}))
+                .forEach(this.deleteAnnotationOrKeyframe);
         },
         deleteAnnotationOrKeyframe(event) {
             let annotation = event.annotation;
@@ -499,16 +549,17 @@ export default {
                 .attachAnnotationLabel(this.selectedLabel)
                 .catch(handleErrorResponse);
         },
-        swapAnnotationLabel(annotation, force) {
+        swapAnnotationLabel(annotation, options) {
+            const newLabel = options?.label || this.selectedLabel;
             let labels = annotation.labels.slice();
-            if (!force) {
+            if (options?.force !== true) {
                 labels = labels.filter(l => l.user_id === this.user.id);
             }
-            let lastLabel = labels.sort((a, b) => a.id - b.id).pop();
+            const lastLabel = labels.sort((a, b) => a.id - b.id).pop();
 
             // Can't use this.attachAnnotationLabel() because detachAnnotationLabel()
             // should not be called on error.
-            annotation.attachAnnotationLabel(this.selectedLabel)
+            annotation.attachAnnotationLabel(newLabel)
                 .then(() => {
                     if (lastLabel) {
                         this.detachAnnotationLabel(annotation, lastLabel);
@@ -517,7 +568,10 @@ export default {
                 .catch(handleErrorResponse);
         },
         forceSwapAnnotationLabel(annotation) {
-            this.swapAnnotationLabel(annotation, true);
+            this.swapAnnotationLabel(annotation, {force: true});
+        },
+        swapAnnotationLabelTo(annotation, label) {
+            this.swapAnnotationLabel(annotation, {label});
         },
         setActiveAnnotationFilter(filter) {
             this.activeAnnotationFilter = filter;
@@ -663,7 +717,7 @@ export default {
             }
         },
         showPreviousVideo() {
-            if (!this.hasSiblingVideos) {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
             this.reset();
@@ -673,7 +727,7 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         showNextVideo() {
-            if (!this.hasSiblingVideos) {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
             this.reset();
@@ -808,6 +862,10 @@ export default {
             Events.emit('videos.map.init', map);
         },
         togglePlaying() {
+            if (this.labelbotIsComputing) {
+                return;
+            }
+
             if (this.video.paused) {
                 if (this.autoPauseTimeout) {
                     this.cancelAutoPlay();
@@ -855,6 +913,16 @@ export default {
             handler(params) {
                 UrlParams.set(params);
             },
+        },
+        videoPopout(popout) {
+            // When the popout is open, no delete event handler is active in the parent
+            // window any more but the user should still be able to delete annotations
+            // selected in the timeline.
+            if (popout) {
+                Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+            } else {
+                Keyboard.off('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
+            }
         },
     },
     created() {
@@ -914,7 +982,6 @@ export default {
 
         Keyboard.on('control+k', this.openSidebarLabels, 0, this.listenerSet);
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
-        Keyboard.on('Delete', this.deleteSelectedAnnotationsOrKeyframes, 0, this.listenerSet);
         Keyboard.on(' ', this.togglePlaying, 0, this.listenerSet);
 
         window.addEventListener('beforeunload', () => {
@@ -922,6 +989,8 @@ export default {
                 this.videoPopout.close();
             }
         });
+
+        this.initLabelBot();
     },
     mounted() {
         // Wait for the sub-components to register their event listeners before
