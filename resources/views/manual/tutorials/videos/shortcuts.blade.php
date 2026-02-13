@@ -60,6 +60,10 @@
                     <td>Select the rectangle annotation tool</td>
                 </tr>
                 <tr>
+                    <td><kbd>Shift</kbd>+<kbd>s</kbd></td>
+                    <td>Select the aligned rectangle annotation tool</td>
+                </tr>
+                <tr>
                     <td><kbd>d</kbd></td>
                     <td>Select the circle annotation tool</td>
                 </tr>

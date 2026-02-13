@@ -1,7 +1,8 @@
 <script>
 import * as preventDoubleclick from '../../../prevent-doubleclick';
-import DrawInteraction from '@biigle/ol/interaction/Draw';
+import DrawInteraction, {createBox} from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
+import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
@@ -48,6 +49,9 @@ export default {
         isDrawingEllipse() {
             return this.interactionMode === 'drawEllipse';
         },
+        isDrawingAlignedRectangle() {
+            return this.interactionMode === 'drawAlignedRectangle';
+        },
     },
     methods: {
         draw(name) {
@@ -77,6 +81,9 @@ export default {
         drawEllipse() {
             this.draw('Ellipse');
         },
+        drawAlignedRectangle() {
+            this.draw('AlignedRectangle');
+        },
         maybeUpdateDrawInteractionMode(mode) {
             if (drawInteraction) {
                 this.map.removeInteraction(drawInteraction);
@@ -84,9 +91,19 @@ export default {
             }
 
             if (this.isDrawing) {
+                let type = mode.slice(4); // remove 'draw' prefix
+                let geometryFunction;
+
+                if (this.isDrawingAlignedRectangle) {
+                    // This is implemented as a special case of Circle in OpenLayers.
+                    type = 'Circle';
+                    geometryFunction = createBox();
+                }
+
                 drawInteraction = new DrawInteraction({
                     source: this.annotationSource,
-                    type: mode.slice(4), // remove 'draw' prefix
+                    type: type,
+                    geometryFunction: geometryFunction,
                     style: Styles.editing,
                     freehandCondition: this.getFreehandCondition(mode),
                     condition: this.updateSnapCoords
@@ -99,6 +116,14 @@ export default {
 
                 drawInteraction.on('drawend', (e) => {
                     this.drawEnded = true;
+
+                    if (this.isDrawingAlignedRectangle) {
+                        let coords = e.feature.getGeometry().getCoordinates();
+                        // Remove the closing point that createBox adds
+                        // (Rectangle expects 4 points, not 5).
+                        coords[0] = coords[0].slice(0, 4);
+                        e.feature.setGeometry(new Rectangle(coords));
+                    }
 
                     if (this.isDrawingPoint) {
                         if (this.isPointDoubleClick(e)) {
@@ -151,6 +176,7 @@ export default {
     created() {
         Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
         Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
+        Keyboard.on('Shift+s', this.drawAlignedRectangle, 0, this.listenerSet);
         Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
         Keyboard.on('Shift+d', this.drawEllipse, 0, this.listenerSet);
         Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
