@@ -60,9 +60,9 @@
                 >
                 <control-button
                     icon="fa-vector-square"
-                    title="Draw an axis-aligned box 𝗦𝗵𝗶𝗳𝘁+𝗦"
-                    :active="isDrawingBox"
-                    v-on:click="drawBox"
+                    title="Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦"
+                    :active="isDrawingAlignedRectangle"
+                    v-on:click="drawAlignedRectangle"
                     v-on:active="onActive"
                     ></control-button>
             </control-button>

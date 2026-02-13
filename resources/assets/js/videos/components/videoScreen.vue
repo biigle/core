@@ -116,22 +116,15 @@
                 <control-button
                     icon="icon-rectangle"
                     :title="(singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') + ' 𝗦'"
-                    :open="isDrawingRectangle || isDrawingBox"
+                    :open="isDrawingRectangle || isDrawingAlignedRectangle"
                     :active="isDrawingRectangle"
                     :disabled="hasError || null"
                     @click="drawRectangle"
                     v-slot="{onActive}"
                     >
-                        <control-button
-                            icon="fa-vector-square"
-                            :title="(singleAnnotation ? 'Draw an axis-aligned box' : 'Start an axis-aligned box annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦'"
-                            :active="isDrawingBox"
-                            @click="drawBox"
-                            @active="onActive"
-                            ></control-button>
                         <template v-if="singleAnnotation">
                             <control-button
-                                v-show="isDrawingRectangle || isDrawingBox"
+                                v-if="isDrawingRectangle || isDrawingAlignedRectangle"
                                 icon="fa-check"
                                 title="Disable the single-frame annotation option to create multi-frame annotations"
                                 :disabled="true"
@@ -139,7 +132,7 @@
                         </template>
                         <template v-else>
                             <control-button
-                                v-show="isDrawingRectangle || isDrawingBox"
+                                v-if="isDrawingRectangle || isDrawingAlignedRectangle"
                                 icon="fa-check"
                                 title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
                                 :disabled="cantFinishDrawAnnotation || null"
@@ -147,6 +140,13 @@
                                 @active="onActive"
                                 ></control-button>
                         </template>
+                        <control-button
+                            icon="fa-vector-square"
+                            :title="(singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦'"
+                            :active="isDrawingAlignedRectangle"
+                            @click="drawAlignedRectangle"
+                            @active="onActive"
+                            ></control-button>
                 </control-button>
                 <control-button
                     icon="icon-circle"
@@ -224,7 +224,7 @@
                     >
                         <template v-if="singleAnnotation">
                             <control-button
-                                v-show="(isDrawingPolygon || isUsingPolygonBrush)"
+                                v-if="(isDrawingPolygon || isUsingPolygonBrush)"
                                 icon="fa-check"
                                 title="Disable the single-frame annotation option to create multi-frame annotations"
                                 :disabled="true"
@@ -232,7 +232,7 @@
                         </template>
                         <template v-else>
                             <control-button
-                                v-show="(isDrawingPolygon || isUsingPolygonBrush)"
+                                v-if="(isDrawingPolygon || isUsingPolygonBrush)"
                                 icon="fa-check"
                                 title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
                                 :disabled="cantFinishDrawAnnotation || null"

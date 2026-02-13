@@ -49,8 +49,8 @@ export default {
         isDrawingEllipse() {
             return this.interactionMode === 'drawEllipse';
         },
-        isDrawingBox() {
-            return this.interactionMode === 'drawBox';
+        isDrawingAlignedRectangle() {
+            return this.interactionMode === 'drawAlignedRectangle';
         },
     },
     methods: {
@@ -81,8 +81,8 @@ export default {
         drawEllipse() {
             this.draw('Ellipse');
         },
-        drawBox() {
-            this.draw('Box');
+        drawAlignedRectangle() {
+            this.draw('AlignedRectangle');
         },
         maybeUpdateDrawInteractionMode(mode) {
             if (drawInteraction) {
@@ -94,8 +94,9 @@ export default {
                 let type = mode.slice(4); // remove 'draw' prefix
                 let geometryFunction;
 
-                if (mode === 'drawBox') {
-                    type = 'Circle'; // Box is implemented as a special case of Circle in ol
+                if (this.isDrawingAlignedRectangle) {
+                    // This is implemented as a special case of Circle in OpenLayers.
+                    type = 'Circle';
                     geometryFunction = createBox();
                 }
 
@@ -116,7 +117,7 @@ export default {
                 drawInteraction.on('drawend', (e) => {
                     this.drawEnded = true;
 
-                    if (this.isDrawingBox) {
+                    if (this.isDrawingAlignedRectangle) {
                         let coords = e.feature.getGeometry().getCoordinates();
                         // Remove the closing point that createBox adds
                         // (Rectangle expects 4 points, not 5).
@@ -175,9 +176,9 @@ export default {
     created() {
         Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
         Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
+        Keyboard.on('Shift+s', this.drawAlignedRectangle, 0, this.listenerSet);
         Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
         Keyboard.on('Shift+d', this.drawEllipse, 0, this.listenerSet);
-        Keyboard.on('Shift+s', this.drawBox, 0, this.listenerSet);
         Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
         Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
     }

@@ -71,8 +71,8 @@ export default {
         isDrawingWholeFrame() {
             return this.interactionMode === 'drawWholeFrame';
         },
-        isDrawingBox() {
-            return this.interactionMode === 'drawBox';
+        isDrawingAlignedRectangle() {
+            return this.interactionMode === 'drawAlignedRectangle';
         },
         hasPendingAnnotation() {
             if (this.isDrawingWholeFrame) {
@@ -132,13 +132,13 @@ export default {
         drawWholeFrame() {
             this.draw('WholeFrame');
         },
-        drawBox() {
-            this.draw('Box');
+        drawAlignedRectangle() {
+            this.draw('AlignedRectangle');
         },
         maybeUpdateDrawInteractionMode(mode) {
             let shape = mode.slice(4); // Remove the 'draw' prefix.
 
-            if (mode === 'drawBox') {
+            if (this.isDrawingAlignedRectangle) {
                 shape = 'Rectangle';
             }
 
@@ -162,7 +162,7 @@ export default {
                     let type = shape;
                     let geometryFunction;
 
-                    if (mode === 'drawBox') {
+                    if (this.isDrawingAlignedRectangle) {
                         type = 'Circle';
                         geometryFunction = createBox();
                     }
@@ -225,7 +225,7 @@ export default {
             this.$emit('pending-annotation', null);
         },
         extendPendingAnnotation(e) {
-            if (this.isDrawingBox) {
+            if (this.isDrawingAlignedRectangle) {
                 let coords = e.feature.getGeometry().getCoordinates();
                 // Remove the closing point that createBox adds
                 // (Rectangle expects 4 points, not 5).
@@ -319,7 +319,7 @@ export default {
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
             Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
             Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
-            Keyboard.on('Shift+s', this.drawBox, 0, this.listenerSet);
+            Keyboard.on('Shift+s', this.drawAlignedRectangle, 0, this.listenerSet);
             Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
             Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
             Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
