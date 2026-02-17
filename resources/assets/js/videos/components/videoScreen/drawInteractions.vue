@@ -1,7 +1,8 @@
 <script>
 import * as preventDoubleclick from '@/prevent-doubleclick';
-import DrawInteraction from '@biigle/ol/interaction/Draw';
+import DrawInteraction, {createBox} from '@biigle/ol/interaction/Draw';
 import Keyboard from '@/core/keyboard.js';
+import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from "./snapInteraction.vue";
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
@@ -70,6 +71,9 @@ export default {
         isDrawingWholeFrame() {
             return this.interactionMode === 'drawWholeFrame';
         },
+        isDrawingAlignedRectangle() {
+            return this.interactionMode === 'drawAlignedRectangle';
+        },
         hasPendingAnnotation() {
             if (this.isDrawingWholeFrame) {
                 return this.pendingAnnotation.shape && this.pendingAnnotation.frames.length > 0 && this.pendingAnnotation.points.length === 0;
@@ -128,8 +132,16 @@ export default {
         drawWholeFrame() {
             this.draw('WholeFrame');
         },
+        drawAlignedRectangle() {
+            this.draw('AlignedRectangle');
+        },
         maybeUpdateDrawInteractionMode(mode) {
             let shape = mode.slice(4); // Remove the 'draw' prefix.
+
+            if (this.isDrawingAlignedRectangle) {
+                shape = 'Rectangle';
+            }
+
             this.resetPendingAnnotation(shape);
 
             if (this.drawInteraction) {
@@ -147,9 +159,18 @@ export default {
                         this.finishDrawAnnotation();
                     }
                 } else {
+                    let type = shape;
+                    let geometryFunction;
+
+                    if (this.isDrawingAlignedRectangle) {
+                        type = 'Circle';
+                        geometryFunction = createBox();
+                    }
+
                     this.drawInteraction = new DrawInteraction({
                         source: this.pendingAnnotationSource,
-                        type: shape,
+                        type: type,
+                        geometryFunction: geometryFunction,
                         style: Styles.editing,
                         freehandCondition: this.getFreehandCondition(mode),
                         condition: this.updateSnapCoords
@@ -204,6 +225,14 @@ export default {
             this.$emit('pending-annotation', null);
         },
         extendPendingAnnotation(e) {
+            if (this.isDrawingAlignedRectangle) {
+                let coords = e.feature.getGeometry().getCoordinates();
+                // Remove the closing point that createBox adds
+                // (Rectangle expects 4 points, not 5).
+                coords[0] = coords[0].slice(0, 4);
+                e.feature.setGeometry(new Rectangle(coords));
+            }
+
             if (isInvalidShape(e.feature)) {
                 // Disallow shapes with too few points.
                 this.$emit('is-invalid-shape', e.feature.getGeometry().getType());
@@ -290,6 +319,7 @@ export default {
             this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
             Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
             Keyboard.on('s', this.drawRectangle, 0, this.listenerSet);
+            Keyboard.on('Shift+s', this.drawAlignedRectangle, 0, this.listenerSet);
             Keyboard.on('d', this.drawCircle, 0, this.listenerSet);
             Keyboard.on('f', this.drawLineString, 0, this.listenerSet);
             Keyboard.on('g', this.drawPolygon, 0, this.listenerSet);
