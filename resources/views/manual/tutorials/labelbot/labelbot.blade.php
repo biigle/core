@@ -19,7 +19,7 @@
         </p>
 
         <p>
-            Whenever a new annotation is created while LabelBOT is active, it will start <b class="text-info">computing</b>. Once finished, an overlay will be shown with the top three suggested labels for the annotation. The first suggested label is automatically preselected for the new annotation. If left alone for a while, the preselected label will automatically be confirmed and the overlay will close. If the preselected label is not correct, you can also select the second or third label with a click or keyboard shortcut. If none of the suggested labels are correct, you can choose a different label from the typeahead at the bottom of the overlay.
+            Whenever a new annotation is created while LabelBOT is active, it will start <b class="text-info">computing</b>. Once finished, an overlay will be shown with the top three suggested labels for the annotation. The first suggested label is automatically preselected for the new annotation. If the preselected label is not correct, you can also select the second or third label with a click or keyboard shortcut. If none of the suggested labels are correct, you can choose a different label from the typeahead at the bottom of the overlay.
         </p>
 
         <p class="text-center">
@@ -27,7 +27,7 @@
         </p>
 
         <p>
-            The automatic timeout for confirming the first suggested label <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#:~:text=The%20LabelBOT%20timeout">can be configured</a> and is cancelled on any interaction with the overlay. The timeout is also cancelled, confirming the first suggested label, when the next annotation is created.
+            You can also <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#:~:text=The%20LabelBOT%20timeout">configure</a> an automatic timeout for confirming the first suggested label. The timeout is cancelled on any interaction with the overlay.
         </p>
         <p>
             A LabelBOT overlay can be dragged to a different position, which can be handy if you create several new annotations in a row and have to review multiple overlapping overlays. To drag an overlay, grab the top edge with the cursor and release it at a different position. A dashed line indicates which overlay belongs to which annotation.

@@ -22,7 +22,7 @@ let defaults = {
     randomSamplingNumber: 9,
     regularSamplingRows: 3,
     regularSamplingColumns: 3,
-    labelbotTimeout: 1,
+    labelbotTimeout: 3, // off
 };
 
 export default new Settings({

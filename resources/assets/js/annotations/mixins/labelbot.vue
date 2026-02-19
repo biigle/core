@@ -30,7 +30,7 @@ export default {
             labelbotMessageID: 0,
             labelbotWorker: null,
             labelBotWorkerListeners: [],
-            labelbotTimeout: 1,
+            labelbotTimeout: 3, // off
         };
     },
     computed: {
