@@ -1,4 +1,5 @@
 import Settings from '@/core/models/Settings.js';
+import {TIMEOUTS} from '../components/labelbotPopup.vue';
 
 /**
  * Store for annotator settings
@@ -22,7 +23,7 @@ let defaults = {
     randomSamplingNumber: 9,
     regularSamplingRows: 3,
     regularSamplingColumns: 3,
-    labelbotTimeout: 3, // off
+    labelbotTimeout: TIMEOUTS.length - 1, // off
 };
 
 export default new Settings({
