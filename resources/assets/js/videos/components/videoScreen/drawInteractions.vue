@@ -1,7 +1,6 @@
 <script>
 import * as preventDoubleclick from '@/prevent-doubleclick';
 import DrawInteraction, {createBox} from '@biigle/ol/interaction/Draw';
-import Keyboard from '@/core/keyboard.js';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from "./snapInteraction.vue";
 import Styles from '@/annotations/stores/styles.js';
