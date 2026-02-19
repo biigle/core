@@ -1,4 +1,5 @@
 import Settings from '@/core/models/Settings.js';
+import {TIMEOUTS} from '@/annotations/components/labelbotPopup.vue';
 
 let defaults = {
     annotationOpacity: 1,
@@ -13,6 +14,7 @@ let defaults = {
     jumpStep: 5.0,
     muteVideo: true,
     singleAnnotation: false,
+    labelbotTimeout: TIMEOUTS.length - 1, // off
 };
 
 export default new Settings({

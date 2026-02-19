@@ -460,7 +460,13 @@ export default {
                 .catch(handleErrorResponse);
         },
         handleUpdatedSettings(key, value) {
-            this.settings[key] = value;
+            // This needs extra handling because it uses the same mechanism than the image
+            // annotation tool, which stores the settings differently.
+            if (key === 'labelbotTimeout') {
+                this.labelbotTimeout = value;
+            } else {
+                this.settings[key] = value;
+            }
         },
         handleOpenedTab(name) {
             Settings.set('openTab', name);

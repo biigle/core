@@ -28,6 +28,7 @@
         <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
     </div>
 
+
     @can('add-annotation', $video)
         <div class="sidebar-tab__section">
             <input type="number" min="0" step="0.5" v-model="autoplayDraw" class="form-control form-control--small" title="Time in seconds that the video should play after an annotation keyframe is drawn"> Play/pause while drawing
@@ -39,12 +40,18 @@
         <input type="range" min="0" :max="autoPauseMax" step="1" v-model="autoPause">
     </div>
 
+
     <div class="sidebar-tab__section">
         <input type="number" min="0.25" max="4.0" step="0.25" v-model="playbackRate" class="form-control form-control--small" title="Video playback rate"> Playback rate
     </div>
 
     <div class="sidebar-tab__section">
         <input type="number" min="0" max="60.0" step="0.1" v-model="jumpStep" class="form-control form-control--small" title="Time in seconds that the video will jump (back or forward) with command buttons"> Jump step (s)
+    </div>
+
+    <div class="sidebar-tab__section">
+        <h5 title="Set the duration of the LabelBOT popup timeout">LabelBOT Timeout (<span v-text="labelbotTimeoutValue"></span>)</h5>
+        <input type="range" min="0" :max="labelbotTimeoutMax" step="1" v-model="labelbotTimeout" onmouseup="this.blur()">
     </div>
 
     <div class="sidebar-tab__section">
