@@ -27,15 +27,24 @@
         </p>
 
         <p>
-            You can also <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#:~:text=The%20LabelBOT%20timeout">configure</a> an automatic timeout for confirming the first suggested label. The timeout is cancelled on any interaction with the overlay.
+            You can also configure an automatic timeout for confirming the first suggested label in the <i class="fa fa-cog"></i> Settings tab. The timeout is cancelled on any interaction with the overlay.
         </p>
         <p>
             A LabelBOT overlay can be dragged to a different position, which can be handy if you create several new annotations in a row and have to review multiple overlapping overlays. To drag an overlay, grab the top edge with the cursor and release it at a different position. A dashed line indicates which overlay belongs to which annotation.
         </p>
 
         <p>
-            Be sure to check out all available <a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}#labelbot">LabelBOT keyboard shortcuts</a> for an efficient workflow!
+            Be sure to check out all available LabelBOT keyboard shortcuts for an efficient workflow:
         </p>
+
+        <ul>
+            <li>
+                <a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}#labelbot">image annotation tool shortcuts</a>
+            </li>
+            <li>
+                <a href="{{route('manual-tutorials', ['videos', 'shortcuts'])}}#labelbot">video annotation tool shortcuts</a>
+            </li>
+        </ul>
 
         <h3>How LabelBOT works</h3>
 
