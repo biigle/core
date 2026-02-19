@@ -76,6 +76,7 @@ export default class Annotation {
 
     set labels(value) {
         this._labels.value = value;
+        this._newRevision();
     }
 
     get color() {
@@ -328,7 +329,7 @@ export default class Annotation {
             this.labels.splice(index, 1);
         }
 
-        this.revision += 1;
+        this._newRevision();
 
         return VideoAnnotationApi.detachLabel({id: annotationLabel.id})
             .catch(e => {
@@ -346,7 +347,7 @@ export default class Annotation {
 
     handleAttachedLabel(response) {
         this.labels.push(response.body);
-        this.revision += 1;
+        this._newRevision();
 
         return response;
     }
