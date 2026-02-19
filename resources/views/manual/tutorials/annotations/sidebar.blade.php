@@ -122,7 +122,7 @@
         </p>
 
         <p>
-            <a name="labelbot-timeout"></a>The LabelBOT timeout slider allows you to control the time after a <a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a> popup automatically closes. Move the slider to the far right to disable automatic closing.
+            <a name="labelbot-timeout"></a>The LabelBOT timeout slider allows you to control the time after a <a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a> popup automatically closes. Move the slider to the left to enable automatic closing.
         </p>
 
         <p>

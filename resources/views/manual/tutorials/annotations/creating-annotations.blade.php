@@ -61,7 +61,7 @@
             <a href="{{asset('assets/images/manual/creating_annotations_rectangle_4.jpg')}}"><img src="{{asset('assets/images/manual/creating_annotations_rectangle_4.jpg')}}" width="24%"></a>
         </p>
 
-        <h4><a name="aligned-rectangle"></a><i class="fa fa-vector-square"></i>Aligned Rectangle</h4>
+        <h4><a name="aligned-rectangle"></a><i class="fa fa-vector-square"></i> Aligned Rectangle</h4>
         <p>
             In addition to the regular mode to draw rectangles, there is the aligned rectangle tool. The button to activate the aligned rectangle tool appears when you hover your cursor over the button of the rectangle tool.
         </p>

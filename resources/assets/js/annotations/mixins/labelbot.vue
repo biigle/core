@@ -3,6 +3,7 @@ import Keyboard from '@/core/keyboard.js';
 import LabelbotWorker from '../workers/labelbot.js?worker';
 import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
 import Messages from '@/core/messages/store.js';
+import {TIMEOUTS} from '../components/labelbotPopup.vue';
 
 // This used to be higher to allow multiple popups at the same time but we found that
 // only a single popup at a time supports a more efficient workflow.
@@ -30,7 +31,7 @@ export default {
             labelbotMessageID: 0,
             labelbotWorker: null,
             labelBotWorkerListeners: [],
-            labelbotTimeout: 1,
+            labelbotTimeout: TIMEOUTS.length - 1, // off
         };
     },
     computed: {
