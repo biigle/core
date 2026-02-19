@@ -576,7 +576,10 @@ export default {
             e.feature.set('unselectable', true);
 
             const points = this.getPoints(geometry);
-            let labelbotImage = null;
+            const newAnnotation = {
+                shape: geometry.getType(),
+                points: points,
+            };
 
             if (this.labelbotIsActive) {
                 // The "info" color.
@@ -600,7 +603,7 @@ export default {
                 // would be an ugly style flickering of the feature while the
                 // labelbotImage is computed.
                 try {
-                    labelbotImage = await this.createLabelbotImage(points);
+                    newAnnotation.labelbotImage = await this.createLabelbotImage(points);
                 } catch (error) {
                     removeCallback();
                     Messages.danger(error.message);
@@ -612,11 +615,7 @@ export default {
 
             // The removeCallback is called when saving the annotation succeeded or
             // failed, to remove the temporary feature.
-            this.$emit('new', {
-                shape: geometry.getType(),
-                points: points,
-                labelbotImage: labelbotImage
-            }, removeCallback);
+            this.$emit('new', newAnnotation, removeCallback);
         },
         deleteSelectedAnnotations() {
             if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
