@@ -188,12 +188,14 @@ class LabelBotService
         $k = (int) config('labelbot.K');
         DB::statement("SET hnsw.ef_search = $k");
 
-        # Iterative scans can use strict or relaxed ordering.
-        # Strict ensures results are in the exact order by distance
-        # Relaxed allows results to be slightly out of order by distance, but provides better recall
-        # See https://github.com/pgvector/pgvector?tab=readme-ov-file#iterative-index-scans for more details
-        #
-        # We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
+        /*
+        Iterative scans can use strict or relaxed ordering.
+        Strict ensures results are in the exact order by distance
+        Relaxed allows results to be slightly out of order by distance, but provides better recall
+        See https://github.com/pgvector/pgvector?tab=readme-ov-file#iterative-index-scans for more details
+
+        We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
+        */
         DB::statement("SET hnsw.iterative_scan = relaxed_order");
 
         $subquery = $model::select('label_id', 'label_tree_id')
@@ -212,8 +214,10 @@ class LabelBotService
 
     /**
      * Get the correct model class for the annotation type.
+     *
+     * @return class-string<ImageAnnotationLabelFeatureVector|VideoAnnotationLabelFeatureVector>
      */
-    protected function getFeatureVectorModelFor(Annotation $annotation): string
+    protected function getFeatureVectorModelFor(Annotation $annotation)
     {
         if ($annotation instanceof ImageAnnotation) {
             return ImageAnnotationLabelFeatureVector::class;
