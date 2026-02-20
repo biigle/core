@@ -44,6 +44,24 @@ class LoginController extends Controller
     }
 
     /**
+     * Validate the user login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            // The email validation also catches invalid UTF-8 sequences that would
+            // produce a database error.
+            $this->username() => 'required|email',
+            'password' => 'required|string',
+        ]);
+    }
+
+    /**
      * Get the needed authorization credentials from the request.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -54,12 +72,9 @@ class LoginController extends Controller
         $username = $this->username();
         $input = $request->input($username, '');
 
-        // Sanitize input by removing invalid UTF-8 sequences to prevent database errors.
-        $sanitized = mb_convert_encoding($input, 'UTF-8', 'UTF-8');
-
         // Transform the username/email to lowercase because we want this to be case
         // insensitive.
-        $request->merge([$username => strtolower($sanitized)]);
+        $request->merge([$username => strtolower($input)]);
 
         return $this->baseCredentials($request);
     }
