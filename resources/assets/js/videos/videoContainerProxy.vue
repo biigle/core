@@ -76,10 +76,16 @@ const proxy = {
             this.parent.handleRequiresSelectedLabel();
         },
         showPreviousVideo() {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
+                return;
+            }
             this.reset();
             this.parent.showPreviousVideo();
         },
         showNextVideo() {
+            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
+                return;
+            }
             this.reset();
             this.parent.showNextVideo();
         },
