@@ -6,21 +6,14 @@ use Biigle\Http\Requests\StoreImageAnnotation;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
-use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
-use Biigle\Project;
-use Biigle\Role;
-use Biigle\Shape;
-use Cache;
+use Biigle\Services\LabelBot\LabelBotService;
 use DB;
 use Exception;
 use Generator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Pgvector\Laravel\Vector;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class ImageAnnotationController extends Controller
 {
@@ -214,7 +207,7 @@ class ImageAnnotationController extends Controller
      * @param StoreImageAnnotation $request
      * @return ImageAnnotation
      */
-    public function store(StoreImageAnnotation $request)
+    public function store(StoreImageAnnotation $request, LabelBotService $labelBotService)
     {
         $points = $request->input('points');
 
@@ -229,51 +222,18 @@ class ImageAnnotationController extends Controller
         }
 
         $annotation->points = $points;
-        $labelId = $request->input('label_id');
 
-        if (is_null($labelId) && $request->has('feature_vector')) {
-            // LabelBOT
-            $topNLabels = [];
-            $maxRequests = config('labelbot.max_requests');
-            $cacheKey = "labelbot-requests-{$request->user()->id}";
-            $currentRequests = Cache::get($cacheKey, 0);
-
-
-            if ($currentRequests >= $maxRequests) {
-                throw new TooManyRequestsHttpException(message: "You already have {$maxRequests} pending LabelBOT requests. Please wait for one to complete before submitting a new one.");
-            }
-
+        if ($request->has('label_id')) {
+            $label = Label::findOrFail($request->input('label_id'));
+        } else {
+            $labels = $labelBotService->getLabelsForAnnotation($annotation, $image->volume_id, $request);
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
-
-            // Get label tree id(s).
-            $treeIds = $this->getLabelTreeIds($request->user(), $image->volume_id);
-            $ignoreIds = array_map('intval', config('labelbot.ignore_label_trees'));
-            $treeIds = array_diff($treeIds, $ignoreIds);
-
-            // Convert the feature vector into a Vector object for compatibility with the query.
-            $featureVector = new Vector($request->input('feature_vector'));
-
-            Cache::increment($cacheKey);
-            try {
-                $topNLabels = $this->performVectorSearch($featureVector, $treeIds, $topNLabels);
-            } finally {
-                $count = Cache::decrement($cacheKey);
-                if ($count <= 0) {
-                    Cache::forget($cacheKey);
-                }
+            $label = array_shift($labels);
+            if (!empty($labels)) {
+                // Attach the remaining labels (if any).
+                $annotation->labelBOTLabels = $labels;
             }
-
-            if (empty($topNLabels)) {
-                throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
-            }
-            // Get labels sorted by their top N order.
-            $labelModels = Label::whereIn('id', $topNLabels)->get()->keyBy('id');
-            $labelBotLabels = array_map(fn ($id) => $labelModels->get($id), $topNLabels);
-
-            $label = array_shift($labelBotLabels);
-        } else {
-            $label = Label::findOrFail($labelId);
         }
 
         $this->authorize('attach-label', [$annotation, $label]);
@@ -288,11 +248,6 @@ class ImageAnnotationController extends Controller
         });
 
         $annotation->load('labels.label', 'labels.user');
-
-        if (isset($labelBotLabels)) {
-            // Attach the remaining labels (if any).
-            $annotation->labelBOTLabels = $labelBotLabels;
-        }
 
         return $annotation;
     }
@@ -388,141 +343,5 @@ class ImageAnnotationController extends Controller
         $annotation->delete();
 
         return response('Deleted.', 200);
-    }
-
-    /**
-     * Get all label trees that are used by all projects which are visible to the user.
-     *
-     * @param mixed $user
-     * @param int $volumeId
-     *
-     * @return array
-     */
-    protected function getLabelTreeIds($user, $volumeId)
-    {
-        if ($user->can('sudo')) {
-            // Global admins have no restrictions.
-            $projectIds = DB::table('project_volume')
-                ->where('volume_id', $volumeId)
-                ->pluck('project_id');
-        } else {
-            // Array of all project IDs that the user and the image have in common
-            // and where the user is editor, expert or admin.
-            $projectIds = Project::inCommon($user, $volumeId, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
-            ])->pluck('id');
-        }
-
-        return DB::table('label_tree_project')
-            ->whereIn('project_id', $projectIds)
-            ->pluck('label_tree_id')
-            ->toArray();
-    }
-
-    /**
-     * Perform vector search using the Dynamic Index Switching (DIS) technique.
-     *
-     * The search process first attempts to retrieve results using an Approximate Nearest Neighbor (ANN) search
-     * via the HNSW index. If the ANN search returns no results, it falls back to an exact KNN search using the
-     * B-Tree index for filtering, ensuring that results are always returned.
-     *
-     * @param vector $featureVector The input feature vector to search for nearest neighbors.
-     * @param int[] $trees The label tree IDs to filter the data by.
-     * @param int[] $topNLabels The array to store the top N labels based on the search results.
-     *
-     * @return array The array of top N labels that are the closest to the input feature vector.
-     */
-    protected function performVectorSearch($featureVector, $trees, $topNLabels)
-    {
-        // Perform ANN search.
-        $topNLabels = $this->performAnnSearch($featureVector, $trees);
-
-        // Perform ANN search with iterative index scan + post filtering as a fallback if ANN search returns no results.
-        if (empty($topNLabels)) {
-            $topNLabels = $this->performAnnSearchWithIterativeIndexScan($featureVector, $trees);
-        }
-
-        return $topNLabels;
-    }
-
-    /**
-     * Perform Approximate Nearest Neighbor (ANN) search using the HNSW index with Post-Subquery Filtering (PSF).
-     *
-     * The search uses the HNSW index to find the top K nearest neighbors of the input feature vector,
-     * and then applies filtering based on the label_tree_id values. If no results are found or if the filtering
-     * removes all results, an empty array is returned.
-     *
-     * @param Vector $featureVector The input feature vector to search for nearest neighbors.
-     * @param int[] $trees The label tree IDs to filter the data by.
-     *
-     * @return array The array of label IDs representing the top nearest neighbors.
-    */
-    protected function performAnnSearch($featureVector, $trees)
-    {
-        // Size of the dynamic candidate list during the search process.
-        // K is always bounded by this value so we set it to K.
-        $k = config('labelbot.K');
-        DB::statement("SET hnsw.ef_search = $k");
-
-        $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
-            ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
-            ->orderBy('distance')
-            ->limit($k);
-        
-        return DB::query()->fromSub($subquery, 'subquery')
-            ->whereIn('label_tree_id', $trees)
-            ->groupBy('label_id')
-            ->orderByRaw('MIN(distance)')
-            ->limit(config('labelbot.N'))
-            ->pluck('label_id')
-            ->toArray();
-    }
-
-    /**
-     * Perform Approximate Nearest Neighbor (ANN) search using the HNSW iterative index
-     * scan.
-     *
-     * The search uses the HNSW iterative index scan to find the top K nearest neighbors
-     * of the input feature vector, and then applies filtering based on the label_tree_id
-     * values. If the filtering removes all results, the iterative scan will
-     * automatically scan more of the index until enough results are found (or it reaches
-     * hnsw.max_scan_tuples, which is 20,000 by default), finally if no results are
-     * found, an empty array is returned.
-     *
-     * @param Vector $featureVector The input feature vector to search for nearest neighbors.
-     * @param int[] $trees The label tree IDs to filter the data by.
-     *
-     * @return array The array of label IDs representing the top nearest neighbors.
-    */
-    protected function performAnnSearchWithIterativeIndexScan($featureVector, $trees)
-    {
-
-        // Size of the dynamic candidate list during the search process.
-        // K is always bounded by this value so we set it to K.
-        $k = config('labelbot.K');
-        DB::statement("SET hnsw.ef_search = $k");
-
-        # Iterative scans can use strict or relaxed ordering.
-        # Strict ensures results are in the exact order by distance
-        # Relaxed allows results to be slightly out of order by distance, but provides better recall
-        # See https://github.com/pgvector/pgvector?tab=readme-ov-file#iterative-index-scans for more details
-        #
-        # We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
-        DB::statement("SET hnsw.iterative_scan = relaxed_order");
-
-        $subquery = ImageAnnotationLabelFeatureVector::select('label_id', 'label_tree_id')
-            ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
-            ->whereIn('label_tree_id', $trees) // Filtering in the subquery is required otherwise the iterative scan would not work.
-            ->orderBy('distance')
-            ->limit($k);
-
-        return DB::query()->fromSub($subquery, 'subquery')
-            ->groupBy('label_id')
-            ->orderByRaw('MIN(distance)')
-            ->limit(config('labelbot.N'))
-            ->pluck('label_id')
-            ->toArray();
     }
 }

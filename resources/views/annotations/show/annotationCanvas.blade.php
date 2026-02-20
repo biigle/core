@@ -56,7 +56,16 @@
                 title="Draw a rectangle 𝗦"
                 :active="isDrawingRectangle"
                 v-on:click="drawRectangle"
-                ></control-button>
+                v-slot="{onActive}"
+                >
+                <control-button
+                    icon="fa-vector-square"
+                    title="Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦"
+                    :active="isDrawingAlignedRectangle"
+                    v-on:click="drawAlignedRectangle"
+                    v-on:active="onActive"
+                    ></control-button>
+            </control-button>
             <control-button
                 icon="icon-circle"
                 title="Draw a circle 𝗗"

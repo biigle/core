@@ -92,6 +92,13 @@ export default {
             crossOriginError: false,
             maybeCorsTiffError: false,
             imageFilenames: {},
+            labelTrees: [],
+            projectIds: [],
+        };
+    },
+    provide() {
+        return {
+            labelTrees: this.labelTrees,
         };
     },
     computed: {
@@ -432,7 +439,17 @@ export default {
             let promise;
 
             if (this.labelbotIsActive) {
-                promise = this.storeLabelbotAnnotation(annotation);
+                let imageId = this.imageId;
+                promise = this.saveLabelbotAnnotation(
+                    annotation,
+                    (annotation) => AnnotationsStore.create(imageId, annotation)
+                );
+
+                promise.then((annotation) => {
+                    if (imageId === this.imageId) {
+                        this.showLabelbotPopup(annotation);
+                    }
+                });
             } else {
                 annotation.label_id = this.selectedLabel.id;
                 promise = AnnotationsStore.create(this.imageId, annotation);
@@ -724,6 +741,8 @@ export default {
         this.isExpert = biigle.$require('annotations.isExpert');
         this.userId = biigle.$require('annotations.userId');
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
+        this.labelTrees = biigle.$require('annotations.labelTrees');
+        this.projectIds = biigle.$require('annotations.projectIds');
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');
@@ -787,6 +806,8 @@ export default {
         }
 
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
+
+        this.initLabelBot();
     },
 };
 </script>

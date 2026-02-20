@@ -1,9 +1,9 @@
 <script>
-import AnnotationsStore from '../stores/annotations.js';
 import Keyboard from '@/core/keyboard.js';
 import LabelbotWorker from '../workers/labelbot.js?worker';
 import LabelbotWorkerUrl from '../workers/labelbot.js?worker&url';
 import Messages from '@/core/messages/store.js';
+import {TIMEOUTS} from '../components/labelbotPopup.vue';
 
 // This used to be higher to allow multiple popups at the same time but we found that
 // only a single popup at a time supports a more efficient workflow.
@@ -31,12 +31,15 @@ export default {
             labelbotMessageID: 0,
             labelbotWorker: null,
             labelBotWorkerListeners: [],
-            labelbotTimeout: 1,
+            labelbotTimeout: TIMEOUTS.length - 1, // off
         };
     },
     computed: {
         labelbotIsActive() {
             return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;
+        },
+        labelbotIsComputing() {
+            return this.labelbotState === LABELBOT_STATES.COMPUTING;
         },
         labelbotOverlayCount() {
             return this.labelbotOverlays.length;
@@ -142,7 +145,6 @@ export default {
                     Keyboard.setActiveSet('default');
                 }
             }
-
         },
         closeAllLabelbotPopups() {
             this.labelbotOverlays = [];
@@ -152,9 +154,7 @@ export default {
         changeLabelbotFocusedPopup(annotation) {
             this.focusedPopupKey = annotation.id;
         },
-        storeLabelbotAnnotation(annotation) {
-            const currentImageId = this.imageId;
-
+        saveLabelbotAnnotation(annotation, saveCallback) {
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
                 return Promise.reject({body: {message: 'LabelBOT is not finished initializing.'}});
             }
@@ -164,16 +164,20 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
+            // Make sure the LabelBOT image is not sent in the API request to create the
+            // annotation.
+            const labelbotImage = annotation.labelbotImage;
+            annotation.labelbotImage = undefined;
+            delete annotation.labelbotImage;
 
-            return this.generateFeatureVector(annotation.labelbotImage)
-                .then(featureVector =>  annotation.feature_vector = featureVector)
-                .then(() => this.labelbotRequestsInFlight += 1)
-                .then(() => AnnotationsStore.create(currentImageId, annotation))
-                .then((annotation) => {
-                    if (currentImageId === this.imageId) {
-                        this.showLabelbotPopup(annotation);
-                    }
+            return this.generateFeatureVector(labelbotImage)
+                .then((featureVector) => {
+                    this.labelbotRequestsInFlight += 1;
+                    annotation.feature_vector = featureVector;
 
+                    return saveCallback(annotation);
+                })
+                .then(annotation => {
                     if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
@@ -196,6 +200,14 @@ export default {
 
                     return annotation;
                 });
+        },
+        initLabelBot() {
+            // Label trees may not be set if the user can't annotate.
+            if (!this.labelTrees.some(t => t.labels.length > 0)) {
+                this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
+            }
+
+            this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');
         },
     },
     watch: {
@@ -221,15 +233,6 @@ export default {
                 this.closeLabelbotPopup(this.labelbotOverlays[0]);
             }
         },
-    },
-    created() {
-        const labelTrees = biigle.$require('annotations.labelTrees');
-        // Label trees may not be set if the user can't annotate.
-        if (!Array.isArray(labelTrees) || !labelTrees.some(t => t.labels.length > 0)) {
-            this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
-        }
-
-        this.labelbotMaxRequests = biigle.$require('labelbot.max_requests');
     },
 };
 </script>
