@@ -51,10 +51,15 @@ class LoginController extends Controller
      */
     protected function credentials(Request $request)
     {
+        $username = $this->username();
+        $input = $request->input($username, '');
+
+        // Sanitize input by removing invalid UTF-8 sequences to prevent database errors.
+        $sanitized = mb_convert_encoding($input, 'UTF-8', 'UTF-8');
+
         // Transform the username/email to lowercase because we want this to be case
         // insensitive.
-        $username = $this->username();
-        $request->merge([$username => strtolower($request->input($username))]);
+        $request->merge([$username => strtolower($sanitized)]);
 
         return $this->baseCredentials($request);
     }
