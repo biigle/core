@@ -9,8 +9,8 @@
 <div id="project-strategy-container">
     <div class="row">
         <div class="col-xs-6">
-    <project-strategy isAdmin={{ $isAdmin }}></project-strategy>
-    </div>
+            <project-strategy :isAdmin={{ $isAdmin ? 'true' : 'false' }}></project-strategy>
+        </div>
     </div>
 </div>
 @endsection

@@ -1,5 +1,5 @@
 <template>
-    <div class='project-strategy'>
+    <div>
         <h4><span v-if="editing">Edit </span><span v-if="creating">Create </span>Annotation Strategy</h4>
         <div v-if="isAdmin">
             <button class="btn pull-right">Edit</button>
