@@ -9,7 +9,7 @@
 <div id="project-strategy-container">
     <div class="row">
         <div class="col-xs-6">
-    <project-strategy></project-strategy>
+    <project-strategy isAdmin={{ $isAdmin }}></project-strategy>
     </div>
     </div>
 </div>
