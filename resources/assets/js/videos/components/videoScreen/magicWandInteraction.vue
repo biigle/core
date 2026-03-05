@@ -18,7 +18,9 @@ let magicWandInteraction;
 export default {
     data() {
         return {
-            videoLayer: null,
+            magicWandVideoLayer: null,
+            magicWandvideoCanvas: null,
+            projection: null
         };
     },
     computed: {
@@ -34,46 +36,26 @@ export default {
                 this.interactionMode = 'magicWand';
             }
         },
-        maybeSetMagicWandLayer() {
-            if (this.video === null || this.video.currentTime === null) {
-                return
-            }
+        updateVideoFrameImage() {
+            // Update video frame
+            let canvasContext = this.magicWandvideoCanvas.getContext('2d');
+            canvasContext.drawImage(this.video, 0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height);
 
-            if (this.map.getLayers().getArray().find(layer => layer.get('name') == 'videoLayer') != undefined) {
-                this.map.removeLayer(this.videoLayer)
-                this.videoLayer = null;
-            }
-
-            let videoCanvas = document.createElement('canvas')
-            let canvasContext = videoCanvas.getContext('2d');
-
-            videoCanvas.width = this.video.videoWidth;
-            videoCanvas.height = this.video.videoHeight;
-            canvasContext.drawImage(this.video, 0, 0, videoCanvas.width, videoCanvas.height);
-
-            this.videoLayer = new ImageLayer();
-            let projection = new Projection({
-                code: 'biigle-video',
-                units: 'pixels',
-                extent: [0, 0, this.video.width, this.video.height]
-            });
-
-            this.videoLayer.setSource(new CanvasSource({
-                canvas: videoCanvas,
-                projection: projection,
-                canvasExtent: [0, 0, videoCanvas.width, videoCanvas.height],
-                canvasSize: [videoCanvas.width, videoCanvas.height],
+            this.magicWandVideoLayer.setSource(new CanvasSource({
+                canvas: this.magicWandvideoCanvas,
+                projection: this.projection,
+                canvasExtent: [0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
+                canvasSize: [this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
             }));
-            this.videoLayer.set('name', 'videoLayer')
-            this.videoLayer.setZIndex(-1);
-            this.map.addLayer(this.videoLayer);
-            magicWandInteraction.setLayer(this.videoLayer);
+
+            // Set updated video frame
             magicWandInteraction.updateSnapshot()
         },
         toggleMagicWandInteraction(isMagicWanding) {
             if (!isMagicWanding) {
                 magicWandInteraction.setActive(false);
             } else if (this.hasSelectedLabel || this.labelbotIsActive) {
+                this.updateVideoFrameImage();
                 magicWandInteraction.setActive(true);
             } else {
                 this.requireSelectedLabel();
@@ -89,6 +71,7 @@ export default {
                 indicatorPointStyle: Styles.editing,
                 indicatorCrossStyle: Styles.cross,
                 simplifyTolerant: 0.1,
+                willReadFrequently: true,
             });
             magicWandInteraction.on('drawend', (e) => {
                 let pendingAnnotation = {
@@ -96,16 +79,44 @@ export default {
                     frames: [this.video.currentTime],
                     points: [this.convertPointsFromOlToDb(e.feature.getGeometry().getCoordinates()[0])],
                 };
+                // TODO: check if polygon is valid
                 this.$emit('pending-annotation', pendingAnnotation);
                 this.annotationSource.once('addfeature', () => {
                     this.$emit('create-annotation', pendingAnnotation);
                     this.$emit('pending-annotation', null);
                 });
             }); // call video handle new feature
+
             magicWandInteraction.setActive(false);
             this.map.addInteraction(magicWandInteraction);
-            this.maybeSetMagicWandLayer();
+
+            // Create video frame layer and canvas
+            this.magicWandVideoLayer = new ImageLayer();
+            this.magicWandVideoLayer.setZIndex(-1);
+            this.projection = new Projection({
+                code: 'biigle-video',
+                units: 'pixels',
+                extent: [0, 0, this.video.width, this.video.height]
+            });
+
+            this.magicWandvideoCanvas = document.createElement('canvas');
+            this.magicWandvideoCanvas.width = this.video.videoWidth;
+            this.magicWandvideoCanvas.height = this.video.videoHeight;
+
+            this.magicWandVideoLayer.setSource(new CanvasSource({
+                canvas: this.magicWandvideoCanvas,
+                projection: this.projection,
+                canvasExtent: [0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
+                canvasSize: [this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
+            }));
+
+            this.map.addLayer(this.magicWandVideoLayer);
+            magicWandInteraction.setLayer(this.magicWandVideoLayer);
         },
+        initializeVideoFrameImage() {
+            this.initInteraction();
+            this.updateVideoFrameImage();
+        }
     },
     watch: {
         isMagicWanding(isMagicWanding) {
@@ -113,10 +124,9 @@ export default {
         },
     },
     created() {
-        this.$watch('initialized', this.initInteraction);
-        // TODO: add jump and seek event
-        this.video.addEventListener('pause', this.maybeSetMagicWandLayer)
-        this.video.addEventListener('seeked', this.maybeSetMagicWandLayer)
+        this.$watch('initialized', this.initializeVideoFrameImage);
+        this.video.addEventListener('pause', this.updateVideoFrameImage)
+        this.video.addEventListener('seeked', this.updateVideoFrameImage)
         Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
     },
 };
