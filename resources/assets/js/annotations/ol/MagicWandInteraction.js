@@ -42,9 +42,11 @@ class MagicWandInteraction extends PointerInteraction {
         this.downPoint = [0, 0];
         this.map = options.map;
 
+        const willReadFrequently = options.willReadFrequently ?? false;
+
         // Canvas element to draw the snapshot of the current view of the image layer to.
         this.snapshotCanvas = document.createElement('canvas');
-        this.snapshotContext = this.snapshotCanvas.getContext('2d');
+        this.snapshotContext = this.snapshotCanvas.getContext('2d', { willReadFrequently: willReadFrequently });
         // MagicWand image object of the snapshot.
         this.snapshot = null;
         // Specifies whether the snapshot is currently updated. This is required to avoid
