@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('project_strategies', function (Blueprint $table) {
+        Schema::create('lol', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project')
                 ->constrained()
@@ -19,10 +19,8 @@ return new class extends Migration
             $table->text('description');
         });
 
-        Schema::create('project_strategy_labels', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('project_strategy')
+        Schema::create('lol2', function (Blueprint $table) {
+            $table->foreignId('annotation_strategy_id')
                 ->constrained()
                 ->onDelete('cascade');
 
@@ -30,13 +28,9 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade');
 
-            //TODO: consider here using Magic SAM and so
-            $table->unsignedBigInteger('preferred_shape');
-            $table->foreign('preferred_shape')
-                ->references('id')
-                ->on('shapes')
-                ->nullable(true)
-                ->onDelete('set null');
+            $table->foreignId('shape_id')
+                ->constrained()
+                ->onDelete('cascade');
 
             $table->text('description');
         });
@@ -47,7 +41,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('project_strategy_label');
-        Schema::dropIfExists('project_strategy');
+        Schema::dropIfExists('annotation_strategy_label');
+        Schema::dropIfExists('annotation_strategy');
     }
 };

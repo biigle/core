@@ -11,7 +11,6 @@
     biigle.$declare('annotations.imageId', {!! $image->id !!});
     biigle.$declare('annotations.volumeId', {!! $image->volume_id !!});
     biigle.$declare('annotations.projectIds', {!! $projectIds !!});
-    biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/:id/file') !!}');

@@ -22,5 +22,12 @@
         </li>
     @endif
 
+    //TODO: this should be fixed
+    @if (($user->can('edit-in', $project) || $user->can('sudo')))
+        <li role="strategy" @if ($activeTab === 'strategy') class="active" @endif>
+            <a href="{{route('annotation-strategy', $project->id)}}" title="Check the project strategy for this project"><i class="fa fa-bullseye"></i> Strategy</a>
+        </li>
+    @endif
+
     @mixin('projectsShowTabs')
 </ul>

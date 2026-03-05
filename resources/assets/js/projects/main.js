@@ -7,7 +7,7 @@ import StatisticsContainer from './statisticsContainer.vue';
 import Title from './title.vue';
 import VolumesContainer from './volumesContainer.vue';
 import VolumesCount from './volumesCount.vue';
-import ProjectStrategyContainer from './projectStrategyContainer.vue';
+import AnnotationStrategyContainer from './annotationStrategyContainer.vue';
 
 biigle.$mount('project-label-trees-count', LabelTreesCount);
 biigle.$mount('project-members-count', MembersCount);
@@ -18,4 +18,4 @@ biigle.$mount('projects-show-members', MembersContainer);
 biigle.$mount('projects-show-statistics', StatisticsContainer);
 biigle.$mount('projects-show-volumes', VolumesContainer);
 biigle.$mount('projects-title', Title);
-biigle.$mount('project-strategy-container', ProjectStrategyContainer);
+biigle.$mount('annotation-strategy-container', AnnotationStrategyContainer);

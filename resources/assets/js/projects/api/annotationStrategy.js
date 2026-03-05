@@ -9,13 +9,4 @@ import {Resource} from 'vue-resource';
  * Delete a strategy.
  * resource.delete({id: projectId}).then(...);
  */
-export default Resource('api/v1/projects{/id}/invitations', {}, {
-    save: {
-        method: 'PUT',
-        url: 'api/v1/project-strategy{/id}',
-    },
-    delete: {
-        method: 'DELETE',
-        url: 'api/v1/project-strategy{/id}',
-    }
-});
+export default Resource('api/v1/projects{/id}/annotation-strategy')
