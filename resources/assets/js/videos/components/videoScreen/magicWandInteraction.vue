@@ -103,13 +103,6 @@ export default {
             this.magicWandvideoCanvas.width = this.video.videoWidth;
             this.magicWandvideoCanvas.height = this.video.videoHeight;
 
-            this.magicWandVideoLayer.setSource(new CanvasSource({
-                canvas: this.magicWandvideoCanvas,
-                projection: this.projection,
-                canvasExtent: [0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
-                canvasSize: [this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
-            }));
-
             this.map.addLayer(this.magicWandVideoLayer);
             magicWandInteraction.setLayer(this.magicWandVideoLayer);
         },
