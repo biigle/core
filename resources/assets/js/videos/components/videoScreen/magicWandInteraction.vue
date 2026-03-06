@@ -71,13 +71,15 @@ export default {
                 simplifyTolerant: 0.1,
                 willReadFrequently: true,
             });
+
             magicWandInteraction.on('drawend', (e) => {
+                let geometry = e.feature.getGeometry();
                 let pendingAnnotation = {
-                    shape: 'Polygon',
+                    shape: geometry.getType(),
                     frames: [this.video.currentTime],
-                    points: [this.convertPointsFromOlToDb(e.feature.getGeometry().getCoordinates()[0])],
+                    points: [this.getPointsFromGeometry(geometry)],
                 };
-                // TODO: check if polygon is valid
+
                 this.$emit('pending-annotation', pendingAnnotation);
                 this.annotationSource.once('addfeature', () => {
                     this.$emit('create-annotation', pendingAnnotation);
