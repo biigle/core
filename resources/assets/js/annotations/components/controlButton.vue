@@ -162,7 +162,7 @@ export default {
         closeTooltip() {
             this.tooltipDismissed = true;
             if (this.tooltipClosable) {
-                window.localStorage.setItem(this.tooltipClosableKey, true);
+                window.localStorage.setItem(this.tooltipClosableKey, '1');
             }
         },
     },
@@ -176,8 +176,8 @@ export default {
     },
     created() {
         if (this.tooltipClosable) {
-            let dismissed = window.localStorage.getItem(this.tooltipClosableKey);
-            this.tooltipDismissed = dismissed ?? false;
+            const dismissed = window.localStorage.getItem(this.tooltipClosableKey);
+            this.tooltipDismissed = dismissed !== null;
         }
     },
 };
