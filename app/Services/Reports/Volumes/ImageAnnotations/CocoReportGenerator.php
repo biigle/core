@@ -39,32 +39,39 @@ class CocoReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        $exists = $this->initQuery()->exists();
         $toZip = [];
 
-        if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
-            $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+        if ($this->shouldSeparateLabelTrees() && $exists) {
+            $treeIds = $this->initQuery()
+                ->select('labels.label_tree_id')
+                ->distinct()
+                ->pluck('label_tree_id');
+
+            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
-                $csv = $this->createCsv($rows->get($id));
+                $csv = $this->createCsv($this->query()->where('labels.label_tree_id', $id));
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'json');
             }
-        } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
-            $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+        } elseif ($this->shouldSeparateUsers() && $exists) {
+            $userIds = $this->initQuery()
+                ->select('user_id')
+                ->distinct()
+                ->pluck('user_id');
+
+            $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
-                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
-                $csv = $this->createCsv($rows->get($id));
+                $csv = $this->createCsv($this->query()->where('user_id', $id));
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'json');
             }
         } else {
-            $csv = $this->createCsv($rows);
+            $csv = $this->createCsv($this->query());
             $this->tmpFiles[] = $csv;
             $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->source->id}-{$this->source->name}", 'json');
         }
@@ -103,10 +110,10 @@ class CocoReportGenerator extends AnnotationReportGenerator
     /**
      * Create a CSV file for this report.
      *
-     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param \Illuminate\Database\Query\Builder $query The query for the CSV rows
      * @return CsvFile
      */
-    protected function createCsv($rows)
+    protected function createCsv($query)
     {
         $csv = CsvFile::makeTmp();
         // column headers
@@ -123,7 +130,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
             'attributes',
         ]);
 
-        foreach ($rows as $row) {
+        $query->eachById(function ($row) use ($csv) {
             $csv->putCsv([
                 $row->annotation_label_id,
                 $row->label_id,
@@ -136,7 +143,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->points,
                 $row->attrs,
             ]);
-        }
+        }, column: 'image_annotation_labels.id', alias: 'annotation_label_id');
 
         $csv->close();
 

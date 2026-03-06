@@ -134,8 +134,11 @@ export default {
             type: Boolean,
             default: false,
         },
+        fullHeight: {
+            type: Boolean,
+            default: false,
+        },
     },
-    inject: ['fullHeight'],
     data() {
         return {
             zoom: 1,

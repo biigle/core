@@ -91,6 +91,33 @@ class ControllerTest extends TestCase
         $this->assertSame($user->id, Auth::user()->id);
     }
 
+    public function testLoginWithInvalidUtf8Sequences()
+    {
+        $this->get('/login');
+        // This test confirms that invalid UTF-8 byte sequences in the email
+        // field don't cause a database error (SQLSTATE[22021])
+        $user = UserTest::create([
+            'email' => 'testing@example.com',
+            // 'password', hashed with 4 rounds as defined in phpunit.xml
+            'password' => '$2y$04$aqV2XBF34eexL9ezbQZs1eM872NWgH5MhvrmD0SC9qUbhmg9EoxJq',
+        ]);
+
+        // Email with invalid UTF-8 byte sequences (0xc0 0xa7).
+        // We need to send this as raw form data, not JSON-encoded.
+        $malformedEmail = "testing@example.com\xc0\xa7%2527%2522'\"";
+
+        // Must not use postJson() here because it sanitized the invalid sequences.
+        $response = $this->post('/login', [
+            '_token'   => Session::token(),
+            'email'    => $malformedEmail,
+            'password' => 'password',
+        ]);
+
+        // Should fail authentication gracefully but not crash with database error
+        $this->assertGuest();
+        $response->assertRedirect('login');
+    }
+
     public function testLogout()
     {
         $this->be(UserTest::create());

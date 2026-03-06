@@ -71,7 +71,7 @@ export default {
             minimap: true,
             progressIndicator: true,
             exampleAnnotations: true,
-            labelbotTimeout: 1,
+            labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
         };
     },

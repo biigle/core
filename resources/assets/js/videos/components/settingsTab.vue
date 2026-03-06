@@ -3,6 +3,7 @@ import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
 import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
 import Settings from '../stores/settings.js';
+import {TIMEOUTS} from '@/annotations/components/labelbotPopup.vue';
 
 // Determines the maximum number of configurable seconds for the auto pause option.
 // The max is this value -1. If this value is reached, playback should not resume at all
@@ -57,6 +58,7 @@ export default {
                 'jumpStep',
                 'muteVideo',
                 'singleAnnotation',
+                'labelbotTimeout',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -72,6 +74,8 @@ export default {
             muteVideo: true,
             singleAnnotation: false,
             autoPauseMax: AUTO_PAUSE_INDEFINITE,
+            labelbotTimeout: TIMEOUTS.length - 1, // off
+            labelbotTimeoutMax: TIMEOUTS.length - 1,
         };
     },
     computed: {
@@ -87,6 +91,9 @@ export default {
             }
 
             return value + ' s';
+        },
+        labelbotTimeoutValue() {
+            return TIMEOUTS[this.labelbotTimeout];
         },
     },
     methods: {
@@ -153,6 +160,11 @@ export default {
                 this.$emit('update', 'annotationOpacity', value);
                 Settings.set('annotationOpacity', value);
             }
+        },
+        labelbotTimeout(index) {
+            index = parseInt(index);
+            this.$emit('update', 'labelbotTimeout', index);
+            Settings.set('labelbotTimeout', index);
         },
         showMinimap(show) {
             this.$emit('update', 'showMinimap', show);

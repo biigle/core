@@ -260,6 +260,9 @@ class Keyboard {
         } else {
             listeners[listenerKeys] = [listener];
         }
+
+        // Return callback to unlisten for convenience.
+        return () => this.off(keys, callback, set);
     }
 
     off(keys, callback, set) {
