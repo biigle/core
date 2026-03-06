@@ -26,6 +26,60 @@
             background-color: darken($btn-danger-bg, 10%);
         }
     }
+
+    &.control-button--info {
+        &:hover {
+            background-color: darken($btn-info-bg, 17%);
+        }
+
+        &.active {
+            background-color: darken($btn-info-bg, 10%);
+        }
+    }
+
+    &.control-button--success {
+        &:hover {
+            background-color: darken($btn-success-bg, 17%);
+        }
+
+        &.active {
+            background-color: darken($btn-success-bg, 10%);
+        }
+    }
+
+    &.control-button--warning {
+        &:hover {
+            background-color: darken($btn-warning-bg, 17%);
+        }
+
+        &.active {
+            background-color: darken($btn-warning-bg, 10%);
+        }
+    }
+
+    .control-button__tooltip {
+        color: $text-color;
+        font-size: $font-size-small;
+        position: absolute;
+        top: -1px;
+        left: 50%;
+        transform: translate(-50%, -100%);
+        display: block;
+        z-index: 100;
+        white-space: nowrap;
+
+        .popover-content {
+            padding: $padding-small-vertical $padding-small-horizontal;
+            display: flex;
+        }
+
+        .close {
+            display: inline-flex;
+            align-items: center;
+            padding-left: 6px;
+            height: 16px;
+        }
+    }
 }
 
 .control-button__sub-controls {
