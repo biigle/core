@@ -282,7 +282,7 @@
                             @active="onActive"
                             ></control-button>
                         <control-button
-                            v-if="video.paused"
+                            v-if="videoPaused"
                             icon="fa-magic"
                             title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
                             :active="isMagicWanding"
@@ -632,6 +632,9 @@ export default {
         },
         jumpForwardMessage() {
             return `Advance video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄`;
+        },
+        videoPaused() {
+            return this.video.paused;
         },
     },
     methods: {
