@@ -16,6 +16,25 @@
             >
             <slot @active="updateActiveSubControls"></slot>
         </span>
+        <span
+            v-if="showTooltip"
+            title=""
+            class="control-button__tooltip popover top"
+            >
+            <div class="arrow"></div>
+            <div class="popover-content">
+                <span v-text="tooltip"></span>
+                <button
+                    v-if="tooltipClosable"
+                    type="button"
+                    class="close"
+                    @click.stop="closeTooltip"
+                    title="Hide the tooltip"
+                    >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </span>
     </span>
 </template>
 
@@ -63,6 +82,16 @@ export default {
             type: Boolean,
             default: false,
         },
+        // Text content for the tooltip shown when button is active.
+        tooltip: {
+            type: String,
+            default: '',
+        },
+        // Unique key for a closable tooltip. When provided, tooltip shows a close button.
+        tooltipClosable: {
+            type: String,
+            default: '',
+        },
     },
     components: {
         Loader,
@@ -72,6 +101,7 @@ export default {
             mouseOver: false,
             timeout: null,
             activeSubControls: 0,
+            tooltipDismissed: false,
         };
     },
     computed: {
@@ -96,6 +126,12 @@ export default {
         },
         hasActiveSubControl() {
             return this.activeSubControls > 0;
+        },
+        showTooltip() {
+            return this.active && this.tooltip && !this.tooltipDismissed;
+        },
+        tooltipClosableKey() {
+            return 'tooltip-dismissed-' + this.tooltipClosable;
         },
     },
     methods: {
@@ -122,7 +158,13 @@ export default {
             } else {
                 this.activeSubControls = Math.max(0, this.activeSubControls - 1);
             }
-        }
+        },
+        closeTooltip() {
+            this.tooltipDismissed = true;
+            if (this.tooltipClosable) {
+                window.localStorage.setItem(this.tooltipClosableKey, true);
+            }
+        },
     },
     watch: {
         active: {
@@ -131,6 +173,12 @@ export default {
                 this.$emit('active', active);
             },
         },
+    },
+    created() {
+        if (this.tooltipClosable) {
+            let dismissed = window.localStorage.getItem(this.tooltipClosableKey);
+            this.tooltipDismissed = dismissed ?? false;
+        }
     },
 };
 </script>
