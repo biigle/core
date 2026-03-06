@@ -292,7 +292,7 @@
                         <control-button
                             v-else
                             icon="fa-magic"
-                            title="The magic wand tool is only available for a still image"
+                            title="The magic wand tool is only available if the video is paused"
                             :disabled="true"
                         ></control-button>
                 </control-button>
