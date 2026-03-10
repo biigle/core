@@ -7,4 +7,9 @@ import {Resource} from 'vue-resource';
  * resource.save({id: projectId, descriptions: [description], labels: [labels]}, {...}).then(...);
  *
  */
-export default Resource('api/v1/projects{/id}/annotation-strategy-label')
+export default Resource('api/v1/projects{/id}/annotation-strategy-label',{}, {
+    upload_file: {
+        method: 'POST',
+        url: 'api/v1/projects{/id}/annotation-strategy-label/upload-image',
+    }
+})
