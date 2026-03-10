@@ -600,8 +600,7 @@ export default {
             mousePosition: [0, 0],
             mapReadyRevision: 0,
             map: null,
-            keyboardOffCallbacks: [],
-            initialized: false,
+            keyboardOffCallbacks: []
         };
     },
     computed: {
@@ -719,7 +718,6 @@ export default {
 
             map.addLayer(this.annotationLayer);
             map.addInteraction(this.selectInteraction);
-            this.initialized = true;
         },
 
         resetInteractionMode() {

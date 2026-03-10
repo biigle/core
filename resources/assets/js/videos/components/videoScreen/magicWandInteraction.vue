@@ -106,10 +106,6 @@ export default {
             this.map.addLayer(this.magicWandVideoLayer);
             magicWandInteraction.setLayer(this.magicWandVideoLayer);
         },
-        initializeVideoFrameImage() {
-            this.initInteraction();
-            this.updateVideoFrameImage();
-        }
     },
     watch: {
         isMagicWanding(isMagicWanding) {
@@ -117,10 +113,12 @@ export default {
         },
     },
     created() {
-        this.$watch('initialized', this.initializeVideoFrameImage);
         this.video.addEventListener('pause', this.updateVideoFrameImage)
         this.video.addEventListener('seeked', this.updateVideoFrameImage)
         Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
     },
+    mounted() {
+        this.initInteraction();
+    }
 };
 </script>
