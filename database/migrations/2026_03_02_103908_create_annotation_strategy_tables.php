@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lol', function (Blueprint $table) {
+        Schema::create('annotation_strategies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project')
                 ->constrained()
                 ->onDelete('cascade');
-            $table->text('description');
+            $table->text('description')
         });
 
-        Schema::create('lol2', function (Blueprint $table) {
+        Schema::create('annotation_strategy_labels', function (Blueprint $table) {
             $table->foreignId('annotation_strategy_id')
                 ->constrained()
                 ->onDelete('cascade');
@@ -29,10 +29,14 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->foreignId('shape_id')
+                ->nullable(true)
                 ->constrained()
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
             $table->text('description');
+
+            $table->string('reference_image')
+                ->nullable(true);
         });
     }
 
