@@ -30,7 +30,7 @@ export default {
         toggleMagicWand() {
             if (this.isMagicWanding) {
                 this.resetInteractionMode();
-            } else if (magicWandInteraction && this.canAdd) {
+            } else if (magicWandInteraction && this.canAdd && !this.videoHasCorsError) {
                 this.interactionMode = 'magicWand';
             }
         },

@@ -592,6 +592,10 @@ export default {
             type: Number,
             default: 0,
         },
+        videoHasCorsError: {
+            type: Boolean,
+            default: false
+        }
     },
     data() {
         return {
@@ -601,7 +605,7 @@ export default {
             mapReadyRevision: 0,
             map: null,
             keyboardOffCallbacks: [],
-            enableMagicWand: true,
+            enableMagicWand: false,
         };
     },
     computed: {
@@ -883,8 +887,12 @@ export default {
         this.keyboardOn('Escape', this.resetInteractionMode, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-        this.video.addEventListener('play', this.toggleEnableMagicWand);
-        this.video.addEventListener('pause', this.toggleEnableMagicWand);
+
+        this.enableMagicWand = !this.videoHasCorsError && this.canAdd;
+        if (this.enableMagicWand) {
+            this.video.addEventListener('play', this.toggleEnableMagicWand);
+            this.video.addEventListener('pause', this.toggleEnableMagicWand);
+        }
      },
     mounted() {
         this.map.setTarget(this.$el);
