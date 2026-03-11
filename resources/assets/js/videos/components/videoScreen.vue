@@ -282,7 +282,7 @@
                             @active="onActive"
                             ></control-button>
                         <control-button
-                            v-if="videoPaused"
+                            v-if="enableMagicWand"
                             icon="fa-magic"
                             title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
                             :active="isMagicWanding"
@@ -600,7 +600,8 @@ export default {
             mousePosition: [0, 0],
             mapReadyRevision: 0,
             map: null,
-            keyboardOffCallbacks: []
+            keyboardOffCallbacks: [],
+            enableMagicWand: true,
         };
     },
     computed: {
@@ -631,9 +632,6 @@ export default {
         },
         jumpForwardMessage() {
             return `Advance video by ${this.jumpStep} s 𝗖𝘁𝗿𝗹+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄`;
-        },
-        videoPaused() {
-            return this.video.paused;
         },
     },
     methods: {
@@ -804,6 +802,9 @@ export default {
         keyboardOn() {
             this.keyboardOffCallbacks.push(Keyboard.on.apply(Keyboard, arguments));
         },
+        toggleEnableMagicWand(e) {
+            this.enableMagicWand = e.type === 'pause' ?? false;
+        }
     },
     watch: {
         selectedAnnotations: {
@@ -882,12 +883,8 @@ export default {
         this.keyboardOn('Escape', this.resetInteractionMode, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-
-        this.video.addEventListener('play', () => {
-            if(this.interactionMode === 'magicWand') {
-                this.resetInteractionMode()
-            }
-        })
+        this.video.addEventListener('play', this.toggleEnableMagicWand);
+        this.video.addEventListener('pause', this.toggleEnableMagicWand);
      },
     mounted() {
         this.map.setTarget(this.$el);

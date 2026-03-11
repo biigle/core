@@ -35,6 +35,9 @@ export default {
             }
         },
         updateVideoFrameImage() {
+            if (!this.isMagicWanding) {
+                return;
+            }
             // Update video frame
             let canvasContext = this.magicWandvideoCanvas.getContext('2d');
             canvasContext.drawImage(this.video, 0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height);
@@ -106,6 +109,11 @@ export default {
             this.map.addLayer(this.magicWandVideoLayer);
             magicWandInteraction.setLayer(this.magicWandVideoLayer);
         },
+        disableMagicWandOnPlay() {
+            if (!this.video.paused && this.interactionMode === 'magicWand') {
+                this.resetInteractionMode();
+            }
+        }
     },
     watch: {
         isMagicWanding(isMagicWanding) {
@@ -114,8 +122,8 @@ export default {
     },
     created() {
         this.video.addEventListener('loadeddata', this.initInteraction)
-        this.video.addEventListener('pause', this.updateVideoFrameImage)
         this.video.addEventListener('seeked', this.updateVideoFrameImage)
+        this.video.addEventListener('play', this.disableMagicWandOnPlay)
         Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
     },
 };
