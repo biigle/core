@@ -96,7 +96,7 @@ export default {
             this.projection = new Projection({
                 code: 'biigle-video',
                 units: 'pixels',
-                extent: [0, 0, this.video.width, this.video.height]
+                extent: [0, 0, this.video.videoWidth, this.video.videoHeight]
             });
 
             this.magicWandvideoCanvas = document.createElement('canvas');
@@ -113,12 +113,10 @@ export default {
         },
     },
     created() {
+        this.video.addEventListener('loadeddata', this.initInteraction)
         this.video.addEventListener('pause', this.updateVideoFrameImage)
         this.video.addEventListener('seeked', this.updateVideoFrameImage)
         Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
     },
-    mounted() {
-        this.initInteraction();
-    }
 };
 </script>
