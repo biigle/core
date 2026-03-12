@@ -9,6 +9,7 @@ use Biigle\AnnotationStrategy;
 use Biigle\AnnotationStrategyLabel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Storage;
 
 class AnnotationStrategyLabelController extends Controller {
     /**
@@ -34,9 +35,8 @@ class AnnotationStrategyLabelController extends Controller {
     public function index(Request $request)
     {
         $project = Project::findOrFail($request->id);
-        $this->authorize('access', $project);
+        $this->authorize('editIn', $project);
         $annotationStrategy = AnnotationStrategy::where(['project' => $project->id])->firstOrFail();
-        //TODO: add method for annotationStrategyLabels that returns the names rather than the ids of shape, labels etc
         return $annotationStrategy->strategyLabels()->get();
     }
 
@@ -61,14 +61,24 @@ class AnnotationStrategyLabelController extends Controller {
     public function update(Request $request)
     {
         $project = Project::findOrFail($request->id);
-        $this->authorize('access', $project);
+        $this->authorize('update', $project);
 
         $labels = $request->labels;
         $shapes = $request->shapes;
         $descriptions = $request->descriptions;
+        $referenceImages = $request->reference_images;
 
         $annotationStrategy = AnnotationStrategy::where(['project' => $project->id])->firstOrFail();
-        $annotationStrategy->strategyLabels()->whereNotIn('label_id', $labels)->delete();
+        $aslToDelete = $annotationStrategy->strategyLabels()->whereNotIn('label_id', $labels);
+        $aslToDelete->delete();
+
+        $disk = Storage::disk(config('annotation_strategy.storage_disk'));
+        foreach ($aslToDelete as $asl) {
+            $url = "$project->id/$asl->reference_image";
+            if ($disk->exists($url)) {
+                $disk->delete($url);
+            }
+        }
 
         for ($i = 0; $i < count($labels); $i++) {
             AnnotationStrategyLabel::updateOrCreate(
@@ -79,38 +89,44 @@ class AnnotationStrategyLabelController extends Controller {
                 [
                     'shape_id' => $shapes[$i],
                     'description' => $descriptions[$i],
+                    'reference_image' => $referenceImages[$i],
                 ]
-            );
+            )->toSql();
         }
     }
 
     public function storeReferenceImage(Request $request)
     {
-        //TODO: validate request using
+        //TODO: validate request?
+        //TODO: should we send it to a temporary dir?
+        //TODO: should we resize the image?
         $project = Project::findOrFail($request->id);
-        $this->authorize('access', $project);
+        $this->authorize('update', $project);
         $request->validate([
             'file' => 'required|file|mimes:jpg,png,pdf|max:5120',
         ]);
 
-        $file = $request->file;
-        $shapes = $request->shapes;
-        $descriptions = $request->descriptions;
+        $file = $request->file('file');
+        $name = $file->hashName();
+        $disk = Storage::disk(config('annotation_strategy.storage_disk'));
+        $disk->putFileAs("$project->id/", $file, $name);
+        return ['filename' => $name];
+    }
 
-        $annotationStrategy = AnnotationStrategy::where(['project' => $project->id])->firstOrFail();
-        $annotationStrategy->strategyLabels()->whereNotIn('label_id', $labels)->delete();
+    public function deleteReferenceImage(Request $request)
+    {
+        //TODO: validate request?
+        //TODO: should we send it to a temporary dir?
+        //TODO: should we resize the image?
+        $project = Project::findOrFail($request->id);
+        $name = $request->input('reference_image');
 
-        for ($i = 0; $i < count($labels); $i++) {
-            AnnotationStrategyLabel::updateOrCreate(
-                [
-                    'annotation_strategy_id' => $annotationStrategy->id,
-                    'label_id' => $labels[$i],
-                ],
-                [
-                    'shape_id' => $shapes[$i],
-                    'description' => $descriptions[$i],
-                ]
-            );
+        $this->authorize('update', $project);
+
+        $disk = Storage::disk(config('annotation_strategy.storage_disk'));
+        $url = "$project->id/$name";
+        if ($disk->exists($url)) {
+            $disk->delete($url);
         }
     }
 }

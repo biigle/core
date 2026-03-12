@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
 use Biigle\Project;
 use Biigle\AnnotationStrategy;
+use Biigle\AnnotationStrategyLabel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,9 +34,13 @@ class AnnotationStrategyController extends Controller
      */
     public function index($id)
     {
-        $project = Project::where(['project' => $id])->firstOrFail();
+        $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        return AnnotationStrategy::first('project', $id);
+        $strategy = AnnotationStrategy::where(['project'=> $id])
+            ->firstOrFail();
+        $strategyLabels = $strategy->strategyLabels()->with('label')->get();
+        return ['annotation_strategy' => $strategy, 'annotation_strategy_labels' => $strategyLabels];
+
     }
 
     //TODO: form request for strategy
@@ -81,6 +86,7 @@ class AnnotationStrategyController extends Controller
     //public function destroy(DestroyAnnotationStrategy $request)
     public function delete(Request $request)
     {
+        //TODO: cleanup all files in the strategy labels
         $annotationStrategy = AnnotationStrategy::where(['project'=> $request->id])->firstOrFail();
         $annotationStrategy->delete();
     }
