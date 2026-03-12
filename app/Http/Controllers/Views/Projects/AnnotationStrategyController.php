@@ -11,6 +11,7 @@ use Biigle\Shape;
 use Biigle\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Js;
 
 class AnnotationStrategyController extends Controller
 {
@@ -41,6 +42,7 @@ class AnnotationStrategyController extends Controller
             ->count();
 
         $annotationStrategy = AnnotationStrategy::where(['project' => $id])->first();
+
         $isAdmin = $user->role_id === Role::adminId() || !$user->can('sudo');
 
         $labelTrees = $project->labelTrees()
@@ -52,12 +54,11 @@ class AnnotationStrategyController extends Controller
 
         if (!$annotationStrategy) {
             if ($isAdmin) {
-                //TODO: here we should return create strategy version of  the page
                 return view('projects.show.annotation-strategy', [
                     "project" => $project,
                     'user' => $user,
-                    "annotationStrategy" => null,
-                    "annotationStrategyLabels" => null,
+                    "annotationStrategy" => [],
+                    "annotationStrategyLabels" => [],
                     'isMember' => $isMember,
                     'isAdmin' => $isAdmin,
                     'isPinned' => $isPinned,
@@ -71,8 +72,6 @@ class AnnotationStrategyController extends Controller
         }
 
         $annotationStrategyLabels = $annotationStrategy->strategyLabels()->with('label')->get();
-
-        //dd($annotationStrategyLabels[0]->label);
 
         return view('projects.show.annotation-strategy', [
                 "project" => $project,
