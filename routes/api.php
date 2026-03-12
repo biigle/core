@@ -304,6 +304,9 @@ $router->post('projects/{id}/annotation-strategy-label/upload-image', [
     'uses' => 'Projects\AnnotationStrategyLabelController@storeReferenceImage',
 ]);
 
+$router->delete('projects/{id}/annotation-strategy-label/delete-image', [
+    'uses' => 'Projects\AnnotationStrategyLabelController@deleteReferenceImage',
+]);
 
 $router->get('public-export/label-trees/{id}', [
     'as' => 'get-public-label-tree-export',
