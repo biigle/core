@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('project')
                 ->constrained()
                 ->onDelete('cascade');
-            $table->text('description')
+            $table->text('description');
         });
 
         Schema::create('annotation_strategy_labels', function (Blueprint $table) {
@@ -37,6 +37,7 @@ return new class extends Migration
 
             $table->string('reference_image')
                 ->nullable(true);
+            $table->primary(['annotation_strategy_id', 'label_id']);
         });
     }
 
