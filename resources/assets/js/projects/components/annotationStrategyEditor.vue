@@ -9,18 +9,19 @@
                     <div class="col-xs-3">
                         <h4>Label</h4>
                     </div>
+                    <div class="col-xs-3">
+                        <h4>Label description</h4>
+                    </div>
                     <div class="col-xs-2">
                         <h4>Shape</h4>
                     </div>
-                    <div class="col-xs-3">
+                    <div class="col-xs-3 center-container">
                         <h4>Reference Image</h4>
                     </div>
-                    <div class="col-xs-3">
-                        <h4>Label description</h4> </div>
                 </div>
                 <div v-for="annotationStrategyLabel in modifiedAnnotationStrategyLabels">
                     <div v-if="!annotationStrategyLabelIsSelected(annotationStrategyLabel)">
-                        <div class="row">
+                        <div class="row annotation-strategy-label">
                             <div class="col-xs-3">
                                 <ul class="label-tree__list">
                                     <label-tree-label
@@ -30,24 +31,35 @@
                                         ></label-tree-label>
                                 </ul>
                             </div>
-                            <div class="col-xs-2">
-                                <span>{{ mapShape(annotationStrategyLabel.shape) }}</span>
-                            </div>
-                            <div class="col-xs-3">
-                                <span>exampleimage</span>
-                            </div>
                             <div class="col-xs-3">
                                 <span>{{ annotationStrategyLabel.description }}</span>
                             </div>
+                            <div class="col-xs-2">
+                               <span class="btn control-button" v-if="annotationStrategyLabel.shape_id"><i :class="`icon icon-white icon-${mapShape(annotationStrategyLabel.shape_id).toLowerCase()}`"></i></span>
+                               <span>{{ mapShape(annotationStrategyLabel.shape_id) }}</span>
+                            </div>
+                            <div class="col-xs-3">
+                                <annotation-strategy-label-image
+                                    :base-url="baseUrl"
+                                    :project-id="projectId"
+                                    :reference-image="annotationStrategyLabel.reference_image || ''"
+                                    ></annotation-strategy-label-image>
+                            </div>
                             <div class="col-xs-1">
-                                <button title="Edit the annotation strategy for this label" @click.stop="editStrategyLabel(annotationStrategyLabel.label)" class="btn btn-default btn"><span aria-hidden="true" class="fa fa-pencil-alt"></span></button>
+                                <button
+                                    title="Edit the annotation strategy for this label"
+                                    @click.stop="editStrategyLabel(annotationStrategyLabel.label)"
+                                    class="btn btn-default btn">
+                                    <span aria-hidden="true" class="fa fa-pencil-alt">
+                                    </span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div v-if="editing">
-                    <div class="row">
-                        <div class="col-sm-3">
+                    <div class="row annotation-strategy-label-edit">
+                        <div class="col-xs-3">
                             <div v-if="!selectedLabel" v-cloak class="annotation-strategy-label-options">
                                 <label-trees
                                     :trees="labelTrees"
@@ -67,52 +79,60 @@
                             </div>
                         </div>
                         <div v-show="selectedLabel">
-                            <div class="col-sm-2">
-                                <select
-                                    class="form-control"
-                                    selected=""
-                                    v-model="selectedShape" title="Select shape" @change="selectShape"
-                                    clearable="true"
-                                    >
-                                    <option
-                                        v-for="name, id in availableShapes"
-                                        :value="id"
-                                        v-text="name"
-                                    ></option>
-                                </select>
-                            </div>
-                            <div class="col-sm-3">
-                                <label>Select a reference image</label>
-                                <input type="file" name="referenceImage" @change="uploadFile" required>
-                            </div>
-                            <div class="col-sm-3">
+                            <div class="col-xs-3" id="description-editor">
                                 <textarea v-model="labelDescription" class="strategy-description" maxlength=200 wrap="hard"
                                     placeholder="Describe how this label should be used..."
                                     ></textarea>
                             </div>
-                            <div class="col-sm-1">
+                            <div v-if="hasLabelDescription">
+                                <div class="col-xs-2">
+                                    <select
+                                        class="form-control"
+                                        selected=""
+                                        v-model="selectedShape" title="Select shape" @change="selectShape"
+                                        >
+                                        <option :value="undefined">None</option>
+                                        <option
+                                            v-for="name, id in availableShapes"
+                                            :value="id"
+                                            v-text="name"
+                                        ></option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-3">
+                                    <annotation-strategy-label-image
+                                        :base-url="baseUrl"
+                                        :editable="true"
+                                        :project-id="projectId"
+                                        :reference-image="selectedReferenceImage || ''"
+                                        @set-reference-image="setReferenceImage"
+                                        @reset-reference-image="resetReferenceImage"
+                                        ></annotation-strategy-label-image>
+                                </div>
+                                <div class="col-xs-1">
                                     <button
-                                        class="btn btn-success btn-block"
+                                        class="btn btn-success btn-block btn-asl"
                                         :disabled="disableAddAnnotationStrategyLabel"
-                                        type="submit"
+                                        type="button"
                                         @click="addAnnotationStrategyLabel"
                                         :title="editingStrategyLabelText"
                                     >
-                                        <span v-if="currentlyEditingStrategyLabel" class="fa fa-pen" aria-hidden="true"></span>
+                                        <span v-if="currentlyEditingStrategyLabel" class="fa fa-check" aria-hidden="true"></span>
                                         <span v-else class="fa fa-plus" aria-hidden="true"></span>
                                     </button>
+                                    <span v-if="currentlyEditingStrategyLabel">
+                                        <button
+                                            class="btn btn-danger btn-block btn-asl"
+                                            type="button"
+                                            @click="deleteAnnotationStrategyLabel"
+                                            title="Delete the strategy for this label"
+                                        >
+                                            <span class="fa fa-times" aria-hidden="true"></span>
+                                        </button>
+                                    </span>
                                     <button
-                                        class="btn btn-danger btn-block"
-                                        :disabled="!currentlyEditingStrategyLabel"
-                                        type="submit"
-                                        @click="deleteAnnotationStrategyLabel"
-                                        title="Delete the strategy for this label"
-                                    >
-                                        <span class="fa fa-times" aria-hidden="true"></span>
-                                    </button>
-                                    <button
-                                        class="btn btn-warning btn-block"
-                                        type="submit"
+                                        class="btn btn-warning btn-block btn-asl"
+                                        type="button"
                                         @click="resetEditing"
                                         title="Go back"
                                     >
@@ -124,46 +144,47 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div v-if="!editing" class="col-xs-2">
-                    <button
-                        class="btn btn-success btn-block"
-                        type="submit"
-                        @click="toggleEditing"
-                        title="Add new label to the annotation strategy "
+        </div>
+        <div class="row">
+            <div class="col-xs-2">
+                <button
+                    class="btn btn-success btn-block"
+                    type="submit"
+                    @click="toggleEditing"
+                    title="Add new label to the annotation strategy "
+                >
+                    <i class="fa fa-tags"></i>
+                    <span class="fa fa-plus" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="col-xs-2">
+                <button
+                    class="btn btn-success btn-block" type="button" @click="sendUpdateAnnotationStrategy" >
+                    <span v-if='creating'>
+                        Create strategy
+                    </span>
+                    <span v-else>
+                        Save changes
+                    </span>
+                </button>
+            </div>
+            <div v-if='!creating' class="col-xs-2">
+                <button
+                    class="btn btn-danger btn-block"
+                    type="submit"
+                    @click="sendDeleteAnnotationStrategy"
+                    title="Delete the annotation strategy"
                     >
-                        <span class="fa fa-plus" aria-hidden="true"></span>
-                    </button>
-                </div>
-                <div>
-                    <div class="col-xs-2">
-                        <button
-                            class="btn btn-success btn-block" type="submit" @click="sendUpdateAnnotationStrategy" >
-                            <span v-if='creating'>
-                                Create strategy
-                            </span>
-                            <span v-else>
-                                Save changes
-                            </span>
-                        </button>
-                    </div>
-                    <div class="col-xs-2">
-                        <button
-                            class="btn btn-danger btn-block"
-                            type="submit"
-                            @click="sendDeleteAnnotationStrategy"
-                            title="Delete the annotation strategy"
-                            >
-                            Delete strategy
-                        </button>
-                    </div>
-                </div>
+                    Delete strategy
+                </button>
             </div>
         </div>
+    </div>
 </template>
 <script>
 import AnnotationStrategy from '@/projects/api/annotationStrategy.js';
 import AnnotationStrategyLabel from '@/projects/api/annotationStrategyLabel.js';
+import AnnotationStrategyLabelImage from './annotationStrategyLabelImage.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LabelTreeLabel from '@/label-trees/components/labelTreeLabel.vue';
@@ -174,67 +195,106 @@ export default {
     components: {
         labelTrees: LabelTrees,
         labelTreeLabel: LabelTreeLabel,
+        annotationStrategyLabelImage: AnnotationStrategyLabelImage,
     },
     emits: [
-        'deselect',
-        'select',
+        'refresh-strategy',
     ],
     props: {
         annotationStrategy: {
             type: Object,
-            default: null,
+            required: true,
         },
         annotationStrategyLabels: {
-            type: Object,
-            default: null,
+            type: Array,
+            required: true,
         },
+        availableShapes: {
+            type: Object,
+            required: true,
+        },
+        labelTrees: {
+            type: Array,
+            required: true,
+        },
+        projectId: {
+            type: Number,
+            required: true,
+        },
+        baseUrl: {
+            type: String,
+            required: true,
+        }
     },
     computed: {
+        hasLabelDescription() {
+            return this.labelDescription && this.labelDescription.trim().length > 0;
+        },
         disableAddAnnotationStrategyLabel() {
-            return this.selectedLabel === undefined || !this.labelDescription || this.labelDescription.trim().lenght == 0;
+            return this.selectedLabel !== undefined && !this.hasLabelDescription;
         },
         creating() {
-            return this.annotationStrategy === null;
+            return this.annotationStrategy.description === undefined;
         },
         currentlyEditingStrategyLabel () {
             return this.selectedLabel && this.editingExistingStrategyLabel(this.selectedLabel.id);
         },
+        hasEditedDescription() {
+            return this.strategyDescription !== this.annotationStrategy.description;
+        },
+        hasEditedStrategyLabels() {
+            return this.modifiedAnnotationStrategyLabels !== this.annotationStrategyLabels || this.currentlyEditingStrategyLabel;
+        },
         editingStrategyLabelText() {
             if (this.currentlyEditingStrategyLabel) {
-                return 'Edit label strategy';
+                return 'Edit ruleset for this label';
             }
-            return 'Create new label strategy';
+            return 'Create ruleset';
         },
     },
     created() {
         if (this.annotationStrategy !== null) {
             this.strategyDescription = this.annotationStrategy.description;
         }
+        window.addEventListener('beforeunload', (e) => {
+            if (this.hasEditedDescription || this.hasEditedStrategyLabels || this.editing) {
+                e.preventDefault();
+                e.returnValue = '';
+            }});
     },
     data() {
-        //TODO: annotationStrategyLabel --> we should it here
+        //TODO: move these values to parent and pass them as props
         return {
             editing: false,
-            projectId: biigle.$require('projects.project').id,
-            labelTrees: biigle.$require('projects.labelTrees'),
             labelDescription: "",
             selectedLabel: undefined,
             selectedShape: undefined,
-            modifiedAnnotationStrategyLabels: this.annotationStrategyLabels ? this.annotationStrategyLabels : [],
-            availableShapes: biigle.$require("projects.availableShapes"),
+            modifiedAnnotationStrategyLabels: this.annotationStrategyLabels,
             strategyDescription: "",
+            labelImagePath: "",
+            selectedReferenceImage: "",
+            automatedReload: false,
         }
     },
     methods: {
+        getImageUrl(label_id) {
+            return this.baseUrl + '/' + label_id
+        },
         mapShape(shape_id) {
-            if (shape_id === undefined) {
-                return "";
+            if (!shape_id) {
+                return "No preferred shape selected";
             }
             return this.availableShapes[shape_id];
         },
         sendUpdateAnnotationStrategy() {
-            //TODO: find the way to reload here
-            if (!this.strategyDescription || this.strategyDescription.trim().length == 0) { alert("The description of the strategy is empty."); return;
+            if (!this.strategyDescription || this.strategyDescription.trim().length == 0) {
+                alert("The description of the strategy is empty.");
+                return;
+            }
+
+            if (this.selectedLabel || this.hasLabelDescription) {
+                alert('You did not save the latest label strategy!')
+                return;
             }
 
             if (this.modifiedAnnotationStrategyLabels.some(function (asl) {
@@ -246,22 +306,40 @@ export default {
 
             AnnotationStrategy
                 .save({ id: this.projectId }, { description: this.strategyDescription })
-                .then(this.sendAnnotationStrategyLabelUpdate, handleErrorResponse)
-                .then(this.reloadPageIfSuccessful, handleErrorResponse)
+                .then(this.sendAnnotationStrategyLabelUpdate, this.handleErrorResponse)
 
         },
         sendAnnotationStrategyLabelUpdate() {
-            let label = this.modifiedAnnotationStrategyLabels.map(item => item.label.id);
-            let description = this.modifiedAnnotationStrategyLabels.map(item => item.description);
-            let shape = this.modifiedAnnotationStrategyLabels.map(item => item.shape);
-            AnnotationStrategyLabel.save({id: this.projectId}, {labels: label, descriptions: description, shapes: shape});
+            let labels = this.modifiedAnnotationStrategyLabels.map(item => item.label.id);
+            let descriptions = this.modifiedAnnotationStrategyLabels.map(item => item.description);
+            let shapes = this.modifiedAnnotationStrategyLabels.map(item => item.shape_id);
+            let referenceImages = this.modifiedAnnotationStrategyLabels.map(item => item.reference_image);
+            AnnotationStrategyLabel.save(
+                {
+                    id: this.projectId
+                },
+                {
+                    labels: labels,
+                    descriptions: descriptions,
+                    shapes: shapes,
+                    reference_images: referenceImages
+                })
+                .then(this.refreshStrategy ,this.handleErrorResponse);
+
         },
         sendDeleteAnnotationStrategy() {
+            let response = prompt(`This will delete the strategy for this project. Please enter 'delete' to confirm.`);
+
+            if (response !== 'delete') {
+                return;
+            }
             AnnotationStrategy.delete({ id: this.projectId }, {})
-                .then(this.reloadPageIfSuccessful).catch(handleErrorResponse)
+                .then(this.refreshStrategy, handleErrorResponse)
         },
-        reloadPageIfSuccessful(response) {
-            console.log(response);
+
+
+        refreshStrategy() {
+            this.$emit('refresh-strategy');
         },
         editStrategyLabel(label) {
             this.editing = true;
@@ -275,8 +353,6 @@ export default {
             }
             this.editing = true;
             this.selectedLabel = label;
-            this.selectedShape = undefined;
-            this.labelDescription = "";
         },
         deselectLabel() {
             //TODO: check if we can use a computed property for the label
@@ -286,20 +362,26 @@ export default {
             if (this.editingExistingStrategyLabel(this.selectedLabel.id)) {
                 Object.assign(this.modifiedAnnotationStrategyLabels
                     .filter((asl) => asl.label.id == this.selectedLabel.id)[0],
-                    {'shape':this.selectedShape, 'description': this.labelDescription});
+                    {
+                        'shape_id':this.selectedShape,
+                        'description': this.labelDescription,
+                        "reference_image": this.selectedReferenceImage,
+                    });
             } else {
                 this.modifiedAnnotationStrategyLabels.push({
                     "label":this.selectedLabel,
-                    "shape": this.selectedShape,
+                    "shape_id": this.selectedShape,
                     "description": this.labelDescription,
+                    "reference_image": this.selectedReferenceImage,
                 });
             }
             this.resetEditing();
         },
         editThis(strategyLabel) {
-            this.selectedShape = strategyLabel.shape;
+            this.selectedShape = strategyLabel.shape_id;
             this.selectedLabel = strategyLabel.label;
             this.labelDescription = strategyLabel.description;
+            this.selectedReferenceImage = strategyLabel.reference_image;
         },
         editingExistingStrategyLabel(label_id) {
             if (this.modifiedAnnotationStrategyLabels.some((asl) => asl.label.id == label_id)) {
@@ -317,7 +399,9 @@ export default {
             this.selectedShape = undefined;
             this.selectedLabel = undefined;
             this.labelDescription = "";
+            this.labelImagePath = ""
             this.editing = false;
+            this.selectedReferenceImage = "";
         },
         deleteAnnotationStrategyLabel() {
             if (this.selectedLabel && this.editingExistingStrategyLabel(this.selectedLabel.id)) {
@@ -325,23 +409,12 @@ export default {
             }
             this.resetEditing();
         },
-        uploadFile(event) {
-            this.startLoading();
-            if (event.target.files[0].size > 5 * 1024 * 1024) {
-                alert('The file is too big');
-                event.target.files[0].value = undefined;
-                event.target.value = undefined; // Reset the input
-                this.finishLoading();
-                return;
-            }
-            let filename = event.target.files[0].file;
-            AnnotationStrategyLabel.upload_file({ id: this.projectId }, { file: event.target.files[0].value })
-                .then(this.setFilename(filename), handleErrorResponse);
+        setReferenceImage(reference_image) {
+            this.selectedReferenceImage = reference_image;
         },
-        setFilename(filename) {
-            this.annotationStrategyLabelFilename = filename;
+        resetReferenceImage() {
+            this.selectedReferenceImage = "";
         },
     }
 };
 </script>
-
