@@ -605,7 +605,7 @@ export default {
             mapReadyRevision: 0,
             map: null,
             keyboardOffCallbacks: [],
-            enableMagicWand: false,
+            finishedVideoScreenInit: false,
         };
     },
     computed: {
@@ -806,9 +806,6 @@ export default {
         keyboardOn() {
             this.keyboardOffCallbacks.push(Keyboard.on.apply(Keyboard, arguments));
         },
-        toggleEnableMagicWand(e) {
-            this.enableMagicWand = e.type === 'pause' ?? false;
-        }
     },
     watch: {
         selectedAnnotations: {
@@ -869,13 +866,14 @@ export default {
             handler() {
                 this.initLayersAndInteractions(this.map);
                 this.initInitialCenterAndResolution(this.map);
+                this.finishedVideoScreenInit = true;
             },
         },
         selectedLabel(newLabel) {
             if (!newLabel && !this.labelbotIsActive) {
                 this.resetInteractionMode();
             }
-        }
+        },
     },
     created() {
         // markRaw is essential here!
@@ -887,12 +885,6 @@ export default {
         this.keyboardOn('Escape', this.resetInteractionMode, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-
-        this.enableMagicWand = !this.videoHasCorsError && this.canAdd;
-        if (this.enableMagicWand) {
-            this.video.addEventListener('play', this.toggleEnableMagicWand);
-            this.video.addEventListener('pause', this.toggleEnableMagicWand);
-        }
      },
     mounted() {
         this.map.setTarget(this.$el);

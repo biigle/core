@@ -18,19 +18,23 @@ export default {
         return {
             magicWandVideoLayer: null,
             magicWandvideoCanvas: null,
-            projection: null
+            // Controls button state in videoScreen component
+            enableMagicWand: false,
         };
     },
     computed: {
         isMagicWanding() {
             return this.interactionMode === 'magicWand' && this.video.paused;
         },
+        canMagicWanding() {
+            return !this.videoHasCorsError && this.canAdd && this.finishedVideoScreenInit;
+        }
     },
     methods: {
         toggleMagicWand() {
             if (this.isMagicWanding) {
                 this.resetInteractionMode();
-            } else if (magicWandInteraction && this.canAdd && !this.videoHasCorsError) {
+            } else if (magicWandInteraction && this.enableMagicWand) {
                 this.interactionMode = 'magicWand';
             }
         },
@@ -38,13 +42,24 @@ export default {
             if (!this.isMagicWanding) {
                 return;
             }
+
+            // Set the projection and canvas size here since a video change could have happened after the last update
+            const projection = new Projection({
+                code: 'biigle-video',
+                units: 'pixels',
+                extent: [0, 0, this.video.videoWidth, this.video.videoHeight]
+            });
+
+            this.magicWandvideoCanvas.width = this.video.videoWidth;
+            this.magicWandvideoCanvas.height = this.video.videoHeight;
+
             // Update video frame
             let canvasContext = this.magicWandvideoCanvas.getContext('2d');
             canvasContext.drawImage(this.video, 0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height);
 
             this.magicWandVideoLayer.setSource(new CanvasSource({
                 canvas: this.magicWandvideoCanvas,
-                projection: this.projection,
+                projection: projection,
                 canvasExtent: [0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
                 canvasSize: [this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
             }));
@@ -62,7 +77,7 @@ export default {
                 this.requireSelectedLabel();
             }
         },
-        initInteraction() {
+        initMagicWandInteraction() {
             // Initialize the magic wand interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             magicWandInteraction = new MagicWandInteraction({
@@ -96,35 +111,47 @@ export default {
             // Create video frame layer and canvas
             this.magicWandVideoLayer = new ImageLayer();
             this.magicWandVideoLayer.setZIndex(-1);
-            this.projection = new Projection({
-                code: 'biigle-video',
-                units: 'pixels',
-                extent: [0, 0, this.video.videoWidth, this.video.videoHeight]
-            });
-
-            this.magicWandvideoCanvas = document.createElement('canvas');
-            this.magicWandvideoCanvas.width = this.video.videoWidth;
-            this.magicWandvideoCanvas.height = this.video.videoHeight;
 
             this.map.addLayer(this.magicWandVideoLayer);
             magicWandInteraction.setLayer(this.magicWandVideoLayer);
+
+            this.magicWandvideoCanvas = document.createElement('canvas');
         },
         disableMagicWandOnPlay() {
             if (!this.video.paused && this.interactionMode === 'magicWand') {
                 this.resetInteractionMode();
             }
+        },
+        toggleEnableMagicWand(e) {
+            this.enableMagicWand = e.type === 'pause' ?? false;
         }
     },
     watch: {
+        finishedVideoScreenInit() {
+            this.initMagicWandInteraction();
+        },
         isMagicWanding(isMagicWanding) {
             this.toggleMagicWandInteraction(isMagicWanding);
         },
-    },
-    created() {
-        this.video.addEventListener('loadeddata', this.initInteraction)
-        this.video.addEventListener('seeked', this.updateVideoFrameImage)
-        this.video.addEventListener('play', this.disableMagicWandOnPlay)
-        Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+        canMagicWanding: {
+            immediate: true,
+            handler(can) {
+                this.enableMagicWand = can;
+                if (can) {
+                    this.video.addEventListener('seeked', this.updateVideoFrameImage);
+                    this.video.addEventListener('play', this.disableMagicWandOnPlay);
+                    this.video.addEventListener('play', this.toggleEnableMagicWand);
+                    this.video.addEventListener('pause', this.toggleEnableMagicWand);
+                    Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+                } else {
+                    this.video.removeEventListener('seeked', this.updateVideoFrameImage);
+                    this.video.removeEventListener('play', this.disableMagicWandOnPlay);
+                    this.video.removeEventListener('play', this.toggleEnableMagicWand);
+                    this.video.removeEventListener('pause', this.toggleEnableMagicWand);
+                    Keyboard.off('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+                }
+            }
+        },
     },
 };
 </script>
