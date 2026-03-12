@@ -11,5 +11,9 @@ export default Resource('api/v1/projects{/id}/annotation-strategy-label',{}, {
     upload_file: {
         method: 'POST',
         url: 'api/v1/projects{/id}/annotation-strategy-label/upload-image',
+    },
+    delete_file: {
+        method: 'DELETE',
+        url: 'api/v1/projects{/id}/annotation-strategy-label/delete-image',
     }
 })
