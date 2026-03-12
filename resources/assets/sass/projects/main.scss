@@ -29,14 +29,52 @@
     align-content: top;
 }
 
-.strategy-description {
+textarea.strategy-description {
   width: 100%;
   resize: none;
   overflow: hidden; /* Hides the scrollbar */
   min-height: 50px;
-  padding: 10px;
+  margin: 3px;
   box-sizing: border-box;
   color: black;
+}
+
+.annotation-strategy-label {
+    display: flex;
+    align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+}
+
+.annotation-strategy-label-edit {
+    justify-content: center;
+    padding: 5px;
+    margin: 5px;
+    border-bottom: 1px solid white;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-asl {
+    margin: 3px;
+}
+
+.reference-image {
+    max-width: 200px;
+    min-width: 50px;
+    max-height: 200px;
+    min-height: 50px;
+}
+
+#strategy-description-text {
+    white-space: pre-line;
 }
 
 @import 'components/previewThumbnail';
