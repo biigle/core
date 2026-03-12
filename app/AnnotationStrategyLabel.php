@@ -15,7 +15,7 @@ class AnnotationStrategyLabel extends Model
 {
     use HasFactory;
     public $incrementing = false;
-    protected $primaryKey = null;
+    protected $primaryKey = ['annotation_strategy_id', 'label_id'];
 
     /**
      * The attributes that should be casted to native types.
@@ -27,6 +27,7 @@ class AnnotationStrategyLabel extends Model
         'label_id' => 'int',
         'shape_id' => 'int',
         'description' => 'string',
+        'reference_image' => 'string',
     ];
     //TODO: add comment
 
@@ -35,6 +36,7 @@ class AnnotationStrategyLabel extends Model
         'label_id',
         'shape_id',
         'description',
+        'reference_image',
     ];
     /**
      * Don't maintain timestamps for this model.
@@ -47,5 +49,14 @@ class AnnotationStrategyLabel extends Model
     {
         return $this->belongsTo(Label::class, foreignKey: 'label_id');
     }
+
+    protected function setKeysForSaveQuery($query)
+    {
+        foreach ($this->getKeyName() as $key) {
+            $query->where($key, '=', $this->getAttribute($key));
+        }
+        return $query;
+    }
+
 }
 
