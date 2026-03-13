@@ -34,7 +34,8 @@ textarea.strategy-description {
   resize: none;
   overflow: hidden; /* Hides the scrollbar */
   min-height: 50px;
-  margin: 3px;
+  margin-top: 3px;
+  margin-bottom: 3px;
   box-sizing: border-box;
   color: black;
 }
@@ -52,9 +53,12 @@ textarea.strategy-description {
 
 .annotation-strategy-label-edit {
     justify-content: center;
-    padding: 5px;
-    margin: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     border-bottom: 1px solid white;
+    border-top: 1px solid white;
 }
 
 .center-container {

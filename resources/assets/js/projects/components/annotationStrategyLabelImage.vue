@@ -27,6 +27,7 @@ export default {
     emits: [
         'set-reference-image',
         'reset-reference-image',
+        'upload-image',
     ],
     props: {
         baseUrl: {
@@ -48,7 +49,7 @@ export default {
     },
     computed: {
         hasFilename() {
-            return this.displayImage && this.referenceImage.length > 0;
+            return this.displayImage && this.referenceImage && this.referenceImage.length > 0;
         },
     },
     data() {
@@ -69,21 +70,16 @@ export default {
             if (response !== 'delete') {
                 return;
             }
-
-            AnnotationStrategyLabel.delete_file({ id: this.projectId }, { reference_image : this.referenceImage})
-                .then(this.displayText, handleErrorResponse)
-                .then(this.emitResetReferenceImage)
-                .finally(this.finishLoading);
+            this.displayText();
+            this.emitResetReferenceImage();
         },
         emitResetReferenceImage() {
             this.$emit('reset-reference-image');
         },
-        attemptDisplayImage(response) {
+        attemptDisplayImage() {
             this.displayImage = true;
-            this.$emit('set-reference-image', response.body.filename);
         },
         uploadReferenceImage(event) {
-            //TODO: rather than uploading immediately, display a preview.
             this.startLoading();
             if (event.target.files.length > 1) {
                 alert('Please select only one file');
@@ -95,12 +91,10 @@ export default {
                 this.finishLoading();
                 return;
             }
-            //TODO: parser?
             const formData = new FormData();
             formData.append('file', event.target.files[0]);
-            AnnotationStrategyLabel.upload_file({ id: this.projectId }, formData)
-                .then(this.attemptDisplayImage, handleErrorResponse)
-                .finally(this.finishLoading);
+            this.$emit('upload-image', formData)
+            this.attemptDisplayImage()
         },
     }
 }

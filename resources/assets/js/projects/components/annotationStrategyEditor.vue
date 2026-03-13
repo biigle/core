@@ -35,8 +35,8 @@
                                 <span>{{ annotationStrategyLabel.description }}</span>
                             </div>
                             <div class="col-xs-2">
-                               <span class="btn control-button" v-if="annotationStrategyLabel.shape_id"><i :class="`icon icon-white icon-${mapShape(annotationStrategyLabel.shape_id).toLowerCase()}`"></i></span>
-                               <span>{{ mapShape(annotationStrategyLabel.shape_id) }}</span>
+                               <span class="btn control-button" v-if="annotationStrategyLabel.shape"><i :class="`icon icon-white icon-${mapShape(annotationStrategyLabel.shape).toLowerCase()}`"></i></span>
+                               <span>{{ mapShape(annotationStrategyLabel.shape) }}</span>
                             </div>
                             <div class="col-xs-3">
                                 <annotation-strategy-label-image
@@ -104,9 +104,10 @@
                                         :base-url="baseUrl"
                                         :editable="true"
                                         :project-id="projectId"
-                                        :reference-image="selectedReferenceImage || ''"
+                                        :reference-image="selectedReferenceImage"
                                         @set-reference-image="setReferenceImage"
                                         @reset-reference-image="resetReferenceImage"
+                                        @upload-image="uploadImage"
                                         ></annotation-strategy-label-image>
                                 </div>
                                 <div class="col-xs-1">
@@ -146,12 +147,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-2">
+            <div class="col-xs-2" v-if="!editing">
                 <button
                     class="btn btn-success btn-block"
-                    type="submit"
+                    type="button"
                     @click="toggleEditing"
-                    title="Add new label to the annotation strategy "
+                    title="Add new label to the annotation strategy"
+
                 >
                     <i class="fa fa-tags"></i>
                     <span class="fa fa-plus" aria-hidden="true"></span>
@@ -247,9 +249,9 @@ export default {
         },
         editingStrategyLabelText() {
             if (this.currentlyEditingStrategyLabel) {
-                return 'Edit ruleset for this label';
+                return 'Edit strategy for this label';
             }
-            return 'Create ruleset';
+            return 'Create strategy for a label';
         },
     },
     created() {
@@ -260,6 +262,7 @@ export default {
             if (this.hasEditedDescription || this.hasEditedStrategyLabels || this.editing) {
                 e.preventDefault();
                 e.returnValue = '';
+                return 'This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.';
             }});
     },
     data() {
@@ -271,7 +274,6 @@ export default {
             selectedShape: undefined,
             modifiedAnnotationStrategyLabels: this.annotationStrategyLabels,
             strategyDescription: "",
-            labelImagePath: "",
             selectedReferenceImage: "",
             automatedReload: false,
         }
@@ -280,11 +282,11 @@ export default {
         getImageUrl(label_id) {
             return this.baseUrl + '/' + label_id
         },
-        mapShape(shape_id) {
-            if (!shape_id) {
+        mapShape(shape) {
+            if (!shape) {
                 return "No preferred shape selected";
             }
-            return this.availableShapes[shape_id];
+            return this.availableShapes[shape];
         },
         sendUpdateAnnotationStrategy() {
             if (!this.strategyDescription || this.strategyDescription.trim().length == 0) {
@@ -312,7 +314,7 @@ export default {
         sendAnnotationStrategyLabelUpdate() {
             let labels = this.modifiedAnnotationStrategyLabels.map(item => item.label.id);
             let descriptions = this.modifiedAnnotationStrategyLabels.map(item => item.description);
-            let shapes = this.modifiedAnnotationStrategyLabels.map(item => item.shape_id);
+            let shapes = this.modifiedAnnotationStrategyLabels.map(item => item.shape);
             let referenceImages = this.modifiedAnnotationStrategyLabels.map(item => item.reference_image);
             AnnotationStrategyLabel.save(
                 {
@@ -378,7 +380,7 @@ export default {
             this.resetEditing();
         },
         editThis(strategyLabel) {
-            this.selectedShape = strategyLabel.shape_id;
+            this.selectedShape = strategyLabel.shape;
             this.selectedLabel = strategyLabel.label;
             this.labelDescription = strategyLabel.description;
             this.selectedReferenceImage = strategyLabel.reference_image;
@@ -399,21 +401,37 @@ export default {
             this.selectedShape = undefined;
             this.selectedLabel = undefined;
             this.labelDescription = "";
-            this.labelImagePath = ""
             this.editing = false;
             this.selectedReferenceImage = "";
         },
         deleteAnnotationStrategyLabel() {
+            if (this.selectedReferenceImage.length > 0) {
+                let response = prompt(`This will delete the image for this label. Please enter 'delete' to confirm.`);
+
+                if (response !== 'delete') {
+                    return;
+                }
+                this.resetReferenceImage();
+            }
             if (this.selectedLabel && this.editingExistingStrategyLabel(this.selectedLabel.id)) {
                 this.modifiedAnnotationStrategyLabels.splice(this.modifiedAnnotationStrategyLabels.indexOf(this.selectedLabel));
             }
             this.resetEditing();
         },
-        setReferenceImage(reference_image) {
-            this.selectedReferenceImage = reference_image;
+        setReferenceImage(filename) {
+            this.selectedReferenceImage = filename;
         },
         resetReferenceImage() {
-            this.selectedReferenceImage = "";
+            this.startLoading();
+            AnnotationStrategyLabel.delete_file({ id: this.projectId }, { reference_image : this.referenceImage})
+                .catch(handleErrorResponse)
+                .finally(this.finishLoading);
+        },
+        uploadImage(formData) {
+            this.startLoading()
+            AnnotationStrategyLabel.upload_file({ id: this.projectId }, formData)
+                .then((response) => this.setReferenceImage(response.body.filename), handleErrorResponse)
+                .finally(this.finishLoading);
         },
     }
 };

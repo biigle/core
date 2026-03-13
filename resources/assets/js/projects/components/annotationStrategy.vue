@@ -54,8 +54,8 @@
                         <span>{{ annotationStrategyLabel.description }}</span>
                     </div>
                     <div class="col-xs-2">
-                        <span class="btn control-button" v-if="annotationStrategyLabel.shape_id"><i :class="`icon icon-white icon-${mapShape(annotationStrategyLabel.shape_id).toLowerCase()}`"></i></span>
-                        <span>{{ mapShape(annotationStrategyLabel.shape_id) }}</span>
+                        <span class="btn control-button" v-if="annotationStrategyLabel.shape"><i :class="`icon icon-white icon-${mapShape(annotationStrategyLabel.shape).toLowerCase()}`"></i></span>
+                        <span>{{ mapShape(annotationStrategyLabel.shape) }}</span>
                     </div>
                     <div class="col-xs-3">
                         <annotation-strategy-label-image
@@ -92,7 +92,7 @@ export default {
     },
     computed: {
         creating() {
-            return this.annotationStrategy === null;
+            return Object.keys(this.annotationStrategy).length === 0;
         },
         hasSelectedLabel() {
             return this.selectedLabel === undefined;
@@ -113,11 +113,11 @@ export default {
         }
     },
     methods: {
-        mapShape(shape_id) {
-            if (!shape_id) {
+        mapShape(shape) {
+            if (!shape) {
                 return "No preferred shape selected";
             }
-            return this.availableShapes[shape_id];
+            return this.availableShapes[shape];
         },
         setEditing(val) {
             this.editing = val;
