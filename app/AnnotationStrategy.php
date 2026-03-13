@@ -49,8 +49,13 @@ class AnnotationStrategy extends Model
         return $this->belongsTo(Project::class, 'project');
     }
 
+    /**
+     * The strategies for the labels within this strategy.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany<AnnotationStrategyLabel, $this>
+     */
     public function strategyLabels()
     {
-        return $this->hasMany(AnnotationStrategyLabel::class);
+        return $this->hasMany(AnnotationStrategyLabel::class, 'annotation_strategy');
     }
 }

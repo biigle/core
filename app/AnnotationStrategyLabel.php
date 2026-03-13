@@ -15,7 +15,7 @@ class AnnotationStrategyLabel extends Model
 {
     use HasFactory;
     public $incrementing = false;
-    protected $primaryKey = ['annotation_strategy_id', 'label_id'];
+    protected $primaryKey = ['annotation_strategy', 'label'];
 
     /**
      * The attributes that should be casted to native types.
@@ -23,18 +23,22 @@ class AnnotationStrategyLabel extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'annotation_strategy_id' => 'int',
-        'label_id' => 'int',
-        'shape_id' => 'int',
+        'annotation_strategy' => 'int',
+        'label' => 'int',
+        'shape' => 'int',
         'description' => 'string',
         'reference_image' => 'string',
     ];
-    //TODO: add comment
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
-        'annotation_strategy_id',
-        'label_id',
-        'shape_id',
+        'annotation_strategy',
+        'label',
+        'shape',
         'description',
         'reference_image',
     ];
@@ -45,11 +49,22 @@ class AnnotationStrategyLabel extends Model
      */
     public $timestamps = false;
 
+
+    /**
+     * The labels that have a strategy for their annotation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Label, $this>
+     */
     public function label()
     {
-        return $this->belongsTo(Label::class, foreignKey: 'label_id');
+        return $this->belongsTo(Label::class, 'label');
     }
 
+    /**
+     * Since this table does not have a primary key but uses two keys as primary keys
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
     protected function setKeysForSaveQuery($query)
     {
         foreach ($this->getKeyName() as $key) {

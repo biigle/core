@@ -20,15 +20,15 @@ return new class extends Migration
         });
 
         Schema::create('annotation_strategy_labels', function (Blueprint $table) {
-            $table->foreignId('annotation_strategy_id')
+            $table->foreignId('annotation_strategy')
                 ->constrained()
                 ->onDelete('cascade');
 
-            $table->foreignId('label_id')
+            $table->foreignId('label')
                 ->constrained()
                 ->onDelete('cascade');
 
-            $table->foreignId('shape_id')
+            $table->foreignId('shape')
                 ->nullable(true)
                 ->constrained()
                 ->onDelete('set null');
@@ -37,7 +37,7 @@ return new class extends Migration
 
             $table->string('reference_image')
                 ->nullable(true);
-            $table->primary(['annotation_strategy_id', 'label_id']);
+            $table->primary(['annotation_strategy', 'label']);
         });
     }
 
@@ -46,7 +46,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('annotation_strategy_label');
-        Schema::dropIfExists('annotation_strategy');
+        Schema::dropIfExists('annotation_strategy_labels');
+        Schema::dropIfExists('annotation_strategies');
     }
 };
