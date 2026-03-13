@@ -26,7 +26,8 @@ export default {
             return this.interactionMode === 'magicWand' && this.video.paused;
         },
         canMagicWanding() {
-            return !this.videoHasCorsError && this.canAdd && this.finishedVideoScreenInit;
+            const initializedMagicWand = this.magicWandVideoLayer != null && this.magicWandvideoCanvas != null;
+            return !this.videoHasCorsError && this.canAdd && initializedMagicWand;
         }
     },
     methods: {
@@ -137,25 +138,22 @@ export default {
         isMagicWanding(isMagicWanding) {
             this.toggleMagicWandInteraction(isMagicWanding);
         },
-        canMagicWanding: {
-            immediate: true,
-            handler(can) {
-                this.enableMagicWand = can;
-                if (can) {
-                    this.video.addEventListener('seeked', this.updateVideoFrameImage);
-                    this.video.addEventListener('play', this.disableMagicWandOnPlay);
-                    this.video.addEventListener('play', this.toggleEnableMagicWand);
-                    this.video.addEventListener('pause', this.toggleEnableMagicWand);
-                    Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
-                } else {
-                    this.video.removeEventListener('seeked', this.updateVideoFrameImage);
-                    this.video.removeEventListener('play', this.disableMagicWandOnPlay);
-                    this.video.removeEventListener('play', this.toggleEnableMagicWand);
-                    this.video.removeEventListener('pause', this.toggleEnableMagicWand);
-                    Keyboard.off('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
-                }
+        canMagicWanding(usable) {
+            this.enableMagicWand = usable;
+            if (usable) {
+                this.video.addEventListener('seeked', this.updateVideoFrameImage);
+                this.video.addEventListener('play', this.disableMagicWandOnPlay);
+                this.video.addEventListener('play', this.toggleEnableMagicWand);
+                this.video.addEventListener('pause', this.toggleEnableMagicWand);
+                Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+            } else {
+                this.video.removeEventListener('seeked', this.updateVideoFrameImage);
+                this.video.removeEventListener('play', this.disableMagicWandOnPlay);
+                this.video.removeEventListener('play', this.toggleEnableMagicWand);
+                this.video.removeEventListener('pause', this.toggleEnableMagicWand);
+                Keyboard.off('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
             }
-        },
+        }
     },
 };
 </script>
