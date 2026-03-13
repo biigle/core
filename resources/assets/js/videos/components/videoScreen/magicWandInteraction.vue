@@ -7,7 +7,7 @@ import CanvasSource from '../../../annotations/ol/source/Canvas.js';
 import Projection from '@biigle/ol/proj/Projection';
 
 /**
- * Mixin for the annotationCanvas component that contains logic for the magic wand interaction.
+ * Mixin for the videoScreen component that contains logic for the magic wand interaction.
  *
  * @type {Object}
  */
@@ -18,7 +18,6 @@ export default {
         return {
             magicWandVideoLayer: null,
             magicWandvideoCanvas: null,
-            // Controls button state in videoScreen component
             enableMagicWand: false,
         };
     },
