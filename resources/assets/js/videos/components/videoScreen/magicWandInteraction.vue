@@ -127,7 +127,7 @@ export default {
             }
         },
         toggleEnableMagicWand(e) {
-            this.enableMagicWand = e.type === 'pause' ?? false;
+            this.enableMagicWand = e.type === 'pause';
         }
     },
     watch: {
