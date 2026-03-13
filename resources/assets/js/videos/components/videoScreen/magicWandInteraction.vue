@@ -91,12 +91,17 @@ export default {
             });
 
             magicWandInteraction.on('drawend', (e) => {
-                let geometry = e.feature.getGeometry();
+                const geometry = e.feature.getGeometry();
+                const points = this.getPointsFromGeometry(geometry);
                 let pendingAnnotation = {
                     shape: geometry.getType(),
                     frames: [this.video.currentTime],
-                    points: [this.getPointsFromGeometry(geometry)],
+                    points: [points],
                 };
+
+                // The LabelBOT image is always created because the user could decide to
+                // enable LabelBOT while they draw the pending annotation.
+                pendingAnnotation.screenshotPromise = this.createLabelbotImage(points);
 
                 this.$emit('pending-annotation', pendingAnnotation);
                 this.annotationSource.once('addfeature', () => {
