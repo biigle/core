@@ -873,7 +873,7 @@ export default {
             if (!newLabel && !this.labelbotIsActive) {
                 this.resetInteractionMode();
             }
-        },
+        }
     },
     created() {
         // markRaw is essential here!
@@ -885,7 +885,7 @@ export default {
         this.keyboardOn('Escape', this.resetInteractionMode, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowRight', this.jumpForward, 0, this.listenerSet);
         this.keyboardOn('Control+ArrowLeft', this.jumpBackward, 0, this.listenerSet);
-     },
+    },
     mounted() {
         this.map.setTarget(this.$el);
         this.$emit('initMap', this.map);
