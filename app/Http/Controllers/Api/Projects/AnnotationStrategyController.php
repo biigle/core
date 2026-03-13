@@ -3,66 +3,82 @@
 namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Label;
 use Biigle\Project;
 use Biigle\AnnotationStrategy;
-use Biigle\AnnotationStrategyLabel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Storage;
 
 class AnnotationStrategyController extends Controller
 {
     /**
-     * Get all image labels and annotation count for a given project
+     * Get the annotation strategy for the given project and the associated labels
      *
-     * @api {get} projects/:pid/strategy Get annotation labels with a annotation count
+     * @api {get} projects/:pid/annotation-strategy Get the annotation strategy for the given project
      * @apiGroup Projects
      * @apiName AnnotationStrategy
      * @apiParam {Number} id The Project ID
-     * @apiPermission projectMember
-     * @apiDescription Returns a collection of annotation labels and their counts in the project
+     * @apiPermission projectEditor
+     * @apiDescription Returns the annotation strategy and the associated labels
      *
      * @apiSuccessExample {json} Success response:
-     * [{"id":1,
-     * "name":"a",
-     * "color":"f2617c",
-     * "label_tree_id":1,
-     * "count":10}]
+     * [{"annotation_strategy":{
+     *  {
+     *    "id":1,
+     *    "project":2,
+     *    "description":"strategy description"
+     *  },
+     *  "annotation_strategy_labels" : {
+     *    {
+     *      "annotation_strategy": 1,
+     *      "label":4,
+     *      "shape":7,
+     *      "description":"description of a label",
+     *      "reference_image":"file.jpg",
+     *      "label":
+     *        {
+     *          "id":4,
+     *          "name":"something else",
+     *        },
+     *  }}]
      *
-     * @param int $id Project ID
-     * @return \Illuminate\Support\Collection
      */
     public function index($id)
     {
         $project = Project::findOrFail($id);
-        $this->authorize('access', $project);
+        $this->authorize('update', $project);
         $strategy = AnnotationStrategy::where(['project'=> $id])
             ->firstOrFail();
-        $strategyLabels = $strategy->strategyLabels()->with('label')->get();
+        $strategyLabels = $strategy
+            ->strategyLabels()
+            ->select()
+            ->with('label')
+            ->get();
         return ['annotation_strategy' => $strategy, 'annotation_strategy_labels' => $strategyLabels];
 
     }
 
-    //TODO: form request for strategy
     /**
-     * Update a label.
+     * Update the annotation strategy for the given project
      *
-     * @api {put} labels/:id Update a label
-     * @apiGroup Labels
-     * @apiName UpdateLabels
-     * @apiPermission labelTreeEditor
+     * @api {update} projects/:pid/annotation-strategy Update the annotation strategy for the given project
+     * @apiGroup Projects
+     * @apiName AnnotationStrategy
+     * @apiParam {Number} id The Project ID
+     * @apiParam {String} description A description on how to annotate the strategy
+     * @apiPermission projectAdmin
+     * @apiDescription Edit the annotation strategy associated with the given ID
      *
-     * @apiParam {Number} id The label ID
-     *
-     * @apiParam (Attributes that can be updated) {String} name Name of the label.
-     * @apiParam (Attributes that can be updated) {String} color Color of the label as hexadecimal string (like `bada55`). May have an optional `#` prefix.
-     * @apiParam (Attributes that can be updated) {Number} parent_id ID of the parent label for ordering in a tree-like structure.
-     *
-     * @param UpdateLabel $request
+     * @param int $id Project ID
      */
-    //public function update(UpdateAnnotationStrategy $request)
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+        $request->validate([
+            'description' => 'required|string',
+        ]);
+
+        $project = Project::findOrFail($id);
+        $this->authorize('update', $project);
+
         AnnotationStrategy::updateOrCreate(
             ['project' => $request->id],
             ['description' =>  $request->description]
@@ -70,25 +86,29 @@ class AnnotationStrategyController extends Controller
     }
 
     /**
-     * Delete a label.
+     * Delete the annotation strategy for the given project
      *
-     * @api {delete} labels/:id Delete a label
-     * @apiGroup Labels
-     * @apiName DestroyLabels
-     * @apiPermission labelTreeEditor
-     * @apiDescription A label may only be deleted if it doesn't have child labels and is
-     * not in use anywhere (e.g. attached to an annotation).
+     * @api {delete} projects/:pid/annotation-strategy Delete the annotation strategy for the given project
+     * @apiGroup Projects
+     * @apiName AnnotationStrategy
+     * @apiParam {Number} id The Project ID
+     * @apiPermission projectAdmin
+     * @apiDescription Delete the annotation strategy associated with the given ID
      *
-     * @apiParam {Number} id The label ID
-     *
-     * @param DestroyLabel $request
+     * @param int $id Project ID
      */
-    //public function destroy(DestroyAnnotationStrategy $request)
     public function delete(Request $request)
     {
-        //TODO: cleanup all files in the strategy labels
-        $annotationStrategy = AnnotationStrategy::where(['project'=> $request->id])->firstOrFail();
+        $project = Project::findOrFail($request->id);
+        $this->authorize('update', $project);
+        $annotationStrategy = AnnotationStrategy::where(['project'=> $project->id])->firstOrFail();
         $annotationStrategy->delete();
-    }
 
+        //Cleanup the directory
+        $disk = Storage::disk(config('annotation_strategy.storage_disk'));
+        $url = "$project->id/";
+        if ($disk->exists($url)) {
+            $disk->deleteDirectory($url);
+        }
+    }
 }

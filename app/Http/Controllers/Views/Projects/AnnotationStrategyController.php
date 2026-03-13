@@ -5,13 +5,10 @@ namespace Biigle\Http\Controllers\Views\Projects;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\AnnotationStrategy;
 use Biigle\Project;
-use Biigle\AnnotationStrategyLabel;
 use Biigle\Role;
 use Biigle\Shape;
-use Biigle\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Js;
 
 class AnnotationStrategyController extends Controller
 {
@@ -30,7 +27,7 @@ class AnnotationStrategyController extends Controller
         $user = $request->user();
 
         if (!$user->can('sudo')) {
-            $this->authorize('access', $project);
+            $this->authorize('editIn', $project);
         }
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
@@ -43,7 +40,7 @@ class AnnotationStrategyController extends Controller
 
         $annotationStrategy = AnnotationStrategy::where(['project' => $id])->first();
 
-        $isAdmin = $user->role_id === Role::adminId() || !$user->can('sudo');
+        $isAdmin = $user->role_id === Role::adminId() || $user->can('sudo');
 
         $labelTrees = $project->labelTrees()
             ->select('id', 'name', 'version_id')
@@ -71,7 +68,10 @@ class AnnotationStrategyController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $annotationStrategyLabels = $annotationStrategy->strategyLabels()->with('label')->get();
+        $annotationStrategyLabels = $annotationStrategy->strategyLabels()
+            ->with('label')
+            ->get()
+            ->toArray();
 
         return view('projects.show.annotation-strategy', [
                 "project" => $project,
