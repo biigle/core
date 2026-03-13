@@ -365,14 +365,14 @@ export default {
                 Object.assign(this.modifiedAnnotationStrategyLabels
                     .filter((asl) => asl.label.id == this.selectedLabel.id)[0],
                     {
-                        'shape_id':this.selectedShape,
+                        'shape':this.selectedShape,
                         'description': this.labelDescription,
                         "reference_image": this.selectedReferenceImage,
                     });
             } else {
                 this.modifiedAnnotationStrategyLabels.push({
                     "label":this.selectedLabel,
-                    "shape_id": this.selectedShape,
+                    "shape": this.selectedShape,
                     "description": this.labelDescription,
                     "reference_image": this.selectedReferenceImage,
                 });
