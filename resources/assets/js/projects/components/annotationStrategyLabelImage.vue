@@ -31,9 +31,7 @@
     </div>
 </template>
 <script>
-import AnnotationStrategyLabel from '@/projects/api/annotationStrategyLabel.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import { handleErrorResponse } from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],

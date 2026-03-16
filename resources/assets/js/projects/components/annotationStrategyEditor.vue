@@ -30,11 +30,7 @@
                     v-for="annotationStrategyLabel in modifiedAnnotationStrategyLabels"
                 >
                     <div
-                        v-if="
-                            !annotationStrategyLabelIsSelected(
-                                annotationStrategyLabel,
-                            )
-                        "
+                        v-if="!annotationStrategyLabelIsSelected(annotationStrategyLabel)"
                     >
                         <div class="row annotation-strategy-label">
                             <div class="col-xs-3">
@@ -67,20 +63,13 @@
                                 <annotation-strategy-label-image
                                     :base-url="baseUrl"
                                     :project-id="projectId"
-                                    :reference-image="
-                                        annotationStrategyLabel.reference_image ||
-                                        ''
-                                    "
+                                    :reference-image="annotationStrategyLabel.reference_image || ''"
                                 ></annotation-strategy-label-image>
                             </div>
                             <div class="col-xs-1">
                                 <button
                                     title="Edit the annotation strategy for this label"
-                                    @click.stop="
-                                        editStrategyLabel(
-                                            annotationStrategyLabel.label,
-                                        )
-                                    "
+                                    @click.stop="editStrategyLabel(annotationStrategyLabel.label)"
                                     class="btn btn-default btn"
                                 >
                                     <span
@@ -153,22 +142,16 @@
                                         :base-url="baseUrl"
                                         :editable="true"
                                         :project-id="projectId"
-                                        :reference-image="
-                                            selectedReferenceImage
-                                        "
+                                        :reference-image="selectedReferenceImage"
                                         @set-reference-image="setReferenceImage"
-                                        @reset-reference-image="
-                                            resetReferenceImage
-                                        "
+                                        @reset-reference-image="resetReferenceImage"
                                         @upload-image="uploadImage"
                                     ></annotation-strategy-label-image>
                                 </div>
                                 <div class="col-xs-1">
                                     <button
                                         class="btn btn-success btn-block btn-asl"
-                                        :disabled="
-                                            disableAddAnnotationStrategyLabel
-                                        "
+                                        :disabled="disableAddAnnotationStrategyLabel"
                                         type="button"
                                         @click="addAnnotationStrategyLabel"
                                         :title="editingStrategyLabelText"
@@ -188,9 +171,7 @@
                                         <button
                                             class="btn btn-danger btn-block btn-asl"
                                             type="button"
-                                            @click="
-                                                deleteAnnotationStrategyLabel
-                                            "
+                                            @click="deleteAnnotationStrategyLabel"
                                             title="Delete the strategy for this label"
                                         >
                                             <span

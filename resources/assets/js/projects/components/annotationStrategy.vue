@@ -83,9 +83,7 @@
                     <div class="col-xs-3">
                         <annotation-strategy-label-image
                             :base-url="baseUrl"
-                            :reference-image="
-                                annotationStrategyLabel.reference_image || ''
-                            "
+                            :reference-image="annotationStrategyLabel.reference_image || ''"
                             :project-id="projectId"
                         ></annotation-strategy-label-image>
                     </div>
