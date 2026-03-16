@@ -1,9 +1,9 @@
 <script>
-import AnnotationStrategy from './components/annotationStrategy.vue';
+import AnnotationStrategy from "./components/annotationStrategy.vue";
 
 export default {
     components: {
-        annotationStrategy: AnnotationStrategy,
-    },
+        annotationStrategy: AnnotationStrategy
+    }
 };
 </script>

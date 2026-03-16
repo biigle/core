@@ -1,9 +1,17 @@
 <template>
     <div class="row center-container">
         <div v-if="hasFilename">
-            <img :src="getImageUrl()" @error="displayText" class="reference-image"/>
+            <img
+                :src="getImageUrl()"
+                @error="displayText"
+                class="reference-image"
+            />
             <div v-if="editable">
-                <button class="btn btn-default" @click="deleteImage(labelId)" title="Remove this image">
+                <button
+                    class="btn btn-default"
+                    @click="deleteImage(labelId)"
+                    title="Remove this image"
+                >
                     <span class="fa fa-times"></span>
                 </button>
             </div>
@@ -12,7 +20,12 @@
             <span>No reference image selected</span>
             <div v-if="editable">
                 <label>Select a reference image (max 5 MB)</label>
-                <input type="file" name="referenceImage" @change="uploadReferenceImage" required />
+                <input
+                    type="file"
+                    name="referenceImage"
+                    @change="uploadReferenceImage"
+                    required
+                />
             </div>
         </div>
     </div>
@@ -20,15 +33,11 @@
 <script>
 import AnnotationStrategyLabel from '@/projects/api/annotationStrategyLabel.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import {handleErrorResponse} from '@/core/messages/store.js';
+import { handleErrorResponse } from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],
-    emits: [
-        'set-reference-image',
-        'reset-reference-image',
-        'upload-image',
-    ],
+    emits: ['set-reference-image', 'reset-reference-image', 'upload-image'],
     props: {
         baseUrl: {
             type: String,
@@ -49,7 +58,11 @@ export default {
     },
     computed: {
         hasFilename() {
-            return this.displayImage && this.referenceImage && this.referenceImage.length > 0;
+            return (
+                this.displayImage &&
+                this.referenceImage &&
+                this.referenceImage.length > 0
+            );
         },
     },
     data() {
@@ -59,13 +72,15 @@ export default {
     },
     methods: {
         getImageUrl() {
-            return this.baseUrl + '/' + this.referenceImage
+            return this.baseUrl + '/' + this.referenceImage;
         },
         displayText() {
             this.displayImage = false;
         },
         deleteImage() {
-            let response = prompt(`This will delete the image for this label. Please enter 'delete' to confirm.`);
+            let response = prompt(
+                `This will delete the image for this label. Please enter 'delete' to confirm.`,
+            );
 
             if (response !== 'delete') {
                 return;
@@ -93,9 +108,9 @@ export default {
             }
             const formData = new FormData();
             formData.append('file', event.target.files[0]);
-            this.$emit('upload-image', formData)
-            this.attemptDisplayImage()
+            this.$emit('upload-image', formData);
+            this.attemptDisplayImage();
         },
-    }
-}
+    },
+};
 </script>

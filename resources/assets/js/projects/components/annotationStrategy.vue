@@ -1,12 +1,25 @@
 <template>
     <div>
-        <h3><span v-if="editing">Edit </span><span v-if="creating">Create </span>Annotation Strategy</h3>
+        <h3>
+            <span v-if="editing">Edit </span
+            ><span v-if="creating">Create </span>Annotation Strategy
+        </h3>
         <div v-if="isAdmin && !creating">
             <div v-if="editing">
-                <button class="btn btn-default pull-right" @click="setEditing(false)">Cancel Editing</button>
+                <button
+                    class="btn btn-default pull-right"
+                    @click="setEditing(false)"
+                >
+                    Cancel Editing
+                </button>
             </div>
             <div v-else>
-                <button class="btn btn-default pull-right" @click="setEditing(true)">Edit</button>
+                <button
+                    class="btn btn-default pull-right"
+                    @click="setEditing(true)"
+                >
+                    Edit
+                </button>
             </div>
         </div>
         <h4>Description</h4>
@@ -19,13 +32,15 @@
                 :project-id="projectId"
                 :base-url="baseUrl"
                 @refresh-strategy="refreshStrategy"
-                ></annotation-strategy-editor>
+            ></annotation-strategy-editor>
         </div>
         <div v-else>
             <div class="form-group">
-                <p id="strategy-description-text">{{ annotationStrategy.description }}</p>
+                <p id="strategy-description-text">
+                    {{ annotationStrategy.description }}
+                </p>
             </div>
-            <div v-if="annotationStrategyLabels.length > 0" class="row ">
+            <div v-if="annotationStrategyLabels.length > 0" class="row">
                 <div class="col-xs-3">
                     <h4>Label</h4>
                 </div>
@@ -47,22 +62,32 @@
                                 :label="annotationStrategyLabel.label"
                                 :flat="true"
                                 :showFavorites="false"
-                                ></label-tree-label>
+                            ></label-tree-label>
                         </ul>
                     </div>
                     <div class="col-xs-3">
                         <span>{{ annotationStrategyLabel.description }}</span>
                     </div>
                     <div class="col-xs-2">
-                        <span class="btn control-button" v-if="annotationStrategyLabel.shape"><i :class="`icon icon-white icon-${mapShape(annotationStrategyLabel.shape).toLowerCase()}`"></i></span>
-                        <span>{{ mapShape(annotationStrategyLabel.shape) }}</span>
+                        <span
+                            class="btn control-button"
+                            v-if="annotationStrategyLabel.shape"
+                            ><i
+                                :class="`icon icon-white icon-${mapShape(annotationStrategyLabel.shape).toLowerCase()}`"
+                            ></i
+                        ></span>
+                        <span>{{
+                            mapShape(annotationStrategyLabel.shape)
+                        }}</span>
                     </div>
                     <div class="col-xs-3">
                         <annotation-strategy-label-image
                             :base-url="baseUrl"
-                            :reference-image="annotationStrategyLabel.reference_image || ''"
+                            :reference-image="
+                                annotationStrategyLabel.reference_image || ''
+                            "
                             :project-id="projectId"
-                            ></annotation-strategy-label-image>
+                        ></annotation-strategy-label-image>
                     </div>
                 </div>
             </div>
@@ -75,7 +100,7 @@ import AnnotationStrategyEditor from './annotationStrategyEditor.vue';
 import AnnotationStrategyLabelImage from './annotationStrategyLabelImage.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import LabelTreeLabel from '@/label-trees/components/labelTreeLabel.vue';
-import {handleErrorResponse} from '@/core/messages/store.js';
+import { handleErrorResponse } from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],
@@ -105,17 +130,21 @@ export default {
             projectId: biigle.$require('projects.project').id,
             labelTrees: biigle.$require('projects.labelTrees'),
             annotationStrategy: biigle.$require('projects.annotationStrategy'),
-            annotationStrategyLabels: biigle.$require('projects.annotationStrategyLabels'),
-            labelDescription: "",
+            annotationStrategyLabels: biigle.$require(
+                'projects.annotationStrategyLabels',
+            ),
+            labelDescription: '',
             selectedLabel: undefined,
-            availableShapes: biigle.$require("projects.availableShapes"),
-            baseUrl: biigle.$require('projects.annotationStrategyLabelsBaseUrl'),
-        }
+            availableShapes: biigle.$require('projects.availableShapes'),
+            baseUrl: biigle.$require(
+                'projects.annotationStrategyLabelsBaseUrl',
+            ),
+        };
     },
     methods: {
         mapShape(shape) {
             if (!shape) {
-                return "No preferred shape selected";
+                return 'No preferred shape selected';
             }
             return this.availableShapes[shape];
         },
@@ -124,16 +153,19 @@ export default {
         },
         refreshStrategy() {
             this.startLoading();
-            AnnotationStrategy.get({id: this.projectId}, {})
-                .then((response) => this.setAnnotationStrategy(response.body), handleErrorResponse)
+            AnnotationStrategy.get({ id: this.projectId }, {})
+                .then(
+                    (response) => this.setAnnotationStrategy(response.body),
+                    handleErrorResponse,
+                )
                 .then(this.setEditing(false))
                 .finally(this.finishLoading);
         },
         setAnnotationStrategy(responseBody) {
             this.annotationStrategy = responseBody.annotation_strategy;
-            this.annotationStrategyLabels = responseBody.annotation_strategy_labels;
+            this.annotationStrategyLabels =
+                responseBody.annotation_strategy_labels;
         },
-    }
+    },
 };
-
 </script>
