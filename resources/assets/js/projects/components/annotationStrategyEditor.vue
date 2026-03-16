@@ -1,4 +1,12 @@
 <template>
+    <div>
+        <button
+            class="btn btn-default pull-right"
+            @click="emitCancelEditing"
+        >
+            Cancel Editing
+        </button>
+    </div>
     <div class="form-group annotation-strategy-description">
         <textarea
             v-model="strategyDescription"
@@ -142,7 +150,7 @@
                                         :base-url="baseUrl"
                                         :editable="true"
                                         :project-id="projectId"
-                                        :reference-image="selectedReferenceImage"
+                                        :reference-image="selectedReferenceImage || ''"
                                         @set-reference-image="setReferenceImage"
                                         @reset-reference-image="resetReferenceImage"
                                         @upload-image="uploadImage"
@@ -241,6 +249,7 @@ import LoaderMixin from '@/core/mixins/loader.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LabelTreeLabel from '@/label-trees/components/labelTreeLabel.vue';
 import { handleErrorResponse } from '@/core/messages/store.js';
+import { toRaw } from 'vue';
 
 export default {
     mixins: [LoaderMixin],
@@ -249,7 +258,10 @@ export default {
         labelTreeLabel: LabelTreeLabel,
         annotationStrategyLabelImage: AnnotationStrategyLabelImage,
     },
-    emits: ['refresh-strategy'],
+    emits: [
+        'refresh-strategy',
+        'cancel-editing',
+    ],
     props: {
         annotationStrategy: {
             type: Object,
@@ -304,7 +316,7 @@ export default {
         hasEditedStrategyLabels() {
             return (
                 this.modifiedAnnotationStrategyLabels !==
-                    this.annotationStrategyLabels ||
+                    toRaw(this.annotationStrategyLabels) ||
                 this.currentlyEditingStrategyLabel
             );
         },
@@ -337,7 +349,7 @@ export default {
             labelDescription: '',
             selectedLabel: undefined,
             selectedShape: undefined,
-            modifiedAnnotationStrategyLabels: this.annotationStrategyLabels,
+            modifiedAnnotationStrategyLabels: structuredClone(toRaw(this.annotationStrategyLabels)),
             strategyDescription: '',
             selectedReferenceImage: '',
             automatedReload: false,
@@ -502,7 +514,7 @@ export default {
         deleteAnnotationStrategyLabel() {
             if (this.selectedReferenceImage.length > 0) {
                 let response = prompt(
-                    `This will delete the image for this label. Please enter 'delete' to confirm.`,
+                    `This will delete the reference image for this label. Please enter 'delete' to confirm.`,
                 );
 
                 if (response !== 'delete') {
@@ -527,16 +539,16 @@ export default {
         },
         resetReferenceImage() {
             this.startLoading();
-            AnnotationStrategyLabel.delete_file(
+            AnnotationStrategyLabel.delete_image(
                 { id: this.projectId },
                 { reference_image: this.referenceImage },
             )
-                .catch(handleErrorResponse)
+                .then(this.setReferenceImage(''), handleErrorResponse)
                 .finally(this.finishLoading);
         },
         uploadImage(formData) {
             this.startLoading();
-            AnnotationStrategyLabel.upload_file(
+            AnnotationStrategyLabel.upload_image(
                 { id: this.projectId },
                 formData,
             )
@@ -547,6 +559,20 @@ export default {
                 )
                 .finally(this.finishLoading);
         },
+        emitCancelEditing() {
+            let confirmExit = true;
+            if (this.hasEditedDescription || this.hasEditedStrategyLabels) {
+                confirmExit = confirm(
+                    `You have edited the annotation strategy, but you have not saved. Are you sure you want to leave?`,
+                );
+            }
+            if (confirmExit) {
+                this.resetEditing();
+                this.strategyDescription = this.annotationStrategy.description;
+                this.modifiedAnnotationStrategyLabels = structuredClone(toRaw(this.annotationStrategyLabels));
+                this.$emit('cancel-editing');
+            }
+        }
     },
 };
 </script>

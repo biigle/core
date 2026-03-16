@@ -5,20 +5,12 @@
             ><span v-if="creating">Create </span>Annotation Strategy
         </h3>
         <div v-if="isAdmin && !creating">
-            <div v-if="editing">
-                <button
-                    class="btn btn-default pull-right"
-                    @click="setEditing(false)"
-                >
-                    Cancel Editing
-                </button>
-            </div>
-            <div v-else>
+            <div v-if='!editing'>
                 <button
                     class="btn btn-default pull-right"
                     @click="setEditing(true)"
                 >
-                    Edit
+                    Edit strategy
                 </button>
             </div>
         </div>
@@ -32,6 +24,7 @@
                 :project-id="projectId"
                 :base-url="baseUrl"
                 @refresh-strategy="refreshStrategy"
+                @cancel-editing="setEditing(false)"
             ></annotation-strategy-editor>
         </div>
         <div v-else>
