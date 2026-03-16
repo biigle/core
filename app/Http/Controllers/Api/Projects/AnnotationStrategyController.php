@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api\Projects;
 
+use Biigle\AnnotationStrategy;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
-use Biigle\AnnotationStrategy;
 use Illuminate\Http\Request;
 use Storage;
 

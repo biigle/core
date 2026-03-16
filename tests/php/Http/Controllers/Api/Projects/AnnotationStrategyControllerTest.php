@@ -5,12 +5,14 @@ namespace Biigle\Tests\Http\Controllers\Api\Projects;
 use ApiTestCase;
 use Biigle\AnnotationStrategy;
 use Biigle\AnnotationStrategyLabel;
-use Biigle\Shape;
 use Biigle\Label;
+use Biigle\Shape;
 use Storage;
 
-class AnnotationStrategyControllerTest extends ApiTestCase {
-    public function testIndex() {
+class AnnotationStrategyControllerTest extends ApiTestCase
+{
+    public function testIndex()
+    {
         $id = $this->project()->id;
         $path = "/api/v1/projects/{$id}/annotation-strategy";
         $this->doTestApiRoute('GET', $path);
@@ -51,7 +53,8 @@ class AnnotationStrategyControllerTest extends ApiTestCase {
                 'shape' => Shape::polygonId(),
                 'description' => 'labelDescription',
                 'reference_image' => 'file.jpg',
-            ]);
+            ]
+        );
 
         $this->get($path)
             ->assertStatus(200)
@@ -68,6 +71,7 @@ class AnnotationStrategyControllerTest extends ApiTestCase {
                 ]
             );
     }
+
     public function testUpdate()
     {
         $id = $this->project()->id;

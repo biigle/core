@@ -2,14 +2,15 @@
 
 namespace Biigle\Http\Controllers\Api\Projects;
 
-use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Project;
 use Biigle\AnnotationStrategy;
 use Biigle\AnnotationStrategyLabel;
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Project;
 use Illuminate\Http\Request;
 use Storage;
 
-class AnnotationStrategyLabelController extends Controller {
+class AnnotationStrategyLabelController extends Controller
+{
     /**
      * Update the strategy for labels within an annotation strategy. Deletes the strategies for labels that are not used anymore.
      *

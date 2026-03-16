@@ -4,7 +4,6 @@ namespace Biigle;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Biigle\AnnotationStrategy;
 
 /**
  * Model for annotation strategies associated to a Model.
@@ -49,7 +48,6 @@ class AnnotationStrategyLabel extends Model
      */
     public $timestamps = false;
 
-
     /**
      * The labels that have a strategy for their annotation
      *
@@ -72,6 +70,4 @@ class AnnotationStrategyLabel extends Model
         }
         return $query;
     }
-
 }
-

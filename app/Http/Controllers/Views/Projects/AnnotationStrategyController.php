@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
-use Biigle\Http\Controllers\Views\Controller;
 use Biigle\AnnotationStrategy;
+use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Shape;
@@ -52,10 +52,10 @@ class AnnotationStrategyController extends Controller
         if (!$annotationStrategy) {
             if ($isAdmin) {
                 return view('projects.show.annotation-strategy', [
-                    "project" => $project,
+                    'project' => $project,
                     'user' => $user,
-                    "annotationStrategy" => [],
-                    "annotationStrategyLabels" => [],
+                    'annotationStrategy' => [],
+                    'annotationStrategyLabels' => [],
                     'isMember' => $isMember,
                     'isAdmin' => $isAdmin,
                     'isPinned' => $isPinned,
@@ -74,17 +74,17 @@ class AnnotationStrategyController extends Controller
             ->toArray();
 
         return view('projects.show.annotation-strategy', [
-                "project" => $project,
-                'annotationStrategy' => $annotationStrategy->toArray(),
-                "annotationStrategyLabels" => $annotationStrategyLabels,
-                'user' => $user,
-                'isMember' => $isMember,
-                'isAdmin' => $isAdmin,
-                'isPinned' => $isPinned,
-                'canPin' => $canPin,
-                'activeTab' => 'strategy',
-                'labelTrees' => $labelTrees,
-                'availableShapes' => $shapes,
+            'project' => $project,
+            'annotationStrategy' => $annotationStrategy->toArray(),
+            'annotationStrategyLabels' => $annotationStrategyLabels,
+            'user' => $user,
+            'isMember' => $isMember,
+            'isAdmin' => $isAdmin,
+            'isPinned' => $isPinned,
+            'canPin' => $canPin,
+            'activeTab' => 'strategy',
+            'labelTrees' => $labelTrees,
+            'availableShapes' => $shapes,
         ]);
     }
 }

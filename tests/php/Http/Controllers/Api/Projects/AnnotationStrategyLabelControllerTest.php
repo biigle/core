@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
-use Illuminate\Http\UploadedFile;
 use ApiTestCase;
 use Biigle\AnnotationStrategy;
 use Biigle\AnnotationStrategyLabel;
-use Biigle\Shape;
 use Biigle\Label;
-use File;
+use Biigle\Shape;
+use Illuminate\Http\UploadedFile;
 use Storage;
 
 class AnnotationStrategyLabelControllerTest extends ApiTestCase
 {
-    public function testUpdate() {
+    public function testUpdate()
+    {
         $id = $this->project()->id;
         $as = AnnotationStrategy::create(['project' => $id, 'description' => 'someDescription']);
         $path = "/api/v1/projects/{$id}/annotation-strategy-label";

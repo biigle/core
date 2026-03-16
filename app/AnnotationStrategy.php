@@ -4,8 +4,6 @@ namespace Biigle;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Biigle\Project;
-use Biigle\AnnotationStrategyLabel;
 
 /**
  * Model for annotation strategies associated to a Model.

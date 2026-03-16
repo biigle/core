@@ -1,10 +1,11 @@
 <?php
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use Biigle\AnnotationStrategy;
 use ApiTestCase;
+use Biigle\AnnotationStrategy;
 
-class AnnotationStrategyControllerTest extends ApiTestCase {
+class AnnotationStrategyControllerTest extends ApiTestCase
+{
     public function testIndex()
     {
         $id = $this->project()->id;
@@ -29,4 +30,3 @@ class AnnotationStrategyControllerTest extends ApiTestCase {
         $this->get($path)->assertStatus(200);
     }
 }
-
