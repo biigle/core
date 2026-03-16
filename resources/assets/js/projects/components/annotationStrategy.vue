@@ -123,10 +123,10 @@ export default {
             this.editing = val;
         },
         refreshStrategy() {
-            this.editing = false;
             this.startLoading();
             AnnotationStrategy.get({id: this.projectId}, {})
                 .then((response) => this.setAnnotationStrategy(response.body), handleErrorResponse)
+                .then(this.setEditing(false))
                 .finally(this.finishLoading);
         },
         setAnnotationStrategy(responseBody) {

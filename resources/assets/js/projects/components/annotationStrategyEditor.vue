@@ -259,7 +259,7 @@ export default {
             this.strategyDescription = this.annotationStrategy.description;
         }
         window.addEventListener('beforeunload', (e) => {
-            if (this.hasEditedDescription || this.hasEditedStrategyLabels || this.editing) {
+            if ((this.hasEditedDescription || this.hasEditedStrategyLabels) && !this.automatedReload) {
                 e.preventDefault();
                 e.returnValue = '';
                 return 'This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.';
@@ -341,6 +341,7 @@ export default {
 
 
         refreshStrategy() {
+            this.automatedReload = true;
             this.$emit('refresh-strategy');
         },
         editStrategyLabel(label) {
