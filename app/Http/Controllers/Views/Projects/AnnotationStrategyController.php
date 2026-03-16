@@ -16,8 +16,8 @@ class AnnotationStrategyController extends Controller
      * Shows the project invitation page.
      *
      * @param Request $request
-     * @param string $id Id of the project
-     * @param bool $edit Id of the project
+     * @param int $id Id of the project
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function show(Request $request, int $id)

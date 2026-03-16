@@ -50,7 +50,7 @@ class AnnotationStrategy extends Model
     /**
      * The strategies for the labels within this strategy.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\hasMany<AnnotationStrategyLabel, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationStrategyLabel, $this>
      */
     public function strategyLabels()
     {

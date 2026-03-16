@@ -41,7 +41,7 @@ class AnnotationStrategyLabelController extends Controller
         $aslToDelete->delete();
 
         $disk = Storage::disk(config('annotation_strategy.storage_disk'));
-        foreach ($aslToDelete as $asl) {
+        foreach ($aslToDelete->get() as $asl) {
             $url = "$project->id/$asl->reference_image";
             if ($disk->exists($url)) {
                 $disk->delete($url);

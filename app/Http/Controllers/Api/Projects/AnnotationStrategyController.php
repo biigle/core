@@ -94,8 +94,6 @@ class AnnotationStrategyController extends Controller
      * @apiParam {Number} id The Project ID
      * @apiPermission projectAdmin
      * @apiDescription Delete the annotation strategy associated with the given ID
-     *
-     * @param int $id Project ID
      */
     public function delete(Request $request)
     {

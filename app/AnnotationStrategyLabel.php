@@ -13,7 +13,27 @@ use Illuminate\Database\Eloquent\Model;
 class AnnotationStrategyLabel extends Model
 {
     use HasFactory;
+
+    /**
+     * The data type of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'array';
+
+    /**
+     * Primary key should not be incrementing.
+     *
+     * @var bool
+     */
     public $incrementing = false;
+
+    /**
+     * Set `annotation_strategy` and `label` as primary keys.
+     *
+     * @var array<int, string>
+     */
+    // @phpstan-ignore-next-line
     protected $primaryKey = ['annotation_strategy', 'label'];
 
     /**
@@ -51,7 +71,7 @@ class AnnotationStrategyLabel extends Model
     /**
      * The labels that have a strategy for their annotation
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Label, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
      */
     public function label()
     {
@@ -65,7 +85,7 @@ class AnnotationStrategyLabel extends Model
      */
     protected function setKeysForSaveQuery($query)
     {
-        foreach ($this->getKeyName() as $key) {
+        foreach ($this->primaryKey as $key) {
             $query->where($key, '=', $this->getAttribute($key));
         }
         return $query;
