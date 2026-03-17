@@ -80,7 +80,7 @@ class AnnotationStrategyController extends Controller
         $this->authorize('update', $project);
 
         AnnotationStrategy::updateOrCreate(
-            ['project' => $request->id],
+            ['project' => $project->id],
             ['description' =>  $request->description]
         );
     }
