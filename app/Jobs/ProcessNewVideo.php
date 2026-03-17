@@ -3,6 +3,8 @@
 namespace Biigle\Jobs;
 
 use App;
+use Biigle\Events\VolumeFilesProcessed;
+use Biigle\User;
 use Biigle\Video;
 use Exception;
 use FFMpeg\Coordinate\Dimension;
@@ -12,6 +14,7 @@ use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
@@ -36,7 +39,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
      *
      * @var Video
      */
-    public $video;
+    public $videos;
 
     /**
      * The FFMpeg video instance.
@@ -51,6 +54,13 @@ class ProcessNewVideo extends Job implements ShouldQueue
     protected $ffprobe;
 
     /**
+     * The user requesting the volume
+     *
+     * @var User 
+     */
+    protected $user;
+
+    /**
      * Ignore this job if the video does not exist any more.
      *
      * @var bool
@@ -60,11 +70,13 @@ class ProcessNewVideo extends Job implements ShouldQueue
     /**
      * Create a new instance.
      *
-     * @param Video $video The video that should be processed.
+     * @param Video $videos The video that should be processed.
+     * @param User $user The user requesting a new video volume
      */
-    public function __construct(Video $video)
+    public function __construct(Collection $videos, User $user)
     {
-        $this->video = $video;
+        $this->videos = $videos;
+        $this->user = $user;
     }
 
     /**
@@ -74,33 +86,38 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            FileCache::getOnce($this->video, [$this, 'handleFile']);
-        } catch (Exception $e) {
-            $retry = true;
-            if (!$this->video->error) {
-                if (Str::startsWith($e->getMessage(), 'The file is too large')) {
-                    $this->video->error = Video::ERROR_TOO_LARGE;
-                    $retry = false;
-                } elseif (preg_match("/MIME type '.+' not allowed\.$/", $e->getMessage()) === 1) {
-                    $this->video->error = Video::ERROR_MIME_TYPE;
-                    $retry = false;
-                } else {
-                    $this->video->error = Video::ERROR_NOT_FOUND;
+        $ids = [];
+        foreach ($this->videos as $video) {
+            try {
+                $ids[$video->id] = $video->uuid;
+                FileCache::getOnce($video, fn ($file, $path) => $this->handleFile($file, $path, $video));
+            } catch (Exception $e) {
+                $retry = true;
+                if (!$video->error) {
+                    if (Str::startsWith($e->getMessage(), 'The file is too large')) {
+                        $video->error = Video::ERROR_TOO_LARGE;
+                        $retry = false;
+                    } elseif (preg_match("/MIME type '.+' not allowed\.$/", $e->getMessage()) === 1) {
+                        $video->error = Video::ERROR_MIME_TYPE;
+                        $retry = false;
+                    } else {
+                        $video->error = Video::ERROR_NOT_FOUND;
+                    }
+
+                    $video->save();
                 }
 
-                $this->video->save();
-            }
-
-            if (App::runningUnitTests()) {
-                throw $e;
-            } elseif ($retry && $this->attempts() < $this->tries) {
-                // Retry after 10 minutes.
-                $this->release(600);
-            } else {
-                Log::warning("Could not process new video {$this->video->id}: {$e->getMessage()}");
+                if (App::runningUnitTests()) {
+                    throw $e;
+                } elseif ($retry && $this->attempts() < $this->tries) {
+                    // Retry after 10 minutes.
+                    $this->release(600);
+                } else {
+                    Log::warning("Could not process new video {$video->id}: {$e->getMessage()}");
+                }
             }
         }
+        VolumeFilesProcessed::dispatch($ids, $this->user);
     }
 
     /**
@@ -109,50 +126,50 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * @param Video $file
      * @param string $path
      */
-    public function handleFile($file, $path)
+    public function handleFile($file, $path, $video)
     {
-        $this->video->mimeType = File::mimeType($path);
-        if (!in_array($this->video->mimeType, Video::MIMES)) {
-            $this->video->error = Video::ERROR_MIME_TYPE;
-            $this->video->save();
+        $video->mimeType = File::mimeType($path);
+        if (!in_array($video->mimeType, Video::MIMES)) {
+            $video->error = Video::ERROR_MIME_TYPE;
+            $video->save();
             return;
         }
 
         $codec = $this->getCodec($path);
 
         if ($codec === '') {
-            $this->video->error = Video::ERROR_MALFORMED;
-            $this->video->save();
+            $video->error = Video::ERROR_MALFORMED;
+            $video->save();
             return;
         }
 
         if (!in_array($codec, Video::CODECS)) {
-            $this->video->error = Video::ERROR_CODEC;
-            $this->video->save();
+            $video->error = Video::ERROR_CODEC;
+            $video->save();
             return;
         }
 
-        $this->video->size = File::size($path);
-        $this->video->duration = $this->getVideoDuration($path);
+        $video->size = File::size($path);
+        $video->duration = $this->getVideoDuration($path);
 
         try {
             $dimensions = $this->getVideoDimensions($path);
-            $this->video->width = $dimensions->getWidth();
-            $this->video->height = $dimensions->getHeight();
+            $video->width = $dimensions->getWidth();
+            $video->height = $dimensions->getHeight();
         } catch (Throwable $e) {
             // ignore and leave dimensions at null.
         }
 
-        if ($this->hasInvalidMoovAtomPosition($path)) {
-            $this->video->error = Video::ERROR_INVALID_MOOV_POS;
-        } elseif ($this->video->error) {
-            $this->video->error = null;
+        if ($this->hasInvalidMoovAtomPosition($path, $video)) {
+            $video->error = Video::ERROR_INVALID_MOOV_POS;
+        } elseif ($video->error) {
+            $video->error = null;
         }
 
-        $this->video->save();
+        $video->save();
 
         $disk = Storage::disk(config('videos.thumbnail_storage_disk'));
-        $fragment = fragment_uuid_path($this->video->uuid);
+        $fragment = fragment_uuid_path($video->uuid);
         try {
             $tmp = config('videos.tmp_dir');
             $tmpDir = "{$tmp}/{$fragment}";
@@ -163,7 +180,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             }
 
             // Extract images from video
-            $this->extractImagesfromVideo($path, $this->video->duration, $tmpDir);
+            $this->extractImagesfromVideo($path, $video->duration, $tmpDir);
 
             // Generate thumbnails
             $this->generateVideoThumbnails($disk, $fragment, $tmpDir);
@@ -172,7 +189,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
             // errors in the actual video data but we can ignore that and skip generating
             // thumbnails. The browser can deal with the video and see if it can be
             // displayed.
-            Log::warning("Could not generate thumbnails for new video {$this->video->id}: {$e->getMessage()}");
+            Log::warning("Could not generate thumbnails for new video {$video->id}: {$e->getMessage()}");
         } finally {
             if (isset($tmpDir) && File::exists($tmpDir)) {
                 File::deleteDirectory($tmpDir);
@@ -334,10 +351,10 @@ class ProcessNewVideo extends Job implements ShouldQueue
         return VipsImage::thumbnail($file, $width, ['height' => $height]);
     }
 
-    protected function hasInvalidMoovAtomPosition($sourcePath)
+    protected function hasInvalidMoovAtomPosition($sourcePath, $video)
     {
         // Webm and mpeg videos don't have a moov atom
-        if (in_array($this->video->mimeType, ['video/mpeg', 'video/webm'])) {
+        if (in_array($video->mimeType, ['video/mpeg', 'video/webm'])) {
             return false;
         }
 
