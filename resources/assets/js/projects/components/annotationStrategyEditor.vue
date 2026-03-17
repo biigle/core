@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="!creating">
         <button
             class="btn btn-default pull-right"
             @click="emitCancelEditing"
@@ -213,6 +213,7 @@
                     type="button"
                     @click="toggleEditing"
                     title="Add new label to the annotation strategy"
+                    :disabled="!hasLabelTrees"
                 >
                     <i class="fa fa-tags"></i>
                     <span class="fa fa-plus" aria-hidden="true"></span>
@@ -223,6 +224,7 @@
                     class="btn btn-success btn-block"
                     type="button"
                     @click="sendUpdateAnnotationStrategy"
+                    :disabled="!hasDescription"
                 >
                     <span v-if="creating"> Create strategy </span>
                     <span v-else> Save changes </span>
@@ -308,6 +310,9 @@ export default {
                 this.editingExistingStrategyLabel(this.selectedLabel.id)
             );
         },
+        hasDescription() {
+            return this.strategyDescription && this.strategyDescription.trim().length > 0;
+        },
         hasEditedDescription() {
             return (
                 this.strategyDescription !== this.annotationStrategy.description
@@ -326,6 +331,9 @@ export default {
             }
             return 'Create strategy for a label';
         },
+        hasLabelTrees() {
+            return this.labelTrees.length > 0;
+        },
     },
     created() {
         if (this.annotationStrategy !== null) {
@@ -343,7 +351,6 @@ export default {
         });
     },
     data() {
-        //TODO: move these values to parent and pass them as props
         return {
             editing: false,
             labelDescription: '',
@@ -457,7 +464,6 @@ export default {
             this.selectedLabel = label;
         },
         deselectLabel() {
-            //TODO: check if we can use a computed property for the label
             this.selectedLabel = undefined;
         },
         addAnnotationStrategyLabel() {

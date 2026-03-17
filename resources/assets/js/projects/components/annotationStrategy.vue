@@ -115,7 +115,6 @@ export default {
         },
     },
     data() {
-        //TODO: annotationStrategyLabel --> we should it here
         return {
             editing: false,
             projectId: biigle.$require('projects.project').id,

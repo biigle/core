@@ -11,16 +11,26 @@ class AnnotationStrategyControllerTest extends ApiTestCase
         $id = $this->project()->id;
 
         $path = "projects/{$id}/annotation-strategy";
-        $this->get($path)->assertStatus(302);
 
         $this->beGuest();
-        $this->get($path)->assertStatus(403);
+        $this->get($path)->assertStatus(404);
 
         $this->beEditor();
         $this->get($path)->assertStatus(404);
 
+        //Admins can create annotation strategies
+        $this->beAdmin();
+        $this->get($path)->assertStatus(200);
+
+        $this->beGlobalAdmin();
+        $this->get($path)->assertStatus(200);
+
         AnnotationStrategy::create(['project' => $id, 'description' => 'someDescription']);
 
+        $this->beGuest();
+        $this->get($path)->assertStatus(200);
+
+        $this->beEditor();
         $this->get($path)->assertStatus(200);
 
         $this->beAdmin();
@@ -28,5 +38,6 @@ class AnnotationStrategyControllerTest extends ApiTestCase
 
         $this->beGlobalAdmin();
         $this->get($path)->assertStatus(200);
+
     }
 }

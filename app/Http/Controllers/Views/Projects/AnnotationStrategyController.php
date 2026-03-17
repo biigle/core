@@ -23,11 +23,10 @@ class AnnotationStrategyController extends Controller
     public function show(Request $request, int $id)
     {
         $project = Project::findOrFail($id);
-        //TODO: validate?
         $user = $request->user();
 
         if (!$user->can('sudo')) {
-            $this->authorize('editIn', $project);
+            $this->authorize('access', $project);
         }
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
@@ -40,7 +39,7 @@ class AnnotationStrategyController extends Controller
 
         $annotationStrategy = AnnotationStrategy::where(['project' => $id])->first();
 
-        $isAdmin = $user->role_id === Role::adminId() || $user->can('sudo');
+        $isAdmin = $user->can('update', $project);
 
         $labelTrees = $project->labelTrees()
             ->select('id', 'name', 'version_id')

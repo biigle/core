@@ -70,10 +70,10 @@ class AnnotationStrategyController extends Controller
      *
      * @param int $id Project ID
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $request->validate([
-            'description' => 'required|string',
+            'description' => 'required|string|min:1',
         ]);
 
         $project = Project::findOrFail($id);
