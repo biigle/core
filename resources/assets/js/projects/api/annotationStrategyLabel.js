@@ -1,7 +1,7 @@
 import {Resource} from 'vue-resource';
 
 /**
- * Resource for the labels within annoation strategies.
+ * Resource for the labels within annotation strategies.
  *
  * Create or update a label in a strategy.
  * resource.save({id: projectId, descriptions: [description], labels: [labels]}, {...}).then(...);
