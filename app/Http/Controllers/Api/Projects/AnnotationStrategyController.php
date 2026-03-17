@@ -60,7 +60,7 @@ class AnnotationStrategyController extends Controller
     /**
      * Update the annotation strategy for the given project
      *
-     * @api {update} projects/:pid/annotation-strategy Update the annotation strategy for the given project
+     * @api {post} projects/:pid/annotation-strategy Update the annotation strategy for the given project
      * @apiGroup Projects
      * @apiName AnnotationStrategy
      * @apiParam {Number} id The Project ID
