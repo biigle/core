@@ -12,7 +12,7 @@ use Illuminate\Http\Response;
 class AnnotationStrategyController extends Controller
 {
     /**
-     * Shows the project invitation page.
+     * Shows the annotation strategy page for the project.
      *
      * @param Request $request
      * @param int $id Id of the project
