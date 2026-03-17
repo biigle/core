@@ -5,7 +5,6 @@ namespace Biigle\Http\Controllers\Views\Projects;
 use Biigle\AnnotationStrategy;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\Shape;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
