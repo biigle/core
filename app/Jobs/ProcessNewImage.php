@@ -3,16 +3,18 @@
 namespace Biigle\Jobs;
 
 use App;
+use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Image;
+use Biigle\User;
 use Carbon\Carbon;
 use ErrorException;
 use Exception;
 use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image as VipsImage;
 use Log;
@@ -64,15 +66,24 @@ class ProcessNewImage extends Job implements ShouldQueue
     protected $threshold;
 
     /**
+     * The user requesting to save a volume with files
+     *
+     * @var User
+     */
+    protected $user;
+
+    /**
      * Create a new job instance.
      *
      * @param Collection $images The image to process.
+     * @param User $user The user requesting to save a volume with files
      *
      * @return void
      */
-    public function __construct(Collection $images)
+    public function __construct(Collection $images, User $user)
     {
         $this->images = $images;
+        $this->user = $user;
     }
 
     /**
@@ -86,38 +97,42 @@ class ProcessNewImage extends Job implements ShouldQueue
         $this->width = config('thumbnails.width') * 2;
         $this->height = config('thumbnails.height') * 2;
         $this->threshold = config('image.tiles.threshold');
+        $ids = [];
 
         foreach ($this->images as $image) {
+            $ids[$image->id] = $image->uuid;
             try {
-            FileCache::getOnce($image, function ($image, $path) {
-                if (!File::exists($path)) {
-                    throw new Exception("File '{$path}' does not exist.");
+                FileCache::getOnce($image, function ($image, $path) {
+                    if (!File::exists($path)) {
+                        throw new Exception("File '{$path}' does not exist.");
+                    }
+
+                    $this->collectMetadata($image, $path);
+                    $image->volume->flushGeoInfoCache();
+
+                    $this->makeThumbnail($image, $path);
+
+                    // Do this after collection of metadata so the image has width and
+                    // height attributes. But do it before generating the thumbnail so
+                    // the tile image job can run while the thumbnail is being generated
+                    // (which can take a while for huge images).
+                    if ($this->shouldBeTiled($image)) {
+                        $this->submitTileJob($image);
+                    }
+                });
+            } catch (Exception $e) {
+                if (App::runningUnitTests()) {
+                    throw $e;
+                } elseif ($this->attempts() < $this->tries) {
+                    // Retry after 10 minutes.
+                    $this->release(600);
+                } else {
+                    Log::warning("Could not process new image {$image->id}: {$e->getMessage()}");
                 }
-
-                $this->collectMetadata($image, $path);
-                $image->volume->flushGeoInfoCache();
-
-                $this->makeThumbnail($image, $path);
-
-                // Do this after collection of metadata so the image has width and
-                // height attributes. But do it before generating the thumbnail so
-                // the tile image job can run while the thumbnail is being generated
-                // (which can take a while for huge images).
-                if ($this->shouldBeTiled($image)) {
-                    $this->submitTileJob($image);
-                }
-            });
-        } catch (Exception $e) {
-            if (App::runningUnitTests()) {
-                throw $e;
-            } elseif ($this->attempts() < $this->tries) {
-                // Retry after 10 minutes.
-                $this->release(600);
-            } else {
-                Log::warning("Could not process new image {$image->id}: {$e->getMessage()}");
             }
         }
-        }
+
+        VolumeFilesProcessed::dispatch($ids,  $this->user);
     }
 
     /**
