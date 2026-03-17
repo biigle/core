@@ -1,5 +1,5 @@
 <?php
-namespace Biigle\Tests\Http\Controllers\Views;
+namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
 use ApiTestCase;
 use Biigle\AnnotationStrategy;
