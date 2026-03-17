@@ -14,7 +14,7 @@ class AnnotationStrategyLabelController extends Controller
     /**
      * Update the strategy for labels within an annotation strategy. Deletes the strategies for labels that are not used anymore.
      *
-     * @api {post} projects/:id/annotation-strategy-labels Update the strategy for labels within an annotation strategy
+     * @api {post} projects/:id/annotation-strategy-label Update the strategy for labels within an annotation strategy
      * @apiGroup Projects
      * @apiName UpdateAnnotationStrategyLabels
      * @apiPermission projectAdmin
