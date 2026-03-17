@@ -2,11 +2,14 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Image;
 use Biigle\Jobs\ProcessNewImage;
 use Biigle\Jobs\TileSingleImage;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\User;
+use Illuminate\Support\Facades\Event;
 use Jcupitt\Vips\Exception as VipsException;
 use Queue;
 use Storage;
@@ -14,22 +17,26 @@ use TestCase;
 
 class ProcessNewImageTest extends TestCase
 {
+    protected $user;
+
     public function setUp(): void
     {
         parent::setUp();
         Storage::fake(config('thumbnails.storage_disk'));
+        Event::fake();
+        $this->user = User::factory()->create();
     }
 
     public function testHandleCollectMetadata()
     {
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create([
             'filename' => 'exif-test.jpg',
             'volume_id' => $volume->id,
         ]);
         $this->assertFalse($volume->hasGeoInfo());
 
-        with(new ProcessNewImageMock($image))->handle();
+        with(new ProcessNewImageMock(collect([$image]), $this->user))->handle();
 
         $image = $image->fresh();
 
@@ -42,32 +49,34 @@ class ProcessNewImageTest extends TestCase
         $this->assertSame(62411, $image->size);
         $this->assertSame('image/jpeg', $image->mimetype);
         $this->assertTrue($volume->hasGeoInfo());
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleCollectMetadataZeroDate()
     {
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create([
             'filename' => 'exif-test.jpg',
             'volume_id' => $volume->id,
         ]);
         $this->assertFalse($volume->hasGeoInfo());
 
-        $job = new ProcessNewImageMock($image);
+        $job = new ProcessNewImageMock(collect([$image]), $this->user);
         $job->exif = ['DateTimeOriginal' => '0000-00-00 00:00:00'];
         $job->handle();
         $image = $image->fresh();
         $this->assertSame(null, $image->taken_at);
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleCollectMetadataAreaYaw()
     {
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create([
             'volume_id' => $volume->id,
         ]);
 
-        $job = new ProcessNewImageMock($image);
+        $job = new ProcessNewImageMock(collect([$image]), $this->user);
         $job->exif = [
             'GPSImgDirection' => "191/4",
             'SubjectArea' => "13/5",
@@ -77,6 +86,7 @@ class ProcessNewImageTest extends TestCase
 
         $this->assertSame(47.75, $image->metadata['yaw']);
         $this->assertSame(2.6, $image->metadata['area']);
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleMakeThumbnail()
@@ -84,9 +94,9 @@ class ProcessNewImageTest extends TestCase
         Storage::fake('test-thumbs');
         config(['thumbnails.storage_disk' => 'test-thumbs']);
 
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create(['volume_id' => $volume->id]);
-        with(new ProcessNewImage($image))->handle();
+        with(new ProcessNewImage(collect([$image]), $this->user))->handle();
 
         $prefix = fragment_uuid_path($image->uuid);
         $format = config('thumbnails.format');
@@ -98,6 +108,7 @@ class ProcessNewImageTest extends TestCase
         $this->assertTrue($size[0] <= ($config[0] * 2));
         $this->assertTrue($size[1] <= ($config[1] * 2));
         $this->assertTrue($size[0] == ($config[0] * 2) || $size[1] == ($config[1] * 2));
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleMakeThumbnailNotReadable()
@@ -106,21 +117,22 @@ class ProcessNewImageTest extends TestCase
         Storage::disk('test')->put('files/broken.jpg', '');
         $image = ImageTest::create(['filename' => 'broken.jpg']);
         try {
-            (new ProcessNewImage($image))->handle();
+            (new ProcessNewImage(collect([$image]), $this->user))->handle();
             $this->assertFalse(true);
         } catch (VipsException $e) {
             $this->assertStringContainsString('not a known file format', $e->getMessage());
         }
+        Event::assertNotDispatched(VolumeFilesProcessed::class);
     }
 
     public function testHandleTileSmallImage()
     {
         config(['image.tiles.threshold' => 300]);
 
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
-        $job = new ProcessNewImageMock($image);
+        $job = new ProcessNewImageMock(collect([$image]), $this->user);
         $job->vipsImage = new class {
             public $width = 100;
             public $height = 200;
@@ -131,16 +143,17 @@ class ProcessNewImageTest extends TestCase
 
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tiled);
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleTileLargeImage()
     {
         config(['image.tiles.threshold' => 300]);
 
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
-        $job = new ProcessNewImageMock($image);
+        $job = new ProcessNewImageMock(collect([$image]), $this->user);
         $job->vipsImage = new class {
             public $width = 400;
             public $height = 200;
@@ -153,12 +166,13 @@ class ProcessNewImageTest extends TestCase
         $image->refresh();
         $this->assertTrue($image->tiled);
         $this->assertTrue($image->tilingInProgress);
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleTileLargeImageSkipInProgress()
     {
         config(['image.tiles.threshold' => 300]);
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create([
             'volume_id' => $volume->id,
             'tiled' => true,
@@ -166,8 +180,9 @@ class ProcessNewImageTest extends TestCase
         ]);
 
         Queue::fake();
-        with(new ProcessNewImageMock($image))->handle();
+        with(new ProcessNewImageMock(collect([$image]), $this->user))->handle();
         Queue::assertNotPushed(TileSingleImage::class);
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleTileLargeImageSkipFinished()
@@ -175,20 +190,21 @@ class ProcessNewImageTest extends TestCase
         config(['image.tiles.threshold' => 300, 'image.tiles.disk' => 'tiles']);
         Storage::fake('tiles');
 
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
         $fragment = fragment_uuid_path($image->uuid);
         Storage::disk('tiles')->put("{$fragment}/ImageProperties.xml", 'test');
 
         Queue::fake();
-        with(new ProcessNewImageMock($image))->handle();
+        with(new ProcessNewImageMock(collect([$image]), $this->user))->handle();
         Queue::assertNotPushed(TileSingleImage::class);
         $this->assertFalse($image->tilingInProgress);
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 
     public function testHandleMergeMetadata()
     {
-        $volume = VolumeTest::create();
+        $volume = VolumeTest::create(['creator_id' => $this->user->id]);
         $image = ImageTest::create([
             'filename' => 'exif-test.jpg',
             'volume_id' => $volume->id,
@@ -198,7 +214,7 @@ class ProcessNewImageTest extends TestCase
         ]);
         $this->assertFalse($volume->hasGeoInfo());
 
-        $job = new ProcessNewImageMock($image);
+        $job = new ProcessNewImageMock(collect([$image]), $this->user);
         $job->exif = [
             'GPSAltitudeRef' => "\x00",
             'GPSAltitude' => 500,
@@ -210,6 +226,7 @@ class ProcessNewImageTest extends TestCase
             'gps_altitude' => 500,
         ];
         $this->assertSame($expect, $image->metadata);
+        Event::assertDispatchedOnce(VolumeFilesProcessed::class);
     }
 }
 

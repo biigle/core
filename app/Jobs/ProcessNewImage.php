@@ -10,6 +10,7 @@ use Exception;
 use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
@@ -37,9 +38,9 @@ class ProcessNewImage extends Job implements ShouldQueue
     /**
      * The image to process
      *
-     * @var Image
+     * @var Collection
      */
-    public $image;
+    public $images;
 
     /**
      * The desired thumbnail width.
@@ -65,13 +66,13 @@ class ProcessNewImage extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Image $image The image to generate process.
+     * @param Collection $images The image to process.
      *
      * @return void
      */
-    public function __construct(Image $image)
+    public function __construct(Collection $images)
     {
-        $this->image = $image;
+        $this->images = $images;
     }
 
     /**
@@ -86,8 +87,9 @@ class ProcessNewImage extends Job implements ShouldQueue
         $this->height = config('thumbnails.height') * 2;
         $this->threshold = config('image.tiles.threshold');
 
-        try {
-            FileCache::getOnce($this->image, function ($image, $path) {
+        foreach ($this->images as $image) {
+            try {
+            FileCache::getOnce($image, function ($image, $path) {
                 if (!File::exists($path)) {
                     throw new Exception("File '{$path}' does not exist.");
                 }
@@ -112,8 +114,9 @@ class ProcessNewImage extends Job implements ShouldQueue
                 // Retry after 10 minutes.
                 $this->release(600);
             } else {
-                Log::warning("Could not process new image {$this->image->id}: {$e->getMessage()}");
+                Log::warning("Could not process new image {$image->id}: {$e->getMessage()}");
             }
+        }
         }
     }
 

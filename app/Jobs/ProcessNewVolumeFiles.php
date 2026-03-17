@@ -59,7 +59,7 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
         if ($this->volume->isImageVolume()) {
             $this->volume->images()
                 ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
-                ->eachById([ProcessNewImage::class, 'dispatch']);
+                ->chunkById(1000, [ProcessNewImage::class, 'dispatch']);
         } else {
             $queue = config('videos.process_new_video_queue');
             $this->volume->videos()
