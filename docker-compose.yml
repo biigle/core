@@ -54,7 +54,7 @@ services:
       # This is required for much faster CPU processing.
       # See: https://pytorch.org/tutorials/intermediate/torchserve_with_ipex.html
       - OMP_NUM_THREADS=2
-    command: "python resources/scripts/ExtractFeaturesWorker.py"
+    command: "python -u resources/scripts/ExtractFeaturesWorker.py"
 
   websockets:
     image: quay.io/soketi/soketi:1.4-16-alpine
