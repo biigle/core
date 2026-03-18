@@ -73,17 +73,27 @@ class ProcessNewImage extends Job implements ShouldQueue
     protected $user;
 
     /**
+     * Checks if this image chunk is the last chunk.
+     * It is true if all images have been processed once this job is done.
+     *
+     * @var bool
+     */
+    protected $isLastImageChunk;
+
+    /**
      * Create a new job instance.
      *
      * @param Collection $images The image to process.
      * @param User $user The user requesting to save a volume with files
+     * @param bool $isLastImageChunk Checks if this image chunk is the last chunk.
      *
      * @return void
      */
-    public function __construct(Collection $images, User $user)
+    public function __construct(Collection $images, User $user, bool $isLastImageChunk)
     {
         $this->images = $images;
         $this->user = $user;
+        $this->isLastImageChunk = $isLastImageChunk;
     }
 
     /**
@@ -132,7 +142,7 @@ class ProcessNewImage extends Job implements ShouldQueue
             }
         }
 
-        VolumeFilesProcessed::dispatch($ids,  $this->user);
+        VolumeFilesProcessed::dispatch($ids,  $this->user, $this->isLastImageChunk);
     }
 
     /**

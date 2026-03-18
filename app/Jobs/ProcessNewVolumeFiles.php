@@ -12,6 +12,8 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
+    protected const CHUNK_SIZE = 1000;
+
     /**
      * The volume for which the files should be processed.
      *
@@ -65,15 +67,22 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
      */
     public function handle()
     {
+        $fileCount = $this->volume->files()->count();
         if ($this->volume->isImageVolume()) {
             $this->volume->images()
                 ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
-                ->chunkById(1000, fn ($images) => ProcessNewImage::dispatch($images, $this->user));
+                ->chunkById(self::CHUNK_SIZE, function ($images) use (&$fileCount) {
+                    $fileCount -= self::CHUNK_SIZE;
+                    ProcessNewImage::dispatch($images, $this->user, $fileCount <= 0);
+                });
         } else {
             $queue = config('videos.process_new_video_queue');
             $this->volume->videos()
                 ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
-                ->chunkById(1000, fn ($videos) => ProcessNewVideo::dispatch($videos, $this->user)->onQueue($queue));
+                ->chunkById(self::CHUNK_SIZE, function ($videos) use ($queue, &$fileCount) {
+                    $fileCount -= self::CHUNK_SIZE;
+                    ProcessNewVideo::dispatch($videos, $this->user, $fileCount <= 0)->onQueue($queue);
+                });
         }
     }
 }

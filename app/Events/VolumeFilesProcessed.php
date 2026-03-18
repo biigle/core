@@ -28,16 +28,26 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
     public $fileIds;
 
     /**
+     * Checks if this event is the last event.
+     * The last event is dispatched if all files were processed.
+     *
+     * @var bool
+     */
+    public $isLastEvent;
+
+    /**
      * Create a new event instance.
      *
      * @param array $fileIds
      * @param User $user
+     * @param bool $isLastEvent
      *
      */
-    public function __construct(array $fileIds, User $user)
+    public function __construct(array $fileIds, User $user, bool $isLastEvent = false)
     {
         $this->user = $user;
         $this->fileIds = $fileIds;
+        $this->isLastEvent = $isLastEvent;
     }
 
     /**
@@ -58,7 +68,8 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
-            'fileIds' => $this->fileIds
+            'fileIds' => $this->fileIds,
+            'isLast' => $this->isLastEvent,
         ];
     }
 }
