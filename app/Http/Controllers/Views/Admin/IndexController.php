@@ -36,7 +36,7 @@ class IndexController extends Controller
             ->pluck('count', 'day');
 
         $imageAnnotationWeek = $days->map(fn ($day) => $imageData->get($day->toDateString(), 0));
-        $totalAnnotations = number_format(ImageAnnotation::count());
+        $totalAnnotations = number_format(ImageAnnotation::cachedCount());
 
         $videoData = VideoAnnotation::selectRaw('created_at::date as day, count(id)')
             ->where('created_at', '>=', Carbon::today()->subWeek())
@@ -44,7 +44,7 @@ class IndexController extends Controller
             ->pluck('count', 'day');
 
         $videoAnnotationWeek = $days->map(fn ($day) => $videoData->get($day->toDateString(), 0));
-        $totalVideoAnnotations = number_format(VideoAnnotation::count());
+        $totalVideoAnnotations = number_format(VideoAnnotation::cachedCount());
 
         $dayNames = $days->map(fn ($day) => $day->format('D'));
 

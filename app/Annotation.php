@@ -45,6 +45,16 @@ abstract class Annotation extends Model implements AnnotationContract
     public $labelBOTLabels = [];
 
     /**
+     * Get the count of all annotations.
+     *
+     * The value is cached for 1 hour.
+     */
+    public static function cachedCount(): int
+    {
+        return Cache::remember(static::class.'_count', 3600, fn () => self::count())
+    }
+
+    /**
      * Scope a query to only include annotations that are visible for a certain user.
      *
      * @param \Illuminate\Database\Query\Builder $query
