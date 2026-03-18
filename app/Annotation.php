@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
+use Cache;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
