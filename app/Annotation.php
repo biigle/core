@@ -51,7 +51,7 @@ abstract class Annotation extends Model implements AnnotationContract
      */
     public static function cachedCount(): int
     {
-        return Cache::remember(static::class.'_count', 3600, fn () => self::count())
+        return Cache::remember(static::class.'_count', 3600, fn () => self::count());
     }
 
     /**
