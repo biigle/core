@@ -69,6 +69,13 @@ class ProcessNewVideo extends Job implements ShouldQueue
     protected $isLastVideoChunk;
 
     /**
+     * The volume id of volume containing the video.
+     *
+     * @var int
+     */
+    protected $volumeId;
+
+    /**
      * Ignore this job if the video does not exist any more.
      *
      * @var bool
@@ -80,12 +87,15 @@ class ProcessNewVideo extends Job implements ShouldQueue
      *
      * @param Video $videos The video that should be processed.
      * @param User $user The user requesting a new video volume
+     * @param bool $isLastVideoChunk Checks if this video chunk is the last chunk.
+     * @param int $volumeId The volume id of volume containing the video.
      */
-    public function __construct(Collection $videos, User $user, bool $isLastVideoChunk)
+    public function __construct(Collection $videos, User $user, bool $isLastVideoChunk = false, int $volumeId)
     {
         $this->videos = $videos;
         $this->user = $user;
         $this->isLastVideoChunk = $isLastVideoChunk;
+        $this->volumeId = $volumeId;
     }
 
     /**
@@ -126,7 +136,7 @@ class ProcessNewVideo extends Job implements ShouldQueue
                 }
             }
         }
-        VolumeFilesProcessed::dispatch($ids, $this->user, $this->isLastVideoChunk);
+        VolumeFilesProcessed::dispatch($ids, $this->user, $this->isLastVideoChunk, $this->volumeId);
     }
 
     /**

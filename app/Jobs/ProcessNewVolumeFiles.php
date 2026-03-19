@@ -73,7 +73,7 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
                 ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
                 ->chunkById(self::CHUNK_SIZE, function ($images) use (&$fileCount) {
                     $fileCount -= self::CHUNK_SIZE;
-                    ProcessNewImage::dispatch($images, $this->user, $fileCount <= 0);
+                    ProcessNewImage::dispatch($images, $this->user, $fileCount <= 0, $this->volume->id);
                 });
         } else {
             $queue = config('videos.process_new_video_queue');
@@ -81,7 +81,7 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
                 ->when($this->only, fn ($query) => $query->whereIn('id', $this->only))
                 ->chunkById(self::CHUNK_SIZE, function ($videos) use ($queue, &$fileCount) {
                     $fileCount -= self::CHUNK_SIZE;
-                    ProcessNewVideo::dispatch($videos, $this->user, $fileCount <= 0)->onQueue($queue);
+                    ProcessNewVideo::dispatch($videos, $this->user, $fileCount <= 0, $this->volume->id)->onQueue($queue);
                 });
         }
     }
