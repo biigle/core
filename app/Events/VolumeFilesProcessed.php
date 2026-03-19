@@ -36,6 +36,13 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
     public $isLastEvent;
 
     /**
+     * The volume id of the volume containig the files.
+     *
+     * @var int
+     */
+    public $volumeId;
+
+    /**
      * Create a new event instance.
      *
      * @param array $fileIds
@@ -43,11 +50,12 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
      * @param bool $isLastEvent
      *
      */
-    public function __construct(array $fileIds, User $user, bool $isLastEvent = false)
+    public function __construct(array $fileIds, User $user, bool $isLastEvent = false, int $volumeId)
     {
         $this->user = $user;
         $this->fileIds = $fileIds;
         $this->isLastEvent = $isLastEvent;
+        $this->volumeId = $volumeId;
     }
 
     /**
