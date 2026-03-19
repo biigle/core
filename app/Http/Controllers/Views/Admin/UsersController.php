@@ -11,7 +11,6 @@ use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
-use Cache;
 use Illuminate\Http\Request;
 
 class UsersController extends Controller
