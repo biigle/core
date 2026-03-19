@@ -30,6 +30,9 @@ class EventServiceProvider extends ServiceProvider
         \Biigle\Events\VolumeCloned::class => [
             \Biigle\Listeners\VolumeClonedListener::class,
         ],
+        \Biigle\Events\VolumeFilesProcessed::class => [
+            \Biigle\Listeners\UpdateVolume::class
+        ]
     ];
 
     /**
