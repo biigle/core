@@ -4,6 +4,7 @@ namespace Biigle\Jobs;
 
 use Biigle\Image;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
+use Biigle\User;
 use Biigle\Video;
 use Biigle\Volume;
 use DB;
@@ -38,17 +39,26 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
     public $metadata;
 
     /**
+     * The user requesting to save a new volume with files.
+     *
+     * @var User
+     */
+    public $user;
+
+    /**
      * Create a new job instance.
      *
      * @param Volume $volume The volume to create the files for.
      * @param array $filenames The filenames of the files to create.
+     * @param User $user The user requesting to save a new volume with files.
      *
      * @return void
      */
-    public function __construct(Volume $volume, array $filenames)
+    public function __construct(Volume $volume, array $filenames, User $user)
     {
         $this->volume = $volume;
         $this->filenames = $filenames;
+        $this->user = $user;
     }
 
     /**
@@ -83,17 +93,12 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
             ->toArray();
 
         if ($hasFiles) {
-            ProcessNewVolumeFiles::dispatch($this->volume, $newIds);
+            ProcessNewVolumeFiles::dispatch($this->volume, $newIds, $this->user);
         } else {
-            ProcessNewVolumeFiles::dispatch($this->volume);
+            ProcessNewVolumeFiles::dispatch($this->volume, [], $this->user);
         }
 
         $this->volume->flushThumbnailCache();
-
-        if ($this->volume->creating_async) {
-            $this->volume->creating_async = false;
-            $this->volume->save();
-        }
 
         if ($this->volume->isImageVolume()) {
             event('images.created', [$this->volume->id, $newIds]);
