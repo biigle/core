@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
+use Cache;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,16 @@ abstract class Annotation extends Model implements AnnotationContract
      * The additional labels suggested by the LabelBOT.
      */
     public $labelBOTLabels = [];
+
+    /**
+     * Get the count of all annotations.
+     *
+     * The value is cached for 1 hour.
+     */
+    public static function cachedCount(): int
+    {
+        return Cache::remember(static::class.'_count', 3600, fn () => static::count());
+    }
 
     /**
      * Scope a query to only include annotations that are visible for a certain user.
