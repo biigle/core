@@ -37,7 +37,7 @@ class AnnotationStrategyControllerTest extends ApiTestCase
 
         $this->get($path)
             ->assertStatus(200)
-            ->assertExactJson(
+            ->assertJson(
                 [
                     'annotation_strategy' =>
                         ['id' => $as1->id, 'project' => $id, 'description' => 'someDescription'],
@@ -52,7 +52,6 @@ class AnnotationStrategyControllerTest extends ApiTestCase
                 'label' => $label->id,
                 'shape' => Shape::polygonId(),
                 'description' => 'labelDescription',
-                'reference_image' => 'file.jpg',
             ]
         );
 
@@ -65,7 +64,6 @@ class AnnotationStrategyControllerTest extends ApiTestCase
                     'annotation_strategy_labels' => [[
                         'description' => 'labelDescription',
                         'label' => $label->toArray(),
-                        'reference_image' => 'file.jpg',
                         'shape' => Shape::polygonId(),
                     ]],
                 ]

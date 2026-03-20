@@ -33,7 +33,6 @@ class AnnotationStrategyController extends Controller
      *      "label":4,
      *      "shape":7,
      *      "description":"description of a label",
-     *      "reference_image":"file.jpg",
      *      "label":
      *        {
      *          "id":4,
