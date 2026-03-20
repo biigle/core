@@ -1,15 +1,15 @@
 <template>
     <div class="row center-container">
-        <div v-if="hasFilename">
+        <div v-if="displayImage">
             <img
-                :src="getImageUrl()"
+                :src="getImageUrl"
                 @error="displayText"
                 class="reference-image"
             />
-            <div v-if="editable">
+            <div v-if="editable && isAdmin" class="center-container">
                 <button
-                    class="btn btn-default"
-                    @click="deleteImage(labelId)"
+                    class="btn btn-danger btn-asl"
+                    @click="deleteImage"
                     title="Remove this image"
                 >
                     <span class="fa fa-times"></span>
@@ -18,12 +18,12 @@
         </div>
         <div v-else>
             <span>No reference image selected</span>
-            <div v-if="editable">
+            <div v-if="editable && isAdmin">
                 <label>Select a reference image (max 5 MB)</label>
                 <input
                     type="file"
                     name="referenceImage"
-                    @change="uploadReferenceImage"
+                    @change="addImage"
                     required
                 />
             </div>
@@ -31,18 +31,15 @@
     </div>
 </template>
 <script>
-import LoaderMixin from '@/core/mixins/loader.vue';
-
 export default {
-    mixins: [LoaderMixin],
-    emits: ['set-reference-image', 'reset-reference-image', 'upload-image'],
+    emits: ['reset-reference-image', 'add-image'],
     props: {
         baseUrl: {
             type: String,
             required: true,
         },
-        referenceImage: {
-            type: String,
+        labelId: {
+            type: Number,
             required: true,
         },
         projectId: {
@@ -53,6 +50,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        temporaryImage: {
+            type: [String, Boolean],
+            default: false,
+        },
+        isAdmin: {
+            type: Boolean,
+            required: true,
+        },
     },
     computed: {
         hasFilename() {
@@ -62,6 +67,11 @@ export default {
                 this.referenceImage.length > 0
             );
         },
+        getImageUrl() {
+            return this.temporaryImage
+                ? this.temporaryImage
+                : this.baseUrl + '/' + this.labelId;
+        },
     },
     data() {
         return {
@@ -69,9 +79,6 @@ export default {
         };
     },
     methods: {
-        getImageUrl() {
-            return this.baseUrl + '/' + this.referenceImage;
-        },
         displayText() {
             this.displayImage = false;
         },
@@ -92,22 +99,20 @@ export default {
         attemptDisplayImage() {
             this.displayImage = true;
         },
-        uploadReferenceImage(event) {
-            this.startLoading();
+        addImage(event) {
             if (event.target.files.length > 1) {
                 alert('Please select only one file');
-                this.finishLoading();
                 return;
             }
-            if (event.target.files[0].size > 5 * 1024 * 1024) {
+            let file = event.target.files[0];
+
+            if (file.size > 5 * 1024 * 1024) {
                 alert('The file is too big');
-                this.finishLoading();
                 return;
             }
-            const formData = new FormData();
-            formData.append('file', event.target.files[0]);
-            this.$emit('upload-image', formData);
-            this.attemptDisplayImage();
+
+            this.$emit('add-image', file);
+            setTimeout(() => this.attemptDisplayImage(), 250);
         },
     },
 };
