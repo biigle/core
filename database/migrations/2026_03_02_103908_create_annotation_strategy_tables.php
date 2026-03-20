@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('project')
                 ->constrained()
                 ->onDelete('cascade');
+            $table->unique('project');
             $table->text('description');
         });
 
@@ -34,8 +35,6 @@ return new class extends Migration {
 
             $table->text('description');
 
-            $table->string('reference_image')
-                ->nullable(true);
             $table->primary(['annotation_strategy', 'label']);
         });
     }

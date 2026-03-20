@@ -5,6 +5,8 @@ namespace Biigle\Http\Controllers\Api\Projects;
 use Biigle\AnnotationStrategy;
 use Biigle\AnnotationStrategyLabel;
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\StoreAnnotationStrategyLabel;
+use Biigle\Label;
 use Biigle\Project;
 use Illuminate\Http\Request;
 use Storage;
@@ -26,72 +28,56 @@ class AnnotationStrategyLabelController extends Controller
      * @apiParam {Array} reference_images The name of the files of the reference images
      *
      */
-    public function update(Request $request)
+    public function update(StoreAnnotationStrategyLabel $request)
     {
-        $project = Project::findOrFail($request->id);
-        $this->authorize('update', $project);
 
-        $labels = $request->labels;
-        $shapes = $request->shapes;
-        $descriptions = $request->descriptions;
-        $referenceImages = $request->reference_images;
+        $projectId = $request->project->id;
+        $validated = $request->validated();
 
-        $annotationStrategy = AnnotationStrategy::where(['project' => $project->id])->firstOrFail();
+        $labels = $validated['labels'];
+        $shapes = $validated['shapes'];
+        $descriptions = $validated['descriptions'];
+        $referenceImages = $validated['reference_images'];
+
+        if (
+            count($labels) !== count($shapes) ||
+            count($labels) !== count($descriptions) ||
+            count($labels) !== count($referenceImages)
+        ) {
+            abort(422, 'Something wrong has happened.');
+        }
+
+        $annotationStrategy = AnnotationStrategy::where(['project' => $projectId])->firstOrFail();
         $aslToDelete = $annotationStrategy->strategyLabels()->whereNotIn('label', $labels);
+        $aslToDeleteRecords = $aslToDelete->get();
+
         $aslToDelete->delete();
 
         $disk = Storage::disk(config('annotation_strategy.storage_disk'));
-        foreach ($aslToDelete->get() as $asl) {
-            $url = "$project->id/$asl->reference_image";
+        foreach ($aslToDeleteRecords as $asl) {
+            $url = $projectId.'/'.$asl->label;
             if ($disk->exists($url)) {
                 $disk->delete($url);
             }
         }
 
         for ($i = 0; $i < count($labels); $i++) {
+            $referenceImage = $referenceImages[$i];
+            $label = $labels[$i];
+            if ($referenceImage != null) {
+                $disk->putFileAs("$projectId", $referenceImage, "$label");
+            }
             AnnotationStrategyLabel::updateOrCreate(
                 [
                     'annotation_strategy' => $annotationStrategy->id,
-                    'label' => $labels[$i],
+                    'label' => $label,
                 ],
                 [
                     'shape' => $shapes[$i],
                     'description' => $descriptions[$i],
-                    'reference_image' => $referenceImages[$i],
                 ]
             );
         }
-    }
-
-    /**
-     * Store a reference image. Returns the name with which the file is stored.
-     *
-     * @api {post} projects/:id/annotation-strategy-labels/upload-image Upload a reference image
-     * @apiGroup Projects
-     * @apiName StoreReferenceImage
-     * @apiPermission projectAdmin
-     *
-     * @apiParam {Integer} id The ID of the project for the annotation strategy for the labels
-     * @apiParam {File} file The reference image to upload
-     *
-     * @apiSuccessExample {json} Success response:
-     * {"filename": "nameOfTheFile"}
-     */
-    public function storeReferenceImage(Request $request)
-    {
-        //TODO: should we send it to a temporary dir?
-        //TODO: should we resize the image?
-        $project = Project::findOrFail($request->id);
-        $this->authorize('update', $project);
-        $request->validate([
-            'file' => 'required|file|mimes:jpg,png,pdf|max:5120',
-        ]);
-
-        $file = $request->file('file');
-        $name = $file->hashName();
-        $disk = Storage::disk(config('annotation_strategy.storage_disk'));
-        $disk->putFileAs("$project->id/", $file, $name);
-        return ['filename' => $name];
     }
 
     /**
@@ -108,12 +94,12 @@ class AnnotationStrategyLabelController extends Controller
     public function deleteReferenceImage(Request $request)
     {
         $project = Project::findOrFail($request->id);
-        $name = $request->input('reference_image');
+        $label = Label::findOrFail($request->label);
 
         $this->authorize('update', $project);
 
         $disk = Storage::disk(config('annotation_strategy.storage_disk'));
-        $url = "$project->id/$name";
+        $url = "$project->id/$label->id";
         if ($disk->exists($url)) {
             $disk->delete($url);
         }

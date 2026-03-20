@@ -46,7 +46,6 @@ class AnnotationStrategyLabel extends Model
         'label' => 'int',
         'shape' => 'int',
         'description' => 'string',
-        'reference_image' => 'string',
     ];
 
     /**
@@ -59,7 +58,6 @@ class AnnotationStrategyLabel extends Model
         'label',
         'shape',
         'description',
-        'reference_image',
     ];
     /**
      * Don't maintain timestamps for this model.

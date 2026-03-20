@@ -300,10 +300,6 @@ $router->post('projects/{id}/annotation-strategy-label', [
     'uses' => 'Projects\AnnotationStrategyLabelController@update',
 ]);
 
-$router->post('projects/{id}/annotation-strategy-label/upload-image', [
-    'uses' => 'Projects\AnnotationStrategyLabelController@storeReferenceImage',
-]);
-
 $router->delete('projects/{id}/annotation-strategy-label/delete-image', [
     'uses' => 'Projects\AnnotationStrategyLabelController@deleteReferenceImage',
 ]);

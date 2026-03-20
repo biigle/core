@@ -17,130 +17,165 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
         $id = $this->project()->id;
         $as = AnnotationStrategy::create(['project' => $id, 'description' => 'someDescription']);
         $path = "/api/v1/projects/{$id}/annotation-strategy-label";
-        $label = Label::factory()->create();
-        $data = [
-            'annotation_strategy' => $as->id,
-            'labels' => [$label->id],
-            'shapes' => [Shape::polygonId()],
-            'descriptions' => ['labelDescription'],
-            'reference_images' => ['file.jpg'],
-        ];
-        $this->doTestApiRoute('POST', $path);
+        $label1 = Label::factory()->create();
 
-        $this->beGuest();
-        $this->post($path, $data)
-            ->assertStatus(403);
-
-        $this->beUser();
-        $this->post($path, $data)
-            ->assertStatus(403);
-
-        $this->beEditor();
-        $this->post($path, $data)
-            ->assertStatus(403);
-
-        $this->beAdmin();
-        $this->post($path, $data)
-            ->assertStatus(200);
-
-        $asl = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
-            ->get()
-            ->toArray();
-
-        $expected = [[
-            'annotation_strategy' => $as->id,
-            'label' => $label->id,
-            'shape' => Shape::polygonId(),
-            'description' => 'labelDescription',
-            'reference_image' => 'file.jpg',
-        ]];
-
-        $this->assertEquals($asl, $expected);
-
-        //Update two other labels, the first label should not be there.
-        $label2 = Label::factory()->create();
-        $label3 = Label::factory()->create();
-        $data = [
-            'annotation_strategy' => $as->id,
-            'labels' => [$label2->id, $label3->id],
-            'shapes' => [null, Shape::circleId()],
-            'descriptions' => ['labelDescription', 'aDifferentDescription'],
-            'reference_images' => ['file.png', null],
-        ];
-
-        $this->post($path, $data)
-            ->assertStatus(200);
-
-        $asl = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
-            ->get()
-            ->toArray();
-
-        $expected = [
-            [
-                'annotation_strategy' => $as->id,
-                'label' => $label2->id,
-                'shape' => null,
-                'description' => 'labelDescription',
-                'reference_image' => 'file.png',
-            ],
-            [
-                'annotation_strategy' => $as->id,
-                'label' => $label3->id,
-                'shape' => Shape::circleId(),
-                'description' => 'aDifferentDescription',
-                'reference_image' => null,
-            ],
-        ];
-
-        $asl = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
-            ->get()
-            ->toArray();
-
-        $this->assertEquals($asl, $expected);
-    }
-
-    public function testReferenceImageUploadAndDelete()
-    {
         config(['annotation_strategy.storage_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
-        $id = $this->project()->id;
 
-        //upload
-        $path = "/api/v1/projects/{$id}/annotation-strategy-label/upload-image";
+        $filename = 'test-image.jpg';
 
-        $textData = ['file' => UploadedFile::fake()->create('file.txt')];
-        $imageData = ['file' => UploadedFile::fake()->create('image.png')];
+        $fileDir = __DIR__."/../../../../../files/";
+        $imageFile = new UploadedFile($fileDir.$filename, $filename, test: true);
+        $data = [
+            'annotation_strategy' => $as->id,
+            'labels' => [$label1->id],
+            'shapes' => [Shape::polygonId()],
+            'descriptions' => ['labelDescription'],
+            'reference_images' => [$imageFile],
+        ];
 
-        $this->doTestApiRoute('POST', $path);
+        try {
+            $this->doTestApiRoute('POST', $path);
 
-        $this->beGuest();
-        $this->post($path, $imageData)
-            ->assertStatus(403);
+            $this->beGuest();
+            $this->post($path, $data)
+                ->assertStatus(403);
 
-        $this->beUser();
-        $this->post($path, $imageData)
-            ->assertStatus(403);
+            $this->beUser();
+            $this->post($path, $data)
+                ->assertStatus(403);
 
-        $this->beEditor();
-        $this->post($path, $imageData)
-            ->assertStatus(403);
+            $this->beEditor();
+            $this->post($path, $data)
+                ->assertStatus(403);
 
-        $this->beAdmin();
-        $response = $this->post($path, $imageData);
-        $response->assertStatus(200);
-        $filename = $response->json()['filename'];
+            $this->beAdmin();
+            $this->post($path, $data)
+                ->assertStatus(200);
 
-        $this->post($path, $textData)
-            ->assertStatus(302);
+            $asl = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
+                ->get()
+                ->toArray();
 
-        $disk->assertExists("{$id}/{$filename}");
+            $disk->assertExists("{$id}/{$label1->id}/original");
+            $disk->assertExists("{$id}/{$label1->id}/thumbnail");
 
-        //delete
-        $path = "/api/v1/projects/{$id}/annotation-strategy-label/delete-image";
+            $expected = [[
+                'annotation_strategy' => $as->id,
+                'label' => $label1->id,
+                'shape' => Shape::polygonId(),
+                'description' => 'labelDescription',
+            ]];
 
-        $this->delete($path, ['filename' => $filename])
-            ->assertStatus(200);
+            $this->assertEquals($asl, $expected);
 
-        $disk->assertMissing("{$id}/image.png");
+            $filename = 'file.txt';
+            $fakeFile = UploadedFile::fake()->create($filename);
+            $data = [
+                'annotation_strategy' => $as->id,
+                'labels' => [$label1->id],
+                'shapes' => [Shape::polygonId()],
+                'descriptions' => ['labelDescription'],
+                'reference_images' => [$fakeFile],
+            ];
+
+            $this->post($path, $data)
+                ->assertStatus(302);
+
+            $imageFile = new UploadedFile($fileDir."test-image.png", "test-image.png", test: true);
+
+            //Update two other labels, the first label should not be there.
+            $label2 = Label::factory()->create();
+            $label3 = Label::factory()->create();
+            $label4 = Label::factory()->create();
+            $data = [
+                'annotation_strategy' => $as->id,
+                'labels' => [$label2->id, $label3->id, $label4->id],
+                'shapes' => [null, Shape::circleId(), Shape::pointId()],
+                'descriptions' => ['labelDescription', 'aDifferentDescription', 'anotherOne'],
+                'reference_images' => [$imageFile, null, null],
+            ];
+
+            $this->post($path, $data)
+                ->assertStatus(200);
+
+
+            $asl2 = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
+                ->get()
+                ->toArray();
+
+            $expected = [
+                [
+                    'annotation_strategy' => $as->id,
+                    'label' => $label2->id,
+                    'shape' => null,
+                    'description' => 'labelDescription',
+                ],
+                [
+                    'annotation_strategy' => $as->id,
+                    'label' => $label3->id,
+                    'shape' => Shape::circleId(),
+                    'description' => 'aDifferentDescription',
+                ],
+                [
+                    'annotation_strategy' => $as->id,
+                    'label' => $label4->id,
+                    'shape' => Shape::pointId(),
+                    'description' => 'anotherOne',
+                ],
+            ];
+
+            $asl = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
+                ->get()
+                ->toArray();
+
+            $this->assertEquals($asl2, $expected);
+
+            //Should have been deleted
+            $disk->assertMissing("{$id}/{$label1->id}/original");
+            $disk->assertMissing("{$id}/{$label1->id}/thumbnail");
+
+            //Should have been uploaded
+            $disk->assertExists("{$id}/{$label2->id}/original");
+            $disk->assertExists("{$id}/{$label2->id}/thumbnail");
+
+            //Should not exist
+            $disk->assertMissing("{$id}/{$label3->id}/original");
+            $disk->assertMissing("{$id}/{$label3->id}/thumbnail");
+
+            //delete
+            $path = "/api/v1/projects/{$id}/annotation-strategy-label/delete-image";
+
+            $data = ['label' => $label2->id];
+
+            $this->beGuest();
+            $this->delete($path, $data)
+                ->assertStatus(403);
+
+            $this->beUser();
+            $this->delete($path, $data)
+                ->assertStatus(403);
+
+            $this->beEditor();
+            $this->delete($path, $data)
+                ->assertStatus(403);
+
+            $this->beAdmin();
+            $this->delete($path, $data)
+                ->assertStatus(200);
+
+            $disk->assertMissing("{$id}/{$label2->id}");
+        } finally {
+            if (isset($label1) && $disk->exists("{$id}/{$label1->id}")) {
+                $disk->deleteDirectory("{$id}/{$label1->id}");
+            }
+            if (isset($label2) && $disk->exists("{$id}/{$label2->id}")) {
+                $disk->deleteDirectory("{$id}/{$label2->id}");
+            }
+            if (isset($label3) && $disk->exists("{$id}/{$label3->id}")) {
+                $disk->deleteDirectory("{$id}/{$label2->id}");
+            }
+        }
+
     }
 }
