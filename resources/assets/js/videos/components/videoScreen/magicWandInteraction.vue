@@ -155,6 +155,17 @@ export default {
         }
     },
     watch: {
+        videoHasError(hasErr) {
+            if (!this.initializedMagicWand) {
+                return;
+            }
+
+            if (hasErr) {
+                this.map.removeLayer(this.magicWandVideoLayer);
+            } else {
+                this.map.addLayer(this.magicWandVideoLayer);
+            }
+        },
         finishedVideoScreenInit() {
             this.initMagicWandInteraction();
         },
