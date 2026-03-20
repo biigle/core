@@ -1,0 +1,91 @@
+<?php
+
+namespace Biigle;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Model for annotation strategies associated to a Model.
+ *
+ * @property int $id
+ */
+class AnnotationStrategyLabel extends Model
+{
+    use HasFactory;
+
+    /**
+     * The data type of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'array';
+
+    /**
+     * Primary key should not be incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * Set `annotation_strategy` and `label` as primary keys.
+     *
+     * @var array<int, string>
+     */
+    // @phpstan-ignore-next-line
+    protected $primaryKey = ['annotation_strategy', 'label'];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'annotation_strategy' => 'int',
+        'label' => 'int',
+        'shape' => 'int',
+        'description' => 'string',
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'annotation_strategy',
+        'label',
+        'shape',
+        'description',
+    ];
+    /**
+     * Don't maintain timestamps for this model.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
+     * The labels that have a strategy for their annotation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
+     */
+    public function label()
+    {
+        return $this->belongsTo(Label::class, 'label');
+    }
+
+    /**
+     * Since this table does not have a primary key but uses two keys as primary keys
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    protected function setKeysForSaveQuery($query)
+    {
+        foreach ($this->primaryKey as $key) {
+            $query->where($key, '=', $this->getAttribute($key));
+        }
+        return $query;
+    }
+}

@@ -33,6 +33,7 @@
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
+                :disabled-labels="disabledLabels"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
@@ -49,6 +50,7 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
+                :disabled-labels="disabledLabels"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
@@ -145,6 +147,10 @@ export default {
         sortingProjectIds: {
             type: Array,
             default: undefined,
+        },
+        disabledLabels: {
+            type: Array,
+            default: () => [],
         },
     },
     computed: {

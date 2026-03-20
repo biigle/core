@@ -149,6 +149,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        disabledLabels: {
+            type: Array,
+            default: () => [],
+        },
     },
     computed: {
         labelMap() {
@@ -191,7 +195,12 @@ export default {
             return compiled;
         },
         rootLabels() {
-            return this.compiledLabels[null];
+            let labels =  this.compiledLabels[null];
+            if (this.disabledLabels.length > 0) {
+                labels = labels.filter((label) => !this.disabledLabels.includes(label.id));
+            }
+            return labels;
+
         },
         collapseTitle() {
             if (this.collapsible) {
