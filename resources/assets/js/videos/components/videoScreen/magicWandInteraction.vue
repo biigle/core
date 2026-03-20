@@ -3,7 +3,7 @@ import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import ImageLayer from '@biigle/ol/layer/Image';
-import CanvasSource from '../../../annotations/ol/source/Canvas.js';
+import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import Projection from '@biigle/ol/proj/Projection';
 
 /**
