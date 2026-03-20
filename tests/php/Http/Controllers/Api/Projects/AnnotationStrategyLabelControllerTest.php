@@ -22,7 +22,7 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
         config(['annotation_strategy.storage_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
-        $filename = 'test-image.jpg';
+        $filename = 'test-image-small.jpg';
 
         $fileDir = __DIR__."/../../../../../files/";
         $imageFile = new UploadedFile($fileDir.$filename, $filename, test: true);
@@ -57,8 +57,7 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
                 ->get()
                 ->toArray();
 
-            $disk->assertExists("{$id}/{$label1->id}/original");
-            $disk->assertExists("{$id}/{$label1->id}/thumbnail");
+            $disk->assertExists("{$id}/{$label1->id}");
 
             $expected = [[
                 'annotation_strategy' => $as->id,
@@ -132,16 +131,13 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $this->assertEquals($asl2, $expected);
 
             //Should have been deleted
-            $disk->assertMissing("{$id}/{$label1->id}/original");
-            $disk->assertMissing("{$id}/{$label1->id}/thumbnail");
+            $disk->assertMissing("{$id}/{$label1->id}");
 
             //Should have been uploaded
-            $disk->assertExists("{$id}/{$label2->id}/original");
-            $disk->assertExists("{$id}/{$label2->id}/thumbnail");
+            $disk->assertExists("{$id}/{$label2->id}");
 
             //Should not exist
-            $disk->assertMissing("{$id}/{$label3->id}/original");
-            $disk->assertMissing("{$id}/{$label3->id}/thumbnail");
+            $disk->assertMissing("{$id}/{$label3->id}");
 
             //delete
             $path = "/api/v1/projects/{$id}/annotation-strategy-label/delete-image";
@@ -167,13 +163,13 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $disk->assertMissing("{$id}/{$label2->id}");
         } finally {
             if (isset($label1) && $disk->exists("{$id}/{$label1->id}")) {
-                $disk->deleteDirectory("{$id}/{$label1->id}");
+                $disk->delete("{$id}/{$label1->id}");
             }
             if (isset($label2) && $disk->exists("{$id}/{$label2->id}")) {
-                $disk->deleteDirectory("{$id}/{$label2->id}");
+                $disk->delete("{$id}/{$label2->id}");
             }
             if (isset($label3) && $disk->exists("{$id}/{$label3->id}")) {
-                $disk->deleteDirectory("{$id}/{$label2->id}");
+                $disk->delete("{$id}/{$label2->id}");
             }
         }
 
