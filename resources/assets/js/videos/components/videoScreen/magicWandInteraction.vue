@@ -29,7 +29,7 @@ export default {
             return this.canAddMagicWandAnnotation && this.initializedMagicWand;
         },
         canAddMagicWandAnnotation() {
-            return !this.videoHasCorsError && this.canAdd;
+            return !this.videoHasError && this.canAdd;
         },
         initializedMagicWand() {
             return this.magicWandVideoLayer != null && this.magicWandVideoCanvas != null;

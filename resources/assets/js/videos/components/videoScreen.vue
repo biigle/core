@@ -592,7 +592,7 @@ export default {
             type: Number,
             default: 0,
         },
-        videoHasCorsError: {
+        videoHasError: {
             type: Boolean,
             default: false
         }

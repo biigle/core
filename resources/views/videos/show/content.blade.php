@@ -65,7 +65,7 @@
       :labelbot-overlays="labelbotOverlays"
       :focused-popup-key="focusedPopupKey"
       :labelbot-timeout="labelbotTimeout"
-      :video-has-cors-error="hasCrossOriginError"
+      :video-has-error="hasCrossOriginError || hasError"
       v-on:swap="swapAnnotationLabelTo"
       v-on:close-labelbot-popup="closeLabelbotPopup"
       v-on:init-map="handleInitMap"
