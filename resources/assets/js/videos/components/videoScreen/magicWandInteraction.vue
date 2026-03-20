@@ -17,7 +17,7 @@ export default {
     data() {
         return {
             magicWandVideoLayer: null,
-            magicWandvideoCanvas: null,
+            magicWandVideoCanvas: null,
             enableMagicWand: false,
         };
     },
@@ -32,7 +32,7 @@ export default {
             return !this.videoHasCorsError && this.canAdd;
         },
         initializedMagicWand() {
-            return this.magicWandVideoLayer != null && this.magicWandvideoCanvas != null;
+            return this.magicWandVideoLayer != null && this.magicWandVideoCanvas != null;
         }
     },
     methods: {
@@ -55,18 +55,18 @@ export default {
                 extent: [0, 0, this.video.videoWidth, this.video.videoHeight]
             });
 
-            this.magicWandvideoCanvas.width = this.video.videoWidth;
-            this.magicWandvideoCanvas.height = this.video.videoHeight;
+            this.magicWandVideoCanvas.width = this.video.videoWidth;
+            this.magicWandVideoCanvas.height = this.video.videoHeight;
 
             // Update video frame
-            let canvasContext = this.magicWandvideoCanvas.getContext('2d');
-            canvasContext.drawImage(this.video, 0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height);
+            let canvasContext = this.magicWandVideoCanvas.getContext('2d');
+            canvasContext.drawImage(this.video, 0, 0, this.magicWandVideoCanvas.width, this.magicWandVideoCanvas.height);
 
             this.magicWandVideoLayer.setSource(new CanvasSource({
-                canvas: this.magicWandvideoCanvas,
+                canvas: this.magicWandVideoCanvas,
                 projection: projection,
-                canvasExtent: [0, 0, this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
-                canvasSize: [this.magicWandvideoCanvas.width, this.magicWandvideoCanvas.height],
+                canvasExtent: [0, 0, this.magicWandVideoCanvas.width, this.magicWandVideoCanvas.height],
+                canvasSize: [this.magicWandVideoCanvas.width, this.magicWandVideoCanvas.height],
             }));
 
             // Set updated video frame
@@ -129,7 +129,7 @@ export default {
             this.map.addLayer(this.magicWandVideoLayer);
             magicWandInteraction.setLayer(this.magicWandVideoLayer);
 
-            this.magicWandvideoCanvas = document.createElement('canvas');
+            this.magicWandVideoCanvas = document.createElement('canvas');
         },
         disableMagicWandOnPlay() {
             if (!this.video.paused && this.interactionMode === 'magicWand') {
@@ -150,7 +150,7 @@ export default {
             this.removeEventListener();
             magicWandInteraction = null;
             this.magicWandVideoLayer = null;
-            this.magicWandvideoCanvas = null;
+            this.magicWandVideoCanvas = null;
             this.enableMagicWand = false;
         }
     },
