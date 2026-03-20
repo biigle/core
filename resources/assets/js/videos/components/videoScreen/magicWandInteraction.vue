@@ -138,6 +138,20 @@ export default {
         },
         toggleEnableMagicWand(e) {
             this.enableMagicWand = e.type === 'pause';
+        },
+        removeEventListener() {
+            this.video.removeEventListener('seeked', this.updateVideoFrameImage);
+            this.video.removeEventListener('play', this.disableMagicWandOnPlay);
+            this.video.removeEventListener('play', this.toggleEnableMagicWand);
+            this.video.removeEventListener('pause', this.toggleEnableMagicWand);
+            Keyboard.off('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+        },
+        resetInteraction() {
+            this.removeEventListener();
+            magicWandInteraction = null;
+            this.magicWandVideoLayer = null;
+            this.magicWandvideoCanvas = null;
+            this.enableMagicWand = false;
         }
     },
     watch: {
@@ -154,15 +168,14 @@ export default {
                 this.video.addEventListener('play', this.disableMagicWandOnPlay);
                 this.video.addEventListener('play', this.toggleEnableMagicWand);
                 this.video.addEventListener('pause', this.toggleEnableMagicWand);
-                Keyboard.on('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+                this.keyboardOn('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
             } else {
-                this.video.removeEventListener('seeked', this.updateVideoFrameImage);
-                this.video.removeEventListener('play', this.disableMagicWandOnPlay);
-                this.video.removeEventListener('play', this.toggleEnableMagicWand);
-                this.video.removeEventListener('pause', this.toggleEnableMagicWand);
-                Keyboard.off('Shift+g', this.toggleMagicWand, 0, this.listenerSet);
+                this.removeEventListener();
             }
         }
     },
+    beforeUnmount() {
+        this.resetInteraction();
+    }
 };
 </script>
