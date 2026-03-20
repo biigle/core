@@ -17,7 +17,7 @@ class AnnotationStrategyController extends Controller
      * @apiGroup Projects
      * @apiName AnnotationStrategy
      * @apiParam {Number} id The Project ID
-     * @apiPermission projectEditor
+     * @apiPermission projectAdmin
      * @apiDescription Returns the annotation strategy and the associated labels
      *
      * @apiSuccessExample {json} Success response:
