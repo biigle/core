@@ -1,9 +1,6 @@
 <template>
     <div>
-        <h3>
-            <span v-if="editing">Edit </span
-            ><span v-if="creating">Create </span>Annotation Strategy
-        </h3>
+        <h3><span v-if="creating">Create </span>Annotation Strategy</h3>
         <div v-if="isAdmin && !creating">
             <div v-if="!creating">
                 <div v-if="editingStrategyDescription">
@@ -27,17 +24,23 @@
         <h4>Description</h4>
         <div>
             <div class="form-group">
-                <div v-if="editingStrategyDescription || creating">
+                <div
+                    v-if="editingStrategyDescription || creating"
+                    :class="{ 'has-error': missingDescription }"
+                >
                     <textarea
                         v-model="annotationStrategy.description"
-                        class="strategy-description"
+                        class="strategy-description form-control"
                         maxlength="2000"
                         wrap="hard"
                         placeholder="Edit the strategy description here..."
                     ></textarea>
+                    <span v-if="missingDescription" class="help-block"
+                        >The description of the strategy is missing</span
+                    >
                 </div>
                 <div v-else>
-                    <p id="strategy-description-text">
+                    <p class="strategy-description-text">
                         {{ annotationStrategy.description }}
                     </p>
                 </div>
@@ -99,12 +102,11 @@
                         <span class="fa fa-plus" aria-hidden="true"></span>
                     </button>
                 </div>
-                <div class="col-xs-2" v-if="creating || mightHaveEdited">
+                <div class="col-xs-2">
                     <button
                         class="btn btn-success btn-block"
                         type="button"
                         @click="sendUpdateAnnotationStrategy"
-                        :disabled="!hasDescription"
                     >
                         <span v-if="creating"> Create strategy </span>
                         <span v-else> Save changes </span>
@@ -191,13 +193,14 @@ export default {
             annotationStrategyLabels: biigle.$require(
                 'projects.annotationStrategyLabels',
             ),
-            availableShapes: biigle.$require('projects.availableShapes'),
+            availableShapes: shapes,
             baseUrl: biigle.$require(
                 'projects.annotationStrategyLabelsBaseUrl',
             ),
             mightHaveEdited: false,
             addingNewLabel: false,
             editingStrategyDescription: false,
+            missingDescription: false,
         };
     },
     created() {
@@ -210,9 +213,6 @@ export default {
         });
     },
     methods: {
-        setEditing(val) {
-            this.editing = val;
-        },
         refreshStrategy() {
             this.startLoading();
             AnnotationStrategy.get({ id: this.projectId }, {})
@@ -220,8 +220,10 @@ export default {
                     (response) => this.setAnnotationStrategy(response.body),
                     handleErrorResponse,
                 )
-                .then(this.setEditing(false))
+                .then(this.resetEditing)
                 .finally(this.finishLoading);
+        },
+        resetEditing() {
             this.editingStrategyDescription = false;
             this.mightHaveEdited = false;
         },
@@ -280,10 +282,17 @@ export default {
             }
         },
         sendUpdateAnnotationStrategy() {
+            if (!this.hasDescription) {
+                this.missingDescription = true;
+                return;
+            }
+            this.missingDescription = false;
             if (this.editingLabel || this.addingNewLabel) {
                 alert('You did not save the latest changes to the label!');
                 return;
             }
+
+            let data = this.generateLabelUpdate();
 
             this.startLoading();
             AnnotationStrategy.save(
@@ -291,12 +300,19 @@ export default {
                 { description: this.annotationStrategy.description },
             )
                 .then(
-                    this.sendAnnotationStrategyLabelUpdate,
+                    AnnotationStrategyLabelApi.save(
+                        { id: this.projectId },
+                        data,
+                    ),
                     this.handleErrorResponse,
                 )
-                .finally(this.finishLoading);
+                .catch(this.handleErrorResponse)
+                .finally(() => {
+                    this.finishLoading();
+                    this.refreshStrategy();
+                });
         },
-        sendAnnotationStrategyLabelUpdate() {
+        generateLabelUpdate() {
             let formData = new FormData();
 
             if (this.annotationStrategyLabels.length === 0) {
@@ -317,11 +333,7 @@ export default {
                     item.reference_image ? item.reference_image : '',
                 );
             });
-
-            AnnotationStrategyLabelApi.save(
-                { id: this.projectId },
-                formData,
-            ).then(this.refreshStrategy, this.handleErrorResponse);
+            return formData;
         },
         sendDeleteAnnotationStrategy() {
             let response = prompt(
@@ -331,13 +343,14 @@ export default {
             if (response !== 'delete') {
                 return;
             }
+            this.mightHaveEdited = false;
             AnnotationStrategy.delete({ id: this.projectId }, {}).then(
                 this.reloadPage,
                 handleErrorResponse,
             );
         },
         reloadPage() {
-            location.reload();
+            setTimeout(() => location.reload(), 100);
         },
         stopEditingDescription() {
             this.editingStrategyDescription = false;

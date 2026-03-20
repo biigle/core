@@ -1,16 +1,20 @@
 <template>
     <div class="row annotation-strategy-label">
         <div class="col-xs-3">
-            <div v-if="creating">
+            <div v-if="creating" :class="{ 'has-error': missingLabel }">
                 <ul class="label-tree__list">
                     <label-trees
                         :trees="labelTrees"
                         :multiselect="false"
+                        :clearable="false"
                         :disabled-labels="labelsToExclude"
                         @select="selectLabel"
                         @deselect="deselectLabel"
                     >
                     </label-trees>
+                    <span class="help-block" v-if="missingLabel">
+                        The description of this label is missing
+                    </span>
                 </ul>
             </div>
             <div v-else>
@@ -24,17 +28,20 @@
             </div>
         </div>
         <div class="col-xs-3">
-            <div v-if="editMode">
+            <div v-if="editMode" :class="{ 'has-error': missingDescription }">
                 <textarea
                     v-model="description"
-                    class="strategy-description"
+                    class="form-control strategy-description"
                     maxlength="200"
                     wrap="hard"
                     placeholder="Describe how this label should be used..."
                 ></textarea>
+                <span class="help-block" v-if="missingDescription"
+                    >The description of this label is missing</span
+                >
             </div>
             <div v-else>
-                <span>{{ description }}</span>
+                <span class="strategy-description-text">{{ description }}</span>
             </div>
         </div>
         <div class="col-xs-2">
@@ -76,7 +83,6 @@
             <div v-if="editMode">
                 <button
                     class="btn btn-success btn-block btn-asl"
-                    :disabled="!hasLabelDescription"
                     type="button"
                     @click="addAnnotationStrategyLabel"
                     :title="editingStrategyLabelText"
@@ -180,8 +186,11 @@ export default {
         labelId() {
             return this.label.id ? this.label.id : NaN;
         },
-        hasLabelDescription() {
-            return !isNaN(this.labelId) && this.description.length !== 0;
+        hasLabel() {
+            return !isNaN(this.labelId);
+        },
+        hasDescription() {
+            return this.description.length !== 0;
         },
         editMode() {
             return this.editing || this.creating;
@@ -193,6 +202,8 @@ export default {
             shape: undefined,
             description: '',
             referenceImage: undefined,
+            missingLabel: false,
+            missingDescription: false,
         };
     },
     created() {
@@ -212,11 +223,19 @@ export default {
         },
         setup() {
             this.label = this.annotationStrategyLabel.label;
-            this.shape = this.annotationStrategyLabel.shape;
+            //casting null to undefined
+            this.shape = this.annotationStrategyLabel.shape ?? undefined;
             this.description = this.annotationStrategyLabel.description;
             this.referenceImage = this.annotationStrategyLabel.reference_image;
         },
         addAnnotationStrategyLabel() {
+            if (!this.hasLabel || !this.hasDescription) {
+                this.missingDescription = !this.hasDescription;
+                this.missingLabel = !this.hasLabel;
+                return;
+            }
+            this.missingDescription = false;
+            this.missingLabel = false;
             this.$emit('add-label', {
                 label: this.label,
                 shape: this.shape,

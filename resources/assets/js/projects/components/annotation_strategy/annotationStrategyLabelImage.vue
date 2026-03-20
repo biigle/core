@@ -68,6 +68,9 @@ export default {
             );
         },
         getImageUrl() {
+            if (isNaN(this.labelId)) {
+                return '';
+            }
             return this.temporaryImage
                 ? this.temporaryImage
                 : this.baseUrl + '/' + this.labelId;
@@ -86,7 +89,6 @@ export default {
             let response = prompt(
                 `This will delete the image for this label. Please enter 'delete' to confirm.`,
             );
-
             if (response !== 'delete') {
                 return;
             }
