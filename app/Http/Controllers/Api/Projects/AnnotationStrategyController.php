@@ -21,14 +21,12 @@ class AnnotationStrategyController extends Controller
      * @apiDescription Returns the annotation strategy and the associated labels
      *
      * @apiSuccessExample {json} Success response:
-     * [{"annotation_strategy":{
-     *  {
+     * {"annotation_strategy":[{
      *    "id":1,
      *    "project":2,
      *    "description":"strategy description"
-     *  },
-     *  "annotation_strategy_labels" : {
-     *    {
+     *  }],
+     *  "annotation_strategy_labels" : [{
      *      "annotation_strategy": 1,
      *      "label":4,
      *      "shape":7,
@@ -38,7 +36,7 @@ class AnnotationStrategyController extends Controller
      *          "id":4,
      *          "name":"something else",
      *        },
-     *  }}]
+     *  }]}
      *
      */
     public function index($id)
