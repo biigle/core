@@ -26,8 +26,13 @@ export default {
             return this.interactionMode === 'magicWand' && this.video.paused;
         },
         canMagicWanding() {
-            const initializedMagicWand = this.magicWandVideoLayer != null && this.magicWandvideoCanvas != null;
-            return !this.videoHasCorsError && this.canAdd && initializedMagicWand;
+            return this.canAddMagicWandAnnotation && this.initializedMagicWand;
+        },
+        canAddMagicWandAnnotation() {
+            return !this.videoHasCorsError && this.canAdd;
+        },
+        initializedMagicWand() {
+            return this.magicWandVideoLayer != null && this.magicWandvideoCanvas != null;
         }
     },
     methods: {
@@ -78,6 +83,10 @@ export default {
             }
         },
         initMagicWandInteraction() {
+            if (this.initializedMagicWand || !this.canAddMagicWandAnnotation) {
+                return;
+            }
+
             // Initialize the magic wand interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             magicWandInteraction = new MagicWandInteraction({
