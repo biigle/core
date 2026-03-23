@@ -120,15 +120,18 @@ class LabelBotService
      */
     protected function performVectorSearch($featureVector, $trees, $model)
     {
-        // Perform ANN search.
-        $topNLabels = $this->performAnnSearch($featureVector, $trees, $model);
+        // This has to be wrapped in a transaction because it uses SET LOCAL.
+        return DB::transaction(function () use ($featureVector, $trees, $model) {
+            // Perform ANN search.
+            $topNLabels = $this->performAnnSearch($featureVector, $trees, $model);
 
-        // Perform ANN search with iterative index scan + post filtering as a fallback if ANN search returns no results.
-        if (empty($topNLabels)) {
-            $topNLabels = $this->performAnnSearchWithIterativeIndexScan($featureVector, $trees, $model);
-        }
+            // Perform ANN search with iterative index scan + post filtering as a fallback if ANN search returns no results.
+            if (empty($topNLabels)) {
+                $topNLabels = $this->performAnnSearchWithIterativeIndexScan($featureVector, $trees, $model);
+            }
 
-        return $topNLabels;
+            return $topNLabels;
+        });
     }
 
     /**
@@ -148,7 +151,7 @@ class LabelBotService
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
         $k = (int) config('labelbot.K');
-        DB::statement("SET hnsw.ef_search = $k");
+        DB::statement("SET LOCAL hnsw.ef_search = $k");
 
         $subquery = $model::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
@@ -186,7 +189,7 @@ class LabelBotService
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
         $k = (int) config('labelbot.K');
-        DB::statement("SET hnsw.ef_search = $k");
+        DB::statement("SET LOCAL hnsw.ef_search = $k");
 
         /*
         Iterative scans can use strict or relaxed ordering.
@@ -196,7 +199,7 @@ class LabelBotService
 
         We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
         */
-        DB::statement("SET hnsw.iterative_scan = relaxed_order");
+        DB::statement("SET LOCAL hnsw.iterative_scan = relaxed_order");
 
         $subquery = $model::select('label_id', 'label_tree_id')
             ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
