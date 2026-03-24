@@ -282,19 +282,13 @@
                             @active="onActive"
                             ></control-button>
                         <control-button
-                            v-if="enableMagicWand"
                             icon="fa-magic"
                             title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
                             :active="isMagicWanding"
-                            v-on:click="toggleMagicWand"
-                            v-on:active="onActive"
+                            :disabled="!enableMagicWand"
+                            @click="toggleMagicWand"
+                            @active="onActive"
                             ></control-button>
-                        <control-button
-                            v-else
-                            icon="fa-magic"
-                            title="The magic wand tool is only available if the video is paused"
-                            :disabled="true"
-                        ></control-button>
                 </control-button>
                 <control-button
                     icon="icon-wholeframe"
