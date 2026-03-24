@@ -339,17 +339,15 @@ export default {
                 { description: this.annotationStrategy.description },
             )
                 .then(
-                    AnnotationStrategyLabelApi.save(
+                    () => AnnotationStrategyLabelApi.save(
                         { id: this.projectId },
                         data,
                     ),
                     this.handleErrorResponse,
                 )
-                .then(this.sendSuccessMessage, this.handleErrorResponse)
-                .finally(() => {
-                    this.finishLoading();
-                    setTimeout(() => this.refreshStrategy(), 300);
-                });
+                .then(() => this.sendSuccessMessage(), this.handleErrorResponse)
+                .then(this.refreshStrategy)
+                .finally(this.finishLoading);
         },
         sendSuccessMessage() {
             Messages.success('Strategy saved.');
