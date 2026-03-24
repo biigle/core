@@ -32,6 +32,7 @@ class AnnotationStrategyLabelController extends Controller
     {
 
         $projectId = $request->project->id;
+        $annotationStrategy = AnnotationStrategy::where(['project' => $projectId])->firstOrFail();
         $validated = $request->validated();
 
         $labels = $validated['labels'];
@@ -47,7 +48,6 @@ class AnnotationStrategyLabelController extends Controller
             abort(422, 'Something wrong has happened.');
         }
 
-        $annotationStrategy = AnnotationStrategy::where(['project' => $projectId])->firstOrFail();
         $aslToDelete = $annotationStrategy->strategyLabels()->whereNotIn('label', $labels);
         $aslToDeleteRecords = $aslToDelete->get();
 
@@ -55,7 +55,7 @@ class AnnotationStrategyLabelController extends Controller
 
         $disk = Storage::disk(config('annotation_strategy.storage_disk'));
         foreach ($aslToDeleteRecords as $asl) {
-            $url = $projectId.'/'.$asl->label;
+            $url = $projectId.'/'.$asl->label.'.jpg';
             if ($disk->exists($url)) {
                 $disk->delete($url);
             }
@@ -65,7 +65,7 @@ class AnnotationStrategyLabelController extends Controller
             $referenceImage = $referenceImages[$i];
             $label = $labels[$i];
             if ($referenceImage != null) {
-                $disk->putFileAs("$projectId", $referenceImage, "$label");
+                $disk->putFileAs("$projectId", $referenceImage, "$label.jpg");
             }
             AnnotationStrategyLabel::updateOrCreate(
                 [
@@ -99,7 +99,7 @@ class AnnotationStrategyLabelController extends Controller
         $this->authorize('update', $project);
 
         $disk = Storage::disk(config('annotation_strategy.storage_disk'));
-        $url = "$project->id/$label->id";
+        $url = "$project->id/$label->id.jpg";
         if ($disk->exists($url)) {
             $disk->delete($url);
         }

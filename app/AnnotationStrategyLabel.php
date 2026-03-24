@@ -6,35 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model for annotation strategies associated to a Model.
+ * Model for labels within an annotation strategy.
  *
  * @property int $id
  */
 class AnnotationStrategyLabel extends Model
 {
     use HasFactory;
-
-    /**
-     * The data type of the primary key ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'array';
-
-    /**
-     * Primary key should not be incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * Set `annotation_strategy` and `label` as primary keys.
-     *
-     * @var array<int, string>
-     */
-    // @phpstan-ignore-next-line
-    protected $primaryKey = ['annotation_strategy', 'label'];
 
     /**
      * The attributes that should be casted to native types.
@@ -74,18 +52,5 @@ class AnnotationStrategyLabel extends Model
     public function label()
     {
         return $this->belongsTo(Label::class, 'label');
-    }
-
-    /**
-     * Since this table does not have a primary key but uses two keys as primary keys
-     *
-     * @return \Illuminate\Database\Eloquent\Builder<static>
-     */
-    protected function setKeysForSaveQuery($query)
-    {
-        foreach ($this->primaryKey as $key) {
-            $query->where($key, '=', $this->getAttribute($key));
-        }
-        return $query;
     }
 }

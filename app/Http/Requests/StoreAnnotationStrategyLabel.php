@@ -8,14 +8,14 @@ use Illuminate\Foundation\Http\FormRequest;
 class StoreAnnotationStrategyLabel extends FormRequest
 {
     /**
-     * The project to attach a user to.
+     * The project of the annotation strategy
      *
      * @var Project
      */
     public $project;
 
     /**
-     * The user to attach.
+     * The user making the request.
      *
      * @var User
      */
@@ -48,7 +48,7 @@ class StoreAnnotationStrategyLabel extends FormRequest
             'shapes' => ['required', 'array'],
             'shapes.*' => ['nullable', 'integer'],
             'reference_images' => ['required', 'array'],
-            'reference_images.*' => ['nullable', 'file', 'mimes:jpg,png', 'dimensions:max_width=300,max_height=300'],
+            'reference_images.*' => ['nullable', 'file', 'mimes:jpg', 'dimensions:max_width=300,max_height=300'],
         ];
     }
 }

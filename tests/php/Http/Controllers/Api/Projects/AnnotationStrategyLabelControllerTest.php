@@ -57,9 +57,10 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
                 ->get()
                 ->toArray();
 
-            $disk->assertExists("{$id}/{$label1->id}");
+            $disk->assertExists("{$id}/{$label1->id}.jpg");
 
             $expected = [[
+                'id' => $asl[0]['id'],
                 'annotation_strategy' => $as->id,
                 'label' => $label1->id,
                 'shape' => Shape::polygonId(),
@@ -71,7 +72,7 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $filename = 'file.txt';
             $fakeFile = UploadedFile::fake()->create($filename);
             $data = [
-                'annotation_strategy' => $as->id,
+                'annotation_strategy' => $as['id'],
                 'labels' => [$label1->id],
                 'shapes' => [Shape::polygonId()],
                 'descriptions' => ['labelDescription'],
@@ -80,8 +81,6 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
 
             $this->post($path, $data)
                 ->assertStatus(302);
-
-            $imageFile = new UploadedFile($fileDir."test-image.png", "test-image.png", test: true);
 
             //Update two other labels, the first label should not be there.
             $label2 = Label::factory()->create();
@@ -100,23 +99,29 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
 
 
             $asl2 = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
+                ->orderBy('label')
                 ->get()
                 ->toArray();
 
+            $this->assertCount(3, $asl2);
+
             $expected = [
                 [
+                    'id' => $asl2[0]['id'],
                     'annotation_strategy' => $as->id,
                     'label' => $label2->id,
                     'shape' => null,
                     'description' => 'labelDescription',
                 ],
                 [
+                    'id' => $asl2[1]['id'],
                     'annotation_strategy' => $as->id,
                     'label' => $label3->id,
                     'shape' => Shape::circleId(),
                     'description' => 'aDifferentDescription',
                 ],
                 [
+                    'id' => $asl2[2]['id'],
                     'annotation_strategy' => $as->id,
                     'label' => $label4->id,
                     'shape' => Shape::pointId(),
@@ -124,20 +129,16 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
                 ],
             ];
 
-            $asl = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
-                ->get()
-                ->toArray();
-
             $this->assertEquals($asl2, $expected);
 
             //Should have been deleted
-            $disk->assertMissing("{$id}/{$label1->id}");
+            $disk->assertMissing("{$id}/{$label1->id}.jpg");
 
             //Should have been uploaded
-            $disk->assertExists("{$id}/{$label2->id}");
+            $disk->assertExists("{$id}/{$label2->id}.jpg");
 
             //Should not exist
-            $disk->assertMissing("{$id}/{$label3->id}");
+            $disk->assertMissing("{$id}/{$label3->id}.jpg");
 
             //delete
             $path = "/api/v1/projects/{$id}/annotation-strategy-label/delete-image";
@@ -160,16 +161,16 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $this->delete($path, $data)
                 ->assertStatus(200);
 
-            $disk->assertMissing("{$id}/{$label2->id}");
+            $disk->assertMissing("{$id}/{$label2->id}.jpg");
         } finally {
-            if (isset($label1) && $disk->exists("{$id}/{$label1->id}")) {
-                $disk->delete("{$id}/{$label1->id}");
+            if (isset($label1) && $disk->exists("{$id}/{$label1->id}.jpg")) {
+                $disk->delete("{$id}/{$label1->id}.jpg");
             }
-            if (isset($label2) && $disk->exists("{$id}/{$label2->id}")) {
-                $disk->delete("{$id}/{$label2->id}");
+            if (isset($label2) && $disk->exists("{$id}/{$label2->id}.jpg")) {
+                $disk->delete("{$id}/{$label2->id}.jpg");
             }
-            if (isset($label3) && $disk->exists("{$id}/{$label3->id}")) {
-                $disk->delete("{$id}/{$label2->id}");
+            if (isset($label3) && $disk->exists("{$id}/{$label3->id}.jpg")) {
+                $disk->delete("{$id}/{$label2->id}.jpg");
             }
         }
 
