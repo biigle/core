@@ -43,6 +43,7 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
+                :is-disabled="disabledLabels.includes(label.id)"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -195,12 +196,7 @@ export default {
             return compiled;
         },
         rootLabels() {
-            let labels =  this.compiledLabels[null];
-            if (this.disabledLabels.length > 0) {
-                labels = labels.filter((label) => !this.disabledLabels.includes(label.id));
-            }
-            return labels;
-
+            return this.compiledLabels[null];
         },
         collapseTitle() {
             if (this.collapsible) {

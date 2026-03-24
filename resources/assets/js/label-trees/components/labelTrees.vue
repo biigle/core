@@ -176,8 +176,10 @@ export default {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
+            labels = labels.filter((label) => !this.disabledLabels.includes(label.id));
+
             if (this.localeCompareSupportsLocales) {
-                // Use this to sort label names "natuarally". This is only supported in
+                // Use this to sort label names "naturally". This is only supported in
                 // modern browsers, though.
                 let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
                 labels.sort(function (a, b) {
