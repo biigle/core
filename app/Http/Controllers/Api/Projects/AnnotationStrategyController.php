@@ -80,6 +80,7 @@ class AnnotationStrategyController extends Controller
             ['project' => $project->id],
             ['description' =>  $request->description]
         );
+
     }
 
     /**

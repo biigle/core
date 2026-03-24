@@ -2,7 +2,7 @@
 
 @push('scripts')
 <script type="module">
-    biigle.$declare('projects.labelTrees', @json($labelTrees));
+    biigle.$declare('projects.labels', @json($labels));
     biigle.$declare('projects.availableShapes', @json($availableShapes));
     biigle.$declare('projects.annotationStrategy', @json($annotationStrategy));
     biigle.$declare('projects.annotationStrategyLabels', @json($annotationStrategyLabels));
@@ -15,7 +15,8 @@
     <div class="row">
         <div class="col-xl-12">
             <annotation-strategy
-            :is-admin={{ $isAdmin ? 'true' : 'false' }}></annotation-strategy>
+            :is-admin={{ $isAdmin ? 'true' : 'false' }}>
+            </annotation-strategy>
         </div>
     </div>
 </div>
