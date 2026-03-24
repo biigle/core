@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Views\Projects;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
+use Biigle\AnnotationStrategy;
 use Biigle\ReportType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -59,6 +60,8 @@ class ProjectReportsController extends Controller
             }
         }
 
+        $annotationStrategy = AnnotationStrategy::where('project', $project->id)->first();
+
         return view('projects.reports', [
             'project' => $project,
             'isMember' => $isMember,
@@ -71,6 +74,7 @@ class ProjectReportsController extends Controller
             'hasVideoVolume' => $hasVideoVolume,
             'labelTrees' => $labelTrees,
             'hasIfdos' => $hasIfdos,
+            'annotationStrategy' => $annotationStrategy,
         ]);
     }
 }
