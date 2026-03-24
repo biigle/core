@@ -1,21 +1,17 @@
 <template>
     <div class="row annotation-strategy-label">
         <div class="col-xs-3">
-            <div v-if="creating" :class="{ 'has-error': missingLabel }">
-                <ul class="label-tree__list">
-                    <label-trees
-                        :trees="labelTrees"
-                        :multiselect="false"
-                        :clearable="false"
-                        :disabled-labels="labelsToExclude"
-                        @select="selectLabel"
-                        @deselect="deselectLabel"
-                    >
-                    </label-trees>
-                    <span class="help-block" v-if="missingLabel">
-                        The description of this label is missing
-                    </span>
-                </ul>
+            <div v-if="creating && !hasLabel" :class="{ 'has-error': missingLabel }">
+                <typeahead
+                    class="typeahead--block"
+                    :items="labels"
+                    placeholder="Label name"
+                    :clear-on-select="true"
+                    v-on:select="selectLabel">
+                </typeahead>
+                <span class="help-block" v-if="missingLabel">
+                    Choose a label
+                </span>
             </div>
             <div v-else>
                 <ul class="label-tree__list">
@@ -37,8 +33,9 @@
                     placeholder="Describe how this label should be used..."
                 ></textarea>
                 <span class="help-block" v-if="missingDescription"
-                    >The description of this label is missing</span
-                >
+                    >
+                    Add a description to this label
+                 </span>
             </div>
             <div v-else>
                 <span class="strategy-description-text">{{ description }}</span>
@@ -80,7 +77,7 @@
             ></annotation-strategy-label-image>
         </div>
         <div v-if="isAdmin" class="col-xs-1">
-            <div v-if="editMode">
+            <div v-if="editMode" :class="{ 'has-error': remindToSave }">
                 <button
                     class="btn btn-success btn-block btn-asl"
                     type="button"
@@ -104,6 +101,9 @@
                         <span class="fa fa-times" aria-hidden="true"></span>
                     </button>
                 </span>
+                <span v-if="remindToSave" class="help-block">
+                    Save or delete this label before saving the strategy
+                </span>
             </div>
             <div v-else>
                 <button
@@ -120,18 +120,19 @@
 <script>
 import AnnotationStrategyLabelImage from './annotationStrategyLabelImage.vue';
 import AnnotationStrategyLabelApi from '@/projects/api/annotationStrategyLabel.js';
-import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LabelTreeLabel from '@/label-trees/components/labelTreeLabel.vue';
 import { handleErrorResponse } from '@/core/messages/store.js';
 import { resizeImage } from './resizeImage.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import Typeahead from '@/core/components/typeahead.vue';
+
 export default {
     mixins: [LoaderMixin],
     emits: ['edit-label', 'add-label', 'delete-label'],
     components: {
-        labelTrees: LabelTrees,
         labelTreeLabel: LabelTreeLabel,
         annotationStrategyLabelImage: AnnotationStrategyLabelImage,
+        typeahead: Typeahead,
     },
     props: {
         annotationStrategyLabel: {
@@ -146,7 +147,7 @@ export default {
             type: Object,
             required: true,
         },
-        labelTrees: {
+        labels: {
             type: Array,
             default: () => [],
         },
@@ -169,6 +170,10 @@ export default {
         labelsToExclude: {
             type: Array,
             default: () => [],
+        },
+        remindToSave: {
+            type: Boolean,
+            default: false,
         },
     },
     computed: {

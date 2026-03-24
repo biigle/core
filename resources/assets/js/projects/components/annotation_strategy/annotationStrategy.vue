@@ -1,31 +1,82 @@
 <template>
     <div>
-        <h3><span v-if="creating">Create </span>Annotation Strategy</h3>
-        <div v-if="isAdmin && !creating">
-            <div v-if="!creating">
-                <div v-if="editingStrategyDescription">
+        <h3>
+            <span v-if="creating">Create </span>Annotation Strategy
+            <a
+                class="btn"
+                href="/manual/tutorials/projects/about#annotation-strategy"
+                title="Learn more about annotation strategies"
+                target="_blank">
+                <i class="fa fa-question-circle">
+                </i>
+            </a>
+        </h3>
+        <div class="row">
+            <div class="col-xs-6">
+                <span>
+                    <h4>Description
+                        <span v-if="isAdmin && !creating">
+                            <span v-if="!editingDescription">
+                                <a
+                                    @click="editDescription"
+                                    class="btn"
+                                    title="Edit the strategy description"
+                                >
+                                    <span aria-hidden="true" class="fa fa-pencil-alt"> </span>
+                                </a>
+                            </span>
+                            <span v-else>
+                                <a
+                                    title="Stop editing the strategy description"
+                                    @click="stopEditingDescription"
+                                    class="btn"
+                                >
+                                    <i aria-hidden="true" class="fa fa-check"> </i>
+                                </a>
+                            </span>
+                        </span>
+                    </h4>
+                </span>
+            </div>
+            <div class="col-xs-6">
+                <span v-if="isAdmin" class="top-bar pull-right">
                     <button
-                        class="btn btn-default pull-right"
-                        @click="stopEditingDescription"
+                        class="btn btn-default btn-sm"
+                        type="button"
+                        @click="addNewLabel"
+                        title="Add new label to the annotation strategy"
                     >
-                        Stop editing strategy description
+                        <i class="fa fa-tags"></i>
+                        <span class="fa fa-plus" aria-hidden="true"></span>
+                        Add label
                     </button>
-                </div>
-                <div v-if="!editingStrategyDescription">
                     <button
-                        class="btn btn-default pull-right"
-                        @click="editStrategyDescription"
+                        class="btn btn-success btn-sm"
+                        type="button"
+                        @click="sendUpdateAnnotationStrategy"
+                        title="Save annotation strategy"
                     >
-                        Edit strategy description
+                        <span class="fa fa-check"></span>
+                        Save strategy
                     </button>
-                </div>
+                    <span v-if="!creating">
+                        <button
+                            class="btn btn-danger btn-sm"
+                            type="submit"
+                            @click="sendDeleteAnnotationStrategy"
+                            title="Delete the annotation strategy"
+                        >
+                            <span class="fa fa-trash"></span>
+                            Delete strategy
+                        </button>
+                    </span>
+                </span>
             </div>
         </div>
-        <h4>Description</h4>
         <div>
             <div class="form-group">
                 <div
-                    v-if="editingStrategyDescription || creating"
+                    v-if="editingDescription || creating"
                     :class="{ 'has-error': missingDescription }"
                 >
                     <textarea
@@ -36,11 +87,12 @@
                         placeholder="Edit the strategy description here..."
                     ></textarea>
                     <span v-if="missingDescription" class="help-block"
-                        >The description of the strategy is missing</span
-                    >
+                        >
+                        The description of the strategy is missing
+                    </span>
                 </div>
                 <div v-else>
-                    <p class="strategy-description-text">
+                    <p class="strategy-description-text well">
                         {{ annotationStrategy.description }}
                     </p>
                 </div>
@@ -77,51 +129,18 @@
             <div v-if="addingNewLabel">
                 <annotation-strategy-label
                     :is-admin="isAdmin"
-                    :label-trees="labelTrees"
+                    :labels="filteredLabels"
                     :project-id="projectId"
                     :creating="true"
                     :available-shapes="availableShapes"
                     :base-url="baseUrl"
                     :labels-to-exclude="labelsInStrategy"
+                    :remind-to-save="remindToSave"
                     @edit-label="setLabelEditing"
                     @add-label="addLabel"
                     @delete-label="deleteLabel"
                 >
                 </annotation-strategy-label>
-            </div>
-            <div v-if="isAdmin" class="row">
-                <div class="col-xs-2" v-if="!addingNewLabel || editingLabel">
-                    <button
-                        class="btn btn-success btn-block"
-                        type="button"
-                        @click="addNewLabel"
-                        title="Add new label to the annotation strategy"
-                        :disabled="!hasLabelTrees"
-                    >
-                        <i class="fa fa-tags"></i>
-                        <span class="fa fa-plus" aria-hidden="true"></span>
-                    </button>
-                </div>
-                <div class="col-xs-2">
-                    <button
-                        class="btn btn-success btn-block"
-                        type="button"
-                        @click="sendUpdateAnnotationStrategy"
-                    >
-                        <span v-if="creating"> Create strategy </span>
-                        <span v-else> Save changes </span>
-                    </button>
-                </div>
-                <div v-if="!creating" class="col-xs-2">
-                    <button
-                        class="btn btn-danger btn-block"
-                        type="submit"
-                        @click="sendDeleteAnnotationStrategy"
-                        title="Delete the annotation strategy"
-                    >
-                        Delete strategy
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -130,6 +149,7 @@
 import AnnotationStrategy from '@/projects/api/annotationStrategy.js';
 import AnnotationStrategyLabelApi from '@/projects/api/annotationStrategyLabel.js';
 import AnnotationStrategyLabel from './annotationStrategyLabel.vue';
+import Messages from '@/core/messages/store.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import { handleErrorResponse } from '@/core/messages/store.js';
 
@@ -145,6 +165,9 @@ export default {
         },
     },
     computed: {
+        filteredLabels() {
+            return this.labels.filter((label) => !this.labelsInStrategy.includes(label.id));
+        },
         creating() {
             return Object.keys(this.annotationStrategy).length === 0;
         },
@@ -162,8 +185,8 @@ export default {
                 this.annotationStrategy.description.trim().length > 0
             );
         },
-        hasLabelTrees() {
-            return this.labelTrees.length > 0;
+        hasLabels() {
+            return this.labels.length > 0;
         },
         labelsInStrategy() {
             return this.annotationStrategyLabels.map((asl) => asl.label.id);
@@ -188,7 +211,7 @@ export default {
         return {
             editing: false,
             projectId: biigle.$require('projects.project').id,
-            labelTrees: biigle.$require('projects.labelTrees'),
+            labels: biigle.$require('projects.labels'),
             annotationStrategy: biigle.$require('projects.annotationStrategy'),
             annotationStrategyLabels: biigle.$require(
                 'projects.annotationStrategyLabels',
@@ -199,8 +222,9 @@ export default {
             ),
             mightHaveEdited: false,
             addingNewLabel: false,
-            editingStrategyDescription: false,
+            editingDescription: false,
             missingDescription: false,
+            remindToSave: false,
         };
     },
     created() {
@@ -224,7 +248,7 @@ export default {
                 .finally(this.finishLoading);
         },
         resetEditing() {
-            this.editingStrategyDescription = false;
+            this.editingDescription = false;
             this.mightHaveEdited = false;
         },
         setAnnotationStrategy(responseBody) {
@@ -241,10 +265,10 @@ export default {
             }
         },
         setLabelEditing(label) {
-            if (this.editingLabel || this.addingNewLabel) {
-                alert('You are already editing another label!');
+            if (this.checkIsEditingLabel()) {
                 return;
             }
+
             Object.assign(
                 this.annotationStrategyLabels.filter(
                     (asl) => asl.label.id == label.id,
@@ -266,9 +290,9 @@ export default {
             this.mightHaveEdited = true;
             this.addingNewLabel = true;
         },
-        editStrategyDescription() {
+        editDescription() {
             this.mightHaveEdited = true;
-            this.editingStrategyDescription = true;
+            this.editingDescription = true;
         },
         deleteLabel() {
             if (this.addingNewLabel) {
@@ -281,17 +305,32 @@ export default {
                 );
             }
         },
+        checkIsEditingLabel() {
+            if (this.addingNewLabel) {
+                Messages.danger('Save the new label before saving the strategy');
+                this.remindToSave = true;
+                return true;
+            }
+
+            if (this.editingLabel) {
+                this.addLabel(this.editingLabel);
+            }
+
+            return false;
+        },
         sendUpdateAnnotationStrategy() {
             if (!this.hasDescription) {
                 this.missingDescription = true;
-                return;
-            }
-            this.missingDescription = false;
-            if (this.editingLabel || this.addingNewLabel) {
-                alert('You did not save the latest changes to the label!');
+                Messages.warning('Add a description before saving')
                 return;
             }
 
+            if (this.checkIsEditingLabel()) {
+                return;
+            }
+
+
+            this.missingDescription = false;
             let data = this.generateLabelUpdate();
 
             this.startLoading();
@@ -306,11 +345,14 @@ export default {
                     ),
                     this.handleErrorResponse,
                 )
-                .catch(this.handleErrorResponse)
+                .then(this.sendSuccessMessage, this.handleErrorResponse)
                 .finally(() => {
                     this.finishLoading();
-                    this.refreshStrategy();
+                    setTimeout(() => this.refreshStrategy(), 300);
                 });
+        },
+        sendSuccessMessage() {
+            Messages.success('Strategy saved.');
         },
         generateLabelUpdate() {
             let formData = new FormData();
@@ -353,7 +395,7 @@ export default {
             setTimeout(() => location.reload(), 100);
         },
         stopEditingDescription() {
-            this.editingStrategyDescription = false;
+            this.editingDescription = false;
         },
     },
 };

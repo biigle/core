@@ -31,6 +31,8 @@
     </div>
 </template>
 <script>
+import Messages from '@/core/messages/store.js';
+
 export default {
     emits: ['reset-reference-image', 'add-image'],
     props: {
@@ -73,7 +75,7 @@ export default {
             }
             return this.temporaryImage
                 ? this.temporaryImage
-                : this.baseUrl + '/' + this.labelId;
+                : this.baseUrl + '/' + this.labelId + '.jpg';
         },
     },
     data() {
@@ -103,13 +105,13 @@ export default {
         },
         addImage(event) {
             if (event.target.files.length > 1) {
-                alert('Please select only one file');
+                Messages.warning('Please select only one file');
                 return;
             }
             let file = event.target.files[0];
 
             if (file.size > 5 * 1024 * 1024) {
-                alert('The file is too big');
+                Messages.warning('The file is too big');
                 return;
             }
 
