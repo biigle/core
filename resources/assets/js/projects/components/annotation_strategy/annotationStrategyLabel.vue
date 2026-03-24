@@ -5,7 +5,7 @@
                 <typeahead
                     class="typeahead--block"
                     :items="labels"
-                    placeholder="Label name"
+                    placeholder="Search a label here..."
                     :clear-on-select="true"
                     v-on:select="selectLabel">
                 </typeahead>
