@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model for annotation strategies associated to a Model.
+ * This Model describes the annotation strategy of a Project
  *
  * @property int $id
  */
@@ -48,7 +48,7 @@ class AnnotationStrategy extends Model
     }
 
     /**
-     * The strategies for the labels within this strategy.
+     * The labels within this strategy.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationStrategyLabel, $this>
      */
