@@ -32,13 +32,11 @@
 textarea.strategy-description {
   width: 100%;
   resize: none;
-  overflow-x: hidden;
   min-height: 150px;
   max-height: 300px;
   margin-top: 3px;
   margin-bottom: 3px;
   box-sizing: border-box;
-  color: black;
 }
 
 .annotation-strategy-label {
@@ -78,7 +76,7 @@ textarea.strategy-description {
     min-height: 50px;
 }
 
-#strategy-description-text {
+.strategy-description-text {
     white-space: pre-line;
 }
 
