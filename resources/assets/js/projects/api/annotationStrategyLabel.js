@@ -7,7 +7,7 @@ import {Resource} from 'vue-resource';
  * resource.save({id: projectId, descriptions: [description], labels: [labels]}, {...}).then(...);
  *
  * Delete a reference image
- * resource.delete_image({id: projectId, descriptions: [description], labels: [labels]}, {...}).then(...);
+ * resource.delete_image({id: projectId, label: labelId).then(...);
  *
  */
 export default Resource('api/v1/projects{/id}/annotation-strategy-label',{}, {
