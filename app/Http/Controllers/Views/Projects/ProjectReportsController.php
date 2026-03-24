@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\AnnotationStrategy;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
-use Biigle\AnnotationStrategy;
 use Biigle\ReportType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

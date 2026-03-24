@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\AnnotationStrategy;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Biigle\Role;
-use Biigle\AnnotationStrategy;
 use Illuminate\Http\Request;
 
 class ProjectUserController extends Controller
