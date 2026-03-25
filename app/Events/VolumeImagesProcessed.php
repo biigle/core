@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class VolumeFilesProcessed implements ShouldBroadcastNow
+class VolumeImagesProcessed implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -21,23 +21,14 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
     public $user;
 
     /**
-     * Ids of processed files
-     *
-     * @var array
-     */
-    public $fileIds;
-
-    /**
      * Create a new event instance.
      *
-     * @param array $fileIds
      * @param User $user
      *
      */
-    public function __construct(array $fileIds, User $user)
+    public function __construct(User $user)
     {
         $this->user = $user;
-        $this->fileIds = $fileIds;
     }
 
     /**
@@ -57,8 +48,6 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
      */
     public function broadcastWith()
     {
-        return [
-            'fileIds' => $this->fileIds
-        ];
+        return [];
     }
 }
