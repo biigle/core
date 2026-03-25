@@ -285,8 +285,8 @@ export default {
         },
     },
     created() {
-        let userId = biigle.$require('volumes.userId');
         let isAsync = biigle.$require('volumes.creatingAsync');
+        let isImageVolume = biigle.$require('volumes.isImageVolume');
         this.type = biigle.$require('volumes.type');
         this.fileIds = biigle.$require('volumes.fileIds');
         this.filterSequence = this.fileIds;
@@ -306,9 +306,10 @@ export default {
         let annotateUri = biigle.$require('volumes.annotateUri');
         let infoUri = biigle.$require('volumes.infoUri');
 
-        if (isAsync) {
+        if (isImageVolume && isAsync) {
+            let userId = biigle.$require('volumes.userId');
             Echo.getInstance().private(`user-${userId}`)
-                .listen('.Biigle\\Events\\VolumeFilesProcessed', this.reload)
+                .listen('.Biigle\\Events\\VolumeImagesProcessed', this.reload)
         } else {
             // Do this here instead of a computed property so the file objects get
             // reactive. Also, this array does never change between page reloads.
