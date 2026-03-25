@@ -57,11 +57,37 @@ class VideoAnnotationTest extends TestCase
         $data->validate();
     }
 
-    public function testValidatePointsArray()
+    public function testValidatePointsArray1()
     {
         $data = new VideoAnnotation(
             shape: Shape::point(),
             points: [10, 10],
+            frames: [1],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectException(Exception::class);
+        $data->validate();
+    }
+
+    public function testValidatePointsArray2()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [[], [10, 10]],
+            frames: [1, 2],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectException(Exception::class);
+        $data->validate();
+    }
+
+    public function testValidatePointsArray3()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [[]],
             frames: [1],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
         );
