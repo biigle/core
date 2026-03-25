@@ -355,17 +355,49 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'frames' => [0.0],
             ])
             ->assertStatus(422);
-    }
 
-    public function testStoreValidatePointsArray2()
-    {
-        $this->beEditor();
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [],
+                'frames' => [0.0],
+            ])
+            ->assertStatus(422);
+
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[]],
+                'frames' => [0.0],
+            ])
+            ->assertStatus(422);
+
         $this
             ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
                 'shape_id' => Shape::pointId(),
                 'label_id' => $this->labelRoot()->id,
                 'points' => [[[10, 11]]],
                 'frames' => [0.0],
+            ])
+            ->assertStatus(422);
+
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[], [10, 11]],
+                'frames' => [0.0, 1.0],
+            ])
+            ->assertStatus(422);
+
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[], []],
+                'frames' => [0.0, 1.0],
             ])
             ->assertStatus(422);
     }
