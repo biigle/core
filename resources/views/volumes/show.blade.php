@@ -78,7 +78,12 @@
                 </div>
             </div>
             @if ($volume->creating_async)
-                <div v-cloak v-if="noContent" class="panel panel-warning">
+                <div v-cloak v-if="error" class="panel panel-danger">
+                    <div class="panel-body text-danger">
+                        An error occurred. The volume files couldn't be processed. Please delete this volume and create a new one.
+                    </div>
+                </div>
+                <div v-cloak v-else-if="noContent" class="panel panel-warning">
                     <div class="panel-body text-warning">
                         @if ($volume->isImageVolume())
                             This volume is still being processed and will be reloaded once it is ready.
