@@ -21,6 +21,13 @@ class VolumeImagesProcessed implements ShouldBroadcastNow
     public $user;
 
     /**
+     * Ignore this job if the user does not exist any more.
+     *
+     * @var bool
+     */
+    protected $deleteWhenMissingModels = true;
+
+    /**
      * Create a new event instance.
      *
      * @param User $user
