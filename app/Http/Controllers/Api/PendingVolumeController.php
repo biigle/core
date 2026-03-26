@@ -23,7 +23,7 @@ class PendingVolumeController extends Controller
      *
      * @var int
      */
-    const CREATE_SYNC_LIMIT = 10000;
+    public const CREATE_SYNC_LIMIT = 10000;
 
     /**
      * Creates a new pending volume associated to the specified project.
