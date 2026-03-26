@@ -19,13 +19,6 @@ use Storage;
 class PendingVolumeController extends Controller
 {
     /**
-     * Limit for the number of files above which volume files are created asynchronously.
-     *
-     * @var int
-     */
-    public const CREATE_SYNC_LIMIT = 10000;
-
-    /**
      * Creates a new pending volume associated to the specified project.
      *
      * @api {post} projects/:id/pending-volumes Create a new pending volume
@@ -165,7 +158,8 @@ class PendingVolumeController extends Controller
     public function update(UpdatePendingVolume $request)
     {
         $pv = $request->pendingVolume;
-        $volume = DB::transaction(function () use ($request, $pv) {
+        $limit = config('volumes.create_sync_limit');
+        $volume = DB::transaction(function () use ($request, $pv, $limit) {
 
             $volume = Volume::create([
                 'name' => $request->input('name'),
@@ -192,7 +186,7 @@ class PendingVolumeController extends Controller
 
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30s execution timeout.
-            if (count($files) > self::CREATE_SYNC_LIMIT) {
+            if (count($files) > $limit) {
                 $job = new CreateNewFilesAndNotifyUser($volume, $files, $request->user());
                 Queue::pushOn('high', $job);
                 $volume->creating_async = true;
