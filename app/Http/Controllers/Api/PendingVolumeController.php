@@ -5,7 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StorePendingVolume;
 use Biigle\Http\Requests\StorePendingVolumeFromVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
-use Biigle\Http\Requests\UpdatePendingVolumeAnnotationLabels;
+use Biigle\Jobs\CreateNewFilesAndNotifyUser;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Project;
@@ -192,12 +192,13 @@ class PendingVolumeController extends Controller
 
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30s execution timeout.
-            $job = new CreateNewImagesOrVideos($volume, $files);
             if (count($files) > self::CREATE_SYNC_LIMIT) {
+                $job = new CreateNewFilesAndNotifyUser($volume, $files, $request->user());
                 Queue::pushOn('high', $job);
                 $volume->creating_async = true;
                 $volume->save();
             } else {
+                $job = new CreateNewImagesOrVideos($volume, $files);
                 Queue::connection('sync')->push($job);
             }
 
