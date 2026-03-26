@@ -68,7 +68,6 @@ export default {
             type: null,
             showStatisticsModal: false,
             statisticsData: {},
-            error: false,
         };
     },
     computed: {
@@ -246,9 +245,6 @@ export default {
         },
         reload() {
             location.reload();
-        },
-        setError() {
-            this.error = true;
         }
     },
     watch: {
@@ -314,7 +310,6 @@ export default {
             let userId = biigle.$require('volumes.userId');
             Echo.getInstance().private(`user-${userId}`)
                 .listen('.Biigle\\Events\\VolumeImagesProcessed', this.reload)
-                .listen('.Biigle\\Events\\VolumeFilesProcessingFailed', this.setError)
         } else {
             // Do this here instead of a computed property so the file objects get
             // reactive. Also, this array does never change between page reloads.
