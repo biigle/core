@@ -120,7 +120,8 @@ class ProjectVolumeController extends Controller
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30 s execution timeout.
             $job = new CreateNewImagesOrVideos($volume, $files);
-            if (count($files) > PendingVolumeController::CREATE_SYNC_LIMIT) {
+            $limit = config('volumes.create_sync_limit');
+            if (count($files) > $limit) {
                 Queue::pushOn('high', $job);
                 $volume->creating_async = true;
                 $volume->save();
