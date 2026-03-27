@@ -47,14 +47,4 @@ class VolumeImagesProcessed implements ShouldBroadcastNow
     {
         return new UserChannel($this->user);
     }
-
-    /**
-     * Get the data to broadcast.
-     *
-     * @return array
-     */
-    public function broadcastWith()
-    {
-        return [];
-    }
 }
