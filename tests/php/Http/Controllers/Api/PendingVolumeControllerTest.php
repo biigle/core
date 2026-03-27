@@ -1112,7 +1112,8 @@ class PendingVolumeControllerTest extends ApiTestCase
             ->assertRedirectToRoute('create-volume', ['project' => $pv->project_id]);
     }
 
-    public function testUpdateLargeVolume() {
+    public function testUpdateLargeVolume()
+    {
         config([
             'volumes.editor_storage_disks' => ['test'],
             'volumes.create_sync_limit' => 2,
