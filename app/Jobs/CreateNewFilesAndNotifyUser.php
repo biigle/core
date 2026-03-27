@@ -21,7 +21,7 @@ class CreateNewFilesAndNotifyUser implements ShouldQueue
     public $volume;
 
     /**
-     * Array of file names contained by the volume
+     * File names of files within the volume
      *
      * @var array
      */
