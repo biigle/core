@@ -187,7 +187,7 @@ class PendingVolumeController extends Controller
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30s execution timeout.
             if (count($files) > $limit) {
-                $job = new CreateNewFilesAndNotifyUser($volume, $files, $request->user());
+                $job = new CreateNewFilesAndNotifyUser($volume, $files, $request->user()->id);
                 Queue::pushOn('high', $job);
                 $volume->creating_async = true;
                 $volume->save();

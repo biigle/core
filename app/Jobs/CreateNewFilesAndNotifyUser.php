@@ -28,14 +28,14 @@ class CreateNewFilesAndNotifyUser extends Job implements ShouldQueue
     public $filenames;
 
     /**
-     * The user requesting the new volume
+     * The id of the user requesting the new volume
      *
-     * @var User
+     * @var int
      */
-    public $user;
+    public $userId;
 
     /**
-     * Ignore this job if the volume or user does not exist any more.
+     * Ignore this job if the volume does not exist any more.
      *
      * @var bool
      */
@@ -46,13 +46,13 @@ class CreateNewFilesAndNotifyUser extends Job implements ShouldQueue
      *
      * @param Volume $volume
      * @param array $filenames
-     * @param User $user
+     * @param int $userId
      */
-    public function __construct(Volume $volume, array $filenames, User $user)
+    public function __construct(Volume $volume, array $filenames, int $userId)
     {
         $this->volume = $volume;
         $this->filenames = $filenames;
-        $this->user = $user;
+        $this->userId = $userId;
     }
 
     /**
@@ -63,8 +63,9 @@ class CreateNewFilesAndNotifyUser extends Job implements ShouldQueue
         $job = $this->getJob();
         $job->handle();
 
-        if ($this->volume->isImageVolume()) {
-            VolumeImagesProcessed::dispatch($this->user);
+        $user = User::where('id', $this->userId)->get();
+        if ($user->isNotEmpty() && $this->volume->isImageVolume()) {
+            VolumeImagesProcessed::dispatch($user->first());
         }
     }
 
