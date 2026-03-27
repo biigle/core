@@ -13,6 +13,8 @@ import VolumesApi from './api/volumes.js';
 import VolumeStatisticsApi from '@/projects/api/volumeStatistics.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
+import Echo from '@/core/echo.js';
+
 
 let transformUuid = function (uuid) {
     return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;
@@ -241,6 +243,9 @@ export default {
         hideStatisticsModal() {
             this.showStatisticsModal = false;
         },
+        reload() {
+            location.reload();
+        }
     },
     watch: {
         fileIdsToShow: {
@@ -280,6 +285,8 @@ export default {
         },
     },
     created() {
+        let isAsync = biigle.$require('volumes.creatingAsync');
+        let isImageVolume = biigle.$require('volumes.isImageVolume');
         this.type = biigle.$require('volumes.type');
         this.fileIds = biigle.$require('volumes.fileIds');
         this.filterSequence = this.fileIds;
@@ -298,28 +305,35 @@ export default {
         let thumbCount = biigle.$require('volumes.thumbCount');
         let annotateUri = biigle.$require('volumes.annotateUri');
         let infoUri = biigle.$require('volumes.infoUri');
-        // Do this here instead of a computed property so the file objects get
-        // reactive. Also, this array does never change between page reloads.
-        this.files = this.fileIds.map(function (id) {
-            let thumbnailUrl;
-            if (thumbCount > 1) {
-                thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
-                    return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
-                });
-            } else {
-                thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
-            }
 
-            return {
-                id: id,
-                thumbnailUrl: thumbnailUrl,
-                annotateUrl: annotateUri.replace(':id', id),
-                infoUrl: infoUri ? infoUri.replace(':id', id) : undefined,
-                flagged: false,
-                filename: null,
-                labels: [],
-            };
-        });
+        if (isImageVolume && isAsync) {
+            let userId = biigle.$require('volumes.userId');
+            Echo.getInstance().private(`user-${userId}`)
+                .listen('.Biigle\\Events\\VolumeImagesProcessed', this.reload)
+        } else {
+            // Do this here instead of a computed property so the file objects get
+            // reactive. Also, this array does never change between page reloads.
+            this.files = this.fileIds.map(function (id) {
+                let thumbnailUrl;
+                if (thumbCount > 1) {
+                    thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
+                        return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
+                    });
+                } else {
+                    thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
+                }
+
+                return {
+                    id: id,
+                    thumbnailUrl: thumbnailUrl,
+                    annotateUrl: annotateUri.replace(':id', id),
+                    infoUrl: infoUri ? infoUri.replace(':id', id) : undefined,
+                    flagged: false,
+                    filename: null,
+                    labels: [],
+                };
+            });
+        }
 
         this.restoreSettings();
     },
