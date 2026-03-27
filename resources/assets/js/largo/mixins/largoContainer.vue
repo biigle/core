@@ -13,6 +13,7 @@ import SettingsTab from '../components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import SortingTab from '../components/sortingTab.vue';
+import {computed} from 'vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants.js';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab.vue';
@@ -63,15 +64,9 @@ export default {
         };
     },
     provide() {
-        const appData = {}
-
-        // Need defineProperty to maintain reactivity.
-        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
-        Object.defineProperty(appData, "showAnnotationOutlines", {
-            get: () => this.showAnnotationOutlines,
-        })
-
-        return { 'outlines': appData };
+        return {
+            showAnnotationOutlines: computed(() => this.showAnnotationOutlines),
+        };
     },
     computed: {
         isInDismissStep() {
