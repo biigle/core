@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\AnnotationStrategy;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Biigle\Role;
@@ -48,6 +49,8 @@ class ProjectUserController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
+        $annotationStrategy = AnnotationStrategy::where('project', $project->id)->first();
+
         return view('projects.show.members', [
             'project' => $project,
             'isMember' => $isMember,
@@ -57,6 +60,7 @@ class ProjectUserController extends Controller
             'roles' => $roles,
             'members' => $members,
             'invitations' => $project->invitations,
+            'annotationStrategy' => $annotationStrategy,
         ]);
     }
 }

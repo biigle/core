@@ -22,5 +22,11 @@
         </li>
     @endif
 
+    @if ((($user->can('update', $project) || $user->can('sudo'))) || (isset($annotationStrategy) && $annotationStrategy != null))
+        <li role="presentation" @if ($activeTab === 'strategy') class="active" @endif>
+            <a href="{{route('annotation-strategy', $project->id)}}" title="Check the project strategy for this project"><i class="fa fa-chess"></i> Strategy</a>
+        </li>
+    @endif
+
     @mixin('projectsShowTabs')
 </ul>
