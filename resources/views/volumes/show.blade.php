@@ -23,7 +23,7 @@
 
         biigle.$declare('volumes.userId', {!! $user->id !!});
         biigle.$declare('volumes.creatingAsync', {!! $volume->creating_async == 1 ? 'true' : 'false' !!});
-        biigle.$declare('volumes.isImageVolume', {!! $volume->isImageVolume() !!});
+        biigle.$declare('volumes.isImageVolume', {!! $volume->isImageVolume() == 1 ? 'true' : 'false' !!});
         biigle.$declare('volumes.isAdmin', @can('update', $volume) true @else false @endcan);
 
         @can('edit-in', $volume)
