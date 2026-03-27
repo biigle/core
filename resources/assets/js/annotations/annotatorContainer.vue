@@ -18,7 +18,7 @@ import SettingsTab from './components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import VolumeImageAreaApi from './api/volumes.js';
-import {defineAsyncComponent} from 'vue'
+import {computed, defineAsyncComponent} from 'vue'
 import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
@@ -98,7 +98,7 @@ export default {
     },
     provide() {
         return {
-            labelTrees: this.labelTrees,
+            labelTrees: computed(() => this.labelTrees),
         };
     },
     computed: {
