@@ -1147,7 +1147,7 @@ class PendingVolumeControllerTest extends ApiTestCase
             $this->assertContains('2.jpg', $job->filenames);
             $this->assertContains('3.jpg', $job->filenames);
             $this->assertCount(3, $job->filenames);
-            $this->assertSame($this->admin()->id, $job->user->id);
+            $this->assertSame($this->admin()->id, $job->userId);
             return true;
         });
 

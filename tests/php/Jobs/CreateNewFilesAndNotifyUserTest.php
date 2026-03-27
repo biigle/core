@@ -24,7 +24,7 @@ class CreateNewFilesAndNotifyUserTest extends TestCase
         $filenames = ['a.jpg', 'b.jpg'];
 
         $mock = Mockery::mock(CreateNewImagesOrVideos::class);
-        $job = new CreateNewFilesAndNotifyUserStub($volume, $filenames, $user);
+        $job = new CreateNewFilesAndNotifyUserStub($volume, $filenames, $user->id);
         $job->subJob = $mock;
 
         $mock->shouldReceive('handle');
@@ -42,7 +42,7 @@ class CreateNewFilesAndNotifyUserTest extends TestCase
         $filenames = ['a.mp4', 'b.mp4'];
 
         $mock = Mockery::mock(CreateNewImagesOrVideos::class);
-        $job = new CreateNewFilesAndNotifyUserStub($volume, $filenames, $user);
+        $job = new CreateNewFilesAndNotifyUserStub($volume, $filenames, $user->id);
         $job->subJob = $mock;
 
         $mock->shouldReceive('handle');
