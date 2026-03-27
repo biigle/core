@@ -49,6 +49,25 @@ class CreateNewFilesAndNotifyUserTest extends TestCase
         $job->handle();
         Event::assertNotDispatched(VolumeImagesProcessed::class);
     }
+
+    public function testHandleMissingCreator()
+    {
+        Event::fake();
+        $volume = VolumeTest::create([
+            'media_type_id' => MediaType::imageId(),
+        ]);
+        $user = User::find($volume->creator_id);
+        $filenames = ['a.jpg', 'b.jpg'];
+
+        $mock = Mockery::mock(CreateNewImagesOrVideos::class);
+        $job = new CreateNewFilesAndNotifyUserStub($volume, $filenames, $user->id);
+        $job->subJob = $mock;
+
+        $mock->shouldReceive('handle');
+        $user->delete();
+        $job->handle();
+        Event::assertNotDispatched(VolumeImagesProcessed::class);
+    }
 }
 
 class CreateNewFilesAndNotifyUserStub extends CreateNewFilesAndNotifyUser
