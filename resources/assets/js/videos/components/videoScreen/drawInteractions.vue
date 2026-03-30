@@ -223,7 +223,7 @@ export default {
             this.$emit('seek', lastFrame);
         },
         finishDrawAnnotation() {
-            if (this.isDrawing || this.isUsingPolygonBrush || this.isMagicWanding) {
+            if (this.isDrawing || this.isUsingPolygonBrush) {
                 if (this.hasPendingAnnotation) {
                     if (this.labelbotIsActive) {
                         // If we don't seek to the last frame, no annotation would be
@@ -353,7 +353,7 @@ export default {
 
             return never;
         },
-        updateMagicWandSnepshot() {
+        updateMagicWandSnapshot() {
             if (!this.isDrawingMagicWand) {
                 return;
             }
@@ -370,9 +370,9 @@ export default {
         },
         isDrawingMagicWand(drawing) {
             if (drawing) {
-                this.video.addEventListener('seeked', this.updateMagicWandSnepshot);
+                this.video.addEventListener('seeked', this.updateMagicWandSnapshot);
             } else {
-                this.video.removeEventListener('seeked', this.updateMagicWandSnepshot);
+                this.video.removeEventListener('seeked', this.updateMagicWandSnapshot);
             }
         },
     },
