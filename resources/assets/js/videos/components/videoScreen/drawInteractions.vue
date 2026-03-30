@@ -1,6 +1,7 @@
 <script>
 import * as preventDoubleclick from '@/prevent-doubleclick';
 import DrawInteraction, {createBox} from '@biigle/ol/interaction/Draw';
+import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from "./snapInteraction.vue";
 import Styles from '@/annotations/stores/styles.js';
@@ -73,6 +74,9 @@ export default {
         isDrawingAlignedRectangle() {
             return this.interactionMode === 'drawAlignedRectangle';
         },
+        isDrawingMagicWand() {
+            return this.interactionMode === 'drawMagicWand';
+        },
         hasPendingAnnotation() {
             if (this.isDrawingWholeFrame) {
                 return this.pendingAnnotation.shape && this.pendingAnnotation.frames.length > 0 && this.pendingAnnotation.points.length === 0;
@@ -134,11 +138,18 @@ export default {
         drawAlignedRectangle() {
             this.draw('AlignedRectangle');
         },
+        drawMagicWand() {
+            this.draw('MagicWand');
+        },
         maybeUpdateDrawInteractionMode(mode) {
             let shape = mode.slice(4); // Remove the 'draw' prefix.
 
             if (this.isDrawingAlignedRectangle) {
                 shape = 'Rectangle';
+            }
+
+            if (this.isDrawingMagicWand) {
+                shape = 'Polygon';
             }
 
             this.resetPendingAnnotation(shape);
@@ -166,14 +177,27 @@ export default {
                         geometryFunction = createBox();
                     }
 
-                    this.drawInteraction = new DrawInteraction({
-                        source: this.pendingAnnotationSource,
-                        type: type,
-                        geometryFunction: geometryFunction,
-                        style: Styles.editing,
-                        freehandCondition: this.getFreehandCondition(mode),
-                        condition: this.updateSnapCoords
-                    });
+                    if (this.isDrawingMagicWand) {
+                        this.drawInteraction = new MagicWandInteraction({
+                            map: this.map,
+                            source: this.pendingAnnotationSource,
+                            layer: this.videoLayer,
+                            style: Styles.editing,
+                            indicatorPointStyle: Styles.editing,
+                            indicatorCrossStyle: Styles.cross,
+                            simplifyTolerant: 0.1,
+                        });
+                    } else {
+                        this.drawInteraction = new DrawInteraction({
+                            source: this.pendingAnnotationSource,
+                            type: type,
+                            geometryFunction: geometryFunction,
+                            style: Styles.editing,
+                            freehandCondition: this.getFreehandCondition(mode),
+                            condition: this.updateSnapCoords
+                        });
+                    }
+
 
                     this.map.addInteraction(this.drawInteraction);
 
@@ -199,7 +223,7 @@ export default {
             this.$emit('seek', lastFrame);
         },
         finishDrawAnnotation() {
-            if (this.isDrawing || this.isUsingPolygonBrush) {
+            if (this.isDrawing || this.isUsingPolygonBrush || this.isMagicWanding) {
                 if (this.hasPendingAnnotation) {
                     if (this.labelbotIsActive) {
                         // If we don't seek to the last frame, no annotation would be
@@ -329,6 +353,13 @@ export default {
 
             return never;
         },
+        updateMagicWandSnepshot() {
+            if (!this.isDrawingMagicWand) {
+                return;
+            }
+
+            this.drawInteraction.updateSnapshot();
+        },
     },
     watch: {
         mapReadyRevision: {
@@ -336,6 +367,13 @@ export default {
             handler() {
                 this.initPendingAnnotationLayer(this.map);
             },
+        },
+        isDrawingMagicWand(drawing) {
+            if (drawing) {
+                this.video.addEventListener('seeked', this.updateMagicWandSnepshot);
+            } else {
+                this.video.removeEventListener('seeked', this.updateMagicWandSnepshot);
+            }
         },
     },
     created() {
@@ -347,6 +385,7 @@ export default {
             this.keyboardOn('d', this.drawCircle, 0, this.listenerSet);
             this.keyboardOn('f', this.drawLineString, 0, this.listenerSet);
             this.keyboardOn('g', this.drawPolygon, 0, this.listenerSet);
+            this.keyboardOn('Shift+g', this.drawMagicWand, 0, this.listenerSet);
             this.keyboardOn('h', this.drawWholeFrame, 0, this.listenerSet);
             this.keyboardOn('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
             this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
