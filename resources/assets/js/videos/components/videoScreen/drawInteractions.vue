@@ -391,5 +391,10 @@ export default {
             this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
     },
+    beforeUnmount() {
+        if (this.video && this.updateMagicWandSnapshot) {
+            this.video.removeEventListener('seeked', this.updateMagicWandSnapshot);
+        }
+    }
 };
 </script>
