@@ -120,6 +120,10 @@
                     <td>Select multiple annotation at the same time</td>
                 </tr>
                 <tr>
+                    <td><kbd>Shift</kbd>+<kbd>g</kbd></td>
+                    <td>Select the magic wand tool</td>
+                </tr>
+                <tr>
                     <td><kbd>Del</kbd></td>
                     <td>Delete all selected annotations/keyframes</td>
                 </tr>

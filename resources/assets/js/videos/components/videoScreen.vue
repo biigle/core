@@ -244,7 +244,7 @@
                     >
                         <template v-if="singleAnnotation">
                             <control-button
-                                v-if="(isDrawingPolygon || isUsingPolygonBrush)"
+                                v-if="(isDrawingPolygon || isUsingPolygonBrush || isDrawingMagicWand)"
                                 icon="fa-check"
                                 title="Disable the single-frame annotation option to create multi-frame annotations"
                                 :disabled="true"
@@ -252,7 +252,7 @@
                         </template>
                         <template v-else>
                             <control-button
-                                v-if="(isDrawingPolygon || isUsingPolygonBrush)"
+                                v-if="(isDrawingPolygon || isUsingPolygonBrush || isDrawingMagicWand)"
                                 icon="fa-check"
                                 title="Finish the polygon annotation 𝗘𝗻𝘁𝗲𝗿"
                                 :disabled="cantFinishDrawAnnotation || null"
@@ -279,6 +279,13 @@
                             title="Modify selected polygons using the fill tool 𝗧"
                             :active="isUsingPolygonFill"
                             @click="togglePolygonFill"
+                            @active="onActive"
+                            ></control-button>
+                        <control-button
+                            icon="fa-magic"
+                            title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
+                            :active="isDrawingMagicWand"
+                            @click="drawMagicWand"
                             @active="onActive"
                             ></control-button>
                 </control-button>
