@@ -2,26 +2,26 @@
 
 namespace Biigle\Events;
 
-use Biigle\Broadcasting\UserChannel;
-use Biigle\User;
+use Biigle\Broadcasting\VolumeChannel;
+use Biigle\Volume;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class VolumeImagesProcessed implements ShouldBroadcastNow
+class VolumeFilesProcessed implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * The user requesting to save a new volume
      *
-     * @var User
+     * @var Volume
      */
-    public $user;
+    public $volume;
 
     /**
-     * Ignore this job if the user does not exist any more.
+     * Ignore this event if the user does not exist any more.
      *
      * @var bool
      */
@@ -30,12 +30,12 @@ class VolumeImagesProcessed implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @param User $user
+     * @param Volume $volume
      *
      */
-    public function __construct(User $user)
+    public function __construct(Volume $volume)
     {
-        $this->user = $user;
+        $this->volume = $volume;
     }
 
     /**
@@ -45,6 +45,6 @@ class VolumeImagesProcessed implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new UserChannel($this->user);
+        return new VolumeChannel($this->volume);
     }
 }

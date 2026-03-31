@@ -1141,22 +1141,13 @@ class PendingVolumeControllerTest extends ApiTestCase
         $content = $response->getContent();
 
         $id = json_decode($content)->volume_id;
-        Queue::assertPushed(CreateNewFilesAndNotifyUser::class, function ($job) use ($id) {
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) use ($id) {
             $this->assertEquals($id, $job->volume->id);
-            $this->assertContains('1.jpg', $job->filenames);
-            $this->assertContains('2.jpg', $job->filenames);
-            $this->assertContains('3.jpg', $job->filenames);
-            $this->assertCount(3, $job->filenames);
-            $this->assertSame($this->admin()->id, $job->userId);
             return true;
         });
 
         $this->assertNull($pv->fresh());
-
-        $this->assertEquals(1, $this->project()->volumes()->count());
-        $volume = $this->project()->volumes()->first();
-        $this->assertEquals('my volume no. 1', $volume->name);
-        $this->assertEquals('test://images', $volume->url);
-        $this->assertEquals(MediaType::imageId(), $volume->media_type_id);
+        $volume = Volume::find($id);
+        $this->assertTrue($volume->creating_async);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Image;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\Video;
@@ -93,6 +94,7 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
         if ($this->volume->creating_async) {
             $this->volume->creating_async = false;
             $this->volume->save();
+            VolumeFilesProcessed::dispatch($this->volume);
         }
 
         if ($this->volume->isImageVolume()) {

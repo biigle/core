@@ -243,9 +243,6 @@ export default {
         hideStatisticsModal() {
             this.showStatisticsModal = false;
         },
-        reload() {
-            location.reload();
-        }
     },
     watch: {
         fileIdsToShow: {
@@ -285,12 +282,7 @@ export default {
         },
     },
     created() {
-        let isAsync = biigle.$require('volumes.creatingAsync');
-        let isImageVolume = biigle.$require('volumes.isImageVolume');
         this.type = biigle.$require('volumes.type');
-        this.fileIds = biigle.$require('volumes.fileIds');
-        this.filterSequence = this.fileIds;
-        this.sortingSequence = this.fileIds;
         this.volumeId = biigle.$require('volumes.volumeId');
         this.settings = new Settings({
             storageKey: 'biigle.volumes.settings',
@@ -300,40 +292,59 @@ export default {
             },
         });
 
+        // A volume with lots of files is created asynchronously in a job.
+        // Listen to the websockets event that announces that all files are ready and
+        // reload the page afterwards.
+        let isAsync = biigle.$require('volumes.creatingAsync');
+        if (isAsync) {
+            Echo.getInstance().private(`volume-${this.volumeId}`)
+                .listen('.Biigle\\Events\\VolumeFilesProcessed', () => location.reload());
+
+            // Sometimes the job to process the volume files is not done when the page
+            // is requested but it is done when this code is executed. In this case, no
+            // websockets event will be fired any more. We check with an additional API
+            // call if the volume is ready now and reload if yes.
+            VolumesApi.get({id: this.volumeId})
+                .then((response) => {
+                    if (!response.data.creating_async) {
+                        location.reload();
+                    }
+                });
+            return;
+        }
+
+        this.fileIds = biigle.$require('volumes.fileIds');
+        this.filterSequence = this.fileIds;
+        this.sortingSequence = this.fileIds;
+
         let fileUuids = biigle.$require('volumes.fileUuids');
         let thumbUri = biigle.$require('volumes.thumbUri');
         let thumbCount = biigle.$require('volumes.thumbCount');
         let annotateUri = biigle.$require('volumes.annotateUri');
         let infoUri = biigle.$require('volumes.infoUri');
 
-        if (isImageVolume && isAsync) {
-            let userId = biigle.$require('volumes.userId');
-            Echo.getInstance().private(`user-${userId}`)
-                .listen('.Biigle\\Events\\VolumeImagesProcessed', this.reload)
-        } else {
-            // Do this here instead of a computed property so the file objects get
-            // reactive. Also, this array does never change between page reloads.
-            this.files = this.fileIds.map(function (id) {
-                let thumbnailUrl;
-                if (thumbCount > 1) {
-                    thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
-                        return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
-                    });
-                } else {
-                    thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
-                }
+        // Do this here instead of a computed property so the file objects get
+        // reactive. Also, this array does never change between page reloads.
+        this.files = this.fileIds.map(function (id) {
+            let thumbnailUrl;
+            if (thumbCount > 1) {
+                thumbnailUrl = Array.from(Array(thumbCount).keys()).map(function (i) {
+                    return thumbUri.replace(':uuid', transformUuid(fileUuids[id]) + '/' + i);
+                });
+            } else {
+                thumbnailUrl = thumbUri.replace(':uuid', transformUuid(fileUuids[id]));
+            }
 
-                return {
-                    id: id,
-                    thumbnailUrl: thumbnailUrl,
-                    annotateUrl: annotateUri.replace(':id', id),
-                    infoUrl: infoUri ? infoUri.replace(':id', id) : undefined,
-                    flagged: false,
-                    filename: null,
-                    labels: [],
-                };
-            });
-        }
+            return {
+                id: id,
+                thumbnailUrl: thumbnailUrl,
+                annotateUrl: annotateUri.replace(':id', id),
+                infoUrl: infoUri ? infoUri.replace(':id', id) : undefined,
+                flagged: false,
+                filename: null,
+                labels: [],
+            };
+        });
 
         this.restoreSettings();
     },

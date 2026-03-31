@@ -122,9 +122,9 @@ class ProjectVolumeController extends Controller
             $job = new CreateNewImagesOrVideos($volume, $files);
             $limit = config('volumes.create_sync_limit');
             if (count($files) > $limit) {
-                Queue::pushOn('high', $job);
                 $volume->creating_async = true;
                 $volume->save();
+                Queue::pushOn('high', $job);
             } else {
                 Queue::connection('sync')->push($job);
             }
