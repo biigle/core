@@ -123,7 +123,7 @@ class VolumeController extends Controller
 
         // Required for the check if a volume should be reloaded initially or if the
         // client can wait for a Websockets event.
-        $volume->setAppends(['creating_async']);
+        $volume->append('creating_async');
 
         return $volume;
     }

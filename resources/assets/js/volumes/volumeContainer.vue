@@ -235,7 +235,7 @@ export default {
             this.startLoading();
             VolumeStatisticsApi.get({id: this.volumeId})
                 .then((response) => {
-                    this.statisticsData = response.data;
+                    this.statisticsData = response.body;
                     this.showStatisticsModal = true;
                 }, handleErrorResponse)
                 .finally(this.finishLoading);
@@ -306,10 +306,10 @@ export default {
             // call if the volume is ready now and reload if yes.
             VolumesApi.get({id: this.volumeId})
                 .then((response) => {
-                    if (!response.data.creating_async) {
+                    if (!response.body.creating_async) {
                         location.reload();
                     }
-                });
+                }, handleErrorResponse);
             return;
         }
 

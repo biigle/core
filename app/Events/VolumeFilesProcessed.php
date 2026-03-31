@@ -14,14 +14,14 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * The user requesting to save a new volume
+     * The volume that was processed
      *
      * @var Volume
      */
     public $volume;
 
     /**
-     * Ignore this event if the user does not exist any more.
+     * Ignore this event if the volume does not exist any more.
      *
      * @var bool
      */
@@ -46,5 +46,17 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
     public function broadcastOn()
     {
         return new VolumeChannel($this->volume);
+    }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return array<string, mixed>
+     */
+    public function broadcastWith(): array
+    {
+        return [
+            'id' => $this->volume->id,
+        ];
     }
 }
