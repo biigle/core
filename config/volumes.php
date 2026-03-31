@@ -26,4 +26,9 @@ return [
     | Storage disk for metadata files of pending volumes.
     */
     'pending_metadata_storage_disk' => env('VOLUME_PENDING_METADATA_STORAGE_DISK', 'pending-metadata'),
+
+    /*
+    | File count limit indicating when files should be processed asynchronously.
+    */
+    'create_sync_limit' => 10000,
 ];
