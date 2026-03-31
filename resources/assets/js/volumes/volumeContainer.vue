@@ -1,7 +1,8 @@
 <script>
+import Echo from '@/core/echo.js';
+import FilesStore from './stores/files.js';
 import FilterTab from './components/filterTab.vue';
 import ImageGrid from './components/volumeImageGrid.vue';
-import FilesStore from './stores/files.js';
 import LabelsTab from './components/labelsTab.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Settings from '@/core/models/Settings.js';
@@ -11,9 +12,8 @@ import SortingTab from './components/sortingTab.vue';
 import StatisticsModal from '@/projects/components/statisticsModal.vue';
 import VolumesApi from './api/volumes.js';
 import VolumeStatisticsApi from '@/projects/api/volumeStatistics.js';
-import {urlParams as UrlParams} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
-import Echo from '@/core/echo.js';
+import {urlParams as UrlParams} from '@/core/utils.js';
 
 
 let transformUuid = function (uuid) {

@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Jobs\CreateNewFilesAndNotifyUser;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
