@@ -106,11 +106,10 @@ class LabelBotService
     }
 
     /**
-     * Perform vector search using the Dynamic Index Switching (DIS) technique.
+     * Perform vector search using the ANN-Iterative-Fallback technique (ANN-Itr-FB).
      *
-     * The search process first attempts to retrieve results using an Approximate Nearest Neighbor (ANN) search
-     * via the HNSW index. If the ANN search returns no results, it falls back to an exact KNN search using the
-     * B-Tree index for filtering, ensuring that results are always returned.
+     * The search process first attempts to retrieve (top K) results using an Approximate Nearest Neighbor (ANN) search
+     * via the HNSW index. If the ANN search returns no results, the iterative index scan is triggered and the ANN search is performed again as a fallback with K = 2 * K.
      *
      * @param vector $featureVector The input feature vector to search for nearest neighbors.
      * @param int[] $trees The label tree IDs to filter the data by.
@@ -122,12 +121,27 @@ class LabelBotService
     {
         // This has to be wrapped in a transaction because it uses SET LOCAL.
         return DB::transaction(function () use ($featureVector, $trees, $model) {
-            // Perform ANN search.
-            $topNLabels = $this->performAnnSearch($featureVector, $trees, $model);
+            $k = (int) config('labelbot.K');
 
-            // Perform ANN search with iterative index scan + post filtering as a fallback if ANN search returns no results.
+            // Perform ANN search.
+            $topNLabels = $this->performAnnSearch($featureVector, $trees, $model, $k);
+
+            // Perform ANN search with iterative index scan as a fallback if ANN search returns no results.
             if (empty($topNLabels)) {
-                $topNLabels = $this->performAnnSearchWithIterativeIndexScan($featureVector, $trees, $model);
+                /*
+                Iterative scans can use strict or relaxed ordering.
+                Strict ensures results are in the exact order by distance
+                Relaxed allows results to be slightly out of order by distance, but provides better recall
+                See https://github.com/pgvector/pgvector?tab=readme-ov-file#iterative-index-scans for more details
+
+                We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
+
+                For the choice of $k*2, see:
+                https://github.com/biigle/core/pull/1401#issuecomment-4163049404
+                */
+                DB::statement("SET LOCAL hnsw.iterative_scan = relaxed_order");
+
+                $topNLabels = $this->performAnnSearch($featureVector, $trees, $model, $k*2);
             }
 
             return $topNLabels;
@@ -143,14 +157,15 @@ class LabelBotService
      *
      * @param Vector $featureVector The input feature vector to search for nearest neighbors.
      * @param int[] $trees The label tree IDs to filter the data by.
+     * @param string $model Class name of the annotation type.
+     * @param int $k Number of desired results.
      *
      * @return array The array of label IDs representing the top nearest neighbors.
     */
-    protected function performAnnSearch($featureVector, $trees, $model)
+    protected function performAnnSearch($featureVector, $trees, $model, $k)
     {
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
-        $k = (int) config('labelbot.K');
         DB::statement("SET LOCAL hnsw.ef_search = $k");
 
         $subquery = $model::select('label_id', 'label_tree_id')
@@ -160,54 +175,6 @@ class LabelBotService
 
         return DB::query()->fromSub($subquery, 'subquery')
             ->whereIn('label_tree_id', $trees)
-            ->groupBy('label_id')
-            ->orderByRaw('MIN(distance)')
-            ->limit(config('labelbot.N'))
-            ->pluck('label_id')
-            ->toArray();
-    }
-
-    /**
-     * Perform Approximate Nearest Neighbor (ANN) search using the HNSW iterative index
-     * scan.
-     *
-     * The search uses the HNSW iterative index scan to find the top K nearest neighbors
-     * of the input feature vector, and then applies filtering based on the label_tree_id
-     * values. If the filtering removes all results, the iterative scan will
-     * automatically scan more of the index until enough results are found (or it reaches
-     * hnsw.max_scan_tuples, which is 20,000 by default), finally if no results are
-     * found, an empty array is returned.
-     *
-     * @param Vector $featureVector The input feature vector to search for nearest neighbors.
-     * @param int[] $trees The label tree IDs to filter the data by.
-     *
-     * @return array The array of label IDs representing the top nearest neighbors.
-    */
-    protected function performAnnSearchWithIterativeIndexScan($featureVector, $trees, $model)
-    {
-
-        // Size of the dynamic candidate list during the search process.
-        // K is always bounded by this value so we set it to K.
-        $k = (int) config('labelbot.K');
-        DB::statement("SET LOCAL hnsw.ef_search = $k");
-
-        /*
-        Iterative scans can use strict or relaxed ordering.
-        Strict ensures results are in the exact order by distance
-        Relaxed allows results to be slightly out of order by distance, but provides better recall
-        See https://github.com/pgvector/pgvector?tab=readme-ov-file#iterative-index-scans for more details
-
-        We will use relaxed order because it's slightly faster and we are sorting the subquery results anyway.
-        */
-        DB::statement("SET LOCAL hnsw.iterative_scan = relaxed_order");
-
-        $subquery = $model::select('label_id', 'label_tree_id')
-            ->selectRaw('(vector <=> ?) AS distance', [$featureVector])
-            ->whereIn('label_tree_id', $trees) // Filtering in the subquery is required otherwise the iterative scan would not work.
-            ->orderBy('distance')
-            ->limit($k);
-
-        return DB::query()->fromSub($subquery, 'subquery')
             ->groupBy('label_id')
             ->orderByRaw('MIN(distance)')
             ->limit(config('labelbot.N'))
