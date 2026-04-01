@@ -108,8 +108,8 @@ class LabelBotService
     /**
      * Perform vector search using the ANN-Iterative-Fallback technique (ANN-Itr-FB).
      *
-     * The search process first attempts to retrieve results using an Approximate Nearest Neighbor (ANN) search
-     * via the HNSW index. If the ANN search returns no results, the iterative index scan is triggered and the ANN search is performed again as a fallback.
+     * The search process first attempts to retrieve (top K) results using an Approximate Nearest Neighbor (ANN) search
+     * via the HNSW index. If the ANN search returns no results, the iterative index scan is triggered and the ANN search is performed again as a fallback with K = 2 * K.
      *
      * @param vector $featureVector The input feature vector to search for nearest neighbors.
      * @param int[] $trees The label tree IDs to filter the data by.
@@ -136,7 +136,7 @@ class LabelBotService
                 */
                 DB::statement("SET LOCAL hnsw.iterative_scan = relaxed_order");
 
-                $topNLabels = $this->performAnnSearch($featureVector, $trees, $model);
+                $topNLabels = $this->performAnnSearch($featureVector, $trees, $model, fallback: true);
             }
 
             return $topNLabels;
@@ -152,14 +152,20 @@ class LabelBotService
      *
      * @param Vector $featureVector The input feature vector to search for nearest neighbors.
      * @param int[] $trees The label tree IDs to filter the data by.
+     * @param string $model Class name of the annotation type.
+     * @param bool $fallback Indicates whether this search is being performed as a fallback after no-result ANN search.
      *
      * @return array The array of label IDs representing the top nearest neighbors.
     */
-    protected function performAnnSearch($featureVector, $trees, $model)
+    protected function performAnnSearch($featureVector, $trees, $model, $fallback = false)
     {
+        $k = (int) config('labelbot.K');
+
+        if ($fallback) {
+            $k *= 2;
+        }
         // Size of the dynamic candidate list during the search process.
         // K is always bounded by this value so we set it to K.
-        $k = (int) config('labelbot.K');
         DB::statement("SET LOCAL hnsw.ef_search = $k");
 
         $subquery = $model::select('label_id', 'label_tree_id')
