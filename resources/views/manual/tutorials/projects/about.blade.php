@@ -102,5 +102,17 @@
             Finally, project admins can delete a project with a click on <button class="btn btn-default btn-xs">Delete</button> in the <button class="btn btn-default btn-xs"><i class="fa fa-cog"></i> <span class="caret"></span></button> dropdown menu. This will detach all label trees and volumes from the project. All volumes that are not attached to another project will be deleted. Be very careful when you want to delete a project since you can destroy lots of annotations with a single action!
         </p>
 
+        <h3><a name="annotation-strategy"></a><i class="fa fa-chess"></i> Annotation strategy</h3>
+
+        <p>
+            The annotation strategy tab contains a strategy for the annotation process that is applied to the project it is attached to. Each project can have only one strategy, which consists of a description and can optionally contain per-label instructions. These instructions are a label description, a preferred shape and a reference image for the label.
+        </p>
+        <p>
+            Annotation strategies can be viewed by any user with access to a project and created or modified by admins. If you are creating a strategy, you will have a box where you can write a description. The description can be edited after creation by pressing the <a class="btn btn-xs"><span aria-hidden="true" class="fa fa-pencil-alt"></span></a> button. To save the strategy, you can press the <button class="btn btn-default btn-sm btn-success"><span class="fa fa-check"></span> Save strategy</button> button on the right. To delete it, you can press the <button class="btn btn-default btn-danger btn-sm"><span class="fa fa-trash"></span> Delete strategy</button> button. This will also delete the description of the labels, as well as the images that were uploaded.
+        </p>
+        <p>
+           To add a new label to the strategy, use the <button class="btn btn-default btn-sm"><span class="fa fa-plus" aria-hidden="true"></span><i class="fa fa-tags"></i> Add label</button> button. In the new row, you can choose which label it refers to, add a description, choose a preferred shape and upload a reference image.
+        </p>
+
     </div>
 @endsection

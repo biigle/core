@@ -43,6 +43,7 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
+                :is-disabled="disabledLabels.includes(label.id)"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -148,6 +149,10 @@ export default {
         showMoveButtonDown: {
             type: Boolean,
             default: false,
+        },
+        disabledLabels: {
+            type: Array,
+            default: () => [],
         },
     },
     computed: {

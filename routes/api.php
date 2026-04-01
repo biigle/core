@@ -284,6 +284,26 @@ $router->get('projects/{id}/label-count', [
     'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
 ]);
 
+$router->get('projects/{id}/annotation-strategy', [
+    'uses' => 'Projects\AnnotationStrategyController@index',
+]);
+
+$router->post('projects/{id}/annotation-strategy', [
+    'uses' => 'Projects\AnnotationStrategyController@update',
+]);
+
+$router->delete('projects/{id}/annotation-strategy', [
+    'uses' => 'Projects\AnnotationStrategyController@delete',
+]);
+
+$router->post('projects/{id}/annotation-strategy-label', [
+    'uses' => 'Projects\AnnotationStrategyLabelController@update',
+]);
+
+$router->delete('projects/{id}/annotation-strategy-label/delete-image', [
+    'uses' => 'Projects\AnnotationStrategyLabelController@deleteReferenceImage',
+]);
+
 $router->get('public-export/label-trees/{id}', [
     'as' => 'get-public-label-tree-export',
     'uses' => 'Export\PublicLabelTreeExportController@show',

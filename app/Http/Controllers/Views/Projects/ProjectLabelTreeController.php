@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\AnnotationStrategy;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Illuminate\Http\Request;
@@ -32,6 +33,8 @@ class ProjectLabelTreeController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
+        $annotationStrategy = AnnotationStrategy::where('project', $project->id)->first();
+
         return view('projects.show.label-trees', [
             'project' => $project,
             'isMember' => $isMember,
@@ -39,6 +42,7 @@ class ProjectLabelTreeController extends Controller
             'canPin' => $canPin,
             'activeTab' => 'label-trees',
             'labelTrees' => $labelTrees,
+            'annotationStrategy' => $annotationStrategy,
         ]);
     }
 }
