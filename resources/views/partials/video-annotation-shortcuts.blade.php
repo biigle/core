@@ -96,7 +96,7 @@
         </tr>
         <tr>
             <td><kbd>o</kbd></td>
-            <td>Toggle the annotation opactiy between 0.0 and 1.0</td>
+            <td>Toggle the annotation opacity between 0.0 and 1.0</td>
         </tr>
         <tr>
             <td><kbd>Shift</kbd>+<kbd>l</kbd></td>
