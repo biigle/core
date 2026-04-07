@@ -11,10 +11,6 @@
 
 @push('scripts')
 <script type="text/html" id="settings-tab-template">
-    @include('partials.keyboard-shortcuts-modal', [
-        'shortcutsPartial' => 'partials.image-annotation-shortcuts', 
-    ])
-    
     <div class="annotator-tab">
         <div class="sidebar-tab__section settings-tab__top-actions">
             <button v-if="crossOrigin" class="btn btn-default" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Screenshot</button>
@@ -25,15 +21,9 @@
                 :ids="ids"
                 ></screenshot-button>
                 
-            <button 
-                class="btn btn-default"
-                type="button"
-                @click="openKeyboardShortcutsModal"
-                title="Show keyboard shortcuts"
-            >
-                <span class="fa fa-keyboard" aria-hidden="true"></span>
-                <span> Shortcuts</span>
-            </button>
+            <shortcuts-button>
+                @include('partials.image-annotation-shortcuts')
+            </shortcuts-button>
         </div>
 
         <div class="sidebar-tab__section">

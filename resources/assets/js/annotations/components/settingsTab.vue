@@ -2,6 +2,7 @@
 import ExportArea from './exportArea.vue';
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
+import ShortcutsButton from '@/core/components/shortcutsButton.vue';
 import ScreenshotButton from './screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '../components/labelbotPopup.vue';
@@ -27,6 +28,7 @@ export default {
         screenshotButton: ScreenshotButton,
         powerToggle: PowerToggle,
         exportArea: ExportArea,
+        shortcutsButton: ShortcutsButton
     },
     props: {
         image: {
@@ -73,7 +75,6 @@ export default {
             exampleAnnotations: true,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
-            showKeyboardShortcutsModal: false,
         };
     },
     computed: {
@@ -148,12 +149,6 @@ export default {
         hideExampleAnnotations() {
             this.exampleAnnotations = false;
         },
-        openKeyboardShortcutsModal() {
-            this.showKeyboardShortcutsModal = true;
-        },
-        closeKeyboardShortcutsModal() {
-            this.showKeyboardShortcutsModal = false;
-        }
     },
     watch: {
         annotationOpacity(opacity) {

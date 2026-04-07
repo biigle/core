@@ -11,9 +11,6 @@
 
 @push('scripts')
 <script type="text/html" id="settings-tab-template">
-@include('partials.keyboard-shortcuts-modal', [
-    'shortcutsPartial' => 'partials.video-annotation-shortcuts', 
-])
 
 <div class="annotator-tab settings-tab">
     <div class="sidebar-tab__section settings-tab__top-actions">
@@ -25,22 +22,15 @@
             :ids="ids"
             ></screenshot-button>
             
-        <button 
-            class="btn btn-default"
-            type="button"
-            @click="openKeyboardShortcutsModal"
-            title="Show keyboard shortcuts"
-        >
-            <span class="fa fa-keyboard" aria-hidden="true"></span>
-            <span> Shortcuts</span>
-        </button>
+        <shortcuts-button>
+            @include('partials.video-annotation-shortcuts')
+        </shortcuts-button>
     </div>
 
     <div class="sidebar-tab__section">
         <h5 title="Set the opacity of annotations">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
         <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
     </div>
-
 
     @can('add-annotation', $video)
         <div class="sidebar-tab__section">
