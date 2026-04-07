@@ -73,6 +73,7 @@ export default {
             exampleAnnotations: true,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
+            showKeyboardShortcutsModal: false,
         };
     },
     computed: {
@@ -147,6 +148,12 @@ export default {
         hideExampleAnnotations() {
             this.exampleAnnotations = false;
         },
+        openKeyboardShortcutsModal() {
+            this.showKeyboardShortcutsModal = true;
+        },
+        closeKeyboardShortcutsModal() {
+            this.showKeyboardShortcutsModal = false;
+        }
     },
     watch: {
         annotationOpacity(opacity) {

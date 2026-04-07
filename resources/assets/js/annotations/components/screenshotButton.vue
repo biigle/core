@@ -5,7 +5,7 @@
     @click="capture"
     >
     <span class="fa fa-camera" aria-hidden="true"></span>
-    Capture screenshot
+    Screenshot
 </button>
 </template>
 <script>
