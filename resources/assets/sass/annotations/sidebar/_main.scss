@@ -14,28 +14,9 @@
             margin-top: 0;
         }
     }
-    
-    .settings-tab__top-actions {
-        position: sticky;
-        flex-wrap: wrap;
-        // The 1em padding of the sidebar would be transparent while scrolling
-        // We replace it with inner padding of the section
-        top: -1em; 
-        margin-top: -1em;
-        padding-top: 1em;
-        background: $body-bg;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1em;
-    }
-}
-
-.settings-tab__shortcuts-modal {
-    display: block;
-    overflow-y: auto;
 }
 
 @import "labels";
 @import "annotation-modes";
 @import "image-labels";
+@import "../../components/settingsTab"
