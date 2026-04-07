@@ -110,7 +110,7 @@
         </tr>
         <tr>
             <td><kbd>Shift</kbd>+<kbd>Mouse left</kbd></td>
-            <td>Select multiple annotation at the same time</td>
+            <td>Select multiple annotations at the same time</td>
         </tr>
         <tr>
             <td><kbd>Del</kbd></td>
