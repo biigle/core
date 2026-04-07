@@ -25,7 +25,7 @@
                     <h4 class="modal-title" id="keyboard-shortcuts-label">Keyboard shortcuts</h4>
                 </div>
                 <div class="modal-body">
-                    @include('partials.shortcuts')
+                    @include('partials.image-annotation-shortcuts')
                 </div>
             </div>
         </div>

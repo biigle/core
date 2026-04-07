@@ -76,6 +76,7 @@ export default {
             autoPauseMax: AUTO_PAUSE_INDEFINITE,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
+            showKeyboardShortcutsModal: false,
         };
     },
     computed: {
@@ -151,6 +152,12 @@ export default {
             } else {
                 this.annotationOpacity = 1;
             }
+        },
+        openKeyboardShortcutsModal() {
+            this.showKeyboardShortcutsModal = true;
+        },
+        closeKeyboardShortcutsModal() {
+            this.showKeyboardShortcutsModal = false;
         },
     },
     watch: {
