@@ -70,6 +70,7 @@ const IGNORED_TAGS = [
  */
 class Keyboard {
     constructor() {
+        this.enabled = true;
         this.activeListenerSetName = 'default';
         this.listenerSets = {
             'default': {},
@@ -82,6 +83,15 @@ class Keyboard {
         document.body.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.body.addEventListener('keyup', this.handleKeyUp.bind(this));
         window.addEventListener('blur', this.clearPressedKeys.bind(this));
+    }
+    
+    disable() {
+        this.enabled = false;
+        this.clearPressedKeys();
+    }
+    
+    enable() {
+        this.enabled = true;
     }
 
     get activeListenerSet() {
@@ -121,6 +131,10 @@ class Keyboard {
     }
 
     handleKeyDown(e) {
+        if (!this.enabled) {
+            return;
+        }
+        
         e = e || event; // see: http://stackoverflow.com/a/5630990/1796523
         if (this.shouldIgnoreTarget(e)) {
             return;
@@ -188,6 +202,10 @@ class Keyboard {
     }
 
     handleKeyUp(e) {
+        if (!this.enabled) {
+            return;
+        }
+        
         this.pressedKeysSet.delete(e.key.toLowerCase());
         this.pressedCodesSet.delete(e.code.toLowerCase());
     }

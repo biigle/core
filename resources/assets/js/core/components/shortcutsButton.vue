@@ -1,57 +1,31 @@
 <template>
-    <div>
-        <button 
-            class="btn btn-default"
-            type="button"
-            @click="openKeyboardShortcutsModal"
-            title="Show keyboard shortcuts"
-        >
-            <span class="fa fa-keyboard" aria-hidden="true"></span>
-            <span> Shortcuts</span>
-        </button>
-
-        <teleport to="body">
-            <div v-if="showKeyboardShortcutsModal">
-                <div
-                    class="modal in settings-tab__shortcuts-modal"
-                    tabindex="-1"
-                    role="dialog"
-                    @click.self="closeKeyboardShortcutsModal"
-                >
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button
-                                    type="button"
-                                    class="close"
-                                    @click="closeKeyboardShortcutsModal"
-                                    aria-label="Close"
-                                >
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                <h4 class="modal-title">
-                                    Keyboard shortcuts
-                                </h4>
-                            </div>
-
-                            <div class="modal-body">
-                                <slot></slot>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    class="modal-backdrop in"
-                    @click="closeKeyboardShortcutsModal"
-                ></div>
-            </div>
-        </teleport>
-    </div>
+    <button 
+        class="btn btn-default"
+        type="button"
+        @click="openKeyboardShortcutsModal"
+        title="Show keyboard shortcuts"
+    >
+        <span class="fa fa-keyboard" aria-hidden="true"></span>
+        <span> Shortcuts</span>
+    </button>
+    
+    <modal 
+        v-model="showKeyboardShortcutsModal"
+        title="Keyboard shortcuts"
+        :footer="false"
+        append-to-body>
+            <slot></slot>
+    </modal>
 </template>
 
 <script>
+import { Modal } from 'uiv';
+import Keyboard from '@/core/keyboard.js';
+
 export default {
+    components: {
+        modal: Modal,
+    },
     data() {
         return {
             showKeyboardShortcutsModal: false,
@@ -60,10 +34,19 @@ export default {
     methods: {
         openKeyboardShortcutsModal() {
             this.showKeyboardShortcutsModal = true;
-        },
-        closeKeyboardShortcutsModal() {
-            this.showKeyboardShortcutsModal = false;
-        },
+        }
     },
+    watch: {
+        showKeyboardShortcutsModal(show) {
+            if (show) {
+                Keyboard.disable();
+            } else {
+                Keyboard.enable();
+            }
+        }
+    },
+    beforeUnmount() {
+        Keyboard.enable();
+    }
 };
 </script>
