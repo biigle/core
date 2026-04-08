@@ -45,7 +45,7 @@
         </tr>
         <tr>
             <td><kbd>o</kbd></td>
-            <td>Toggle the annotation opactiy between 0.0 and 1.0</td>
+            <td>Toggle the annotation opacity between 0.0 and 1.0</td>
         </tr>
         <tr>
             <td><kbd>a</kbd></td>
@@ -110,7 +110,7 @@
         </tr>
         <tr>
             <td><kbd>Shift</kbd>+<kbd>Mouse left</kbd></td>
-            <td>Select multiple annotation at the same time</td>
+            <td>Select multiple annotations at the same time</td>
         </tr>
         <tr>
             <td><kbd>Del</kbd></td>
