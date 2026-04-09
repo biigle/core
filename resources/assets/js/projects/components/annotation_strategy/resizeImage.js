@@ -19,7 +19,7 @@ export const resizeImage = (
                 let width = img.width;
                 let height = img.height;
 
-                if (width > maxWidth && height > maxHeight) {
+                if (width > maxWidth || height > maxHeight) {
                     const scale = Math.min(
                         maxWidth / width,
                         maxHeight / height,
@@ -28,6 +28,8 @@ export const resizeImage = (
                     width = Math.round(width * scale);
                     height = Math.round(height * scale);
                 }
+                width = Math.max(width, 50);
+                height = Math.max(height, 50);
 
                 canvas.width = width;
                 canvas.height = height;
