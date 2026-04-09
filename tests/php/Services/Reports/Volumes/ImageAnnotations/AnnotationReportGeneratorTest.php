@@ -575,7 +575,7 @@ class AnnotationReportGeneratorTest extends TestCase
             'annotation_id' => ImageAnnotationTest::create([
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05 09:15:00',
-            ]),
+            ])->id,
             'user_id' => $userId,
         ]);
 
