@@ -40,11 +40,7 @@ class AnnotationStrategyController extends Controller
 
         $isAdmin = $user->can('update', $project);
 
-        $labelTrees = $project->labelTrees()->get();
-        $labels = [];
-        foreach ($labelTrees as $labelTree) {
-            array_push($labels, ...$labelTree->labels->toArray());
-        }
+        $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
 
         $shapes = Shape::pluck('name', 'id');
 
@@ -60,7 +56,7 @@ class AnnotationStrategyController extends Controller
                     'isPinned' => $isPinned,
                     'canPin' => $canPin,
                     'activeTab' => 'strategy',
-                    'labels' => $labels,
+                    'labelTrees' => $labelTrees,
                     'availableShapes' => $shapes,
                 ]);
             }
@@ -82,7 +78,7 @@ class AnnotationStrategyController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'strategy',
-            'labels' => $labels,
+            'labelTrees' => $labelTrees,
             'availableShapes' => $shapes,
         ]);
     }

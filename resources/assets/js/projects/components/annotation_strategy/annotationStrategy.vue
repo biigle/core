@@ -41,16 +41,6 @@
             <div class="col-xs-6">
                 <span v-if="isAdmin" class="top-bar pull-right">
                     <button
-                        class="btn btn-default btn-sm"
-                        type="button"
-                        @click="addNewLabel"
-                        title="Add new label to the annotation strategy"
-                    >
-                        <i class="fa fa-tags"></i>
-                        <span class="fa fa-plus" aria-hidden="true"></span>
-                        Add label
-                    </button>
-                    <button
                         class="btn btn-success btn-sm"
                         type="button"
                         @click="sendUpdateAnnotationStrategy"
@@ -97,50 +87,35 @@
                     </p>
                 </div>
             </div>
-            <div v-if="annotationStrategyLabels.length > 0" class="row">
-                <div class="col-xs-3">
-                    <h4>Label</h4>
+            <div  v-if="hasLabelTrees">
+                <div v-if="annotationStrategyLabels.length > 0" class="row">
+                    <div class="col-xs-3">
+                        <h4>Label</h4>
+                    </div>
+                    <div class="col-xs-3">
+                        <h4>Label description</h4>
+                    </div>
+                    <div class="col-xs-2">
+                        <h4>Shape</h4>
+                    </div>
+                    <div class="col-xs-3 center-container">
+                        <h4>Reference Image</h4>
+                    </div>
                 </div>
-                <div class="col-xs-3">
-                    <h4>Label description</h4>
+                <div class="row annotation-strategy-label">
+                    <annotation-strategy-label
+                        :annotation-strategy-labels="annotationStrategyLabels"
+                        :labelTrees="labelTrees"
+                        :project-id="projectId"
+                        :creating="false"
+                        :available-shapes="availableShapes"
+                        :base-url="baseUrl"
+                        :is-admin="isAdmin"
+                        @add-label="addLabel"
+                        @delete-label="deleteLabel"
+                    >
+                    </annotation-strategy-label>
                 </div>
-                <div class="col-xs-2">
-                    <h4>Shape</h4>
-                </div>
-                <div class="col-xs-3 center-container">
-                    <h4>Reference Image</h4>
-                </div>
-            </div>
-            <div v-for="annotationStrategyLabel in annotationStrategyLabels">
-                <annotation-strategy-label
-                    :annotation-strategy-label="annotationStrategyLabel"
-                    :project-id="projectId"
-                    :creating="false"
-                    :available-shapes="availableShapes"
-                    :editing="annotationStrategyLabel.editing"
-                    :base-url="baseUrl"
-                    :is-admin="isAdmin"
-                    @edit-label="setLabelEditing"
-                    @add-label="addLabel"
-                    @delete-label="deleteLabel"
-                >
-                </annotation-strategy-label>
-            </div>
-            <div v-if="addingNewLabel">
-                <annotation-strategy-label
-                    :is-admin="isAdmin"
-                    :labels="filteredLabels"
-                    :project-id="projectId"
-                    :creating="true"
-                    :available-shapes="availableShapes"
-                    :base-url="baseUrl"
-                    :labels-to-exclude="labelsInStrategy"
-                    :remind-to-save="remindToSave"
-                    @edit-label="setLabelEditing"
-                    @add-label="addLabel"
-                    @delete-label="deleteLabel"
-                >
-                </annotation-strategy-label>
             </div>
         </div>
     </div>
@@ -165,19 +140,8 @@ export default {
         },
     },
     computed: {
-        filteredLabels() {
-            return this.labels.filter((label) => !this.labelsInStrategy.includes(label.id));
-        },
         creating() {
             return Object.keys(this.annotationStrategy).length === 0;
-        },
-        hasSelectedLabel() {
-            return this.selectedLabel === undefined;
-        },
-        editingLabel() {
-            return this.annotationStrategyLabels.filter(
-                (asl) => asl.editing === true,
-            )[0];
         },
         hasDescription() {
             return (
@@ -185,24 +149,8 @@ export default {
                 this.annotationStrategy.description.trim().length > 0
             );
         },
-        hasLabels() {
-            return this.labels.length > 0;
-        },
-        labelsInStrategy() {
-            return this.annotationStrategyLabels.map((asl) => asl.label.id);
-        },
-    },
-    watch: {
-        //At most one label is edited
-        editingLabel: function (editingAsl) {
-            if (editingAsl) {
-                Object.assign(
-                    this.annotationStrategyLabels.filter(
-                        (asl) => asl.label.id != editingAsl.label.id,
-                    ),
-                    { editing: false },
-                );
-            }
+        hasLabelTrees() {
+            return this.labelTrees.length > 0;
         },
     },
     data() {
@@ -211,7 +159,6 @@ export default {
         return {
             editing: false,
             projectId: biigle.$require('projects.project').id,
-            labels: biigle.$require('projects.labels'),
             annotationStrategy: biigle.$require('projects.annotationStrategy'),
             annotationStrategyLabels: biigle.$require(
                 'projects.annotationStrategyLabels',
@@ -225,6 +172,7 @@ export default {
             editingDescription: false,
             missingDescription: false,
             remindToSave: false,
+            labelTrees: biigle.$require('projects.labelTrees'),
         };
     },
     created() {
@@ -264,46 +212,24 @@ export default {
                 this.setEditing(false);
             }
         },
-        setLabelEditing(label) {
-            if (this.checkIsEditingLabel()) {
-                return;
-            }
-
-            Object.assign(
-                this.annotationStrategyLabels.filter(
-                    (asl) => asl.label.id == label.id,
-                )[0],
-                { editing: true },
-            );
-        },
         addLabel(annotationStrategyLabel) {
             this.mightHaveEdited = true;
-            if (this.editingLabel) {
-                Object.assign(this.editingLabel, annotationStrategyLabel);
-                this.editingLabel.editing = false;
+            let existingAsl = this.annotationStrategyLabels.find((asl) => asl.label.id == annotationStrategyLabel.label.id)
+            if (existingAsl) {
+                Object.assign(existingAsl, annotationStrategyLabel);
                 return;
             }
             this.annotationStrategyLabels.push(annotationStrategyLabel);
-            this.addingNewLabel = false;
-        },
-        addNewLabel() {
-            this.mightHaveEdited = true;
-            this.addingNewLabel = true;
         },
         editDescription() {
             this.mightHaveEdited = true;
             this.editingDescription = true;
         },
-        deleteLabel() {
-            if (this.addingNewLabel) {
-                this.addingNewLabel = false;
-            } else {
-                this.annotationStrategyLabels.splice(
-                    this.annotationStrategyLabels.findIndex(
-                        (asl) => asl.label.id == this.editingLabel.id,
-                    ),
-                );
-            }
+        deleteLabel(id) {
+            this.annotationStrategyLabels.splice(
+                this.annotationStrategyLabels.findIndex(
+                    (asl) => asl.label.id == id,
+            ));
         },
         checkIsEditingLabel() {
             if (this.addingNewLabel) {

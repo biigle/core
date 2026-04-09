@@ -1,30 +1,14 @@
 <template>
-    <div class="row annotation-strategy-label">
         <div class="col-xs-3">
-            <div v-if="creating && !hasLabel" :class="{ 'has-error': missingLabel }">
-                <typeahead
-                    class="typeahead--block"
-                    :items="labels"
-                    placeholder="Search a label here..."
-                    :clear-on-select="true"
-                    v-on:select="selectLabel">
-                </typeahead>
-                <span class="help-block" v-if="missingLabel">
-                    Choose a label
-                </span>
-            </div>
-            <div v-else>
-                <ul class="label-tree__list">
-                    <label-tree-label
-                        :label="label"
-                        :flat="true"
-                        :showFavorites="false"
-                    ></label-tree-label>
-                </ul>
-            </div>
+            <label-trees
+                :trees="labelTrees"
+                @select="selectLabel"
+                @deselect="deselectLabel"
+                >
+            </label-trees>
         </div>
-        <div class="col-xs-3">
-            <div v-if="editMode" :class="{ 'has-error': missingDescription }">
+        <div v-if="label.id" class="col-xs-3">
+            <div v-if="isAdmin" :class="{ 'has-error': missingDescription }">
                 <textarea
                     v-model="description"
                     class="form-control strategy-description"
@@ -38,11 +22,11 @@
                  </span>
             </div>
             <div v-else>
-                <span class="strategy-description-text">{{ description }}</span>
+                <span v-if="hasDescription" class="strategy-description-text">{{ description }}</span>
             </div>
         </div>
-        <div class="col-xs-2">
-            <div v-if="editMode">
+        <div v-if="label.id" class="col-xs-2">
+            <div v-if="isAdmin">
                 <select
                     class="form-control"
                     v-model="shape"
@@ -56,28 +40,33 @@
                 </select>
             </div>
             <div v-else>
-                <span class="btn control-button" v-if="shape"
-                    ><i
-                        :class="`icon icon-white icon-${availableShapes[shape].toLowerCase()}`"
-                    ></i
-                ></span>
-                <span>{{ availableShapes[shape] }}</span>
+                <span v-if="shape">
+                    <span class="btn control-button"
+                        ><i
+                            :class="`icon icon-white icon-${availableShapes[shape].toLowerCase()}`"
+                        ></i
+                    ></span>
+                    <span>{{ availableShapes[shape] }}</span>
+                </span>
+                <span v-else>
+                    No preferred shape
+                </span>
             </div>
         </div>
-        <div class="col-xs-3">
+        <div v-if="label.id" class="col-xs-3">
             <annotation-strategy-label-image
                 :base-url="baseUrl"
                 :label-id="labelId"
                 :project-id="projectId"
-                :editable="editMode"
                 :temporary-image="temporaryReferenceImage"
                 :is-admin="isAdmin"
                 @reset-reference-image="resetReferenceImage"
                 @add-image="addImage"
             ></annotation-strategy-label-image>
+            <span v-if="imageError" class="has-error">Image dimensions are invalid. Please select a different image</span>
         </div>
-        <div v-if="isAdmin" class="col-xs-1">
-            <div v-if="editMode" :class="{ 'has-error': remindToSave }">
+        <div v-if="isAdmin && label.id" class="col-xs-1">
+            <div :class="{ 'has-error': remindToSave }">
                 <button
                     class="btn btn-success btn-block btn-asl"
                     type="button"
@@ -105,39 +94,27 @@
                     Save or delete this label before saving the strategy
                 </span>
             </div>
-            <div v-else>
-                <button
-                    title="Edit this label in the strategy"
-                    @click.stop="emitEdit"
-                    class="btn btn-default btn"
-                >
-                    <span aria-hidden="true" class="fa fa-pencil-alt"> </span>
-                </button>
-            </div>
         </div>
-    </div>
 </template>
 <script>
 import AnnotationStrategyLabelImage from './annotationStrategyLabelImage.vue';
 import AnnotationStrategyLabelApi from '@/projects/api/annotationStrategyLabel.js';
-import LabelTreeLabel from '@/label-trees/components/labelTreeLabel.vue';
 import { handleErrorResponse } from '@/core/messages/store.js';
 import { resizeImage } from './resizeImage.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
-import Typeahead from '@/core/components/typeahead.vue';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
 
 export default {
     mixins: [LoaderMixin],
-    emits: ['edit-label', 'add-label', 'delete-label'],
+    emits: ['add-label', 'delete-label'],
     components: {
-        labelTreeLabel: LabelTreeLabel,
         annotationStrategyLabelImage: AnnotationStrategyLabelImage,
-        typeahead: Typeahead,
+        labelTrees: LabelTrees,
     },
     props: {
-        annotationStrategyLabel: {
-            type: Object,
-            default: () => {},
+        annotationStrategyLabels: {
+            type: Array,
+            default: () => [],
         },
         editing: {
             type: Boolean,
@@ -147,9 +124,9 @@ export default {
             type: Object,
             required: true,
         },
-        labels: {
+        labelTrees: {
             type: Array,
-            default: () => [],
+            required: true,
         },
         projectId: {
             type: Number,
@@ -166,10 +143,6 @@ export default {
         isAdmin: {
             type: Boolean,
             required: true,
-        },
-        labelsToExclude: {
-            type: Array,
-            default: () => [],
         },
         remindToSave: {
             type: Boolean,
@@ -191,14 +164,30 @@ export default {
         labelId() {
             return this.label.id ? this.label.id : NaN;
         },
-        hasLabel() {
-            return !isNaN(this.labelId);
-        },
         hasDescription() {
             return this.description.length !== 0;
         },
         editMode() {
             return this.editing || this.creating;
+        },
+        currentAnnotationStrategyLabel() {
+            let asl = {
+                label: this.label
+            };
+            if (this.label && this.annotationStrategyLabels.filter((asl) => asl.label.id == this.label.id)[0]) {
+                asl = this.annotationStrategyLabels.filter((asl) => asl.label.id == this.label.id)[0]
+            }
+            return asl
+        },
+
+    },
+    watch: {
+        currentAnnotationStrategyLabel: function(asl) {
+            this.label = asl.label;
+            //casting null to undefined
+            this.shape = asl.shape ?? undefined;
+            this.description = asl.description;
+            this.referenceImage = asl.reference_image;
         },
     },
     data() {
@@ -209,12 +198,8 @@ export default {
             referenceImage: undefined,
             missingLabel: false,
             missingDescription: false,
+            imageError: false,
         };
-    },
-    created() {
-        if (!this.creating) {
-            this.setup();
-        }
     },
     methods: {
         selectLabel(label) {
@@ -223,20 +208,9 @@ export default {
         deselectLabel() {
             this.label = {};
         },
-        emitEdit() {
-            this.$emit('edit-label', this.label);
-        },
-        setup() {
-            this.label = this.annotationStrategyLabel.label;
-            //casting null to undefined
-            this.shape = this.annotationStrategyLabel.shape ?? undefined;
-            this.description = this.annotationStrategyLabel.description;
-            this.referenceImage = this.annotationStrategyLabel.reference_image;
-        },
         addAnnotationStrategyLabel() {
-            if (!this.hasLabel || !this.hasDescription) {
+            if (!this.hasDescription) {
                 this.missingDescription = !this.hasDescription;
-                this.missingLabel = !this.hasLabel;
                 return;
             }
             this.missingDescription = false;
@@ -249,16 +223,23 @@ export default {
             });
         },
         deleteLabel() {
-            this.$emit('delete-label');
+            this.$emit('delete-label', this.label.id);
+            this.deselectLabel();
         },
         addImage(file) {
             this.startLoading();
             resizeImage(file)
-                .then((image) => this.setImage(image))
+                .then((image) => this.setImage(image), this.setImageWarning)
+                .catch(console.log)
                 .finally(this.finishLoading);
+        },
+        setImageWarning() {
+            debugger;
+            this.imageError = true;
         },
         setImage(image) {
             this.referenceImage = image;
+            this.imageError = false;
         },
         resetReferenceImage() {
             this.startLoading();

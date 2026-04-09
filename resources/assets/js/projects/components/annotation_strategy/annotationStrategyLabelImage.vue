@@ -6,7 +6,7 @@
                 @error="displayText"
                 class="reference-image"
             />
-            <div v-if="editable && isAdmin" class="center-container">
+            <div v-if="isAdmin" class="center-container">
                 <button
                     class="btn btn-danger btn-asl"
                     @click="deleteImage"
@@ -18,7 +18,7 @@
         </div>
         <div v-else>
             <span>No reference image selected</span>
-            <div v-if="editable && isAdmin">
+            <div v-if="isAdmin">
                 <label>Select a reference image (max 5 MB)</label>
                 <input
                     type="file"
@@ -82,6 +82,10 @@ export default {
         return {
             displayImage: true,
         };
+    },
+    watch: {
+        temporaryImage: "attemptDisplayImage",
+        labelId: "attemptDisplayImage",
     },
     methods: {
         displayText() {
