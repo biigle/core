@@ -121,13 +121,14 @@ class AnnotationPolicy extends CachedPolicy
                 ->pluck('project_id');
                 
             if ($projectIds->isEmpty()) {
-                return Response::deny("You are not authorized to use the label '{$label->name}' because you are not the editor, expert or admin of any projects this annotation belongs to.");
+                return Response::deny("Only project editors, experts or admins may attach a label to this annotation.");
             }
 
-            if (!DB::table('label_tree_project')
+            $labelBelongsToProject = DB::table('label_tree_project')
                 ->whereIn('project_id', $projectIds)
                 ->where('label_tree_id', $label->label_tree_id)
-                ->exists()) {
+                ->exists();
+            if (!$labelBelongsToProject) {
                 return Response::deny("You are not authorized to use the label '{$label->name}' because the label tree is not attached to the project.");
             }
                     
