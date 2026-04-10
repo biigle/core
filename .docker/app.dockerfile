@@ -7,7 +7,8 @@ LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 ADD ".docker/app-php.ini" "$PHP_INI_DIR/conf.d/app.ini"
 
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache \
         openssl \
         postgresql \
         libxml2 \
