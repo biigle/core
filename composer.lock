@@ -113,16 +113,16 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v5.1.0",
+            "version": "v5.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "a64770f41c3959fb49c227b214354b05aa6cc556"
+                "reference": "28bb788470e8f084a804413bf15cc202548aaacc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/a64770f41c3959fb49c227b214354b05aa6cc556",
-                "reference": "a64770f41c3959fb49c227b214354b05aa6cc556",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/28bb788470e8f084a804413bf15cc202548aaacc",
+                "reference": "28bb788470e8f084a804413bf15cc202548aaacc",
                 "shasum": ""
             },
             "require": {
@@ -166,9 +166,9 @@
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
             "support": {
                 "issues": "https://github.com/biigle/laravel-file-cache/issues",
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v5.1.0"
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v5.1.1"
             },
-            "time": "2025-05-13T13:23:10+00:00"
+            "time": "2026-04-10T08:06:58+00:00"
         },
         {
             "name": "biigle/metadata-ifdo",
@@ -11185,7 +11185,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -11196,9 +11196,9 @@
         "ext-soap": "*",
         "ext-zip": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.2.21"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
