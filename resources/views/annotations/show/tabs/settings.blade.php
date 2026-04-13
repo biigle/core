@@ -13,7 +13,7 @@
 <script type="text/html" id="settings-tab-template">
     <div class="annotator-tab">
         <div class="sidebar-tab__section settings-tab__top-actions">
-            <button v-if="crossOrigin" class="btn btn-default btn-block" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Screenshot</button>
+            <button v-if="crossOrigin" class="btn btn-default btn-block" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
             <screenshot-button
                 v-else
                 :current-id="currentId"
