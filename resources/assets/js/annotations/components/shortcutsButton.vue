@@ -1,12 +1,12 @@
 <template>
     <button 
-        class="btn btn-default"
+        class="btn btn-default btn-block"
         type="button"
         @click="openKeyboardShortcutsModal"
         title="Show keyboard shortcuts"
     >
         <span class="fa fa-keyboard" aria-hidden="true"></span>
-        <span> Shortcuts</span>
+        <span> Available shortcuts</span>
     </button>
     
     <modal 

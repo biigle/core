@@ -1,11 +1,11 @@
 <template>
 <button
-    class="btn btn-default"
+    class="btn btn-default btn-block"
     title="Get a screenshot of the visible area 𝗣"
     @click="capture"
     >
     <span class="fa fa-camera" aria-hidden="true"></span>
-    Screenshot
+    Capture screenshot
 </button>
 </template>
 <script>

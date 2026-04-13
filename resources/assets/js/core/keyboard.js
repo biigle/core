@@ -87,7 +87,6 @@ class Keyboard {
     
     disable() {
         this.enabled = false;
-        this.clearPressedKeys();
     }
     
     enable() {
@@ -131,10 +130,6 @@ class Keyboard {
     }
 
     handleKeyDown(e) {
-        if (!this.enabled) {
-            return;
-        }
-        
         e = e || event; // see: http://stackoverflow.com/a/5630990/1796523
         if (this.shouldIgnoreTarget(e)) {
             return;
@@ -185,32 +180,33 @@ class Keyboard {
     maybeRemoveModifierKeys(e) {
         if (e.altKey) {
             this.pressedKeysSet.delete('alt');
-            this.pressedKeysSet.delete('alt');
+            this.pressedCodesSet.delete('alt');
         }
         if (e.ctrlKey) {
             this.pressedKeysSet.delete('control');
-            this.pressedKeysSet.delete('control');
+            this.pressedCodesSet.delete('control');
         }
         if (e.metaKey) {
             this.pressedKeysSet.delete('meta');
-            this.pressedKeysSet.delete('meta');
+            this.pressedCodesSet.delete('meta');
         }
         if (e.shiftKey) {
             this.pressedKeysSet.delete('shift');
-            this.pressedKeysSet.delete('shift');
+            this.pressedCodesSet.delete('shift');
         }
     }
 
+
     handleKeyUp(e) {
-        if (!this.enabled) {
-            return;
-        }
-        
         this.pressedKeysSet.delete(e.key.toLowerCase());
         this.pressedCodesSet.delete(e.code.toLowerCase());
     }
 
     handleKeyEvents(e, keys) {
+        if (!this.enabled) {
+            return;
+        }
+        
         if (this.activeListenerSet.hasOwnProperty(keys)) {
             this.executeCallbacks(this.activeListenerSet[keys], e);
         }

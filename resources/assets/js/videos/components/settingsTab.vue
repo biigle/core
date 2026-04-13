@@ -1,7 +1,7 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
-import ShortcutsButton from '@/core/components/shortcutsButton.vue';
+import ShortcutsButton from '@/annotations/components/shortcutsButton.vue';
 import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '@/annotations/components/labelbotPopup.vue';
