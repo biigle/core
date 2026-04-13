@@ -44,7 +44,7 @@
             </button>
             <button
                 class="list-group-item"
-                title="Sort by outliers (higher is more dissimilar)"
+                title="Sort by outliers (higher is more dissimilar) 𝗔"
                 :class="{active: sortingByOutlier}"
                 @click="sortByOutlier"
                 >
@@ -52,7 +52,7 @@
             </button>
             <a
                 class="list-group-item"
-                title="Sort by similarity (higher is more similar)"
+                title="Sort by similarity (higher is more similar) 𝗦"
                 href="#"
                 :class="{
                     active: sortingBySimilarity,
