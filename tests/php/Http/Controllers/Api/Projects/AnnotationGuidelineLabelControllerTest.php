@@ -3,23 +3,23 @@
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
-use Biigle\AnnotationStrategy;
-use Biigle\AnnotationStrategyLabel;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Label;
 use Biigle\Shape;
 use Illuminate\Http\UploadedFile;
 use Storage;
 
-class AnnotationStrategyLabelControllerTest extends ApiTestCase
+class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 {
     public function testUpdate()
     {
         $id = $this->project()->id;
-        $as = AnnotationStrategy::create(['project' => $id, 'description' => 'someDescription']);
-        $path = "/api/v1/projects/{$id}/annotation-strategy-label";
+        $as = AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
+        $path = "/api/v1/projects/{$id}/annotation-guideline-label";
         $label1 = Label::factory()->create();
 
-        config(['annotation_strategy.storage_disk' => 'annotation_storage']);
+        config(['annotation_guideline.storage_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $filename = 'test-image-small.jpg';
@@ -27,11 +27,11 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
         $fileDir = __DIR__."/../../../../../files/";
         $imageFile = new UploadedFile($fileDir.$filename, $filename, test: true);
         $data = [
-            'annotation_strategy' => $as->id,
-            'labels' => [$label1->id],
-            'shapes' => [Shape::polygonId()],
-            'descriptions' => ['labelDescription'],
-            'reference_images' => [$imageFile],
+            'annotation_guideline' => $as->id,
+            'label' => $label1->id,
+            'shape' => Shape::polygonId(),
+            'description' => 'labelDescription',
+            'reference_image' =>$imageFile,
         ];
 
         try {
@@ -53,7 +53,7 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $this->post($path, $data)
                 ->assertStatus(200);
 
-            $asl = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
+            $asl = AnnotationGuidelineLabel::where(['annotation_guideline' => $as->id])
                 ->get()
                 ->toArray();
 
@@ -61,7 +61,7 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
 
             $expected = [[
                 'id' => $asl[0]['id'],
-                'annotation_strategy' => $as->id,
+                'annotation_guideline' => $as->id,
                 'label' => $label1->id,
                 'shape' => Shape::polygonId(),
                 'description' => 'labelDescription',
@@ -72,11 +72,11 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $filename = 'file.txt';
             $fakeFile = UploadedFile::fake()->create($filename);
             $data = [
-                'annotation_strategy' => $as['id'],
-                'labels' => [$label1->id],
-                'shapes' => [Shape::polygonId()],
-                'descriptions' => ['labelDescription'],
-                'reference_images' => [$fakeFile],
+                'annotation_guideline' => $as['id'],
+                'label' => $label1->id,
+                'shape' => Shape::polygonId(),
+                'description' => 'labelDescription',
+                'reference_image' => $fakeFile,
             ];
 
             $this->post($path, $data)
@@ -85,20 +85,31 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             //Update two other labels, the first label should not be there.
             $label2 = Label::factory()->create();
             $label3 = Label::factory()->create();
-            $label4 = Label::factory()->create();
+
             $data = [
-                'annotation_strategy' => $as->id,
-                'labels' => [$label2->id, $label3->id, $label4->id],
-                'shapes' => [null, Shape::circleId(), Shape::pointId()],
-                'descriptions' => ['labelDescription', 'aDifferentDescription', 'anotherOne'],
-                'reference_images' => [$imageFile, null, null],
+                'annotation_guideline' => $as->id,
+                'label' => $label2->id,
+                'shape' => null,
+                'description' => null,
+                'reference_image' => $imageFile,
+            ];
+
+            $this->post($path, $data)
+                ->assertStatus(200);
+
+            $data = [
+                'annotation_guideline' => $as->id,
+                'label' => $label3->id,
+                'shape' => Shape::circleId(),
+                'description' => 'aDifferentDescription',
+                'reference_image' => null,
             ];
 
             $this->post($path, $data)
                 ->assertStatus(200);
 
 
-            $asl2 = AnnotationStrategyLabel::where(['annotation_strategy' => $as->id])
+            $asl2 = AnnotationGuidelineLabel::where(['annotation_guideline' => $as->id])
                 ->orderBy('label')
                 ->get()
                 ->toArray();
@@ -108,31 +119,29 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $expected = [
                 [
                     'id' => $asl2[0]['id'],
-                    'annotation_strategy' => $as->id,
-                    'label' => $label2->id,
-                    'shape' => null,
+                    'annotation_guideline' => $as->id,
+                    'label' => $label1->id,
+                    'shape' => Shape::polygonId(),
                     'description' => 'labelDescription',
                 ],
                 [
                     'id' => $asl2[1]['id'],
-                    'annotation_strategy' => $as->id,
-                    'label' => $label3->id,
-                    'shape' => Shape::circleId(),
-                    'description' => 'aDifferentDescription',
+                    'annotation_guideline' => $as->id,
+                    'label' => $label2->id,
+                    'shape' => null,
+                    'description' => null,
                 ],
                 [
                     'id' => $asl2[2]['id'],
-                    'annotation_strategy' => $as->id,
-                    'label' => $label4->id,
-                    'shape' => Shape::pointId(),
-                    'description' => 'anotherOne',
+                    'annotation_guideline' => $as->id,
+                    'label' => $label3->id,
+                    'shape' => Shape::circleId(),
+                    'description' => 'aDifferentDescription',
                 ],
             ];
 
             $this->assertEquals($asl2, $expected);
 
-            //Should have been deleted
-            $disk->assertMissing("{$id}/{$label1->id}.jpg");
 
             //Should have been uploaded
             $disk->assertExists("{$id}/{$label2->id}.jpg");
@@ -141,7 +150,7 @@ class AnnotationStrategyLabelControllerTest extends ApiTestCase
             $disk->assertMissing("{$id}/{$label3->id}.jpg");
 
             //delete
-            $path = "/api/v1/projects/{$id}/annotation-strategy-label/delete-image";
+            $path = "/api/v1/projects/{$id}/annotation-guideline-label/delete-image";
 
             $data = ['label' => $label2->id];
 

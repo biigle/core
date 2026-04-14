@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
-use Biigle\AnnotationStrategy;
+use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Illuminate\Http\Request;
@@ -60,7 +60,7 @@ class ProjectsController extends Controller
             ->projects()
             ->wherePivot('pinned', true)
             ->count();
-        $annotationStrategy = AnnotationStrategy::where(['project' => $id])->first();
+        $annotationGuideline = AnnotationGuideline::where(['project' => $id])->first();
 
         return view('projects.show.volumes', [
             'project' => $project,
@@ -69,7 +69,7 @@ class ProjectsController extends Controller
             'canPin' => $canPin,
             'activeTab' => 'volumes',
             'volumes' => $volumes,
-            'annotationStrategy' => $annotationStrategy,
+            'annotationGuideline' => $annotationGuideline,
         ]);
     }
 }

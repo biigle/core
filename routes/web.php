@@ -281,9 +281,9 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'LargoController@index',
         ]);
 
-        $router->get('{id}/annotation-strategy', [
-            'as'   => 'annotation-strategy',
-            'uses' => 'AnnotationStrategyController@show',
+        $router->get('{id}/annotation-guideline', [
+            'as'   => 'annotation-guideline',
+            'uses' => 'AnnotationGuidelineController@show',
         ]);
     });
 

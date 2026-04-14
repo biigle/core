@@ -22,9 +22,9 @@
         </li>
     @endif
 
-    @if ((($user->can('update', $project) || $user->can('sudo'))) || (isset($annotationStrategy) && $annotationStrategy != null))
-        <li role="presentation" @if ($activeTab === 'strategy') class="active" @endif>
-            <a href="{{route('annotation-strategy', $project->id)}}" title="Check the project strategy for this project"><i class="fa fa-chess"></i> Strategy</a>
+    @if ((($user->can('update', $project) || $user->can('sudo'))) || (isset($annotationGuideline) && $annotationGuideline != null))
+        <li role="presentation" @if ($activeTab === 'guideline') class="active" @endif>
+            <a href="{{route('annotation-guideline', $project->id)}}" title="Check the project guideline for this project"><i class="fa fa-chess"></i> Guideline</a>
         </li>
     @endif
 

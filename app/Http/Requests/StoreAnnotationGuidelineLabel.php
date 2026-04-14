@@ -5,10 +5,10 @@ use Biigle\Project;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAnnotationStrategyLabel extends FormRequest
+class StoreAnnotationGuidelineLabel extends FormRequest
 {
     /**
-     * The project of the annotation strategy
+     * The project of the annotation guideline
      *
      * @var Project
      */
@@ -41,14 +41,10 @@ class StoreAnnotationStrategyLabel extends FormRequest
     public function rules(): array
     {
         return [
-            'labels' => ['required', 'array'],
-            'labels.*' => ['required', 'integer'],
-            'descriptions' => ['required', 'array'],
-            'descriptions.*' => ['required', 'string'],
-            'shapes' => ['required', 'array'],
-            'shapes.*' => ['nullable', 'integer'],
-            'reference_images' => ['required', 'array'],
-            'reference_images.*' => ['nullable', 'file', 'mimes:jpg', 'dimensions:max_width=300,max_height=300'],
+            'label' => ['required', 'integer'],
+            'description' => ['nullable', 'string'],
+            'shape' => ['nullable', 'integer'],
+            'reference_image' => ['nullable', 'file', 'mimes:jpg', 'dimensions:max_width=300,max_height=300'],
         ];
     }
 }

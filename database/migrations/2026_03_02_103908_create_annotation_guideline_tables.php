@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('annotation_strategies', function (Blueprint $table) {
+        Schema::create('annotation_guidelines', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project')
                 ->constrained()
@@ -19,9 +19,9 @@ return new class extends Migration {
             $table->text('description');
         });
 
-        Schema::create('annotation_strategy_labels', function (Blueprint $table) {
+        Schema::create('annotation_guideline_labels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('annotation_strategy')
+            $table->foreignId('annotation_guideline')
                 ->constrained()
                 ->onDelete('cascade');
 
@@ -34,9 +34,10 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('set null');
 
-            $table->text('description');
+            $table->text('description')
+                ->nullable(true);
 
-            $table->unique(['annotation_strategy', 'label']);
+            $table->unique(['annotation_guideline', 'label']);
         });
     }
 
@@ -45,7 +46,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('annotation_strategy_labels');
-        Schema::dropIfExists('annotation_strategies');
+        Schema::dropIfExists('annotation_guideline_labels');
+        Schema::dropIfExists('annotation_guidelines');
     }
 };

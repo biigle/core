@@ -284,24 +284,24 @@ $router->get('projects/{id}/label-count', [
     'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
 ]);
 
-$router->get('projects/{id}/annotation-strategy', [
-    'uses' => 'Projects\AnnotationStrategyController@index',
+$router->get('projects/{id}/annotation-guideline', [
+    'uses' => 'Projects\AnnotationGuidelineController@index',
 ]);
 
-$router->post('projects/{id}/annotation-strategy', [
-    'uses' => 'Projects\AnnotationStrategyController@update',
+$router->post('projects/{id}/annotation-guideline', [
+    'uses' => 'Projects\AnnotationGuidelineController@update',
 ]);
 
-$router->delete('projects/{id}/annotation-strategy', [
-    'uses' => 'Projects\AnnotationStrategyController@delete',
+$router->delete('projects/{id}/annotation-guideline', [
+    'uses' => 'Projects\AnnotationGuidelineController@delete',
 ]);
 
-$router->post('projects/{id}/annotation-strategy-label', [
-    'uses' => 'Projects\AnnotationStrategyLabelController@update',
+$router->post('projects/{id}/annotation-guideline-label', [
+    'uses' => 'Projects\AnnotationGuidelineLabelController@update',
 ]);
 
-$router->delete('projects/{id}/annotation-strategy-label/delete-image', [
-    'uses' => 'Projects\AnnotationStrategyLabelController@deleteReferenceImage',
+$router->delete('projects/{id}/annotation-guideline-label/delete-image', [
+    'uses' => 'Projects\AnnotationGuidelineLabelController@deleteReferenceImage',
 ]);
 
 $router->get('public-export/label-trees/{id}', [
