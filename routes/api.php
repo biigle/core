@@ -300,6 +300,10 @@ $router->post('projects/{id}/annotation-guideline-label', [
     'uses' => 'Projects\AnnotationGuidelineLabelController@update',
 ]);
 
+$router->delete('projects/{id}/annotation-guideline-label', [
+    'uses' => 'Projects\AnnotationGuidelineLabelController@delete',
+]);
+
 $router->delete('projects/{id}/annotation-guideline-label/delete-image', [
     'uses' => 'Projects\AnnotationGuidelineLabelController@deleteReferenceImage',
 ]);

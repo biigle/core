@@ -15,7 +15,6 @@ class AnnotationGuidelineLabelController extends Controller
 {
     /**
      * Update the label within an annotation guideline.
-     *
      * @api {post} projects/:id/annotation-guideline-label Update the guideline for labels within an annotation guideline
      * @apiGroup Projects
      * @apiName UpdateAnnotationGuidelineLabels
@@ -55,6 +54,35 @@ class AnnotationGuidelineLabelController extends Controller
                 'description' => $description,
             ]
         );
+    }
+
+    /**
+     * Delete a label from a guideline.
+     *
+     * @api {delete} projects/:id/annotation-guideline-labels/delete-image Delete a reference image
+     * @apiGroup Projects
+     * @apiName DeleteReferenceImage
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Integer} id The ID of the project for the annotation guideline for the labels
+     *
+     */
+    public function delete(Request $request)
+    {
+        $project = Project::findOrFail($request->id);
+        $label = Label::findOrFail($request->label);
+        $annotationGuideline = AnnotationGuideline::where(['project' => $project->id])->firstOrFail();
+        $annotationGuideline->guidelineLabels()->where(['label' => $label->id])->firstOrFail();
+
+        $this->authorize('update', $project);
+
+        $annotationGuideline->delete();
+
+        $disk = Storage::disk(config('annotation_guideline.storage_disk'));
+        $url = "$project->id/$label->id.jpg";
+        if ($disk->exists($url)) {
+            $disk->delete($url);
+        }
     }
 
     /**
