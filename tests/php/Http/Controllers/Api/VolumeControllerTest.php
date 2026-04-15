@@ -209,10 +209,35 @@ class VolumeControllerTest extends ApiTestCase
         Queue::assertPushed(ProcessNewVolumeFiles::class);
     }
 
+    public function testUpdateUrlFilesMissing()
+    {
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        config(['volumes.editor_storage_disks' => ['editor-test']]);
+
+        $disk = Storage::fake('admin-test');
+        $disk->put('volumes/file.jpg', 'abc');
+        Storage::fake('editor-test');
+
+        $volume = $this->volume();
+        $volume->url = 'admin-test://volumes';
+        $volume->save();
+        ImageTest::create(['filename' => 'file.jpg', 'volume_id' => $volume->id]);
+
+        $this->beGlobalAdmin();
+
+        $this
+            ->json('PUT', '/api/v1/volumes/'.$volume->id, [
+                'url' => 'editor-test://volumes',
+            ])
+            ->assertStatus(422);
+        $this->assertSame('admin-test://volumes', $volume->fresh()->url);
+        Queue::assertNothingPushed();
+    }
+
     public function testUpdateInvalidUrl()
     {
         $volume = $this->volume();
-        
+
         config(['volumes.admin_storage_disks' => ['admin-test']]);
         $disk = Storage::fake('admin-test');
         $disk->put('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/file.txt', 'abc');
