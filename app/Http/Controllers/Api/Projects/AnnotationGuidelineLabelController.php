@@ -72,11 +72,11 @@ class AnnotationGuidelineLabelController extends Controller
         $project = Project::findOrFail($request->id);
         $label = Label::findOrFail($request->label);
         $annotationGuideline = AnnotationGuideline::where(['project' => $project->id])->firstOrFail();
-        $annotationGuideline->guidelineLabels()->where(['label' => $label->id])->firstOrFail();
+        $annotationGuidelineLabel = $annotationGuideline->guidelineLabels()->where(['label' => $label->id])->firstOrFail();
 
         $this->authorize('update', $project);
 
-        $annotationGuideline->delete();
+        $annotationGuidelineLabel->delete();
 
         $disk = Storage::disk(config('annotation_guideline.storage_disk'));
         $url = "$project->id/$label->id.jpg";

@@ -12,7 +12,7 @@ use Storage;
 
 class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 {
-    public function testUpdate()
+    public function testUpdateAndDelete()
     {
         $id = $this->project()->id;
         $as = AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
@@ -69,8 +69,8 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 
             $this->assertEquals($asl, $expected);
 
-            $filename = 'file.txt';
-            $fakeFile = UploadedFile::fake()->create($filename);
+            //Bad file
+            $filename = 'file.txt'; $fakeFile = UploadedFile::fake()->create($filename);
             $data = [
                 'annotation_guideline' => $as['id'],
                 'label' => $label1->id,
@@ -144,12 +144,40 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 
 
             //Should have been uploaded
+            $disk->assertExists("{$id}/{$label1->id}.jpg");
             $disk->assertExists("{$id}/{$label2->id}.jpg");
 
             //Should not exist
             $disk->assertMissing("{$id}/{$label3->id}.jpg");
 
-            //delete
+            $path = "/api/v1/projects/{$id}/annotation-guideline-label";
+            $data = ['label' => $label1->id];
+
+            $this->beGuest();
+            $this->delete($path, $data)
+                ->assertStatus(403);
+
+            $this->beUser();
+            $this->delete($path, $data)
+                ->assertStatus(403);
+
+            $this->beEditor();
+            $this->delete($path, $data)
+                ->assertStatus(403);
+
+            $this->beAdmin();
+            $this->delete($path, $data)
+                ->assertStatus(200);
+
+            $asl = AnnotationGuidelineLabel::where(['annotation_guideline' => $as->id, 'label' => $label1->id])
+                ->get()
+                ->toArray();
+
+            $this->assertEmpty($asl);
+
+            $disk->assertMissing("{$id}/{$label1->id}.jpg");
+
+            //delete image
             $path = "/api/v1/projects/{$id}/annotation-guideline-label/delete-image";
 
             $data = ['label' => $label2->id];
@@ -184,33 +212,4 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         }
     }
 
-    public function testDelete()
-    {
-        $id = $this->project()->id;
-        $as = AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
-        $label = Label::factory()->create();
-        AnnotationGuidelineLabel::create(['annotation_strategy' => $as->id, 'label' => $label->id]);
-
-        $path = "/api/v1/projects/{$id}/annotation-guideline-label/delete-image";
-        $data = ['label' => $label->id];
-
-        $this->beGuest();
-        $this->delete($path, $data)
-            ->assertStatus(403);
-
-        $this->beUser();
-        $this->delete($path, $data)
-            ->assertStatus(403);
-
-        $this->beEditor();
-        $this->delete($path, $data)
-            ->assertStatus(403);
-
-        $this->beAdmin();
-        $this->delete($path, $data)
-            ->assertStatus(200);
-
-        $vals = AnnotationGuidelineLabel::where(['annotation_strategy' => $as->id, 'label' => $label->id])->get();
-        $this->assertEmpty($vals, 0);
-    }
 }
