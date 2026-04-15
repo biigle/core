@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Rules\Handle;
+use Biigle\Rules\VolumeAccessibleAtUrl;
 use Biigle\Rules\VolumeUrl;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
@@ -35,9 +36,21 @@ class UpdateVolume extends FormRequest
      */
     public function rules()
     {
+        $urlRules = ['bail', 'filled', 'string', 'max:256', new VolumeUrl];
+
+        // If the URL is being changed, also probe the volume's existing
+        // files at the new URL — same per-file existence check that
+        // StoreVolume applies on creation. Without this, a typo in the
+        // new URL would silently re-point the volume at empty storage
+        // (#829).
+        $newUrl = $this->input('url');
+        if (is_string($newUrl) && $newUrl !== '' && $newUrl !== $this->volume->url) {
+            $urlRules[] = new VolumeAccessibleAtUrl($this->volume);
+        }
+
         return [
             'name' => 'filled|max:512',
-            'url' => ['bail', 'filled', 'string', 'max:256', new VolumeUrl],
+            'url' => $urlRules,
             'handle' => ['bail', 'nullable', 'string', 'max:256', new Handle],
         ];
     }
