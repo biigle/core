@@ -9,7 +9,7 @@
                 <span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>
                 <span v-show="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>
                 <span v-show="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>
-                <span v-text="label.name" :class="{ 'text-muted': !isInGuideline }" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
+                <span v-text="label.name" :class="{ 'text-muted': guidelinePresent && !isInGuideline  }" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
                 <a v-if="guidelinePresent && isInGuideline" class="btn btn-xs" title="This label is present in a guideline"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
             </span>
             <span class="label-tree-label__buttons">

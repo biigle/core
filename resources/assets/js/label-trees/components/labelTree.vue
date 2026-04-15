@@ -216,12 +216,6 @@ export default {
         },
     },
     methods: {
-        labelInGuideline(label) {
-            if (this.labelsInGuideline.length == 0) {
-                return "no-guideline";
-            }
-            return this.labelsInGuideline.includes(label.id) ? "in-guideline" : "not-in-guideline";
-        },
         hasLabel(id) {
             return this.labelMap.hasOwnProperty(id);
         },
