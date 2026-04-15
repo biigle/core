@@ -70,7 +70,8 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             $this->assertEquals($asl, $expected);
 
             //Bad file
-            $filename = 'file.txt'; $fakeFile = UploadedFile::fake()->create($filename);
+            $filename = 'file.txt';
+            $fakeFile = UploadedFile::fake()->create($filename);
             $data = [
                 'annotation_guideline' => $as['id'],
                 'label' => $label1->id,
@@ -211,5 +212,4 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             }
         }
     }
-
 }
