@@ -43,7 +43,8 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
-                :is-disabled="disabledLabels.includes(label.id)"
+                :is-in-guideline="labelsInGuideline.includes(label.id)"
+                :guideline-present="labelsInGuideline.length > 0"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -150,7 +151,7 @@ export default {
             type: Boolean,
             default: false,
         },
-        disabledLabels: {
+        labelsInGuideline: {
             type: Array,
             default: () => [],
         },
@@ -215,6 +216,12 @@ export default {
         },
     },
     methods: {
+        labelInGuideline(label) {
+            if (this.labelsInGuideline.length == 0) {
+                return "no-guideline";
+            }
+            return this.labelsInGuideline.includes(label.id) ? "in-guideline" : "not-in-guideline";
+        },
         hasLabel(id) {
             return this.labelMap.hasOwnProperty(id);
         },
