@@ -7,8 +7,7 @@
             <button
                 v-if="clearable"
                 @click="clear"
-                class="btn btn-default"
-                title="Clear selected labels"
+                class="btn btn-default" title="Clear selected labels"
                 type="button"
                 >
                 <span class="fa fa-times fa-fw" aria-hidden="true"></span>
@@ -33,7 +32,7 @@
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
-                :disabled-labels="disabledLabels"
+                :labels-in-guideline="labelsInGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
@@ -50,7 +49,7 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
-                :disabled-labels="disabledLabels"
+                :labels-in-guideline="labelsInGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
@@ -148,7 +147,7 @@ export default {
             type: Array,
             default: undefined,
         },
-        disabledLabels: {
+        labelsInGuideline: {
             type: Array,
             default: () => [],
         },
@@ -176,7 +175,9 @@ export default {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
-            labels = labels.filter((label) => !this.disabledLabels.includes(label.id));
+            if (this.labelsInGuideline.length > 0) {
+                labels = labels.filter((label) => this.labelsInGuideline.includes(label.id));
+            }
 
             if (this.localeCompareSupportsLocales) {
                 // Use this to sort label names "naturally". This is only supported in

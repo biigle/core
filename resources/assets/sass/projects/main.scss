@@ -22,14 +22,14 @@
     margin-top: 5em;
 }
 
-.form-control.annotation-strategy-description {
+.form-control.annotation-guideline-description {
     height: 200px;
     box-sizing: border-box;
     text-align: left;
     align-content: top;
 }
 
-textarea.strategy-description {
+textarea.guideline-description {
   width: 100%;
   resize: none;
   min-height: 150px;
@@ -39,24 +39,11 @@ textarea.strategy-description {
   box-sizing: border-box;
 }
 
-.annotation-strategy-label {
-    display: flex;
-    align-items: center;
+.annotation-guideline-label {
     padding-top: 5px;
     padding-bottom: 5px;
     margin-top: 5px;
     margin-bottom: 5px;
-    border-top: 1px solid white;
-    border-bottom: 1px solid white;
-}
-
-.annotation-strategy-label-edit {
-    justify-content: center;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-bottom: 1px solid white;
     border-top: 1px solid white;
 }
 
@@ -70,13 +57,13 @@ textarea.strategy-description {
 }
 
 .reference-image {
-    max-width: 150px;
+    max-width: 300px;
     min-width: 50px;
-    max-height: 150px;
+    max-height: 300px;
     min-height: 50px;
 }
 
-.strategy-description-text {
+.guideline-description-text {
     white-space: pre-line;
 }
 

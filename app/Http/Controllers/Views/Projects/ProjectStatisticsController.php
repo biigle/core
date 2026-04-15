@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
-use Biigle\AnnotationStrategy;
+use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
 use Biigle\MediaType;
@@ -38,7 +38,7 @@ class ProjectStatisticsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $annotationStrategy = AnnotationStrategy::where('project', $project->id)->first();
+        $annotationGuideline = AnnotationGuideline::where('project', $project->id)->first();
 
         $totalImages = Image::whereIn('images.volume_id', fn ($query) => $query->select('volume_id')
             ->from('project_volume')
@@ -68,7 +68,7 @@ class ProjectStatisticsController extends Controller
             'canPin' => $canPin,
             'activeTab' => 'charts',
             'volumes' => $volumes,
-            'annotationStrategy' => $annotationStrategy,
+            'annotationGuideline' => $annotationGuideline,
             // IMAGES
             'annotatedImages' => $imageVolumeStatistics['annotatedFiles'],
             'annotationLabels' => $imageVolumeStatistics['annotationLabels'],

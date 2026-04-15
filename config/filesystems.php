@@ -94,10 +94,10 @@ return [
             'visibility' => 'public',
         ],
 
-        'annotation-strategy' => [
+        'annotation-guideline' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/annotation-strategy-reference-images'),
-            'url' => env('APP_URL').'/storage/annotation-strategy-reference-images',
+            'root' => storage_path('app/public/annotation-guideline-reference-images'),
+            'url' => env('APP_URL').'/storage/annotation-guideline-reference-images',
             'visibility' => 'public',
         ],
     ],

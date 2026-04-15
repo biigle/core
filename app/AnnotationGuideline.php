@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * This Model describes the annotation strategy of a Project
+ * This Model describes the annotation guideline of a Project
  *
  * @property int $id
  */
-class AnnotationStrategy extends Model
+class AnnotationGuideline extends Model
 {
     use HasFactory;
 
@@ -38,7 +38,7 @@ class AnnotationStrategy extends Model
     public $timestamps = false;
 
     /**
-     * The project this strategy belongs to.
+     * The project this guideline belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Project, $this>
      */
@@ -48,12 +48,12 @@ class AnnotationStrategy extends Model
     }
 
     /**
-     * The labels within this strategy.
+     * The labels within this guideline.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationStrategyLabel, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationGuidelineLabel, $this>
      */
-    public function strategyLabels()
+    public function guidelineLabels()
     {
-        return $this->hasMany(AnnotationStrategyLabel::class, 'annotation_strategy');
+        return $this->hasMany(AnnotationGuidelineLabel::class, 'annotation_guideline');
     }
 }
