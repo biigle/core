@@ -45,7 +45,7 @@
                 </div>
                 <div v-else>
                     <span v-if="hasDescription" class="guideline-description-text">{{ description }}</span>
-                    <span v-else>No description for this label was provided</span>
+                    <span v-else>No description was provided</span>
                 </div>
                 <h4>Shape</h4>
                 <div v-if="isAdmin && editingMode">
@@ -71,7 +71,7 @@
                         <span>{{ availableShapes[shape] }}</span>
                     </span>
                     <span v-else>
-                        No preferred shape
+                        No preferred shape was provided
                     </span>
                 </div>
                 <annotation-guideline-label-image
@@ -128,7 +128,10 @@
                 required: true,
             },
             creating: {
-                type: Boolean, default: false, }, isAdmin: {
+                type: Boolean,
+                default: false,
+            },
+            isAdmin: {
                 type: Boolean,
                 required: true,
             },
@@ -161,12 +164,13 @@
         },
         currentAnnotationGuidelineLabel() {
             let asl = {
-                label: this.label
+                label: this.label,
+                reference_image: '',
             };
             if (this.label && this.annotationGuidelineLabels.filter((asl) => asl.label.id == this.label.id)[0]) {
                 asl = this.annotationGuidelineLabels.filter((asl) => asl.label.id == this.label.id)[0]
             }
-            return asl
+            return asl;
         },
 
 

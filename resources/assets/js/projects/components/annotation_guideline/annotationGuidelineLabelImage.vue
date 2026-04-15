@@ -17,7 +17,7 @@
         </span>
     </div>
     <div v-else>
-        <span>No reference image selected</span>
+        <span>No reference image was provided</span>
         <div v-if="isAdmin && editable">
             <label>Select a reference image (max 5 MB)</label>
             <input
@@ -105,6 +105,8 @@ export default {
         },
         attemptDisplayImage() {
             this.displayImage = true;
+        },
+        forceRefresh() {
             this.refresh += 1;
         },
         addImage(event) {

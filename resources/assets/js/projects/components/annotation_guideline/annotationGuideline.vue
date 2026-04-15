@@ -83,7 +83,7 @@
                 <div class="row annotation-guideline-label">
                     <annotation-guideline-label
                         :annotation-guideline-labels="annotationGuidelineLabels"
-                        :labelTrees="labelTrees"
+                        :label-trees="labelTrees"
                         :project-id="projectId"
                         :creating="false"
                         :available-shapes="availableShapes"
@@ -203,11 +203,11 @@ export default {
             }
         },
         addLabel(annotationGuidelineLabel) {
-            let data = this.generateLabelUpdate(annotationGuidelineLabel);
             if (!this.checkHasDescription()) {
                 return;
             }
             let element = "Label";
+            let data = this.generateLabelUpdate(annotationGuidelineLabel);
 
             //To add a label to a guideline, we need to first create the guideline.
             let createAnnotationGuideline = Promise.resolve("");
@@ -232,6 +232,17 @@ export default {
                 .finally(this.finishLoading);
         },
         deleteLabel(id) {
+            let response = prompt(
+                `This will all the information about this label, including the image. Please enter 'delete' to confirm.`,
+            );
+
+            if (response !== 'delete') {
+                return;
+            }
+
+            AnnotationGuidelineLabelApi.delete({ id: this.projectId }, { label: id })
+                    .catch(this.handleErrorResponse);
+
             this.annotationGuidelineLabels.splice(
                 this.annotationGuidelineLabels.findIndex(
                     (agl) => agl.label.id == id,
@@ -286,9 +297,13 @@ export default {
             let formData = new FormData();
 
             formData.append(`label`, agl.label.id);
-            formData.append(`description`, agl.description);
 
             //If not set to '', if undefined will be cast to string
+            formData.append(
+                `description`,
+                agl.description ? agl.description : ''
+            );
+
             formData.append(
                 `shape`,
                 agl.shape ? agl.shape : '',
@@ -307,7 +322,7 @@ export default {
             if (response !== 'delete') {
                 return;
             }
-            this.mightHaveEdited = false;
+
             AnnotationGuideline.delete({ id: this.projectId }, {}).then(
                 this.reloadPage,
                 handleErrorResponse,
