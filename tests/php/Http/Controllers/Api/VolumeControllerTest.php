@@ -216,7 +216,8 @@ class VolumeControllerTest extends ApiTestCase
 
         $disk = Storage::fake('admin-test');
         $disk->put('volumes/file.jpg', 'abc');
-        Storage::fake('editor-test');
+        $disk2 = Storage::fake('editor-test');
+        $disk2->put('volumes/other.jpg', 'abc');
 
         $volume = $this->volume();
         $volume->url = 'admin-test://volumes';

@@ -63,7 +63,12 @@ class UpdateVolume extends FormRequest
                 return;
             }
 
-            $filenames = $this->volume->files()->pluck('filename')->all();
+            $filenames = $this->volume
+                ->files()
+                ->inRandomOrder()
+                ->limit(5)
+                ->pluck('filename')
+                ->all();
             if (empty($filenames)) {
                 return;
             }
