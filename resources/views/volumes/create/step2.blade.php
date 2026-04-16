@@ -115,7 +115,7 @@
                         @else
                             <textarea class="form-control" name="files" id="files" placeholder="1.mp4, 2.mp4, 3.mp4" required v-model="filenames" rows="3"></textarea>
                             <p class="help-block">
-                               The filenames of the videos in the volume directory formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264) and WebM (VP8, VP9, AV1).
+                               The filenames of the videos in the volume directory formatted as comma separated values. Example: <code>1.mp4, 2.mp4, 3.mp4</code>. The supported video file formats are: MP4 (H.264, H.265/HEVC) and WebM (VP8, VP9, AV1).
                             </p>
                         @endif
                         @if($errors->has('files'))
@@ -143,7 +143,7 @@
                     @if ($isImageMediaType)
                         Only files with a supported image file format are shown (JPEG, PNG, WebP and TIFF).
                     @else
-                        Only files with a supported video file format are shown (MP4 (H.264) and WebM (VP8, VP9, AV1)).
+                        Only files with a supported video file format are shown (MP4 (H.264, H.265/HEVC) and WebM (VP8, VP9, AV1)).
                     @endif
                 </p>
 
