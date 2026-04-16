@@ -1,38 +1,36 @@
 <template>
-    <div class="row center-container">
-        <div v-if="displayImage">
-            <img
-                :src="getImageUrl"
-                @error="displayText"
-                class="reference-image"
+    <h4>Reference Image</h4>
+    <div v-if="displayImage">
+        <img
+            :src="getImageUrl"
+            @error="displayText"
+            class="reference-image"
+        />
+        <span v-if="isAdmin && editable">
+            <button
+                class="btn btn-danger"
+                @click="deleteImage"
+                title="Remove this image"
+            >
+                <span class="fa fa-times"></span>
+            </button>
+        </span>
+    </div>
+    <div v-else>
+        <span>No reference image was provided</span>
+        <div v-if="isAdmin && editable">
+            <label>Select a reference image (max 5 MB)</label>
+            <input
+                type="file"
+                name="referenceImage"
+                @change="addImage"
+                required
             />
-            <div v-if="editable && isAdmin" class="center-container">
-                <button
-                    class="btn btn-danger btn-asl"
-                    @click="deleteImage"
-                    title="Remove this image"
-                >
-                    <span class="fa fa-times"></span>
-                </button>
-            </div>
-        </div>
-        <div v-else>
-            <span>No reference image selected</span>
-            <div v-if="editable && isAdmin">
-                <label>Select a reference image (max 5 MB)</label>
-                <input
-                    type="file"
-                    name="referenceImage"
-                    @change="addImage"
-                    required
-                />
-            </div>
         </div>
     </div>
 </template>
 <script>
 import Messages from '@/core/messages/store.js';
-
 export default {
     emits: ['reset-reference-image', 'add-image'],
     props: {
@@ -70,18 +68,23 @@ export default {
             );
         },
         getImageUrl() {
-            if (isNaN(this.labelId)) {
-                return '';
+            if (this.labelId > 0) {
+                return this.temporaryImage
+                    ? this.temporaryImage
+                    : this.baseUrl + '/' + this.labelId + '.jpg?v=' + this.refresh;
             }
-            return this.temporaryImage
-                ? this.temporaryImage
-                : this.baseUrl + '/' + this.labelId + '.jpg';
+            return '';
         },
     },
     data() {
         return {
             displayImage: true,
+            refresh: 0,
         };
+    },
+    watch: {
+        temporaryImage: "attemptDisplayImage",
+        labelId: "attemptDisplayImage",
     },
     methods: {
         displayText() {
@@ -103,18 +106,19 @@ export default {
         attemptDisplayImage() {
             this.displayImage = true;
         },
+        forceRefresh() {
+            this.refresh += 1;
+        },
         addImage(event) {
             if (event.target.files.length > 1) {
                 Messages.warning('Please select only one file');
                 return;
             }
             let file = event.target.files[0];
-
             if (file.size > 5 * 1024 * 1024) {
                 Messages.warning('The file is too big');
                 return;
             }
-
             this.$emit('add-image', file);
             setTimeout(() => this.attemptDisplayImage(), 250);
         },

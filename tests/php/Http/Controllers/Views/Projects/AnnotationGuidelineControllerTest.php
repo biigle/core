@@ -2,15 +2,15 @@
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
 use ApiTestCase;
-use Biigle\AnnotationStrategy;
+use Biigle\AnnotationGuideline;
 
-class AnnotationStrategyControllerTest extends ApiTestCase
+class AnnotationGuidelineControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
         $id = $this->project()->id;
 
-        $path = "projects/{$id}/annotation-strategy";
+        $path = "projects/{$id}/annotation-guideline";
 
         $this->beGuest();
         $this->get($path)->assertStatus(404);
@@ -18,14 +18,14 @@ class AnnotationStrategyControllerTest extends ApiTestCase
         $this->beEditor();
         $this->get($path)->assertStatus(404);
 
-        //Admins can create annotation strategies
+        //Admins can create annotation guidelines
         $this->beAdmin();
         $this->get($path)->assertStatus(200);
 
         $this->beGlobalAdmin();
         $this->get($path)->assertStatus(200);
 
-        AnnotationStrategy::create(['project' => $id, 'description' => 'someDescription']);
+        AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
 
         $this->beGuest();
         $this->get($path)->assertStatus(200);

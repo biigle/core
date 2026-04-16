@@ -2,32 +2,32 @@
 
 namespace Biigle\Http\Controllers\Api\Projects;
 
-use Biigle\AnnotationStrategy;
+use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use Illuminate\Http\Request;
 use Storage;
 
-class AnnotationStrategyController extends Controller
+class AnnotationGuidelineController extends Controller
 {
     /**
-     * Get the annotation strategy for the given project and the associated labels
+     * Get the annotation guideline for the given project and the associated labels
      *
-     * @api {get} projects/:pid/annotation-strategy Get the annotation strategy for the given project
+     * @api {get} projects/:pid/annotation-guideline Get the annotation guideline for the given project
      * @apiGroup Projects
-     * @apiName AnnotationStrategy
+     * @apiName AnnotationGuideline
      * @apiParam {Number} id The Project ID
      * @apiPermission projectAdmin
-     * @apiDescription Returns the annotation strategy and the associated labels
+     * @apiDescription Returns the annotation guideline and the associated labels
      *
      * @apiSuccessExample {json} Success response:
-     * {"annotation_strategy":[{
+     * {"annotation_guideline":[{
      *    "id":1,
      *    "project":2,
-     *    "description":"strategy description"
+     *    "description":"guideline description"
      *  }],
-     *  "annotation_strategy_labels" : [{
-     *      "annotation_strategy": 1,
+     *  "annotation_guideline_labels" : [{
+     *      "annotation_guideline": 1,
      *      "label":4,
      *      "shape":7,
      *      "description":"description of a label",
@@ -43,27 +43,27 @@ class AnnotationStrategyController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
-        $strategy = AnnotationStrategy::where(['project'=> $id])
+        $guideline = AnnotationGuideline::where(['project'=> $id])
             ->firstOrFail();
-        $strategyLabels = $strategy
-            ->strategyLabels()
+        $guidelineLabels = $guideline
+            ->guidelineLabels()
             ->select()
             ->with('label')
             ->get();
-        return ['annotation_strategy' => $strategy, 'annotation_strategy_labels' => $strategyLabels];
+        return ['annotation_guideline' => $guideline, 'annotation_guideline_labels' => $guidelineLabels];
 
     }
 
     /**
-     * Update the annotation strategy for the given project
+     * Update the annotation guideline for the given project
      *
-     * @api {post} projects/:pid/annotation-strategy Update the annotation strategy for the given project
+     * @api {post} projects/:pid/annotation-guideline Update the annotation guideline for the given project
      * @apiGroup Projects
-     * @apiName AnnotationStrategy
+     * @apiName AnnotationGuideline
      * @apiParam {Number} id The Project ID
-     * @apiParam {String} description A description on how to annotate the strategy
+     * @apiParam {String} description A description on how to annotate the guideline
      * @apiPermission projectAdmin
-     * @apiDescription Edit the annotation strategy associated with the given ID
+     * @apiDescription Edit the annotation guideline associated with the given ID
      *
      * @param int $id Project ID
      */
@@ -76,7 +76,7 @@ class AnnotationStrategyController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        AnnotationStrategy::updateOrCreate(
+        AnnotationGuideline::updateOrCreate(
             ['project' => $project->id],
             ['description' =>  $request->description]
         );
@@ -84,24 +84,24 @@ class AnnotationStrategyController extends Controller
     }
 
     /**
-     * Delete the annotation strategy for the given project
+     * Delete the annotation guideline for the given project
      *
-     * @api {delete} projects/:pid/annotation-strategy Delete the annotation strategy for the given project
+     * @api {delete} projects/:pid/annotation-guideline Delete the annotation guideline for the given project
      * @apiGroup Projects
-     * @apiName AnnotationStrategy
+     * @apiName AnnotationGuideline
      * @apiParam {Number} id The Project ID
      * @apiPermission projectAdmin
-     * @apiDescription Delete the annotation strategy associated with the given ID
+     * @apiDescription Delete the annotation guideline associated with the given ID
      */
     public function delete(Request $request)
     {
         $project = Project::findOrFail($request->id);
         $this->authorize('update', $project);
-        $annotationStrategy = AnnotationStrategy::where(['project'=> $project->id])->firstOrFail();
-        $annotationStrategy->delete();
+        $annotationGuideline = AnnotationGuideline::where(['project'=> $project->id])->firstOrFail();
+        $annotationGuideline->delete();
 
         //Cleanup the directory
-        $disk = Storage::disk(config('annotation_strategy.storage_disk'));
+        $disk = Storage::disk(config('annotation_guideline.storage_disk'));
         $url = "$project->id/";
         if ($disk->exists($url)) {
             $disk->deleteDirectory($url);

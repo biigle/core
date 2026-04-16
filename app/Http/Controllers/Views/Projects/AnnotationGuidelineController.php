@@ -2,17 +2,17 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
-use Biigle\AnnotationStrategy;
+use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Biigle\Shape;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class AnnotationStrategyController extends Controller
+class AnnotationGuidelineController extends Controller
 {
     /**
-     * Shows the annotation strategy page for the project.
+     * Shows the annotation guideline page for the project.
      *
      * @param Request $request
      * @param int $id Id of the project
@@ -36,53 +36,49 @@ class AnnotationStrategyController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
-        $annotationStrategy = AnnotationStrategy::where(['project' => $id])->first();
+        $annotationGuideline = AnnotationGuideline::where(['project' => $id])->first();
 
         $isAdmin = $user->can('update', $project);
 
-        $labelTrees = $project->labelTrees()->get();
-        $labels = [];
-        foreach ($labelTrees as $labelTree) {
-            array_push($labels, ...$labelTree->labels->toArray());
-        }
+        $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
 
         $shapes = Shape::pluck('name', 'id');
 
-        if (!$annotationStrategy) {
+        if (!$annotationGuideline) {
             if ($isAdmin) {
-                return view('projects.show.annotation-strategy', [
+                return view('projects.show.annotation-guideline', [
                     'project' => $project,
                     'user' => $user,
-                    'annotationStrategy' => [],
-                    'annotationStrategyLabels' => [],
+                    'annotationGuideline' => [],
+                    'annotationGuidelineLabels' => [],
                     'isMember' => $isMember,
                     'isAdmin' => $isAdmin,
                     'isPinned' => $isPinned,
                     'canPin' => $canPin,
-                    'activeTab' => 'strategy',
-                    'labels' => $labels,
+                    'activeTab' => 'guideline',
+                    'labelTrees' => $labelTrees,
                     'availableShapes' => $shapes,
                 ]);
             }
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $annotationStrategyLabels = $annotationStrategy->strategyLabels()
+        $annotationGuidelineLabels = $annotationGuideline->guidelineLabels()
             ->with('label')
             ->get()
             ->toArray();
 
-        return view('projects.show.annotation-strategy', [
+        return view('projects.show.annotation-guideline', [
             'project' => $project,
-            'annotationStrategy' => $annotationStrategy->toArray(),
-            'annotationStrategyLabels' => $annotationStrategyLabels,
+            'annotationGuideline' => $annotationGuideline->toArray(),
+            'annotationGuidelineLabels' => $annotationGuidelineLabels,
             'user' => $user,
             'isMember' => $isMember,
             'isAdmin' => $isAdmin,
             'isPinned' => $isPinned,
             'canPin' => $canPin,
-            'activeTab' => 'strategy',
-            'labels' => $labels,
+            'activeTab' => 'guideline',
+            'labelTrees' => $labelTrees,
             'availableShapes' => $shapes,
         ]);
     }

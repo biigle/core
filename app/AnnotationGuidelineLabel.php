@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Model for labels within an annotation strategy.
+ * Model for labels within an annotation guideline.
  *
  * @property int $id
  */
-class AnnotationStrategyLabel extends Model
+class AnnotationGuidelineLabel extends Model
 {
     use HasFactory;
 
@@ -20,7 +20,7 @@ class AnnotationStrategyLabel extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'annotation_strategy' => 'int',
+        'annotation_guideline' => 'int',
         'label' => 'int',
         'shape' => 'int',
         'description' => 'string',
@@ -32,7 +32,7 @@ class AnnotationStrategyLabel extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'annotation_strategy',
+        'annotation_guideline',
         'label',
         'shape',
         'description',
@@ -45,7 +45,7 @@ class AnnotationStrategyLabel extends Model
     public $timestamps = false;
 
     /**
-     * The labels that have a strategy for their annotation
+     * The labels that have a guideline for their annotation
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
      */
