@@ -13,7 +13,7 @@
 @section('project-content')
 <div id="annotation-guideline-container">
     <div class="row">
-        <div class="col-xl-12">
+        <div class="col-sm-12">
             <annotation-guideline
             :is-admin={{ $isAdmin ? 'true' : 'false' }}>
             </annotation-guideline>
