@@ -22,5 +22,11 @@
         </li>
     @endif
 
+    @if ((($user->can('update', $project) || $user->can('sudo'))) || (isset($annotationGuideline) && $annotationGuideline != null))
+        <li role="presentation" @if ($activeTab === 'guideline') class="active" @endif>
+            <a href="{{route('annotation-guideline', $project->id)}}" title="Check the project guideline for this project"><i class="fas fa-list-ol"></i> Guideline</a>
+        </li>
+    @endif
+
     @mixin('projectsShowTabs')
 </ul>

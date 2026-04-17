@@ -22,6 +22,51 @@
     margin-top: 5em;
 }
 
+.form-control.annotation-guideline-description {
+    height: 200px;
+    box-sizing: border-box;
+    text-align: left;
+    align-content: top;
+}
+
+textarea.guideline-description {
+  width: 100%;
+  resize: none;
+  min-height: 150px;
+  max-height: 300px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  box-sizing: border-box;
+}
+
+.annotation-guideline-label {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-top: 1px solid white;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-asl {
+    margin: 3px;
+}
+
+.reference-image {
+    max-width: 300px;
+    min-width: 50px;
+    max-height: 300px;
+    min-height: 50px;
+}
+
+.guideline-description-text {
+    white-space: pre-line;
+}
+
 @import 'components/previewThumbnail';
 @import 'show';
 @import 'charts';

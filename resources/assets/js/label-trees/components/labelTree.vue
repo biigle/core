@@ -43,6 +43,8 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
+                :is-in-guideline="labelsInGuideline.includes(label.id)"
+                :guideline-present="labelsInGuideline.length > 0"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -148,6 +150,10 @@ export default {
         showMoveButtonDown: {
             type: Boolean,
             default: false,
+        },
+        labelsInGuideline: {
+            type: Array,
+            default: () => [],
         },
     },
     computed: {
