@@ -415,7 +415,13 @@ class ApplyLargoSession extends Job implements ShouldQueue
         $toDeleteQuery = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $affected)
             ->whereDoesntHave('labels');
 
-        $toDeleteArgs = $toDeleteQuery->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
+        // Acquire row locks in ascending ID order before deleting. Without this, two
+        // concurrent jobs can deadlock: PostgreSQL's FK check on the annotation labels
+        // table causes each job's DELETE to wait for the other's insert-transaction,
+        // forming a circular lock dependency.
+        $toDeleteQuery->clone()->orderBy('id')->lockForUpdate()->pluck('id');
+
+        $toDeleteArgs = $toDeleteQuery->clone()->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
             ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
             ->toArray();
 
