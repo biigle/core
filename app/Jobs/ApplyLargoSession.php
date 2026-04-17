@@ -412,15 +412,25 @@ class ApplyLargoSession extends Job implements ShouldQueue
         $relation = (new $annotationModel)->file();
         $fileTable = $relation->getRelated()->getTable();
 
-        $toDeleteQuery = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $affected)
-            ->whereDoesntHave('labels');
-
-        $toDeleteArgs = $toDeleteQuery->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
-            ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
+        // Select with ORDER BY + FOR UPDATE so concurrent transactions always acquire
+        // row locks in the same sequence. Without this, two jobs deleting overlapping
+        // annotation sets can deadlock: PostgreSQL's FK check on image_annotation_labels
+        // causes each job's DELETE to wait for the other job's insert-transaction, forming
+        // a circular lock dependency.
+        $idsToDelete = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $affected)
+            ->whereDoesntHave('labels')
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->pluck('id')
             ->toArray();
 
-        if (!empty($toDeleteArgs)) {
-            $toDeleteQuery->delete();
+        if (!empty($idsToDelete)) {
+            $toDeleteArgs = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $idsToDelete)
+                ->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
+                ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
+                ->toArray();
+
+            $annotationModel::whereIn('id', $idsToDelete)->delete();
             // The annotation model observer does not fire for this query so we
             // dispatch the remove patch job manually here.
             if ($annotationModel === ImageAnnotation::class) {
