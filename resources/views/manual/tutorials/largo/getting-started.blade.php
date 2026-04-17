@@ -157,7 +157,7 @@
 
         <dl>
             <dt>Show annotation outlines</dt>
-            <dd>Disable this option to hide the outlines of the annotation on each patch (enabled by default). 
+            <dd>Disable this option to hide the outlines of the annotation on each patch (enabled by default).</dd>
         </dl>
 
         <h3><a name="example-use-cases"></a>Example use cases</h3>
