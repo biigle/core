@@ -188,6 +188,7 @@ export default {
         resetEditing() {
             this.editingMode = false;
             this.mightHaveEdited = false;
+            this.forceSaveLabel = false;
         },
         setAnnotationGuideline(responseBody) {
             this.annotationGuideline = responseBody.annotation_guideline;

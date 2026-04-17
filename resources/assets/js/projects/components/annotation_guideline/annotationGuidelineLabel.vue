@@ -1,148 +1,156 @@
 <template>
-        <div class="col-xs-4">
-            <label-trees
-                :trees="labelTrees"
-                :labelsInGuideline="labelsInGuideline"
-                @select="selectLabel"
-                @deselect="deselectLabel"
-                >
-            </label-trees>
-        </div>
-        <div class="col-xs-8">
-            <span v-if="isAdmin && editingMode && label.id" class="top-bar pull-right">
+    <div class="col-xs-4">
+        <label-trees
+            :trees="labelTrees"
+            :labelsInGuideline="labelsInGuideline"
+            @select="selectLabel"
+            @deselect="deselectLabel"
+        >
+        </label-trees>
+    </div>
+    <div class="col-xs-8">
+        <span
+            v-if="isAdmin && editingMode && label.id"
+            class="top-bar pull-right"
+        >
+            <button
+                class="btn btn-success btn-sm"
+                type="button"
+                @click="addAnnotationGuidelineLabel"
+                title="Save label in the guideline"
+            >
+                <span class="fa fa-check" aria-hidden="true"></span>
+                Save label
+            </button>
+            <span>
                 <button
-                    class="btn btn-success btn-sm"
+                    class="btn btn-danger btn-sm"
                     type="button"
-                    @click="addAnnotationGuidelineLabel"
-                    title="Save label in the guideline"
+                    @click="deleteLabel"
+                    title="Delete this label from the guideline"
                 >
-                    <span class="fa fa-check" aria-hidden="true"></span>
-                    Save label
+                    <span class="fa fa-times" aria-hidden="true"></span>
+                    Delete label
                 </button>
-                <span>
-                    <button
-                        class="btn btn-danger btn-sm"
-                        type="button"
-                        @click="deleteLabel"
-                        title="Delete this label from the guideline"
-                    >
-                        <span class="fa fa-times" aria-hidden="true"></span>
-                        Delete label
-                    </button>
-                </span>
             </span>
-            <div v-if="displayLabelInfo" class="row">
-                <h4><b>{{ label.name }}</b></h4>
-                <h4>Label description</h4>
-                <div v-if="isAdmin && editingMode">
-                    <textarea
-                        v-model="description"
-                        class="form-control guideline-description"
-                        maxlength="200"
-                        wrap="hard"
-                        placeholder="Describe how this label should be used..."
-                    ></textarea>
-                </div>
-                <div v-else>
-                    <span v-if="hasDescription" class="guideline-description-text">{{ description }}</span>
-                    <span v-else>No description was provided</span>
-                </div>
-                <h4>Shape</h4>
-                <div v-if="isAdmin && editingMode">
-                    <select
-                        class="form-control"
-                        v-model="shape"
-                        title="Select shape"
-                    >
-                        <option
-                            v-for="(name, id) in availableShapes"
-                            :value="id"
-                            v-text="name"
-                        ></option>
-                    </select>
-                </div>
-                <div v-else>
-                    <span v-if="shape">
-                        <span class="btn control-button"
-                            ><i
-                                :class="`icon icon-white icon-${availableShapes[shape].toLowerCase()}`"
-                            ></i
-                        ></span>
-                        <span>{{ availableShapes[shape] }}</span>
-                    </span>
-                    <span v-else>
-                        No preferred shape was provided
-                    </span>
-                </div>
-                <annotation-guideline-label-image
-                    :base-url="baseUrl"
-                    :label-id="labelId"
-                    :project-id="projectId"
-                    :temporary-image="temporaryReferenceImage"
-                    :is-admin="isAdmin"
-                    :editable="editingMode"
-                    @reset-reference-image="resetReferenceImage"
-                    @add-image="addImage"
-                ></annotation-guideline-label-image>
+        </span>
+        <div v-if="displayLabelInfo" class="row">
+            <h4>
+                <b>{{ label.name }}</b>
+            </h4>
+            <h4>Label description</h4>
+            <div v-if="isAdmin && editingMode">
+                <textarea
+                    v-model="description"
+                    class="form-control guideline-description"
+                    maxlength="200"
+                    wrap="hard"
+                    placeholder="Describe how this label should be used..."
+                ></textarea>
             </div>
+            <div v-else>
+                <span
+                    v-if="hasDescription"
+                    class="guideline-description-text"
+                    >{{ description }}</span
+                >
+                <span v-else>No description was provided</span>
+            </div>
+            <h4>Shape</h4>
+            <div v-if="isAdmin && editingMode">
+                <select
+                    class="form-control"
+                    v-model="shape"
+                    title="Select shape"
+                >
+                    <option
+                        v-for="(name, id) in availableShapes"
+                        :value="id"
+                        v-text="name"
+                    ></option>
+                </select>
+            </div>
+            <div v-else>
+                <span v-if="shape">
+                    <span class="btn control-button"
+                        ><i
+                            :class="`icon icon-white icon-${availableShapes[shape].toLowerCase()}`"
+                        ></i
+                    ></span>
+                    <span>{{ availableShapes[shape] }}</span>
+                </span>
+                <span v-else> No preferred shape was provided </span>
+            </div>
+            <annotation-guideline-label-image
+                :base-url="baseUrl"
+                :label-id="labelId"
+                :project-id="projectId"
+                :temporary-image="temporaryReferenceImage"
+                :is-admin="isAdmin"
+                :editable="editingMode"
+                @reset-reference-image="resetReferenceImage"
+                @add-image="addImage"
+            ></annotation-guideline-label-image>
         </div>
-    </template>
-    <script>
-    import AnnotationGuidelineLabelImage from './annotationGuidelineLabelImage.vue';
-    import AnnotationGuidelineLabelApi from '@/projects/api/annotationGuidelineLabel.js';
-    import { handleErrorResponse } from '@/core/messages/store.js';
-    import { resizeImage } from './resizeImage.js';
-    import LoaderMixin from '@/core/mixins/loader.vue';
-    import LabelTrees from '@/label-trees/components/labelTrees.vue';
+    </div>
+</template>
+<script>
+import AnnotationGuidelineLabelImage from './annotationGuidelineLabelImage.vue';
+import AnnotationGuidelineLabelApi from '@/projects/api/annotationGuidelineLabel.js';
+import { handleErrorResponse } from '@/core/messages/store.js';
+import { resizeImage } from './resizeImage.js';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
 
-    export default {
-        mixins: [LoaderMixin],
-        emits: ['add-label', 'delete-label'],
-        components: {
-            annotationGuidelineLabelImage: AnnotationGuidelineLabelImage,
-            labelTrees: LabelTrees,
+export default {
+    mixins: [LoaderMixin],
+    emits: ['add-label', 'delete-label'],
+    components: {
+        annotationGuidelineLabelImage: AnnotationGuidelineLabelImage,
+        labelTrees: LabelTrees,
+    },
+    props: {
+        annotationGuidelineLabels: {
+            type: Array,
+            default: () => [],
         },
-        props: {
-            annotationGuidelineLabels: {
-                type: Array,
-                default: () => [],
-            },
-            editingMode: {
-                type: Boolean,
-                default: false,
-            },
-            availableShapes: {
-                type: Object,
-                required: true,
-            },
-            labelTrees: {
-                type: Array,
-                required: true,
-            },
-            projectId: {
-                type: Number,
-                required: true,
-            },
-            baseUrl: {
-                type: String,
-                required: true,
-            },
-            creating: {
-                type: Boolean,
-                default: false,
-            },
-            isAdmin: {
-                type: Boolean,
-                required: true,
-            },
-            remindToSave: {
-                type: Boolean,
-                default: false,
-            },
-            forceSaveLabel: {
-                type: Boolean,
-                required: true,
-            },
+        editingMode: {
+            type: Boolean,
+            default: false,
+        },
+        availableShapes: {
+            type: Object,
+            required: true,
+        },
+        labelTrees: {
+            type: Array,
+            required: true,
+        },
+        projectId: {
+            type: Number,
+            required: true,
+        },
+        baseUrl: {
+            type: String,
+            required: true,
+        },
+        creating: {
+            type: Boolean,
+            default: false,
+        },
+        isAdmin: {
+            type: Boolean,
+            required: true,
+        },
+        remindToSave: {
+            type: Boolean,
+            default: false,
+        },
+        // Used to force save the label if the annotationGuideline is saved
+        forceSaveLabel: {
+            type: Boolean,
+            required: true,
+        },
     },
     computed: {
         temporaryReferenceImage() {
@@ -160,32 +168,42 @@
             return this.description && this.description.length !== 0;
         },
         displayLabelInfo() {
-            return this.editingMode && this.label.id || this.labelsInGuideline.includes(this.label.id);
+            return (
+                (this.editingMode && this.label.id) ||
+                this.labelsInGuideline.includes(this.label.id)
+            );
         },
         currentAnnotationGuidelineLabel() {
             let asl = {
                 label: this.label,
                 reference_image: '',
             };
-            if (this.label && this.annotationGuidelineLabels.filter((asl) => asl.label.id == this.label.id)[0]) {
-                asl = this.annotationGuidelineLabels.filter((asl) => asl.label.id == this.label.id)[0]
+            if (
+                this.label &&
+                this.annotationGuidelineLabels.filter(
+                    (asl) => asl.label.id == this.label.id,
+                )[0]
+            ) {
+                asl = this.annotationGuidelineLabels.filter(
+                    (asl) => asl.label.id == this.label.id,
+                )[0];
             }
             return asl;
         },
-
-
     },
     watch: {
-        currentAnnotationGuidelineLabel: function(asl) {
+        currentAnnotationGuidelineLabel: function (asl) {
             this.label = asl.label;
             //casting null to undefined
             this.shape = asl.shape ?? undefined;
             this.description = asl.description;
             this.referenceImage = asl.reference_image;
         },
-        forceSaveLabel: function() {
-            this.addAnnotationGuidelineLabel();
-        },
+        forceSaveLabel: function(value) {
+            if (value) {
+                this.addAnnotationGuidelineLabel();
+            }
+        }
     },
     data() {
         return {
@@ -204,6 +222,15 @@
             this.label = {};
         },
         addAnnotationGuidelineLabel() {
+            // Avoid accidental save, a label without any info is allowed only voluntarily
+            if (
+                this.forceSaveLabel &&
+                !this.shape &&
+                !this.description &&
+                !this.referenceImage)
+            {
+                return;
+            }
             if (this.labelId > 0) {
                 this.$emit('add-label', {
                     label: this.label,
