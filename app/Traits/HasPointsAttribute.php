@@ -15,45 +15,91 @@ trait HasPointsAttribute
      */
     public function validatePoints(array $points)
     {
-        // check if all elements are integer
+        $shapeName = $this->shape->name;
+
+        // check if all elements are integer or float
         $valid = array_reduce($points, fn ($carry, $point) => $carry && (is_float($point) || is_int($point)), true);
 
         if (!$valid) {
-            throw new Exception('Point coordinates must be of type float or integer.');
+            throw new Exception('Invalid points for shape '.$shapeName.'!');
         }
 
         $size = sizeof($points);
 
         switch ($this->shape_id) {
             case Shape::pointId():
-                $valid = $size === 2;
+                $this->validateExactPointCount($size, 2, $shapeName);
                 break;
             case Shape::circleId():
-                $valid = $size === 3 && intval(($points)[2]) !== 0;
+                $this->validateExactPointCount($size, 3, $shapeName);
+                $valid = intval(($points)[2]) !== 0;
                 break;
             case Shape::ellipseId():
             case Shape::rectangleId():
-                $valid = $size === 8 && $this->countDistinctCoordinates($points) === 4;
+                $this->validateExactPointCount($size, 8, $shapeName);
+                $valid = $this->countDistinctCoordinates($points) === 4;
                 break;
             case Shape::polygonId():
-                $valid = $size % 2 === 0 && count($points) >= 8 && $this->countDistinctCoordinates($points) >= 3;
+                if ($size < 8) {
+                    throw new Exception('Too few points for shape '.$shapeName.'!');
+                }
+
+                if ($size % 2 !== 0) {
+                    throw new Exception('Too many points for shape '.$shapeName.'!');
+                }
+
+                $valid = $this->countDistinctCoordinates($points) >= 3;
                 break;
             case Shape::lineId():
-                $valid = $size % 2 === 0 && count($points) >= 4 && $this->countDistinctCoordinates($points) >= 2;
+                if ($size < 4) {
+                    throw new Exception('Too few points for shape '.$shapeName.'!');
+                }
+
+                if ($size % 2 !== 0) {
+                    throw new Exception('Too many points for shape '.$shapeName.'!');
+                }
+
+                $valid = $this->countDistinctCoordinates($points) >= 2;
                 break;
             default:
-                $valid = $size > 0 && $size % 2 === 0;
+                if ($size === 0) {
+                    throw new Exception('Too few points for shape '.$shapeName.'!');
+                }
+
+                if ($size % 2 !== 0) {
+                    throw new Exception('Too many points for shape '.$shapeName.'!');
+                }
+
+                $valid = true;
         }
 
         if (!$valid) {
-            throw new Exception('Invalid (number of) points for shape '.$this->shape->name.'!');
+            throw new Exception('Invalid points for shape '.$shapeName.'!');
         }
 
         if ($this->shape_id === Shape::polygonId()) {
             $length = count($points);
             if ($points[0] !== $points[$length - 2] || $points[1] !== $points[$length - 1]) {
-                throw new Exception('The first and last coordinate of a polygon must be the same.');
+                throw new Exception('Invalid points for shape '.$shapeName.'!');
             }
+        }
+    }
+
+    /**
+     * Validate an exact number of coordinates.
+     *
+     * @param int $size
+     * @param int $expectedSize
+     * @param string $shapeName
+     */
+    private function validateExactPointCount(int $size, int $expectedSize, string $shapeName): void
+    {
+        if ($size < $expectedSize) {
+            throw new Exception('Too few points for shape '.$shapeName.'!');
+        }
+
+        if ($size > $expectedSize) {
+            throw new Exception('Too many points for shape '.$shapeName.'!');
         }
     }
 
