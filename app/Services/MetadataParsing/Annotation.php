@@ -69,11 +69,25 @@ abstract class Annotation
      */
     public function setPointsAttribute(array $points)
     {
-        $this->points = array_map(
-            fn ($a) => is_array($a)
-                ? array_map(fn ($b) => round($b, 2), $a)
-                : round($a, 2),
-            $points
-        );
+        $this->points = $this->normalizePoints($points);
+    }
+
+    /**
+     * Normalize point coordinates by rounding numeric values while preserving invalid
+     * values so validation can report the intended error messages.
+     */
+    private function normalizePoints(array $points): array
+    {
+        return array_map(function ($value) {
+            if (is_array($value)) {
+                return $this->normalizePoints($value);
+            }
+
+            if (is_int($value) || is_float($value)) {
+                return round($value, 2);
+            }
+
+            return $value;
+        }, $points);
     }
 }
