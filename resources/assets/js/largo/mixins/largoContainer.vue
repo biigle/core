@@ -3,6 +3,7 @@ import DismissImageGrid from '../components/dismissImageGrid.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import FilteringTab from '../components/filteringTab.vue';
+import Keyboard from '@/core/keyboard.js';
 import LabelList from '../components/labelList.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
@@ -642,6 +643,29 @@ export default {
         },
         setUnionLogic(union) {
             this.union = union;
+        },
+        editableElementIsFocused() {
+            const activeElement = document.activeElement;
+            
+            return activeElement && (
+                activeElement.isContentEditable ||
+                ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeElement.tagName)
+            )
+        },
+        sortByOutlierShortcut() {
+            if (this.editableElementIsFocused() || this.loading) {
+                return;
+            }
+            
+            this.handleCancelSimilaritySort();
+            this.updateSortKey(SORT_KEY.OUTLIER);
+        },
+        sortBySimilarityShortcut() {
+            if (this.editableElementIsFocused() || this.loading) {
+                return;
+            }
+            
+            this.handleInitSimilaritySort();
         }
     },
     watch: {
@@ -685,6 +709,9 @@ export default {
                 return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
             }
         });
+        
+        Keyboard.on('a', () => this.sortByOutlierShortcut());
+        Keyboard.on('s', () => this.sortBySimilarityShortcut());
 
         this.initializeEcho();
     },

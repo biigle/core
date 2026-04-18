@@ -1,6 +1,6 @@
 @extends('manual.base')
 
-@section('manual-title', 'Largo')
+@section('manual-title', 'Getting started')
 
 @section('manual-content')
     <div class="row">
@@ -157,7 +157,7 @@
 
         <dl>
             <dt>Show annotation outlines</dt>
-            <dd>Disable this option to hide the outlines of the annotation on each patch (enabled by default). Use the <kbd>o</kbd> key as shortcut.</dd>
+            <dd>Disable this option to hide the outlines of the annotation on each patch (enabled by default).</dd>
         </dl>
 
         <h3><a name="example-use-cases"></a>Example use cases</h3>

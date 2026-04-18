@@ -81,6 +81,8 @@
     <sidebar-tab name="settings" icon="cog" title="Settings">
         <settings-tab
             v-on:change-outlines="updateShowOutlines"
-            ></settings-tab>
+            >
+            @include('partials.largo-shortcuts')
+        </settings-tab>
     </sidebar-tab>
 </sidebar>
