@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests;
 
-use TestCase;
+use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Shape;
 use Exception;
-use Biigle\Services\MetadataParsing\ImageAnnotation;
+use TestCase;
 
 class PointsValidationTest extends TestCase
 {
