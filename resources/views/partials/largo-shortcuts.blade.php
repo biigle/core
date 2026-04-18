@@ -20,7 +20,7 @@
         </tr>
         <tr>
             <td><kbd>o</kbd></td>
-            <td>Hide the annotation outlines</td>
+            <td>Toggle annotation outlines</td>
         </tr>
     </tbody>
 </table>
