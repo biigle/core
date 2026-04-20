@@ -78,7 +78,7 @@ abstract class Annotation
         );
     }
     
-    private function roundValue($value) 
+    private function roundValue($value)
     {
         if (!is_int($value) && !is_float($value)) {
             throw new InvalidCoordinateTypeException('Coordinate "'.$value.'" is not of type int or float.');

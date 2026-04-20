@@ -5,10 +5,18 @@ namespace Biigle\Traits;
 use Biigle\Shape;
 use Exception;
 
-class InvalidCoordinateTypeException extends Exception {};
-class InvalidNumberOfCoordinatesException extends Exception {};
-class InvalidNumberOfPointsException extends Exception {};
-class InvalidShapeException extends Exception {};
+class InvalidCoordinateTypeException extends Exception
+{
+};
+class InvalidNumberOfCoordinatesException extends Exception
+{
+};
+class InvalidNumberOfPointsException extends Exception
+{
+};
+class InvalidShapeException extends Exception
+{
+};
 
 trait HasPointsAttribute
 {
@@ -26,7 +34,8 @@ trait HasPointsAttribute
         $this->validateShape($points);
     }
     
-    private function validateCoordinatesAreNumeric($points) {
+    private function validateCoordinatesAreNumeric($points)
+    {
         $valid = array_reduce($points, fn ($carry, $point) => $carry && (is_float($point) || is_int($point)), true);
 
         if (!$valid) {
@@ -38,7 +47,7 @@ trait HasPointsAttribute
     {
         $size = count($points);
         
-        switch($this->shape_id) {
+        switch ($this->shape_id) {
             case Shape::circleId():
                 if ($size !== 3) {
                     throw new InvalidNumberOfCoordinatesException('Invalid number of values for shape circle: Expected 3, got '.$size.'.');
@@ -55,11 +64,11 @@ trait HasPointsAttribute
         }
     }
     
-    private function validateNumberOfPoints($points) 
+    private function validateNumberOfPoints($points)
     {
         $pointCount = intval(count($points) / 2);
         
-        switch($this->shape_id) {
+        switch ($this->shape_id) {
             case Shape::pointId():
                 if ($pointCount !== 1) {
                     throw new InvalidNumberOfPointsException('Invalid number of points: Need exactly 1 point for shape point, but '.$pointCount.' were given.');
@@ -85,11 +94,12 @@ trait HasPointsAttribute
         }
     }
     
-    private function validateShape($points) {
+    private function validateShape($points)
+    {
         $distinctPointCount = $this->countDistinctPoints($points);
         
-        switch($this->shape_id) {
-            case Shape::circleId(): 
+        switch ($this->shape_id) {
+            case Shape::circleId():
                 if ($points[2] <= 0) {
                     throw new InvalidShapeException('Invalid radius for circle: Must be > 0, but is '.$points[2].'');
                 }
