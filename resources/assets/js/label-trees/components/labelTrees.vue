@@ -7,7 +7,8 @@
             <button
                 v-if="clearable"
                 @click="clear"
-                class="btn btn-default" title="Clear selected labels"
+                class="btn btn-default"
+                title="Clear selected labels"
                 type="button"
                 >
                 <span class="fa fa-times fa-fw" aria-hidden="true"></span>

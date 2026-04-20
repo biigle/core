@@ -284,7 +284,7 @@ export default {
         addImage(file) {
             this.startLoading();
             resizeImage(file)
-                .then((image) => this.setImage(image), this.setImageWarning)
+                .then((image) => this.setImage(image))
                 .finally(this.finishLoading);
         },
         setImage(image) {

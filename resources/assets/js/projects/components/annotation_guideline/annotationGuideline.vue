@@ -158,7 +158,6 @@ export default {
             addingNewLabel: false,
             editingMode: false,
             missingDescription: false,
-            remindToSave: false,
             labelTrees: biigle.$require('projects.labelTrees'),
             forceSaveLabel: false,
         };
@@ -247,19 +246,6 @@ export default {
                     (agl) => agl.label.id == id,
             ));
         },
-        checkIsEditingLabel() {
-            if (this.addingNewLabel) {
-                Messages.danger('Save the new label before saving the guideline');
-                this.remindToSave = true;
-                return true;
-            }
-
-            if (this.editingLabel) {
-                this.addLabel(this.editingLabel);
-            }
-
-            return false;
-        },
         checkHasDescription() {
             if (!this.hasDescription) {
                 this.missingDescription = true;
@@ -331,9 +317,6 @@ export default {
         },
         reloadPage() {
             setTimeout(() => location.reload(), 100);
-        },
-        stopEditingDescription() {
-            this.editingDescription = false;
         },
     },
 };
