@@ -8,15 +8,14 @@
         >
         </label-trees>
     </div>
-    <div class="col-xs-8">
+    <div class="col-xs-8" v-if="canSaveGuideline" >
         <span
             v-if="isAdmin && editingMode && label.id"
-            class="top-bar pull-right"
-        >
+            class="top-bar pull-right" >
             <button
                 class="btn btn-success btn-sm"
                 type="button"
-                @click="addAnnotationGuidelineLabel"
+                @click="addAnnotationGuidelineLabel(false)"
                 title="Save label in the guideline"
             >
                 <span class="fa fa-check" aria-hidden="true"></span>
@@ -88,10 +87,16 @@
                 :temporary-image="temporaryReferenceImage"
                 :is-admin="isAdmin"
                 :editable="editingMode"
+                :refresh-count="refreshCount"
                 @reset-reference-image="resetReferenceImage"
                 @add-image="addImage"
             ></annotation-guideline-label-image>
         </div>
+    </div>
+    <div class="col-xs-8 has-error" v-else>
+        <span class="help-block">
+            Add a description to the guideline before adding a label
+        </span>
     </div>
 </template>
 <script>
@@ -104,7 +109,7 @@ import LabelTrees from '@/label-trees/components/labelTrees.vue';
 
 export default {
     mixins: [LoaderMixin],
-    emits: ['add-label', 'delete-label'],
+    emits: ['add-label', 'delete-label', 'editing'],
     components: {
         annotationGuidelineLabelImage: AnnotationGuidelineLabelImage,
         labelTrees: LabelTrees,
@@ -151,6 +156,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        canSaveGuideline: {
+            type: Boolean,
+            required: true,
+        },
     },
     computed: {
         temporaryReferenceImage() {
@@ -162,7 +171,7 @@ export default {
             return this.label.id ? this.label.id : -1;
         },
         labelsInGuideline() {
-            return this.annotationGuidelineLabels.map((asl) => asl.label.id);
+            return this.annotationGuidelineLabels.map((agl) => agl.label.id);
         },
         hasDescription() {
             return this.description && this.description.length !== 0;
@@ -174,36 +183,42 @@ export default {
             );
         },
         currentAnnotationGuidelineLabel() {
-            let asl = {
+            let agl = {
                 label: this.label,
                 reference_image: '',
             };
             if (
                 this.label &&
                 this.annotationGuidelineLabels.filter(
-                    (asl) => asl.label.id == this.label.id,
+                    (agl) => agl.label.id == this.label.id,
                 )[0]
             ) {
-                asl = this.annotationGuidelineLabels.filter(
-                    (asl) => asl.label.id == this.label.id,
+                agl = this.annotationGuidelineLabels.filter(
+                    (agl) => agl.label.id == this.label.id,
                 )[0];
             }
-            return asl;
+            return agl;
         },
+
     },
     watch: {
-        currentAnnotationGuidelineLabel: function (asl) {
-            this.label = asl.label;
+        currentAnnotationGuidelineLabel: function (agl) {
+            this.label = agl.label;
             //casting null to undefined
-            this.shape = asl.shape ?? undefined;
-            this.description = asl.description;
-            this.referenceImage = asl.reference_image;
+            this.shape = agl.shape ?? undefined;
+            this.description = agl.description;
+            this.referenceImage = agl.reference_image;
+            this.refreshCount = agl.label.refreshCount ?? 0;
         },
         forceSaveLabel: function(value) {
             if (value) {
-                this.addAnnotationGuidelineLabel();
+                this.addAnnotationGuidelineLabel(true);
             }
-        }
+        },
+        shape: "emitEditEvent",
+        description: "emitEditEvent",
+        referenceImage: "emitEditEvent",
+        canSaveGuideline: "displayLabelData"
     },
     data() {
         return {
@@ -211,26 +226,48 @@ export default {
             shape: undefined,
             description: '',
             referenceImage: undefined,
-            imageError: false,
+            refreshCount: 0,
+            showLabelData: false,
         };
     },
     methods: {
+        displayLabelData(value) {
+            if (value) {
+                this.showLabelData = true;
+                return;
+            }
+            this.showLabelData = false;
+        },
+        emitEditEvent() {
+            if (this.editingMode) {
+                this.$emit('editing');
+            }
+        },
         selectLabel(label) {
+            if (this.editingMode) {
+                this.addAnnotationGuidelineLabel(true);
+            }
+            this.label.refreshCount += 1;
             this.label = label;
         },
         deselectLabel() {
+            if (this.editingMode) {
+                this.addAnnotationGuidelineLabel(true);
+            }
             this.label = {};
         },
-        addAnnotationGuidelineLabel() {
+        addAnnotationGuidelineLabel(automaticSave) {
             // Avoid accidental save, a label without any info is allowed only voluntarily
             if (
-                this.forceSaveLabel &&
+                automaticSave &&
                 !this.shape &&
                 !this.description &&
                 !this.referenceImage)
             {
                 return;
             }
+
+
             if (this.labelId > 0) {
                 this.$emit('add-label', {
                     label: this.label,
@@ -250,12 +287,8 @@ export default {
                 .then((image) => this.setImage(image), this.setImageWarning)
                 .finally(this.finishLoading);
         },
-        setImageWarning() {
-            this.imageError = true;
-        },
         setImage(image) {
             this.referenceImage = image;
-            this.imageError = false;
         },
         resetReferenceImage() {
             this.startLoading();

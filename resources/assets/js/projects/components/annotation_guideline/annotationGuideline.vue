@@ -23,7 +23,7 @@
                         <button
                             class="btn btn-success btn-sm"
                             type="button"
-                            @click="sendUpdateAnnotationGuideline"
+                            @click="updateAnnotationGuideline"
                             title="Save annotation guideline"
                         >
                             <span class="fa fa-check"></span>
@@ -33,7 +33,7 @@
                             <button
                                 class="btn btn-danger btn-sm"
                                 type="submit"
-                                @click="sendDeleteAnnotationGuideline"
+                                @click="deleteAnnotationGuideline"
                                 title="Delete the annotation guideline"
                             >
                                 <span class="fa fa-trash" aria-hidden="true"></span>
@@ -83,6 +83,7 @@
                 <div class="row annotation-guideline-label">
                     <annotation-guideline-label
                         :annotation-guideline-labels="annotationGuidelineLabels"
+                        :can-save-guideline="hasDescription"
                         :label-trees="labelTrees"
                         :project-id="projectId"
                         :creating="false"
@@ -93,6 +94,7 @@
                         :force-save-label="forceSaveLabel"
                         @add-label="addLabel"
                         @delete-label="deleteLabel"
+                        @editing="setMightHaveEdited"
                     >
                     </annotation-guideline-label>
                 </div>
@@ -127,14 +129,16 @@ export default {
             return Object.keys(this.annotationGuideline).length === 0;
         },
         hasDescription() {
-            return (
-                this.annotationGuideline.description &&
-                this.annotationGuideline.description.trim().length > 0
-            );
+            let description = this.annotationGuideline.description ?? '';
+            return description.trim().length > 0;
         },
         hasLabelTrees() {
             return this.labelTrees.length > 0;
         },
+    },
+    watch: {
+        'annotationGuideline.description': "setMightHaveEdited",
+        'annotationGuidelineLabel': "setMightHaveEdited",
     },
     data() {
         let shapes = biigle.$require('projects.availableShapes');
@@ -172,6 +176,9 @@ export default {
         }
     },
     methods: {
+        setMightHaveEdited() {
+            this.mightHaveEdited = true;
+        },
         refreshGuideline() {
             this.startLoading();
             AnnotationGuideline.get({ id: this.projectId }, {})
@@ -183,7 +190,6 @@ export default {
         },
         setEditing() {
             this.editingMode = true;
-            this.mightHaveEdited = true;
         },
         resetEditing() {
             this.editingMode = false;
@@ -195,19 +201,11 @@ export default {
             this.annotationGuidelineLabels =
                 responseBody.annotation_guideline_labels;
         },
-        cancelEditing() {
-            let confirmExit = confirm(
-                `Are you sure you want to exit editing without saving?`,
-            );
-            if (confirmExit) {
-                this.resetEditing();
-            }
-        },
         addLabel(annotationGuidelineLabel) {
             if (!this.checkHasDescription()) {
                 return;
             }
-            let element = "Label";
+            let element = 'Label';
             let data = this.generateLabelUpdate(annotationGuidelineLabel);
 
             //To add a label to a guideline, we need to first create the guideline.
@@ -268,15 +266,15 @@ export default {
                 Messages.warning('Add a description before saving')
                 return false;
             }
+            this.missingDescription = false;
             return true;
         },
-        sendUpdateAnnotationGuideline() {
+        updateAnnotationGuideline() {
             if (!this.checkHasDescription()) {
                 return;
             }
 
             this.forceSaveLabel = true;
-            this.missingDescription = false;
 
             //Leave some time to save the label
             setTimeout(
@@ -315,7 +313,7 @@ export default {
             );
             return formData;
         },
-        sendDeleteAnnotationGuideline() {
+        deleteAnnotationGuideline() {
             let response = prompt(
                 `This will delete the guideline for this project. Please enter 'delete' to confirm.`,
             );
@@ -323,6 +321,8 @@ export default {
             if (response !== 'delete') {
                 return;
             }
+
+            this.mightHaveEdited = false;
 
             AnnotationGuideline.delete({ id: this.projectId }, {}).then(
                 this.reloadPage,

@@ -58,6 +58,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        refreshCount: {
+            type: Number,
+            required: 0,
+        }
     },
     computed: {
         hasFilename() {
@@ -71,7 +75,7 @@ export default {
             if (this.labelId > 0) {
                 return this.temporaryImage
                     ? this.temporaryImage
-                    : this.baseUrl + '/' + this.labelId + '.jpg?v=' + this.refresh;
+                    : this.baseUrl + '/' + this.labelId + '.jpg?v=' + this.refreshCount;
             }
             return '';
         },
@@ -120,6 +124,7 @@ export default {
                 return;
             }
             this.$emit('add-image', file);
+            this.forceRefresh();
             setTimeout(() => this.attemptDisplayImage(), 250);
         },
     },
