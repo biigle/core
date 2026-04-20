@@ -27,6 +27,7 @@ abstract class Annotation
         public array $labels,
     ) {
         $this->shape_id = $shape->id;
+        $this->validatePoints($points); // TODO Without this, non-numeric strings would be passed directly to round()
         $this->setPointsAttribute($points);
 
         array_walk($labels, function ($label) {
@@ -51,7 +52,7 @@ abstract class Annotation
     }
 
     /**
-     * Validatethe points and labels.
+     * Validate the points and labels.
      *
      * @throws Exception If something is invalid.
      */
@@ -67,7 +68,7 @@ abstract class Annotation
     /**
      * {@inheritdoc}
      */
-    public function setPointsAttribute(array $points)
+    private function setPointsAttribute(array $points)
     {
         $this->points = array_map(
             fn ($a) => is_array($a)
