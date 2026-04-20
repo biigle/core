@@ -12,10 +12,16 @@ use Biigle\Services\MetadataParsing\ImageAnnotation;
 
 class PointsValidationTest extends TestCase 
 {
+    private function createAndValidateAnnotation($shape, $points) 
+    {
+        $annotation = new ImageAnnotation(Shape::{$shape}(), $points, []);
+        $annotation->validatePoints($points);
+    }
+    
     public function testInvalidCoordinateType()
     {
         $this->expectException(InvalidCoordinateTypeException::class);
-        new ImageAnnotation(Shape::rectangle(), [0,0, 10,0, 10,10, 0,'10'], []);
+        $this->createAndValidateAnnotation('rectangle', [0,0, 10,0, 10,10, 0,'10']);
     }
     
     /**
@@ -24,7 +30,7 @@ class PointsValidationTest extends TestCase
     public function testInvalidNumberOfCoordinates($shape, $points) 
     {
         $this->expectException(InvalidNumberOfCoordinatesException::class);
-        new ImageAnnotation(Shape::{$shape}(), $points, []);
+        $this->createAndValidateAnnotation($shape, $points);
     }
     
     public static function invalidCoordinatesProvider()
@@ -43,7 +49,7 @@ class PointsValidationTest extends TestCase
     public function testInvalidPoints($shape, $points)
     {
         $this->expectException(InvalidNumberOfPointsException::class);
-        new ImageAnnotation(Shape::{$shape}(), $points, []);
+        $this->createAndValidateAnnotation($shape, $points);
     }
     
     public static function invalidPointsProvider() 
@@ -63,7 +69,7 @@ class PointsValidationTest extends TestCase
     public function testInvalidShape($shape, $points)
     {
         $this->expectException(InvalidShapeException::class);
-        new ImageAnnotation(Shape::{$shape}(), $points, []);
+        $this->createAndValidateAnnotation($shape, $points);
     }
     
     public static function invalidShapesProvider()
@@ -83,7 +89,7 @@ class PointsValidationTest extends TestCase
      * @dataProvider validPointsProvider
      */
     public function testValidPoints($shape, $points) {
-        new ImageAnnotation(Shape::{$shape}(), $points, []);
+        $this->createAndValidateAnnotation($shape, $points);
         $this->assertTrue(true);
     }
     
