@@ -60,7 +60,7 @@ export default {
         },
         refreshCount: {
             type: Number,
-            required: 0,
+            default: 0,
         }
     },
     computed: {
