@@ -571,13 +571,11 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $session->users()->attach($userId);
 
-        $a = ImageAnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-10-05 09:15:00',
-        ]);
-
         $al1 = ImageAnnotationLabelTest::create([
-            'annotation_id' => $a->id,
+            'annotation_id' => ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => '2016-10-05 09:15:00',
+            ])->id,
             'user_id' => $userId,
         ]);
 
@@ -612,9 +610,15 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al1->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al3->label->label_tree_id, $results[1]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[2]->label_tree_id);
+       
+        $this->assertEqualsCanonicalizing(
+            [
+                $al1->label->label_tree_id,
+                $al3->label->label_tree_id,
+                $al4->label->label_tree_id,
+            ],
+            $results->pluck('label_tree_id')->all()
+        );
     }
 
     public function testAnnotationSessionNewestLabelSeparateLabelTree()

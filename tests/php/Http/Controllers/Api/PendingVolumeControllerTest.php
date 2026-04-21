@@ -1110,4 +1110,43 @@ class PendingVolumeControllerTest extends ApiTestCase
             ->delete("/api/v1/pending-volumes/{$pv->id}")
             ->assertRedirectToRoute('create-volume', ['project' => $pv->project_id]);
     }
+
+    public function testUpdateLargeVolume()
+    {
+        config([
+            'volumes.editor_storage_disks' => ['test'],
+            'volumes.create_sync_limit' => 2,
+        ]);
+
+        $disk = Storage::fake('test');
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type_id' => MediaType::imageId(),
+            'user_id' => $this->admin()->id,
+        ]);
+        $id = $pv->id;
+
+        $disk->makeDirectory('images');
+        $disk->put('images/1.jpg', 'abc');
+        $disk->put('images/2.jpg', 'abc');
+        $disk->put('images/3.jpg', 'abc');
+
+        $this->beAdmin();
+        $response = $this->putJson("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'files' => ['1.jpg', '2.jpg', '3.jpg'],
+        ])->assertSuccessful();
+        $content = $response->getContent();
+
+        $id = json_decode($content)->volume_id;
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) use ($id) {
+            $this->assertEquals($id, $job->volume->id);
+            return true;
+        });
+
+        $this->assertNull($pv->fresh());
+        $volume = Volume::find($id);
+        $this->assertTrue($volume->creating_async);
+    }
 }

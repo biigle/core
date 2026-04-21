@@ -4,9 +4,12 @@ from queue import Queue, Empty
 from threading import Thread, Event
 from torch import device, no_grad
 from torch.cuda import is_available as cuda_is_available
-from torch.hub import load as hub_load
+from torch.hub import load as hub_load, get_dir as hub_get_dir
+import argparse
+import fcntl
 import io
 import json
+import os
 import signal
 import sys
 import torchvision.transforms as T
@@ -54,7 +57,15 @@ def worker():
     # See: https://stackoverflow.com/a/23575424/1796523
     ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-    dinov2_vits14 = hub_load('facebookresearch/dinov2:main', 'dinov2_vits14')
+    # Use a file lock so parallel workers don't race to init the TorchHub cache.
+    lock_path = os.path.join(hub_get_dir(), '.init.lock')
+    os.makedirs(os.path.dirname(lock_path), exist_ok=True)
+    with open(lock_path, 'a') as lock_file:
+        fcntl.flock(lock_file, fcntl.LOCK_EX)
+        try:
+            dinov2_vits14 = hub_load('facebookresearch/dinov2:main', 'dinov2_vits14')
+        finally:
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
 
     if cuda_is_available():
         dev = device('cuda')
@@ -93,7 +104,11 @@ def worker():
         request_queue.task_done()
 
 if __name__ == '__main__':
-    httpd = ThreadingHTTPServer(('', 80), RequestHandler)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int, default=80)
+    args = parser.parse_args()
+
+    httpd = ThreadingHTTPServer(('', args.port), RequestHandler)
 
     def signal_handler(signum, frame):
         shutdown_event.set()

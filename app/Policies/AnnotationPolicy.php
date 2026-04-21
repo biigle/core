@@ -10,6 +10,7 @@ use Biigle\User;
 use Biigle\Volume;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class AnnotationPolicy extends CachedPolicy
 {
@@ -118,14 +119,20 @@ class AnnotationPolicy extends CachedPolicy
                     Role::adminId(),
                 ])
                 ->pluck('project_id');
+                
+            if ($projectIds->isEmpty()) {
+                return Response::deny("Only project editors, experts or admins may attach a label to this annotation.");
+            }
 
-            // User must be editor, expert or admin in one of the projects.
-            return $projectIds->isNotEmpty()
-                // Label must belong to a label tree that is used by one of the projects.
-                && DB::table('label_tree_project')
-                    ->whereIn('project_id', $projectIds)
-                    ->where('label_tree_id', $label->label_tree_id)
-                    ->exists();
+            $labelBelongsToProject = DB::table('label_tree_project')
+                ->whereIn('project_id', $projectIds)
+                ->where('label_tree_id', $label->label_tree_id)
+                ->exists();
+            if (!$labelBelongsToProject) {
+                return Response::deny("You are not authorized to use the label '{$label->name}' because the label tree is not attached to the project.");
+            }
+                    
+            return Response::allow();
         });
     }
 

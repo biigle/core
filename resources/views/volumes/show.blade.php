@@ -22,6 +22,7 @@
         @endif
 
         biigle.$declare('volumes.userId', {!! $user->id !!});
+        biigle.$declare('volumes.creatingAsync', {!! $volume->creating_async ? 'true' : 'false' !!});
         biigle.$declare('volumes.isAdmin', @can('update', $volume) true @else false @endcan);
 
         @can('edit-in', $volume)
@@ -78,7 +79,8 @@
             @if ($volume->creating_async)
                 <div v-cloak v-if="noContent" class="panel panel-warning">
                     <div class="panel-body text-warning">
-                        This volume still being processed. Please come back later.
+                        <loader :active="true"></loader>
+                        This volume is still being processed and will be reloaded once it is ready.
                     </div>
                 </div>
             @else

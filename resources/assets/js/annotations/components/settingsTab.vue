@@ -2,6 +2,7 @@
 import ExportArea from './exportArea.vue';
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
+import ShortcutsButton from './shortcutsButton.vue';
 import ScreenshotButton from './screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '../components/labelbotPopup.vue';
@@ -27,6 +28,7 @@ export default {
         screenshotButton: ScreenshotButton,
         powerToggle: PowerToggle,
         exportArea: ExportArea,
+        shortcutsButton: ShortcutsButton
     },
     props: {
         image: {
