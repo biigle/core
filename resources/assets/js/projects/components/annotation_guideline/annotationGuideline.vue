@@ -86,7 +86,6 @@
                         :can-save-guideline="hasDescription"
                         :label-trees="labelTrees"
                         :project-id="projectId"
-                        :creating="false"
                         :available-shapes="availableShapes"
                         :base-url="baseUrl"
                         :is-admin="isAdmin"

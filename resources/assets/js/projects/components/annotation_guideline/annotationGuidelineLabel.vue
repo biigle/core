@@ -1,102 +1,104 @@
 <template>
-    <div class="col-xs-4">
-        <label-trees
-            :trees="labelTrees"
-            :labelsInGuideline="labelsInGuideline"
-            @select="selectLabel"
-            @deselect="deselectLabel"
-        >
-        </label-trees>
-    </div>
-    <div class="col-xs-8" v-if="canSaveGuideline" >
-        <span
-            v-if="isAdmin && editingMode && label.id"
-            class="top-bar pull-right" >
-            <button
-                class="btn btn-success btn-sm"
-                type="button"
-                @click="addAnnotationGuidelineLabel(false)"
-                title="Save label in the guideline"
+    <div class="row annotation-guideline-label">
+        <div class="col-xs-4">
+            <label-trees
+                :trees="labelTrees"
+                :labelsInGuideline="labelsInGuideline"
+                @select="selectLabel"
+                @deselect="deselectLabel"
             >
-                <span class="fa fa-check" aria-hidden="true"></span>
-                Save label
-            </button>
-            <span>
-                <button
-                    class="btn btn-danger btn-sm"
-                    type="button"
-                    @click="deleteLabel"
-                    title="Delete this label from the guideline"
-                >
-                    <span class="fa fa-times" aria-hidden="true"></span>
-                    Delete label
-                </button>
-            </span>
-        </span>
-        <div v-if="displayLabelInfo" class="row">
-            <h4>
-                <b>{{ label.name }}</b>
-            </h4>
-            <h4>Label description</h4>
-            <div v-if="isAdmin && editingMode">
-                <textarea
-                    v-model="description"
-                    class="form-control guideline-description"
-                    maxlength="200"
-                    wrap="hard"
-                    placeholder="Describe how this label should be used..."
-                ></textarea>
-            </div>
-            <div v-else>
-                <span
-                    v-if="hasDescription"
-                    class="guideline-description-text"
-                    >{{ description }}</span
-                >
-                <span v-else>No description was provided</span>
-            </div>
-            <h4>Shape</h4>
-            <div v-if="isAdmin && editingMode">
-                <select
-                    class="form-control"
-                    v-model="shape"
-                    title="Select shape"
-                >
-                    <option
-                        v-for="(name, id) in availableShapes"
-                        :value="id"
-                        v-text="name"
-                    ></option>
-                </select>
-            </div>
-            <div v-else>
-                <span v-if="shape">
-                    <span class="btn control-button"
-                        ><i
-                            :class="`icon icon-white icon-${availableShapes[shape].toLowerCase()}`"
-                        ></i
-                    ></span>
-                    <span>{{ availableShapes[shape] }}</span>
-                </span>
-                <span v-else> No preferred shape was provided </span>
-            </div>
-            <annotation-guideline-label-image
-                :base-url="baseUrl"
-                :label-id="labelId"
-                :project-id="projectId"
-                :temporary-image="temporaryReferenceImage"
-                :is-admin="isAdmin"
-                :editable="editingMode"
-                :refresh-count="refreshCount"
-                @reset-reference-image="resetReferenceImage"
-                @add-image="addImage"
-            ></annotation-guideline-label-image>
+            </label-trees>
         </div>
-    </div>
-    <div class="col-xs-8 has-error" v-else>
-        <span class="help-block">
-            Add a description to the guideline before adding a label
-        </span>
+        <div class="col-xs-8" v-if="canSaveGuideline" >
+            <span
+                v-if="isAdmin && editingMode && label.id"
+                class="top-bar pull-right" >
+                <button
+                    class="btn btn-success btn-sm"
+                    type="button"
+                    @click="addAnnotationGuidelineLabel(false)"
+                    title="Save label in the guideline"
+                >
+                    <span class="fa fa-check" aria-hidden="true"></span>
+                    Save label
+                </button>
+                <span>
+                    <button
+                        class="btn btn-danger btn-sm"
+                        type="button"
+                        @click="deleteLabel"
+                        title="Delete this label from the guideline"
+                    >
+                        <span class="fa fa-times" aria-hidden="true"></span>
+                        Delete label
+                    </button>
+                </span>
+            </span>
+            <div v-if="displayLabelInfo" class="row">
+                <h4>
+                    <b>{{ label.name }}</b>
+                </h4>
+                <h4>Label description</h4>
+                <div v-if="isAdmin && editingMode">
+                    <textarea
+                        v-model="description"
+                        class="form-control guideline-description"
+                        maxlength="200"
+                        wrap="hard"
+                        placeholder="Describe how this label should be used..."
+                    ></textarea>
+                </div>
+                <div v-else>
+                    <span
+                        v-if="hasDescription"
+                        class="guideline-description-text"
+                        >{{ description }}</span
+                    >
+                    <span v-else>No description was provided</span>
+                </div>
+                <h4>Shape</h4>
+                <div v-if="isAdmin && editingMode">
+                    <select
+                        class="form-control"
+                        v-model="shape"
+                        title="Select shape"
+                    >
+                        <option
+                            v-for="(name, id) in availableShapes"
+                            :value="id"
+                            v-text="name"
+                        ></option>
+                    </select>
+                </div>
+                <div v-else>
+                    <span v-if="shape">
+                        <span class="btn control-button"
+                            ><i
+                                :class="`icon icon-white icon-${availableShapes[shape].toLowerCase()}`"
+                            ></i
+                        ></span>
+                        <span>{{ availableShapes[shape] }}</span>
+                    </span>
+                    <span v-else> No preferred shape was provided </span>
+                </div>
+                <annotation-guideline-label-image
+                    :base-url="baseUrl"
+                    :label-id="labelId"
+                    :project-id="projectId"
+                    :temporary-image="temporaryReferenceImage"
+                    :is-admin="isAdmin"
+                    :editable="editingMode"
+                    :refresh-count="refreshCount"
+                    @reset-reference-image="resetReferenceImage"
+                    @add-image="addImage"
+                ></annotation-guideline-label-image>
+            </div>
+        </div>
+        <div class="col-xs-8 has-error" v-else>
+            <span class="help-block">
+                Add a description to the guideline before adding a label
+            </span>
+        </div>
     </div>
 </template>
 <script>
@@ -138,10 +140,6 @@ export default {
         baseUrl: {
             type: String,
             required: true,
-        },
-        creating: {
-            type: Boolean,
-            default: false,
         },
         isAdmin: {
             type: Boolean,
