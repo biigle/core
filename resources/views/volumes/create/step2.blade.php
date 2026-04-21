@@ -8,7 +8,7 @@
         biigle.$declare('volumes.url', '{!! $oldUrl !!}');
         biigle.$declare('volumes.handle', {{ Js::from($oldHandle) }});
         biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
-        biigle.$declare('volumes.filenames', {{ Js::from($filenames) }});
+        biigle.$declare('volumes.filenames', {{ Js::from($filenames ?? '') }});
         biigle.$declare('volumes.filenamesFromMeta', {{ $filenamesFromMeta ? 'true' : 'false' }});
         biigle.$declare('volumes.disks', {!! $disks->keys() !!});
     </script>
