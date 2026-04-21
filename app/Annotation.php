@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property array $points
  * @property string $created_at
  * @property int $shape_id
+ * @phpstan-consistent-constructor
  */
 abstract class Annotation extends Model implements AnnotationContract
 {
