@@ -80,7 +80,6 @@
                 </div>
             </div>
             <div  v-if="hasLabelTrees">
-                <div class="row annotation-guideline-label">
                     <annotation-guideline-label
                         :annotation-guideline-labels="annotationGuidelineLabels"
                         :can-save-guideline="hasDescription"
@@ -96,7 +95,6 @@
                         @editing="setMightHaveEdited"
                     >
                     </annotation-guideline-label>
-                </div>
             </div>
             <div v-else>
                 There are no label trees associated to this project. To add labels to the guideline, add label trees first.

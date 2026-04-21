@@ -145,10 +145,6 @@ export default {
             type: Boolean,
             required: true,
         },
-        remindToSave: {
-            type: Boolean,
-            default: false,
-        },
         // Used to force save the label if the annotationGuideline is saved
         forceSaveLabel: {
             type: Boolean,
