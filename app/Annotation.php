@@ -4,7 +4,6 @@ namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
-use Cache;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,13 +45,16 @@ abstract class Annotation extends Model implements AnnotationContract
     public $labelBOTLabels = [];
 
     /**
-     * Get the count of all annotations.
+     * Get an estimated count of all annotations from pg_class statistics.
+     * This is much faster than a full table scan of a large table.
      *
-     * The value is cached for 1 hour.
+     * See: https://wiki.postgresql.org/wiki/Count_estimate
      */
-    public static function cachedCount(): int
+    public static function estimatedCount(): int
     {
-        return Cache::remember(static::class.'_count', 3600, fn () => static::count());
+        $table = (new static)->getTable();
+
+        return (int) DB::selectOne('SELECT reltuples::bigint AS estimate FROM pg_class WHERE relname = ?', [$table])->estimate;
     }
 
     /**
