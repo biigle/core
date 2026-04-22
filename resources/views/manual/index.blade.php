@@ -251,7 +251,7 @@
 
             <h3>Largo</h3>
             <h4>
-                <a href="{{route('manual-tutorials', ['largo', 'getting-started'])}}">Getting started</a>
+                <a href="{{route('manual-tutorials', ['largo', 'getting-started'])}}">Getting Started</a>
             </h4>
             <p>
                 The Label Review Grid Overview and what you can do with it.

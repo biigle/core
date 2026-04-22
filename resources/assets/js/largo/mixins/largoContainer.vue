@@ -644,16 +644,8 @@ export default {
         setUnionLogic(union) {
             this.union = union;
         },
-        editableElementIsFocused() {
-            const activeElement = document.activeElement;
-            
-            return activeElement && (
-                activeElement.isContentEditable ||
-                ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeElement.tagName)
-            )
-        },
         sortByOutlierShortcut() {
-            if (this.editableElementIsFocused() || this.loading) {
+            if (this.loading) {
                 return;
             }
             
@@ -661,7 +653,7 @@ export default {
             this.updateSortKey(SORT_KEY.OUTLIER);
         },
         sortBySimilarityShortcut() {
-            if (this.editableElementIsFocused() || this.loading) {
+            if (this.loading) {
                 return;
             }
             
@@ -710,8 +702,8 @@ export default {
             }
         });
         
-        Keyboard.on('a', () => this.sortByOutlierShortcut());
-        Keyboard.on('s', () => this.sortBySimilarityShortcut());
+        Keyboard.on('a', this.sortByOutlierShortcut);
+        Keyboard.on('s', this.sortBySimilarityShortcut);
 
         this.initializeEcho();
     },
