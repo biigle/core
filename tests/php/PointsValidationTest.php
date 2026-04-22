@@ -38,6 +38,7 @@ class PointsValidationTest extends TestCase
         return [
             'circle: too few coordinates' => ['circle', [0, 0]],
             'circle: too many coordinates' => ['circle', [0, 0, 1, 1]],
+            'circle: no coordinates' => ['circle', []],
             'uneven number of coordinates' => ['point', [0]],
             'no coordinates' => ['point', []]
         ];

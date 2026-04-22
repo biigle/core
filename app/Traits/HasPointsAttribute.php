@@ -36,10 +36,13 @@ trait HasPointsAttribute
     
     private function validateCoordinatesAreNumeric($points)
     {
-        $valid = array_reduce($points, fn ($carry, $point) => $carry && (is_float($point) || is_int($point)), true);
+        $invalidCoordinates = array_values(array_filter(
+            $points,
+            fn ($coordinate) => !is_int($coordinate) && !is_float($coordinate)
+        ));
 
-        if (!$valid) {
-            throw new InvalidCoordinateTypeException('Point coordinates must be of type float or integer.');
+        if (!empty($invalidCoordinates)) {
+            throw new InvalidCoordinateTypeException('Invalid coordinate type: The following coordinates aren\'t int or float: '.implode(', ', $invalidCoordinates).'');
         }
     }
     
@@ -78,7 +81,7 @@ trait HasPointsAttribute
             case Shape::rectangleId():
             case Shape::ellipseId():
                 if ($pointCount !== 4) {
-                    throw new InvalidNumberOfPointsException('Invalid number of points for shape rectangle or circle: Expected 4, got '.$pointCount.'');
+                    throw new InvalidNumberOfPointsException('Invalid number of points for shape rectangle or ellipse: Expected 4, got '.$pointCount.'');
                 }
                 break;
             case Shape::polygonId():
