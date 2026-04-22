@@ -71,24 +71,24 @@ trait HasPointsAttribute
         switch ($this->shape_id) {
             case Shape::pointId():
                 if ($pointCount !== 1) {
-                    throw new InvalidNumberOfPointsException('Invalid number of points: Need exactly 1 point for shape point, but '.$pointCount.' were given.');
+                    throw new InvalidNumberOfPointsException('Invalid number of points for shape point: Need exactly 1 point, but '.$pointCount.' were given.');
                 }
                 break;
             case Shape::circleId(): return;
             case Shape::rectangleId():
             case Shape::ellipseId():
                 if ($pointCount !== 4) {
-                    throw new InvalidNumberOfPointsException('Invalid number of points: Expected 4, got '.$pointCount.'');
+                    throw new InvalidNumberOfPointsException('Invalid number of points for shape rectangle or circle: Expected 4, got '.$pointCount.'');
                 }
                 break;
             case Shape::polygonId():
                 if ($pointCount < 4) {
-                    throw new InvalidNumberOfPointsException('Invalid number of points: At least 4 points are needed for a polygon, but only '.$pointCount.' are present.');
+                    throw new InvalidNumberOfPointsException('Invalid number of points for shape polygon: At least 4 points are needed, but only '.$pointCount.' are present.');
                 }
                 break;
             case Shape::lineId():
                 if ($pointCount < 2) {
-                    throw new InvalidNumberOfPointsException('Invalid number of points: At least 2 points are needed for a line, but only '.$pointCount.' are present.');
+                    throw new InvalidNumberOfPointsException('Invalid number of points for shape line: At least 2 points are needed, but only '.$pointCount.' are present.');
                 }
                 break;
         }
@@ -107,21 +107,21 @@ trait HasPointsAttribute
             case Shape::rectangleId():
             case Shape::ellipseId():
                 if ($distinctPointCount !== 4) {
-                    throw new InvalidShapeException('Not all 4 points are distinct.');
+                    throw new InvalidShapeException('Invalid points for shape rectangle or ellipse: Not all 4 points are distinct.');
                 }
                 break;
             case Shape::polygonId():
                 if ($distinctPointCount < 3) {
-                    throw new InvalidShapeException('A polygon requires at least 3 distinct points, but only '.$distinctPointCount.' were given.');
+                    throw new InvalidShapeException('Invalid points for shape polygon: A polygon requires at least 3 distinct points, but only '.$distinctPointCount.' were given.');
                 }
                 
                 if ($points[0] !== $points[count($points) - 2] || $points[1] !== $points[count($points) - 1]) {
-                    throw new InvalidShapeException('The first and last coordinate of a polygon must be the same.');
+                    throw new InvalidShapeException('Invalid points for shape polygon: The first and last coordinate of a polygon must be the same.');
                 }
                 break;
             case Shape::lineId():
                 if ($distinctPointCount < 2) {
-                    throw new InvalidShapeException('A line requires at least 2 distinct points, but only 1 was given.');
+                    throw new InvalidShapeException('Invalid points for shape line: A line requires at least 2 distinct points, but only 1 was given.');
                 }
                 break;
         }
