@@ -90,8 +90,8 @@ class PointsValidationTest extends TestCase
      */
     public function testValidPoints($shape, $points)
     {
+        $this->expectNotToPerformAssertions();
         $this->createAndValidateAnnotation($shape, $points);
-        $this->assertTrue(true);
     }
     
     public static function validPointsProvider()
