@@ -280,6 +280,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'projectsLargo',
             'uses' => 'LargoController@index',
         ]);
+
+        $router->get('{id}/annotation-guideline', [
+            'as'   => 'annotation-guideline',
+            'uses' => 'AnnotationGuidelineController@show',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {

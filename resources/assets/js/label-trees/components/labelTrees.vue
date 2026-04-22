@@ -33,6 +33,7 @@
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
+                :labels-in-guideline="labelsInGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
@@ -49,6 +50,7 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
+                :labels-in-guideline="labelsInGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
@@ -146,6 +148,10 @@ export default {
             type: Array,
             default: undefined,
         },
+        labelsInGuideline: {
+            type: Array,
+            default: () => [],
+        },
     },
     computed: {
         customOrderStorageKeys() {
@@ -170,8 +176,12 @@ export default {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
+            if (this.labelsInGuideline.length > 0) {
+                labels = labels.filter((label) => this.labelsInGuideline.includes(label.id));
+            }
+
             if (this.localeCompareSupportsLocales) {
-                // Use this to sort label names "natuarally". This is only supported in
+                // Use this to sort label names "naturally". This is only supported in
                 // modern browsers, though.
                 let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
                 labels.sort(function (a, b) {

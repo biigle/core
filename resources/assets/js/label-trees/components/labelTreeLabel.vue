@@ -9,7 +9,8 @@
                 <span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>
                 <span v-show="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>
                 <span v-show="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>
-                <span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
+                <span v-text="label.name" :class="{ 'text-muted': guidelinePresent && !isInGuideline  }" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
+                <a v-if="guidelinePresent && isInGuideline" class="btn btn-xs" title="This label is present in a guideline"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
             </span>
             <span class="label-tree-label__buttons">
                 <span v-if="showFavouriteShortcuts" class="text-muted label-tree-label_position">
@@ -28,7 +29,7 @@
             </span>
         </div>
         <ul v-if="expandable && label.open" class="label-tree__list">
-            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" :isInGuideline="isInGuideline" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
         </ul>
     </li>
 </template>
@@ -83,10 +84,18 @@ export default {
             type: Boolean,
             default: false,
         },
-        position:{
+        position: {
             type: Number,
             default:-1,
         },
+        isInGuideline: {
+            type: Boolean,
+            default: false,
+        },
+        guidelinePresent: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         showColor() {
