@@ -305,19 +305,24 @@ class ProcessNewImage extends Job implements ShouldQueue
      * Converts a EXIF GPS coordinate to a float
      * see: http://stackoverflow.com/a/2572991/1796523.
      *
-     * @param  array $exifCoord Containing fractures like `"41/1"`
+     * @param  array|float $exifCoord Array containing fractions like `"41/1"`. Non-standard floats are supported, too.
      * @param  string $hemi      Hemisphere, one of `N`, `S`, `E`, or `W`
      * @return float
      */
     protected function getGps($exifCoord, $hemi)
     {
-        $fracs = count($exifCoord);
-        $degrees = $fracs > 0 ? $this->fracToFloat($exifCoord[0]) : 0;
-        $minutes = $fracs > 1 ? $this->fracToFloat($exifCoord[1]) : 0;
-        $seconds = $fracs > 2 ? $this->fracToFloat($exifCoord[2]) : 0;
+        if (is_float($exifCoord)) {
+            $coord = $exifCoord;
+        } else {
+            $fracs = count($exifCoord);
+            $degrees = $fracs > 0 ? $this->fracToFloat($exifCoord[0]) : 0;
+            $minutes = $fracs > 1 ? $this->fracToFloat($exifCoord[1]) : 0;
+            $seconds = $fracs > 2 ? $this->fracToFloat($exifCoord[2]) : 0;
+            $coord = ($degrees + $minutes / 60 + $seconds / 3600);
+        }
         $flip = ($hemi === 'W' || $hemi === 'S') ? -1 : 1;
 
-        return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
+        return $flip * $coord;
     }
 
     /**
