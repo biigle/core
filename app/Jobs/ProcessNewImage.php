@@ -305,7 +305,7 @@ class ProcessNewImage extends Job implements ShouldQueue
      * Converts a EXIF GPS coordinate to a float
      * see: http://stackoverflow.com/a/2572991/1796523.
      *
-     * @param  array|float $exifCoord Array containing fractures like `"41/1"`. Non-standard floats are supported, too.
+     * @param  array|float $exifCoord Array containing fractions like `"41/1"`. Non-standard floats are supported, too.
      * @param  string $hemi      Hemisphere, one of `N`, `S`, `E`, or `W`
      * @return float
      */
