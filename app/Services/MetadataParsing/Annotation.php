@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Biigle\Exceptions\InvalidCoordinateTypeException;
 use Biigle\Shape;
 use Biigle\Traits\HasPointsAttribute;
 use Exception;
@@ -51,7 +52,7 @@ abstract class Annotation
     }
 
     /**
-     * Validatethe points and labels.
+     * Validate the points and labels.
      *
      * @throws Exception If something is invalid.
      */
@@ -67,13 +68,22 @@ abstract class Annotation
     /**
      * {@inheritdoc}
      */
-    public function setPointsAttribute(array $points)
+    private function setPointsAttribute(array $points)
     {
         $this->points = array_map(
             fn ($a) => is_array($a)
-                ? array_map(fn ($b) => round($b, 2), $a)
-                : round($a, 2),
+                ? array_map(fn ($b) => $this->roundValue($b), $a)
+                : $this->roundValue($a),
             $points
         );
+    }
+    
+    private function roundValue($value)
+    {
+        if (!is_int($value) && !is_float($value)) {
+            throw new InvalidCoordinateTypeException('Coordinate "'.$value.'" is not of type int or float.');
+        }
+        
+        return round($value, 2);
     }
 }
