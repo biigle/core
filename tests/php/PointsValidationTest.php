@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests;
 
+use Biigle\Exceptions\InvalidCoordinateTypeException;
+use Biigle\Exceptions\InvalidNumberOfCoordinatesException;
+use Biigle\Exceptions\InvalidNumberOfPointsException;
+use Biigle\Exceptions\InvalidShapeException;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Shape;
-use Biigle\Traits\InvalidCoordinateTypeException;
-use Biigle\Traits\InvalidNumberOfCoordinatesException;
-use Biigle\Traits\InvalidNumberOfPointsException;
-use Biigle\Traits\InvalidShapeException;
 use TestCase;
 
 class PointsValidationTest extends TestCase

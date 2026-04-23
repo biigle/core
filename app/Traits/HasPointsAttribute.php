@@ -2,21 +2,12 @@
 
 namespace Biigle\Traits;
 
+use Biigle\Exceptions\InvalidCoordinateTypeException;
+use Biigle\Exceptions\InvalidNumberOfCoordinatesException;
+use Biigle\Exceptions\InvalidNumberOfPointsException;
+use Biigle\Exceptions\InvalidShapeException;
 use Biigle\Shape;
 use Exception;
-
-class InvalidCoordinateTypeException extends Exception
-{
-};
-class InvalidNumberOfCoordinatesException extends Exception
-{
-};
-class InvalidNumberOfPointsException extends Exception
-{
-};
-class InvalidShapeException extends Exception
-{
-};
 
 trait HasPointsAttribute
 {

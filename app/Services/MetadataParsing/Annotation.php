@@ -2,9 +2,9 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Biigle\Exceptions\InvalidCoordinateTypeException;
 use Biigle\Shape;
 use Biigle\Traits\HasPointsAttribute;
-use Biigle\Traits\InvalidCoordinateTypeException;
 use Exception;
 
 // Abstract becaus it should not be used directly.
