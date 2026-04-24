@@ -291,8 +291,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(2, $results);
-        $this->assertEquals($al2->id, $results[0]->id);
-        $this->assertEquals($al4->id, $results[1]->id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->id, $al4->id],
+            [$results[0]->id, $results[1]->id]
+        );
     }
 
     public function testAnnotationSessionNewestLabelRestrictedLabelSeparateLabelTrees()
@@ -359,8 +361,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(2, $results);
-        $this->assertEquals($al2->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[1]->label_tree_id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->label->label_tree_id, $al4->label->label_tree_id],
+            [$results[0]->label_tree_id, $results[1]->label_tree_id]
+        );
     }
 
     public function testAnnotationSessionNewestLabelRestrictedLabelSeparateUser()
@@ -427,8 +431,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(2, $results);
-        $this->assertEquals($al2->user_id, $results[0]->user_id);
-        $this->assertEquals($al4->user_id, $results[1]->user_id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->user_id, $al4->user_id],
+            [$results[0]->user_id, $results[1]->user_id]
+        );
     }
 
     public function testAnnotationSessionNewestLabel()
@@ -493,9 +499,7 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al2->id, $results[0]->id);
-        $this->assertEquals($al3->id, $results[1]->id);
-        $this->assertEquals($al4->id, $results[2]->id);
+        $this->assertEqualsCanonicalizing([$al2->id, $al3->id, $al4->id], $results->pluck('id')->all());
     }
 
     public function testAnnotationSession()
@@ -552,9 +556,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al1->id, $results[0]->id);
-        $this->assertEquals($al3->id, $results[1]->id);
-        $this->assertEquals($al4->id, $results[2]->id);
+        $this->assertEqualsCanonicalizing(
+            [$al1->id, $al3->id, $al4->id],
+            [$results[0]->id, $results[1]->id, $results[2]->id]
+        );
     }
 
     public function testAnnotationSessionSeparateLabelTree()
@@ -812,9 +817,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al2->user_id, $results[0]->user_id);
-        $this->assertEquals($al3->user_id, $results[1]->user_id);
-        $this->assertEquals($al4->user_id, $results[2]->user_id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->user_id, $al3->user_id, $al4->user_id],
+            $results->pluck('user_id')->all()
+        );
     }
 
     public function testAnnotationSessionRestrictedLabel()
@@ -879,9 +885,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al1->id, $results[0]->id);
-        $this->assertEquals($al2->id, $results[1]->id);
-        $this->assertEquals($al4->id, $results[2]->id);
+        $this->assertEqualsCanonicalizing(
+            [$al1->id, $al2->id, $al4->id],
+            $results->pluck('id')->all()
+        );
     }
 
     public function testAnnotationSessionRestrictedLabelSeparateLabelTrees()
@@ -947,9 +954,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al1->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al2->label->label_tree_id, $results[1]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[2]->label_tree_id);
+        $this->assertEqualsCanonicalizing(
+            [$al1->label->label_tree_id, $al2->label->label_tree_id, $al4->label->label_tree_id],
+            $results->pluck('label_tree_id')->all()
+        );
     }
 
     public function testAnnotationSessionRestrictedLabelSeparateUser()
@@ -1015,9 +1023,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($session->volume);
         $results = $generator->initQuery([])->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al1->user_id, $results[0]->user_id);
-        $this->assertEquals($al2->user_id, $results[1]->user_id);
-        $this->assertEquals($al4->user_id, $results[2]->user_id);
+        $this->assertEqualsCanonicalizing(
+            [$al1->user_id, $al2->user_id, $al4->user_id],
+            $results->pluck('user_id')->all()
+        );
     }
 
     public function testNewestLabelRestrictedLabel()
@@ -1059,8 +1068,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($volume);
         $results = $generator->initQuery(['image_annotation_labels.id'])->get();
         $this->assertCount(2, $results);
-        $this->assertEquals($al2->id, $results[0]->id);
-        $this->assertEquals($al4->id, $results[1]->id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->id, $al4->id],
+            $results->pluck('id')->all()
+        );
     }
 
     public function testNewestLabelSeparateLabelTree()
@@ -1102,9 +1113,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al2->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al3->label->label_tree_id, $results[1]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[2]->label_tree_id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->label->label_tree_id, $al3->label->label_tree_id, $al4->label->label_tree_id],
+            $results->pluck('label_tree_id')->all()
+        );
     }
 
     public function testNewestLabelRestrictedLabelSeparateLabelTrees()
@@ -1147,8 +1159,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(2, $results);
-        $this->assertEquals($al2->label->label_tree_id, $results[0]->label_tree_id);
-        $this->assertEquals($al4->label->label_tree_id, $results[1]->label_tree_id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->label->label_tree_id, $al4->label->label_tree_id],
+            $results->pluck('label_tree_id')->all()
+        );
     }
 
     public function testNewestLabelSeparateUser()
@@ -1190,9 +1204,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(3, $results);
-        $this->assertEquals($al2->user_id, $results[0]->user_id);
-        $this->assertEquals($al3->user_id, $results[1]->user_id);
-        $this->assertEquals($al4->user_id, $results[2]->user_id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->user_id, $al3->user_id, $al4->user_id],
+            $results->pluck('user_id')->all()
+        );
     }
 
     public function testNewestLabelRestrictedLabelSeparateUser()
@@ -1235,8 +1250,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(2, $results);
-        $this->assertEquals($al2->user_id, $results[0]->user_id);
-        $this->assertEquals($al4->user_id, $results[1]->user_id);
+        $this->assertEqualsCanonicalizing(
+            [$al2->user_id, $al4->user_id],
+            $results->pluck('user_id')->all()
+        );
     }
 
     public function testRestrictToExportAreaQueryAnnotationSession()

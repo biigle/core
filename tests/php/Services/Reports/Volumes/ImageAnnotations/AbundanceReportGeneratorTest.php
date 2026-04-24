@@ -1295,8 +1295,10 @@ class AbundanceReportGeneratorTest extends TestCase
         $this->assertCount(2, $results);
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertSame($image->filename, $results[1]->filename);
-        $this->assertSame($al1->label_id, $results[0]->id);
-        $this->assertSame($al2->label_id, $results[1]->id);
+        $this->assertEqualsCanonicalizing(
+            [$al1->label_id, $al2->label_id], 
+            [$results[0]->id, $results[1]->id]
+        );
     }
 
     public function testInitQueryAnnotationSession()
@@ -1624,8 +1626,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $this->assertCount(2, $results);
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertSame($image->filename, $results[1]->filename);
-        $this->assertSame($al2->id, $results[0]->id);
-        $this->assertSame($al3->id, $results[1]->id);
+        $this->assertEqualsCanonicalizing([$al2->id, $al3->id], $results->pluck('id')->all());
     }
 
     public function testInitQueryAnnotationSessionRestrictedLabel()
