@@ -1296,7 +1296,7 @@ class AbundanceReportGeneratorTest extends TestCase
         $this->assertSame($image->filename, $results[0]->filename);
         $this->assertSame($image->filename, $results[1]->filename);
         $this->assertEqualsCanonicalizing(
-            [$al1->label_id, $al2->label_id], 
+            [$al1->label_id, $al2->label_id],
             [$results[0]->id, $results[1]->id]
         );
     }
