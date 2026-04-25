@@ -276,12 +276,11 @@ class CsvReportGeneratorTest extends TestCase
             ->once()
             ->andReturn(true);
         
-        // TODO Do this for ImageAnnotations, VideoAnnotations and VideoLabels as well
         $expectedTargets = ["{$user1->id}-joe-jack-user.csv", "{$user2->id}-jane-user.csv"];
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->withArgs(function ($source, $target) use ($expectedTargets) {
+            ->withArgs(function ($source, $target) use (&$expectedTargets) {
                 if(($i = array_search($target, $expectedTargets, true)) !== false) {
                     unset($expectedTargets[$i]);
                     return $source === 'abc';
@@ -292,7 +291,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->withArgs(function ($source, $target) use ($expectedTargets) {
+            ->withArgs(function ($source, $target) use (&$expectedTargets) {
                 return $source === 'def' && in_array($target, $expectedTargets);
             });
 
