@@ -12,11 +12,15 @@
     <tbody>
         <tr>
             <td><kbd>a</kbd></td>
-            <td>Sort annotation patches by unusual objects</td>
+            <td>Sort annotation patches by creation time</td>
         </tr>
         <tr>
             <td><kbd>s</kbd></td>
-            <td>Sort annotation patches by similarity</td>
+            <td>Sort annotation patches by unusual objects</td>
+        </tr>
+        <tr>
+            <td><kbd>d</kbd></td>
+            <td>Sort annotation patches by similarity to a selected reference</td>
         </tr>
         <tr>
             <td><kbd>o</kbd></td>

@@ -589,6 +589,7 @@ export default {
             }
         },
         resetSorting() {
+            this.handleCancelSimilaritySort();
             return this.updateSortKey(SORT_KEY.ANNOTATION_ID)
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
@@ -702,8 +703,9 @@ export default {
             }
         });
         
-        Keyboard.on('a', this.sortByOutlierShortcut);
-        Keyboard.on('s', this.sortBySimilarityShortcut);
+        Keyboard.on('a', this.resetSorting);
+        Keyboard.on('s', this.sortByOutlierShortcut);
+        Keyboard.on('d', this.sortBySimilarityShortcut);
 
         this.initializeEcho();
     },
