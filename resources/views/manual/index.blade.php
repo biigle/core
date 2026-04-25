@@ -249,11 +249,20 @@
                 Fix errors in video files that can cause problems in BIIGLE.
             </p>
 
-            <h3>
-                <a href="{{route('manual-tutorials', ['largo', 'largo'])}}">Largo</a>
-            </h3>
+            <h3>Largo</h3>
+            <h4>
+                <a href="{{route('manual-tutorials', ['largo', 'getting-started'])}}">Getting Started</a>
+            </h4>
             <p>
                 The Label Review Grid Overview and what you can do with it.
+            </p>
+            
+            <h4>
+                <a href="{{route('manual-tutorials', ['largo', 'shortcuts'])}}">Shortcuts</a>
+            </h4>
+            
+            <p>
+                A list of all available shortcut keys in Largo.
             </p>
 
             <h3>

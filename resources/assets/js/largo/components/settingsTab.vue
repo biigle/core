@@ -1,13 +1,21 @@
 <template>
-    <div class="settings-tab">
-        <div class="largo-tab__button">
-            <power-toggle
-                :active="showOutlines"
-                @on="enableOutlines"
-                @off="disableOutlines"
-                >
-                Show annotation outlines
-            </power-toggle>
+    <div class="annotator-tab settings-tab">
+        <div class="sidebar-tab__section settings-tab__top-actions">
+            <shortcuts-button>
+                <slot></slot>
+            </shortcuts-button>
+        </div>
+        
+        <div class="sidebar-tab__section">
+            <div class="largo-tab__button">
+                <power-toggle
+                    :active="showOutlines"
+                    @on="enableOutlines"
+                    @off="disableOutlines"
+                    >
+                    Show annotation outlines
+                </power-toggle>
+            </div>
         </div>
     </div>
 </template>
@@ -15,6 +23,7 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
+import ShortcutsButton from '@/annotations/components/shortcutsButton.vue';
 import Settings from '../stores/settings.js';
 
 export default {
@@ -22,7 +31,8 @@ export default {
         'change-outlines',
     ],
     components: {
-        PowerToggle
+        PowerToggle,
+        ShortcutsButton
     },
     data() {
         return {
