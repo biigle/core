@@ -281,7 +281,7 @@ class CsvReportGeneratorTest extends TestCase
         $mock->shouldReceive('addFile')
             ->once()
             ->withArgs(function ($source, $target) use (&$expectedTargets) {
-                if(($i = array_search($target, $expectedTargets, true)) !== false) {
+                if (($i = array_search($target, $expectedTargets, true)) !== false) {
                     unset($expectedTargets[$i]);
                     return $source === 'abc';
                 } else {
