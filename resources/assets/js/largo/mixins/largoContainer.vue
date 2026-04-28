@@ -703,9 +703,9 @@ export default {
             }
         });
         
-        Keyboard.on('a', this.resetSorting);
-        Keyboard.on('s', this.sortByOutlierShortcut);
-        Keyboard.on('d', this.sortBySimilarityShortcut);
+        Keyboard.on('x', this.resetSorting);
+        Keyboard.on('c', this.sortByOutlierShortcut);
+        Keyboard.on('v', this.sortBySimilarityShortcut);
 
         this.initializeEcho();
     },

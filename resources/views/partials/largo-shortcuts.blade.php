@@ -11,20 +11,26 @@
     </thead>
     <tbody>
         <tr>
-            <td><kbd>a</kbd></td>
+            <td><kbd>X</kbd></td>
             <td>Sort annotation patches by creation time</td>
         </tr>
         <tr>
-            <td><kbd>s</kbd></td>
+            <td><kbd>C</kbd></td>
             <td>Sort annotation patches by unusual objects</td>
         </tr>
         <tr>
-            <td><kbd>d</kbd></td>
+            <td><kbd>V</kbd></td>
             <td>Sort annotation patches by similarity to a selected reference</td>
         </tr>
         <tr>
-            <td><kbd>o</kbd></td>
+            <td><kbd>O</kbd></td>
             <td>Toggle annotation outlines</td>
         </tr>
     </tbody>
 </table>
+
+<p class="lead">
+    Available shortcuts from the image grid.
+</p>
+
+@include('partials.image-grid-shortcuts')

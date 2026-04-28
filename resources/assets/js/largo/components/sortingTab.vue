@@ -36,7 +36,7 @@
         <div class="list-group sorter-list-group">
             <button
                 class="list-group-item"
-                title="Sort by annotation timestamp (higher is newer)"
+                title="Sort by annotation timestamp (higher is newer) 𝗫"
                 :class="{active: sortingByAnnotationId}"
                 @click="sortByAnnotationId"
                 >
@@ -44,7 +44,7 @@
             </button>
             <button
                 class="list-group-item"
-                title="Sort by outliers (higher is more dissimilar) 𝗔"
+                title="Sort by outliers (higher is more dissimilar) 𝗖"
                 :class="{active: sortingByOutlier}"
                 @click="sortByOutlier"
                 >
@@ -52,7 +52,7 @@
             </button>
             <a
                 class="list-group-item"
-                title="Sort by similarity (higher is more similar) 𝗦"
+                title="Sort by similarity (higher is more similar) 𝗩"
                 href="#"
                 :class="{
                     active: sortingBySimilarity,
