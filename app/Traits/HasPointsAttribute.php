@@ -46,10 +46,10 @@ trait HasPointsAttribute
                 break;
             default:
                 if ($size % 2 !== 0) {
-                    throw new InvalidNumberOfCoordinatesException('Even number of coordinates expected but got '.$size.' coordinates instead. Note that each pair of coordinates is interpreted as a point.');
+                    throw new InvalidNumberOfCoordinatesException('Even number of coordinates expected but got '.$size.' coordinates instead.');
                 }
                 
-                if ($size == 0) {
+                if ($size === 0) {
                     throw new InvalidNumberOfCoordinatesException('No coordinates were passed.');
                 }
         }
@@ -65,7 +65,6 @@ trait HasPointsAttribute
                     throw new InvalidNumberOfPointsException('Invalid number of points for shape point: Need exactly 1 point, but '.$pointCount.' were given.');
                 }
                 break;
-            case Shape::circleId(): return;
             case Shape::rectangleId():
             case Shape::ellipseId():
                 if ($pointCount !== 4) {
