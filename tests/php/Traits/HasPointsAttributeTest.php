@@ -10,7 +10,7 @@ use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Shape;
 use TestCase;
 
-class PointsValidationTest extends TestCase
+class HasPointsAttributeTest extends TestCase
 {
     private function createAndValidateAnnotation($shape, $points)
     {
