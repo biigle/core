@@ -27,13 +27,10 @@ trait HasPointsAttribute
     
     private function validateCoordinatesAreNumeric($points)
     {
-        $invalidCoordinates = array_values(array_filter(
-            $points,
-            fn ($coordinate) => !is_int($coordinate) && !is_float($coordinate)
-        ));
-
-        if (!empty($invalidCoordinates)) {
-            throw new InvalidCoordinateTypeException('Invalid coordinate type: The following coordinates aren\'t int or float: '.implode(', ', $invalidCoordinates).'');
+        foreach ($points as $coordinate) {
+            if (!is_int($coordinate) && !is_float($coordinate)) {
+                throw new InvalidCoordinateTypeException('Invalid coordinate type: Coordinates must be of type float or integer.');
+            }
         }
     }
     
