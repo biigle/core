@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests;
+namespace Biigle\Tests\Traits;
 
 use Biigle\Exceptions\InvalidCoordinateTypeException;
 use Biigle\Exceptions\InvalidNumberOfCoordinatesException;
