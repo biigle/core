@@ -21,6 +21,16 @@
                 :items="labels"
                 @select="handleSelect"
                 ></typeahead>
+            <button
+                v-if="hasGuideline"
+                @click="filterLabelsByGuideline"
+                class="btn btn-default"
+                :class="filterByGuidelineClass"
+                title="Show only labels in guideline"
+                type="button"
+                >
+                <span class="fa fa-clipboard-list fa-fw" aria-hidden="true"></span>
+            </button>
         </div>
         <div class="label-trees__body">
             <label-tree
@@ -33,7 +43,8 @@
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
-                :labels-in-guideline="labelsInGuideline"
+                :labels-in-guideline="labelsInGuidelineSet"
+                :filter-by-guideline="filterByGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
@@ -50,7 +61,8 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
-                :labels-in-guideline="labelsInGuideline"
+                :labels-in-guideline="labelsInGuidelineSet"
+                :filter-by-guideline="filterByGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
@@ -91,6 +103,7 @@ export default {
             favourites: [],
             customOrder: [],
             sortable: true,
+            filterByGuideline: false,
         };
     },
     props: {
@@ -169,6 +182,12 @@ export default {
 
             return false;
         },
+        labelsInGuidelineSet() {
+            return new Set(this.labelsInGuideline);
+        },
+        hasGuideline() {
+            return this.labelsInGuidelineSet.size > 0;
+        },
         // All labels of all label trees in a flat, sorted list.
         labels() {
             let labels = [];
@@ -176,8 +195,8 @@ export default {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
-            if (this.labelsInGuideline.length > 0) {
-                labels = labels.filter((label) => this.labelsInGuideline.includes(label.id));
+            if (this.filterByGuideline) {
+                labels = labels.filter(label => this.labelsInGuidelineSet.has(label.id));
             }
 
             if (this.localeCompareSupportsLocales) {
@@ -225,7 +244,12 @@ export default {
         },
         treeIds() {
             return this.trees.map(tree => tree.id);
-        }
+        },
+        filterByGuidelineClass() {
+            return {
+                'active btn-info': this.filterByGuideline,
+            };
+        },
     },
     methods: {
         handleSelect(label, e) {
@@ -293,7 +317,10 @@ export default {
             this.customOrderStorageKeys.forEach(function (storageKey) {
                 localStorage.setItem(storageKey, JSON.stringify(newCustomOrder));
             });
-        }
+        },
+        filterLabelsByGuideline() {
+            this.filterByGuideline = !this.filterByGuideline;
+        },
     },
     watch: {
         trees: {

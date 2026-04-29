@@ -43,8 +43,8 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
-                :is-in-guideline="labelsInGuideline.includes(label.id)"
-                :guideline-present="labelsInGuideline.length > 0"
+                :has-guideline="hasGuideline"
+                :filter-by-guideline="filterByGuideline"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -152,8 +152,12 @@ export default {
             default: false,
         },
         labelsInGuideline: {
-            type: Array,
-            default: () => [],
+            type: Set,
+            default: () => new Set(),
+        },
+        filterByGuideline: {
+            type: Boolean,
+            default: false,
         },
     },
     computed: {
@@ -192,11 +196,23 @@ export default {
                         label.open = false;
                     }
                 });
+
+                const hasChildrenInGuideline = (children) => {
+                    return children?.some(child => child.inGuideline || hasChildrenInGuideline(child.children));
+                };
+
+                this.labels.forEach(function (label) {
+                    label.childrenInGuideline = hasChildrenInGuideline(label.children);
+                });
             }
 
             return compiled;
         },
         rootLabels() {
+            if (this.filterByGuideline) {
+                return this.compiledLabels[null]?.filter(label => label.inGuideline || label.childrenInGuideline);
+            }
+
             return this.compiledLabels[null];
         },
         collapseTitle() {
@@ -213,6 +229,9 @@ export default {
                 'text-muted': this.collapsed,
                 'collapsible': this.collapsible,
             };
+        },
+        hasGuideline() {
+            return this.labelsInGuideline.size > 0;
         },
     },
     methods: {
@@ -391,7 +410,7 @@ export default {
     },
     created() {
         // Set the reactive label properties
-        this.labels.forEach(function (label) {
+        this.labels.forEach((label) => {
             if (!label.hasOwnProperty('open')) {
                 label.open = false;
             }
@@ -402,6 +421,10 @@ export default {
 
             if (!label.hasOwnProperty('favourite')) {
                 label.favourite = false;
+            }
+
+            if (!label.hasOwnProperty('inGuideline')) {
+                label.inGuideline = this.labelsInGuideline.has(label.id);
             }
         });
 
