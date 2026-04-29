@@ -3,6 +3,7 @@ import DismissImageGrid from '../components/dismissImageGrid.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import FilteringTab from '../components/filteringTab.vue';
+import Keyboard from '@/core/keyboard.js';
 import LabelList from '../components/labelList.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
@@ -588,6 +589,7 @@ export default {
             }
         },
         resetSorting() {
+            this.handleCancelSimilaritySort();
             return this.updateSortKey(SORT_KEY.ANNOTATION_ID)
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
@@ -642,6 +644,21 @@ export default {
         },
         setUnionLogic(union) {
             this.union = union;
+        },
+        sortByOutlierShortcut() {
+            if (this.loading) {
+                return;
+            }
+            
+            this.handleCancelSimilaritySort();
+            this.updateSortKey(SORT_KEY.OUTLIER);
+        },
+        sortBySimilarityShortcut() {
+            if (this.loading) {
+                return;
+            }
+            
+            this.handleInitSimilaritySort();
         }
     },
     watch: {
@@ -685,6 +702,10 @@ export default {
                 return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
             }
         });
+        
+        Keyboard.on('x', this.resetSorting);
+        Keyboard.on('c', this.sortByOutlierShortcut);
+        Keyboard.on('v', this.sortBySimilarityShortcut);
 
         this.initializeEcho();
     },
