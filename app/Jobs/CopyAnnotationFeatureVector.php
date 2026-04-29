@@ -4,6 +4,7 @@ namespace Biigle\Jobs;
 
 use Biigle\AnnotationLabel;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
@@ -36,14 +37,21 @@ abstract class CopyAnnotationFeatureVector extends Job
     {
         $vector = $this->getFeatureVectorQuery()->first();
         if (!is_null($vector)) {
-            $this->updateOrCreateFeatureVector([
-                'id' => $this->annotationLabel->id,
-                'annotation_id' => $this->annotationLabel->annotation_id,
-                'label_id' => $this->annotationLabel->label_id,
-                'label_tree_id' => $this->annotationLabel->label->label_tree_id,
-                'volume_id' => $vector->volume_id,
-                'vector' => $vector->vector,
-            ]);
+            try {
+                $this->updateOrCreateFeatureVector([
+                    'id' => $this->annotationLabel->id,
+                    'annotation_id' => $this->annotationLabel->annotation_id,
+                    'label_id' => $this->annotationLabel->label_id,
+                    'label_tree_id' => $this->annotationLabel->label->label_tree_id,
+                    'volume_id' => $vector->volume_id,
+                    'vector' => $vector->vector,
+                ]);
+            } catch (QueryException $e) {
+                // Annotation was deleted between the query and the insert.
+                if (!str_contains($e->getMessage(), 'foreign key constraint')) {
+                    throw $e;
+                }
+            }
         }
     }
 
