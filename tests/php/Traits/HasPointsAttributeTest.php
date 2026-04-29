@@ -20,8 +20,10 @@ class HasPointsAttributeTest extends TestCase
     
     public function testInvalidCoordinateType()
     {
-        $this->expectException(InvalidCoordinateTypeException::class);
-        $this->createAndValidateAnnotation('rectangle', [0, 0, 10, 0, 10, 10, 0, '10']);
+        foreach(['10', 'x'] as $invalidCoordinate) {
+            $this->expectException(InvalidCoordinateTypeException::class);
+            $this->createAndValidateAnnotation('rectangle', [0, 0, 10, 0, 10, 10, 0, $invalidCoordinate]);
+        }
     }
     
     /**
