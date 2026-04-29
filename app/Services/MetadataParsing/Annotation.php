@@ -66,7 +66,7 @@ abstract class Annotation
     }
 
     /**
-     * Sets the points and rounds them if they are numeric.
+     * @inheritDoc
      */
     protected function setPointsAttribute(array $points)
     {
