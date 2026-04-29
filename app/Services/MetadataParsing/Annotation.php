@@ -66,7 +66,7 @@ abstract class Annotation
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setPointsAttribute(array $points)
     {
