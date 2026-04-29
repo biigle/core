@@ -7,7 +7,6 @@ use Biigle\Exceptions\InvalidNumberOfCoordinatesException;
 use Biigle\Exceptions\InvalidNumberOfPointsException;
 use Biigle\Exceptions\InvalidShapeException;
 use Biigle\Shape;
-use Exception;
 
 trait HasPointsAttribute
 {
@@ -15,7 +14,7 @@ trait HasPointsAttribute
      * Validates a points array for the shape of this annotation.
      *
      * @param array $points Points array like `[x1, y1, x2, y2, x3, y3, ...]`
-     * @throws Exception If the points array is invalid
+     * @throws InvalidCoordinateTypeException|InvalidNumberOfCoordinatesException|InvalidNumberOfPointsException|InvalidShapeException If the points array is invalid
      */
     public function validatePoints(array $points)
     {
@@ -25,7 +24,11 @@ trait HasPointsAttribute
         $this->validateShape($points);
     }
     
-    private function validateCoordinatesAreNumeric($points)
+    /**
+     * Valies that all coordinates are either int or float
+     * @throws InvalidCoordinateTypeException if any coordinates are not int or float
+     */
+    protected function validateCoordinatesAreNumeric(array $points)
     {
         foreach ($points as $coordinate) {
             if (!is_int($coordinate) && !is_float($coordinate)) {
@@ -34,7 +37,11 @@ trait HasPointsAttribute
         }
     }
     
-    private function validateNumberOfCoordinates($points)
+    /**
+     * Validates that the number of coordinates matches the required number for the given shape
+     * @throws InvalidNumberOfCoordinatesException if the number of coordinates does not match the expected number
+     */
+    protected function validateNumberOfCoordinates(array $points)
     {
         $size = count($points);
         
@@ -55,7 +62,11 @@ trait HasPointsAttribute
         }
     }
     
-    private function validateNumberOfPoints($points)
+    /**
+     * Validates that the number of points (sequential coordinate pairs) matches the expected number of points for the given shape 
+     * @throws InvalidNumberOfPointsException if the number of points doesn't match the expected number
+     */
+    protected function validateNumberOfPoints(array $points)
     {
         $pointCount = intval(count($points) / 2);
         
@@ -84,7 +95,11 @@ trait HasPointsAttribute
         }
     }
     
-    private function validateShape($points)
+    /**
+     * Validates some edgecases where the given points don't create a valid shape
+     * @throws InvalidShapeException if the points don't match certain shape requirements (negative radius, etc.)
+     */
+    protected function validateShape(array $points)
     {
         $distinctPointCount = $this->countDistinctPoints($points);
         
@@ -134,10 +149,9 @@ trait HasPointsAttribute
 
     /**
      * Counts number of distinct points
-     * @param array $points containing the coordinates
      * @return int number of distinct points
      * **/
-    private function countDistinctPoints($points)
+    protected function countDistinctPoints(array $points): int
     {
         $points = collect($points);
         // Use values to reset index
