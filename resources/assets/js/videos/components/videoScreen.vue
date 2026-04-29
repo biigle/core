@@ -583,6 +583,10 @@ export default {
             type: Number,
             default: 0,
         },
+        draftAnnotationUsesLabelColor: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {

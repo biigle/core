@@ -89,6 +89,18 @@
     <div class="sidebar-tab__section">
         <power-toggle :active="singleAnnotation" title-off="Enable always creating single-frame annotations" title-on="Disable always creating single-frame annotations" v-on:on="handleSingleAnnotation" v-on:off="handleDisableSingleAnnotation">Single-Frame Annotation</power-toggle>
     </div>
+    
+    <div class="sidebar-tab__section">
+        <power-toggle
+            :active="draftAnnotationUsesLabelColor"
+            title-off="Use default draft color"
+            title-on="Use selected label color for draft annotations"
+            v-on:on="handleShowDraftAnnotationUsesLabelColor"
+            v-on:off="handleHideDraftAnnotationUsesLabelColor"
+        >
+            Draft Annotation Color
+        </power-toggle>
+    </div>
 </div>
 </script>
 @endpush
