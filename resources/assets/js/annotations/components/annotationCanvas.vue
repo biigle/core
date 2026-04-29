@@ -153,6 +153,10 @@ export default {
             type: Number,
             required: true,
         },
+        draftAnnotationUsesLabelColor: {
+            type: Boolean,
+            default: true, 
+        },
     },
     data() {
         return {

@@ -110,8 +110,12 @@ export default {
                 });
                 this.map.addInteraction(drawInteraction);
 
-                drawInteraction.on('drawstart', () => {
+                drawInteraction.on('drawstart', (event) => {
                     this.drawEnded = false;
+                    
+                    if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
+                        event.feature.set('color', this.selectedLabel.color);
+                    }
                 });
 
                 drawInteraction.on('drawend', (e) => {

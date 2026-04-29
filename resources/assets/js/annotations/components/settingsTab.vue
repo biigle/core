@@ -62,6 +62,7 @@ export default {
                 'progressIndicator',
                 'exampleAnnotations',
                 'labelbotTimeout',
+                'draftAnnotationUsesLabelColor',
             ],
             annotationOpacity: 1.0,
             cachedImagesCount: 1,
@@ -75,6 +76,7 @@ export default {
             exampleAnnotations: true,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
+            draftAnnotationUsesLabelColor: false,
         };
     },
     computed: {
@@ -149,6 +151,12 @@ export default {
         hideExampleAnnotations() {
             this.exampleAnnotations = false;
         },
+        showDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = true;
+        },
+        hideDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = false;
+        },
     },
     watch: {
         annotationOpacity(opacity) {
@@ -197,6 +205,10 @@ export default {
         exampleAnnotations(show) {
             this.$emit('change', 'exampleAnnotations', show);
             this.settings.set('exampleAnnotations', show);
+        },
+        draftAnnotationUsesLabelColor(show) {
+            this.$emit('change', 'draftAnnotationUsesLabelColor', show);
+            this.settings.set('draftAnnotationUsesLabelCoor', show);
         },
     },
     created() {
