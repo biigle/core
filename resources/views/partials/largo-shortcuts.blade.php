@@ -30,7 +30,7 @@
 </table>
 
 <p class="lead">
-    Available shortcuts from the image grid.
+    Available shortcuts of the image grid.
 </p>
 
 @include('partials.image-grid-shortcuts')
