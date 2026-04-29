@@ -208,7 +208,7 @@ export default {
         },
         draftAnnotationUsesLabelColor(show) {
             this.$emit('change', 'draftAnnotationUsesLabelColor', show);
-            this.settings.set('draftAnnotationUsesLabelCoor', show);
+            this.settings.set('draftAnnotationUsesLabelColor', show);
         },
     },
     created() {
