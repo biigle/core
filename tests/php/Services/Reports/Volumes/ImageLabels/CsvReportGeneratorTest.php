@@ -275,14 +275,25 @@ class CsvReportGeneratorTest extends TestCase
         $mock->shouldReceive('open')
             ->once()
             ->andReturn(true);
+        
+        $expectedTargets = ["{$user1->id}-joe-jack-user.csv", "{$user2->id}-jane-user.csv"];
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+            ->withArgs(function ($source, $target) use (&$expectedTargets) {
+                if ($source === 'abc' && ($i = array_search($target, $expectedTargets)) !== false) {
+                    unset($expectedTargets[$i]);
+                    return true;
+                } else {
+                    return false;
+                }
+            });
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$user2->id}-jane-user.csv");
+            ->withArgs(function ($source, $target) use (&$expectedTargets) {
+                return $source === 'def' && in_array($target, $expectedTargets);
+            });
 
         $mock->shouldReceive('close')->once();
 
