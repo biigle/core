@@ -63,7 +63,7 @@ trait HasPointsAttribute
     }
     
     /**
-     * Validates that the number of points (sequential coordinate pairs) matches the expected number of points for the given shape 
+     * Validates that the number of points (sequential coordinate pairs) matches the expected number of points for the given shape
      * @throws InvalidNumberOfPointsException if the number of points doesn't match the expected number
      */
     protected function validateNumberOfPoints(array $points)
