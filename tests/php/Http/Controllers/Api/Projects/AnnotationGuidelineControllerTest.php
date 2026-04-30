@@ -52,6 +52,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
                 'label' => $label->id,
                 'shape' => Shape::polygonId(),
                 'description' => 'labelDescription',
+                'reference_image' => false,
             ]
         );
 
@@ -112,7 +113,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
     public function testDelete()
     {
         $id = $this->project()->id;
-        config(['annotation_guideline.storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $path = "/api/v1/projects/{$id}/annotation-guideline";
