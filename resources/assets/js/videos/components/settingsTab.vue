@@ -156,10 +156,10 @@ export default {
                 this.annotationOpacity = 1;
             }
         },
-        handleShowDraftAnnotationUsesLabelColor() {
+        showDraftAnnotationUsesLabelColor() {
             this.draftAnnotationUsesLabelColor = true;
         },
-        handleHideDraftAnnotationUsesLabelColor() {
+        hideDraftAnnotationUsesLabelColor() {
             this.draftAnnotationUsesLabelColor = false;
         }
     },
