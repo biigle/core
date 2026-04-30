@@ -152,6 +152,10 @@ export default {
             type: Array,
             default: () => [],
         },
+        enforceGuideline: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         customOrderStorageKeys() {
@@ -176,7 +180,7 @@ export default {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
-            if (this.labelsInGuideline.length > 0) {
+            if (this.enforceGuideline && this.labelsInGuideline.length > 0) {
                 labels = labels.filter((label) => this.labelsInGuideline.includes(label.id));
             }
 
