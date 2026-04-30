@@ -70,7 +70,7 @@ class AnnotationGuidelineController extends Controller
     public function update(Request $request, int $id)
     {
         $request->validate([
-            'description' => 'required|string|min:1',
+            'description' => 'nullable|string|min:1',
         ]);
 
         $project = Project::findOrFail($id);
@@ -101,7 +101,7 @@ class AnnotationGuidelineController extends Controller
         $annotationGuideline->delete();
 
         //Cleanup the directory
-        $disk = Storage::disk(config('annotation_guideline.storage_disk'));
+        $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));
         $url = "$project->id/";
         if ($disk->exists($url)) {
             $disk->deleteDirectory($url);

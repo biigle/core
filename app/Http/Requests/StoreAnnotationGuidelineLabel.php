@@ -44,7 +44,7 @@ class StoreAnnotationGuidelineLabel extends FormRequest
             'label' => ['required', 'integer'],
             'description' => ['nullable', 'string'],
             'shape' => ['nullable', 'integer'],
-            'reference_image' => ['nullable', 'file', 'mimes:jpg', 'dimensions:max_width=300,max_height=300'],
+            'reference_image' => ['nullable', 'file', 'mimes:jpg,png,webp', 'max:5120', 'dimensions:max_width=300,max_height=300'],
         ];
     }
 }

@@ -16,7 +16,8 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('cascade');
             $table->unique('project');
-            $table->text('description');
+            $table->text('description')
+                ->nullable(true);
         });
 
         Schema::create('annotation_guideline_labels', function (Blueprint $table) {
@@ -36,6 +37,8 @@ return new class extends Migration {
 
             $table->text('description')
                 ->nullable(true);
+
+            $table->boolean('reference_image');
 
             $table->unique(['annotation_guideline', 'label']);
         });

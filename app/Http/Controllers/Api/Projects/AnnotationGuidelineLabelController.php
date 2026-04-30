@@ -8,6 +8,7 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\StoreAnnotationGuidelineLabel;
 use Biigle\Label;
 use Biigle\Project;
+use Biigle\Shape;
 use Illuminate\Http\Request;
 use Storage;
 
@@ -17,14 +18,14 @@ class AnnotationGuidelineLabelController extends Controller
      * Update the label within an annotation guideline.
      * @api {post} projects/:id/annotation-guideline-label Update the guideline for labels within an annotation guideline
      * @apiGroup Projects
-     * @apiName UpdateAnnotationGuidelineLabels
+     * @apiName UpdateAnnotationGuidelineLabel
      * @apiPermission projectAdmin
      *
      * @apiParam {Integer} id THe ID of the project for the annotation guideline for the labels
      * @apiParam {Integer} label The ID for the label for the annotation guideline
-     * @apiParam {Integer} shape The IDs for the shapes for the annotation guideline
-     * @apiParam {String} description The IDs for the shapes for the annotation guideline
-     * @apiParam {File} reference_image The reference image for the desired label
+     * @apiParam {Integer} shape (optional) The ID for the preferred shape for the label in the annotation guideline
+     * @apiParam {String} description (optional) A description of the label
+     * @apiParam {File} reference_image (optional) The reference image for the label
      *
      */
     public function update(StoreAnnotationGuidelineLabel $request)
@@ -34,24 +35,35 @@ class AnnotationGuidelineLabelController extends Controller
         $annotationGuideline = AnnotationGuideline::where(['project' => $projectId])->firstOrFail();
         $validated = $request->validated();
 
-        $label = $validated['label'];
-        $shape = $validated['shape'];
-        $description = $validated['description'];
-        $referenceImage = $validated['reference_image'];
+        $labelId = $validated['label'];
+        $label = Label::findOrFail($labelId);
 
-        $disk = Storage::disk(config('annotation_guideline.storage_disk'));
-
-        if ($referenceImage != null) {
-            $disk->putFileAs("$projectId", $referenceImage, "$label.jpg");
+        $shapeId = $validated['shape'] ?? null;
+        if (!is_null($shapeId)) {
+            $shapeId = Shape::findOrFail($shapeId)->id;
         }
+
+        $description = $validated['description'] ?? null;
+        $referenceImage = $validated['reference_image'] ?? null;
+
+        $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));
+
+        $hasReferenceImage = !is_null($referenceImage);
+        if ($hasReferenceImage) {
+            $disk->putFileAs("$projectId", $referenceImage, "$label->id.jpg");
+        }
+
+        //If image already exists, avoid problems
+        $imageExists = $disk->exists("$projectId/$label->id.jpg");
         AnnotationGuidelineLabel::updateOrCreate(
             [
                 'annotation_guideline' => $annotationGuideline->id,
-                'label' => $label,
+                'label' => $label->id,
             ],
             [
-                'shape' => $shape,
+                'shape' => $shapeId,
                 'description' => $description,
+                'reference_image' => $imageExists,
             ]
         );
     }
@@ -78,7 +90,7 @@ class AnnotationGuidelineLabelController extends Controller
 
         $annotationGuidelineLabel->delete();
 
-        $disk = Storage::disk(config('annotation_guideline.storage_disk'));
+        $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));
         $url = "$project->id/$label->id.jpg";
         if ($disk->exists($url)) {
             $disk->delete($url);
@@ -100,10 +112,14 @@ class AnnotationGuidelineLabelController extends Controller
     {
         $project = Project::findOrFail($request->id);
         $label = Label::findOrFail($request->label);
+        $annotationGuideline = AnnotationGuideline::where(['project' => $project->id])->firstOrFail();
+        $annotationGuidelineLabel = $annotationGuideline->guidelineLabels()->where(['label' => $label->id])->firstOrFail();
 
         $this->authorize('update', $project);
 
-        $disk = Storage::disk(config('annotation_guideline.storage_disk'));
+        $annotationGuidelineLabel->update(['reference_image' => false]);
+
+        $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));
         $url = "$project->id/$label->id.jpg";
         if ($disk->exists($url)) {
             $disk->delete($url);
