@@ -85,7 +85,7 @@ export default {
             showMinimap: true,
             showScaleLine: false,
             showExampleAnnotations: true,
-            draftAnnotationUsesLabelColor: false,
+            draftAnnotationUsesLabelColor: true,
             imagesArea: null,
             openTab: null,
             userUpdatedVolareResolution: false,
