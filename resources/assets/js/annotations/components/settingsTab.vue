@@ -76,7 +76,7 @@ export default {
             exampleAnnotations: true,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
-            draftAnnotationUsesLabelColor: false,
+            draftAnnotationUsesLabelColor: true,
         };
     },
     computed: {

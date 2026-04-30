@@ -85,15 +85,17 @@
             </div>
         @endcan
         
-        <power-toggle
-            :active="draftAnnotationUsesLabelColor"
-            title-off="Use selected label color for draft annotations"
-            title-on="Use default draft color"
-            v-on:on="showDraftAnnotationUsesLabelColor"
-            v-on:off="hideDraftAnnotationUsesLabelColor"
-        >
-            Draft Annotation Color
-        </power-toggle>
+        <div class="sidebar-tab__section">
+            <power-toggle
+                :active="draftAnnotationUsesLabelColor"
+                title-off="Enable using the selected label color for draft annotations"
+                title-on="Disable using the selected label color for draft annotations"
+                v-on:on="handleShowDraftAnnotationUsesLabelColor"
+                v-on:off="handleHideDraftAnnotationUsesLabelColor"
+            >
+                Draft Annotation Color
+            </power-toggle>
+        </div>
 
         @mixin('annotationsSettingsTab')
     </div>

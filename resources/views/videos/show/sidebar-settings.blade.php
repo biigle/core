@@ -93,8 +93,8 @@
     <div class="sidebar-tab__section">
         <power-toggle
             :active="draftAnnotationUsesLabelColor"
-            title-off="Use default draft color"
-            title-on="Use selected label color for draft annotations"
+            title-off="Enable using the selected label color for draft annotations"
+            title-on="Disable using the selected label color for draft annotations"
             v-on:on="handleShowDraftAnnotationUsesLabelColor"
             v-on:off="handleHideDraftAnnotationUsesLabelColor"
         >
