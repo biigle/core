@@ -3,7 +3,6 @@
     <div v-if="displayImage">
         <img
             :src="getImageUrl"
-            @error="displayText"
             class="reference-image"
         />
         <span v-if="isAdmin && editable">
@@ -19,7 +18,7 @@
     <div v-else>
         <span>No reference image was provided</span>
         <div v-if="isAdmin && editable">
-            <label>Select a reference image (max 5 MB)</label>
+            <label>Select a reference image</label>
             <input
                 type="file"
                 name="referenceImage"
@@ -61,16 +60,13 @@ export default {
         refreshCount: {
             type: Number,
             default: 0,
-        }
+        },
+        displayImage: {
+            type: Boolean,
+            required: true,
+        },
     },
     computed: {
-        hasFilename() {
-            return (
-                this.displayImage &&
-                this.referenceImage &&
-                this.referenceImage.length > 0
-            );
-        },
         getImageUrl() {
             if (this.labelId > 0) {
                 return this.temporaryImage
@@ -80,20 +76,7 @@ export default {
             return '';
         },
     },
-    data() {
-        return {
-            displayImage: true,
-            refresh: 0,
-        };
-    },
-    watch: {
-        temporaryImage: "attemptDisplayImage",
-        labelId: "attemptDisplayImage",
-    },
     methods: {
-        displayText() {
-            this.displayImage = false;
-        },
         deleteImage() {
             let response = prompt(
                 `This will delete the image for this label. Please enter 'delete' to confirm.`,
@@ -101,17 +84,10 @@ export default {
             if (response !== 'delete') {
                 return;
             }
-            this.displayText();
             this.emitResetReferenceImage();
         },
         emitResetReferenceImage() {
             this.$emit('reset-reference-image');
-        },
-        attemptDisplayImage() {
-            this.displayImage = true;
-        },
-        forceRefresh() {
-            this.refresh += 1;
         },
         addImage(event) {
             if (event.target.files.length > 1) {
@@ -119,13 +95,7 @@ export default {
                 return;
             }
             let file = event.target.files[0];
-            if (file.size > 5 * 1024 * 1024) {
-                Messages.warning('The file is too big');
-                return;
-            }
             this.$emit('add-image', file);
-            this.forceRefresh();
-            setTimeout(() => this.attemptDisplayImage(), 250);
         },
     },
 };

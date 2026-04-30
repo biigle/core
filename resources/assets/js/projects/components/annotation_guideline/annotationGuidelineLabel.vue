@@ -9,7 +9,7 @@
             >
             </label-trees>
         </div>
-        <div class="col-xs-8" v-if="canSaveGuideline" >
+        <div class="col-xs-8">
             <span
                 v-if="isAdmin && editingMode && label.id"
                 class="top-bar pull-right" >
@@ -46,6 +46,7 @@
                         maxlength="200"
                         wrap="hard"
                         placeholder="Describe how this label should be used..."
+                        @change="setWasEdited"
                     ></textarea>
                 </div>
                 <div v-else>
@@ -62,6 +63,7 @@
                         class="form-control"
                         v-model="shape"
                         title="Select shape"
+                        @change="setWasEdited"
                     >
                         <option
                             v-for="(name, id) in availableShapes"
@@ -85,19 +87,15 @@
                     :base-url="baseUrl"
                     :label-id="labelId"
                     :project-id="projectId"
-                    :temporary-image="temporaryReferenceImage"
+                    :display-image="displayImage"
+                    :temporary-image="temporaryReferenceImageObject"
                     :is-admin="isAdmin"
                     :editable="editingMode"
-                    :refresh-count="refreshCount"
+                    :refresh-count="refreshCount[labelId]"
                     @reset-reference-image="resetReferenceImage"
                     @add-image="addImage"
                 ></annotation-guideline-label-image>
             </div>
-        </div>
-        <div class="col-xs-8 has-error" v-else>
-            <span class="help-block">
-                Add a description to the guideline before adding a label
-            </span>
         </div>
     </div>
 </template>
@@ -150,16 +148,15 @@ export default {
             type: Boolean,
             required: true,
         },
-        canSaveGuideline: {
-            type: Boolean,
-            required: true,
-        },
     },
     computed: {
-        temporaryReferenceImage() {
-            return this.referenceImage
-                ? URL.createObjectURL(this.referenceImage)
-                : undefined;
+        temporaryReferenceImageObject() {
+            return this.temporaryImage
+                ? URL.createObjectURL(this.temporaryImage)
+                : false;
+        },
+        displayImage() {
+            return this.hasReferenceImage || this.temporaryReferenceImageObject;
         },
         labelId() {
             return this.label.id ? this.label.id : -1;
@@ -179,7 +176,6 @@ export default {
         currentAnnotationGuidelineLabel() {
             let agl = {
                 label: this.label,
-                reference_image: '',
             };
             if (
                 this.label &&
@@ -199,56 +195,56 @@ export default {
         currentAnnotationGuidelineLabel: function (agl) {
             this.label = agl.label;
             //casting null to undefined
-            this.shape = agl.shape ?? undefined;
-            this.description = agl.description;
-            this.referenceImage = agl.reference_image;
-            this.refreshCount = agl.label.refreshCount ?? 0;
+            this.shape = agl.shape ?? '';
+            this.description = agl.description ?? '';
+            this.hasReferenceImage = agl.reference_image;
+            this.temporaryImage = false;
+            this.$emit('editing', false);
         },
         forceSaveLabel: function(value) {
             if (value) {
                 this.addAnnotationGuidelineLabel(true);
             }
         },
-        shape: "emitEditEvent",
-        description: "emitEditEvent",
-        referenceImage: "emitEditEvent",
-        canSaveGuideline: "displayLabelData"
+        temporaryImage: "setWasEdited",
     },
     data() {
         return {
             label: {},
             shape: undefined,
             description: '',
-            referenceImage: undefined,
-            refreshCount: 0,
-            showLabelData: false,
+            hasReferenceImage: false,
+            temporaryImage: false,
+            changingLabel: false,
+            refreshCount: {},
+            wasEdited: false,
         };
     },
     methods: {
-        displayLabelData(value) {
-            if (value) {
-                this.showLabelData = true;
-                return;
-            }
-            this.showLabelData = false;
-        },
-        emitEditEvent() {
-            if (this.editingMode) {
+        setWasEdited() {
+            if (this.editingMode && !this.changingLabel) {
+                this.wasEdited = true;
                 this.$emit('editing');
             }
         },
+        increaseRefreshCount(labelId) {
+            let labelRefreshCount = this.refreshCount[labelId] ?? 0
+            this.refreshCount[labelId] = labelRefreshCount + 1;
+        },
         selectLabel(label) {
-            if (this.editingMode) {
+            if (this.wasEdited) {
                 this.addAnnotationGuidelineLabel(true);
             }
-            this.label.refreshCount += 1;
+            this.increaseRefreshCount(label.id);
             this.label = label;
+            setTimeout(() => this.wasEdited = false);
         },
         deselectLabel() {
-            if (this.editingMode) {
+            if (this.wasEdited) {
                 this.addAnnotationGuidelineLabel(true);
             }
             this.label = {};
+            setTimeout(() => this.wasEdited = false);
         },
         addAnnotationGuidelineLabel(automaticSave) {
             // Avoid accidental save, a label without any info is allowed only voluntarily
@@ -256,23 +252,25 @@ export default {
                 automaticSave &&
                 !this.shape &&
                 !this.description &&
-                !this.referenceImage)
+                !this.temporaryReferenceImageObject)
             {
                 return;
             }
-
+            let image = this.temporaryImage ? this.temporaryImage : null;
 
             if (this.labelId > 0) {
                 this.$emit('add-label', {
                     label: this.label,
                     shape: this.shape,
                     description: this.description,
-                    reference_image: this.referenceImage,
+                    reference_image: image,
                 });
             }
+            this.wasEdited = false;
         },
         deleteLabel() {
             this.$emit('delete-label', this.label.id);
+            this.wasEdited = false;
             this.deselectLabel();
         },
         addImage(file) {
@@ -280,9 +278,16 @@ export default {
             resizeImage(file)
                 .then((image) => this.setImage(image))
                 .finally(this.finishLoading);
+            this.increaseRefreshCount(this.labelId);
         },
         setImage(image) {
-            this.referenceImage = image;
+            this.temporaryImage = image;
+        },
+        resetImage() {
+            this.temporaryImage = false;
+            this.hasReferenceImage = false;
+            this.$emit('editing');
+            this.increaseRefreshCount(this.labelId);
         },
         resetReferenceImage() {
             this.startLoading();
@@ -290,7 +295,7 @@ export default {
                 { id: this.projectId },
                 { label: this.label.id },
             )
-                .then(this.setReferenceImage, handleErrorResponse)
+                .then(this.resetImage, handleErrorResponse)
                 .finally(this.finishLoading);
         },
     },
