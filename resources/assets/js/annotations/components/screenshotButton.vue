@@ -55,6 +55,7 @@ export default {
     },
     methods: {
         download(blob) {
+            // TODO Add scale bar
             let a = document.createElement('a');
             a.style = 'display: none';
             a.download = this.filename;
