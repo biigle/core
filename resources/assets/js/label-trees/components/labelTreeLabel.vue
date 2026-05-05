@@ -12,11 +12,11 @@
                 <span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
             </span>
             <span class="label-tree-label__buttons">
-                <i v-if="hasGuideline && isInGuideline" class="fa fa-fw fa-clipboard-list" title="This label is included in an annotation guideline"></i>
                 <span v-if="showFavouriteShortcuts" class="text-muted label-tree-label_position">
                     <span class="fa fa-keyboard" aria-hidden="true"></span>
                     <span v-text="actualPosition"></span>
                 </span>
+                <i v-if="showGuidelineIcon" class="fa fa-fw fa-clipboard-list" title="This label is included in an annotation guideline"></i>
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
                     <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
@@ -174,6 +174,9 @@ export default {
         },
         shouldBeFilteredByGuideline() {
             return this.filterByGuideline && !this.isInGuideline && !this.label.childrenInGuideline;
+        },
+        showGuidelineIcon() {
+            return this.hasGuideline && this.isInGuideline && !this.filterByGuideline
         },
         filteredChildren() {
             if (this.filterByGuideline) {

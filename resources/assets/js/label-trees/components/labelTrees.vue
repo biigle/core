@@ -36,7 +36,7 @@
             <label-tree
                 v-if="hasFavourites"
                 name="Favourites"
-                :labels="favourites"
+                :labels="filteredFavourites"
                 :show-favourites="showFavourites"
                 :showMoveButtonUp="false"
                 :showMoveButtonDown="false"
@@ -224,8 +224,15 @@ export default {
         canHaveMoreFavourites() {
             return this.favourites.length < MAX_FAVOURITES;
         },
+        filteredFavourites() {
+            if (this.filterByGuideline) {
+                return this.favourites.filter(label => this.labelsInGuidelineSet.has(label.id));
+            }
+
+            return this.favourites;
+        },
         hasFavourites() {
-            return this.favourites.length > 0;
+            return this.filteredFavourites.length > 0;
         },
         ownId() {
             if (this.id) {
@@ -298,8 +305,8 @@ export default {
             }
         },
         selectFavourite(index) {
-            if (this.favourites[index]) {
-                this.handleSelect(this.favourites[index]);
+            if (this.filteredFavourites[index]) {
+                this.handleSelect(this.filteredFavourites[index]);
             }
         },
         on(key, fn) {
