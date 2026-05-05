@@ -51,7 +51,7 @@ abstract class Annotation
     }
 
     /**
-     * Validatethe points and labels.
+     * Validate the points and labels.
      *
      * @throws Exception If something is invalid.
      */
@@ -67,12 +67,12 @@ abstract class Annotation
     /**
      * {@inheritdoc}
      */
-    public function setPointsAttribute(array $points)
+    protected function setPointsAttribute(array $points)
     {
         $this->points = array_map(
             fn ($a) => is_array($a)
-                ? array_map(fn ($b) => round($b, 2), $a)
-                : round($a, 2),
+                ? array_map(fn ($b) => is_numeric($b) ? round($b, 2) : $b, $a)
+                : (is_numeric($a) ? round($a, 2) : $a),
             $points
         );
     }
