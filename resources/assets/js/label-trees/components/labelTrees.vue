@@ -23,7 +23,7 @@
                 ></typeahead>
             <button
                 v-if="hasGuideline"
-                @click="filterLabelsByGuideline"
+                @click="toggleFilterLabelsByGuideline"
                 class="btn btn-default"
                 :class="filterByGuidelineClass"
                 title="Show only labels in guideline"
@@ -103,7 +103,7 @@ export default {
             favourites: [],
             customOrder: [],
             sortable: true,
-            filterByGuideline: false,
+            filterByGuidelineInternal: false,
         };
     },
     props: {
@@ -245,6 +245,9 @@ export default {
         treeIds() {
             return this.trees.map(tree => tree.id);
         },
+        filterByGuideline() {
+            return this.filterByGuidelineInternal && this.hasGuideline;
+        },
         filterByGuidelineClass() {
             return {
                 'active btn-info': this.filterByGuideline,
@@ -318,8 +321,8 @@ export default {
                 localStorage.setItem(storageKey, JSON.stringify(newCustomOrder));
             });
         },
-        filterLabelsByGuideline() {
-            this.filterByGuideline = !this.filterByGuideline;
+        toggleFilterLabelsByGuideline() {
+            this.filterByGuidelineInternal = !this.filterByGuidelineInternal;
         },
     },
     watch: {
