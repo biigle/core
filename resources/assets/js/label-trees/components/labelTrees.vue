@@ -21,19 +21,30 @@
                 :items="labels"
                 @select="handleSelect"
                 ></typeahead>
+            <button
+                v-if="hasGuideline"
+                @click="toggleFilterLabelsByGuideline"
+                class="btn btn-default"
+                :class="filterByGuidelineClass"
+                title="Show only labels in guideline"
+                type="button"
+                >
+                <span class="fa fa-clipboard-list fa-fw" aria-hidden="true"></span>
+            </button>
         </div>
         <div class="label-trees__body">
             <label-tree
-                v-if="hasFavourites"
+                v-if="hasFilteredFavourites"
                 name="Favourites"
-                :labels="favourites"
+                :labels="filteredFavourites"
                 :show-favourites="showFavourites"
                 :showMoveButtonUp="false"
                 :showMoveButtonDown="false"
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
-                :labels-in-guideline="labelsInGuideline"
+                :labels-in-guideline="labelsInGuidelineSet"
+                :filter-by-guideline="filterByGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
@@ -50,7 +61,8 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
-                :labels-in-guideline="labelsInGuideline"
+                :labels-in-guideline="labelsInGuidelineSet"
+                :filter-by-guideline="filterByGuideline"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"
@@ -91,6 +103,7 @@ export default {
             favourites: [],
             customOrder: [],
             sortable: true,
+            filterByGuidelineInternal: false,
         };
     },
     props: {
@@ -173,6 +186,12 @@ export default {
 
             return false;
         },
+        labelsInGuidelineSet() {
+            return new Set(this.labelsInGuideline);
+        },
+        hasGuideline() {
+            return this.labelsInGuidelineSet.size > 0;
+        },
         // All labels of all label trees in a flat, sorted list.
         labels() {
             let labels = [];
@@ -180,8 +199,8 @@ export default {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
-            if (this.enforceGuideline && this.labelsInGuideline.length > 0) {
-                labels = labels.filter((label) => this.labelsInGuideline.includes(label.id));
+            if (this.filterByGuideline) {
+                labels = labels.filter(label => this.labelsInGuidelineSet.has(label.id));
             }
 
             if (this.localeCompareSupportsLocales) {
@@ -205,8 +224,18 @@ export default {
         canHaveMoreFavourites() {
             return this.favourites.length < MAX_FAVOURITES;
         },
+        filteredFavourites() {
+            if (this.filterByGuideline) {
+                return this.favourites.filter(label => this.labelsInGuidelineSet.has(label.id));
+            }
+
+            return this.favourites;
+        },
         hasFavourites() {
             return this.favourites.length > 0;
+        },
+        hasFilteredFavourites() {
+            return this.filteredFavourites.length > 0;
         },
         ownId() {
             if (this.id) {
@@ -229,7 +258,15 @@ export default {
         },
         treeIds() {
             return this.trees.map(tree => tree.id);
-        }
+        },
+        filterByGuideline() {
+            return this.filterByGuidelineInternal && this.hasGuideline;
+        },
+        filterByGuidelineClass() {
+            return {
+                'active btn-info': this.filterByGuideline,
+            };
+        },
     },
     methods: {
         handleSelect(label, e) {
@@ -271,8 +308,8 @@ export default {
             }
         },
         selectFavourite(index) {
-            if (this.favourites[index]) {
-                this.handleSelect(this.favourites[index]);
+            if (this.filteredFavourites[index]) {
+                this.handleSelect(this.filteredFavourites[index]);
             }
         },
         on(key, fn) {
@@ -297,7 +334,10 @@ export default {
             this.customOrderStorageKeys.forEach(function (storageKey) {
                 localStorage.setItem(storageKey, JSON.stringify(newCustomOrder));
             });
-        }
+        },
+        toggleFilterLabelsByGuideline() {
+            this.filterByGuidelineInternal = !this.filterByGuidelineInternal;
+        },
     },
     watch: {
         trees: {

@@ -1,6 +1,6 @@
 <template>
-    <li class="label-tree-label" :class="classObject">
-        <div class="label-tree-label__name" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">
+    <li v-show="!shouldBeFilteredByGuideline" class="label-tree-label" :class="classObject">
+        <div class="label-tree-label__name" :class="nameClass" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">
             <span v-if="editing">
                 <input type="color" class="form-control input-sm label-tree-color-input" v-model="newColor" />
                 <input type="text" v-model="newName" v-on:keydown.enter="saveThis" class="form-control input-sm label-tree-label__name-input">
@@ -9,14 +9,14 @@
                 <span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>
                 <span v-show="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>
                 <span v-show="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>
-                <span v-text="label.name" :class="{ 'text-muted': guidelinePresent && !inGuideline  }" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
-                <a v-if="guidelinePresent && inGuideline" class="btn btn-xs" title="This label is present in a guideline"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                <span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
             </span>
             <span class="label-tree-label__buttons">
                 <span v-if="showFavouriteShortcuts" class="text-muted label-tree-label_position">
                     <span class="fa fa-keyboard" aria-hidden="true"></span>
                     <span v-text="actualPosition"></span>
                 </span>
+                <i v-if="showGuidelineIcon" class="fa fa-fw fa-clipboard-list" title="This label is included in an annotation guideline"></i>
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
                     <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
@@ -29,7 +29,21 @@
             </span>
         </div>
         <ul v-if="expandable && label.open" class="label-tree__list">
-            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" :labels-in-guideline="labelsInGuideline"  v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+            <label-tree-label
+                v-for="child in filteredChildren"
+                :key="child.id"
+                :label="child"
+                :editable="editable"
+                :show-favourites="showFavourites"
+                :labels-in-guideline="labelsInGuideline"
+                :filter-by-guideline="filterByGuideline"
+                @select="emitSelect"
+                @deselect="emitDeselect"
+                @save="emitSave"
+                @delete="emitDelete"
+                @add-favourite="emitAddFavourite"
+                @remove-favourite="emitRemoveFavourite"
+                ></label-tree-label>
         </ul>
     </li>
 </template>
@@ -86,20 +100,18 @@ export default {
         },
         position: {
             type: Number,
-            default:-1,
+            default: -1,
         },
         labelsInGuideline: {
-            type: Array,
-            default: () => [],
-        }
+            type: Set,
+            default: () => new Set(),
+        },
+        filterByGuideline: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
-        guidelinePresent() {
-            return this.labelsInGuideline.length > 0;
-        },
-        inGuideline() {
-            return this.labelsInGuideline.includes(this.label.id);
-        },
         showColor() {
             return !this.expandable || !this.hover;
         },
@@ -131,6 +143,11 @@ export default {
                 'selected': this.label.favourite,
             };
         },
+        nameClass() {
+            return {
+                'text-muted': this.hasGuideline && !this.isInGuideline,
+            };
+        },
         favouriteTitle() {
             return (this.label.favourite ? 'Remove' : 'Add') + ' as favourite';
         },
@@ -141,14 +158,33 @@ export default {
             return 'Remove label ' + this.label.name;
         },
         expandable() {
-            return !this.flat && !!this.label.children;
+            return !this.flat && (this.filteredChildren && this.filteredChildren.length > 0);
         },
         showEditButton() {
             return this.editable && this.hover && !this.editing;
         },
         actualPosition() {
             return (this.position + 1) % MAX_FAVOURITES;
-        }
+        },
+        hasGuideline() {
+            return this.labelsInGuideline.size > 0;
+        },
+        isInGuideline() {
+            return this.labelsInGuideline.has(this.label.id);
+        },
+        shouldBeFilteredByGuideline() {
+            return this.filterByGuideline && !this.isInGuideline && !this.label.childrenInGuideline;
+        },
+        showGuidelineIcon() {
+            return this.hasGuideline && this.isInGuideline && !this.filterByGuideline
+        },
+        filteredChildren() {
+            if (this.filterByGuideline) {
+                return this.label.children?.filter(child => this.labelsInGuideline.has(child.id) || child.childrenInGuideline);
+            }
+
+            return this.label.children;
+        },
     },
     methods: {
         toggleSelect(e) {
