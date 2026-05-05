@@ -34,7 +34,7 @@
         </div>
         <div class="label-trees__body">
             <label-tree
-                v-if="hasFavourites"
+                v-if="hasFilteredFavourites"
                 name="Favourites"
                 :labels="filteredFavourites"
                 :show-favourites="showFavourites"
@@ -232,6 +232,9 @@ export default {
             return this.favourites;
         },
         hasFavourites() {
+            return this.favourites.length > 0;
+        },
+        hasFilteredFavourites() {
             return this.filteredFavourites.length > 0;
         },
         ownId() {
