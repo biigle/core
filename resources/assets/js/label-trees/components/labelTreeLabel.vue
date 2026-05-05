@@ -35,7 +35,7 @@
                 :label="child"
                 :editable="editable"
                 :show-favourites="showFavourites"
-                :has-guideline="hasGuideline"
+                :labels-in-guideline="labelsInGuideline"
                 :filter-by-guideline="filterByGuideline"
                 @select="emitSelect"
                 @deselect="emitDeselect"
@@ -102,9 +102,9 @@ export default {
             type: Number,
             default: -1,
         },
-        hasGuideline: {
-            type: Boolean,
-            default: false,
+        labelsInGuideline: {
+            type: Set,
+            default: () => new Set(),
         },
         filterByGuideline: {
             type: Boolean,
@@ -112,12 +112,6 @@ export default {
         },
     },
     computed: {
-        guidelinePresent() {
-            return this.labelsInGuideline.length > 0;
-        },
-        inGuideline() {
-            return this.labelsInGuideline.includes(this.label.id);
-        },
         showColor() {
             return !this.expandable || !this.hover;
         },
@@ -172,15 +166,18 @@ export default {
         actualPosition() {
             return (this.position + 1) % MAX_FAVOURITES;
         },
+        hasGuideline() {
+            return this.labelsInGuideline.size > 0;
+        },
         isInGuideline() {
-            return this.label.inGuideline;
+            return this.labelsInGuideline.has(this.label.id);
         },
         shouldBeFilteredByGuideline() {
             return this.filterByGuideline && !this.isInGuideline && !this.label.childrenInGuideline;
         },
         filteredChildren() {
             if (this.filterByGuideline) {
-                return this.label.children?.filter(child => child.inGuideline || child.childrenInGuideline);
+                return this.label.children?.filter(child => this.labelsInGuideline.has(child.id) || child.childrenInGuideline);
             }
 
             return this.label.children;

@@ -43,7 +43,7 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
-                :has-guideline="hasGuideline"
+                :labels-in-guideline="labelsInGuideline"
                 :filter-by-guideline="filterByGuideline"
                 @select="emitSelect"
                 @deselect="emitDeselect"
@@ -198,7 +198,7 @@ export default {
                 });
 
                 const hasChildrenInGuideline = (children) => {
-                    return children?.some(child => child.inGuideline || hasChildrenInGuideline(child.children));
+                    return children?.some(child => this.labelsInGuideline.has(child.id) || hasChildrenInGuideline(child.children));
                 };
 
                 this.labels.forEach(function (label) {
@@ -210,7 +210,7 @@ export default {
         },
         rootLabels() {
             if (this.filterByGuideline) {
-                return this.compiledLabels[null]?.filter(label => label.inGuideline || label.childrenInGuideline);
+                return this.compiledLabels[null]?.filter(label => this.labelsInGuideline.has(label.id) || label.childrenInGuideline);
             }
 
             return this.compiledLabels[null];
@@ -229,9 +229,6 @@ export default {
                 'text-muted': this.collapsed,
                 'collapsible': this.collapsible,
             };
-        },
-        hasGuideline() {
-            return this.labelsInGuideline.size > 0;
         },
     },
     methods: {
@@ -421,10 +418,6 @@ export default {
 
             if (!label.hasOwnProperty('favourite')) {
                 label.favourite = false;
-            }
-
-            if (!label.hasOwnProperty('inGuideline')) {
-                label.inGuideline = this.labelsInGuideline.has(label.id);
             }
         });
 
