@@ -112,6 +112,12 @@ export default {
         },
     },
     computed: {
+        guidelinePresent() {
+            return this.labelsInGuideline.length > 0;
+        },
+        inGuideline() {
+            return this.labelsInGuideline.includes(this.label.id);
+        },
         showColor() {
             return !this.expandable || !this.hover;
         },

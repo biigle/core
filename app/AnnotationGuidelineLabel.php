@@ -24,6 +24,7 @@ class AnnotationGuidelineLabel extends Model
         'label' => 'int',
         'shape' => 'int',
         'description' => 'string',
+        'reference_image' => 'boolean',
     ];
 
     /**
@@ -36,6 +37,7 @@ class AnnotationGuidelineLabel extends Model
         'label',
         'shape',
         'description',
+        'reference_image',
     ];
     /**
      * Don't maintain timestamps for this model.

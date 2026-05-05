@@ -19,10 +19,10 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $path = "/api/v1/projects/{$id}/annotation-guideline-label";
         $label1 = Label::factory()->create();
 
-        config(['annotation_guideline.storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
-        $filename = 'test-image-small.jpg';
+        $filename = 'test-image.png';
 
         $fileDir = __DIR__."/../../../../../files/";
         $imageFile = new UploadedFile($fileDir.$filename, $filename, test: true);
@@ -57,7 +57,6 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
                 ->get()
                 ->toArray();
 
-            $disk->assertExists("{$id}/{$label1->id}.jpg");
 
             $expected = [[
                 'id' => $asl[0]['id'],
@@ -65,7 +64,10 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
                 'label' => $label1->id,
                 'shape' => Shape::polygonId(),
                 'description' => 'labelDescription',
+                'reference_image' => true,
             ]];
+
+            $disk->assertExists("{$id}/{$label1->id}.jpg");
 
             $this->assertEquals($asl, $expected);
 
@@ -124,6 +126,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
                     'label' => $label1->id,
                     'shape' => Shape::polygonId(),
                     'description' => 'labelDescription',
+                    'reference_image' => true,
                 ],
                 [
                     'id' => $asl2[1]['id'],
@@ -131,6 +134,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
                     'label' => $label2->id,
                     'shape' => null,
                     'description' => null,
+                    'reference_image' => true,
                 ],
                 [
                     'id' => $asl2[2]['id'],
@@ -138,6 +142,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
                     'label' => $label3->id,
                     'shape' => Shape::circleId(),
                     'description' => 'aDifferentDescription',
+                    'reference_image' => false,
                 ],
             ];
 
@@ -208,7 +213,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
                 $disk->delete("{$id}/{$label2->id}.jpg");
             }
             if (isset($label3) && $disk->exists("{$id}/{$label3->id}.jpg")) {
-                $disk->delete("{$id}/{$label2->id}.jpg");
+                $disk->delete("{$id}/{$label3->id}.jpg");
             }
         }
     }

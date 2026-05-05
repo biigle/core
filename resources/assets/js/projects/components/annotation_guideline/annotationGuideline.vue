@@ -59,7 +59,6 @@
             <div class="form-group">
                 <div
                     v-if="editingMode || creating"
-                    :class="{ 'has-error': missingDescription }"
                 >
                     <textarea
                         v-model="annotationGuideline.description"
@@ -68,10 +67,6 @@
                         wrap="hard"
                         placeholder="Edit the guideline description here..."
                     ></textarea>
-                    <span v-if="missingDescription" class="help-block"
-                        >
-                        The description of the guideline is missing
-                    </span>
                 </div>
                 <div v-else>
                     <p class="guideline-description-text well">
@@ -82,7 +77,6 @@
             <div  v-if="hasLabelTrees">
                     <annotation-guideline-label
                         :annotation-guideline-labels="annotationGuidelineLabels"
-                        :can-save-guideline="hasDescription"
                         :label-trees="labelTrees"
                         :project-id="projectId"
                         :available-shapes="availableShapes"
@@ -125,10 +119,6 @@ export default {
         creating() {
             return Object.keys(this.annotationGuideline).length === 0;
         },
-        hasDescription() {
-            let description = this.annotationGuideline.description ?? '';
-            return description.trim().length > 0;
-        },
         hasLabelTrees() {
             return this.labelTrees.length > 0;
         },
@@ -138,8 +128,10 @@ export default {
         'annotationGuidelineLabel': "setMightHaveEdited",
     },
     data() {
-        let shapes = biigle.$require('projects.availableShapes');
-        shapes[undefined] = 'None';
+        let shapes = {
+            '': 'None',
+            ...biigle.$require('projects.availableShapes'),
+        };
         return {
             editing: false,
             projectId: biigle.$require('projects.project').id,
@@ -154,21 +146,22 @@ export default {
             mightHaveEdited: false,
             addingNewLabel: false,
             editingMode: false,
-            missingDescription: false,
             labelTrees: biigle.$require('projects.labelTrees'),
             forceSaveLabel: false,
         };
     },
     created() {
-        window.addEventListener('beforeunload', (e) => {
-            if (this.mightHaveEdited) {
-                e.preventDefault();
-                e.returnValue = '';
-                return 'This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.';
+        if (this.isAdmin) {
+            window.addEventListener('beforeunload', (e) => {
+                if (this.mightHaveEdited) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                    return 'This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.';
+                }
+            });
+            if (this.creating) {
+                this.editingMode = true;
             }
-        });
-        if (this.creating) {
-            this.editingMode = true;
         }
     },
     methods: {
@@ -183,6 +176,7 @@ export default {
                     handleErrorResponse,
                 )
                 .finally(this.finishLoading);
+            this.mightHaveEdited = false;
         },
         setEditing() {
             this.editingMode = true;
@@ -196,18 +190,15 @@ export default {
             this.annotationGuideline = responseBody.annotation_guideline;
             this.annotationGuidelineLabels =
                 responseBody.annotation_guideline_labels;
+            this.mightHaveEdited = false;
         },
         addLabel(annotationGuidelineLabel) {
-            if (!this.checkHasDescription()) {
-                return;
-            }
-            let element = 'Label';
             let data = this.generateLabelUpdate(annotationGuidelineLabel);
 
-            //To add a label to a guideline, we need to first create the guideline.
+            //If the user tries to save a label before creating a guideline,
+            // we need to save the strategy first.
             let createAnnotationGuideline = Promise.resolve("");
             if (this.creating) {
-                element = element + " and guideline";
                 createAnnotationGuideline = AnnotationGuideline.save(
                     { id: this.projectId },
                     { description: this.annotationGuideline.description },
@@ -222,8 +213,8 @@ export default {
                     ),
                     this.handleErrorResponse,
                 )
-                .then(() => this.sendSuccessMessage(element), this.handleErrorResponse)
-                .then(this.refreshGuideline)
+                .then(() => this.sendSuccessMessage("Label"), this.handleErrorResponse)
+                .then(() => this.refreshGuideline())
                 .finally(this.finishLoading);
         },
         deleteLabel(id) {
@@ -238,25 +229,14 @@ export default {
             AnnotationGuidelineLabelApi.delete({ id: this.projectId }, { label: id })
                     .catch(this.handleErrorResponse);
 
-            this.annotationGuidelineLabels.splice(
-                this.annotationGuidelineLabels.findIndex(
-                    (agl) => agl.label.id == id,
-            ));
-        },
-        checkHasDescription() {
-            if (!this.hasDescription) {
-                this.missingDescription = true;
-                Messages.warning('Add a description before saving')
-                return false;
+            const index = this.annotationGuidelineLabels.findIndex(
+                (agl) => agl.label.id == id,
+            );
+            if (index !== -1) {
+                this.annotationGuidelineLabels.splice(index, 1);
             }
-            this.missingDescription = false;
-            return true;
         },
         updateAnnotationGuideline() {
-            if (!this.checkHasDescription()) {
-                return;
-            }
-
             this.forceSaveLabel = true;
 
             //Leave some time to save the label
