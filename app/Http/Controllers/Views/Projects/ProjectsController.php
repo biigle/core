@@ -60,7 +60,6 @@ class ProjectsController extends Controller
             ->projects()
             ->wherePivot('pinned', true)
             ->count();
-        $annotationGuideline = AnnotationGuideline::where(['project' => $id])->first();
 
         return view('projects.show.volumes', [
             'project' => $project,
@@ -69,7 +68,6 @@ class ProjectsController extends Controller
             'canPin' => $canPin,
             'activeTab' => 'volumes',
             'volumes' => $volumes,
-            'annotationGuideline' => $annotationGuideline,
         ]);
     }
 }

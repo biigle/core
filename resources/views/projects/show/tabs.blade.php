@@ -22,7 +22,7 @@
         </li>
     @endif
 
-    @if ((($user->can('update', $project) || $user->can('sudo'))) || (isset($annotationGuideline) && $annotationGuideline != null))
+    @if ((($user->can('update', $project) || $user->can('sudo'))) || $project->annotationGuideline()->exists())
         <li role="presentation" @if ($activeTab === 'guideline') class="active" @endif>
             <a href="{{route('annotation-guideline', $project->id)}}" title="See the project guideline"><i class="fa fa-clipboard-list"></i> Guideline</a>
         </li>

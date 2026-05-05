@@ -2,57 +2,22 @@
 
 namespace Biigle;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
- * Model for labels within an annotation guideline.
- *
- * @property int $id
+ * Pivot model for labels within an annotation guideline.
  */
-class AnnotationGuidelineLabel extends Model
+class AnnotationGuidelineLabel extends Pivot
 {
-    use HasFactory;
+    protected $table = 'annotation_guideline_label';
 
     /**
-     * The attributes that should be casted to native types.
+     * The defined shape for this label.
      *
-     * @var array<string, string>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
      */
-    protected $casts = [
-        'annotation_guideline' => 'int',
-        'label' => 'int',
-        'shape' => 'int',
-        'description' => 'string',
-        'reference_image' => 'boolean',
-    ];
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'annotation_guideline',
-        'label',
-        'shape',
-        'description',
-        'reference_image',
-    ];
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
-    /**
-     * The labels that have a guideline for their annotation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
-     */
-    public function label()
+    public function shape()
     {
-        return $this->belongsTo(Label::class, 'label');
+        return $this->belongsTo(Shape::class);
     }
 }

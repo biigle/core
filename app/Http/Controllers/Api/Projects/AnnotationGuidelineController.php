@@ -6,99 +6,121 @@ use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 use Storage;
 
 class AnnotationGuidelineController extends Controller
 {
     /**
-     * Get the annotation guideline for the given project and the associated labels
+     * Get the annotation guideline for the given project.
      *
-     * @api {get} projects/:pid/annotation-guideline Get the annotation guideline for the given project
+     * @api {get} projects/:id/annotation-guidelines Get the annotation guideline
      * @apiGroup Projects
-     * @apiName AnnotationGuideline
-     * @apiParam {Number} id The Project ID
-     * @apiPermission projectAdmin
-     * @apiDescription Returns the annotation guideline and the associated labels
+     * @apiName IndexAnnotationGuideline
+     * @apiParam {Number} id The project ID
+     * @apiPermission projectMember
+     * @apiDescription Returns the annotation guideline with its associated labels.
      *
      * @apiSuccessExample {json} Success response:
-     * {"annotation_guideline":[{
-     *    "id":1,
-     *    "project":2,
-     *    "description":"guideline description"
-     *  }],
-     *  "annotation_guideline_labels" : [{
-     *      "annotation_guideline": 1,
-     *      "label":4,
-     *      "shape":7,
-     *      "description":"description of a label",
-     *      "label":
-     *        {
-     *          "id":4,
-     *          "name":"something else",
-     *        },
-     *  }]}
-     *
+     * {
+     *   "id": 1,
+     *   "project_id": 2,
+     *   "description": "guideline description",
+     *   "labels": [{
+     *     "id": 4,
+     *     "name": "some label",
+     *     "pivot": {
+     *       "annotation_guideline_id": 1,
+     *       "label_id": 4,
+     *       "shape_id": 7,
+     *       "description": "description of a label",
+     *       "reference_image_path": null
+     *     }
+     *   }]
+     * }
      */
     public function index($id)
     {
         $project = Project::findOrFail($id);
-        $this->authorize('update', $project);
-        $guideline = AnnotationGuideline::where(['project'=> $id])
-            ->firstOrFail();
-        $guidelineLabels = $guideline
-            ->guidelineLabels()
-            ->select()
-            ->with('label')
-            ->get();
-        return ['annotation_guideline' => $guideline, 'annotation_guideline_labels' => $guidelineLabels];
+        $this->authorize('access', $project);
 
+        $guideline = $project->annotationGuideline;
+
+        if (!$guideline) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return $guideline->load('labels');
     }
 
     /**
-     * Update the annotation guideline for the given project
+     * Create the annotation guideline for the given project.
      *
-     * @api {post} projects/:pid/annotation-guideline Update the annotation guideline for the given project
+     * @api {post} projects/:id/annotation-guidelines Create the annotation guideline
      * @apiGroup Projects
-     * @apiName AnnotationGuideline
-     * @apiParam {Number} id The Project ID
-     * @apiParam {String} description A description on how to annotate the guideline
+     * @apiName StoreAnnotationGuideline
+     * @apiParam {Number} id The project ID
+     * @apiParam {String} [description] Description of how to annotate.
      * @apiPermission projectAdmin
-     * @apiDescription Edit the annotation guideline associated with the given ID
-     *
-     * @param int $id Project ID
      */
-    public function update(Request $request, int $id)
+    public function store(Request $request, int $id)
     {
+        $project = Project::findOrFail($id);
+        $this->authorize('update', $project);
+
+        if ($project->annotationGuideline()->exists()) {
+            throw ValidationException::withMessages([
+                'id' => 'The project already has an annotation guideline.',
+            ]);
+        }
+
         $request->validate([
             'description' => 'nullable|string|min:1',
         ]);
 
-        $project = Project::findOrFail($id);
-        $this->authorize('update', $project);
-
-        AnnotationGuideline::updateOrCreate(
-            ['project' => $project->id],
-            ['description' =>  $request->description]
-        );
-
+        return AnnotationGuideline::create([
+            'project_id' => $project->id,
+            'description' => $request->description,
+        ]);
     }
 
     /**
-     * Delete the annotation guideline for the given project
+     * Update the annotation guideline.
      *
-     * @api {delete} projects/:pid/annotation-guideline Delete the annotation guideline for the given project
+     * @api {put} annotation-guidelines/:id Update the annotation guideline
      * @apiGroup Projects
-     * @apiName AnnotationGuideline
-     * @apiParam {Number} id The Project ID
+     * @apiName UpdateAnnotationGuideline
+     * @apiParam {Number} id The guideline ID
+     * @apiParam {String} [description] Description of how to annotate.
      * @apiPermission projectAdmin
-     * @apiDescription Delete the annotation guideline associated with the given ID
      */
-    public function delete(Request $request)
+    public function update(Request $request, int $id)
     {
-        $project = Project::findOrFail($request->id);
-        $this->authorize('update', $project);
-        $annotationGuideline = AnnotationGuideline::where(['project'=> $project->id])->firstOrFail();
-        $annotationGuideline->delete();
+        $guideline = AnnotationGuideline::findOrFail($id);
+        $this->authorize('update', $guideline->project);
+
+        $request->validate([
+            'description' => 'nullable|string|min:1',
+        ]);
+
+        $guideline->update(['description' => $request->description]);
+    }
+
+    /**
+     * Delete the annotation guideline.
+     *
+     * @api {delete} annotation-guidelines/:id Delete the annotation guideline
+     * @apiGroup Projects
+     * @apiName DestroyAnnotationGuideline
+     * @apiParam {Number} id The guideline ID
+     * @apiPermission projectAdmin
+     */
+    public function destroy(int $id)
+    {
+        $guideline = AnnotationGuideline::findOrFail($id);
+        $this->authorize('update', $guideline->project);
+        $guideline->delete();
 
         //Cleanup the directory
         $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));

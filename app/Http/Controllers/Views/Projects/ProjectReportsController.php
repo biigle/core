@@ -60,8 +60,6 @@ class ProjectReportsController extends Controller
             }
         }
 
-        $annotationGuideline = AnnotationGuideline::where('project', $project->id)->first();
-
         return view('projects.reports', [
             'project' => $project,
             'isMember' => $isMember,
@@ -74,7 +72,6 @@ class ProjectReportsController extends Controller
             'hasVideoVolume' => $hasVideoVolume,
             'labelTrees' => $labelTrees,
             'hasIfdos' => $hasIfdos,
-            'annotationGuideline' => $annotationGuideline,
         ]);
     }
 }

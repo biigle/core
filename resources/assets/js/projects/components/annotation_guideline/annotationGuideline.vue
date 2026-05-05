@@ -117,7 +117,7 @@ export default {
     },
     computed: {
         creating() {
-            return Object.keys(this.annotationGuideline).length === 0;
+            return this.annotationGuideline === null;
         },
         hasLabelTrees() {
             return this.labelTrees.length > 0;
@@ -132,6 +132,7 @@ export default {
             '': 'None',
             ...biigle.$require('projects.availableShapes'),
         };
+
         return {
             editing: false,
             projectId: biigle.$require('projects.project').id,
@@ -187,16 +188,15 @@ export default {
             this.forceSaveLabel = false;
         },
         setAnnotationGuideline(responseBody) {
-            this.annotationGuideline = responseBody.annotation_guideline;
-            this.annotationGuidelineLabels =
-                responseBody.annotation_guideline_labels;
+            this.annotationGuideline = responseBody;
+            this.annotationGuidelineLabels = responseBody.labels;
             this.mightHaveEdited = false;
         },
         addLabel(annotationGuidelineLabel) {
             let data = this.generateLabelUpdate(annotationGuidelineLabel);
 
-            //If the user tries to save a label before creating a guideline,
-            // we need to save the strategy first.
+            // If the user tries to save a label before creating a guideline,
+            // we need to save the guideline first.
             let createAnnotationGuideline = Promise.resolve("");
             if (this.creating) {
                 createAnnotationGuideline = AnnotationGuideline.save(
@@ -241,8 +241,8 @@ export default {
 
             //Leave some time to save the label
             setTimeout(
-                () => AnnotationGuideline.save(
-                    { id: this.projectId },
+                () => AnnotationGuideline.update(
+                    { id: this.annotationGuideline.id },
                     { description: this.annotationGuideline.description },
                 )
                 .then(this.refreshGuideline)
@@ -287,7 +287,7 @@ export default {
 
             this.mightHaveEdited = false;
 
-            AnnotationGuideline.delete({ id: this.projectId }, {}).then(
+            AnnotationGuideline.delete({ id: this.annotationGuideline.id }, {}).then(
                 this.reloadPage,
                 handleErrorResponse,
             );

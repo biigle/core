@@ -28,6 +28,16 @@ class AnnotationGuidelineController extends Controller
             $this->authorize('access', $project);
         }
 
+        $isAdmin = $user->can('update', $project);
+
+        $annotationGuideline = $project->annotationGuideline;
+
+        if ($annotationGuideline) {
+            $annotationGuideline->load('labels');
+        } else if (!$isAdmin) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
         $isPinned = $isMember && $userProject->getRelationValue('pivot')->pinned;
@@ -36,43 +46,14 @@ class AnnotationGuidelineController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
-        $annotationGuideline = AnnotationGuideline::where(['project' => $id])->first();
-
-        $isAdmin = $user->can('update', $project);
-
         $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
 
         $shapes = Shape::pluck('name', 'id');
 
-        if (!$annotationGuideline) {
-            if ($isAdmin) {
-                return view('projects.show.annotation-guideline', [
-                    'project' => $project,
-                    'user' => $user,
-                    'annotationGuideline' => [],
-                    'annotationGuidelineLabels' => [],
-                    'isMember' => $isMember,
-                    'isAdmin' => $isAdmin,
-                    'isPinned' => $isPinned,
-                    'canPin' => $canPin,
-                    'activeTab' => 'guideline',
-                    'labelTrees' => $labelTrees,
-                    'availableShapes' => $shapes,
-                ]);
-            }
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
-        $annotationGuidelineLabels = $annotationGuideline->guidelineLabels()
-            ->with('label')
-            ->get()
-            ->toArray();
-
         return view('projects.show.annotation-guideline', [
             'project' => $project,
-            'annotationGuideline' => $annotationGuideline->toArray(),
-            'annotationGuidelineLabels' => $annotationGuidelineLabels,
             'user' => $user,
+            'annotationGuideline' => $annotationGuideline,
             'isMember' => $isMember,
             'isAdmin' => $isAdmin,
             'isPinned' => $isPinned,

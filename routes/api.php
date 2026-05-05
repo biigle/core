@@ -284,16 +284,14 @@ $router->get('projects/{id}/label-count', [
     'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
 ]);
 
-$router->get('projects/{id}/annotation-guideline', [
-    'uses' => 'Projects\AnnotationGuidelineController@index',
+$router->resource('projects.annotation-guidelines', 'Projects\AnnotationGuidelineController', [
+    'only' => ['index', 'store',],
+    'parameters' => ['projects' => 'id'],
 ]);
 
-$router->post('projects/{id}/annotation-guideline', [
-    'uses' => 'Projects\AnnotationGuidelineController@update',
-]);
-
-$router->delete('projects/{id}/annotation-guideline', [
-    'uses' => 'Projects\AnnotationGuidelineController@delete',
+$router->resource('annotation-guidelines', 'Projects\AnnotationGuidelineController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['annotation-guidelines' => 'id'],
 ]);
 
 $router->post('projects/{id}/annotation-guideline-label', [

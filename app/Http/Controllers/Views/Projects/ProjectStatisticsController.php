@@ -38,8 +38,6 @@ class ProjectStatisticsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $annotationGuideline = AnnotationGuideline::where('project', $project->id)->first();
-
         $totalImages = Image::whereIn('images.volume_id', fn ($query) => $query->select('volume_id')
             ->from('project_volume')
             ->where('project_id', $project->id))->count();
@@ -68,7 +66,6 @@ class ProjectStatisticsController extends Controller
             'canPin' => $canPin,
             'activeTab' => 'charts',
             'volumes' => $volumes,
-            'annotationGuideline' => $annotationGuideline,
             // IMAGES
             'annotatedImages' => $imageVolumeStatistics['annotatedFiles'],
             'annotationLabels' => $imageVolumeStatistics['annotationLabels'],

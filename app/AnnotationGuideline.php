@@ -21,21 +21,14 @@ class AnnotationGuideline extends Model
      */
     protected $casts = [
         'id' => 'int',
-        'project' => 'int',
+        'project_id' => 'int',
         'description' => 'string',
     ];
 
     protected $fillable = [
-        'project',
+        'project_id',
         'description',
     ];
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * The project this guideline belongs to.
@@ -44,16 +37,18 @@ class AnnotationGuideline extends Model
      */
     public function project()
     {
-        return $this->belongsTo(Project::class, 'project');
+        return $this->belongsTo(Project::class);
     }
 
     /**
      * The labels within this guideline.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationGuidelineLabel, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Label, $this>
      */
-    public function guidelineLabels()
+    public function labels()
     {
-        return $this->hasMany(AnnotationGuidelineLabel::class, 'annotation_guideline');
+        return $this->belongsToMany(Label::class)
+            ->using(AnnotationGuidelineLabel::class)
+            ->withPivot('shape_id', 'description', 'reference_image_path');
     }
 }
