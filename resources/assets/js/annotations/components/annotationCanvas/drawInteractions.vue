@@ -112,7 +112,7 @@ export default {
 
                 drawInteraction.on('drawstart', (event) => {
                     this.drawEnded = false;
-                    
+
                     if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
                         event.feature.set('color', this.selectedLabel.color);
                     }
@@ -189,7 +189,7 @@ export default {
             if (this.isDrawing && !label && !this.labelbotIsActive) {
                 this.resetInteractionMode();
             }
-            
+
             this.updateDraftAnnotationColor(label);
         },
         draftAnnotationUsesLabelColor() {

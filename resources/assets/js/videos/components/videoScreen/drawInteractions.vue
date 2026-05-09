@@ -203,7 +203,7 @@ export default {
 
                     this.drawInteraction.on('drawstart', (event) => {
                         this.drawEnded = false;
-                        
+
                         if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
                             event.feature.set('color', this.selectedLabel.color);
                         }
