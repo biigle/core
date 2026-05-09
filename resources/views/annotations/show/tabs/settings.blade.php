@@ -84,7 +84,6 @@
                     </power-toggle>
             </div>
         @endcan
-        
         <div class="sidebar-tab__section">
             <power-toggle
                 :active="draftAnnotationUsesLabelColor"
