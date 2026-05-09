@@ -166,12 +166,34 @@ export default {
 
             return never;
         },
+        updateDraftAnnotationColor(label) {
+            if (!drawInteraction) {
+                return;
+            }
+
+            const overlay = drawInteraction.getOverlay();
+            const source = overlay && overlay.getSource();
+            const features = source ? source.getFeatures() : [];
+
+            features.forEach((feature) => {
+                if (label && label.color && this.draftAnnotationUsesLabelColor) {
+                    feature.set('color', label.color);
+                } else {
+                    feature.unset('color');
+                }
+            });
+        },
     },
     watch: {
         selectedLabel(label) {
             if (this.isDrawing && !label && !this.labelbotIsActive) {
                 this.resetInteractionMode();
             }
+            
+            this.updateDraftAnnotationColor(label);
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updateDraftAnnotationColor(this.selectedLabel);
         },
         interactionMode(mode) {
             this.maybeUpdateDrawInteractionMode(mode)
