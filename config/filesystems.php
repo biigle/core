@@ -96,8 +96,8 @@ return [
 
         'annotation-guideline' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/annotation-guideline-reference-images'),
-            'url' => env('APP_URL').'/storage/annotation-guideline-reference-images',
+            'root' => storage_path('app/public/annotation-guidelines'),
+            'url' => env('APP_URL').'/storage/annotation-guidelines',
             'visibility' => 'public',
         ],
     ],

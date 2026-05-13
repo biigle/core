@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests;
 
+use Biigle\AnnotationGuideline;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
@@ -346,5 +347,12 @@ class ProjectTest extends ModelTestCase
         $this->assertFalse($this->model->pendingVolumes()->exists());
         PendingVolume::factory(['project_id' => $this->model->id])->create();
         $this->assertTrue($this->model->pendingVolumes()->exists());
+    }
+
+    public function testAnnotationGuideline()
+    {
+        $this->assertFalse($this->model->annotationGuideline()->exists());
+        AnnotationGuideline::factory(['project_id' => $this->model->id])->create();
+        $this->assertTrue($this->model->annotationGuideline()->exists());
     }
 }

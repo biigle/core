@@ -3,56 +3,33 @@
 namespace Biigle;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Storage;
 
 /**
- * Model for labels within an annotation guideline.
- *
- * @property int $id
+ * Pivot model for labels within an annotation guideline.
  */
-class AnnotationGuidelineLabel extends Model
+class AnnotationGuidelineLabel extends Pivot
 {
     use HasFactory;
 
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'annotation_guideline' => 'int',
-        'label' => 'int',
-        'shape' => 'int',
-        'description' => 'string',
-        'reference_image' => 'boolean',
-    ];
+    protected $table = 'annotation_guideline_label';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'annotation_guideline',
-        'label',
-        'shape',
-        'description',
-        'reference_image',
-    ];
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
-    /**
-     * The labels that have a guideline for their annotation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
-     */
-    public function label()
+    protected static function booted(): void
     {
-        return $this->belongsTo(Label::class, 'label');
+        static::deleting(function (self $guidelineLabel) {
+            Storage::disk(config('projects.annotation_guideline_storage_disk'))
+                ->delete("{$guidelineLabel->annotation_guideline_id}/{$guidelineLabel->uuid}");
+        });
+    }
+
+    /**
+     * The defined shape for this label.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
+     */
+    public function shape()
+    {
+        return $this->belongsTo(Shape::class);
     }
 }

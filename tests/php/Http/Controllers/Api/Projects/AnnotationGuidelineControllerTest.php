@@ -11,139 +11,159 @@ use Storage;
 
 class AnnotationGuidelineControllerTest extends ApiTestCase
 {
+    public function testIndexRequiresMembership()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->doTestApiRoute('GET', $path);
+
+        $this->beUser();
+        $this->get($path)->assertStatus(403);
+
+        $this->beGuest();
+        $this->get($path)->assertStatus(404);
+    }
+
     public function testIndex()
     {
         $id = $this->project()->id;
-        $path = "/api/v1/projects/{$id}/annotation-guideline";
-        $this->doTestApiRoute('GET', $path);
+        $guideline = AnnotationGuideline::factory()->create(['project_id' => $id]);
+        $label = Label::factory()->create();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+            'shape_id' => Shape::polygonId(),
+            'description' => 'labelDescription',
+        ]);
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
 
         $this->beGuest();
         $this->get($path)
-            ->assertStatus(403);
+            ->assertStatus(200)
+            ->assertJson([
+                'labels' => [[
+                    'id' => $label->id,
+                    'pivot' => [
+                        'shape_id' => Shape::polygonId(),
+                        'description' => 'labelDescription',
+                    ],
+                ]],
+            ]);
+    }
 
-        $this->beUser();
-        $this->get($path)
-            ->assertStatus(403);
+    public function testStoreRequiresAdmin()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->doTestApiRoute('POST', $path);
 
         $this->beEditor();
-        $this->get($path)
-            ->assertStatus(403);
+        $this->json('POST', $path, ['description' => 'someDescription'])->assertStatus(403);
 
         $this->beAdmin();
-        $this->get($path)
-            ->assertStatus(404);
+        $this->json('POST', $path, ['description' => 'someDescription'])->assertStatus(201);
+    }
 
-        $as1 = AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
+    public function testStore()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
 
-        $this->get($path)
-            ->assertStatus(200)
-            ->assertJson(
-                [
-                    'annotation_guideline' =>
-                        ['id' => $as1->id, 'project' => $id, 'description' => 'someDescription'],
-                    'annotation_guideline_labels' => [],
-                ]
-            );
-        $label = Label::factory()->create();
+        $this->beAdmin();
+        $this->json('POST', $path, ['description' => 'someDescription'])->assertStatus(201);
 
-        $asl1 = AnnotationGuidelineLabel::create(
-            [
-                'annotation_guideline' => $as1->id,
-                'label' => $label->id,
-                'shape' => Shape::polygonId(),
-                'description' => 'labelDescription',
-                'reference_image' => false,
-            ]
-        );
+        $guideline = $this->project()->annotationGuideline;
+        $this->assertSame($id, $guideline->project_id);
+        $this->assertSame('someDescription', $guideline->description);
+    }
 
-        $this->get($path)
-            ->assertStatus(200)
-            ->assertJson(
-                [
-                    'annotation_guideline' =>
-                        ['id' => $as1->id, 'project' => $id, 'description' => 'someDescription'],
-                    'annotation_guideline_labels' => [[
-                        'description' => 'labelDescription',
-                        'label' => $label->toArray(),
-                        'shape' => Shape::polygonId(),
-                    ]],
-                ]
-            );
+    public function testStoreFailsIfGuidelineExists()
+    {
+        $id = $this->project()->id;
+        AnnotationGuideline::factory()->create(['project_id' => $id]);
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->beAdmin();
+        $this->json('POST', $path, ['description' => 'someDescription'])->assertStatus(422);
+    }
+
+    public function testUpdateRequiresAdmin()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->doTestApiRoute('PUT', $path);
+
+        $this->beEditor();
+        $this->json('PUT', $path, ['description' => 'new'])->assertStatus(403);
+
+        $this->beAdmin();
+        $this->json('PUT', $path, ['description' => 'new'])->assertStatus(200);
     }
 
     public function testUpdate()
     {
-        $id = $this->project()->id;
-        $path = "/api/v1/projects/{$id}/annotation-guideline";
-        $this->doTestApiRoute('POST', $path);
-
-        $data = ['description' => 'someDescription'];
-
-        $this->beGuest();
-        $this->json('POST', $path, $data)
-            ->assertStatus(403);
-
-        $this->beUser();
-        $this->json('POST', $path, $data)
-            ->assertStatus(403);
-
-        $this->beEditor();
-        $this->json('POST', $path, $data)
-            ->assertStatus(403);
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'description' => 'old',
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
         $this->beAdmin();
-        $this->json('POST', $path, $data)
-            ->assertStatus(200);
+        $this->json('PUT', $path, ['description' => 'new'])->assertStatus(200);
+        $this->assertSame('new', $guideline->fresh()->description);
 
-        $as1 = AnnotationGuideline::where(['project' => $id])->first();
-
-        $this->assertSame($as1->project, $id);
-        $this->assertSame($as1->description, 'someDescription');
-
-        $this->json('POST', $path, ['project' => $id, 'description' => 'someNewDescription'])
-            ->assertStatus(200);
-
-        $as2 = AnnotationGuideline::where(['project' => $id])->first();
-
-        $this->assertSame($as2->id, $as1->id);
-        $this->assertSame($as2->project, $id);
-        $this->assertSame($as2->description, 'someNewDescription');
+        $this->json('PUT', $path, ['description' => null])->assertStatus(200);
+        $this->assertNull($guideline->fresh()->description);
     }
 
-    public function testDelete()
+    public function testDestroyRequiresAdmin()
     {
-        $id = $this->project()->id;
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->doTestApiRoute('DELETE', $path);
+
+        $this->beEditor();
+        $this->delete($path)->assertStatus(403);
+
+        $this->beAdmin();
+        $this->delete($path)->assertStatus(200);
+    }
+
+    public function testDestroy()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->delete($path)->assertStatus(200);
+
+        $this->assertNull($guideline->fresh());
+    }
+
+    public function testDestroyDeletesStorageDirectory()
+    {
         config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
-        $path = "/api/v1/projects/{$id}/annotation-guideline";
-        $this->doTestApiRoute('DELETE', $path);
-
-        $this->beGuest();
-        $this->delete($path)
-            ->assertStatus(403);
-
-        $this->beUser();
-        $this->delete($path)
-            ->assertStatus(403);
-
-        $this->beEditor();
-        $this->delete($path)
-            ->assertStatus(403);
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $disk->put("{$guideline->id}/reference.png", 'content');
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
         $this->beAdmin();
-        $this->delete($path)
-            ->assertStatus(404);
+        $this->delete($path)->assertStatus(200);
 
-        AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
-
-        //We also test that the files are cleared
-        $disk->put("$id/somefile.png", 'content');
-
-        $this->delete($path)
-            ->assertStatus(200);
-
-        $this->assertEmpty(AnnotationGuideline::where(['project' => $id])->first());
-        $disk->assertMissing("$id/somefile.png");
+        $disk->assertMissing("{$guideline->id}/reference.png");
     }
 }

@@ -5,7 +5,6 @@
     biigle.$declare('projects.labelTrees', @json($labelTrees));
     biigle.$declare('projects.availableShapes', @json($availableShapes));
     biigle.$declare('projects.annotationGuideline', @json($annotationGuideline));
-    biigle.$declare('projects.annotationGuidelineLabels', @json($annotationGuidelineLabels));
     biigle.$declare('projects.annotationGuidelineLabelsBaseUrl', "{!! Storage::disk(config('projects.annotation_guideline_storage_disk'))->url("$project->id") !!}");
 </script>
 @endpush
