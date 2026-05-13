@@ -169,6 +169,9 @@
             The example annotations switch allows you to enable or disable the example annotation patches that are displayed in the <i class="fa fa-tags"></i> label trees tab.
         </p>
 
+        <p>
+            The draft annotation color switch enables using the selected label's color for the draft annotation. If disabled, a neutral default color is used for draft annotations. 
+        </p>
 
         @mixin('annotationsManualSidebarSettings')
     </div>

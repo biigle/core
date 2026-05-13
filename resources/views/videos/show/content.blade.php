@@ -65,6 +65,7 @@
       :labelbot-overlays="labelbotOverlays"
       :focused-popup-key="focusedPopupKey"
       :labelbot-timeout="labelbotTimeout"
+      :draft-annotation-uses-label-color="settings.draftAnnotationUsesLabelColor"
       v-on:swap="swapAnnotationLabelTo"
       v-on:close-labelbot-popup="closeLabelbotPopup"
       v-on:init-map="handleInitMap"

@@ -85,6 +85,7 @@ export default {
             showMinimap: true,
             showScaleLine: false,
             showExampleAnnotations: true,
+            draftAnnotationUsesLabelColor: true,
             imagesArea: null,
             openTab: null,
             userUpdatedVolareResolution: false,
@@ -588,6 +589,9 @@ export default {
                     break;
                 case 'exampleAnnotations':
                     this.showExampleAnnotations = value;
+                    break;
+                case 'draftAnnotationUsesLabelColor':
+                    this.draftAnnotationUsesLabelColor = value;
                     break;
             }
         },

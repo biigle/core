@@ -61,6 +61,7 @@ export default {
                 'muteVideo',
                 'singleAnnotation',
                 'labelbotTimeout',
+                'draftAnnotationUsesLabelColor',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -78,6 +79,7 @@ export default {
             autoPauseMax: AUTO_PAUSE_INDEFINITE,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
+            draftAnnotationUsesLabelColor: true,
         };
     },
     computed: {
@@ -154,6 +156,12 @@ export default {
                 this.annotationOpacity = 1;
             }
         },
+        showDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = true;
+        },
+        hideDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = false;
+        }
     },
     watch: {
         annotationOpacity(value) {
@@ -220,6 +228,10 @@ export default {
         singleAnnotation(show) {
             this.$emit('update', 'singleAnnotation', show);
             Settings.set('singleAnnotation', show);
+        },
+        draftAnnotationUsesLabelColor(show) {
+            this.$emit('update', 'draftAnnotationUsesLabelColor', show);
+            Settings.set('draftAnnotationUsesLabelColor', show);
         },
     },
     created() {

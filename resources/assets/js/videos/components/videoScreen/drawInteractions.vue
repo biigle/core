@@ -201,8 +201,12 @@ export default {
 
                     this.map.addInteraction(this.drawInteraction);
 
-                    this.drawInteraction.on('drawstart', () => {
+                    this.drawInteraction.on('drawstart', (event) => {
                         this.drawEnded = false;
+
+                        if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
+                            event.feature.set('color', this.selectedLabel.color);
+                        }
                     });
                     this.drawInteraction.on('drawend', (e) => {
                         this.extendPendingAnnotation(e);
@@ -360,6 +364,24 @@ export default {
 
             this.drawInteraction.updateSnapshot();
         },
+        updateDraftAnnotationColor(label) {
+            if (!this.drawInteraction) {
+                return;
+            }
+
+            const overlay = this.drawInteraction.getOverlay();
+            const source = overlay && overlay.getSource();
+            let features = source ? source.getFeatures() : [];
+            features.push(...this.pendingAnnotationSource.getFeatures());
+
+            features.forEach((feature) => {
+                if (label && label.color && this.draftAnnotationUsesLabelColor) {
+                    feature.set('color', label.color);
+                } else {
+                    feature.unset('color');
+                }
+            });
+        },
     },
     watch: {
         mapReadyRevision: {
@@ -375,6 +397,12 @@ export default {
                 this.video.removeEventListener('seeked', this.updateMagicWandSnapshot);
             }
         },
+        selectedLabel(label) {
+            this.updateDraftAnnotationColor(label);
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updateDraftAnnotationColor(this.selectedLabel);
+        }
     },
     created() {
         if (this.canAdd) {
