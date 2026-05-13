@@ -102,5 +102,13 @@
             Finally, project admins can delete a project with a click on <button class="btn btn-default btn-xs">Delete</button> in the <button class="btn btn-default btn-xs"><i class="fa fa-cog"></i> <span class="caret"></span></button> dropdown menu. This will detach all label trees and volumes from the project. All volumes that are not attached to another project will be deleted. Be very careful when you want to delete a project since you can destroy lots of annotations with a single action!
         </p>
 
+        <h3><a name="annotation-guideline"></a><i class="fa fa-clipboard-list"></i> Annotation guideline</h3>
+
+        <p>
+            The annotation guideline tab contains the annotation guideline applied to its project. Each project can have only one guideline, which consists of a description and optional label instructions. Label instructions can include a description, a preferred shape, and a reference image for each label.
+        </p>
+        <p>
+            Annotation guidelines can be viewed by any user with project access, but can only be created or modified by admins. To create a guideline, click the tab, enter a description, and save it using the <button class="btn btn-default btn-xs btn-success"><span class="fa fa-check"></span> Save guideline</button> button. To remove the guideline entirely, click the <button class="btn btn-default btn-danger btn-xs"><span class="fa fa-trash"></span> Delete guideline</button> button. To add a label to the guideline, click on it below the guideline description; this allows you to enter a description, select a preferred shape, and upload a reference image for that label. Save the label using the <button class="btn btn-default btn-xs btn-success"><span class="fa fa-check"></span> Save label</button> button, or remove it with the <button class="btn btn-default btn-danger btn-xs"><span class="fa fa-trash"></span> Delete label</button> button.
+        </p>
     </div>
 @endsection

@@ -43,6 +43,8 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
+                :labels-in-guideline="labelsInGuideline"
+                :filter-by-guideline="filterByGuideline"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -149,6 +151,14 @@ export default {
             type: Boolean,
             default: false,
         },
+        labelsInGuideline: {
+            type: Set,
+            default: () => new Set(),
+        },
+        filterByGuideline: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         labelMap() {
@@ -186,11 +196,23 @@ export default {
                         label.open = false;
                     }
                 });
+
+                const hasChildrenInGuideline = (children) => {
+                    return children?.some(child => this.labelsInGuideline.has(child.id) || hasChildrenInGuideline(child.children));
+                };
+
+                this.labels.forEach(function (label) {
+                    label.childrenInGuideline = hasChildrenInGuideline(label.children);
+                });
             }
 
             return compiled;
         },
         rootLabels() {
+            if (this.filterByGuideline) {
+                return this.compiledLabels[null]?.filter(label => this.labelsInGuideline.has(label.id) || label.childrenInGuideline);
+            }
+
             return this.compiledLabels[null];
         },
         collapseTitle() {
@@ -385,7 +407,7 @@ export default {
     },
     created() {
         // Set the reactive label properties
-        this.labels.forEach(function (label) {
+        this.labels.forEach((label) => {
             if (!label.hasOwnProperty('open')) {
                 label.open = false;
             }
