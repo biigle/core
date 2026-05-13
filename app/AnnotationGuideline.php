@@ -35,7 +35,7 @@ class AnnotationGuideline extends Model
     {
         static::deleting(function (self $guideline) {
             Storage::disk(config('projects.annotation_guideline_storage_disk'))
-                ->deleteDirectory($guideline->id);
+                ->deleteDirectory("$guideline->id");
         });
     }
 

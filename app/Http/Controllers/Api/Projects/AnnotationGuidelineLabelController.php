@@ -62,7 +62,7 @@ class AnnotationGuidelineLabelController extends Controller
             if (array_key_exists('reference_image', $validated)) {
                 $image = $validated['reference_image'];
                 if ($image) {
-                    $disk->putFileAs($guidelineId, $image, $guidelineLabel->uuid);
+                    $disk->putFileAs("$guidelineId", $image, $guidelineLabel->uuid);
                 } elseif ($disk->exists("{$guidelineId}/{$guidelineLabel->uuid}")) {
                     $disk->delete("{$guidelineId}/{$guidelineLabel->uuid}");
                 }
