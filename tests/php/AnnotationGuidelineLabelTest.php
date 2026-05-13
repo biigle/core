@@ -2,9 +2,7 @@
 
 namespace Biigle\Tests;
 
-use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
-use Biigle\Shape;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use TestCase;

@@ -84,7 +84,9 @@ class AnnotationGuidelineLabelController extends Controller
         $project = Project::findOrFail($request->id);
         $label = Label::findOrFail($request->label);
         $annotationGuideline = AnnotationGuideline::where(['project' => $project->id])->firstOrFail();
-        $annotationGuidelineLabel = $annotationGuideline->guidelineLabels()->where(['label' => $label->id])->firstOrFail();
+        $annotationGuidelineLabel = $annotationGuideline->labels()
+            ->where('label', $label->id)
+            ->firstOrFail();
 
         $this->authorize('update', $project);
 
@@ -113,7 +115,9 @@ class AnnotationGuidelineLabelController extends Controller
         $project = Project::findOrFail($request->id);
         $label = Label::findOrFail($request->label);
         $annotationGuideline = AnnotationGuideline::where(['project' => $project->id])->firstOrFail();
-        $annotationGuidelineLabel = $annotationGuideline->guidelineLabels()->where(['label' => $label->id])->firstOrFail();
+        $annotationGuidelineLabel = $annotationGuideline->labels()
+            ->where('label', $label->id)
+            ->firstOrFail();
 
         $this->authorize('update', $project);
 

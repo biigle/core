@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
-use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Biigle\Role;

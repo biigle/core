@@ -43,7 +43,7 @@ class AnnotationGuideline extends Model
     /**
      * The labels within this guideline.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Label, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Label, $this, AnnotationGuidelineLabel>
      */
     public function labels()
     {

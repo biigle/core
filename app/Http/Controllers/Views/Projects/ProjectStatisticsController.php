@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
-use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
 use Biigle\MediaType;

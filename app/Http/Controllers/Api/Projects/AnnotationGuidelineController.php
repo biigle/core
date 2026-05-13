@@ -124,7 +124,7 @@ class AnnotationGuidelineController extends Controller
 
         //Cleanup the directory
         $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));
-        $url = "$project->id/";
+        $url = "$guideline->project->id/";
         if ($disk->exists($url)) {
             $disk->deleteDirectory($url);
         }

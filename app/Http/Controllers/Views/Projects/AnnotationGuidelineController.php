@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
-use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
 use Biigle\Shape;
@@ -34,7 +33,7 @@ class AnnotationGuidelineController extends Controller
 
         if ($annotationGuideline) {
             $annotationGuideline->load('labels');
-        } else if (!$isAdmin) {
+        } elseif (!$isAdmin) {
             abort(Response::HTTP_NOT_FOUND);
         }
 
