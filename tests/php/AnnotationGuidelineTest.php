@@ -3,8 +3,10 @@
 namespace Biigle\Tests;
 
 use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
+use Storage;
 
 class AnnotationGuidelineTest extends ModelTestCase
 {
@@ -50,14 +52,23 @@ class AnnotationGuidelineTest extends ModelTestCase
     public function testLabels()
     {
         $label = LabelTest::create();
-        $this->model->labels()->attach($label->id);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+        ]);
         $this->assertSame($label->id, $this->model->labels()->first()->id);
     }
 
     public function testLabelsOnDeleteCascade()
     {
+        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        Storage::fake('annotation_storage');
+
         $label = LabelTest::create();
-        $this->model->labels()->attach($label->id);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+        ]);
         $this->model->delete();
         $this->assertFalse($this->model->labels()->exists());
         $this->assertNotNull($label->fresh());

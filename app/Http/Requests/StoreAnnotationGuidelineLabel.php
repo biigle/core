@@ -1,25 +1,18 @@
 <?php
 namespace Biigle\Http\Requests;
 
-use Biigle\Project;
+use Biigle\AnnotationGuideline;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAnnotationGuidelineLabel extends FormRequest
 {
     /**
-     * The project of the annotation guideline
+     * The annotation guideline
      *
-     * @var Project
+     * @var AnnotationGuideline
      */
-    public $project;
-
-    /**
-     * The user making the request.
-     *
-     * @var User
-     */
-    public $user;
+    public $guideline;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -28,9 +21,9 @@ class StoreAnnotationGuidelineLabel extends FormRequest
      */
     public function authorize()
     {
-        $this->project = Project::findOrFail($this->route('id'));
+        $this->guideline = AnnotationGuideline::findOrFail($this->route('id'));
 
-        return $this->user()->can('update', $this->project);
+        return $this->user()->can('update', $this->guideline);
     }
 
     /**
@@ -41,10 +34,16 @@ class StoreAnnotationGuidelineLabel extends FormRequest
     public function rules(): array
     {
         return [
-            'label' => ['required', 'integer'],
+            'label_id' => ['required', 'integer', 'exists:labels,id'],
             'description' => ['nullable', 'string'],
-            'shape' => ['nullable', 'integer'],
-            'reference_image' => ['nullable', 'file', 'mimes:jpg,png,webp', 'max:5120', 'dimensions:max_width=300,max_height=300'],
+            'shape_id' => ['nullable', 'integer', 'exists:shapes,id'],
+            'reference_image' => [
+                'nullable',
+                'file',
+                'mimes:jpg,png,webp',
+                'max:5120',
+                'dimensions:max_width=300,max_height=300',
+            ],
         ];
     }
 }

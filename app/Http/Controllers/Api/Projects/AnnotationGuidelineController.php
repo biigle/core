@@ -8,7 +8,6 @@ use Biigle\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
-use Storage;
 
 class AnnotationGuidelineController extends Controller
 {
@@ -121,12 +120,5 @@ class AnnotationGuidelineController extends Controller
         $guideline = AnnotationGuideline::findOrFail($id);
         $this->authorize('update', $guideline->project);
         $guideline->delete();
-
-        //Cleanup the directory
-        $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));
-        $url = "$guideline->project->id/";
-        if ($disk->exists($url)) {
-            $disk->deleteDirectory($url);
-        }
     }
 }

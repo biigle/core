@@ -294,16 +294,9 @@ $router->resource('annotation-guidelines', 'Projects\AnnotationGuidelineControll
     'parameters' => ['annotation-guidelines' => 'id'],
 ]);
 
-$router->post('projects/{id}/annotation-guideline-label', [
-    'uses' => 'Projects\AnnotationGuidelineLabelController@update',
-]);
-
-$router->delete('projects/{id}/annotation-guideline-label', [
-    'uses' => 'Projects\AnnotationGuidelineLabelController@delete',
-]);
-
-$router->delete('projects/{id}/annotation-guideline-label/delete-image', [
-    'uses' => 'Projects\AnnotationGuidelineLabelController@deleteReferenceImage',
+$router->resource('annotation-guidelines.labels', 'Projects\AnnotationGuidelineLabelController', [
+    'only' => ['store', 'destroy'],
+    'parameters' => ['annotation-guidelines' => 'id'],
 ]);
 
 $router->get('public-export/label-trees/{id}', [

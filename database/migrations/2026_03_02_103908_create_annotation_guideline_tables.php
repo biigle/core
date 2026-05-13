@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('annotation_guidelines', function (Blueprint $table) {
             $table->id();
+            $table->timestamps();
             $table->foreignId('project_id')
                 ->constrained()
                 ->onDelete('cascade');
@@ -19,10 +20,11 @@ return new class extends Migration {
             $table->unique('project_id');
 
             $table->text('description')->nullable();
-            $table->timestamps();
         });
 
         Schema::create('annotation_guideline_label', function (Blueprint $table) {
+            $table->timestamps();
+
             $table->foreignId('annotation_guideline_id')
                 ->constrained()
                 ->onDelete('cascade');
@@ -36,8 +38,8 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('set null');
 
+            $table->uuid('uuid');
             $table->text('description')->nullable();
-            $table->string('reference_image_path')->nullable();
 
             $table->index('annotation_guideline_id');
             $table->unique(['annotation_guideline_id', 'label_id']);
