@@ -19,12 +19,6 @@ export default {
             required: true,
         },
     },
-    data() {
-        return {
-            targetWidth: 100,
-            leadingDigits: [1, 2, 5],
-        };
-    },
     computed: {
         scaleLineProperties() {
             return new ScaleLineProperties(this.resolution, this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
