@@ -57,7 +57,6 @@ export default {
     },
     methods: {
         download(blob) {
-            // TODO Add scale bar
             let a = document.createElement('a');
             a.style = 'display: none';
             a.download = this.filename;
@@ -76,21 +75,16 @@ export default {
                 this.map.renderSync();
             }
         },
-        makeBlob(canvas) {
-            try {
-                canvas = trimCanvas(canvas);
-            } catch (error) {
-                return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
-            }
-            
-            const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
+        drawScaleLine(canvas) {
             const ratio = window.devicePixelRatio;
-            const width = scaleLineProperties.width() * window.devicePixelRatio;
-            
-            const ctx = canvas.getContext('2d');
             const height = 4 * ratio;
             const x = 10 * ratio;
             const y = canvas.height - 10 * ratio - height;
+            
+            const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
+            const width = scaleLineProperties.width() * ratio;
+            
+            const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#000';
             ctx.fillRect(x, y, width, height);
             ctx.fillStyle = '#FFF';
@@ -99,7 +93,6 @@ export default {
             const fontSize = 12 * ratio;
             ctx.font = `${fontSize}px sans-serif`;
             ctx.fillStyle = '#200';
-            
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             
@@ -112,6 +105,17 @@ export default {
             
             ctx.fillStyle = '#FFF';
             ctx.fillText(scaleLineProperties.text(), centerX, textY);
+        },
+        makeBlob(canvas) {
+            try {
+                canvas = trimCanvas(canvas);
+            } catch (error) {
+                return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+            }
+            
+            if(this.image && this.hasArea) {
+                this.drawScaleLine(canvas);
+            }
 
             let type = 'image/png';
             if (!HTMLCanvasElement.prototype.toBlob) {

@@ -7,10 +7,12 @@
 export default {
     props: {
         image: {
-            required: true,
+            type: Object,
+            default: null
         },
         areas: {
-            required: true,
+            type: Object,
+            default: null
         },
     },
     data() {
@@ -37,11 +39,6 @@ export default {
             
             return Math.sqrt(this.area / (this.image.width * this.image.height));
         },
-    },
-    methods: {
-        powerOfTen(input) {
-            return Math.pow(10, Math.floor(Math.log10(input)));
-        },
-    },
+    }
 };
 </script>
