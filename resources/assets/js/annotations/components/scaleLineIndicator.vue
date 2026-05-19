@@ -5,6 +5,7 @@
 </template>
 <script>
 import MeasureComponent from '../mixins/measureComponent.vue';
+import { ScaleLineProperties } from '../utils';
 
 /**
  * The scale line indicator of the canvas element
@@ -25,62 +26,17 @@ export default {
         };
     },
     computed: {
-        scale() {
-            return this.targetWidth * this.scaleMultiplier;
-        },
-        scalePowerOfTen() {
-            return this.powerOfTen(this.scale);
-        },
-        scaleMultiplier() {
-            if (this.hasArea) {
-                return this.resolution * this.pxWidthInMeter;
-            }
-
-            return this.resolution || 0;
-        },
-        scaleNearest() {
-            let smallestIndex = 0;
-            let smallestDistance = Infinity;
-            for (let i = this.leadingDigits.length - 1; i >= 0; i--) {
-                let check = this.leadingDigits[i] * this.scalePowerOfTen;
-                if (Math.abs(this.scale - check) < smallestDistance) {
-                    smallestIndex = i;
-                    smallestDistance = Math.abs(this.scale - check);
-                }
-            }
-
-            return this.leadingDigits[smallestIndex] * this.scalePowerOfTen;
-        },
-        unitNearest() {
-            let smallestIndex = 0;
-            let smallestDistance = Infinity;
-            for (let i = this.unitMultipliers.length - 1; i >= 0; i--) {
-                if (Math.abs(this.unitMultipliers[i] - this.scalePowerOfTen) < smallestDistance) {
-                    smallestIndex = i;
-                    smallestDistance = Math.abs(this.unitMultipliers[i] - this.scalePowerOfTen);
-                }
-            }
-
-            return smallestIndex;
+        scaleLineProperties() {
+            return new ScaleLineProperties(this.resolution, this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
         },
         width() {
-            const width = Math.round(this.scaleNearest / this.scaleMultiplier);
-            console.log("component");
-            console.log("width: ", width);
-            console.log("scaleNearest: ", this.scaleNearest);
-            console.log("scaleMultiplier: ", this.scaleMultiplier);
-            
-            return width;
+            return this.scaleLineProperties.width();
         },
         styleObject() {
             return {width: this.width + 'px'};
         },
         text() {
-            if (this.hasArea) {
-                return Math.round(this.scaleNearest / this.unitMultipliers[this.unitNearest]) + ' ' + this.unitNames[this.unitNearest];
-            }
-
-            return Math.round(this.scaleNearest) + ' px';
+            return this.scaleLineProperties.text();
         },
     },
 };

@@ -162,12 +162,7 @@ class ScaleLineProperties
     }
     
     width() {
-        const width = Math.round(this.#scaleNearest() / this.#scaleMultiplier());
-        console.log("class");
-        console.log("width: ", width);
-        console.log("scaleNearest: ", this.#scaleNearest());
-        console.log("scaleMultiplier: ", this.#scaleMultiplier());
-        return width;
+        return Math.round(this.#scaleNearest() / this.#scaleMultiplier());
     }
     
     text() {

@@ -31,6 +31,10 @@ export default {
             return this.area !== -1;
         },
         pxWidthInMeter() {
+            if (!this.hasArea || !this.image) {
+                return null;
+            }
+            
             return Math.sqrt(this.area / (this.image.width * this.image.height));
         },
     },
