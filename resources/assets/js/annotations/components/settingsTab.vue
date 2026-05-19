@@ -35,6 +35,10 @@ export default {
             type: Object,
             default: null,
         },
+        imagesArea: {
+            type: Object,
+            default: null
+        },
         imageFilenames: {
             type: Array,
             default: () => [],

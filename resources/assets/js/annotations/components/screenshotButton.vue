@@ -12,7 +12,8 @@
 import Events from '@/core/events.js';
 import Messages from '@/core/messages/store.js';
 import Keyboard from '@/core/keyboard.js';
-import { trimCanvas } from '../utils';
+import MeasureComponent from '../mixins/measureComponent.vue';
+import { trimCanvas, ScaleLineProperties } from '../utils';
 
 /**
  * A button that produces a screenshot of the map
@@ -20,6 +21,7 @@ import { trimCanvas } from '../utils';
  * @type {Object}
  */
 export default {
+    mixins: [MeasureComponent],
     props: {
         filenames: {
             type: Array,
@@ -80,6 +82,36 @@ export default {
             } catch (error) {
                 return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
+            
+            const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
+            const ratio = window.devicePixelRatio;
+            const width = scaleLineProperties.width() * window.devicePixelRatio;
+            
+            const ctx = canvas.getContext('2d');
+            const height = 4 * ratio;
+            const x = 10 * ratio;
+            const y = canvas.height - 10 * ratio - height;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(x, y, width, height);
+            ctx.fillStyle = '#FFF';
+            ctx.fillRect(x + ratio, y + ratio, width - ratio * 2, height - ratio * 2);
+            
+            const fontSize = 12 * ratio;
+            ctx.font = `${fontSize}px sans-serif`;
+            ctx.fillStyle = '#200';
+            
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            
+            const centerX = x + width / 2;
+            const textY = y - 2 * ratio;
+            
+            ctx.lineWidth = 2 * ratio;
+            ctx.strokeStyle = '#000';
+            ctx.strokeText(scaleLineProperties.text(), centerX, textY);
+            
+            ctx.fillStyle = '#FFF';
+            ctx.fillText(scaleLineProperties.text(), centerX, textY);
 
             let type = 'image/png';
             if (!HTMLCanvasElement.prototype.toBlob) {

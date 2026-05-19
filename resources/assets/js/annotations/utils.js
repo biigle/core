@@ -96,4 +96,88 @@ function trimCanvas(canvas) {
     return copy.canvas;
 }
 
-export {isInvalidShape, clamp, trimCanvas};
+function powerOfTen(value) {
+    return Math.pow(10, Math.floor(Math.log10(value)));
+}
+
+class ScaleLineProperties
+{
+    #targetWidth = 100;
+    #leadingDigits = [1, 2, 5];
+    #resolution;
+    #hasArea;
+    #pxWidthInMeter;
+    #unitMultipliers;
+    #unitNames;
+    
+    constructor(resolution, hasArea, pxWidthInMeter, unitMultipliers, unitNames) {
+        this.#resolution = resolution;
+        this.#hasArea = hasArea;
+        this.#pxWidthInMeter = pxWidthInMeter;
+        this.#unitMultipliers = unitMultipliers;
+        this.#unitNames = unitNames;
+    }
+    
+    #scale() {
+        return this.#targetWidth * this.#scaleMultiplier();
+    }
+    
+    #scalePowerOfTen() {
+        return powerOfTen(this.#scale());
+    }
+    
+    #scaleMultiplier() {
+        if(this.#hasArea) {
+            return this.#resolution * this.#pxWidthInMeter;
+        }
+        
+        return this.#resolution || 0;
+    }
+    
+    #scaleNearest() {
+        let smallestIndex = 0;
+        let smallestDistance = Infinity;
+        for (let i = this.#leadingDigits.length - 1; i >= 0; i--) {
+            let check = this.#leadingDigits[i] * this.#scalePowerOfTen();
+            if (Math.abs(this.#scale() - check) < smallestDistance) {
+                smallestIndex = i;
+                smallestDistance = Math.abs(this.#scale() - check);
+            }
+        }
+
+        return this.#leadingDigits[smallestIndex] * this.#scalePowerOfTen();
+    }
+    
+    #unitNearest() {
+        let smallestIndex = 0;
+        let smallestDistance = Infinity;
+        for (let i = this.#unitMultipliers.length - 1; i >= 0; i--) {
+            if (Math.abs(this.#unitMultipliers[i] - this.#scalePowerOfTen()) < smallestDistance) {
+                smallestIndex = i;
+                smallestDistance = Math.abs(this.#unitMultipliers[i] - this.#scalePowerOfTen());
+            }
+        }
+
+        return smallestIndex;
+    }
+    
+    width() {
+        const width = Math.round(this.#scaleNearest() / this.#scaleMultiplier());
+        console.log("class");
+        console.log("width: ", width);
+        console.log("scaleNearest: ", this.#scaleNearest());
+        console.log("scaleMultiplier: ", this.#scaleMultiplier());
+        return width;
+    }
+    
+    text() {
+        if (this.#hasArea) {
+            const unitNearest = this.#unitNearest();
+            return Math.round(this.#scaleNearest() / this.#unitMultipliers[unitNearest]) + ' ' + this.#unitNames[unitNearest];
+        }
+
+        return Math.round(this.#scaleNearest()) + ' px';
+    }
+}
+
+export {isInvalidShape, clamp, trimCanvas, ScaleLineProperties};

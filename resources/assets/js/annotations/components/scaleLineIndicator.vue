@@ -64,7 +64,13 @@ export default {
             return smallestIndex;
         },
         width() {
-            return Math.round(this.scaleNearest / this.scaleMultiplier);
+            const width = Math.round(this.scaleNearest / this.scaleMultiplier);
+            console.log("component");
+            console.log("width: ", width);
+            console.log("scaleNearest: ", this.scaleNearest);
+            console.log("scaleMultiplier: ", this.scaleMultiplier);
+            
+            return width;
         },
         styleObject() {
             return {width: this.width + 'px'};
