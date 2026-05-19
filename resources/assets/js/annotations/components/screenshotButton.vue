@@ -113,7 +113,7 @@ export default {
                 return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
             
-            if(this.image && this.hasArea) {
+            if (this.image && this.hasArea) {
                 this.drawScaleLine(canvas);
             }
 

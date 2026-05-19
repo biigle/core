@@ -102,59 +102,54 @@ function powerOfTen(value) {
 
 class ScaleLineProperties
 {
-    #targetWidth = 100;
-    #leadingDigits = [1, 2, 5];
-    #resolution;
-    #hasArea;
-    #pxWidthInMeter;
-    #unitMultipliers;
-    #unitNames;
-    
     constructor(resolution, hasArea, pxWidthInMeter, unitMultipliers, unitNames) {
-        this.#resolution = resolution;
-        this.#hasArea = hasArea;
-        this.#pxWidthInMeter = pxWidthInMeter;
-        this.#unitMultipliers = unitMultipliers;
-        this.#unitNames = unitNames;
+        this._resolution = resolution;
+        this._hasArea = hasArea;
+        this._pxWidthInMeter = pxWidthInMeter;
+        this._unitMultipliers = unitMultipliers;
+        this._unitNames = unitNames;
+        
+        this._targetWidth = 100;
+        this._leadingDigits = [1, 2, 5];
     }
     
-    #scale() {
-        return this.#targetWidth * this.#scaleMultiplier();
+    _scale() {
+        return this._targetWidth * this._scaleMultiplier();
     }
     
-    #scalePowerOfTen() {
-        return powerOfTen(this.#scale());
+    _scalePowerOfTen() {
+        return powerOfTen(this._scale());
     }
     
-    #scaleMultiplier() {
-        if(this.#hasArea) {
-            return this.#resolution * this.#pxWidthInMeter;
+    _scaleMultiplier() {
+        if (this._hasArea) {
+            return this._resolution * this._pxWidthInMeter;
         }
         
-        return this.#resolution || 0;
+        return this._resolution || 0;
     }
     
-    #scaleNearest() {
+    _scaleNearest() {
         let smallestIndex = 0;
         let smallestDistance = Infinity;
-        for (let i = this.#leadingDigits.length - 1; i >= 0; i--) {
-            let check = this.#leadingDigits[i] * this.#scalePowerOfTen();
-            if (Math.abs(this.#scale() - check) < smallestDistance) {
+        for (let i = this._leadingDigits.length - 1; i >= 0; i--) {
+            let check = this._leadingDigits[i] * this._scalePowerOfTen();
+            if (Math.abs(this._scale() - check) < smallestDistance) {
                 smallestIndex = i;
-                smallestDistance = Math.abs(this.#scale() - check);
+                smallestDistance = Math.abs(this._scale() - check);
             }
         }
 
-        return this.#leadingDigits[smallestIndex] * this.#scalePowerOfTen();
+        return this._leadingDigits[smallestIndex] * this._scalePowerOfTen();
     }
     
-    #unitNearest() {
+    _unitNearest() {
         let smallestIndex = 0;
         let smallestDistance = Infinity;
-        for (let i = this.#unitMultipliers.length - 1; i >= 0; i--) {
-            if (Math.abs(this.#unitMultipliers[i] - this.#scalePowerOfTen()) < smallestDistance) {
+        for (let i = this._unitMultipliers.length - 1; i >= 0; i--) {
+            if (Math.abs(this._unitMultipliers[i] - this._scalePowerOfTen()) < smallestDistance) {
                 smallestIndex = i;
-                smallestDistance = Math.abs(this.#unitMultipliers[i] - this.#scalePowerOfTen());
+                smallestDistance = Math.abs(this._unitMultipliers[i] - this._scalePowerOfTen());
             }
         }
 
@@ -162,16 +157,16 @@ class ScaleLineProperties
     }
     
     width() {
-        return Math.round(this.#scaleNearest() / this.#scaleMultiplier());
+        return Math.round(this._scaleNearest() / this._scaleMultiplier());
     }
     
     text() {
-        if (this.#hasArea) {
-            const unitNearest = this.#unitNearest();
-            return Math.round(this.#scaleNearest() / this.#unitMultipliers[unitNearest]) + ' ' + this.#unitNames[unitNearest];
+        if (this._hasArea) {
+            const unitNearest = this._unitNearest();
+            return Math.round(this._scaleNearest() / this._unitMultipliers[unitNearest]) + ' ' + this._unitNames[unitNearest];
         }
 
-        return Math.round(this.#scaleNearest()) + ' px';
+        return Math.round(this._scaleNearest()) + ' px';
     }
 }
 
