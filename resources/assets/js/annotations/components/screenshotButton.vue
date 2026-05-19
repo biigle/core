@@ -84,27 +84,35 @@ export default {
             
             const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
             const width = scaleLineProperties.width() * ratio;
-            
             const ctx = canvas.getContext('2d');
+            
+            // black border
             ctx.fillStyle = '#000';
             ctx.fillRect(x, y, width, height);
+            
+            // white line
             ctx.fillStyle = '#FFF';
             ctx.fillRect(x + ratio, y + ratio, width - ratio * 2, height - ratio * 2);
             
+            this.drawCenteredText(canvas, scaleLineProperties.text(), x + width / 2, y - 2 * ratio);
+        },
+        drawCenteredText(canvas, text, centerX, y) {
+            const ratio = window.devicePixelRatio;
+            const ctx = canvas.getContext('2d');
             const fontSize = 12 * ratio;
+            
             ctx.font = `${fontSize}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             
-            const centerX = x + width / 2;
-            const textY = y - 2 * ratio;
-            
+            // black text border
             ctx.lineWidth = 2 * ratio;
             ctx.strokeStyle = '#000';
-            ctx.strokeText(scaleLineProperties.text(), centerX, textY);
+            ctx.strokeText(text, centerX, y);
             
+            // white text
             ctx.fillStyle = '#FFF';
-            ctx.fillText(scaleLineProperties.text(), centerX, textY);
+            ctx.fillText(text, centerX, y);
         },
         makeBlob(canvas) {
             try {
@@ -144,8 +152,14 @@ export default {
             const canvas = e.target
                 .getViewport()
                 .querySelector('.ol-layer canvas, canvas.ol-layer');
+                
+            const clone = document.createElement('canvas');
+            clone.width = canvas.width;
+            clone.height = canvas.height;
+            const ctx = clone.getContext('2d');
+            ctx.drawImage(canvas, 0, 0);
 
-            this.makeBlob(canvas).then(this.download).catch(this.handleError);
+            this.makeBlob(clone).then(this.download).catch(this.handleError);
         },
         handleError(message) {
             Messages.danger(message);
