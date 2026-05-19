@@ -13,6 +13,7 @@ import Events from '@/core/events.js';
 import Messages from '@/core/messages/store.js';
 import Keyboard from '@/core/keyboard.js';
 import MeasureComponent from '../mixins/measureComponent.vue';
+import Settings from '../stores/settings.js';
 import { trimCanvas, ScaleLineProperties } from '../utils';
 
 /**
@@ -92,7 +93,6 @@ export default {
             
             const fontSize = 12 * ratio;
             ctx.font = `${fontSize}px sans-serif`;
-            ctx.fillStyle = '#200';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
             
@@ -113,7 +113,7 @@ export default {
                 return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
             
-            if (this.image && this.hasArea) {
+            if (this.image && this.hasArea && Settings.get('scaleLine')) {
                 this.drawScaleLine(canvas);
             }
 
