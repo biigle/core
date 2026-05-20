@@ -24,6 +24,8 @@
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="_redirect" value="{{ route('project', $project->id) }}">
                             </form>
+                        @else
+                            <a title="You cannot pin more than three projects to the dashboard" href="#">Pin</a>
                         @endif
                     </li>
                 @endif
