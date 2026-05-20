@@ -25,7 +25,7 @@
                                 <input type="hidden" name="_redirect" value="{{ route('project', $project->id) }}">
                             </form>
                         @else
-                            <a title="You cannot pin more than three projects to the dashboard" href="#">Pin</a>
+                            <a title="You cannot pin more than three projects to the dashboard">Pin</a>
                         @endif
                     </li>
                 @endif
