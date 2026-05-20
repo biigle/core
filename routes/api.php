@@ -432,7 +432,7 @@ $router->group([
 
     $router->get('{id}/files/filter/filename/{pattern}', [
         'uses' => 'Filters\FilenameController@index',
-    ]);
+    ])->where('pattern', '.*');
 
     $router->get('{id}/file-labels', [
         'uses' => 'UsedFileLabelsController@index',

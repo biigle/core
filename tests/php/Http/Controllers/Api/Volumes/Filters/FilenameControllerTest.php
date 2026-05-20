@@ -62,14 +62,32 @@ class FilenameControllerTest extends ApiTestCase
     {
         $vid = $this->volume()->id;
 
-        $image = ImageTest::create([
+        $image1 = ImageTest::create([
             'volume_id' => $vid,
             'filename' => 'abcde.jpg',
         ]);
+        $image2 = ImageTest::create([
+            'volume_id' => $vid,
+            'filename' => '/.jpg'
+        ]);
+        $image3 = ImageTest::create([
+            'volume_id' => $vid,
+            'filename' => '%2F.jpg' // encodeURIComponent("/") yields "%2F"
+        ]);
+        
+        $expectedResults = [
+            '*cde*%5C' => [],
+            '%2F.jpg' => [$image2->id], // "/.jpg"
+            '%2F*' => [$image2->id], // "/*"
+            '%25252F.jpg' => [$image3->id], // "%2F.jpg"
+        ];
+        
         $this->beGuest();
-        $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/*cde*%5C")
-            ->assertExactJson([]);
-        $response->assertStatus(200);
+        foreach ($expectedResults as $pattern => $expectedIds) {
+            $response = $this->json('GET', "/api/v1/volumes/{$vid}/files/filter/filename/{$pattern}")
+            ->assertExactJson($expectedIds);
+            $response->assertStatus(200);
+        }
     }
 
     public function testIndexVideo()
