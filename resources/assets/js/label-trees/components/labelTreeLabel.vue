@@ -16,7 +16,7 @@
                     <span class="fa fa-keyboard" aria-hidden="true"></span>
                     <span v-text="actualPosition"></span>
                 </span>
-                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
+                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle" :disabled="!label.favourite && !canHaveMoreFavourites">
                     <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
                 <span if="editable">
@@ -87,6 +87,10 @@ export default {
             type: Number,
             default:-1,
         },
+        canHaveMoreFavourites: {
+            type: Boolean,
+            default: true,
+        },
     },
     computed: {
         showColor() {
@@ -121,6 +125,10 @@ export default {
             };
         },
         favouriteTitle() {
+            if (!this.label.favourite && !this.canHaveMoreFavourites) {
+                return 'You cannot add more than ten favourite labels';
+            }
+            
             return (this.label.favourite ? 'Remove' : 'Add') + ' as favourite';
         },
         editTitle() {
