@@ -28,7 +28,7 @@
             </span>
         </div>
         <ul v-if="expandable && label.open" class="label-tree__list">
-            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" :can-have-more-favourites="canHaveMoreFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
         </ul>
     </li>
 </template>
