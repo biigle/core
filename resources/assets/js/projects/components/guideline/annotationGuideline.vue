@@ -83,10 +83,12 @@
                 </div>
 
                 <button
-                    :disabled="!selectedLabel || loading || !isDirty"
+                    v-show="selectedLabel"
+                    :disabled="!selectedLabel || loading"
                     class="btn btn-success"
+                    :title="isInGuideline ? 'Update this label in the guideline' : 'Add this label to the guideline'"
                     >
-                    Save
+                    <i class="fa fa-clipboard-list"></i> <span v-text="isInGuideline ? 'Update' : 'Add'"></span>
                 </button>
                 <loader :active="loading"></loader>
                 <button
