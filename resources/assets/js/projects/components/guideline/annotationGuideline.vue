@@ -88,6 +88,16 @@
                     >
                     Save
                 </button>
+                <loader :active="loading"></loader>
+                <button
+                    v-show="selectedLabel && isInGuideline"
+                    title="Remove this label from the guideline"
+                    :disabled="loading"
+                    class="btn btn-danger pull-right"
+                    @click.prevent="deleteLabel"
+                    >
+                    Remove
+                </button>
             </form>
         </div>
     </div>
@@ -135,13 +145,15 @@ export default {
         hasLabelTrees() {
             return this.labelTrees.length > 0;
         },
+        isInGuideline() {
+            return this.selectedLabel && this.annotationGuidelineLabels.has(this.selectedLabel.id);
+        },
     },
     watch: {
         selectedLabel(label) {
             this.resetForm();
             const guidelineLabel = this.annotationGuidelineLabels.get(label?.id);
             if (guidelineLabel) {
-                console.log(guidelineLabel);
                 this.labelDescription = guidelineLabel.description || '';
                 this.selectedShape = guidelineLabel.shape_id || null;
                 this.isDirty = false;
@@ -195,6 +207,22 @@ export default {
             this.isDirty = true;
             this.referenceImage = event.target.files[0] || null;
         },
+        deleteLabel() {
+            if (!confirm(`Remove "${this.selectedLabel.name}" from the guideline?`)) {
+                return;
+            }
+
+            this.startLoading();
+            AnnotationGuidelineLabelApi.delete({
+                    id: this.annotationGuideline.id,
+                    labelId: this.selectedLabel.id,
+                })
+                .then(() => {
+                    this.annotationGuidelineLabels.delete(this.selectedLabel.id);
+                    this.selectedLabel = null;
+                }, handleErrorResponse)
+                .finally(this.finishLoading);
+        },
         saveLabel() {
             let formData = new FormData();
             formData.append('label_id', this.selectedLabel.id);
@@ -235,6 +263,5 @@ export default {
 <style scoped>
 :deep(.label-trees__body) {
     max-height: 600px;
-
 }
 </style>
