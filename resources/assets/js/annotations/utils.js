@@ -169,7 +169,6 @@ class ScaleLineProperties
 
     _formatValue(value) {
         return new Intl.NumberFormat("en-US", {
-            notation: "standard",
             maximumSignificantDigits: 3
         }).format(value);
     }

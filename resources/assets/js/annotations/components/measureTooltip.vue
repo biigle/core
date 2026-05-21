@@ -93,7 +93,6 @@ export default {
         },
         formatMeasurement(measurement, unit, decimals) {
             return new Intl.NumberFormat("en-US", {
-                notation: "standard",
                 maximumSignificantDigits: decimals
             }).format(measurement) + ' ' + unit;
         },
