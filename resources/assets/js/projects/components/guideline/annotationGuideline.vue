@@ -77,6 +77,7 @@
                 <div class="form-group">
                     <label>Reference Image</label>
                     <input type="file" @change="addImage" :disabled="!selectedLabel" />
+                    <img v-if="referenceImagePreview" :src="referenceImagePreview" />
                     <p class="help-block">
                         Upload a reference image that helps to identify objects with this label.
                     </p>
@@ -84,7 +85,7 @@
 
                 <button
                     v-show="selectedLabel"
-                    :disabled="!selectedLabel || loading"
+                    :disabled="!canSave"
                     class="btn btn-success"
                     :title="isInGuideline ? 'Update this label in the guideline' : 'Add this label to the guideline'"
                     >
@@ -122,6 +123,14 @@ export default {
             type: Boolean,
             required: true,
         },
+        imageMaxWidth: {
+            type: Number,
+            default: 300,
+        },
+        imageMaxHeight: {
+            type: Number,
+            default: 300,
+        },
     },
     data() {
         return {
@@ -134,6 +143,7 @@ export default {
             labelDescription: '',
             selectedShape: null,
             referenceImage: null,
+            referenceImagePreview: null,
             isDirty: false,
         };
     },
@@ -149,6 +159,9 @@ export default {
         },
         isInGuideline() {
             return this.selectedLabel && this.annotationGuidelineLabels.has(this.selectedLabel.id);
+        },
+        canSave() {
+            return this.selectedLabel && !this.loading && (this.isDirty || !this.annotationGuidelineLabels.has(this.selectedLabel?.id));
         },
     },
     watch: {
@@ -203,11 +216,41 @@ export default {
             this.labelDescription = '';
             this.selectedShape = null;
             this.referenceImage = null;
+            if (this.referenceImagePreview) {
+                URL.revokeObjectURL(this.referenceImagePreview);
+                this.referenceImagePreview = null;
+            }
             this.isDirty = false;
         },
         addImage(event) {
+            const file = event.target.files[0] || null;
+            if (!file) {
+                this.referenceImage = null;
+                return;
+            }
+
             this.isDirty = true;
-            this.referenceImage = event.target.files[0] || null;
+            const url = URL.createObjectURL(file);
+            const img = new Image();
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                let {naturalWidth: w, naturalHeight: h} = img;
+                const widthRatio = this.imageMaxWidth / w;
+                const heightRatio = this.imageMaxHeight / h;
+                const scale = Math.min(1, widthRatio, heightRatio);
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(w * scale);
+                canvas.height = Math.round(h * scale);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((blob) => {
+                    this.referenceImage = new File([blob], file.name, {type: blob.type});
+                    if (this.referenceImagePreview) {
+                        URL.revokeObjectURL(this.referenceImagePreview);
+                    }
+                    this.referenceImagePreview = URL.createObjectURL(blob);
+                }, file.type);
+            };
+            img.src = url;
         },
         deleteLabel() {
             if (!confirm(`Remove "${this.selectedLabel.name}" from the guideline?`)) {
