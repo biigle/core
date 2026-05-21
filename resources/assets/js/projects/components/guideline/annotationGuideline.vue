@@ -44,7 +44,7 @@
                         :disabled="!selectedLabel"
                         class="form-control"
                         maxlength="200"
-                        placeholder=""
+                        @change="isDirty = true"
                     ></textarea>
                     <p class="help-block">
                         Describe how objects with this label can be identified and how they should be annotated.
@@ -54,13 +54,18 @@
                 <div class="form-group">
                     <label>Shape</label>
                     <div class="btn-group btn-group-justified">
-                        <div v-for="shape in availableShapes" class="btn-group">
+                        <div v-for="(shape, shapeId) in availableShapes" class="btn-group">
                             <button
                                 class="btn btn-default"
+                                :class="{'active btn-info': selectedShape == shapeId}"
                                 :title="shape"
                                 :disabled="!selectedLabel"
+                                @click.prevent="selectShape(shapeId)"
                                 >
-                                <i class="icon" :class="`icon-${shape.toLowerCase()}`"></i>
+                                <i
+                                    class="icon"
+                                    :class="[`icon-${shape.toLowerCase()}`, selectedShape == shapeId ? 'icon-white' : '']"
+                                    ></i>
                             </button>
                         </div>
                     </div>
@@ -77,7 +82,10 @@
                     </p>
                 </div>
 
-                <button :disabled="!selectedLabel" class="btn btn-success">
+                <button
+                    :disabled="!selectedLabel || loading || !isDirty"
+                    class="btn btn-success"
+                    >
                     Save
                 </button>
             </form>
@@ -86,18 +94,15 @@
 </div>
 </template>
 <script>
-import AnnotationGuideline from '@/projects/api/annotationGuideline.js';
+import AnnotationGuidelineApi from '@/projects/api/annotationGuideline.js';
 import AnnotationGuidelineLabelApi from '@/projects/api/annotationGuidelineLabel.js';
-import AnnotationGuidelineLabel from './annotationGuidelineLabel.vue';
-import Messages from '@/core/messages/store.js';
+import Messages, { handleErrorResponse } from '@/core/messages/store.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
-import { handleErrorResponse } from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],
     components: {
-        annotationGuidelineLabel: AnnotationGuidelineLabel,
         labelTrees: LabelTrees,
     },
     props: {
@@ -106,11 +111,24 @@ export default {
             required: true,
         },
     },
+    data() {
+        return {
+            labelTrees: biigle.$require('projects.labelTrees'),
+            selectedLabel: null,
+            annotationGuidelineLabels: new Map(),
+            availableShapes: biigle.$require('projects.availableShapes'),
+            projectId: biigle.$require('projects.project').id,
+            annotationGuideline: biigle.$require('projects.annotationGuideline'),
+            labelDescription: '',
+            selectedShape: null,
+            referenceImage: null,
+            isDirty: false,
+        };
+    },
     computed: {
         labelsInGuideline() {
-            return this.annotationGuidelineLabels.map((agl) => agl.label.id);
+            return [...this.annotationGuidelineLabels.keys()];
         },
-
         creating() {
             return this.annotationGuideline === null;
         },
@@ -119,186 +137,96 @@ export default {
         },
     },
     watch: {
-        'annotationGuideline.description': "setMightHaveEdited",
-        'annotationGuidelineLabel': "setMightHaveEdited",
-    },
-    data() {
-        return {
-            labelTrees: biigle.$require('projects.labelTrees'),
-            selectedLabel: null,
-            annotationGuidelineLabels: [],
-            availableShapes: biigle.$require('projects.availableShapes'),
-
-
-            editing: false,
-            projectId: biigle.$require('projects.project').id,
-            annotationGuideline: biigle.$require('projects.annotationGuideline'),
-            description: '',
-            baseUrl: biigle.$require(
-                'projects.annotationGuidelineLabelsBaseUrl',
-            ),
-            mightHaveEdited: false,
-            addingNewLabel: false,
-            editingMode: false,
-            forceSaveLabel: false,
-        };
+        selectedLabel(label) {
+            this.resetForm();
+            const guidelineLabel = this.annotationGuidelineLabels.get(label?.id);
+            if (guidelineLabel) {
+                console.log(guidelineLabel);
+                this.labelDescription = guidelineLabel.description || '';
+                this.selectedShape = guidelineLabel.shape_id || null;
+                this.isDirty = false;
+            }
+        },
     },
     created() {
         if (this.isAdmin) {
             window.addEventListener('beforeunload', (e) => {
-                if (this.mightHaveEdited) {
+                if (this.isDirty) {
                     e.preventDefault();
                     e.returnValue = '';
-                    return 'This page is asking you to confirm that you want to leave — information you’ve entered may not be saved.';
                 }
             });
-            if (this.creating) {
-                this.editingMode = true;
-            }
         }
 
         if (this.annotationGuideline) {
-            this.description = this.annotationGuideline.description;
-            this.annotationGuidelineLabels = this.annotationGuideline.labels;
+            this.annotationGuideline.labels.forEach((label) => {
+                this.annotationGuidelineLabels.set(label.id, label.pivot);
+            });
         }
     },
     methods: {
         selectLabel(label) {
-            this.selectedLabel = label;
+            if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
+                this.saveLabel().then(() => this.selectedLabel = label);
+            } else {
+                this.selectedLabel = label;
+            }
+        },
+        selectShape(id) {
+            this.isDirty = true;
+            this.selectedShape = id;
         },
         deselectLabel() {
-            this.selectedLabel = null;
+            if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
+                this.saveLabel().then(() => {
+                    this.selectedLabel = null;
+                });
+            } else {
+                this.selectedLabel = null;
+            }
         },
-
-
-        setMightHaveEdited() {
-            this.mightHaveEdited = true;
+        resetForm() {
+            this.labelDescription = '';
+            this.selectedShape = null;
+            this.referenceImage = null;
+            this.isDirty = false;
         },
-        refreshGuideline() {
+        addImage(event) {
+            this.isDirty = true;
+            this.referenceImage = event.target.files[0] || null;
+        },
+        saveLabel() {
+            let formData = new FormData();
+            formData.append('label_id', this.selectedLabel.id);
+            formData.append('description', this.labelDescription || '');
+            if (this.selectedShape) {
+                formData.append('shape_id', this.selectedShape);
+            }
+            if (this.referenceImage !== null) {
+                formData.append('reference_image', this.referenceImage);
+            }
+
             this.startLoading();
-            AnnotationGuideline.get({ id: this.projectId }, {})
+            let promise = Promise.resolve();
+            if (this.creating) {
+                promise = AnnotationGuidelineApi.save({ id: this.projectId }, {})
+                    .then(
+                        (response) => { this.annotationGuideline = response.body; },
+                        handleErrorResponse,
+                    );
+            }
+
+            return promise
                 .then(
-                    (response) => this.setAnnotationGuideline(response.body),
+                    () => AnnotationGuidelineLabelApi.save({ id: this.annotationGuideline.id }, formData),
                     handleErrorResponse,
                 )
+                .then((response) => {
+                    const label = response.body;
+                    this.annotationGuidelineLabels.set(label.label_id, label);
+                    this.isDirty = false;
+                }, handleErrorResponse)
                 .finally(this.finishLoading);
-            this.mightHaveEdited = false;
-        },
-        setEditing() {
-            this.editingMode = true;
-        },
-        resetEditing() {
-            this.editingMode = false;
-            this.mightHaveEdited = false;
-            this.forceSaveLabel = false;
-        },
-        setAnnotationGuideline(responseBody) {
-            this.annotationGuideline = responseBody;
-            this.annotationGuidelineLabels = responseBody.labels;
-            this.mightHaveEdited = false;
-        },
-        addLabel(annotationGuidelineLabel) {
-            let data = this.generateLabelUpdate(annotationGuidelineLabel);
-
-            // If the user tries to save a label before creating a guideline,
-            // we need to save the guideline first.
-            let createAnnotationGuideline = Promise.resolve("");
-            if (this.creating) {
-                createAnnotationGuideline = AnnotationGuideline.save(
-                    { id: this.projectId },
-                    { description: this.annotationGuideline.description },
-                )
-            }
-            this.startLoading()
-            createAnnotationGuideline
-                .then(
-                    () => AnnotationGuidelineLabelApi.save(
-                        { id: this.projectId },
-                        data,
-                    ),
-                    this.handleErrorResponse,
-                )
-                .then(() => this.sendSuccessMessage("Label"), this.handleErrorResponse)
-                .then(() => this.refreshGuideline())
-                .finally(this.finishLoading);
-        },
-        deleteLabel(id) {
-            let response = prompt(
-                `This will all the information about this label, including the image. Please enter 'delete' to confirm.`,
-            );
-
-            if (response !== 'delete') {
-                return;
-            }
-
-            AnnotationGuidelineLabelApi.delete({ id: this.projectId }, { label: id })
-                    .catch(this.handleErrorResponse);
-
-            const index = this.annotationGuidelineLabels.findIndex(
-                (agl) => agl.label.id == id,
-            );
-            if (index !== -1) {
-                this.annotationGuidelineLabels.splice(index, 1);
-            }
-        },
-        updateAnnotationGuideline() {
-            this.forceSaveLabel = true;
-
-            //Leave some time to save the label
-            setTimeout(
-                () => AnnotationGuideline.update(
-                    { id: this.annotationGuideline.id },
-                    { description: this.annotationGuideline.description },
-                )
-                .then(this.refreshGuideline)
-                .then(() => this.sendSuccessMessage("Guideline"))
-                .then(this.resetEditing)
-                .finally(this.finishLoading),
-                500
-            )
-        },
-        sendSuccessMessage(element) {
-            Messages.success(element + ' saved.');
-        },
-        generateLabelUpdate(agl) {
-            let formData = new FormData();
-
-            formData.append(`label`, agl.label.id);
-
-            //If not set to '', if undefined will be cast to string
-            formData.append(
-                `description`,
-                agl.description ? agl.description : ''
-            );
-
-            formData.append(
-                `shape`,
-                agl.shape ? agl.shape : '',
-            );
-            formData.append(
-                `reference_image`,
-                agl.reference_image ? agl.reference_image : '',
-            );
-            return formData;
-        },
-        deleteAnnotationGuideline() {
-            let response = prompt(
-                `This will delete the guideline for this project. Please enter 'delete' to confirm.`,
-            );
-
-            if (response !== 'delete') {
-                return;
-            }
-
-            this.mightHaveEdited = false;
-
-            AnnotationGuideline.delete({ id: this.annotationGuideline.id }, {}).then(
-                this.reloadPage,
-                handleErrorResponse,
-            );
-        },
-        reloadPage() {
-            setTimeout(() => location.reload(), 100);
         },
     },
 };

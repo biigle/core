@@ -15,6 +15,17 @@ class AnnotationGuidelineLabel extends Pivot
 
     protected $table = 'annotation_guideline_label';
 
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'label_id' => 'int',
+        'shape_id' => 'int',
+        'annotation_guideline_id' => 'int',
+    ];
+
     protected static function booted(): void
     {
         static::deleting(function (self $guidelineLabel) {
