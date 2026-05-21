@@ -92,7 +92,10 @@ export default {
             return this.formatMeasurement(length, unit, 1);
         },
         formatMeasurement(measurement, unit, decimals) {
-            return new Intl.NumberFormat("en-US", { notation: "standard", maximumSignificantDigits: decimals }).format(measurement) + ' ' + unit;
+            return new Intl.NumberFormat("en-US", {
+                notation: "standard",
+                maximumSignificantDigits: decimals
+            }).format(measurement) + ' ' + unit;
         },
         unitNearest(measurement, multipliers, min) {
             if (measurement === 0) {
