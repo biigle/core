@@ -20,6 +20,8 @@ class AnnotationGuidelineLabel extends Pivot
      *
      * @var array<string, string>
      */
+    protected $appends = ['reference_image_url'];
+
     protected $casts = [
         'label_id' => 'int',
         'shape_id' => 'int',
@@ -29,9 +31,15 @@ class AnnotationGuidelineLabel extends Pivot
     protected static function booted(): void
     {
         static::deleting(function (self $guidelineLabel) {
-            Storage::disk(config('projects.annotation_guideline_storage_disk'))
+            Storage::disk(config('projects.annotation_guideline_disk'))
                 ->delete("{$guidelineLabel->annotation_guideline_id}/{$guidelineLabel->uuid}");
         });
+    }
+
+    public function getReferenceImageUrlAttribute(): string
+    {
+        return Storage::disk(config('projects.annotation_guideline_disk'))
+            ->url("{$this->annotation_guideline_id}/{$this->uuid}");
     }
 
     /**

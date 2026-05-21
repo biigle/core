@@ -57,7 +57,7 @@ class AnnotationGuidelineLabelController extends Controller
                 ]);
             }
 
-            $disk = Storage::disk(config('projects.annotation_guideline_storage_disk'));
+            $disk = Storage::disk(config('projects.annotation_guideline_disk'));
 
             if (array_key_exists('reference_image', $validated)) {
                 $image = $validated['reference_image'];

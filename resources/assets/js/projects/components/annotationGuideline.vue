@@ -76,8 +76,23 @@
 
                 <div class="form-group">
                     <label>Reference Image</label>
-                    <input type="file" @change="addImage" :disabled="!selectedLabel" />
-                    <img v-if="referenceImagePreview" :src="referenceImagePreview" />
+                    <div class="form-group">
+                    <button
+                        v-if="referenceImagePreview && referenceImagePreviewLoaded"
+                        class="btn btn-default btn-sm pull-right"
+                        title="Remove reference image"
+                        @click.prevent="removeImage"
+                        ><i class="fa fa-times"></i></button>
+                        <input type="file" @change="addImage" :disabled="!selectedLabel" />
+                    </div>
+                    <div v-show="referenceImagePreviewLoaded" class="well well-sm">
+                        <img
+                            v-if="referenceImagePreview"
+                            :src="referenceImagePreview"
+                            @load="referenceImagePreviewLoaded = true"
+                            @error="referenceImagePreview = null"
+                            />
+                    </div>
                     <p class="help-block">
                         Upload a reference image that helps to identify objects with this label.
                     </p>
@@ -109,7 +124,7 @@
 <script>
 import AnnotationGuidelineApi from '@/projects/api/annotationGuideline.js';
 import AnnotationGuidelineLabelApi from '@/projects/api/annotationGuidelineLabel.js';
-import Messages, { handleErrorResponse } from '@/core/messages/store.js';
+import { handleErrorResponse } from '@/core/messages/store.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 
@@ -143,7 +158,9 @@ export default {
             labelDescription: '',
             selectedShape: null,
             referenceImage: null,
+            referenceImagePreviewLoaded: false,
             referenceImagePreview: null,
+            clearReferenceImage: false,
             isDirty: false,
         };
     },
@@ -171,6 +188,8 @@ export default {
             if (guidelineLabel) {
                 this.labelDescription = guidelineLabel.description || '';
                 this.selectedShape = guidelineLabel.shape_id || null;
+                this.referenceImagePreviewLoaded = false;
+                this.referenceImagePreview = guidelineLabel.reference_image_url;
                 this.isDirty = false;
             }
         },
@@ -216,11 +235,23 @@ export default {
             this.labelDescription = '';
             this.selectedShape = null;
             this.referenceImage = null;
+            this.clearReferenceImage = false;
             if (this.referenceImagePreview) {
-                URL.revokeObjectURL(this.referenceImagePreview);
+                if (this.referenceImagePreview.startsWith('blob:')) {
+                    URL.revokeObjectURL(this.referenceImagePreview);
+                }
                 this.referenceImagePreview = null;
             }
             this.isDirty = false;
+        },
+        removeImage() {
+            this.referenceImage = null;
+            if (this.referenceImagePreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(this.referenceImagePreview);
+            }
+            this.referenceImagePreview = null;
+            this.clearReferenceImage = true;
+            this.isDirty = true;
         },
         addImage(event) {
             const file = event.target.files[0] || null;
@@ -244,9 +275,10 @@ export default {
                 canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
                 canvas.toBlob((blob) => {
                     this.referenceImage = new File([blob], file.name, {type: blob.type});
-                    if (this.referenceImagePreview) {
+                    if (this.referenceImagePreview?.startsWith('blob:')) {
                         URL.revokeObjectURL(this.referenceImagePreview);
                     }
+                    this.referenceImagePreviewLoaded = false;
                     this.referenceImagePreview = URL.createObjectURL(blob);
                 }, file.type);
             };
@@ -277,6 +309,8 @@ export default {
             }
             if (this.referenceImage !== null) {
                 formData.append('reference_image', this.referenceImage);
+            } else if (this.clearReferenceImage) {
+                formData.append('reference_image', '');
             }
 
             this.startLoading();
