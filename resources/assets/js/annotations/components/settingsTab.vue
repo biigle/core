@@ -68,6 +68,7 @@ export default {
                 'exampleAnnotations',
                 'labelbotTimeout',
                 'draftAnnotationUsesLabelColor',
+                'preferredUnit',
             ],
             annotationOpacity: 1.0,
             cachedImagesCount: 1,
