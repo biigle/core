@@ -81,35 +81,35 @@ export default {
             const height = 4 * ratio;
             const x = 10 * ratio;
             const y = canvas.height - 10 * ratio - height;
-            
+
             const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
             const width = scaleLineProperties.width() * ratio;
             const ctx = canvas.getContext('2d');
-            
+
             // black border
             ctx.fillStyle = '#000';
             ctx.fillRect(x, y, width, height);
-            
+
             // white line
             ctx.fillStyle = '#FFF';
             ctx.fillRect(x + ratio, y + ratio, width - ratio * 2, height - ratio * 2);
-            
+
             this.drawCenteredText(canvas, scaleLineProperties.text(), x + width / 2, y - 2 * ratio);
         },
         drawCenteredText(canvas, text, centerX, y) {
             const ratio = window.devicePixelRatio;
             const ctx = canvas.getContext('2d');
             const fontSize = 12 * ratio;
-            
+
             ctx.font = `${fontSize}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'bottom';
-            
+
             // black text border
             ctx.lineWidth = 2 * ratio;
             ctx.strokeStyle = '#000';
             ctx.strokeText(text, centerX, y);
-            
+
             // white text
             ctx.fillStyle = '#FFF';
             ctx.fillText(text, centerX, y);
@@ -120,7 +120,7 @@ export default {
             } catch (error) {
                 return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
             }
-            
+
             if (this.image && this.hasArea && Settings.get('scaleLine')) {
                 this.drawScaleLine(canvas);
             }
@@ -152,7 +152,7 @@ export default {
             const canvas = e.target
                 .getViewport()
                 .querySelector('.ol-layer canvas, canvas.ol-layer');
-                
+
             const clone = document.createElement('canvas');
             clone.width = canvas.width;
             clone.height = canvas.height;

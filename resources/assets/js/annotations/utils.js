@@ -108,27 +108,27 @@ class ScaleLineProperties
         this._pxWidthInMeter = pxWidthInMeter;
         this._unitMultipliers = unitMultipliers;
         this._unitNames = unitNames;
-        
+
         this._targetWidth = 100;
         this._leadingDigits = [1, 2, 5];
     }
-    
+
     _scale() {
         return this._targetWidth * this._scaleMultiplier();
     }
-    
+
     _scalePowerOfTen() {
         return powerOfTen(this._scale());
     }
-    
+
     _scaleMultiplier() {
         if (this._hasArea) {
             return this._resolution * this._pxWidthInMeter;
         }
-        
+
         return this._resolution || 0;
     }
-    
+
     _scaleNearest() {
         let smallestIndex = 0;
         let smallestDistance = Infinity;
@@ -142,7 +142,7 @@ class ScaleLineProperties
 
         return this._leadingDigits[smallestIndex] * this._scalePowerOfTen();
     }
-    
+
     _unitNearest() {
         let smallestIndex = 0;
         let smallestDistance = Infinity;
@@ -155,11 +155,11 @@ class ScaleLineProperties
 
         return smallestIndex;
     }
-    
+
     width() {
         return Math.round(this._scaleNearest() / this._scaleMultiplier());
     }
-    
+
     text() {
         if (this._hasArea) {
             const unitNearest = this._unitNearest();

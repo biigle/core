@@ -23,7 +23,7 @@
                 :image="image"
                 :areas="imagesArea"
                 ></screenshot-button>
-                
+
             <shortcuts-button>
                 @include('partials.image-annotation-shortcuts')
             </shortcuts-button>

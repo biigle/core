@@ -36,7 +36,7 @@ export default {
             if (!this.hasArea || !this.image) {
                 return null;
             }
-            
+
             return Math.sqrt(this.area / (this.image.width * this.image.height));
         },
     }
