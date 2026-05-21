@@ -2,6 +2,7 @@
     <settings-tab
         v-cloak
         :image="image"
+        :images-area="imagesArea"
         :current-id="imageId"
         :image-filenames="imageFilenames"
         :ids="allImagesIds"
@@ -19,8 +20,10 @@
                 :current-id="currentId"
                 :filenames="imageFilenames"
                 :ids="ids"
+                :image="image"
+                :areas="imagesArea"
                 ></screenshot-button>
-                
+
             <shortcuts-button>
                 @include('partials.image-annotation-shortcuts')
             </shortcuts-button>
