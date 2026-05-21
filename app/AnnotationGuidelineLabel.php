@@ -18,7 +18,7 @@ class AnnotationGuidelineLabel extends Pivot
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array<string, string>
+     * @var list<string>
      */
     protected $appends = ['reference_image_url'];
 

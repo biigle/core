@@ -34,7 +34,7 @@ class AnnotationGuideline extends Model
     protected static function booted(): void
     {
         static::deleting(function (self $guideline) {
-            Storage::disk(config('projects.annotation_guideline_storage_disk'))
+            Storage::disk(config('projects.annotation_guideline_disk'))
                 ->deleteDirectory("$guideline->id");
         });
     }

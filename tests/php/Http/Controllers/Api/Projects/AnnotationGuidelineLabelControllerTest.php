@@ -81,7 +81,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 
     public function testStoreCreatesReferenceImage()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $guideline = AnnotationGuideline::factory()->create([
@@ -107,7 +107,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 
     public function testStoreUpdatesReferenceImage()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $guideline = AnnotationGuideline::factory()->create([
@@ -137,7 +137,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 
     public function testStoreDeletesReferenceImageWhenNull()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $guideline = AnnotationGuideline::factory()->create([
@@ -162,7 +162,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 
     public function testStoreKeepsReferenceImageWhenNotProvided()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $guideline = AnnotationGuideline::factory()->create([
@@ -238,7 +238,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 
     public function testDestroyDeletesReferenceImage()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $guideline = AnnotationGuideline::factory()->create([

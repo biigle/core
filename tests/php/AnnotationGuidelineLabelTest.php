@@ -60,7 +60,7 @@ class AnnotationGuidelineLabelTest extends TestCase
 
     public function testGuidelineOnDeleteCascade()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         Storage::fake('annotation_storage');
 
         AnnotationGuidelineLabel::factory()->create([

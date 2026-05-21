@@ -152,7 +152,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
     public function testDestroyDeletesStorageDirectory()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
         $guideline = AnnotationGuideline::factory()->create([

@@ -61,7 +61,7 @@ class AnnotationGuidelineTest extends ModelTestCase
 
     public function testLabelsOnDeleteCascade()
     {
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         Storage::fake('annotation_storage');
 
         $label = LabelTest::create();
