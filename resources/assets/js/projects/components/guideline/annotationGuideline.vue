@@ -1,100 +1,89 @@
 <template>
+<div>
     <div>
-        <h3>
-            <span v-if="creating">Create </span>Annotation Guideline
-            <a
-                class="btn"
-                href="/manual/tutorials/projects/about#annotation-guideline"
-                title="Learn more about annotation guidelines"
-                target="_blank">
-                <i class="fa fa-question-circle">
-                </i>
-            </a>
-        </h3>
-        <div class="row">
-            <div class="col-xs-6">
-                <span>
-                    <h4>Description</h4>
-                </span>
-            </div>
-            <div class="col-xs-6">
-                <span v-if="isAdmin" class="top-bar pull-right">
-                    <span v-if="editingMode">
-                        <button
-                            class="btn btn-success btn-sm"
-                            type="button"
-                            @click="updateAnnotationGuideline"
-                            title="Save annotation guideline"
-                        >
-                            <span class="fa fa-check"></span>
-                            Save guideline
-                        </button>
-                        <span v-if="!creating">
-                            <button
-                                class="btn btn-danger btn-sm"
-                                type="submit"
-                                @click="deleteAnnotationGuideline"
-                                title="Delete the annotation guideline"
-                            >
-                                <span class="fa fa-trash" aria-hidden="true"></span>
-                                Delete guideline
-                            </button>
-                        </span>
-                    </span>
-                    <span v-else>
-                        <button
-                            class="btn btn-default btn-sm"
-                            type="button"
-                            @click="setEditing"
-                            title="Edit the guideline"
-                        >
-                            <span class="fa fa-pen" aria-hidden="true"></span>
-                            Edit guideline
-                        </button>
-                    </span>
+        <a
+            class="btn btn-default pull-right"
+            href="/manual/tutorials/projects/about#annotation-guideline"
+            title="Learn more about annotation guidelines"
+            target="_blank"
+            >
+            <i class="fa fa-question-circle"></i>
+        </a>
+    </div>
+    <div>
+        <p class="text-muted">
+            An annotation guideline can provide detailed annotation instructions and constraints for the labels of a project.
+        </p>
+        <p class="text-muted" v-if="hasLabelTrees">
+            Select labels and provide information to get started.
+        </p>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="well well-sm">
+                <label-trees
+                    v-if="hasLabelTrees"
+                    :trees="labelTrees"
+                    :labelsInGuideline="labelsInGuideline"
+                    @select="selectLabel"
+                    @deselect="deselectLabel"
+                >
+                </label-trees>
+                <span v-else>
+                    Attach label trees to the project to get started.
                 </span>
             </div>
         </div>
-        <div>
-            <div class="form-group">
-                <div
-                    v-if="editingMode || creating"
-                >
+        <div class="col-xs-6">
+            <form @submit.prevent="saveLabel" v-if="hasLabelTrees">
+                <div class="form-group">
+                    <label for="label-description">Description</label>
                     <textarea
-                        v-model="annotationGuideline.description"
-                        class="guideline-description form-control"
-                        maxlength="2000"
-                        wrap="hard"
-                        placeholder="Edit the guideline description here..."
+                        v-model="labelDescription"
+                        id="label-description"
+                        :disabled="!selectedLabel"
+                        class="form-control"
+                        maxlength="200"
+                        placeholder=""
                     ></textarea>
-                </div>
-                <div v-else>
-                    <p class="guideline-description-text well">
-                        {{ annotationGuideline.description }}
+                    <p class="help-block">
+                        Describe how objects with this label can be identified and how they should be annotated.
                     </p>
                 </div>
-            </div>
-            <div  v-if="hasLabelTrees">
-                    <annotation-guideline-label
-                        :annotation-guideline-labels="annotationGuidelineLabels"
-                        :label-trees="labelTrees"
-                        :project-id="projectId"
-                        :available-shapes="availableShapes"
-                        :base-url="baseUrl"
-                        :is-admin="isAdmin"
-                        :editingMode="editingMode"
-                        :force-save-label="forceSaveLabel"
-                        @add-label="addLabel"
-                        @delete-label="deleteLabel"
-                        @editing="setMightHaveEdited"
-                    >
-                    </annotation-guideline-label>
-            </div>
-            <div v-else>
-                There are no label trees associated to this project. To add labels to the guideline, add label trees first.
-            </div>
+
+                <div class="form-group">
+                    <label>Shape</label>
+                    <div class="btn-group btn-group-justified">
+                        <div v-for="shape in availableShapes" class="btn-group">
+                            <button
+                                class="btn btn-default"
+                                :title="shape"
+                                :disabled="!selectedLabel"
+                                >
+                                <i class="icon" :class="`icon-${shape.toLowerCase()}`"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="help-block">
+                        Select a shape tool that should be used for annotations with this label.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label>Reference Image</label>
+                    <input type="file" @change="addImage" :disabled="!selectedLabel" />
+                    <p class="help-block">
+                        Upload a reference image that helps to identify objects with this label.
+                    </p>
+                </div>
+
+                <button :disabled="!selectedLabel" class="btn btn-success">
+                    Save
+                </button>
+            </form>
         </div>
     </div>
+</div>
 </template>
 <script>
 import AnnotationGuideline from '@/projects/api/annotationGuideline.js';
@@ -102,12 +91,14 @@ import AnnotationGuidelineLabelApi from '@/projects/api/annotationGuidelineLabel
 import AnnotationGuidelineLabel from './annotationGuidelineLabel.vue';
 import Messages from '@/core/messages/store.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import { handleErrorResponse } from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],
     components: {
         annotationGuidelineLabel: AnnotationGuidelineLabel,
+        labelTrees: LabelTrees,
     },
     props: {
         isAdmin: {
@@ -116,6 +107,10 @@ export default {
         },
     },
     computed: {
+        labelsInGuideline() {
+            return this.annotationGuidelineLabels.map((agl) => agl.label.id);
+        },
+
         creating() {
             return this.annotationGuideline === null;
         },
@@ -128,26 +123,23 @@ export default {
         'annotationGuidelineLabel': "setMightHaveEdited",
     },
     data() {
-        let shapes = {
-            '': 'None',
-            ...biigle.$require('projects.availableShapes'),
-        };
-
         return {
+            labelTrees: biigle.$require('projects.labelTrees'),
+            selectedLabel: null,
+            annotationGuidelineLabels: [],
+            availableShapes: biigle.$require('projects.availableShapes'),
+
+
             editing: false,
             projectId: biigle.$require('projects.project').id,
             annotationGuideline: biigle.$require('projects.annotationGuideline'),
-            annotationGuidelineLabels: biigle.$require(
-                'projects.annotationGuidelineLabels',
-            ),
-            availableShapes: shapes,
+            description: '',
             baseUrl: biigle.$require(
                 'projects.annotationGuidelineLabelsBaseUrl',
             ),
             mightHaveEdited: false,
             addingNewLabel: false,
             editingMode: false,
-            labelTrees: biigle.$require('projects.labelTrees'),
             forceSaveLabel: false,
         };
     },
@@ -164,8 +156,21 @@ export default {
                 this.editingMode = true;
             }
         }
+
+        if (this.annotationGuideline) {
+            this.description = this.annotationGuideline.description;
+            this.annotationGuidelineLabels = this.annotationGuideline.labels;
+        }
     },
     methods: {
+        selectLabel(label) {
+            this.selectedLabel = label;
+        },
+        deselectLabel() {
+            this.selectedLabel = null;
+        },
+
+
         setMightHaveEdited() {
             this.mightHaveEdited = true;
         },
@@ -298,3 +303,10 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+:deep(.label-trees__body) {
+    max-height: 600px;
+
+}
+</style>
