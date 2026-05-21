@@ -68,11 +68,11 @@ class FilenameControllerTest extends ApiTestCase
         ]);
         $image2 = ImageTest::create([
             'volume_id' => $vid,
-            'filename' => '/.jpg'
+            'filename' => '/.jpg',
         ]);
         $image3 = ImageTest::create([
             'volume_id' => $vid,
-            'filename' => '%2F.jpg' // encodeURIComponent("/") yields "%2F"
+            'filename' => '%2F.jpg', // encodeURIComponent("/") yields "%2F"
         ]);
 
         $expectedResults = [
