@@ -12,6 +12,8 @@ import MeasureComponent from '../mixins/measureComponent.vue';
 import Polygon from '@biigle/ol/geom/Polygon';
 import Circle from '@biigle/ol/geom/Circle';
 import LineString from '@biigle/ol/geom/LineString';
+import { UnitNames, UnitMultipliers } from '../utils';
+import Settings from '../stores/settings';
 
 /**
  * Tooltip showing length/area of the hovered annotations.
@@ -28,10 +30,13 @@ export default {
     },
     computed: {
         areaUnitMultipliers() {
-            return this.unitMultipliers.map(function (multiplier) {
+            return UnitMultipliers.map(function (multiplier) {
                 return Math.pow(multiplier, 2);
             });
         },
+        preferredUnit() {
+            return Settings.get('preferredUnit');
+        }
     },
     methods: {
         updateGeometries(features) {
@@ -68,7 +73,7 @@ export default {
             if (this.hasArea) {
                 area *= Math.pow(this.pxWidthInMeter, 2);
                 let index = this.unitNearest(area, this.areaUnitMultipliers, 1e-3);
-                unit = this.unitNames[index] + '²';
+                unit = UnitNames[index] + '²';
                 area = area / this.areaUnitMultipliers[index];
             }
 
@@ -79,20 +84,23 @@ export default {
 
             if (this.hasArea) {
                 length = length * this.pxWidthInMeter;
-                let index = this.unitNearest(length, this.unitMultipliers);
-                unit = this.unitNames[index];
-                length = length / this.unitMultipliers[index];
+                let index = this.unitNearest(length, UnitMultipliers);
+                unit = UnitNames[index];
+                length = length / UnitMultipliers[index];
             }
 
-            return this.formatMeasurement(length, unit);
+            return this.formatMeasurement(length, unit, 1);
         },
         formatMeasurement(measurement, unit, decimals) {
-            decimals = Math.pow(10, decimals || 1);
-            return (Math.round(measurement * decimals) / decimals) + ' ' + unit;
+            return new Intl.NumberFormat("en-US", { notation: "standard", maximumSignificantDigits: decimals }).format(measurement) + ' ' + unit;
         },
         unitNearest(measurement, multipliers, min) {
             if (measurement === 0) {
                 return multipliers.length - 1;
+            }
+
+            if (UnitNames.indexOf(this.preferredUnit) !== -1) {
+                return UnitNames.indexOf(this.preferredUnit);
             }
 
             min = min || 1;
@@ -115,6 +123,11 @@ export default {
                 this.updateGeometries(features);
             }
         },
+        preferredUnit() {
+            if (this.show) {
+                this.updateGeometries(this.features);
+            }
+        }
     }
 };
 </script>

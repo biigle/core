@@ -6,6 +6,7 @@ import ShortcutsButton from './shortcutsButton.vue';
 import ScreenshotButton from './screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '../components/labelbotPopup.vue';
+import { UnitNames } from '../utils.js';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -81,6 +82,7 @@ export default {
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
             draftAnnotationUsesLabelColor: true,
+            preferredUnit: 'auto'
         };
     },
     computed: {
@@ -95,6 +97,9 @@ export default {
         },
         labelbotTimeoutValue() {
             return TIMEOUTS[this.labelbotTimeout];
+        },
+        unitNames() {
+            return ['auto'].concat(UnitNames);
         },
     },
     methods: {
@@ -214,6 +219,10 @@ export default {
             this.$emit('change', 'draftAnnotationUsesLabelColor', show);
             this.settings.set('draftAnnotationUsesLabelColor', show);
         },
+        preferredUnit(unit) {
+            this.$emit('change', 'preferredUnit', unit);
+            this.settings.set('preferredUnit', unit);
+        }
     },
     created() {
         this.restoreKeys.forEach((key) => {

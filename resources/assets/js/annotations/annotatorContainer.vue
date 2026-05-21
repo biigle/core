@@ -593,6 +593,9 @@ export default {
                 case 'draftAnnotationUsesLabelColor':
                     this.draftAnnotationUsesLabelColor = value;
                     break;
+                case 'preferredUnit':
+                    this.preferredUnit = value;
+                    break;
             }
         },
         handleAnnotationModeChange(mode, data) {
