@@ -108,7 +108,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -122,7 +122,7 @@
                             icon="fa-project-diagram"
                             title="Disable the single-frame annotation option to track annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-project-diagram"
@@ -197,7 +197,7 @@
                             icon="fa-project-diagram"
                             title="Disable the single-frame annotation option to track annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-project-diagram"
@@ -429,8 +429,9 @@ import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
-import {defaults as defaultInteractions} from '@biigle/ol/interaction';
+import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction';
 import {markRaw} from 'vue';
+import { noModifierKeys } from '@biigle/ol/events/condition.js';
 
 export default {
     emits: [
@@ -611,6 +612,12 @@ export default {
         isDefaultInteractionMode() {
             return this.interactionMode === 'default';
         },
+        isBrushOrWandMode() {
+            return this.interactionMode === 'polygonBrush'
+                || this.interactionMode === 'polygonEraser'
+                || this.interactionMode === 'polygonFill'
+                || this.interactionMode === 'drawMagicWand';
+        },
         styleObject() {
             if (this.heightOffset !== 0) {
                 return `height: calc(65% + ${this.heightOffset}px);`;
@@ -651,6 +658,26 @@ export default {
                     pinchRotate: false,
                     pinchZoom: true,
                 }),
+            });
+
+            map.addInteraction(new DragPan({
+                condition: (mapBrowserEvent) => {
+                    return mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
+                },
+            }));
+
+            map.getViewport().addEventListener('contextmenu', (e) => {
+                switch (this.interactionMode) {
+                    case 'default':
+                    case 'translate':
+                    case 'swapLabel':
+                    case 'forceSwapLabel':
+                    case 'attachLabel':
+                    case 'drawWholeFrame':
+                        break;
+                    default:
+                        e.preventDefault();
+                }
             });
 
             control = new ZoomToNativeControl({

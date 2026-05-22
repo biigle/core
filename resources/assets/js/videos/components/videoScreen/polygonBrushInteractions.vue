@@ -66,6 +66,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     resizeCondition: altKeyOnlyCondition,
+                    condition: (event) => event.originalEvent.button !== 2
                 });
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
@@ -85,7 +86,7 @@ export default {
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
                     addCondition: neverCondition,
-                    subtractCondition: noModifierKeysCondition,
+                    subtractCondition: (event) => noModifierKeysCondition(event) && event.originalEvent.button !== 2,
                     resizeCondition: altKeyOnlyCondition,
                 });
                 this.polygonEraserInteraction.on('modifystart', this.handleModifyStart);
@@ -106,7 +107,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
-                    addCondition: noModifierKeysCondition,
+                    addCondition: (event) => noModifierKeysCondition(event) && event.originalEvent.button !== 2,
                     subtractCondition: neverCondition,
                     resizeCondition: altKeyOnlyCondition,
                 });

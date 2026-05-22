@@ -186,6 +186,7 @@ export default {
                             indicatorPointStyle: Styles.editing,
                             indicatorCrossStyle: Styles.cross,
                             simplifyTolerant: 0.1,
+                            condition: (event) => event.originalEvent.button !== 2
                         });
                     } else {
                         this.drawInteraction = new DrawInteraction({
