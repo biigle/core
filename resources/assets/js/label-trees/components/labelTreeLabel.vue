@@ -128,7 +128,7 @@ export default {
             if (this.cantBeAddedAsFavourite) {
                 return `You cannot add more than ${MAX_FAVOURITES} favourite labels`;
             }
-            
+
             return (this.label.favourite ? 'Remove' : 'Add') + ' as favourite';
         },
         cantBeAddedAsFavourite() {
