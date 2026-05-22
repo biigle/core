@@ -176,7 +176,6 @@ export default {
             // Mouse position in OpenLayers coordinates.
             mousePosition: [0, 0],
             modifyInProgress: false,
-            rightClickDragEnabled: false
         };
     },
     computed: {
@@ -292,14 +291,20 @@ export default {
 
             map.addInteraction(new DragPan({
                 condition: (mapBrowserEvent) => {
-                    this.rightClickDragEnabled = mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandModeActive;
-                    return this.rightClickDragEnabled;
+                    return mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandModeActive;
                 },
             }));
 
-            map.getViewport().addEventListener('contextmenu',  (e) => {
-                if (this.rightClickDragEnabled) {
-                    e.preventDefault();
+            map.getViewport().addEventListener('contextmenu', (e) => {
+                switch (this.interactionMode) {
+                    case 'default':
+                    case 'translate':
+                    case 'swap':
+                    case 'force-swap':
+                    case 'attach':
+                        break;
+                    default:
+                        e.preventDefault();
                 }
             });
 
