@@ -44,12 +44,13 @@ import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
 import { isInvalidShape } from '../utils.js';
-import {click as clickCondition} from '@biigle/ol/events/condition';
-import {defaults as defaultInteractions} from '@biigle/ol/interaction'
+import {click as clickCondition, mouseActionButton, noModifierKeys} from '@biigle/ol/events/condition';
+import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction'
 import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import { rightClick } from '@biigle/ol/events/condition.js';
 
 /**
  * The annotator canvas
@@ -155,7 +156,7 @@ export default {
         },
         draftAnnotationUsesLabelColor: {
             type: Boolean,
-            default: true, 
+            default: true,
         },
     },
     data() {
@@ -176,6 +177,7 @@ export default {
             // Mouse position in OpenLayers coordinates.
             mousePosition: [0, 0],
             modifyInProgress: false,
+            rightClickDragEnabled: false
         };
     },
     computed: {
@@ -245,6 +247,12 @@ export default {
                     return 'Next image';
             }
         },
+        isBrushOrWandModeActive() {
+            return this.interactionMode === 'polygonBrush'
+                || this.interactionMode === 'polygonEraser'
+                || this.interactionMode === 'polygonFill'
+                || this.interactionMode === 'magicWand';
+        },
     },
     methods: {
         createMap() {
@@ -282,6 +290,19 @@ export default {
                     return !shiftKeyOnlyCondition(mapBrowserEvent);
                 },
             }));
+
+            map.addInteraction(new DragPan({
+                condition: (mapBrowserEvent) => {
+                    this.rightClickDragEnabled = mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandModeActive;
+                    return this.rightClickDragEnabled;
+                },
+            }));
+
+            map.getViewport().addEventListener('contextmenu',  (e) => {
+                if (this.rightClickDragEnabled) {
+                    e.preventDefault();
+                }
+            });
 
             control = new ZoomToNativeControl({
                 // fontawesome expand icon
