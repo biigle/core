@@ -159,6 +159,25 @@
 </table>
 
 <p>
+    When any of the polygon brush/fill/eraser tools or the magic wand tool is active:
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Function</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><kbd>Right click</kbd> (held)</td>
+            <td>Drag the map<br></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>
     When the ruler tool is activated:
 </p>
 
