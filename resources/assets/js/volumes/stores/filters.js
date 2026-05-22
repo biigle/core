@@ -205,7 +205,7 @@ let filenameFilter = {
     getSequence(volumeId, pattern) {
         return VolumesApi.queryFilesWithFilename({
             id: volumeId,
-            pattern: encodeURIComponent(pattern),
+            pattern: pattern,
         });
     },
 };

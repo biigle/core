@@ -32,7 +32,7 @@ class FilenameController extends Controller
 
         // Decode percent-encoded characters, example:
         // Frontend turns / into %2F, we turn it back to /
-        $pattern = rawurldecode($pattern);
+        // $pattern = rawurldecode($pattern);
 
         // Escape trailing backslashes, else there would be an error with ilike.
         $pattern = preg_replace('/\\\\$/', '\\\\\\\\', $pattern);

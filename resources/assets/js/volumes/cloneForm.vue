@@ -99,7 +99,7 @@ export default {
             let promise1 = VolumeApi.queryFilenames({id: this.id});
             let promise2 = VolumeApi.queryFilesWithFilename({
                 id: this.id,
-                pattern: encodeURIComponent(this.filePattern)
+                pattern: this.filePattern
             });
 
             Promise.all([promise1, promise2])
