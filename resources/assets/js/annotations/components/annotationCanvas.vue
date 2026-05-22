@@ -245,7 +245,7 @@ export default {
                     return 'Next image';
             }
         },
-        isBrushOrWandModeActive() {
+        isBrushOrWandMode() {
             return this.interactionMode === 'polygonBrush'
                 || this.interactionMode === 'polygonEraser'
                 || this.interactionMode === 'polygonFill'
@@ -291,7 +291,7 @@ export default {
 
             map.addInteraction(new DragPan({
                 condition: (mapBrowserEvent) => {
-                    return mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandModeActive;
+                    return mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
                 },
             }));
 
