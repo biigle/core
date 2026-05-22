@@ -2,7 +2,6 @@
 import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
-import { mouseActionButton } from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the magic wand interaction.
@@ -81,7 +80,7 @@ export default {
             indicatorPointStyle: Styles.editing,
             indicatorCrossStyle: Styles.cross,
             simplifyTolerant: 0.1,
-            condition: mouseActionButton
+            condition: (event) => event.originalEvent.button !== 2
         });
         magicWandInteraction.on('drawend', this.handleNewFeature);
         magicWandInteraction.setActive(false);

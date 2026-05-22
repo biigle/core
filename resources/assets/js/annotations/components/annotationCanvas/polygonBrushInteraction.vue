@@ -4,7 +4,7 @@ import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPo
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
-import { never, click, shiftKeyOnly, altKeyOnly, mouseActionButton } from '@biigle/ol/events/condition';
+import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the polygon brush interaction.
@@ -64,7 +64,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: brushRadius,
                     resizeCondition: altKeyOnly,
-                    condition: mouseActionButton
+                    condition: (event) => event.originalEvent.button !== 2
                 });
                 currentInteraction.on('drawend', this.handleNewFeature);
                 this.map.addInteraction(currentInteraction);
@@ -79,7 +79,7 @@ export default {
                     brushRadius: brushRadius,
                     allowRemove: false,
                     addCondition: never,
-                    subtractCondition: mouseActionButton,
+                    subtractCondition: (event) => noModifierKeys(event) && event.originalEvent.button !== 2,
                     resizeCondition: altKeyOnly,
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
@@ -94,7 +94,7 @@ export default {
                     features: this.selectInteraction.getFeatures(),
                     style: Styles.editing,
                     brushRadius: brushRadius,
-                    addCondition: mouseActionButton,
+                    addCondition: (event) => noModifierKeys(event) && event.originalEvent.button !== 2,
                     subtractCondition: never,
                     resizeCondition: altKeyOnly,
                 });
