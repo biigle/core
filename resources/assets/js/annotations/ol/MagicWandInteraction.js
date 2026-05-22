@@ -206,7 +206,7 @@ class MagicWandInteraction extends PointerInteraction {
      * Start drawing of a sketch.
      */
     handleDownEvent(e) {
-        if (!mouseActionButton(e)) {
+        if (e.originalEvent.button === 2) {
             return false;
         }
         this.downPoint[0] = Math.round(e.coordinate[0]);
