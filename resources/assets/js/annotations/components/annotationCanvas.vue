@@ -296,15 +296,8 @@ export default {
             }));
 
             map.getViewport().addEventListener('contextmenu', (e) => {
-                switch (this.interactionMode) {
-                    case 'default':
-                    case 'translate':
-                    case 'swap':
-                    case 'force-swap':
-                    case 'attach':
-                        break;
-                    default:
-                        e.preventDefault();
+                if (this.isBrushOrWandMode) {
+                    e.preventDefault();
                 }
             });
 

@@ -431,7 +431,7 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction';
 import {markRaw} from 'vue';
-import { noModifierKeys } from '@biigle/ol/events/condition.js';
+import { noModifierKeys } from '@biigle/ol/events/condition';
 
 export default {
     emits: [
@@ -667,16 +667,8 @@ export default {
             }));
 
             map.getViewport().addEventListener('contextmenu', (e) => {
-                switch (this.interactionMode) {
-                    case 'default':
-                    case 'translate':
-                    case 'swapLabel':
-                    case 'forceSwapLabel':
-                    case 'attachLabel':
-                    case 'drawWholeFrame':
-                        break;
-                    default:
-                        e.preventDefault();
+                if (this.isBrushOrWandMode) {
+                    e.preventDefault();
                 }
             });
 
