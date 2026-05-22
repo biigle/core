@@ -45,7 +45,7 @@ import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
 import { isInvalidShape } from '../utils.js';
 import {click as clickCondition, noModifierKeys} from '@biigle/ol/events/condition';
-import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction'
+import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
