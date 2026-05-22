@@ -8,7 +8,6 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import { mouseActionButton } from '@biigle/ol/events/condition';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
