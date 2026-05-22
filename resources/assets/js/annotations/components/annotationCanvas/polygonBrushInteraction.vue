@@ -4,7 +4,7 @@ import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPo
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
-import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly, mouseActionButton } from '@biigle/ol/events/condition';
+import { never, click, shiftKeyOnly, altKeyOnly, mouseActionButton } from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the polygon brush interaction.

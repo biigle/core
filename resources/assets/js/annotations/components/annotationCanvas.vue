@@ -44,13 +44,12 @@ import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
 import { isInvalidShape } from '../utils.js';
-import {click as clickCondition, mouseActionButton, noModifierKeys} from '@biigle/ol/events/condition';
+import {click as clickCondition, noModifierKeys} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction'
 import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
-import { rightClick } from '@biigle/ol/events/condition.js';
 
 /**
  * The annotator canvas
