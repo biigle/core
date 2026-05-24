@@ -251,10 +251,7 @@ class ModifyPolygonBrush extends Modify {
 
   setDraftColor(color) {
     this.draftColor_ = color || null;
-
-    if (this.sketchPoint_) {
-      setOrUnsetProperty(this.sketchPoint_, 'color', this.draftColor_);
-    }
+    setOrUnsetProperty(this.sketchPoint_, 'color', this.draftColor_);
   }
 }
 
