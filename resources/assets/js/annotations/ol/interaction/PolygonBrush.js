@@ -103,6 +103,7 @@ class PolygonBrush extends Draw {
 
     this.isDrawing_ = false;
     this.sketchCircle_ = null;
+    this.draftColor_ = options.draftColor || null;
   }
 
   setMap(map) {
@@ -165,6 +166,9 @@ class PolygonBrush extends Draw {
     if (!this.sketchPoint_) {
       let relativeRadius = event.map.getView().getResolution() * this.sketchPointRadius_;
       this.sketchPoint_ = new Feature(new Circle(coordinates, relativeRadius));
+      if (this.draftColor_) {
+        this.sketchPoint_.set('color', this.draftColor_);
+      }
       this.updateSketchFeatures_();
     } else {
       const sketchPointGeom = this.sketchPoint_.getGeometry();
@@ -212,6 +216,9 @@ class PolygonBrush extends Draw {
     const start = event.coordinate;
     this.finishCoordinate_ = start;
     this.sketchFeature_ = new Feature(fromCircle(this.sketchCircle_));
+    if (this.draftColor_) {
+      this.sketchFeature_.set('color', this.draftColor_);
+    }
     this.updateSketchFeatures_();
     this.dispatchEvent(new DrawEvent(DrawEventType.DRAWSTART, this.sketchFeature_));
   }
@@ -263,6 +270,28 @@ class PolygonBrush extends Draw {
     this.sketchCircle_ = null;
 
     return super.abortDrawing_();
+  }
+
+  setDraftColor(color) {
+    this.draftColor_ = color || null;
+
+    if (this.sketchPoint_) {
+      if (this.draftColor_) {
+        this.sketchPoint_.set('color', this.draftColor_);
+      } else {
+        this.sketchPoint_.unset('color');
+      }
+    }
+
+    if (this.sketchFeature_) {
+      if (this.draftColor_) {
+        this.sketchFeature_.set('color', this.draftColor_);
+      } else {
+        this.sketchFeature_.unset('color');
+      }
+    }
+
+    this.overlay_.changed();
   }
 }
 

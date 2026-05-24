@@ -30,6 +30,8 @@ class MagicWandInteraction extends PointerInteraction {
         this.blurRadius = options.blurRadius === undefined ? 5 :
             options.blurRadius;
 
+        this.draftColor_ = options.draftColor || null;
+
         // Value to adjust simplification of the sketch polygon. Higher values result in
         // less vertices of the polygon. Set to 0 to disable simplification.
         this.simplifyTolerant = options.simplifyTolerant === undefined ? 0 :
@@ -127,6 +129,29 @@ class MagicWandInteraction extends PointerInteraction {
         this.toggleActive();
     }
 
+    setDraftColor(color) {
+        this.draftColor_ = color || null;
+        [this.indicatorPoint, this.indicatorCross, this.sketchFeature].forEach((feature) => {
+            if (!feature) {
+                return;
+            }
+
+            if (this.draftColor_) {
+                feature.set('color', this.draftColor_);
+            } else {
+                feature.unset('color');
+            }
+        });
+
+        if (this.indicatorSource) {
+            this.indicatorSource.changed();
+        }
+
+        if (this.sketchSource) {
+            this.sketchSource.changed();
+        }
+    }
+
     /**
      * Scaling factor of high DPI displays. The snapshot will be by a factor of
      * 'scaling' larger than the map so we have to include this factor in the
@@ -189,7 +214,7 @@ class MagicWandInteraction extends PointerInteraction {
             // Add feature to annotation source to prevent flickering feature
             this.source.addFeature(this.sketchFeature);
         }
-        
+
         this.sketchSource.removeFeature(this.sketchFeature);
 
         this.sketchFeature = null;
@@ -379,6 +404,9 @@ class MagicWandInteraction extends PointerInteraction {
                 this.sketchFeature.getGeometry().setCoordinates([points]);
             } else {
                 this.sketchFeature = new Feature(new Polygon([points]));
+                if (this.draftColor_) {
+                    this.sketchFeature.set('color', this.draftColor_);
+                }
                 if (this.sketchStyle) {
                     this.sketchFeature.setStyle(this.sketchStyle);
                 }

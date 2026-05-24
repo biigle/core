@@ -64,6 +64,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: brushRadius,
                     resizeCondition: altKeyOnly,
+                    draftColor: this.getDraftColor()
                 });
                 currentInteraction.on('drawend', this.handleNewFeature);
                 this.map.addInteraction(currentInteraction);
@@ -80,6 +81,7 @@ export default {
                     addCondition: never,
                     subtractCondition: noModifierKeys,
                     resizeCondition: altKeyOnly,
+                    draftColor: this.getDraftColor()
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
@@ -96,6 +98,7 @@ export default {
                     addCondition: noModifierKeys,
                     subtractCondition: never,
                     resizeCondition: altKeyOnly,
+                    draftColor: this.getDraftColor()
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
@@ -113,12 +116,21 @@ export default {
             shiftClickSelectInteraction.setActive(this.canModify
                 && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
         },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
+        },
+        updatePolygonBrushDraftColor() {
+            if (currentInteraction && currentInteraction.setDraftColor) {
+                currentInteraction.setDraftColor(this.getDraftColor());
+            }
+        },
     },
     watch: {
         isUsingPolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetCurrentInteraction();
                 this.togglePolygonBrushInteraction();
+                this.updatePolygonBrushDraftColor();
             }
         },
         isUsingPolygonEraser() {
@@ -126,6 +138,7 @@ export default {
                 this.resetCurrentInteraction();
                 this.toggleShiftClickSelectInteraction();
                 this.togglePolygonEraserInteraction();
+                this.updatePolygonBrushDraftColor();
             }
         },
         isUsingPolygonFill() {
@@ -133,12 +146,19 @@ export default {
                 this.resetCurrentInteraction();
                 this.toggleShiftClickSelectInteraction();
                 this.togglePolygonFillInteraction();
+                this.updatePolygonBrushDraftColor();
             }
         },
         isNotAPolygonTool() {
             if (this.isNotAPolygonTool) {
                 this.resetCurrentInteraction();
             }
+        },
+        selectedLabel() {
+            this.updatePolygonBrushDraftColor();
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updatePolygonBrushDraftColor();
         }
     },
     created() {

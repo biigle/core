@@ -46,6 +46,7 @@ class ModifyPolygonBrush extends Modify {
       options.resizeCondition : shiftKeyOnly;
     this.allowRemove_ = options.allowRemove !== undefined ?
       options.allowRemove : true;
+    this.draftColor_ = options.draftColor || null;
 
     this.isAdding_ = false;
     this.isSubtracting_ = false;
@@ -75,6 +76,9 @@ class ModifyPolygonBrush extends Modify {
     if (!this.sketchPoint_) {
       let relativeRadius = event.map.getView().getResolution() * this.sketchPointRadius_;
       this.sketchPoint_ = new Feature(new Circle(coordinates, relativeRadius));
+      if (this.draftColor_) {
+        this.sketchPoint_.set('color', this.draftColor_);
+      }
       this.overlay_.getSource().addFeature(this.sketchPoint_)
     } else {
       const sketchPointGeom = this.sketchPoint_.getGeometry();
@@ -242,6 +246,20 @@ class ModifyPolygonBrush extends Modify {
 
   getBrushRadius() {
     return this.sketchPointRadius_;
+  }
+
+  setDraftColor(color) {
+    this.draftColor_ = color || null;
+
+    if (this.sketchPoint_) {
+      if (this.draftColor_) {
+        this.sketchPoint_.set('color', this.draftColor_);
+      } else {
+        this.sketchPoint_.unset('color');
+      }
+    }
+
+    this.overlay_.changed();
   }
 }
 

@@ -58,12 +58,26 @@ export default {
             } else {
                 this.requireSelectedLabel();
             }
+        },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
+        },
+        updateMagicWandDraftColor() {
+            if (magicWandInteraction) {
+                magicWandInteraction.setDraftColor(this.getDraftColor());
+            }
         }
     },
     watch: {
         isMagicWanding(isMagicWanding) {
             this.toggleMagicWandInteraction(isMagicWanding);
         },
+        selectedLabel() {
+            this.updateMagicWandDraftColor();
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updateMagicWandDraftColor();
+        }
     },
     created() {
         this.$watch('image', this.maybeUpdateMagicWandSnapshot);
@@ -80,6 +94,7 @@ export default {
             indicatorPointStyle: Styles.editing,
             indicatorCrossStyle: Styles.cross,
             simplifyTolerant: 0.1,
+            draftColor: this.getDraftColor()
         });
         magicWandInteraction.on('drawend', this.handleNewFeature);
         magicWandInteraction.setActive(false);

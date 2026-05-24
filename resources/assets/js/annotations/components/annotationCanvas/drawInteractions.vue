@@ -110,12 +110,23 @@ export default {
                 });
                 this.map.addInteraction(drawInteraction);
 
+                const applyDraftColor = (feature) => {
+                    if (this.draftAnnotationUsesLabelColor && this.selectedLabel?.color) {
+                        feature.set('color', this.selectedLabel.color);
+                    } else {
+                        feature.unset('color');
+                    }
+                };
+                const overlaySource = drawInteraction.getOverlay().getSource();
+
+                overlaySource.on('addfeature', (event) => {
+                    applyDraftColor(event.feature);
+                });
+                overlaySource.getFeatures().forEach(applyDraftColor);
+
                 drawInteraction.on('drawstart', (event) => {
                     this.drawEnded = false;
-
-                    if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
-                        event.feature.set('color', this.selectedLabel.color);
-                    }
+                    applyDraftColor(event.feature);
                 });
 
                 drawInteraction.on('drawend', (e) => {
