@@ -30,10 +30,6 @@ class FilenameController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        // Decode percent-encoded characters, example:
-        // Frontend turns / into %2F, we turn it back to /
-        // $pattern = rawurldecode($pattern);
-
         // Escape trailing backslashes, else there would be an error with ilike.
         $pattern = preg_replace('/\\\\$/', '\\\\\\\\', $pattern);
 
