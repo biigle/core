@@ -290,8 +290,6 @@ class PolygonBrush extends Draw {
         this.sketchFeature_.unset('color');
       }
     }
-
-    this.overlay_.changed();
   }
 }
 

@@ -142,14 +142,6 @@ class MagicWandInteraction extends PointerInteraction {
                 feature.unset('color');
             }
         });
-
-        if (this.indicatorSource) {
-            this.indicatorSource.changed();
-        }
-
-        if (this.sketchSource) {
-            this.sketchSource.changed();
-        }
     }
 
     /**

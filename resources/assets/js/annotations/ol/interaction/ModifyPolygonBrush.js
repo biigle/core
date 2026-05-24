@@ -258,8 +258,6 @@ class ModifyPolygonBrush extends Modify {
         this.sketchPoint_.unset('color');
       }
     }
-
-    this.overlay_.changed();
   }
 }
 
