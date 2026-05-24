@@ -8,6 +8,7 @@ import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
+import { setOrUnsetProperty } from '../../../utils';
 
 
 /**
@@ -111,11 +112,7 @@ export default {
                 this.map.addInteraction(drawInteraction);
 
                 const applyDraftColor = (feature) => {
-                    if (this.draftAnnotationUsesLabelColor && this.selectedLabel?.color) {
-                        feature.set('color', this.selectedLabel.color);
-                    } else {
-                        feature.unset('color');
-                    }
+                    setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? this.selectedLabel?.color : null);
                 };
                 const overlaySource = drawInteraction.getOverlay().getSource();
 
@@ -187,11 +184,7 @@ export default {
             const features = source ? source.getFeatures() : [];
 
             features.forEach((feature) => {
-                if (label && label.color && this.draftAnnotationUsesLabelColor) {
-                    feature.set('color', label.color);
-                } else {
-                    feature.unset('color');
-                }
+                setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? label?.color : null);
             });
         },
     },

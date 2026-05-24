@@ -12,6 +12,7 @@ import { never } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
+import { setOrUnsetProperty } from '../../../utils';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -375,11 +376,7 @@ export default {
             features.push(...this.pendingAnnotationSource.getFeatures());
 
             features.forEach((feature) => {
-                if (label && label.color && this.draftAnnotationUsesLabelColor) {
-                    feature.set('color', label.color);
-                } else {
-                    feature.unset('color');
-                }
+                setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? label?.color : null);
             });
         },
     },

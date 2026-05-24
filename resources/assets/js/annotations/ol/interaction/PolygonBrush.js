@@ -11,6 +11,7 @@ import {fromCircle} from '@biigle/ol/geom/Polygon';
 import {polygon as turfPolygon} from '@turf/helpers';
 import {shiftKeyOnly, penOnly} from '@biigle/ol/events/condition';
 import {union} from '../geom/flat/union.js';
+import { setOrUnsetProperty } from '../../../utils.js';
 
 const MIN_BRUSH_SIZE = 5;
 const BRUSH_RESIZE_STEP = 5;
@@ -275,21 +276,8 @@ class PolygonBrush extends Draw {
   setDraftColor(color) {
     this.draftColor_ = color || null;
 
-    if (this.sketchPoint_) {
-      if (this.draftColor_) {
-        this.sketchPoint_.set('color', this.draftColor_);
-      } else {
-        this.sketchPoint_.unset('color');
-      }
-    }
-
-    if (this.sketchFeature_) {
-      if (this.draftColor_) {
-        this.sketchFeature_.set('color', this.draftColor_);
-      } else {
-        this.sketchFeature_.unset('color');
-      }
-    }
+    setOrUnsetProperty(this.sketchPoint_, 'color', this.draftColor_);
+    setOrUnsetProperty(this.sketchFeature_, 'color', this.draftColor_);
   }
 }
 
