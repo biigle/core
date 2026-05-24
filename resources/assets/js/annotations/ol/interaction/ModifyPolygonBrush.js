@@ -46,7 +46,7 @@ class ModifyPolygonBrush extends Modify {
       options.resizeCondition : shiftKeyOnly;
     this.allowRemove_ = options.allowRemove !== undefined ?
       options.allowRemove : true;
-    this.draftColor_ = options.draftColor || null;
+    this.draftColor_ = options.draftColor || null;
 
     this.isAdding_ = false;
     this.isSubtracting_ = false;
