@@ -148,15 +148,10 @@ export default {
         updatePolygonBrushDraftColor() {
             const draftColor = this.getDraftColor();
 
-            if (this.currentInteraction?.setDraftColor) {
-                this.currentInteraction.setDraftColor(draftColor);
-            }
-
-            if (this.pendingAnnotationSource) {
-                this.pendingAnnotationSource.getFeatures().forEach( (feature) => {
-                    setOrUnsetProperty(feature, 'color', draftColor);
-                });
-            }
+            this.currentInteraction?.setDraftColor?.(draftColor);
+            this.pendingAnnotationSource?.getFeatures().forEach( (feature) => {
+                setOrUnsetProperty(feature, 'color', draftColor);
+            });
         }
     },
     watch: {

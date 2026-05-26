@@ -120,9 +120,7 @@ export default {
             return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
         },
         updatePolygonBrushDraftColor() {
-            if (currentInteraction && currentInteraction.setDraftColor) {
-                currentInteraction.setDraftColor(this.getDraftColor());
-            }
+            currentInteraction?.setDraftColor?.(this.getDraftColor());
         },
     },
     watch: {
