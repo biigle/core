@@ -31,8 +31,6 @@ class MagicWandInteraction extends PointerInteraction {
         this.blurRadius = options.blurRadius === undefined ? 5 :
             options.blurRadius;
 
-        this.draftColor_ = options.draftColor || null;
-
         // Value to adjust simplification of the sketch polygon. Higher values result in
         // less vertices of the polygon. Set to 0 to disable simplification.
         this.simplifyTolerant = options.simplifyTolerant === undefined ? 0 :
@@ -125,6 +123,7 @@ class MagicWandInteraction extends PointerInteraction {
         this.mapExtent_ = null;
         this.snapshotHeight_ = 0;
         this.scaleFactor_ = 0;
+        this.setDraftColor(options.draftColor);
 
         // Update the snapshot and set event listeners if the interaction is active.
         this.toggleActive();
