@@ -199,15 +199,20 @@ export default {
                         });
                     }
 
-
                     this.map.addInteraction(this.drawInteraction);
+                    const applyDraftColor = (feature) => {
+                        setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? this.selectedLabel?.color : null);
+                    };
+                    const overlaySource = this.drawInteraction.getOverlay().getSource();
+
+                    overlaySource.on('addfeature', (event) => {
+                        applyDraftColor(event.feature);
+                    });
+                    overlaySource.getFeatures().forEach(applyDraftColor);
 
                     this.drawInteraction.on('drawstart', (event) => {
                         this.drawEnded = false;
-
-                        if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
-                            event.feature.set('color', this.selectedLabel.color);
-                        }
+                        applyDraftColor(event.feature);
                     });
                     this.drawInteraction.on('drawend', (e) => {
                         this.extendPendingAnnotation(e);
