@@ -187,6 +187,7 @@ export default {
                             indicatorPointStyle: Styles.editing,
                             indicatorCrossStyle: Styles.cross,
                             simplifyTolerant: 0.1,
+                            draftColor: this.getDraftColor()
                         });
                     } else {
                         this.drawInteraction = new DrawInteraction({
@@ -200,20 +201,28 @@ export default {
                     }
 
                     this.map.addInteraction(this.drawInteraction);
-                    const applyDraftColor = (feature) => {
-                        setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? this.selectedLabel?.color : null);
-                    };
-                    const overlaySource = this.drawInteraction.getOverlay().getSource();
 
-                    overlaySource.on('addfeature', (event) => {
-                        applyDraftColor(event.feature);
-                    });
-                    overlaySource.getFeatures().forEach(applyDraftColor);
+                    if (typeof this.drawInteraction.setDraftColor === 'function') {
+                        this.drawInteraction.setDraftColor(this.getDraftColor());
+                    } else {
+                        const applyDraftColor = (feature) => {
+                            setOrUnsetProperty(feature, 'color', this.getDraftColor());
+                        };
 
-                    this.drawInteraction.on('drawstart', (event) => {
-                        this.drawEnded = false;
-                        applyDraftColor(event.feature);
-                    });
+                        const source = this.drawInteraction.getOverlay().getSource();
+                        const features = source.getFeatures() || [];
+
+                        source.on('addfeature', (event) => {
+                            applyDraftColor(event.feature);
+                        });
+                        features.forEach(applyDraftColor);
+
+                        this.drawInteraction.on('drawstart', (event) => {
+                            this.drawEnded = false;
+                            applyDraftColor(event.feature);
+                        });
+                    }
+
                     this.drawInteraction.on('drawend', (e) => {
                         this.extendPendingAnnotation(e);
                         this.drawEnded = true;
@@ -371,19 +380,28 @@ export default {
             this.drawInteraction.updateSnapshot();
         },
         updateDraftAnnotationColor(label) {
-            if (!this.drawInteraction) {
-                return;
+            const draftColor = this.draftAnnotationUsesLabelColor ? label?.color : null;
+
+            if (this.drawInteraction?.setDraftColor) {
+                this.drawInteraction.setDraftColor(draftColor);
+            } else if (this.drawInteraction) {
+                let features = this.drawInteraction.getOverlay()?.getSource()?.getFeatures() || [];
+                features.push(...this.pendingAnnotationSource.getFeatures());
+
+                features.forEach((feature) => {
+                    setOrUnsetProperty(feature, 'color', draftColor);
+                });
             }
 
-            const overlay = this.drawInteraction.getOverlay();
-            const source = overlay && overlay.getSource();
-            let features = source ? source.getFeatures() : [];
-            features.push(...this.pendingAnnotationSource.getFeatures());
-
-            features.forEach((feature) => {
-                setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? label?.color : null);
-            });
+            if (this.pendingAnnotationSource) {
+                this.pendingAnnotationSource.getFeatures().forEach((feature) => {
+                    setOrUnsetProperty(feature, 'color', draftColor);
+                });
+            }
         },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
+        }
     },
     watch: {
         mapReadyRevision: {

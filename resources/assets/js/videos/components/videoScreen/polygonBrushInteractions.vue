@@ -8,6 +8,9 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
+import { setOrUnsetProperty } from '../../../utils';
+
+let currentInteraction;
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush
@@ -66,10 +69,13 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     resizeCondition: altKeyOnlyCondition,
+                    draftColor: this.getDraftColor()
                 });
+                currentInteraction = this.polygonBrushInteraction;
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
                 this.map.addInteraction(this.polygonBrushInteraction);
+                this.updatePolygonBrushDraftColor();
             }
         },
         togglePolygonEraserInteraction(isUsingPolygonEraser) {
@@ -87,11 +93,14 @@ export default {
                     addCondition: neverCondition,
                     subtractCondition: noModifierKeysCondition,
                     resizeCondition: altKeyOnlyCondition,
+                    draftColor: this.getDraftColor()
                 });
+                currentInteraction = this.polygonEraserInteraction;
                 this.polygonEraserInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonEraserInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonEraserInteraction);
                 this.map.addInteraction(this.shiftClickSelectInteraction);
+                this.updatePolygonBrushDraftColor();
             }
         },
         togglePolygonFillInteraction(isUsingPolygonFill) {
@@ -109,11 +118,14 @@ export default {
                     addCondition: noModifierKeysCondition,
                     subtractCondition: neverCondition,
                     resizeCondition: altKeyOnlyCondition,
+                    draftColor: this.getDraftColor()
                 });
+                currentInteraction = this.polygonFillInteraction;
                 this.polygonFillInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonFillInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonFillInteraction);
                 this.map.addInteraction(this.shiftClickSelectInteraction);
+                this.updatePolygonBrushDraftColor();
             }
         },
         initShiftSelectInteraction() {
@@ -127,6 +139,30 @@ export default {
                 multi: true,
             });
             this.shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
+        },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel?.color : null;
+        },
+        updatePolygonBrushDraftColor() {
+            const draftColor = this.getDraftColor();
+
+            if (currentInteraction?.setDraftColor) {
+                currentInteraction.setDraftColor(this.getDraftColor());
+            }
+
+            if (this.pendingAnnotationSource) {
+                this.pendingAnnotationSource.getFeatures().forEach( (feature) => {
+                    setOrUnsetProperty(feature, 'color', draftColor);
+                });
+            }
+        }
+    },
+    watch: {
+        selectedLabel() {
+            this.updatePolygonBrushDraftColor();
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updatePolygonBrushDraftColor();
         },
     },
     created() {
