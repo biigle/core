@@ -10,8 +10,6 @@ import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condi
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import { setOrUnsetProperty } from '../../../utils';
 
-let currentInteraction;
-
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush
  * interactions.
@@ -22,6 +20,7 @@ export default {
     data() {
         return {
             polygonBrushRadius: 50,
+            currentInteraction: null,
         };
     },
     computed: {
@@ -39,6 +38,7 @@ export default {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
+                this.currentInteraction = null;
             } else if (!this.hasSelectedLabel) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
@@ -48,6 +48,7 @@ export default {
         togglePolygonEraser() {
             if (this.isUsingPolygonEraser) {
                 this.resetInteractionMode();
+                this.currentInteraction = null;
             } else if (this.canModify) {
                 this.interactionMode = 'polygonEraser';
             }
@@ -55,6 +56,7 @@ export default {
         togglePolygonFill() {
             if (this.isUsingPolygonFill) {
                 this.resetInteractionMode();
+                this.currentInteraction = null;
             } else if (this.canModify) {
                 this.interactionMode = 'polygonFill';
             }
@@ -71,7 +73,7 @@ export default {
                     resizeCondition: altKeyOnlyCondition,
                     draftColor: this.getDraftColor()
                 });
-                currentInteraction = this.polygonBrushInteraction;
+                this.currentInteraction = this.polygonBrushInteraction;
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
                 this.map.addInteraction(this.polygonBrushInteraction);
@@ -95,7 +97,7 @@ export default {
                     resizeCondition: altKeyOnlyCondition,
                     draftColor: this.getDraftColor()
                 });
-                currentInteraction = this.polygonEraserInteraction;
+                this.currentInteraction = this.polygonEraserInteraction;
                 this.polygonEraserInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonEraserInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonEraserInteraction);
@@ -120,7 +122,7 @@ export default {
                     resizeCondition: altKeyOnlyCondition,
                     draftColor: this.getDraftColor()
                 });
-                currentInteraction = this.polygonFillInteraction;
+                this.currentInteraction = this.polygonFillInteraction;
                 this.polygonFillInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonFillInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonFillInteraction);
@@ -146,8 +148,8 @@ export default {
         updatePolygonBrushDraftColor() {
             const draftColor = this.getDraftColor();
 
-            if (currentInteraction?.setDraftColor) {
-                currentInteraction.setDraftColor(this.getDraftColor());
+            if (this.currentInteraction?.setDraftColor) {
+                this.currentInteraction.setDraftColor(draftColor);
             }
 
             if (this.pendingAnnotationSource) {

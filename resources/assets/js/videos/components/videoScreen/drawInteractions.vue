@@ -381,23 +381,18 @@ export default {
         },
         updateDraftAnnotationColor(label) {
             const draftColor = this.draftAnnotationUsesLabelColor ? label?.color : null;
+            let features = this.pendingAnnotationSource?.getFeatures() || [];
 
             if (this.drawInteraction?.setDraftColor) {
                 this.drawInteraction.setDraftColor(draftColor);
             } else if (this.drawInteraction) {
-                let features = this.drawInteraction.getOverlay()?.getSource()?.getFeatures() || [];
-                features.push(...this.pendingAnnotationSource.getFeatures());
-
-                features.forEach((feature) => {
-                    setOrUnsetProperty(feature, 'color', draftColor);
-                });
+                let currentFeatures = this.drawInteraction.getOverlay()?.getSource()?.getFeatures() || [];
+                features.push(...currentFeatures);
             }
 
-            if (this.pendingAnnotationSource) {
-                this.pendingAnnotationSource.getFeatures().forEach((feature) => {
-                    setOrUnsetProperty(feature, 'color', draftColor);
-                });
-            }
+            features.forEach((feature) => {
+                setOrUnsetProperty(feature, 'color', draftColor);
+            });
         },
         getDraftColor() {
             return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
