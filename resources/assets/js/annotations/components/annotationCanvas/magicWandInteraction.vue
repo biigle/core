@@ -59,9 +59,6 @@ export default {
                 this.requireSelectedLabel();
             }
         },
-        getDraftColor() {
-            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
-        },
         updateMagicWandDraftColor() {
             magicWandInteraction?.setDraftColor(this.getDraftColor());
         }
