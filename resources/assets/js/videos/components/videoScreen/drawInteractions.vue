@@ -202,7 +202,7 @@ export default {
 
                     this.map.addInteraction(this.drawInteraction);
 
-                    if (typeof this.drawInteraction.setDraftColor === 'function') {
+                    if (this.drawInteraction.setDraftColor) {
                         this.drawInteraction.setDraftColor(this.getDraftColor());
                     } else {
                         const applyDraftColor = (feature) => {
