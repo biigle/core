@@ -142,9 +142,6 @@ export default {
             });
             this.shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
         },
-        getDraftColor() {
-            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel?.color : null;
-        },
         updatePolygonBrushDraftColor() {
             const draftColor = this.getDraftColor();
 
@@ -152,7 +149,7 @@ export default {
             this.pendingAnnotationSource?.getFeatures().forEach( (feature) => {
                 setOrUnsetProperty(feature, 'color', draftColor);
             });
-        }
+        },
     },
     watch: {
         selectedLabel() {

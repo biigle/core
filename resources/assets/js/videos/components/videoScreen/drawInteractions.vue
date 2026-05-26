@@ -394,9 +394,6 @@ export default {
                 setOrUnsetProperty(feature, 'color', draftColor);
             });
         },
-        getDraftColor() {
-            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
-        }
     },
     watch: {
         mapReadyRevision: {

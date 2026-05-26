@@ -116,9 +116,6 @@ export default {
             shiftClickSelectInteraction.setActive(this.canModify
                 && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
         },
-        getDraftColor() {
-            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
-        },
         updatePolygonBrushDraftColor() {
             currentInteraction?.setDraftColor?.(this.getDraftColor());
         },

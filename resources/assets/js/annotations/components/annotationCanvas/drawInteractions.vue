@@ -112,7 +112,7 @@ export default {
                 this.map.addInteraction(drawInteraction);
 
                 const applyDraftColor = (feature) => {
-                    setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? this.selectedLabel?.color : null);
+                    setOrUnsetProperty(feature, 'color', this.getDraftColor());
                 };
                 const overlaySource = drawInteraction.getOverlay().getSource();
 
