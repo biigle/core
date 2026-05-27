@@ -220,7 +220,12 @@ export default {
         },
         selectShape(id) {
             this.isDirty = true;
-            this.selectedShape = id;
+            id = Number(id);
+            if (this.selectedShape === id) {
+                this.selectedShape = null;
+            } else {
+                this.selectedShape = id;
+            }
         },
         deselectLabel() {
             if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
