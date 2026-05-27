@@ -1,23 +1,74 @@
 <template>
 <div>
-    <div>
-        <a
-            class="btn btn-default pull-right"
-            href="/manual/tutorials/projects/about#annotation-guideline"
-            title="Learn more about annotation guidelines"
-            target="_blank"
-            >
-            <i class="fa fa-question-circle"></i>
-        </a>
-    </div>
-    <div>
+    <div class="clearfix">
+        <div class="pull-right">
+            <loader :active="loading"></loader>
+            <dropdown>
+                <button
+                    type="button"
+                    class="btn btn-default dropdown-toggle"
+                    >
+                    Manage <span class="caret"></span>
+                </button>
+                <template #dropdown>
+                    <li :class="{ 'disabled': isEditingDescription }">
+                        <a href="#" @click.prevent="editDescription">
+                            <template v-if="guidelineDescription">
+                                Edit description
+                            </template>
+                            <template v-else>
+                                Add description
+                            </template>
+                        </a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li :class="{ 'disabled': !annotationGuideline }">
+                        <a href="#" @click.prevent="deleteGuideline">
+                            Delete guideline
+                        </a>
+                    </li>
+                </template>
+            </dropdown>
+            <a
+                class="btn btn-default"
+                href="/manual/tutorials/projects/about#annotation-guideline"
+                title="Learn more about annotation guidelines"
+                target="_blank"
+                >
+                <i class="fa fa-question-circle"></i>
+            </a>
+        </div>
         <p class="text-muted">
             An annotation guideline can provide detailed annotation instructions and constraints for the labels of a project.
         </p>
-        <p class="text-muted" v-if="hasLabelTrees">
-            Select labels and provide information to get started.
-        </p>
     </div>
+    <div class="row" v-if="isEditingDescription">
+        <div class="col-xs-6 form-group">
+            <textarea
+                class="form-control"
+                placeholder="Guideline description..."
+                v-model="guidelineDescription"
+                ></textarea>
+        </div>
+        <div class="col-xs-6">
+            <button class="btn btn-success" @click="saveDescription">
+                Save description
+            </button>
+            <button class="btn btn-default" @click="cancelEditingDescription">
+                Cancel
+            </button>
+        </div>
+    </div>
+    <div v-else-if="guidelineDescription" class="row">
+        <div class="col-xs-6">
+            <div class="well well-sm">
+                {{ guidelineDescription }}
+            </div>
+        </div>
+    </div>
+    <p class="text-muted" v-if="hasLabelTrees">
+        Select labels and provide information to get started.
+    </p>
     <div class="row">
         <div class="col-xs-6">
             <div class="well well-sm">
@@ -106,7 +157,6 @@
                     >
                     <i class="fa fa-clipboard-list"></i> <span v-text="isInGuideline ? 'Update' : 'Add'"></span>
                 </button>
-                <loader :active="loading"></loader>
                 <button
                     v-show="selectedLabel && isInGuideline"
                     title="Remove this label from the guideline"
@@ -124,14 +174,16 @@
 <script>
 import AnnotationGuidelineApi from '@/projects/api/annotationGuideline.js';
 import AnnotationGuidelineLabelApi from '@/projects/api/annotationGuidelineLabel.js';
-import { handleErrorResponse } from '@/core/messages/store.js';
-import LoaderMixin from '@/core/mixins/loader.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LoaderMixin from '@/core/mixins/loader.vue';
+import { Dropdown } from 'uiv';
+import { handleErrorResponse } from '@/core/messages/store.js';
 
 export default {
     mixins: [LoaderMixin],
     components: {
         labelTrees: LabelTrees,
+        Dropdown,
     },
     props: {
         isAdmin: {
@@ -162,6 +214,9 @@ export default {
             referenceImagePreview: null,
             clearReferenceImage: false,
             isDirty: false,
+            guidelineDescription: null,
+            previousGuidelineDescription: null,
+            isEditingDescription: false,
         };
     },
     computed: {
@@ -305,7 +360,11 @@ export default {
                 }, handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        saveLabel() {
+        async saveLabel() {
+            if (this.loading) {
+                return;
+            }
+
             let formData = new FormData();
             formData.append('label_id', this.selectedLabel.id);
             formData.append('description', this.labelDescription || '');
@@ -318,27 +377,79 @@ export default {
                 formData.append('reference_image', '');
             }
 
-            this.startLoading();
-            let promise = Promise.resolve();
             if (this.creating) {
-                promise = AnnotationGuidelineApi.save({ id: this.projectId }, {})
-                    .then(
-                        (response) => { this.annotationGuideline = response.body; },
-                        handleErrorResponse,
-                    );
+                try {
+                    await this.createOrSaveGuideline();
+                } catch (e) {
+                    return;
+                }
             }
 
-            return promise
-                .then(
-                    () => AnnotationGuidelineLabelApi.save({ id: this.annotationGuideline.id }, formData),
-                    handleErrorResponse,
-                )
+            this.startLoading();
+            return AnnotationGuidelineLabelApi.save({ id: this.annotationGuideline.id }, formData)
                 .then((response) => {
                     const label = response.body;
                     this.annotationGuidelineLabels.set(label.label_id, label);
                     this.isDirty = false;
                 }, handleErrorResponse)
                 .finally(this.finishLoading);
+        },
+        createOrSaveGuideline() {
+            if (this.loading) {
+                return;
+            }
+
+            this.startLoading();
+            const payload = {};
+            if (this.guidelineDescription) {
+                payload.description = this.guidelineDescription;
+            }
+
+            if (this.creating) {
+                return AnnotationGuidelineApi.save({ id: this.projectId }, payload)
+                    .then(
+                        response => { this.annotationGuideline = response.body; },
+                        error => { handleErrorResponse(error); throw error; },
+                    )
+                    .finally(this.finishLoading);
+            }
+
+            return AnnotationGuidelineApi.update({ id: this.annotationGuideline.id }, payload)
+                    .catch(error => { handleErrorResponse(error); throw error; })
+                    .finally(this.finishLoading);
+
+        },
+        editDescription() {
+            this.isEditingDescription = true;
+            this.previousGuidelineDescription = this.guidelineDescription;
+        },
+        async saveDescription() {
+            try {
+                await this.createOrSaveGuideline();
+            } catch (e) {
+                return;
+            }
+            this.isEditingDescription = false;
+        },
+        cancelEditingDescription() {
+            this.guidelineDescription = this.previousGuidelineDescription;
+            this.isEditingDescription = false;
+        },
+        deleteGuideline() {
+            if (this.annotationGuideline && confirm('Are you sure you want to delete this guideline?')) {
+                this.startLoading();
+                AnnotationGuidelineApi.delete({ id: this.annotationGuideline.id })
+                    .then(this.reset, handleErrorResponse)
+                    .finally(this.finishLoading);
+            }
+        },
+        reset() {
+            this.resetForm();
+            this.annotationGuideline = null;
+            this.guidelineDescription = null;
+            this.isEditingDescription = false;
+            this.selectedLabel = null;
+            this.annotationGuidelineLabels.clear();
         },
     },
 };
