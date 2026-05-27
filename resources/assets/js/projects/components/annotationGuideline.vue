@@ -3,7 +3,7 @@
     <div class="clearfix">
         <div class="pull-right">
             <loader :active="loading"></loader>
-            <dropdown>
+            <dropdown v-if="isAdmin">
                 <button
                     type="button"
                     class="btn btn-default dropdown-toggle"
@@ -66,10 +66,10 @@
             </div>
         </div>
     </div>
-    <p class="text-muted" v-if="hasLabelTrees">
+    <p class="text-info" v-if="hasLabelTrees && isAdmin && !hasLabels">
         Select labels and provide information to get started.
     </p>
-    <div class="row">
+    <div v-if="isAdmin || hasLabels" class="row">
         <div class="col-xs-6">
             <div class="well well-sm">
                 <label-trees
@@ -86,23 +86,27 @@
             </div>
         </div>
         <div class="col-xs-6">
-            <form @submit.prevent="saveLabel" v-if="hasLabelTrees">
-                <div class="form-group">
+            <p v-if="!isAdmin && !isInGuideline" class="text-info">
+                Select a label with <i class="fa fa-clipboard-list"></i> to see guideline information.
+            </p>
+            <form @submit.prevent="saveLabel" v-else-if="hasLabelTrees">
+                <div v-if="isAdmin || labelDescription" class="form-group">
                     <label for="label-description">Description</label>
                     <textarea
                         v-model="labelDescription"
                         id="label-description"
                         :disabled="!selectedLabel"
+                        :readonly="!isAdmin"
                         class="form-control"
                         maxlength="200"
-                        @change="isDirty = true"
+                        @input="isDirty = true"
                     ></textarea>
-                    <p class="help-block">
+                    <p v-if="isAdmin" class="help-block">
                         Describe how objects with this label can be identified and how they should be annotated.
                     </p>
                 </div>
 
-                <div class="form-group">
+                <div v-if="isAdmin || selectedShape" class="form-group">
                     <label>Shape</label>
                     <div class="btn-group btn-group-justified">
                         <div v-for="(shape, shapeId) in availableShapes" class="btn-group">
@@ -110,7 +114,7 @@
                                 class="btn btn-default"
                                 :class="{'active btn-info': selectedShape == shapeId}"
                                 :title="shape"
-                                :disabled="!selectedLabel"
+                                :disabled="!selectedLabel || !isAdmin"
                                 @click.prevent="selectShape(shapeId)"
                                 >
                                 <i
@@ -120,21 +124,21 @@
                             </button>
                         </div>
                     </div>
-                    <p class="help-block">
+                    <p v-if="isAdmin" class="help-block">
                         Select a shape tool that should be used for annotations with this label.
                     </p>
                 </div>
 
-                <div class="form-group">
+                <div v-show="isAdmin || referenceImagePreviewLoaded" class="form-group">
                     <label>Reference Image</label>
-                    <div class="form-group">
-                    <button
-                        v-if="referenceImagePreview && referenceImagePreviewLoaded"
-                        class="btn btn-default btn-sm pull-right"
-                        title="Remove reference image"
-                        @click.prevent="removeImage"
-                        ><i class="fa fa-times"></i></button>
-                        <input type="file" @change="addImage" :disabled="!selectedLabel" />
+                    <div class="form-group" v-if="isAdmin">
+                        <button
+                            v-if="referenceImagePreview && referenceImagePreviewLoaded"
+                            class="btn btn-default btn-sm pull-right"
+                            title="Remove reference image"
+                            @click.prevent="removeImage"
+                            ><i class="fa fa-times"></i></button>
+                            <input type="file" @change="addImage" :disabled="!selectedLabel" />
                     </div>
                     <div v-show="referenceImagePreviewLoaded" class="well well-sm">
                         <img
@@ -144,12 +148,13 @@
                             @error="referenceImagePreview = null"
                             />
                     </div>
-                    <p class="help-block">
+                    <p v-if="isAdmin" class="help-block">
                         Upload a reference image that helps to identify objects with this label.
                     </p>
                 </div>
 
                 <button
+                    v-if="isAdmin"
                     v-show="selectedLabel"
                     :disabled="!canSave"
                     class="btn btn-success"
@@ -158,6 +163,7 @@
                     <i class="fa fa-clipboard-list"></i> <span v-text="isInGuideline ? 'Update' : 'Add'"></span>
                 </button>
                 <button
+                    v-if="isAdmin"
                     v-show="selectedLabel && isInGuideline"
                     title="Remove this label from the guideline"
                     :disabled="loading"
@@ -201,12 +207,12 @@ export default {
     },
     data() {
         return {
-            labelTrees: biigle.$require('projects.labelTrees'),
+            labelTrees: [],
             selectedLabel: null,
             annotationGuidelineLabels: new Map(),
-            availableShapes: biigle.$require('projects.availableShapes'),
-            projectId: biigle.$require('projects.project').id,
-            annotationGuideline: biigle.$require('projects.annotationGuideline'),
+            availableShapes: null,
+            projectId: null,
+            annotationGuideline: null,
             labelDescription: '',
             selectedShape: null,
             referenceImage: null,
@@ -220,6 +226,9 @@ export default {
         };
     },
     computed: {
+        hasLabels() {
+            return this.labelsInGuideline.length > 0;
+        },
         labelsInGuideline() {
             return [...this.annotationGuidelineLabels.keys()];
         },
@@ -243,13 +252,17 @@ export default {
             if (guidelineLabel) {
                 this.labelDescription = guidelineLabel.description || '';
                 this.selectedShape = guidelineLabel.shape_id || null;
-                this.referenceImagePreviewLoaded = false;
                 this.referenceImagePreview = guidelineLabel.reference_image_url;
                 this.isDirty = false;
             }
         },
     },
     created() {
+        this.labelTrees = biigle.$require('projects.labelTrees');
+        this.availableShapes = biigle.$require('projects.availableShapes');
+        this.projectId = biigle.$require('projects.project').id;
+        this.annotationGuideline = biigle.$require('projects.annotationGuideline');
+
         if (this.isAdmin) {
             window.addEventListener('beforeunload', (e) => {
                 if (this.isDirty) {
@@ -260,6 +273,7 @@ export default {
         }
 
         if (this.annotationGuideline) {
+            this.guidelineDescription = this.annotationGuideline.description;
             this.annotationGuideline.labels.forEach((label) => {
                 this.annotationGuidelineLabels.set(label.id, label.pivot);
             });
@@ -295,6 +309,7 @@ export default {
             this.labelDescription = '';
             this.selectedShape = null;
             this.referenceImage = null;
+            this.referenceImagePreviewLoaded = false;
             this.clearReferenceImage = false;
             if (this.referenceImagePreview) {
                 if (this.referenceImagePreview.startsWith('blob:')) {
@@ -361,7 +376,7 @@ export default {
                 .finally(this.finishLoading);
         },
         async saveLabel() {
-            if (this.loading) {
+            if (this.loading || !this.isAdmin) {
                 return;
             }
 
@@ -395,7 +410,7 @@ export default {
                 .finally(this.finishLoading);
         },
         createOrSaveGuideline() {
-            if (this.loading) {
+            if (this.loading || !this.isAdmin) {
                 return;
             }
 
@@ -436,7 +451,7 @@ export default {
             this.isEditingDescription = false;
         },
         deleteGuideline() {
-            if (this.annotationGuideline && confirm('Are you sure you want to delete this guideline?')) {
+            if (this.annotationGuideline && !this.loading && this.isAdmin && confirm('Are you sure you want to delete this guideline?')) {
                 this.startLoading();
                 AnnotationGuidelineApi.delete({ id: this.annotationGuideline.id })
                     .then(this.reset, handleErrorResponse)
