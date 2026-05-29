@@ -269,6 +269,25 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $response->assertSessionHas('deleted', false);
     }
 
+    public function testDestroyRequiresForceWithGuidelineLabels()
+    {
+        $p = $this->project();
+        $t = $this->labelTree();
+        $label = $this->labelRoot();
+
+        $guideline = AnnotationGuideline::factory()->create(['project_id' => $p->id]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+
+        $this->beAdmin();
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}")
+            ->assertStatus(409);
+
+        $this->assertTrue($p->labelTrees()->where('id', $t->id)->exists());
+    }
+
     public function testDestroyDeletesGuidelineLabels()
     {
         config(['projects.annotation_guideline_disk' => 'annotation_storage']);
@@ -286,7 +305,7 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
 
         $this->beAdmin();
-        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}")
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}", ['force' => true])
             ->assertStatus(200);
 
         $this->assertNull($guidelineLabel->fresh());
