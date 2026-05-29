@@ -12,10 +12,8 @@ class ProjectObserver
 {
     /**
      * A project must not be created without having a creator.
-     * @param \Biigle\Project $project
-     *
      */
-    public function creating($project)
+    public function creating(Project $project)
     {
         if ($project->creator_id === null) {
             throw new Exception('Project creator must not be null when creating a new project.');
@@ -24,11 +22,8 @@ class ProjectObserver
 
     /**
      * Handle actions for newly created projects.
-     *
-     * @param \Biigle\Project $project
-     * @return void
      */
-    public function created($project)
+    public function created(Project $project)
     {
         // set creator as project admin
         // this must be done *after* the project is saved so it already has an id
@@ -41,12 +36,16 @@ class ProjectObserver
         $project->labelTrees()->attach($ids);
     }
 
+    public function deleting(Project $project)
+    {
+        // Delete stored files of the annotation guideline.
+        $project->annotationGuideline?->delete();
+    }
+
     /**
      * Update the source name of reports when the source is deleted.
-     *
-     * @param \Biigle\Project $project
      */
-    public function deleted($project)
+    public function deleted(Project $project)
     {
         Report::where('source_id', '=', $project->id)
             ->where('source_type', '=', Project::class)

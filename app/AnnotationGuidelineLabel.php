@@ -15,6 +15,12 @@ class AnnotationGuidelineLabel extends Pivot
 
     protected $table = 'annotation_guideline_label';
 
+    protected $primaryKey = 'uuid';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     /**
      * The attributes that should be casted to native types.
      *

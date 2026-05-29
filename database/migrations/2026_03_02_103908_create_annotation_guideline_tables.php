@@ -23,6 +23,7 @@ return new class extends Migration {
         });
 
         Schema::create('annotation_guideline_label', function (Blueprint $table) {
+            $table->uuid('uuid');
             $table->timestamps();
 
             $table->foreignId('annotation_guideline_id')
@@ -38,7 +39,6 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('set null');
 
-            $table->uuid('uuid');
             $table->text('description')->nullable();
 
             $table->index('annotation_guideline_id');
