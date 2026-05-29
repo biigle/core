@@ -3,10 +3,13 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Project;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Visibility;
+use Storage;
 
 class ProjectLabelTreeControllerTest extends ApiTestCase
 {
@@ -264,5 +267,29 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $response->assertRedirect('/settings');
         // should be false because nothing was deleted
         $response->assertSessionHas('deleted', false);
+    }
+
+    public function testDestroyDeletesGuidelineLabels()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        $disk = Storage::fake('annotation_storage');
+
+        $p = $this->project();
+        $t = $this->labelTree();
+        $label = $this->labelRoot();
+
+        $guideline = AnnotationGuideline::factory()->create(['project_id' => $p->id]);
+        $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
+
+        $this->beAdmin();
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}")
+            ->assertStatus(200);
+
+        $this->assertNull($guidelineLabel->fresh());
+        $disk->assertMissing("{$guideline->id}/{$guidelineLabel->uuid}");
     }
 }

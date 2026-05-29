@@ -2,9 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Http\Requests\StoreProjectLabelTree;
 use Biigle\LabelTree;
 use Biigle\Project;
+use DB;
 use Illuminate\Http\Request;
 
 class ProjectLabelTreeController extends Controller
@@ -156,7 +158,14 @@ class ProjectLabelTreeController extends Controller
     {
         $project = Project::findOrFail($pid);
         $this->authorize('update', $project);
-        $count = $project->labelTrees()->detach($lid);
+        $count = DB::transaction(function () use ($project, $lid) {
+            AnnotationGuidelineLabel::join('annotation_guidelines', 'annotation_guidelines.id', '=', 'annotation_guideline_label.annotation_guideline_id')
+                ->where('annotation_guidelines.project_id', $project->id)
+                ->whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->where('label_tree_id', $lid))
+                ->each(fn ($gl) => $gl->delete());
+
+            return $project->labelTrees()->detach($lid);
+        });
 
         if (!$this->isAutomatedRequest()) {
             return $this->fuzzyRedirect()->with('deleted', $count > 0);
