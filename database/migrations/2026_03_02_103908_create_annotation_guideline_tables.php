@@ -23,7 +23,7 @@ return new class extends Migration {
         });
 
         Schema::create('annotation_guideline_label', function (Blueprint $table) {
-            $table->uuid('uuid');
+            $table->uuid('uuid')->primary();
             $table->timestamps();
 
             $table->foreignId('annotation_guideline_id')
