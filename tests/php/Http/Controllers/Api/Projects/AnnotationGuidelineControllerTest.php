@@ -121,6 +121,19 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->assertNull($guideline->fresh()->description);
     }
 
+    public function testUpdateClearDescriptionOnMissing()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'description' => 'old',
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path)->assertStatus(200);
+        $this->assertNull($guideline->fresh()->description);
+    }
+
     public function testDestroyRequiresAdmin()
     {
         $guideline = AnnotationGuideline::factory()->create([
