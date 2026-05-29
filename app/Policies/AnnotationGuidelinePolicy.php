@@ -12,6 +12,13 @@ class AnnotationGuidelinePolicy extends CachedPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user, string $ability)
+    {
+        if ($user->can('sudo')) {
+            return true;
+        }
+    }
+
     /**
      * Determine if the user can edit the given annotation guideline.
      */

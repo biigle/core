@@ -35,6 +35,6 @@ class AnnotationGuidelinePolicyTest extends TestCase
         $this->assertFalse($this->editor->can('update', $this->guideline));
         $this->assertFalse($this->expert->can('update', $this->guideline));
         $this->assertTrue($this->admin->can('update', $this->guideline));
-        $this->assertFalse($this->globalAdmin->can('update', $this->guideline));
+        $this->assertTrue($this->globalAdmin->can('update', $this->guideline));
     }
 }
