@@ -1,5 +1,5 @@
 <script>
-import AnnotationGuideline from "./components/annotation_guideline/annotationGuideline.vue";
+import AnnotationGuideline from "./components/annotationGuideline.vue";
 
 export default {
     components: {

@@ -284,28 +284,19 @@ $router->get('projects/{id}/label-count', [
     'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
 ]);
 
-$router->get('projects/{id}/annotation-guideline', [
-    'uses' => 'Projects\AnnotationGuidelineController@index',
+$router->resource('projects.annotation-guidelines', 'Projects\AnnotationGuidelineController', [
+    'only' => ['index', 'store',],
+    'parameters' => ['projects' => 'id'],
 ]);
 
-$router->post('projects/{id}/annotation-guideline', [
-    'uses' => 'Projects\AnnotationGuidelineController@update',
+$router->resource('annotation-guidelines', 'Projects\AnnotationGuidelineController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['annotation-guidelines' => 'id'],
 ]);
 
-$router->delete('projects/{id}/annotation-guideline', [
-    'uses' => 'Projects\AnnotationGuidelineController@delete',
-]);
-
-$router->post('projects/{id}/annotation-guideline-label', [
-    'uses' => 'Projects\AnnotationGuidelineLabelController@update',
-]);
-
-$router->delete('projects/{id}/annotation-guideline-label', [
-    'uses' => 'Projects\AnnotationGuidelineLabelController@delete',
-]);
-
-$router->delete('projects/{id}/annotation-guideline-label/delete-image', [
-    'uses' => 'Projects\AnnotationGuidelineLabelController@deleteReferenceImage',
+$router->resource('annotation-guidelines.labels', 'Projects\AnnotationGuidelineLabelController', [
+    'only' => ['store', 'destroy'],
+    'parameters' => ['annotation-guidelines' => 'id'],
 ]);
 
 $router->get('public-export/label-trees/{id}', [

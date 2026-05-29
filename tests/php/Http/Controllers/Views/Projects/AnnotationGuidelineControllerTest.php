@@ -25,7 +25,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         $this->get($path)->assertStatus(200);
 
-        AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
+        AnnotationGuideline::create(['project_id' => $id, 'description' => 'someDescription']);
 
         $this->beGuest();
         $this->get($path)->assertStatus(200);

@@ -2,9 +2,12 @@
 
 namespace Biigle\Tests;
 
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Label;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
+use Storage;
 
 class LabelTest extends ModelTestCase
 {
@@ -160,5 +163,22 @@ class LabelTest extends ModelTestCase
         $this->assertFalse(Label::used()->exists());
         VideoLabelTest::create(['label_id' => $this->model->id]);
         $this->assertTrue(Label::used()->exists());
+    }
+
+    public function testDeleteLabelDeletesGuidelineLabelReferenceImage()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        Storage::fake('annotation_storage');
+
+        $guideline = AnnotationGuideline::factory()->create();
+        $pivot = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->model->id,
+        ]);
+        Storage::disk('annotation_storage')->put("{$guideline->id}/{$pivot->uuid}", 'image');
+
+        $this->model->delete();
+
+        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/{$pivot->uuid}");
     }
 }

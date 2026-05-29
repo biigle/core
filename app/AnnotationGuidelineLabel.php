@@ -2,57 +2,64 @@
 
 namespace Biigle;
 
+use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Storage;
 
 /**
- * Model for labels within an annotation guideline.
- *
- * @property int $id
+ * Pivot model for labels within an annotation guideline.
  */
-class AnnotationGuidelineLabel extends Model
+class AnnotationGuidelineLabel extends Pivot
 {
     use HasFactory;
+
+    protected $table = 'annotation_guideline_label';
+
+    protected $primaryKey = 'uuid';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
 
     /**
      * The attributes that should be casted to native types.
      *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'annotation_guideline' => 'int',
-        'label' => 'int',
-        'shape' => 'int',
-        'description' => 'string',
-        'reference_image' => 'boolean',
-    ];
-
-    /**
-     * The attributes that are mass assignable.
-     *
      * @var list<string>
      */
-    protected $fillable = [
-        'annotation_guideline',
-        'label',
-        'shape',
-        'description',
-        'reference_image',
+    protected $appends = ['reference_image_url'];
+
+    protected $casts = [
+        'label_id' => 'int',
+        'shape_id' => 'int',
+        'annotation_guideline_id' => 'int',
     ];
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (self $guidelineLabel) {
+            // Defer storage deletion until after the DB transaction commits to avoid
+            // deleting files if the transaction rolls back.
+            DB::afterCommit(function () use ($guidelineLabel) {
+                Storage::disk(config('projects.annotation_guideline_disk'))
+                    ->delete("{$guidelineLabel->annotation_guideline_id}/{$guidelineLabel->uuid}");
+            });
+        });
+    }
+
+    public function getReferenceImageUrlAttribute(): string
+    {
+        return Storage::disk(config('projects.annotation_guideline_disk'))
+            ->url("{$this->annotation_guideline_id}/{$this->uuid}");
+    }
 
     /**
-     * The labels that have a guideline for their annotation
+     * The defined shape for this label.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Label, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
      */
-    public function label()
+    public function shape()
     {
-        return $this->belongsTo(Label::class, 'label');
+        return $this->belongsTo(Shape::class);
     }
 }

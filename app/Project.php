@@ -344,4 +344,14 @@ class Project extends Model
     {
         Cache::forget("project-{$this->id}-has-geo-info");
     }
+
+    /**
+     * The annotation guideline of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<AnnotationGuideline, $this>
+     */
+    public function annotationGuideline()
+    {
+        return $this->hasOne(AnnotationGuideline::class);
+    }
 }
