@@ -6,6 +6,7 @@ use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Report;
 use Biigle\Role;
+use DB;
 use Exception;
 
 class ProjectObserver
@@ -38,8 +39,10 @@ class ProjectObserver
 
     public function deleting(Project $project)
     {
-        // Delete stored files of the annotation guideline.
-        $project->annotationGuideline?->delete();
+        // Delete manually so the reference image files are cleaned.
+        // Wrap in a transaction so DB::afterCommit() in the guideline model defers
+        // storage deletion until the DB delete is committed.
+        DB::transaction(fn () => $project->annotationGuideline?->delete());
     }
 
     /**

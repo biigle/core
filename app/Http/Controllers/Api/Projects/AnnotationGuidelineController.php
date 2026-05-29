@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api\Projects;
 use Biigle\AnnotationGuideline;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
@@ -120,6 +121,8 @@ class AnnotationGuidelineController extends Controller
     {
         $guideline = AnnotationGuideline::findOrFail($id);
         $this->authorize('update', $guideline->project);
-        $guideline->delete();
+        // Wrap in a transaction so DB::afterCommit() in the guideline model defers
+        // storage deletion until the DB delete is committed.
+        DB::transaction(fn () => $guideline->delete());
     }
 }

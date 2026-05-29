@@ -89,6 +89,8 @@ class AnnotationGuidelineLabelController extends Controller
             ->where('label_id', $labelId)
             ->firstOrFail();
 
-        $label->pivot->delete();
+        // Wrap in a transaction so DB::afterCommit() in the guideline label model
+        // defers storage deletion until the DB delete is committed.
+        DB::transaction(fn () => $label->pivot->delete());
     }
 }

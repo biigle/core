@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Storage;
@@ -34,8 +35,12 @@ class AnnotationGuideline extends Model
     protected static function booted(): void
     {
         static::deleting(function (self $guideline) {
-            Storage::disk(config('projects.annotation_guideline_disk'))
-                ->deleteDirectory("$guideline->id");
+            // Defer storage deletion until after the DB transaction commits to avoid
+            // deleting files if the transaction rolls back.
+            DB::afterCommit(function () use ($guideline) {
+                Storage::disk(config('projects.annotation_guideline_disk'))
+                    ->deleteDirectory("$guideline->id");
+            });
         });
     }
 

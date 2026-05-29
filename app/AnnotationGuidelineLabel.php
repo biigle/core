@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Storage;
@@ -37,8 +38,12 @@ class AnnotationGuidelineLabel extends Pivot
     protected static function booted(): void
     {
         static::deleting(function (self $guidelineLabel) {
-            Storage::disk(config('projects.annotation_guideline_disk'))
-                ->delete("{$guidelineLabel->annotation_guideline_id}/{$guidelineLabel->uuid}");
+            // Defer storage deletion until after the DB transaction commits to avoid
+            // deleting files if the transaction rolls back.
+            DB::afterCommit(function () use ($guidelineLabel) {
+                Storage::disk(config('projects.annotation_guideline_disk'))
+                    ->delete("{$guidelineLabel->annotation_guideline_id}/{$guidelineLabel->uuid}");
+            });
         });
     }
 
