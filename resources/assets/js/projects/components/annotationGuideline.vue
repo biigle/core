@@ -31,7 +31,7 @@
             </dropdown>
             <a
                 class="btn btn-default"
-                href="/manual/tutorials/projects/about#annotation-guideline"
+                href="/manual/tutorials/projects/about#guideline"
                 title="Learn more about annotation guidelines"
                 target="_blank"
                 >
