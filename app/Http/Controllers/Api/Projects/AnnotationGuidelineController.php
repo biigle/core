@@ -30,11 +30,12 @@ class AnnotationGuidelineController extends Controller
      *     "id": 4,
      *     "name": "some label",
      *     "pivot": {
+     *       "uuid": "...",
      *       "annotation_guideline_id": 1,
      *       "label_id": 4,
      *       "shape_id": 7,
      *       "description": "description of a label",
-     *       "reference_image_path": null
+     *       "reference_image_url": null
      *     }
      *   }]
      * }

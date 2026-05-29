@@ -140,7 +140,7 @@
                             ><i class="fa fa-times"></i></button>
                             <input type="file" @change="addImage" :disabled="!selectedLabel" />
                     </div>
-                    <div v-show="referenceImagePreviewLoaded" class="well well-sm">
+                    <div v-show="referenceImagePreview && referenceImagePreviewLoaded" class="well well-sm">
                         <img
                             v-if="referenceImagePreview"
                             :src="referenceImagePreview"
@@ -218,7 +218,6 @@ export default {
             referenceImage: null,
             referenceImagePreviewLoaded: false,
             referenceImagePreview: null,
-            clearReferenceImage: false,
             isDirty: false,
             guidelineDescription: null,
             previousGuidelineDescription: null,
@@ -280,12 +279,11 @@ export default {
         }
     },
     methods: {
-        selectLabel(label) {
+        async selectLabel(label) {
             if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
-                this.saveLabel().then(() => this.selectedLabel = label);
-            } else {
-                this.selectedLabel = label;
+                await this.saveLabel();
             }
+            this.selectedLabel = label;
         },
         selectShape(id) {
             this.isDirty = true;
@@ -296,21 +294,17 @@ export default {
                 this.selectedShape = id;
             }
         },
-        deselectLabel() {
+        async deselectLabel() {
             if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
-                this.saveLabel().then(() => {
-                    this.selectedLabel = null;
-                });
-            } else {
-                this.selectedLabel = null;
+                await this.saveLabel();
             }
+            this.selectedLabel = null;
         },
         resetForm() {
             this.labelDescription = '';
             this.selectedShape = null;
             this.referenceImage = null;
             this.referenceImagePreviewLoaded = false;
-            this.clearReferenceImage = false;
             if (this.referenceImagePreview) {
                 if (this.referenceImagePreview.startsWith('blob:')) {
                     URL.revokeObjectURL(this.referenceImagePreview);
@@ -320,12 +314,12 @@ export default {
             this.isDirty = false;
         },
         removeImage() {
-            this.referenceImage = null;
             if (this.referenceImagePreview?.startsWith('blob:')) {
                 URL.revokeObjectURL(this.referenceImagePreview);
             }
             this.referenceImagePreview = null;
-            this.clearReferenceImage = true;
+            this.referenceImagePreviewLoaded = false;
+            this.referenceImage = null;
             this.isDirty = true;
         },
         addImage(event) {
@@ -377,7 +371,7 @@ export default {
         },
         async saveLabel() {
             if (this.loading || !this.isAdmin) {
-                return;
+                return Promise.resolve();
             }
 
             let formData = new FormData();
@@ -388,7 +382,7 @@ export default {
             }
             if (this.referenceImage !== null) {
                 formData.append('reference_image', this.referenceImage);
-            } else if (this.clearReferenceImage) {
+            } else {
                 formData.append('reference_image', '');
             }
 
@@ -396,7 +390,7 @@ export default {
                 try {
                     await this.createOrSaveGuideline();
                 } catch (e) {
-                    return;
+                    return Promise.resolve();
                 }
             }
 
