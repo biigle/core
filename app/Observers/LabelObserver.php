@@ -12,7 +12,8 @@ class LabelObserver
     {
         // Delete annotation guideline labels manually to clean up their stored
         // reference images.
-        DB::transaction(fn () =>
+        DB::transaction(
+            fn () =>
             AnnotationGuidelineLabel::where('label_id', $label->id)->each(fn ($gl) => $gl->delete())
         );
     }

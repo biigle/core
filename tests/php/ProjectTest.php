@@ -4,7 +4,6 @@ namespace Biigle\Tests;
 
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
-use Storage;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
@@ -14,6 +13,7 @@ use Biigle\Role;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 use Queue;
+use Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends ModelTestCase

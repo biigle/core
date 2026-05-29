@@ -12,7 +12,8 @@ class LabelTreeObserver
     {
         // Delete annotation guideline labels manually to clean up their stored
         // reference images.
-        DB::transaction(fn () =>
+        DB::transaction(
+            fn () =>
             AnnotationGuidelineLabel::whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->where('label_tree_id', $labelTree->id))
                 ->each(fn ($gl) => $gl->delete())
         );
