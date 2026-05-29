@@ -17,7 +17,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
         $this->doTestApiRoute('POST', $path);
@@ -34,7 +34,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
         $this->beAdmin();
@@ -56,7 +56,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
         AnnotationGuidelineLabel::factory()->create([
@@ -87,7 +87,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
         $file = new UploadedFile(
             __DIR__.'/../../../../../files/test-image.png',
@@ -113,7 +113,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
@@ -143,7 +143,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
@@ -168,7 +168,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
@@ -182,12 +182,25 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $disk->assertExists("{$guideline->id}/{$guidelineLabel->uuid}");
     }
 
+    public function testStoreRequiresLabelBelongsToProject()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        // Label from a label tree not attached to the project.
+        $label = Label::factory()->create();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, ['label_id' => $label->id])->assertStatus(422);
+    }
+
     public function testStoreValidatesReferenceImageType()
     {
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
         $this->beAdmin();
@@ -202,7 +215,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
@@ -223,7 +236,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
@@ -244,7 +257,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
         ]);
-        $label = Label::factory()->create();
+        $label = $this->labelRoot();
         $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
