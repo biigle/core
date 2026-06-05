@@ -108,7 +108,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
-                    addCondition: (event) => noModifierKeysCondition(event) && !rightClick(event)
+                    addCondition: (event) => noModifierKeysCondition(event) && !rightClick(event),
                     subtractCondition: neverCondition,
                     resizeCondition: altKeyOnlyCondition,
                 });
