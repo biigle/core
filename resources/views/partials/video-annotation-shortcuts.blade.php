@@ -142,7 +142,8 @@
 </table>
 
 <p>
-    <a name="jump-by-frame"></a>When <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">jump by frame</a> is enabled:
+    <a name="jump-by-frame"></a>When <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">jump
+        by frame</a> is enabled:
 </p>
 
 <table class="table">
@@ -168,25 +169,6 @@
         <tr>
             <td><kbd>Shift</kbd>+<kbd>Arrow right</kbd></td>
             <td>Next video</td>
-        </tr>
-    </tbody>
-</table>
-
-<p>
-    When any of the polygon brush/fill/eraser tools or the magic wand tool is active:
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Key</th>
-            <th>Function</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><kbd>Right click</kbd> (held)</td>
-            <td>Drag the map<br></td>
         </tr>
     </tbody>
 </table>
@@ -255,7 +237,8 @@
         </tr>
         <tr>
             <td><kbd>Esc</kbd></td>
-            <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise</td>
+            <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise
+            </td>
         </tr>
         <tr>
             <td><kbd>Backspace</kbd></td>
