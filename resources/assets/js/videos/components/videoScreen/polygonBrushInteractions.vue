@@ -8,6 +8,7 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
+import { rightClick } from '../../../annotations/ol/events/condition';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush
@@ -66,7 +67,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     resizeCondition: altKeyOnlyCondition,
-                    condition: (event) => event.originalEvent.button !== 2
+                    condition: !rightClick
                 });
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
@@ -86,7 +87,7 @@ export default {
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
                     addCondition: neverCondition,
-                    subtractCondition: (event) => noModifierKeysCondition(event) && event.originalEvent.button !== 2,
+                    subtractCondition: (event) => noModifierKeysCondition(event) && !rightClick(event),
                     resizeCondition: altKeyOnlyCondition,
                 });
                 this.polygonEraserInteraction.on('modifystart', this.handleModifyStart);
@@ -107,7 +108,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
-                    addCondition: (event) => noModifierKeysCondition(event) && event.originalEvent.button !== 2,
+                    addCondition: (event) => noModifierKeysCondition(event) && !rightClick(event)
                     subtractCondition: neverCondition,
                     resizeCondition: altKeyOnlyCondition,
                 });

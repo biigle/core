@@ -8,6 +8,7 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import { rightClick } from './events/condition';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -205,7 +206,7 @@ class MagicWandInteraction extends PointerInteraction {
      * Start drawing of a sketch.
      */
     handleDownEvent(e) {
-        if (e.originalEvent.button === 2) {
+        if (rightClick(e)) {
             return false;
         }
         this.downPoint[0] = Math.round(e.coordinate[0]);

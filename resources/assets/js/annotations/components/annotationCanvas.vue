@@ -50,6 +50,7 @@ import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import { rightClick } from '../ol/events/condition.js';
 
 /**
  * The annotator canvas
@@ -291,7 +292,7 @@ export default {
 
             map.addInteraction(new DragPan({
                 condition: (mapBrowserEvent) => {
-                    return mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
+                    return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
                 },
             }));
 

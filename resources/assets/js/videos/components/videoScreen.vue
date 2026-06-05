@@ -432,6 +432,7 @@ import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction';
 import {markRaw} from 'vue';
 import { noModifierKeys } from '@biigle/ol/events/condition';
+import { rightClick } from '../../annotations/ol/events/condition.js';
 
 export default {
     emits: [
@@ -662,7 +663,7 @@ export default {
 
             map.addInteraction(new DragPan({
                 condition: (mapBrowserEvent) => {
-                    return mapBrowserEvent.originalEvent.button === 2 && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
+                    return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
                 },
             }));
 
