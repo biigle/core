@@ -16,7 +16,6 @@
         }
     ],
     "require": {
-        "php": "^8.2",
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
@@ -126,7 +125,7 @@
             "composer/package-versions-deprecated": true
         },
         "platform": {
-            "php": "8.2.21"
+            "php": "8.5.7"
         }
     },
     "prefer-stable": true

@@ -171,7 +171,7 @@ class Project extends Model
     public function removeUserId($userId)
     {
         if ($this->userCanBeRemoved($userId)) {
-            return (boolean) $this->users()->detach($userId);
+            return (bool) $this->users()->detach($userId);
         }
 
         return false;
