@@ -77,7 +77,6 @@ export default {
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
                 this.map.addInteraction(this.polygonBrushInteraction);
-                this.updatePolygonBrushDraftColor();
             }
         },
         togglePolygonEraserInteraction(isUsingPolygonEraser) {
@@ -102,7 +101,6 @@ export default {
                 this.polygonEraserInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonEraserInteraction);
                 this.map.addInteraction(this.shiftClickSelectInteraction);
-                this.updatePolygonBrushDraftColor();
             }
         },
         togglePolygonFillInteraction(isUsingPolygonFill) {
@@ -127,7 +125,6 @@ export default {
                 this.polygonFillInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonFillInteraction);
                 this.map.addInteraction(this.shiftClickSelectInteraction);
-                this.updatePolygonBrushDraftColor();
             }
         },
         initShiftSelectInteraction() {

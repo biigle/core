@@ -125,7 +125,6 @@ export default {
             if (this.isUsingPolygonBrush) {
                 this.resetCurrentInteraction();
                 this.togglePolygonBrushInteraction();
-                this.updatePolygonBrushDraftColor();
             }
         },
         isUsingPolygonEraser() {
@@ -133,7 +132,6 @@ export default {
                 this.resetCurrentInteraction();
                 this.toggleShiftClickSelectInteraction();
                 this.togglePolygonEraserInteraction();
-                this.updatePolygonBrushDraftColor();
             }
         },
         isUsingPolygonFill() {
@@ -141,7 +139,6 @@ export default {
                 this.resetCurrentInteraction();
                 this.toggleShiftClickSelectInteraction();
                 this.togglePolygonFillInteraction();
-                this.updatePolygonBrushDraftColor();
             }
         },
         isNotAPolygonTool() {
