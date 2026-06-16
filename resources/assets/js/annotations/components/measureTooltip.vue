@@ -91,10 +91,10 @@ export default {
 
             return this.formatMeasurement(length, unit, 1);
         },
-        formatMeasurement(measurement, unit, decimals) {
+        formatMeasurement(measurement, unit, digits) {
             return new Intl.NumberFormat("en-US", {
-                minimumFractionDigits: decimals,
-                maximumFractionDigits: decimals
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits
             }).format(measurement) + ' ' + unit;
         },
         unitNearest(measurement, multipliers, min) {
