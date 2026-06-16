@@ -216,13 +216,14 @@ export default {
                             applyDraftColor(event.feature);
                         });
                         features.forEach(applyDraftColor);
-
                         this.drawInteraction.on('drawstart', (event) => {
-                            this.drawEnded = false;
                             applyDraftColor(event.feature);
                         });
                     }
 
+                    this.drawInteraction.on('drawstart', (event) => {
+                        this.drawEnded = false;
+                    });
                     this.drawInteraction.on('drawend', (e) => {
                         this.extendPendingAnnotation(e);
                         this.drawEnded = true;
