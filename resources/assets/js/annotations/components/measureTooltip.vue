@@ -97,12 +97,12 @@ export default {
             }).format(measurement) + ' ' + unit;
         },
         unitNearest(measurement, multipliers, min) {
-            if (measurement === 0) {
-                return multipliers.length - 1;
-            }
-
             if (UnitNames.indexOf(this.preferredUnit) !== -1) {
                 return UnitNames.indexOf(this.preferredUnit);
+            }
+
+            if (measurement === 0) {
+                return multipliers.length - 1;
             }
 
             min = min || 1;
