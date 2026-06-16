@@ -14,6 +14,10 @@ export default {
             type: Object,
             default: () => LabelTypeaheadItem,
         },
+        scrollable: {
+            type: Boolean,
+            default: true,
+        },
     },
 };
 </script>

@@ -79,6 +79,48 @@ class ProcessNewImageTest extends TestCase
         $this->assertSame(2.6, $image->metadata['area']);
     }
 
+    public function testHandleGpsFloat()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        $job = new ProcessNewImageMock($image);
+        $job->exif = [
+            'GPSLatitudeRef' => 'N',
+            'GPSLatitude' => 54.61,
+            'GPSLongitudeRef' => 'E',
+            'GPSLongitude' => 11.01,
+        ];
+        $job->handle();
+        $image = $image->fresh();
+
+        $this->assertSame(54.61, $image->lat);
+        $this->assertSame(11.01, $image->lng);
+    }
+
+    public function testHandleGpsFloatFlip()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        $job = new ProcessNewImageMock($image);
+        $job->exif = [
+            'GPSLatitudeRef' => 'S',
+            'GPSLatitude' => 54.61,
+            'GPSLongitudeRef' => 'W',
+            'GPSLongitude' => 11.01,
+        ];
+        $job->handle();
+        $image = $image->fresh();
+
+        $this->assertSame(-54.61, $image->lat);
+        $this->assertSame(-11.01, $image->lng);
+    }
+
     public function testHandleMakeThumbnail()
     {
         Storage::fake('test-thumbs');

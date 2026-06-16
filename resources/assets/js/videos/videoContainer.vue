@@ -79,6 +79,7 @@ export default {
                 enableJumpByFrame: false,
                 muteVideo: true,
                 singleAnnotation: false,
+                draftAnnotationUsesLabelColor: true
             },
             openTab: '',
             urlParams: {

@@ -3,6 +3,7 @@
 namespace Biigle\Jobs;
 
 use Biigle\Events\VolumeCloned;
+use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Http\Requests\CloneVolume;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
@@ -158,6 +159,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ProcessCloneVolumeFiles::dispatch($copy, $this->uuidMap, []);
         }
 
+        VolumeFilesProcessed::dispatch($copy);
         VolumeCloned::dispatch($copy);
     }
 

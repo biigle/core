@@ -203,7 +203,7 @@ export default {
         },
         initLabelBot() {
             // Label trees may not be set if the user can't annotate.
-            if (!this.labelTrees.some(t => t.labels.length > 0)) {
+            if (!Array.isArray(this.labelTrees) || !this.labelTrees.some(t => t.labels.length > 0)) {
                 this.updateLabelbotState(LABELBOT_STATES.NOLABELS);
             }
 

@@ -2,6 +2,7 @@
     <settings-tab
         v-cloak
         :image="image"
+        :images-area="imagesArea"
         :current-id="imageId"
         :image-filenames="imageFilenames"
         :ids="allImagesIds"
@@ -19,8 +20,10 @@
                 :current-id="currentId"
                 :filenames="imageFilenames"
                 :ids="ids"
+                :image="image"
+                :areas="imagesArea"
                 ></screenshot-button>
-                
+
             <shortcuts-button>
                 @include('partials.image-annotation-shortcuts')
             </shortcuts-button>
@@ -84,6 +87,17 @@
                     </power-toggle>
             </div>
         @endcan
+        <div class="sidebar-tab__section">
+            <power-toggle
+                :active="draftAnnotationUsesLabelColor"
+                title-off="Enable using the selected label color for draft annotations"
+                title-on="Disable using the selected label color for draft annotations"
+                v-on:on="showDraftAnnotationUsesLabelColor"
+                v-on:off="hideDraftAnnotationUsesLabelColor"
+            >
+                Draft Annotation Color
+            </power-toggle>
+        </div>
 
         @mixin('annotationsSettingsTab')
     </div>
