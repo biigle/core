@@ -12,11 +12,8 @@
     .label-trees__body {
         flex: 1;
         overflow-y: scroll;
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
+        scrollbar-width: thin;
+        padding-right: 10px;
     }
 
     .typeahead {
