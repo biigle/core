@@ -221,7 +221,7 @@ export default {
                         });
                     }
 
-                    this.drawInteraction.on('drawstart', (event) => {
+                    this.drawInteraction.on('drawstart', () => {
                         this.drawEnded = false;
                     });
                     this.drawInteraction.on('drawend', (e) => {
