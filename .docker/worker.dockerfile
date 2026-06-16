@@ -72,6 +72,8 @@ RUN LC_ALL=C.UTF-8 apt-get update \
     && apt-get install -y --no-install-recommends \
         python3-dev \
         python3-pip \
+        # This is required by matplotlib
+        python3-packaging \
     # Install torch first to get the CPU nversion. It is also present in
     # requirements.txt but this is only for automatic vulnerability checks.
     && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
