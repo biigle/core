@@ -94,7 +94,6 @@ export default {
                     addCondition: neverCondition,
                     subtractCondition: noModifierKeysCondition,
                     resizeCondition: altKeyOnlyCondition,
-                    draftColor: this.getDraftColor()
                 });
                 this.currentInteraction = this.polygonEraserInteraction;
                 this.polygonEraserInteraction.on('modifystart', this.handleModifyStart);
@@ -118,7 +117,6 @@ export default {
                     addCondition: noModifierKeysCondition,
                     subtractCondition: neverCondition,
                     resizeCondition: altKeyOnlyCondition,
-                    draftColor: this.getDraftColor()
                 });
                 this.currentInteraction = this.polygonFillInteraction;
                 this.polygonFillInteraction.on('modifystart', this.handleModifyStart);
@@ -141,8 +139,9 @@ export default {
         },
         updatePolygonBrushDraftColor() {
             const draftColor = this.getDraftColor();
-
-            this.currentInteraction?.setDraftColor?.(draftColor);
+            if (!this.isUsingPolygonEraser && !this.isUsingPolygonFill) {
+                this.currentInteraction?.setDraftColor?.(draftColor);
+            }
             this.pendingAnnotationSource?.getFeatures().forEach( (feature) => {
                 setOrUnsetProperty(feature, 'color', draftColor);
             });

@@ -81,7 +81,6 @@ export default {
                     addCondition: never,
                     subtractCondition: noModifierKeys,
                     resizeCondition: altKeyOnly,
-                    draftColor: this.getDraftColor()
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
@@ -98,7 +97,6 @@ export default {
                     addCondition: noModifierKeys,
                     subtractCondition: never,
                     resizeCondition: altKeyOnly,
-                    draftColor: this.getDraftColor()
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
                 currentInteraction.on('modifyend', this.handleFeatureModifyEnd);
@@ -117,6 +115,10 @@ export default {
                 && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
         },
         updatePolygonBrushDraftColor() {
+            if (this.isUsingPolygonEraser || this.isUsingPolygonFill) {
+                return;
+            }
+
             currentInteraction?.setDraftColor?.(this.getDraftColor());
         },
     },
