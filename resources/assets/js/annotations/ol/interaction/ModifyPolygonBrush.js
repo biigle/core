@@ -14,7 +14,7 @@ import {ModifyEvent} from '@biigle/ol/interaction/Modify';
 import {polygon as turfPolygon} from '@turf/helpers';
 import {shiftKeyOnly} from '@biigle/ol/events/condition';
 import {union} from '../geom/flat/union.js';
-import { setOrUnsetProperty } from '../../../utils.js';
+import { setOrUnsetProperty } from '@/utils.js';
 
 export const ModifyEventType = {
   MODIFYSTART: 'modifystart',

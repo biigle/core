@@ -8,7 +8,7 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
-import { setOrUnsetProperty } from '../../../utils';
+import { setOrUnsetProperty } from '@/utils';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush

@@ -11,7 +11,7 @@ import {fromCircle} from '@biigle/ol/geom/Polygon';
 import {polygon as turfPolygon} from '@turf/helpers';
 import {shiftKeyOnly, penOnly} from '@biigle/ol/events/condition';
 import {union} from '../geom/flat/union.js';
-import { setOrUnsetProperty } from '../../../utils.js';
+import { setOrUnsetProperty } from '@/utils.js';
 
 const MIN_BRUSH_SIZE = 5;
 const BRUSH_RESIZE_STEP = 5;
