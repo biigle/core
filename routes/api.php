@@ -362,13 +362,11 @@ $router->resource('visibilities', 'VisibilityController', [
 ]);
 
 $router->post(
-    'volumes/{id}/clone-to/{id2}',
-    'VolumeController@clone'
+    'volumes/{id}/clone-to/{id2}', 'VolumeController@clone'
 );
 
 $router->get(
-    'volumes/{id}/files/annotation-timestamps',
-    'VolumeController@getFileIdsSortedByAnnotationTimestamps'
+    'volumes/{id}/files/annotation-timestamps', 'VolumeController@getFileIdsSortedByAnnotationTimestamps'
 );
 
 $router->resource('volumes', 'VolumeController', [
@@ -387,8 +385,7 @@ $router->resource('volumes.files', 'VolumeFileController', [
 ]);
 
 $router->post(
-    'volumes/{id}/pending-volumes',
-    'PendingVolumeController@storeVolume'
+    'volumes/{id}/pending-volumes', 'PendingVolumeController@storeVolume'
 );
 
 $router->post('volumes/{id}/reports', [
@@ -436,7 +433,7 @@ $router->group([
     $router->get('{id}/files/filter/filename/{pattern}', [
         'uses' => 'Filters\FilenameController@index',
     ])->where('pattern', '.*'); // Filenames may contain characters that laravel would throw an exception on,
-    // i. e. forward slashes in remote videos, so we explictly allow all characters
+                                // i. e. forward slashes in remote videos, so we explictly allow all characters
 
     $router->get('{id}/file-labels', [
         'uses' => 'UsedFileLabelsController@index',
