@@ -168,9 +168,7 @@ class ScaleLineProperties
     }
 
     _formatValue(value) {
-        return new Intl.NumberFormat("en-US", {
-            maximumSignificantDigits: 3
-        }).format(value);
+        return new Intl.NumberFormat("en-US").format(value);
     }
 
     width() {

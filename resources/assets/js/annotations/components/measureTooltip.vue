@@ -93,7 +93,8 @@ export default {
         },
         formatMeasurement(measurement, unit, decimals) {
             return new Intl.NumberFormat("en-US", {
-                maximumSignificantDigits: decimals
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
             }).format(measurement) + ' ' + unit;
         },
         unitNearest(measurement, multipliers, min) {
