@@ -797,7 +797,7 @@ export default {
             this.keyboardOffCallbacks.push(Keyboard.on.apply(Keyboard, arguments));
         },
         getDraftColor() {
-            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel?.color : null;
+            return this.draftAnnotationUsesLabelColor ? this.selectedLabel?.color : null;
         },
     },
     watch: {
