@@ -429,10 +429,8 @@ import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
-import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction';
+import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {markRaw} from 'vue';
-import { noModifierKeys } from '@biigle/ol/events/condition';
-import { rightClick } from '../../annotations/ol/events/condition.js';
 
 export default {
     emits: [
@@ -660,12 +658,6 @@ export default {
                     pinchZoom: true,
                 }),
             });
-
-            map.addInteraction(new DragPan({
-                condition: (mapBrowserEvent) => {
-                    return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
-                },
-            }));
 
             map.getViewport().addEventListener('contextmenu', (e) => {
                 if (this.isBrushOrWandMode) {

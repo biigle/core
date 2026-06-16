@@ -3,12 +3,13 @@ import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPo
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
-import {altKeyOnly as altKeyOnlyCondition} from '@biigle/ol/events/condition';
+import {altKeyOnly as altKeyOnlyCondition, noModifierKeys} from '@biigle/ol/events/condition';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import { rightClick } from '../../../annotations/ol/events/condition';
+import { DragPan } from '@biigle/ol/interaction';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush
@@ -67,7 +68,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     resizeCondition: altKeyOnlyCondition,
-                    condition: !rightClick
+                    condition: (event) => !rightClick(event)
                 });
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
@@ -151,5 +152,12 @@ export default {
             this.keyboardOn('t', this.togglePolygonFill, 0, this.listenerSet);
         }
     },
+    mounted() {
+        this.map.addInteraction(new DragPan({
+            condition: (mapBrowserEvent) => {
+                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
+            },
+        }));
+    }
 };
 </script>

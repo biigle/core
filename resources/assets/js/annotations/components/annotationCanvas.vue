@@ -44,13 +44,12 @@ import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
 import { isInvalidShape } from '../utils.js';
-import {click as clickCondition, noModifierKeys} from '@biigle/ol/events/condition';
-import {defaults as defaultInteractions, DragPan} from '@biigle/ol/interaction';
+import {click as clickCondition} from '@biigle/ol/events/condition';
+import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
-import { rightClick } from '../ol/events/condition.js';
 
 /**
  * The annotator canvas
@@ -287,12 +286,6 @@ export default {
                     // If Shift is pressed, the event should be handled by the parent
                     // component to scroll through the images of a volume.
                     return !shiftKeyOnlyCondition(mapBrowserEvent);
-                },
-            }));
-
-            map.addInteraction(new DragPan({
-                condition: (mapBrowserEvent) => {
-                    return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
                 },
             }));
 
