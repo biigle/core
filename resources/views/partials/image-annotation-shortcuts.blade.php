@@ -1,3 +1,4 @@
+
 <p class="lead">
     A list of all available shortcut keys in the image annotation tool.
 </p>
@@ -298,8 +299,7 @@
         </tr>
         <tr>
             <td><kbd>Esc</kbd></td>
-            <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise
-            </td>
+            <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise</td>
         </tr>
         <tr>
             <td><kbd>Backspace</kbd></td>

@@ -142,8 +142,7 @@
 </table>
 
 <p>
-    <a name="jump-by-frame"></a>When <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">jump
-        by frame</a> is enabled:
+    <a name="jump-by-frame"></a>When <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">jump by frame</a> is enabled:
 </p>
 
 <table class="table">
@@ -237,8 +236,7 @@
         </tr>
         <tr>
             <td><kbd>Esc</kbd></td>
-            <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise
-            </td>
+            <td>Cancel the overlay timeout if it is active or confirm the label choice and close the overlay otherwise</td>
         </tr>
         <tr>
             <td><kbd>Backspace</kbd></td>
