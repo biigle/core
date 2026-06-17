@@ -2,6 +2,8 @@
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
+import PlayPause from '@/core/components/playPause.vue';
+import { PlayPauseState } from '@/core/components/playPause.vue';
 import Settings from '../stores/settings.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 
@@ -19,6 +21,7 @@ export default {
     ],
     components: {
         powerToggle: PowerToggle,
+        playPause: PlayPause
     },
     data() {
         return {
@@ -38,6 +41,7 @@ export default {
             randomSamplingNumber: 9,
             regularSamplingRows: 3,
             regularSamplingColumns: 3,
+            playPauseState: PlayPauseState.STOPPED,
         };
     },
     computed: {
@@ -81,6 +85,9 @@ export default {
         emitCreateSample() {
             this.$emit('create-sample');
         },
+        handlePlayPauseStateTransition(target) {
+            this.playPauseState = target;
+        }
     },
     watch: {
         mode(mode, oldMode) {
