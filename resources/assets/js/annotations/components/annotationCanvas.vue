@@ -155,7 +155,7 @@ export default {
         },
         draftAnnotationUsesLabelColor: {
             type: Boolean,
-            default: true, 
+            default: true,
         },
     },
     data() {

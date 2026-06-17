@@ -676,6 +676,11 @@ export default {
                 let [image, annotations] = await Promise.all(this.getImageAndAnnotationsPromises(id));
                 this.image = image;
                 this.annotations = annotations;
+
+                // Wait for the canvas to be updated, otherwise lawnmower mode
+                // could compute the current section using the old viewport
+                await this.$nextTick();
+
                 this.maybeUpdateAnnotationMode();
                 this.maybeShowTilingInProgressMessage();
             } catch (e) {
