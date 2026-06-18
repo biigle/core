@@ -183,8 +183,11 @@ export default {
 
             const view = this.map.getView();
             view.setResolution(state.resolution);
-            this.showImageSection(state.imageSection);
-            this.pendingLawnmowerState = null;
+
+            this.$nextTick(() => {
+                this.showImageSection(state.imageSection);
+                this.pendingLawnmowerState = null;
+            });
         },
         discardSavedLawnmowerState() {
             localStorage.removeItem(this.getLawnmowerStorageKey());
