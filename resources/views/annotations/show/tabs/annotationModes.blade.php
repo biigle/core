@@ -3,7 +3,7 @@
         v-on:attach-label="handleAttachAllSelected"
         v-on:change="handleAnnotationModeChange"
         v-on:create-sample="createSampledAnnotation"
-        v-on:lawnmower-state-transition-requested="handleLawnmowerStateTransitionRequest"
+        v-on:lawnmower-state-requested="handleLawnmowerStateRequest"
         :current-lawnmower-state="currentLawnmowerState"></annotation-modes-tab>
 </sidebar-tab>
 
@@ -25,7 +25,7 @@
                 stopButtonTitleText="Stop cycling through image sections 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Lawnmower"
                 :state="currentLawnmowerState"
-                @transitionRequested="handleLawnmowerStateTransitionRequest"
+                @transitionRequested="handleLawnmowerStateRequest"
             ></play-pause>
         </div>
         @can('add-annotation', $image)

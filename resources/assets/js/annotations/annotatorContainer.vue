@@ -599,17 +599,17 @@ export default {
                     break;
             }
         },
-        handleLawnmowerStateTransitionRequest(targetState) {
+        setLawnmowerState(targetState) {
             const transition = `${this.currentLawnmowerState}->${targetState}`;
 
             switch(transition) {
-                case 'playing->paused':
+                case 'active->paused':
                     this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
                     break;
-                case 'paused->playing':
+                case 'paused->active':
                     this.lawnmowerSaveState = LawnmowerSaveState.LOAD;
                     break;
-                case 'paused->stopped':
+                case 'paused->inactive':
                     this.lawnmowerSaveState = LawnmowerSaveState.DISCARD;
                     break;
             }
@@ -624,7 +624,7 @@ export default {
         },
         handleAnnotationModeChange(mode, data) {
             if (mode !== 'default' && mode !== 'lawnmower') {
-                this.handleLawnmowerStateTransitionRequest(PlayPauseState.INACTIVE);
+                this.setLawnmowerState(PlayPauseState.INACTIVE);
             }
             this.annotationMode = mode;
             this.annotationModeCarry = null;

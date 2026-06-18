@@ -24,7 +24,7 @@ export default {
         'attach-label',
         'change',
         'create-sample',
-        'lawnmowerStateTransitionRequested'
+        'lawnmowerStateRequested'
     ],
     components: {
         powerToggle: PowerToggle,
@@ -91,8 +91,8 @@ export default {
         emitCreateSample() {
             this.$emit('create-sample');
         },
-        handleLawnmowerStateTransitionRequest(targetState) {
-            this.$emit('lawnmowerStateTransitionRequested', targetState);
+        handleLawnmowerStateRequest(targetState) {
+            this.$emit('lawnmowerStateRequested', targetState);
         }
     },
     watch: {
