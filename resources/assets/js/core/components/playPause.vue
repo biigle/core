@@ -73,11 +73,11 @@ export default {
         },
         playButtonClicked() {
             const targetState = this.is(ACTIVE) ? INACTIVE : ACTIVE;
-            this.$emit('transitionRequested', target);
+            this.$emit('transitionRequested', targetState);
         },
         pauseButtonClicked() {
             const targetState = this.is(ACTIVE) ? PAUSED : INACTIVE;
-            this.$emit('transitionRequested', target);
+            this.$emit('transitionRequested', targetState);
         }
     }
 }

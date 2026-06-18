@@ -3,7 +3,7 @@
         v-on:attach-label="handleAttachAllSelected"
         v-on:change="handleAnnotationModeChange"
         v-on:create-sample="createSampledAnnotation"
-        v-on:lawnmower-state-requested="handleLawnmowerStateRequest"
+        v-on:lawnmower-state-requested="setLawnmowerState"
         :current-lawnmower-state="currentLawnmowerState"></annotation-modes-tab>
 </sidebar-tab>
 
