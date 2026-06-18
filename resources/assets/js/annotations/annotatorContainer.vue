@@ -622,10 +622,14 @@ export default {
                 this.imageIndex = index;
             }
         },
-        handleAnnotationModeChange(mode, data) {
+        updateLawnmowerState(newMode) {
+            // Update the playPause component for the lawnmower
             if (mode !== 'default' && mode !== 'lawnmower') {
                 this.setLawnmowerState(PlayPauseState.INACTIVE);
             }
+        },
+        handleAnnotationModeChange(mode, data) {
+            this.updateLawnmowerState(newMode);
             this.annotationMode = mode;
             this.annotationModeCarry = null;
             this.maybeUpdateAnnotationMode(data);

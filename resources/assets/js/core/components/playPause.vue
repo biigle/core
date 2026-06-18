@@ -19,8 +19,8 @@
 
 <script>
 export const PlayPauseState = Object.freeze({
-    INACTIVE: 'stopped',
-    ACTIVE: 'playing',
+    INACTIVE: 'inactive',
+    ACTIVE: 'active',
     PAUSED: 'paused'
 });
 
