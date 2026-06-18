@@ -30,7 +30,8 @@ export default {
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
             lawnmowerState: PlayPauseState.INACTIVE,
-            pendingLawnmowerState: null
+            pendingLawnmowerState: null,
+            restoringLawnmower: false
         };
     },
     computed: {
@@ -145,7 +146,7 @@ export default {
             const view = this.map.getView();
             const state = {
                 imageId: this.image.id,
-                imageSection: [...this.imageSection],
+                center: view.getCenter(),
                 resolution: view.getResolution(),
             };
 
@@ -182,11 +183,15 @@ export default {
             }
 
             const view = this.map.getView();
+            this.restoringLawnmower = true;
             view.setResolution(state.resolution);
 
             this.$nextTick(() => {
-                this.showImageSection(state.imageSection);
+                this.imageSectionCenter = state.center;
+                view.setCenter(state.center);
+
                 this.pendingLawnmowerState = null;
+                this.restoringLawnmower = false;
             });
         },
         discardSavedLawnmowerState() {
@@ -198,7 +203,7 @@ export default {
         // Update the current image section if either the resolution or the map size
         // changed. viewExtent depends on both so we can use it as watcher.
         viewExtent() {
-            if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
+            if (this.restoringLawnmower || !this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
                 return;
             }
             let distance = function (p1, p2) {
