@@ -10,7 +10,12 @@
         <i class="fas fa-grip-lines"></i>
     </div>
     <ul class="labelbot-labels">
-        <li
+        <li v-if="noLabels" class="labelbot-popup__message">
+            <p>
+                LabelBOT could not find similar annotations. Enter a label below, or close this popup to delete the annotation.
+            </p>
+        </li>
+        <li v-else
             v-for="(label, index) in labels"
             class="labelbot-label"
             :class="{'labelbot-label--progress': index === 0 && hasProgressBar}"
@@ -75,6 +80,7 @@ export const TIMEOUTS = [
 
 export default {
     emits: [
+        'new',
         'update',
         'close',
         'delete',
@@ -147,7 +153,14 @@ export default {
             return this.popupKey === this.focusedPopupKey;
         },
         labels() {
-            return [this.annotation.labels[0].label].concat(this.annotation.labelBOTLabels);
+            if (this.annotation.labels?.length > 0) {
+                return [this.annotation.labels[0].label].concat(this.annotation.labelBOTLabels);
+            } else {
+                return [];
+            }
+        },
+        noLabels() {
+            return this.labels.length === 0;
         },
         classObject() {
             return {
@@ -157,7 +170,7 @@ export default {
             };
         },
         popupKey() {
-            return this.annotation.id;
+            return this.annotation.id ?? this.annotation.feature.ol_uid;
         },
         hasProgressBar() {
             return this.isFocused && this.shouldHaveProgressBar;
@@ -182,6 +195,27 @@ export default {
         },
     },
     methods: {
+        createAndClose(label) {
+            const annotation = { ...this.annotation };
+            annotation.label_id = label.id;
+            const feature = annotation.feature;
+
+            let removeCallback = () => {
+                try {
+                    // probably the feature is already removed because emitClose()
+                    // could be reached before saving
+                    this.$parent.labelbotSource.removeFeature(feature);
+                } catch (e) {
+                    // ignore
+                }
+            };
+
+            delete annotation.feature;
+            delete annotation.labels;
+
+            this.$emit('new', { newAnnotation: annotation, rmvCallback: removeCallback});
+            this.emitClose();
+        },
         updateAndClose(label) {
             // Top 1 label is already attached/selected
             if (this.selectedLabel.id !== label.id) {
@@ -223,6 +257,10 @@ export default {
         handleEsc() {
             if (!this.isFocused) return;
 
+            if (this.noLabels) {
+                 this.$parent.labelbotSource.removeFeature(this.annotation.feature);
+            }
+
             if (this.shouldHaveProgressBar) {
                 this.shouldHaveProgressBar = false;
             } else {
@@ -250,7 +288,11 @@ export default {
         deleteLabelAnnotation() {
             if (!this.isFocused) return;
 
-            this.$emit('delete', this.annotation);
+            if (this.labels.length > 0) {
+                this.$emit('delete', this.annotation);
+            } else {
+                this.$parent.labelbotSource.removeFeature(this.annotation.feature);
+            }
             this.emitClose();
             Events.emit('labelbot.dismissed');
         },
@@ -294,7 +336,12 @@ export default {
 
         },
         createOverlay(annotationCanvas) {
-            const annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
+            let annotationFeature;
+            if (this.noLabels) {
+                annotationFeature = this.annotation.feature;
+            } else {
+                annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
+            }
             const annotationGeometry = annotationFeature.getGeometry();
             const annotationExtent = annotationGeometry.getExtent();
             let popupPosition = [
@@ -344,7 +391,13 @@ export default {
             const line = new LineString([popupPosition, popupPosition]);
             this.lineFeature = markRaw(new Feature(line));
             this.lineFeature.set('unselectable', true);
-            this.lineFeature.set('color', this.labels[0].color);
+            if (this.noLabels) {
+                annotationFeature.set('color', Styles.blue)
+                annotationFeature.setStyle(Styles.editing)
+                this.lineFeature.set('color', Styles.blue);
+            } else {
+                this.lineFeature.set('color', this.labels[0].color);
+            }
             this.lineFeature.setStyle(Styles.editing);
 
             this.lineFeature._updateCoordinates = () => {
@@ -383,7 +436,11 @@ export default {
             }
         },
         selectTypeaheadLabel(label) {
-            this.updateAndClose(label);
+            if (this.noLabels) {
+                this.createAndClose(label)
+            } else {
+                this.updateAndClose(label);
+            }
             Events.emit('labelbot.chose_label_other');
         },
         selectLabel(index) {
@@ -430,6 +487,14 @@ export default {
             Keyboard.off('1', this.selectLabel1, 'labelbot');
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');
+        } else {
+            // When LabelBOT returns no results, the annotation contains the temp feature
+            // so we delete it before unmount, if the user did not interact with empty popup
+            this.$parent.annotationSource.once('addfeature', () => {
+                this.$parent.labelbotSource.removeFeature(this.annotation.feature);
+            });
+
+            
         }
     },
 };

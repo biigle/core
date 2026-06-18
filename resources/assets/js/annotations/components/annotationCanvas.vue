@@ -581,6 +581,7 @@ export default {
 
             const points = this.getPoints(geometry);
             const newAnnotation = {
+                feature: e.feature, // we need this temporarily if LabelBOT returns no results
                 shape: geometry.getType(),
                 points: points,
             };
