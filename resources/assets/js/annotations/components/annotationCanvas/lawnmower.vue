@@ -29,7 +29,7 @@ export default {
             imageSection: [0, 0],
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
-            lawnmowerState: PlayPauseState.STOPPED,
+            lawnmowerState: PlayPauseState.INACTIVE,
             pendingLawnmowerState: null
         };
     },

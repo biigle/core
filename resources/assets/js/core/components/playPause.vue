@@ -19,13 +19,13 @@
 
 <script>
 export const PlayPauseState = Object.freeze({
-    STOPPED: 'stopped',
-    PLAYING: 'playing',
+    INACTIVE: 'stopped',
+    ACTIVE: 'playing',
     PAUSED: 'paused'
 });
 
-const STOPPED = PlayPauseState.STOPPED;
-const PLAYING = PlayPauseState.PLAYING;
+const INACTIVE = PlayPauseState.INACTIVE;
+const ACTIVE = PlayPauseState.ACTIVE;
 const PAUSED = PlayPauseState.PAUSED;
 
 export default {
@@ -52,19 +52,19 @@ export default {
     },
     computed: {
         playButtonIconClass() {
-            return this.is(PLAYING) ? 'fa-stop' : 'fa-play';
+            return this.is(ACTIVE) ? 'fa-stop' : 'fa-play';
         },
         playButtonClass() {
-            return this.is(PLAYING) ? 'active btn-info' : '';
+            return this.is(ACTIVE) ? 'active btn-info' : '';
         },
         pauseButtonClass() {
             return this.is(PAUSED) ? 'active btn-info' : '';
         },
         playButtonTitle() {
-            return this.is(PLAYING) ? this.stopButtonTitleText : this.playButtonTitleText;
+            return this.is(ACTIVE) ? this.stopButtonTitleText : this.playButtonTitleText;
         },
         pauseButtonDisabled() {
-            return this.is(STOPPED);
+            return this.is(INACTIVE);
         },
     },
     methods: {
@@ -72,11 +72,11 @@ export default {
             return this.state === state;
         },
         playButtonClicked() {
-            const target = this.is(PLAYING) ? STOPPED : PLAYING;
+            const target = this.is(ACTIVE) ? INACTIVE : ACTIVE;
             this.$emit('transitionRequested', target);
         },
         pauseButtonClicked() {
-            const target = this.is(PLAYING) ? PAUSED : STOPPED;
+            const target = this.is(ACTIVE) ? PAUSED : INACTIVE;
             this.$emit('transitionRequested', target);
         }
     }

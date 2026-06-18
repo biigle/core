@@ -139,7 +139,7 @@ export default {
             Settings.set('regularSamplingColumns', number);
         },
         currentLawnmowerState(newState) {
-            if (newState === PlayPauseState.PLAYING) {
+            if (newState === PlayPauseState.ACTIVE) {
                 this.startLawnmower();
             } else if (newState === PlayPauseState.PAUSED) {
                 this.resetMode();

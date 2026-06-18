@@ -97,7 +97,7 @@ export default {
             imageFilenames: {},
             labelTrees: [],
             projectIds: [],
-            currentLawnmowerState: PlayPauseState.STOPPED,
+            currentLawnmowerState: PlayPauseState.INACTIVE,
             lawnmowerSaveState: ""
         };
     },
@@ -624,7 +624,7 @@ export default {
         },
         handleAnnotationModeChange(mode, data) {
             if (mode !== 'default' && mode !== 'lawnmower') {
-                this.handleLawnmowerStateTransitionRequest(PlayPauseState.STOPPED);
+                this.handleLawnmowerStateTransitionRequest(PlayPauseState.INACTIVE);
             }
             this.annotationMode = mode;
             this.annotationModeCarry = null;
