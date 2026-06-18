@@ -1,10 +1,24 @@
 <script>
+import { PlayPauseState } from '../../../core/components/playPause.vue';
+
+export const LawnmowerSaveState = Object.freeze({
+    SAVE: 'save',
+    LOAD: 'load',
+    DISCARD: 'discard'
+});
+
 /**
  * Mixin for the annotationCanvas component that contains logic for Lawnmower Mode.
  *
  * @type {Object}
  */
 export default {
+    props: {
+        lawnmowerSaveState: {
+            type: String,
+            required: true
+        }
+    },
     data() {
         return {
             // The image section information is needed for the lawnmower cycling mode
@@ -12,6 +26,7 @@ export default {
             imageSection: [0, 0],
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
+            lawnmowerState: PlayPauseState.STOPPED
         };
     },
     computed: {
@@ -118,6 +133,12 @@ export default {
                 return this.showImageSection([0, this.imageSection[1] + 1]);
             }
         },
+        saveCurrentLawnmowerState() {
+        },
+        loadSavedLawnmowerState() {
+        },
+        discardSavedLawnmowerState() {
+        }
     },
     watch: {
         // Update the current image section if either the resolution or the map size
@@ -146,6 +167,19 @@ export default {
 
             this.showImageSection(nearestStep);
         },
+        lawnmowerSaveState(newState) {
+            switch(newState) {
+                case LawnmowerSaveState.SAVE:
+                    this.saveCurrentLawnmowerState();
+                    break;
+                case LawnmowerSaveState.LOAD:
+                    this.loadSavedLawnmowerState();
+                    break;
+                case LawnmowerSaveState.DISCARD:
+                    this.discardSavedLawnmowerState;
+                    break;
+            }
+        }
     },
 };
 </script>

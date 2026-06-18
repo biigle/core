@@ -1,5 +1,10 @@
 <sidebar-tab name="annotation-modes" icon="th" title="Annotation modes" :highlight="!isDefaultAnnotationMode">
-    <annotation-modes-tab v-on:attach-label="handleAttachAllSelected" v-on:change="handleAnnotationModeChange" v-on:create-sample="createSampledAnnotation"></annotation-modes-tab>
+    <annotation-modes-tab
+        v-on:attach-label="handleAttachAllSelected"
+        v-on:change="handleAnnotationModeChange"
+        v-on:create-sample="createSampledAnnotation"
+        v-on:lawnmower-state-transition-requested="handleLawnmowerStateTransitionRequest"
+        :current-lawnmower-state="currentLawnmowerState"></annotation-modes-tab>
 </sidebar-tab>
 
 @push('scripts')
@@ -16,13 +21,12 @@
         <div class="sidebar-tab__section">
             <h5 title="Cycle through image sections">Lawnmower Mode<br><small>cycle through image sections</small></h5>
             <play-pause
-                playButtonTitleText="Start Lawnmower"
-                stopButtonTitleText="Stop Lawnmower"
+                playButtonTitleText="Start cycling through image sections"
+                stopButtonTitleText="Stop cycling through image sections 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Lawnmower"
-                :state="playPauseState"
-                @transitionRequested="handlePlayPauseStateTransition"
+                :state="currentLawnmowerState"
+                @transitionRequested="handleLawnmowerStateTransitionRequest"
             ></play-pause>
-            <!--<power-toggle :active="isLawnmowerActive" title-off="Start cycling through image sections" title-on="Stop cycling through image sections 𝗘𝘀𝗰" v-on:on="startLawnmower" v-on:off="resetMode"></power-toggle>-->
         </div>
         @can('add-annotation', $image)
             <div class="sidebar-tab__section">

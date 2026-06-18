@@ -23,6 +23,8 @@ import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
+import { PlayPauseState } from '../core/components/playPause.vue';
+import { LawnmowerSaveState } from './components/annotationCanvas/lawnmower.vue';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
     loader: function () {
@@ -95,6 +97,8 @@ export default {
             imageFilenames: {},
             labelTrees: [],
             projectIds: [],
+            currentLawnmowerState: PlayPauseState.STOPPED,
+            lawnmowerSaveState: ""
         };
     },
     provide() {
@@ -595,7 +599,27 @@ export default {
                     break;
             }
         },
+        handleLawnmowerStateTransitionRequest(targetState) {
+            const transition = `${this.currentLawnmowerState}->${targetState}`;
+
+            switch(transition) {
+                case 'playing->paused':
+                    this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
+                    break;
+                case 'paused->playing':
+                    this.lawnmowerSaveState = LawnmowerSaveState.LOAD;
+                    break;
+                case 'paused->stopped':
+                    this.lawnmowerSaveState = LawnmowerSaveState.DISCARD;
+                    break;
+            }
+
+            this.currentLawnmowerState = targetState;
+        },
         handleAnnotationModeChange(mode, data) {
+            if (mode !== 'default' && mode !== 'lawnmower') {
+                this.handleLawnmowerStateTransitionRequest(PlayPauseState.STOPPED);
+            }
             this.annotationMode = mode;
             this.annotationModeCarry = null;
             this.maybeUpdateAnnotationMode(data);

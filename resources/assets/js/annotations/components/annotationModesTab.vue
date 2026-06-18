@@ -13,11 +13,18 @@ import {urlParams as UrlParams} from '@/core/utils.js';
  * @type {Object}
  */
 export default {
+    props: {
+        currentLawnmowerState: {
+            type: String,
+            required: true
+        },
+    },
     template: '#annotation-modes-tab-template',
     emits: [
         'attach-label',
         'change',
         'create-sample',
+        'lawnmowerStateTransitionRequested'
     ],
     components: {
         powerToggle: PowerToggle,
@@ -41,7 +48,6 @@ export default {
             randomSamplingNumber: 9,
             regularSamplingRows: 3,
             regularSamplingColumns: 3,
-            playPauseState: PlayPauseState.STOPPED,
         };
     },
     computed: {
@@ -85,8 +91,8 @@ export default {
         emitCreateSample() {
             this.$emit('create-sample');
         },
-        handlePlayPauseStateTransition(target) {
-            this.playPauseState = target;
+        handleLawnmowerStateTransitionRequest(targetState) {
+            this.$emit('lawnmowerStateTransitionRequested', targetState);
         }
     },
     watch: {
@@ -132,6 +138,13 @@ export default {
         regularSamplingColumns(number) {
             Settings.set('regularSamplingColumns', number);
         },
+        currentLawnmowerState(newState) {
+            if (newState === PlayPauseState.PLAYING) {
+                this.startLawnmower();
+            } else if (newState === PlayPauseState.PAUSED) {
+                this.resetMode();
+            }
+        }
     },
     created() {
         this.restoreKeys.forEach((key) => this[key] = Settings.get(key));
