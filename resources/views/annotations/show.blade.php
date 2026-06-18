@@ -117,6 +117,7 @@
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
             v-on:lawnmower-state-transition-requested="handleLawnmowerStateTransitionRequest"
+            v-on:restore-lawnmower-image="restoreLawnmowerImage"
             ref="canvas"
             ></annotation-canvas>
     </div>

@@ -616,6 +616,12 @@ export default {
 
             this.currentLawnmowerState = targetState;
         },
+        restoreLawnmowerImage(imageId) {
+            const index = this.imagesIds.indexOf(imageId);
+            if (index !== -1) {
+                this.imageIndex = index;
+            }
+        },
         handleAnnotationModeChange(mode, data) {
             if (mode !== 'default' && mode !== 'lawnmower') {
                 this.handleLawnmowerStateTransitionRequest(PlayPauseState.STOPPED);

@@ -13,6 +13,9 @@ export const LawnmowerSaveState = Object.freeze({
  * @type {Object}
  */
 export default {
+    emits: [
+        'restore-lawnmower-image',
+    ],
     props: {
         lawnmowerSaveState: {
             type: String,
@@ -26,7 +29,8 @@ export default {
             imageSection: [0, 0],
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
-            lawnmowerState: PlayPauseState.STOPPED
+            lawnmowerState: PlayPauseState.STOPPED,
+            pendingLawnmowerState: null
         };
     },
     computed: {
@@ -133,11 +137,57 @@ export default {
                 return this.showImageSection([0, this.imageSection[1] + 1]);
             }
         },
+        getLawnmowerStorageKey() {
+            const volumeId = biigle.$require('annotations.volumeId');
+            return `lawnmower-state-${volumeId}`;
+        },
         saveCurrentLawnmowerState() {
+            const view = this.map.getView();
+            const state = {
+                imageId: this.image.id,
+                imageSection: [...this.imageSection],
+                resolution: view.getResolution(),
+            };
+
+            localStorage.setItem(
+                this.getLawnmowerStorageKey(),
+                JSON.stringify(state)
+            );
         },
         loadSavedLawnmowerState() {
+            const raw = localStorage.getItem(this.getLawnmowerStorageKey());
+            if (!raw) {
+                return;
+            }
+
+            try {
+                this.pendingLawnmowerState = JSON.parse(raw);
+            } catch {
+                this.discardSavedLawnmowerState();
+                return;
+            }
+
+            if (this.pendingLawnmowerState.imageId !== this.image?.id) {
+                this.$emit('restore-lawnmower-image', this.pendingLawnmowerState.imageId);
+                return;
+            }
+
+            this.applyPendingLawnmowerState();
+        },
+        applyPendingLawnmowerState() {
+            const state = this.pendingLawnmowerState;
+            if (!state || !this.image || state.imageId !== this.image.id) {
+                return;
+            }
+
+            const view = this.map.getView();
+            view.setResolution(state.resolution);
+            this.showImageSection(state.imageSection);
+            this.pendingLawnmowerState = null;
         },
         discardSavedLawnmowerState() {
+            localStorage.removeItem(this.getLawnmowerStorageKey());
+            this.pendingLawnmowerState = null;
         }
     },
     watch: {
@@ -167,6 +217,11 @@ export default {
 
             this.showImageSection(nearestStep);
         },
+        image() {
+            if (this.pendingLawnmowerState) {
+                this.$nextTick(() => this.applyPendingLawnmowerState());
+            }
+        },
         lawnmowerSaveState(newState) {
             switch(newState) {
                 case LawnmowerSaveState.SAVE:
@@ -176,7 +231,7 @@ export default {
                     this.loadSavedLawnmowerState();
                     break;
                 case LawnmowerSaveState.DISCARD:
-                    this.discardSavedLawnmowerState;
+                    this.discardSavedLawnmowerState();
                     break;
             }
         }
