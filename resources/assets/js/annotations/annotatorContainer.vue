@@ -624,12 +624,12 @@ export default {
         },
         updateLawnmowerState(newMode) {
             // Update the playPause component for the lawnmower
-            if (mode !== 'default' && mode !== 'lawnmower') {
+            if (newMode !== 'default' && newMode !== 'lawnmower') {
                 this.setLawnmowerState(PlayPauseState.INACTIVE);
             }
         },
         handleAnnotationModeChange(mode, data) {
-            this.updateLawnmowerState(newMode);
+            this.updateLawnmowerState(mode);
             this.annotationMode = mode;
             this.annotationModeCarry = null;
             this.maybeUpdateAnnotationMode(data);

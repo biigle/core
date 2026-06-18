@@ -149,6 +149,7 @@ export default {
                 resolution: view.getResolution(),
             };
 
+            // TODO replace with local variable once we decided what "every volume remembers" means
             localStorage.setItem(
                 this.getLawnmowerStorageKey(),
                 JSON.stringify(state)
