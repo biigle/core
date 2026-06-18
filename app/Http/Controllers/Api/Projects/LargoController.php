@@ -7,7 +7,10 @@ use Biigle\Http\Requests\StoreProjectLargoSession;
 use Biigle\Jobs\ApplyLargoSession;
 use Biigle\Label;
 use Biigle\Project;
+use DB;
+use Queue;
 use Ramsey\Uuid\Uuid;
+use Throwable;
 
 class LargoController extends Controller
 {
@@ -38,16 +41,33 @@ class LargoController extends Controller
         }
 
         $uuid = Uuid::uuid4();
+
         // Set job ID in volumes to lock them for any other Largo sessions to save while
         // this session is saved.
-        $request->volumes->each(function ($volume) use ($uuid) {
-            $attrs = $volume->attrs;
-            $attrs['largo_job_id'] = $uuid;
-            $volume->attrs = $attrs;
-            $volume->save();
+        DB::transaction(function () use ($uuid, $request) {
+            $request->volumes->each(function ($volume) use ($uuid) {
+                $attrs = $volume->attrs;
+                $attrs['largo_job_id'] = $uuid;
+                $volume->attrs = $attrs;
+                $volume->save();
+            });
         });
 
-        ApplyLargoSession::dispatch($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
+        try {
+            $job = new ApplyLargoSession($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
+            Queue::pushOn($job->queue, $job);
+        } catch (Throwable $e) {
+            // We can't use DB::transaction to roll back the changes because this would
+            // allow a situation where the queue job runs before the transaction was
+            // committed.
+            $request->volumes->each(function ($volume) {
+                $attrs = $volume->attrs;
+                unset($attrs['largo_job_id']);
+                $volume->attrs = $attrs;
+                $volume->save();
+            });
+            throw $e;
+        }
 
         return ['id' => $uuid];
     }
