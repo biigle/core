@@ -116,7 +116,7 @@
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
-            v-on:restore-lawnmower-image="restoreLawnmowerImage"
+            v-on:restore-lawnmower-image="loadImageWithId"
             ref="canvas"
             ></annotation-canvas>
     </div>

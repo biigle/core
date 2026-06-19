@@ -18,7 +18,7 @@ import SettingsTab from './components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import VolumeImageAreaApi from './api/volumes.js';
-import {computed, defineAsyncComponent} from 'vue'
+import {computed, defineAsyncComponent, watch} from 'vue'
 import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
@@ -559,7 +559,7 @@ export default {
 
             this.currentLawnmowerState = targetState;
         },
-        restoreLawnmowerImage(imageId) {
+        loadImageWithId(imageId) {
             const index = this.imagesIds.indexOf(imageId);
             if (index !== -1) {
                 this.imageIndex = index;
@@ -750,6 +750,26 @@ export default {
         Events.on('annotations.deselect', this.handleDeselectAnnotation);
         Events.on('annotations.detachLabel', this.handleDetachAnnotationLabel);
         Events.on('annotations.delete', this.handleDeleteAnnotation);
+        Events.on('annotations.focus', this.focusAnnotation);
+
+        // TODO Are these necessary? Should they be moved to the new volare composable?
+
+        if (UrlParams.get('annotation')) {
+            let id = parseInt(UrlParams.get('annotation'));
+            Events.once('images.change', () => {
+                let annotations = this.annotations;
+                for (let i = annotations.length - 1; i >= 0; i--) {
+                    if (annotations[i].id === id) {
+                        // Use $nextTick so the annotationCanvas component has time to
+                        // render the image.
+                        this.$nextTick(
+                            () => this.volare.selectAndFocusAnnotation(annotations[i])
+                        );
+                        return;
+                    }
+                }
+            });
+        }
 
         if (Settings.has('openTab')) {
             let openTab = Settings.get('openTab');
@@ -775,9 +795,10 @@ export default {
             focusAnnotationInCanvas: this.focusAnnotation,
             fitImageInCanvas: (...args) => this.$refs.canvas.fitImage(...args),
             volareModeIsActive: computed(() => this.isVolareAnnotationMode),
-            annotationFilter: this.annotationFilter
+            annotationFilter: this.annotationFilter,
+            image: computed(() => this.image)
         });
-        this.volare.registerEvents(this.annotations);
+        watch(this.volare.requestedImageId, this.loadImageWithId);
     }
 };
 </script>

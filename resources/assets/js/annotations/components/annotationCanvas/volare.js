@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { required } from '@/utils.js';
 import { urlParams as UrlParams } from '@/core/utils.js';
 import Events from '@/core/events.js';
@@ -10,10 +10,14 @@ export function useVolareMode({
     focusAnnotationInCanvas = required('focusAnnotationInCanvas'),
     fitImageInCanvas = required('fitImageInCanvas'),
     volareModeIsActive = required('volareModeIsActive'),
-    annotationFilter = required('annotationFilter')
+    annotationFilter = required('annotationFilter'),
+    image = required('image')
 }) {
     const focussedAnnotationIndex = ref(null);
     const userUpdateVolareResolution = ref(false);
+    const requestedImageId = ref(null);
+    let pendingVolareState = null;
+    let savedState = null;
 
     const focussedAnnotation = computed(() => {
         return filteredAnnotations.value[focussedAnnotationIndex.value];
@@ -92,21 +96,26 @@ export function useVolareMode({
         return false;
     }
 
-    function registerEvents(annotations) {
-        if (UrlParams.get('annotation')) {
-            const id = parseInt(UrlParams.get('annotation'));
-            Events.once('images.change', () => {
-                const annotation = annotations.value.find(a => a.id === id);
-                if (!annotation) {
-                    return;
-                }
-                nextTick(() => {
-                    selectAndFocusAnnotation(annotation);
-                });
-            });
+    function saveState() {
+        savedState = {
+            imageId: image.value.id,
+            focussedAnnotationIndex: focussedAnnotationIndex.value,
+        };
+    }
+
+    function loadState() {
+        if (!savedState) {
+            return;
+        } else if (savedState.imageId !== image.value.id) {
+            requestedImageId.value = savedState.imageId;
+            return;
         }
 
-        Events.on('annotations.focus', focusAnnotationInCanvas);
+        focussedAnnotationIndex.value = null;
+        nextTick(() => {
+            focussedAnnotationIndex.value = savedState.focussedAnnotationIndex;
+            savedState = null;
+        });
     }
 
     watch(focussedAnnotation, (annotation) => {
@@ -120,6 +129,9 @@ export function useVolareMode({
             userUpdateVolareResolution.value = false;
         }
     });
+    watch(() => image?.value, () => {
+        nextTick(loadState);
+    });
 
     return {
         focussedAnnotationIndex,
@@ -129,6 +141,8 @@ export function useVolareMode({
         updateFocussedAnnotation,
         handleNextAnnotation,
         handlePreviousAnnotation,
-        registerEvents
+        requestedImageId,
+        saveState,
+        loadState,
     };
 }
