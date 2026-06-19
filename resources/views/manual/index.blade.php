@@ -316,6 +316,10 @@
                 <strong>Video Object Tracking</strong><br>
                 <a href="https://doi.org/10.1109/CVPR.2017.515">Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.</a> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: <code>10.1109/CVPR.2017.515</code>
             </p>
+            <p>
+                <strong>LabelBOT</strong><br>
+                <a href="https://doi.org/10.1109/ACCESS.2026.3688574">G. Kourie, M. Zurowietz, D. Langenkämper, D. Brembilla and T. W. Nattkemper, LabelBOT: A Human-in-the-Loop Classification Assistance in the BIIGLE Image Annotation Tool.</a> <br>IEEE Access, vol. 14, pp. 65161-65180, 2026. doi: <code>10.1109/ACCESS.2026.3688574</code>
+            </p>
             @mixin('manualReferences')
 
             <a name="developer-documentation"></a>

@@ -63,5 +63,12 @@
         <p>
             Some part of the computation for LabelBOT is done in your browser. This can take several seconds on low-end or older machines. The computation will be dramatically faster if there is access to a dedicated graphics card via WebGPU. Access to WebGPU can also depend on the web browser and operating system. You can check <a href="https://webgpureport.org/">here</a> if WebGPU is available in your browser.
         </p>
+
+        <h3><a name="references"></a>References</h3>
+        <ol>
+            <li>
+                <a name="ref1"></a><a href="https://doi.org/10.1109/ACCESS.2026.3688574">G. Kourie, M. Zurowietz, D. Langenkämper, D. Brembilla and T. W. Nattkemper, LabelBOT: A Human-in-the-Loop Classification Assistance in the BIIGLE Image Annotation Tool.</a> In IEEE Access, vol. 14, pp. 65161-65180, 2026. doi: <code>10.1109/ACCESS.2026.3688574</code>
+            </li>
+        </ol>
     </div>
 @endsection
