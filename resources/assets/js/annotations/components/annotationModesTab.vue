@@ -91,7 +91,7 @@ export default {
         emitCreateSample() {
             this.$emit('create-sample');
         },
-        emitRequestedLawnmowerState(targetState) {
+        emitLawnmowerStateRequested(targetState) {
             this.$emit('lawnmowerStateRequested', targetState);
         }
     },

@@ -32,7 +32,7 @@
                 stopButtonTitleText="Stop cycling through image sections 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Lawnmower"
                 :state="currentLawnmowerState"
-                @transitionRequested="emitRequestedLawnmowerState"
+                @transitionRequested="emitLawnmowerStateRequested"
             ></play-pause>
         </div>
         @can('add-annotation', $image)
