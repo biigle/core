@@ -111,6 +111,7 @@ export function useVolareMode({
             return;
         }
 
+        // TODO Instead of this hack to trigger the watcher maybe use direct calls and don't use watchers in this composable
         focussedAnnotationIndex.value = null;
         nextTick(() => {
             focussedAnnotationIndex.value = savedState.focussedAnnotationIndex;
