@@ -111,6 +111,7 @@ export default {
             shouldHaveProgressBar: true,
             maybeGetsAttention: false,
             typeaheadFocused: false,
+            pendingAnnotation: false,
             selectedLabel: null,
             overlay: null,
             lineFeature: null,
@@ -196,14 +197,14 @@ export default {
     },
     methods: {
         createAndClose(label) {
+            this.pendingAnnotation = false;
+
             const annotation = { ...this.annotation };
             annotation.label_id = label.id;
             const feature = annotation.feature;
 
             let removeCallback = () => {
                 try {
-                    // probably the feature is already removed because emitClose()
-                    // could be reached before saving
                     this.$parent.labelbotSource.removeFeature(feature);
                 } catch (e) {
                     // ignore
@@ -339,6 +340,7 @@ export default {
             let annotationFeature;
             if (this.noLabels) {
                 annotationFeature = this.annotation.feature;
+                this.pendingAnnotation = true;
             } else {
                 annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
             }
@@ -487,14 +489,11 @@ export default {
             Keyboard.off('1', this.selectLabel1, 'labelbot');
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');
-        } else {
-            // When LabelBOT returns no results, the annotation contains the temp feature
-            // so we delete it before unmount, if the user did not interact with empty popup
-            this.$parent.annotationSource.once('addfeature', () => {
-                this.$parent.labelbotSource.removeFeature(this.annotation.feature);
-            });
-
-            
+        }
+        // We can't use a plain else here because the pending annotation state
+        // may change if the annotation gets a label via the typeahead.
+        else if (this.pendingAnnotation) { 
+            this.$parent.labelbotSource.removeFeature(this.annotation.feature);
         }
     },
 };
