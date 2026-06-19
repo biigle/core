@@ -622,14 +622,15 @@ export default {
                 this.imageIndex = index;
             }
         },
-        updateLawnmowerState(newMode) {
-            // Update the playPause component for the lawnmower
-            if (newMode !== 'default' && newMode !== 'lawnmower') {
+        updateLawnmowerState(oldMode, newMode) {
+            // Switching from lawnmower to default is caused by pausing,
+            // switching to a different mode inactivates lawnmower
+            if (oldMode === "lawnmower" && newMode !== 'default') {
                 this.setLawnmowerState(PlayPauseState.INACTIVE);
             }
         },
         handleAnnotationModeChange(mode, data) {
-            this.updateLawnmowerState(mode);
+            this.updateLawnmowerState(this.annotationMode, mode);
             this.annotationMode = mode;
             this.annotationModeCarry = null;
             this.maybeUpdateAnnotationMode(data);
