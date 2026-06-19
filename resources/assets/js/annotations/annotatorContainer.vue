@@ -25,6 +25,7 @@ import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 import { PlayPauseState } from '../core/components/playPause.vue';
 import { LawnmowerSaveState } from './components/annotationCanvas/lawnmower.vue';
+import { useVolareMode } from './components/annotationCanvas/volare.js';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
     loader: function () {
@@ -75,7 +76,6 @@ export default {
             mapResolution: undefined,
             selectedLabel: null,
             annotationMode: 'default',
-            focussedAnnotationIndex: null,
             // For lawnmower and sampling modes: When switching images, this determines
             // if the first (0) or the last (Infinity) image section/sampling location
             // should be shown.
@@ -133,9 +133,6 @@ export default {
         },
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.selected);
-        },
-        focussedAnnotation() {
-            return this.filteredAnnotations[this.focussedAnnotationIndex];
         },
         isDefaultAnnotationMode() {
             return this.annotationMode === 'default';
@@ -209,20 +206,8 @@ export default {
                 return;
             }
 
-            if (this.isVolareAnnotationMode) {
-                if (this.focussedAnnotationIndex < (this.filteredAnnotations.length - 1)) {
-                    this.focussedAnnotationIndex++;
-                    return;
-                } else if (this.focussedAnnotationIndex === Infinity) {
-                    // This may happen if the volume has only one image and we can't
-                    // switch to the next image. Here, we want to go to the second
-                    // annotation of the image.
-                    this.focussedAnnotationIndex = Math.min(1, this.filteredAnnotations.length - 1);
-                } else {
-                    // Show the first annotation of the next image in this case, so
-                    // don't return.
-                    this.focussedAnnotationIndex = -Infinity;
-                }
+            if (this.volare.handleNextAnnotation()) {
+                return;
             } else if (this.isLawnmowerAnnotationMode) {
                 // This returns false if the image section can't be advanced (i.e.
                 // the last section is shown).
@@ -249,20 +234,8 @@ export default {
                 return;
             }
 
-            if (this.isVolareAnnotationMode) {
-                if (this.focussedAnnotationIndex > 0) {
-                    this.focussedAnnotationIndex--;
-                    return;
-                } else if (this.focussedAnnotationIndex === -Infinity) {
-                    // This may happen if the volume has only one image and we can't
-                    // switch to the next image. Here, we want to go to the second to
-                    // last annotation of the image.
-                    this.focussedAnnotationIndex = Math.max(this.filteredAnnotations.length - 2, 0);
-                } else {
-                    // Show the last annotation of the previous image in this case,
-                    // so don't return.
-                    this.focussedAnnotationIndex = Infinity;
-                }
+            if (this.volare.handlePreviousAnnotation()) {
+                return;
             } else if (this.isLawnmowerAnnotationMode) {
                 // This returns false if the image section can't be reversed (i.e.
                 // the first section is shown).
@@ -284,26 +257,6 @@ export default {
 
             // Show previous image.
             this.imageIndex = this.getPreviousIndex(this.imageIndex);
-        },
-        maybeUpdateFocussedAnnotation() {
-            if (this.isVolareAnnotationMode) {
-                if (this.filteredAnnotations.length > 0) {
-                    if (this.focussedAnnotationIndex === Infinity) {
-                        // Show the last annotation if the previous image is shown.
-                        this.focussedAnnotationIndex = this.filteredAnnotations.length - 1;
-                    } else {
-                        // Show the first annotation if the next image is shown or
-                        // the annotation filter changed.
-                        this.focussedAnnotationIndex = 0;
-                    }
-                } else {
-                    // Show the whole image if there are no annotations.
-                    this.focussedAnnotationIndex = null;
-                    this.$refs.canvas.fitImage();
-                }
-            } else {
-                this.focussedAnnotationIndex = null;
-            }
         },
         maybeUpdateShownImageSection() {
             if (this.isLawnmowerAnnotationMode) {
@@ -328,7 +281,7 @@ export default {
             }
         },
         maybeUpdateAnnotationMode(data) {
-            this.maybeUpdateFocussedAnnotation();
+            this.volare.updateFocussedAnnotation();
             this.maybeUpdateShownImageSection();
             this.maybeUpdateShownSampling(data);
         },
@@ -373,9 +326,6 @@ export default {
                 });
             }
         },
-        focusAnnotation(annotation, fast, keepResolution) {
-            this.$refs.canvas.focusAnnotation(annotation, fast, keepResolution);
-        },
         handleDetachAnnotationLabel(annotation, annotationLabel) {
             if (this.isEditor) {
                 if (annotation.labels.length > 1) {
@@ -413,13 +363,6 @@ export default {
                 Promise.all(annotations.map(a => AnnotationsStore.update(a)))
                     .catch(handleErrorResponse);
             }
-        },
-        selectAndFocusAnnotation(annotation, keepResolution) {
-            this.selectedAnnotations.forEach(function (a) {
-                a.selected = false;
-            });
-            annotation.selected = true;
-            this.focusAnnotation(annotation, true, keepResolution);
         },
         handleFilter(filter) {
             this.annotationFilter = filter;
@@ -697,6 +640,9 @@ export default {
         openSidebarLabels() {
             this.openTab = 'labels';
         },
+        focusAnnotation(annotation, fast, keepResolution) {
+            this.$refs.canvas.focusAnnotation(annotation, fast, keepResolution);
+        }
     },
     watch: {
         async imageId(id) {
@@ -741,14 +687,6 @@ export default {
             // Twice the count because the next and previous images are cached.
             ImagesStore.setMaxCacheSize(count * 2);
         },
-        focussedAnnotation(annotation) {
-            if (annotation) {
-                this.selectAndFocusAnnotation(annotation, this.userUpdatedVolareResolution);
-            }
-        },
-        annotationFilter() {
-            this.maybeUpdateFocussedAnnotation();
-        },
         showScaleLine(show) {
             if (show) {
                 this.fetchImagesArea();
@@ -757,11 +695,6 @@ export default {
         showMeasureTooltip(show) {
             if (show) {
                 this.fetchImagesArea();
-            }
-        },
-        isVolareAnnotationMode(enabled) {
-            if (!enabled) {
-                this.userUpdatedVolareResolution = false;
             }
         },
         mapResolution() {
@@ -817,24 +750,6 @@ export default {
         Events.on('annotations.deselect', this.handleDeselectAnnotation);
         Events.on('annotations.detachLabel', this.handleDetachAnnotationLabel);
         Events.on('annotations.delete', this.handleDeleteAnnotation);
-        Events.on('annotations.focus', this.focusAnnotation);
-
-        if (UrlParams.get('annotation')) {
-            let id = parseInt(UrlParams.get('annotation'));
-            Events.once('images.change', () => {
-                let annotations = this.annotations;
-                for (let i = annotations.length - 1; i >= 0; i--) {
-                    if (annotations[i].id === id) {
-                        // Use $nextTick so the annotationCanvas component has time to
-                        // render the image.
-                        this.$nextTick(
-                            () => this.selectAndFocusAnnotation(annotations[i])
-                        );
-                        return;
-                    }
-                }
-            });
-        }
 
         if (Settings.has('openTab')) {
             let openTab = Settings.get('openTab');
@@ -853,5 +768,34 @@ export default {
 
         this.initLabelBot();
     },
+    mounted() {
+        this.volare = useVolareMode({
+            filteredAnnotations: computed(() => this.filteredAnnotations),
+            selectedAnnotations: computed(() => this.selectedAnnotations),
+            focusAnnotationInCanvas: this.focusAnnotation,
+            fitImageInCanvas: (...args) => this.$refs.canvas.fitImage(...args),
+            volareModeIsActive: computed(() => this.isVolareAnnotationMode),
+            annotationFilter: this.annotationFilter
+        });
+
+        Events.on('annotations.focus', this.volare.focusAnnotation);
+
+        if (UrlParams.get('annotation')) {
+            let id = parseInt(UrlParams.get('annotation'));
+            Events.once('images.change', () => {
+                let annotations = this.annotations;
+                for (let i = annotations.length - 1; i >= 0; i--) {
+                    if (annotations[i].id === id) {
+                        // Use $nextTick so the annotationCanvas component has time to
+                        // render the image.
+                        this.$nextTick(
+                            () => this.volare.selectAndFocusAnnotation(annotations[i])
+                        );
+                        return;
+                    }
+                }
+            });
+        }
+    }
 };
 </script>
