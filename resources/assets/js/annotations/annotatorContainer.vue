@@ -777,25 +777,7 @@ export default {
             volareModeIsActive: computed(() => this.isVolareAnnotationMode),
             annotationFilter: this.annotationFilter
         });
-
-        Events.on('annotations.focus', this.volare.focusAnnotation);
-
-        if (UrlParams.get('annotation')) {
-            let id = parseInt(UrlParams.get('annotation'));
-            Events.once('images.change', () => {
-                let annotations = this.annotations;
-                for (let i = annotations.length - 1; i >= 0; i--) {
-                    if (annotations[i].id === id) {
-                        // Use $nextTick so the annotationCanvas component has time to
-                        // render the image.
-                        this.$nextTick(
-                            () => this.volare.selectAndFocusAnnotation(annotations[i])
-                        );
-                        return;
-                    }
-                }
-            });
-        }
+        this.volare.registerEvents(this.annotations);
     }
 };
 </script>

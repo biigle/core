@@ -1,5 +1,7 @@
 import { ref, computed, watch } from 'vue';
 import { required } from '@/utils.js';
+import { urlParams as UrlParams } from '@/core/utils.js';
+import Events from '@/core/events.js';
 
 
 export function useVolareMode({
@@ -16,10 +18,6 @@ export function useVolareMode({
     const focussedAnnotation = computed(() => {
         return filteredAnnotations.value[focussedAnnotationIndex.value];
     });
-
-    function focusAnnotation(annotation, fast, keepResolution) {
-        focusAnnotationInCanvas(annotation, fast, keepResolution);
-    }
 
     function selectAndFocusAnnotation(annotation, keepResolution = false) {
         selectedAnnotations.value.forEach(a => {
@@ -94,6 +92,23 @@ export function useVolareMode({
         return false;
     }
 
+    function registerEvents(annotations) {
+        if (UrlParams.get('annotation')) {
+            const id = parseInt(UrlParams.get('annotation'));
+            Events.once('images.change', () => {
+                const annotation = annotations.value.find(a => a.id === id);
+                if (!annotation) {
+                    return;
+                }
+                nextTick(() => {
+                    selectAndFocusAnnotation(annotation);
+                });
+            });
+        }
+
+        Events.on('annotations.focus', focusAnnotationInCanvas);
+    }
+
     watch(focussedAnnotation, (annotation) => {
         if (annotation) {
             selectAndFocusAnnotation(annotation, userUpdateVolareResolution.value);
@@ -104,16 +119,16 @@ export function useVolareMode({
         if (!enabled) {
             userUpdateVolareResolution.value = false;
         }
-    })
+    });
 
     return {
         focussedAnnotationIndex,
         focussedAnnotation,
-        focusAnnotation,
         userUpdateVolareResolution,
         selectAndFocusAnnotation,
         updateFocussedAnnotation,
         handleNextAnnotation,
         handlePreviousAnnotation,
+        registerEvents
     };
 }
