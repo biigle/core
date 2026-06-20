@@ -122,7 +122,7 @@ export function useVolareMode({
     function pause() {
         resumeContext = {
             imageId: image.value.id,
-            focussedAnnotationIndex: focussedAnnotationIndex.value,
+            focussedAnnotationId: focussedAnnotation.value?.id
         };
     }
 
@@ -137,17 +137,15 @@ export function useVolareMode({
             return;
         }
 
-        const savedIndex = resumeContext.focussedAnnotationIndex;
+        const savedID = resumeContext.focussedAnnotationId;
         resumeContext = null;
         resuming = false;
 
         focussedAnnotationIndex.value = null;
         nextTick(() => {
-            // TODO Handle changes of filtered annotations while volare is active or paused
-            if (savedIndex !== null && savedIndex < filteredAnnotations.value.length) {
-                focussedAnnotationIndex.value = savedIndex;
-            }
-        })
+            const index = filteredAnnotations.value.findIndex(a => a.id === savedID);
+            focussedAnnotationIndex.value = index === -1 ? 0 : index;
+        });
     }
 
     watch(focussedAnnotation, (annotation) => {

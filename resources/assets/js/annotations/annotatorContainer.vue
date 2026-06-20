@@ -647,7 +647,7 @@ export default {
                 this.annotations = annotations;
 
                 // Wait for the canvas to be updated, otherwise lawnmower mode
-                // could compute the current section using the old viewport
+                // may compute the current section using the old viewport
                 await this.$nextTick();
 
                 this.maybeUpdateAnnotationMode();
