@@ -18,14 +18,14 @@ import SettingsTab from './components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import VolumeImageAreaApi from './api/volumes.js';
-import {computed, defineAsyncComponent, watch} from 'vue'
+import {computed, defineAsyncComponent} from 'vue'
 import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
-import { PlayPauseState } from '../core/components/playPause.vue';
-import { LawnmowerSaveState } from './components/annotationCanvas/lawnmower.vue';
-import { useVolareMode } from './components/annotationCanvas/volare.js';
+import {PlayPauseState} from '../core/components/playPause.vue';
+import {LawnmowerSaveState} from './components/annotationCanvas/lawnmower.vue';
+import {useVolareMode} from './components/annotationCanvas/volare.js';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
     loader: function () {

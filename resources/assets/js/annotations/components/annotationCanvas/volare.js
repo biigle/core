@@ -1,7 +1,5 @@
 import { ref, computed, watch, nextTick, readonly } from 'vue';
 import { required } from '@/utils.js';
-import { urlParams as UrlParams } from '@/core/utils.js';
-import Events from '@/core/events.js';
 import { PlayPauseState } from '@/core/components/playPause.vue';
 
 

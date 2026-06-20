@@ -1,6 +1,4 @@
 <script>
-import { PlayPauseState } from '@/core/components/playPause.vue';
-
 export const LawnmowerSaveState = Object.freeze({
     SAVE: 'save',
     LOAD: 'load',
