@@ -90,7 +90,6 @@ export default {
             draftAnnotationUsesLabelColor: true,
             imagesArea: null,
             openTab: null,
-            userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
             maybeCorsTiffError: false,
@@ -98,7 +97,8 @@ export default {
             labelTrees: [],
             projectIds: [],
             currentLawnmowerState: PlayPauseState.INACTIVE,
-            lawnmowerSaveState: ""
+            lawnmowerSaveState: "",
+            volare: null,
         };
     },
     provide() {
@@ -136,9 +136,6 @@ export default {
         },
         isDefaultAnnotationMode() {
             return this.annotationMode === 'default';
-        },
-        isVolareAnnotationMode() {
-            return this.annotationMode === 'volare';
         },
         isLawnmowerAnnotationMode() {
             return this.annotationMode === 'lawnmower';
@@ -281,7 +278,6 @@ export default {
             }
         },
         maybeUpdateAnnotationMode(data) {
-            this.volare.updateFocussedAnnotation();
             this.maybeUpdateShownImageSection();
             this.maybeUpdateShownSampling(data);
         },
@@ -417,7 +413,7 @@ export default {
                     confidence: 1,
                 };
 
-                if (this.isVolareAnnotationMode) {
+                if (this.volare.volareModeIsActive) {
                     this.$refs.canvas.blinkAnnotation(annotation);
                 }
 
@@ -545,7 +541,7 @@ export default {
         setLawnmowerState(targetState) {
             const transition = `${this.currentLawnmowerState}->${targetState}`;
 
-            switch(transition) {
+            switch (transition) {
                 case 'active->paused':
                     this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
                     break;
@@ -559,21 +555,13 @@ export default {
 
             this.currentLawnmowerState = targetState;
         },
-        loadImageWithId(imageId) {
+        showImageWithId(imageId) {
             const index = this.imagesIds.indexOf(imageId);
             if (index !== -1) {
                 this.imageIndex = index;
             }
         },
-        updateLawnmowerState(oldMode, newMode) {
-            // Switching from lawnmower to default is caused by pausing,
-            // switching to a different mode inactivates lawnmower
-            if (oldMode === "lawnmower" && newMode !== 'default') {
-                this.setLawnmowerState(PlayPauseState.INACTIVE);
-            }
-        },
         handleAnnotationModeChange(mode, data) {
-            this.updateLawnmowerState(this.annotationMode, mode);
             this.annotationMode = mode;
             this.annotationModeCarry = null;
             this.maybeUpdateAnnotationMode(data);
@@ -697,11 +685,6 @@ export default {
                 this.fetchImagesArea();
             }
         },
-        mapResolution() {
-            if (this.isVolareAnnotationMode) {
-                this.userUpdatedVolareResolution = true;
-            }
-        },
         image(image) {
             this.crossOriginError = image?.crossOrigin;
         },
@@ -787,18 +770,17 @@ export default {
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
 
         this.initLabelBot();
-    },
-    mounted() {
+
         this.volare = useVolareMode({
             filteredAnnotations: computed(() => this.filteredAnnotations),
             selectedAnnotations: computed(() => this.selectedAnnotations),
             focusAnnotationInCanvas: this.focusAnnotation,
             fitImageInCanvas: (...args) => this.$refs.canvas.fitImage(...args),
-            volareModeIsActive: computed(() => this.isVolareAnnotationMode),
             annotationFilter: this.annotationFilter,
-            image: computed(() => this.image)
+            image: computed(() => this.image),
+            mapResolution: computed(() => this.mapResolution),
+            showImageWithId: this.showImageWithId,
         });
-        watch(this.volare.requestedImageId, this.loadImageWithId);
-    }
+    },
 };
 </script>

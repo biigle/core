@@ -1,7 +1,8 @@
-import { ref, computed, watch, nextTick } from 'vue';
+import { ref, computed, watch, nextTick, readonly } from 'vue';
 import { required } from '@/utils.js';
 import { urlParams as UrlParams } from '@/core/utils.js';
 import Events from '@/core/events.js';
+import { PlayPauseState } from '@/core/components/playPause.vue';
 
 
 export function useVolareMode({
@@ -9,18 +10,23 @@ export function useVolareMode({
     selectedAnnotations = required('selectedAnnotations'),
     focusAnnotationInCanvas = required('focusAnnotationInCanvas'),
     fitImageInCanvas = required('fitImageInCanvas'),
-    volareModeIsActive = required('volareModeIsActive'),
     annotationFilter = required('annotationFilter'),
-    image = required('image')
+    image = required('image'),
+    mapResolution = required('mapResolution'),
+    showImageWithId = required('showImageWithId'),
 }) {
     const focussedAnnotationIndex = ref(null);
-    const userUpdateVolareResolution = ref(false);
-    const requestedImageId = ref(null);
-    let pendingVolareState = null;
-    let savedState = null;
+    const resolutionWasChangedByUser = ref(false);
+    const state = ref(PlayPauseState.INACTIVE);
+    let resumeContext = null;
+    let resuming = false;
 
     const focussedAnnotation = computed(() => {
         return filteredAnnotations.value[focussedAnnotationIndex.value];
+    });
+
+    const volareModeIsActive = computed(() => {
+        return state.value === PlayPauseState.ACTIVE;
     });
 
     function selectAndFocusAnnotation(annotation, keepResolution = false) {
@@ -32,7 +38,9 @@ export function useVolareMode({
     }
 
     function updateFocussedAnnotation() {
-        if (!volareModeIsActive.value) {
+        if (resumeContext) {
+            return;
+        } else if (!volareModeIsActive.value) {
             focussedAnnotationIndex.value = null;
             return;
         } else if (filteredAnnotations.value.length === 0) {
@@ -66,8 +74,7 @@ export function useVolareMode({
             // annotation of the image.
             focussedAnnotationIndex.value = Math.min(1, filteredAnnotations.value.length - 1);
         } else {
-            // Show the first annotation of the next image in this case, so
-            // don't return.
+            // Show the first annotation of the next image in this case
             focussedAnnotationIndex.value = -Infinity;
         }
 
@@ -88,62 +95,93 @@ export function useVolareMode({
             // last annotation of the image.
             focussedAnnotationIndex.value = Math.max(filteredAnnotations.value.length - 2, 0);
         } else {
-            // Show the last annotation of the previous image in this case,
-            // so don't return.
+            // Show the last annotation of the previous image in this case
             focussedAnnotationIndex.value = Infinity;
         }
 
         return false;
     }
 
-    function saveState() {
-        savedState = {
+    function setState(targetState) {
+        const transition = `${state.value}->${targetState}`;
+
+        switch (transition) {
+            case 'active->paused':
+                pause();
+                break;
+            case 'paused->active':
+                resume();
+                break;
+            default:
+                resumeContext = null;
+        }
+
+        state.value = targetState;
+    }
+
+    function pause() {
+        resumeContext = {
             imageId: image.value.id,
             focussedAnnotationIndex: focussedAnnotationIndex.value,
         };
     }
 
-    function loadState() {
-        if (!savedState) {
-            return;
-        } else if (savedState.imageId !== image.value.id) {
-            requestedImageId.value = savedState.imageId;
+    function resume() {
+        if (!resumeContext) {
             return;
         }
 
-        // TODO Instead of this hack to trigger the watcher maybe use direct calls and don't use watchers in this composable
+        resuming = true;
+        if (resumeContext.imageId !== image.value.id) {
+            showImageWithId(resumeContext.imageId);
+            return;
+        }
+
+        const savedIndex = resumeContext.focussedAnnotationIndex;
+        resumeContext = null;
+        resuming = false;
+
         focussedAnnotationIndex.value = null;
         nextTick(() => {
-            focussedAnnotationIndex.value = savedState.focussedAnnotationIndex;
-            savedState = null;
-        });
+            // TODO Handle changes of filtered annotations while volare is active or paused
+            if (savedIndex !== null && savedIndex < filteredAnnotations.value.length) {
+                focussedAnnotationIndex.value = savedIndex;
+            }
+        })
     }
 
     watch(focussedAnnotation, (annotation) => {
-        if (annotation) {
-            selectAndFocusAnnotation(annotation, userUpdateVolareResolution.value);
+        if (volareModeIsActive.value && annotation) {
+            selectAndFocusAnnotation(annotation, resolutionWasChangedByUser.value);
         }
     });
     watch(() => annotationFilter?.value, updateFocussedAnnotation);
     watch(volareModeIsActive, (enabled) => {
         if (!enabled) {
-            userUpdateVolareResolution.value = false;
+            resolutionWasChangedByUser.value = false;
+        } else {
+            updateFocussedAnnotation();
         }
     });
     watch(() => image?.value, () => {
-        nextTick(loadState);
+        if (resuming) {
+            nextTick(resume);
+        } else if (volareModeIsActive.value) {
+            nextTick(updateFocussedAnnotation);
+        }
+    });
+    watch(mapResolution, () => {
+        if (volareModeIsActive.value) {
+            resolutionWasChangedByUser.value = true;
+        }
     });
 
     return {
-        focussedAnnotationIndex,
-        focussedAnnotation,
-        userUpdateVolareResolution,
         selectAndFocusAnnotation,
-        updateFocussedAnnotation,
         handleNextAnnotation,
         handlePreviousAnnotation,
-        requestedImageId,
-        saveState,
-        loadState,
+        setState,
+        volareModeIsActive,
+        state: readonly(state),
     };
 }

@@ -18,13 +18,18 @@ export default {
             type: String,
             required: true
         },
+        currentVolareState: {
+            type: String,
+            required: true
+        },
     },
     template: '#annotation-modes-tab-template',
     emits: [
         'attach-label',
         'change',
         'create-sample',
-        'lawnmowerStateRequested'
+        'lawnmowerStateRequested',
+        'volare-state-requested',
     ],
     components: {
         powerToggle: PowerToggle,
@@ -77,13 +82,30 @@ export default {
         startRegularSampling() {
             this.setMode('regularSampling');
         },
-        setMode(mode) {
-            if (this.modes.indexOf(mode) !== -1) {
-                this.mode = mode;
+        deactivateResumableModes(oldMode, newMode) {
+            // Switching from lawnmower/volare to default is caused by pausing and does not deactivate the mode
+            if (newMode === 'default') {
+                return;
+            }
+
+            if (oldMode === 'lawnmower' || this.currentLawnmowerState === PlayPauseState.PAUSED && newMode !== 'lawnmower') {
+                this.emitLawnmowerStateRequested(PlayPauseState.INACTIVE);
+            } else if (oldMode === 'volare' || this.currentVolareState === PlayPauseState.PAUSED && newMode !== 'volare') {
+                this.emitVolareStateRequested(PlayPauseState.INACTIVE);
             }
         },
+        setMode(newMode) {
+            if (this.modes.indexOf(newMode) === -1) {
+                return;
+            }
+
+            const oldMode = this.mode;
+            this.mode = newMode;
+
+            this.deactivateResumableModes(oldMode, newMode);
+        },
         resetMode() {
-            this.mode = 'default';
+            this.setMode('default');
         },
         emitAttachLabel() {
             this.$emit('attach-label');
@@ -93,6 +115,9 @@ export default {
         },
         emitLawnmowerStateRequested(targetState) {
             this.$emit('lawnmowerStateRequested', targetState);
+        },
+        emitVolareStateRequested(targetState) {
+            this.$emit('volare-state-requested', targetState);
         }
     },
     watch: {
@@ -141,6 +166,13 @@ export default {
         currentLawnmowerState(newState) {
             if (newState === PlayPauseState.ACTIVE) {
                 this.startLawnmower();
+            } else if (newState === PlayPauseState.PAUSED) {
+                this.resetMode();
+            }
+        },
+        currentVolareState(newState) {
+            if (newState === PlayPauseState.ACTIVE) {
+                this.startVolare();
             } else if (newState === PlayPauseState.PAUSED) {
                 this.resetMode();
             }
