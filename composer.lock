@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b22555cf9bbc3dac45e84d9a9ebd9dfe",
+    "content-hash": "6b5378bc60eb5cc612408f82acb2fb59",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -113,27 +113,27 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v5.2.0",
+            "version": "v6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "f600fb9a433d051e6b8c2e0afe52b4d562dfa3c6"
+                "reference": "b53e77ca442a723b3decddb0e9165b75fba623ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/f600fb9a433d051e6b8c2e0afe52b4d562dfa3c6",
-                "reference": "f600fb9a433d051e6b8c2e0afe52b4d562dfa3c6",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/b53e77ca442a723b3decddb0e9165b75fba623ee",
+                "reference": "b53e77ca442a723b3decddb0e9165b75fba623ee",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^7.0",
-                "illuminate/console": "^11.0 || ^12.0 || ^13.0",
-                "illuminate/filesystem": "^11.0 || ^12.0 || ^13.0",
-                "illuminate/support": "^11.0 || ^12.0 || ^13.0",
+                "illuminate/console": "^12.0 || ^13.0",
+                "illuminate/filesystem": "^12.0 || ^13.0",
+                "illuminate/support": "^12.0 || ^13.0",
                 "symfony/finder": "^7.0"
             },
             "require-dev": {
-                "laravel/laravel": "^11.0 || ^12.0 || ^13.0",
+                "laravel/laravel": "^12.0 || ^13.0",
                 "mockery/mockery": "^1.2",
                 "phpunit/phpunit": "^10.0 || ^11.0"
             },
@@ -166,9 +166,9 @@
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
             "support": {
                 "issues": "https://github.com/biigle/laravel-file-cache/issues",
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v5.2.0"
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v6.0.0"
             },
-            "time": "2026-05-11T19:19:38+00:00"
+            "time": "2026-06-22T11:48:22+00:00"
         },
         {
             "name": "biigle/metadata-ifdo",
