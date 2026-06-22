@@ -113,16 +113,16 @@
         },
         {
             "name": "biigle/laravel-file-cache",
-            "version": "v6.0.0",
+            "version": "v6.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-file-cache.git",
-                "reference": "b53e77ca442a723b3decddb0e9165b75fba623ee"
+                "reference": "d48e2b9da821fab3e662b201a7f11313e7336c9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/b53e77ca442a723b3decddb0e9165b75fba623ee",
-                "reference": "b53e77ca442a723b3decddb0e9165b75fba623ee",
+                "url": "https://api.github.com/repos/biigle/laravel-file-cache/zipball/d48e2b9da821fab3e662b201a7f11313e7336c9b",
+                "reference": "d48e2b9da821fab3e662b201a7f11313e7336c9b",
                 "shasum": ""
             },
             "require": {
@@ -166,9 +166,9 @@
             "description": "Fetch and cache files from local filesystem, cloud storage or public webservers in Laravel",
             "support": {
                 "issues": "https://github.com/biigle/laravel-file-cache/issues",
-                "source": "https://github.com/biigle/laravel-file-cache/tree/v6.0.0"
+                "source": "https://github.com/biigle/laravel-file-cache/tree/v6.0.1"
             },
-            "time": "2026-06-22T11:48:22+00:00"
+            "time": "2026-06-22T13:51:13+00:00"
         },
         {
             "name": "biigle/metadata-ifdo",
