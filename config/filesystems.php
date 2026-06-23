@@ -14,9 +14,7 @@ return [
     | Supported: "local", "ftp", "sftp", "s3"
     |
     */
-
     'default' => env('FILESYSTEM_DISK', env('FILESYSTEM_DRIVER', 'local')),
-
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -93,6 +91,13 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public/largo-patches'),
             'url' => env('APP_URL').'/storage/largo-patches',
+            'visibility' => 'public',
+        ],
+
+        'annotation-guideline' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/annotation-guideline-reference-images'),
+            'url' => env('APP_URL').'/storage/annotation-guideline-reference-images',
             'visibility' => 'public',
         ],
     ],
