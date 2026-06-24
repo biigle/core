@@ -313,12 +313,12 @@
                 <a href="https://doi.org/10.3389/fmars.2021.760036">Zurowietz, M., & Nattkemper, T. W. (2021). Current Trends and Future Directions of Large Scale Image and Video Annotation: Observations From Four Years of BIIGLE 2.0.</a><br>Frontiers in Marine Science, 8, 760036. doi: <code>10.3389/fmars.2021.760036</code>
             </p>
             <p>
-                <strong>Video Object Tracking</strong><br>
-                <a href="https://doi.org/10.1109/CVPR.2017.515">Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.</a> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: <code>10.1109/CVPR.2017.515</code>
-            </p>
-            <p>
                 <strong>LabelBOT</strong><br>
                 <a href="https://doi.org/10.1109/ACCESS.2026.3688574">G. Kourie, M. Zurowietz, D. Langenkämper, D. Brembilla and T. W. Nattkemper, LabelBOT: A Human-in-the-Loop Classification Assistance in the BIIGLE Image Annotation Tool.</a> <br>IEEE Access, vol. 14, pp. 65161-65180, 2026. doi: <code>10.1109/ACCESS.2026.3688574</code>
+            </p>
+            <p>
+                <strong>Video Object Tracking</strong><br>
+                <a href="https://doi.org/10.1109/CVPR.2017.515">Lukezic, A., Vojir, T., ˇCehovin Zajc, L., Matas, J., & Kristan, M. (2017). Discriminative correlation filter with channel and spatial reliability.</a> In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 6309-6318). doi: <code>10.1109/CVPR.2017.515</code>
             </p>
             @mixin('manualReferences')
 
