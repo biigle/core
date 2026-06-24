@@ -9,7 +9,7 @@
         </p>
 
         <p>
-            LabelBOT is the automatic classification assistant of BIIGLE. It suggests labels for new annotations based on similar existing annotations, so you no longer have to select the labels yourself. This manual article explains how you can use LabelBOT and how it works under the hood.
+            LabelBOT <small class="text-muted"><a href="#ref1">[1]</a></small> is the automatic classification assistant of BIIGLE. It suggests labels for new annotations based on similar existing annotations, so you no longer have to select the labels yourself. This manual article explains how you can use LabelBOT and how it works under the hood.
         </p>
 
         <h3>How to use LabelBOT</h3>
