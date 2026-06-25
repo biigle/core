@@ -8,6 +8,7 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import { rightClick } from './events/condition';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -189,7 +190,7 @@ class MagicWandInteraction extends PointerInteraction {
             // Add feature to annotation source to prevent flickering feature
             this.source.addFeature(this.sketchFeature);
         }
-        
+
         this.sketchSource.removeFeature(this.sketchFeature);
 
         this.sketchFeature = null;
@@ -205,6 +206,9 @@ class MagicWandInteraction extends PointerInteraction {
      * Start drawing of a sketch.
      */
     handleDownEvent(e) {
+        if (rightClick(e)) {
+            return false;
+        }
         this.downPoint[0] = Math.round(e.coordinate[0]);
         this.downPoint[1] = Math.round(e.coordinate[1]);
         this.drawSketch();
