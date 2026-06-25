@@ -23,6 +23,9 @@ import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
+import {PlayPauseState} from '../core/components/playPause.vue';
+import {LawnmowerSaveState} from './components/annotationCanvas/lawnmower.vue';
+import {useVolareMode} from './components/annotationCanvas/volare.js';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
     loader: function () {
@@ -73,7 +76,6 @@ export default {
             mapResolution: undefined,
             selectedLabel: null,
             annotationMode: 'default',
-            focussedAnnotationIndex: null,
             // For lawnmower and sampling modes: When switching images, this determines
             // if the first (0) or the last (Infinity) image section/sampling location
             // should be shown.
@@ -89,13 +91,15 @@ export default {
             preferredUnit: 'auto',
             imagesArea: null,
             openTab: null,
-            userUpdatedVolareResolution: false,
             userId: null,
             crossOriginError: false,
             maybeCorsTiffError: false,
             imageFilenames: {},
             labelTrees: [],
             projectIds: [],
+            currentLawnmowerState: PlayPauseState.INACTIVE,
+            lawnmowerSaveState: "",
+            volare: null,
         };
     },
     provide() {
@@ -131,14 +135,8 @@ export default {
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.selected);
         },
-        focussedAnnotation() {
-            return this.filteredAnnotations[this.focussedAnnotationIndex];
-        },
         isDefaultAnnotationMode() {
             return this.annotationMode === 'default';
-        },
-        isVolareAnnotationMode() {
-            return this.annotationMode === 'volare';
         },
         isLawnmowerAnnotationMode() {
             return this.annotationMode === 'lawnmower';
@@ -206,20 +204,8 @@ export default {
                 return;
             }
 
-            if (this.isVolareAnnotationMode) {
-                if (this.focussedAnnotationIndex < (this.filteredAnnotations.length - 1)) {
-                    this.focussedAnnotationIndex++;
-                    return;
-                } else if (this.focussedAnnotationIndex === Infinity) {
-                    // This may happen if the volume has only one image and we can't
-                    // switch to the next image. Here, we want to go to the second
-                    // annotation of the image.
-                    this.focussedAnnotationIndex = Math.min(1, this.filteredAnnotations.length - 1);
-                } else {
-                    // Show the first annotation of the next image in this case, so
-                    // don't return.
-                    this.focussedAnnotationIndex = -Infinity;
-                }
+            if (this.volare.handleNextAnnotation()) {
+                return;
             } else if (this.isLawnmowerAnnotationMode) {
                 // This returns false if the image section can't be advanced (i.e.
                 // the last section is shown).
@@ -246,20 +232,8 @@ export default {
                 return;
             }
 
-            if (this.isVolareAnnotationMode) {
-                if (this.focussedAnnotationIndex > 0) {
-                    this.focussedAnnotationIndex--;
-                    return;
-                } else if (this.focussedAnnotationIndex === -Infinity) {
-                    // This may happen if the volume has only one image and we can't
-                    // switch to the next image. Here, we want to go to the second to
-                    // last annotation of the image.
-                    this.focussedAnnotationIndex = Math.max(this.filteredAnnotations.length - 2, 0);
-                } else {
-                    // Show the last annotation of the previous image in this case,
-                    // so don't return.
-                    this.focussedAnnotationIndex = Infinity;
-                }
+            if (this.volare.handlePreviousAnnotation()) {
+                return;
             } else if (this.isLawnmowerAnnotationMode) {
                 // This returns false if the image section can't be reversed (i.e.
                 // the first section is shown).
@@ -281,26 +255,6 @@ export default {
 
             // Show previous image.
             this.imageIndex = this.getPreviousIndex(this.imageIndex);
-        },
-        maybeUpdateFocussedAnnotation() {
-            if (this.isVolareAnnotationMode) {
-                if (this.filteredAnnotations.length > 0) {
-                    if (this.focussedAnnotationIndex === Infinity) {
-                        // Show the last annotation if the previous image is shown.
-                        this.focussedAnnotationIndex = this.filteredAnnotations.length - 1;
-                    } else {
-                        // Show the first annotation if the next image is shown or
-                        // the annotation filter changed.
-                        this.focussedAnnotationIndex = 0;
-                    }
-                } else {
-                    // Show the whole image if there are no annotations.
-                    this.focussedAnnotationIndex = null;
-                    this.$refs.canvas.fitImage();
-                }
-            } else {
-                this.focussedAnnotationIndex = null;
-            }
         },
         maybeUpdateShownImageSection() {
             if (this.isLawnmowerAnnotationMode) {
@@ -325,7 +279,6 @@ export default {
             }
         },
         maybeUpdateAnnotationMode(data) {
-            this.maybeUpdateFocussedAnnotation();
             this.maybeUpdateShownImageSection();
             this.maybeUpdateShownSampling(data);
         },
@@ -370,9 +323,6 @@ export default {
                 });
             }
         },
-        focusAnnotation(annotation, fast, keepResolution) {
-            this.$refs.canvas.focusAnnotation(annotation, fast, keepResolution);
-        },
         handleDetachAnnotationLabel(annotation, annotationLabel) {
             if (this.isEditor) {
                 if (annotation.labels.length > 1) {
@@ -410,13 +360,6 @@ export default {
                 Promise.all(annotations.map(a => AnnotationsStore.update(a)))
                     .catch(handleErrorResponse);
             }
-        },
-        selectAndFocusAnnotation(annotation, keepResolution) {
-            this.selectedAnnotations.forEach(function (a) {
-                a.selected = false;
-            });
-            annotation.selected = true;
-            this.focusAnnotation(annotation, true, keepResolution);
         },
         handleFilter(filter) {
             this.annotationFilter = filter;
@@ -471,7 +414,7 @@ export default {
                     confidence: 1,
                 };
 
-                if (this.isVolareAnnotationMode) {
+                if (this.volare.volareModeIsActive) {
                     this.$refs.canvas.blinkAnnotation(annotation);
                 }
 
@@ -596,6 +539,29 @@ export default {
                     break;
             }
         },
+        setLawnmowerState(targetState) {
+            const transition = `${this.currentLawnmowerState}->${targetState}`;
+
+            switch (transition) {
+                case 'active->paused':
+                    this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
+                    break;
+                case 'paused->active':
+                    this.lawnmowerSaveState = LawnmowerSaveState.LOAD;
+                    break;
+                case 'paused->inactive':
+                    this.lawnmowerSaveState = LawnmowerSaveState.DISCARD;
+                    break;
+            }
+
+            this.currentLawnmowerState = targetState;
+        },
+        showImageWithId(imageId) {
+            const index = this.imagesIds.indexOf(imageId);
+            if (index !== -1) {
+                this.imageIndex = index;
+            }
+        },
         handleAnnotationModeChange(mode, data) {
             this.annotationMode = mode;
             this.annotationModeCarry = null;
@@ -663,6 +629,9 @@ export default {
         openSidebarLabels() {
             this.openTab = 'labels';
         },
+        focusAnnotation(annotation, fast, keepResolution) {
+            this.$refs.canvas.focusAnnotation(annotation, fast, keepResolution);
+        }
     },
     watch: {
         async imageId(id) {
@@ -677,6 +646,11 @@ export default {
                 let [image, annotations] = await Promise.all(this.getImageAndAnnotationsPromises(id));
                 this.image = image;
                 this.annotations = annotations;
+
+                // Wait for the canvas to be updated, otherwise lawnmower mode
+                // may compute the current section using the old viewport
+                await this.$nextTick();
+
                 this.maybeUpdateAnnotationMode();
                 this.maybeShowTilingInProgressMessage();
             } catch (e) {
@@ -702,14 +676,6 @@ export default {
             // Twice the count because the next and previous images are cached.
             ImagesStore.setMaxCacheSize(count * 2);
         },
-        focussedAnnotation(annotation) {
-            if (annotation) {
-                this.selectAndFocusAnnotation(annotation, this.userUpdatedVolareResolution);
-            }
-        },
-        annotationFilter() {
-            this.maybeUpdateFocussedAnnotation();
-        },
         showScaleLine(show) {
             if (show) {
                 this.fetchImagesArea();
@@ -718,16 +684,6 @@ export default {
         showMeasureTooltip(show) {
             if (show) {
                 this.fetchImagesArea();
-            }
-        },
-        isVolareAnnotationMode(enabled) {
-            if (!enabled) {
-                this.userUpdatedVolareResolution = false;
-            }
-        },
-        mapResolution() {
-            if (this.isVolareAnnotationMode) {
-                this.userUpdatedVolareResolution = true;
             }
         },
         image(image) {
@@ -780,6 +736,8 @@ export default {
         Events.on('annotations.delete', this.handleDeleteAnnotation);
         Events.on('annotations.focus', this.focusAnnotation);
 
+        // TODO Are these necessary? Should they be moved to the new volare composable?
+
         if (UrlParams.get('annotation')) {
             let id = parseInt(UrlParams.get('annotation'));
             Events.once('images.change', () => {
@@ -789,7 +747,7 @@ export default {
                         // Use $nextTick so the annotationCanvas component has time to
                         // render the image.
                         this.$nextTick(
-                            () => this.selectAndFocusAnnotation(annotations[i])
+                            () => this.volare.selectAndFocusAnnotation(annotations[i])
                         );
                         return;
                     }
@@ -813,6 +771,17 @@ export default {
         Keyboard.on('C', this.selectLastAnnotation, 0, this.listenerSet);
 
         this.initLabelBot();
+
+        this.volare = useVolareMode({
+            filteredAnnotations: computed(() => this.filteredAnnotations),
+            selectedAnnotations: computed(() => this.selectedAnnotations),
+            focusAnnotationInCanvas: this.focusAnnotation,
+            fitImageInCanvas: (...args) => this.$refs.canvas.fitImage(...args),
+            annotationFilter: this.annotationFilter,
+            image: computed(() => this.image),
+            mapResolution: computed(() => this.mapResolution),
+            showImageWithId: this.showImageWithId,
+        });
     },
 };
 </script>

@@ -62,4 +62,8 @@ let declare = function (namespace, object) {
     return object;
 };
 
-export {mount, require, declare};
+function required(name) {
+    throw new Error(`Missing required parameter '${name}'`);
+}
+
+export {mount, require, declare, required};

@@ -100,6 +100,7 @@
             :focused-popup-key="focusedPopupKey"
             :labelbot-timeout="labelbotTimeout"
             :draft-annotation-uses-label-color="draftAnnotationUsesLabelColor"
+            :lawnmower-save-state="lawnmowerSaveState"
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
             v-on:close-labelbot-popup="closeLabelbotPopup"
             v-on:moveend="handleMapMoveend"
@@ -115,6 +116,7 @@
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
+            v-on:restore-lawnmower-image="showImageWithId"
             ref="canvas"
             ></annotation-canvas>
     </div>
