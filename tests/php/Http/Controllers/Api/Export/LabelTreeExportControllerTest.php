@@ -17,7 +17,9 @@ class LabelTreeExportControllerTest extends ApiTestCase
         $this->get('/api/v1/export/label-trees')->assertStatus(403);
 
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/label-trees')
+        $this->getJson('/api/v1/export/label-trees')->assertStatus(422);
+
+        $response = $this->get("/api/v1/export/label-trees?only={$tree->id}")
             ->assertStatus(200)
             ->assertHeader('content-type', 'application/zip')
             ->assertHeader('content-disposition', 'attachment; filename=biigle_label_tree_export.zip');
@@ -57,10 +59,21 @@ class LabelTreeExportControllerTest extends ApiTestCase
         $this->assertEquals($tree1->id, $contents->pluck('id')[0]);
     }
 
+    public function testShowInvalidFilter()
+    {
+        $this->beGlobalAdmin();
+        $this->getJson('/api/v1/export/label-trees?only=,')->assertStatus(422);
+        $this->getJson('/api/v1/export/label-trees?only=abc')->assertStatus(422);
+        $this->getJson('/api/v1/export/label-trees?only=0')->assertStatus(422);
+        $this->getJson('/api/v1/export/label-trees?except=,')->assertStatus(422);
+        $this->getJson('/api/v1/export/label-trees?except=abc')->assertStatus(422);
+        $this->getJson('/api/v1/export/label-trees?except=0')->assertStatus(422);
+    }
+
     public function testIsAllowed()
     {
         config(['sync.allowed_exports' => ['volumes', 'users']]);
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/label-trees')->assertStatus(404);
+        $response = $this->get('/api/v1/export/label-trees?only=1')->assertStatus(404);
     }
 }

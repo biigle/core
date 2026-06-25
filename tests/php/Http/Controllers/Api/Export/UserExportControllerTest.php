@@ -16,7 +16,10 @@ class UserExportControllerTest extends ApiTestCase
         $this->get('/api/v1/export/users')->assertStatus(403);
 
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/users')
+        $this->getJson('/api/v1/export/users')->assertStatus(422);
+
+        $id = $this->user()->id;
+        $response = $this->get("/api/v1/export/users?only={$id}")
             ->assertStatus(200)
             ->assertHeader('content-type', 'application/zip')
             ->assertHeader('content-disposition', 'attachment; filename=biigle_user_export.zip');
@@ -24,8 +27,7 @@ class UserExportControllerTest extends ApiTestCase
         $zip = new ZipArchive;
         $zip->open($response->getFile()->getRealPath());
         $contents = collect(json_decode($zip->getFromName('users.json')));
-        $expect = User::orderBy('id')->pluck('id');
-        $this->assertEquals($expect, $contents->sortBy('id')->pluck('id'));
+        $this->assertEquals(collect([$id]), $contents->pluck('id'));
     }
 
     public function testShowExcept()
@@ -53,10 +55,21 @@ class UserExportControllerTest extends ApiTestCase
         $this->assertEquals(collect([$id]), $contents->pluck('id'));
     }
 
+    public function testShowInvalidFilter()
+    {
+        $this->beGlobalAdmin();
+        $this->getJson('/api/v1/export/users?only=,')->assertStatus(422);
+        $this->getJson('/api/v1/export/users?only=abc')->assertStatus(422);
+        $this->getJson('/api/v1/export/users?only=0')->assertStatus(422);
+        $this->getJson('/api/v1/export/users?except=,')->assertStatus(422);
+        $this->getJson('/api/v1/export/users?except=abc')->assertStatus(422);
+        $this->getJson('/api/v1/export/users?except=0')->assertStatus(422);
+    }
+
     public function testIsAllowed()
     {
         config(['sync.allowed_exports' => ['volumes', 'labelTrees']]);
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/users')->assertStatus(404);
+        $response = $this->get('/api/v1/export/users?only=1')->assertStatus(404);
     }
 }
