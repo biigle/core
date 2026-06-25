@@ -59,6 +59,14 @@ class LabelTreeExportControllerTest extends ApiTestCase
         $this->assertEquals($tree1->id, $contents->pluck('id')[0]);
     }
 
+    public function testShowOnlyAndExceptMutuallyExclusive()
+    {
+        $tree = LabelTreeTest::create();
+        $id = $tree->id;
+        $this->beGlobalAdmin();
+        $this->getJson("/api/v1/export/label-trees?only={$id}&except={$id}")->assertStatus(422);
+    }
+
     public function testShowInvalidFilter()
     {
         $this->beGlobalAdmin();
@@ -68,6 +76,36 @@ class LabelTreeExportControllerTest extends ApiTestCase
         $this->getJson('/api/v1/export/label-trees?except=,')->assertStatus(422);
         $this->getJson('/api/v1/export/label-trees?except=abc')->assertStatus(422);
         $this->getJson('/api/v1/export/label-trees?except=0')->assertStatus(422);
+    }
+
+    public function testShowOnlyArray()
+    {
+        $tree1 = LabelTreeTest::create();
+        $tree2 = LabelTreeTest::create();
+        $id = $tree1->id;
+        $this->beGlobalAdmin();
+        $response = $this->get("/api/v1/export/label-trees?only[]={$id}")->assertStatus(200);
+
+        $zip = new ZipArchive;
+        $zip->open($response->getFile()->getRealPath());
+        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
+        $this->assertEquals($tree1->id, $contents->pluck('id')[0]);
+        $this->assertCount(1, $contents);
+    }
+
+    public function testShowExceptArray()
+    {
+        $tree1 = LabelTreeTest::create();
+        $tree2 = LabelTreeTest::create();
+        $id = $tree1->id;
+        $this->beGlobalAdmin();
+        $response = $this->get("/api/v1/export/label-trees?except[]={$id}")->assertStatus(200);
+
+        $zip = new ZipArchive;
+        $zip->open($response->getFile()->getRealPath());
+        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
+        $this->assertEquals($tree2->id, $contents->pluck('id')[0]);
+        $this->assertCount(1, $contents);
     }
 
     public function testIsAllowed()

@@ -55,6 +55,13 @@ class UserExportControllerTest extends ApiTestCase
         $this->assertEquals(collect([$id]), $contents->pluck('id'));
     }
 
+    public function testShowOnlyAndExceptMutuallyExclusive()
+    {
+        $id = $this->user()->id;
+        $this->beGlobalAdmin();
+        $this->getJson("/api/v1/export/users?only={$id}&except={$id}")->assertStatus(422);
+    }
+
     public function testShowInvalidFilter()
     {
         $this->beGlobalAdmin();
@@ -64,6 +71,31 @@ class UserExportControllerTest extends ApiTestCase
         $this->getJson('/api/v1/export/users?except=,')->assertStatus(422);
         $this->getJson('/api/v1/export/users?except=abc')->assertStatus(422);
         $this->getJson('/api/v1/export/users?except=0')->assertStatus(422);
+    }
+
+    public function testShowOnlyArray()
+    {
+        $id = $this->user()->id;
+        $this->beGlobalAdmin();
+        $response = $this->get("/api/v1/export/users?only[]={$id}")->assertStatus(200);
+
+        $zip = new ZipArchive;
+        $zip->open($response->getFile()->getRealPath());
+        $contents = collect(json_decode($zip->getFromName('users.json')));
+        $this->assertEquals(collect([$id]), $contents->pluck('id'));
+    }
+
+    public function testShowExceptArray()
+    {
+        $id = $this->user()->id;
+        $this->beGlobalAdmin();
+        $response = $this->get("/api/v1/export/users?except[]={$id}")->assertStatus(200);
+
+        $zip = new ZipArchive;
+        $zip->open($response->getFile()->getRealPath());
+        $contents = collect(json_decode($zip->getFromName('users.json')));
+        $expect = User::where('id', '!=', $id)->pluck('id');
+        $this->assertEquals($expect, $contents->pluck('id'));
     }
 
     public function testIsAllowed()
