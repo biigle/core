@@ -439,8 +439,11 @@ export default {
             annotation.confidence = 1;
 
             let promise;
-
-            if (this.labelbotIsActive) {
+            let pendingAnnotation = false;
+            // We check for label_id in case LabelBOT returns no results
+            // and the user input a label in the typeahead, so we skip this step
+            // and save the annotation with its label.
+            if (!annotation.label_id && this.labelbotIsActive) {
                 let imageId = this.imageId;
                 promise = this.saveLabelbotAnnotation(
                     annotation,
@@ -449,18 +452,26 @@ export default {
 
                 promise.then((annotation) => {
                     if (imageId === this.imageId) {
+                        pendingAnnotation = annotation.labels?.length === 0
                         this.showLabelbotPopup(annotation);
                     }
                 });
             } else {
-                annotation.label_id = this.selectedLabel.id;
+                if (!annotation.label_id) {
+                    annotation.label_id = this.selectedLabel.id;
+                }
                 promise = AnnotationsStore.create(this.imageId, annotation);
             }
 
             promise.then(this.setLastCreatedAnnotation)
                 .catch(handleErrorResponse)
-                // Remove the temporary annotation if saving succeeded or failed.
-                .finally(removeCallback);
+                // Remove the temporary annotation if saving succeeded or failed
+                // if it's not a pending annotation
+                .finally(() => {
+                    if (!pendingAnnotation) {
+                        removeCallback();
+                    }
+                });
         },
         handleAttachLabel(annotation, label) {
             label = label || this.selectedLabel;
@@ -545,6 +556,9 @@ export default {
             Promise.all(toCache).catch(function () {});
         },
         setLastCreatedAnnotation(annotation) {
+            if (!annotation.id) {
+                return;
+            }
             if (this.lastCreatedAnnotationTimeout) {
                 window.clearTimeout(this.lastCreatedAnnotationTimeout);
             }

@@ -331,6 +331,16 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->beEditor();
 
+        // Query an empty DB
+        $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ]);
+        // We expect no content
+        $response->assertStatus(204);
+
         // Test label
         $label = LabelTest::create();
         // Label must be attached to a label tree
