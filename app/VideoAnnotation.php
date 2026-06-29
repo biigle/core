@@ -224,6 +224,11 @@ class VideoAnnotation extends Annotation
      */
     protected function rectangleToInterpolationPoints($points)
     {
+        // Ignore gap frames.
+        if (empty($points)) {
+            return [];
+        }
+
         // Return the center point, the normalized vector from the first point
         // (A) to the second point (B), the width (A->B) and the height (A->D).
         $ab = [$points[2] - $points[0], $points[3] - $points[1]];
