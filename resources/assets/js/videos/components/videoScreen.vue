@@ -108,7 +108,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -122,7 +122,7 @@
                             icon="fa-project-diagram"
                             title="Disable the single-frame annotation option to track annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-project-diagram"
@@ -197,7 +197,7 @@
                             icon="fa-project-diagram"
                             title="Disable the single-frame annotation option to track annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-project-diagram"
@@ -611,6 +611,12 @@ export default {
         isDefaultInteractionMode() {
             return this.interactionMode === 'default';
         },
+        isBrushOrWandMode() {
+            return this.interactionMode === 'polygonBrush'
+                || this.interactionMode === 'polygonEraser'
+                || this.interactionMode === 'polygonFill'
+                || this.interactionMode === 'drawMagicWand';
+        },
         styleObject() {
             if (this.heightOffset !== 0) {
                 return `height: calc(65% + ${this.heightOffset}px);`;
@@ -651,6 +657,12 @@ export default {
                     pinchRotate: false,
                     pinchZoom: true,
                 }),
+            });
+
+            map.getViewport().addEventListener('contextmenu', (e) => {
+                if (this.isBrushOrWandMode) {
+                    e.preventDefault();
+                }
             });
 
             control = new ZoomToNativeControl({
