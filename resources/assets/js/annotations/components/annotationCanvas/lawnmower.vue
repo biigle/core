@@ -1,10 +1,25 @@
 <script>
+export const LawnmowerSaveState = Object.freeze({
+    SAVE: 'save',
+    LOAD: 'load',
+    DISCARD: 'discard'
+});
+
 /**
  * Mixin for the annotationCanvas component that contains logic for Lawnmower Mode.
  *
  * @type {Object}
  */
 export default {
+    emits: [
+        'restore-lawnmower-image',
+    ],
+    props: {
+        lawnmowerSaveState: {
+            type: String,
+            required: true
+        }
+    },
     data() {
         return {
             // The image section information is needed for the lawnmower cycling mode
@@ -12,6 +27,7 @@ export default {
             imageSection: [0, 0],
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
+            pendingLawnmowerState: null,
         };
     },
     computed: {
@@ -118,6 +134,66 @@ export default {
                 return this.showImageSection([0, this.imageSection[1] + 1]);
             }
         },
+        getLawnmowerStorageKey() {
+            const volumeId = biigle.$require('annotations.volumeId');
+            return `lawnmower-state-${volumeId}`;
+        },
+        saveCurrentLawnmowerState() {
+            const view = this.map.getView();
+            const state = {
+                imageId: this.image.id,
+                center: view.getCenter(),
+                resolution: view.getResolution(),
+                imageSection: [...this.imageSection]
+            };
+
+            // TODO replace with local variable once we decided what "every volume remembers" means
+            localStorage.setItem(
+                this.getLawnmowerStorageKey(),
+                JSON.stringify(state)
+            );
+        },
+        loadSavedLawnmowerState() {
+            const raw = localStorage.getItem(this.getLawnmowerStorageKey());
+            if (!raw) {
+                return;
+            }
+
+            try {
+                this.pendingLawnmowerState = JSON.parse(raw);
+            } catch {
+                this.discardSavedLawnmowerState();
+                return;
+            }
+
+            if (this.pendingLawnmowerState.imageId !== this.image?.id) {
+                this.$emit('restore-lawnmower-image', this.pendingLawnmowerState.imageId);
+                return;
+            }
+
+            this.applyPendingLawnmowerState();
+        },
+        applyPendingLawnmowerState() {
+            const state = this.pendingLawnmowerState;
+            if (!state || !this.image || state.imageId !== this.image.id) {
+                return;
+            }
+
+            const view = this.map.getView();
+            view.setResolution(state.resolution);
+
+            this.$nextTick(() => {
+                this.imageSectionCenter = state.center;
+                this.imageSection = state.imageSection;
+                view.setCenter(state.center);
+
+                this.pendingLawnmowerState = null;
+            });
+        },
+        discardSavedLawnmowerState() {
+            localStorage.removeItem(this.getLawnmowerStorageKey());
+            this.pendingLawnmowerState = null;
+        }
     },
     watch: {
         // Update the current image section if either the resolution or the map size
@@ -146,6 +222,24 @@ export default {
 
             this.showImageSection(nearestStep);
         },
+        image() {
+            if (this.pendingLawnmowerState) {
+                this.$nextTick(() => this.applyPendingLawnmowerState());
+            }
+        },
+        lawnmowerSaveState(newState) {
+            switch(newState) {
+                case LawnmowerSaveState.SAVE:
+                    this.saveCurrentLawnmowerState();
+                    break;
+                case LawnmowerSaveState.LOAD:
+                    this.loadSavedLawnmowerState();
+                    break;
+                case LawnmowerSaveState.DISCARD:
+                    this.discardSavedLawnmowerState();
+                    break;
+            }
+        }
     },
 };
 </script>
