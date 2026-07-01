@@ -129,7 +129,7 @@ export default {
         },
         showLabelbotPopup(annotation) {
             this.labelbotOverlays.push(annotation);
-            this.focusedPopupKey = annotation.id;
+            this.focusedPopupKey = annotation.id ?? annotation.feature.ol_uid;
             Keyboard.setActiveSet('labelbot');
         },
         updateLabelbotState(labelbotState) {
@@ -139,9 +139,11 @@ export default {
             const index = this.labelbotOverlays.indexOf(annotation);
             if (index !== -1) {
                 this.labelbotOverlays.splice(index, 1);
-                this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.id;
+                const lastOverlay = this.labelbotOverlays[this.labelbotOverlays.length - 1]
 
-                if (!this.focusedPopupKey) {
+                if (lastOverlay) {
+                    this.focusedPopupKey = lastOverlay.id ?? lastOverlay.feature.ol_uid; 
+                } else {
                     Keyboard.setActiveSet('default');
                 }
             }
@@ -152,7 +154,7 @@ export default {
             Keyboard.setActiveSet('default');
         },
         changeLabelbotFocusedPopup(annotation) {
-            this.focusedPopupKey = annotation.id;
+            this.focusedPopupKey = annotation.id ?? annotation.feature.ol_uid;
         },
         saveLabelbotAnnotation(annotation, saveCallback) {
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
@@ -164,12 +166,17 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            // Make sure the LabelBOT image is not sent in the API request to create the
+            // Make sure the LabelBOT image and temp feature are not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
             annotation.labelbotImage = undefined;
             delete annotation.labelbotImage;
 
+            const feature = annotation.feature;
+            annotation.feature = undefined;
+            delete annotation.feature;
+
+            const shape = annotation.shape;
             return this.generateFeatureVector(labelbotImage)
                 .then((featureVector) => {
                     this.labelbotRequestsInFlight += 1;
@@ -177,12 +184,23 @@ export default {
 
                     return saveCallback(annotation);
                 })
-                .then(annotation => {
+                .then(_annotation => {
                     if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
-
-                    return annotation;
+                    if (!_annotation) {
+                        // We need to parse the ol_uid to int to be used as pop key
+                        feature.ol_uid = parseInt(feature.ol_uid)
+                        
+                        // We return annotation and not _annotation, because _annotation is null 
+                        annotation.feature = feature;
+                        annotation.labels = [];
+                        delete annotation.feature_vector;
+                        delete annotation.shape_id;
+                        annotation.shape = shape;
+                        return annotation
+                    }
+                    return _annotation;
                 })
                 .catch((e) => {
                     if (e.status === 429) {

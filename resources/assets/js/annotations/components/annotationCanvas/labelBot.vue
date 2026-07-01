@@ -16,6 +16,7 @@ export default {
         'change-labelbot-focused-popup',
         'close-labelbot-popup',
         'swap',
+        'new',
     ],
     props: {
         labelbotState: {
@@ -55,6 +56,9 @@ export default {
         },
     },
     methods: {
+        createNewLabelBOTAnnotation(event) {
+            this.$emit('new', event.newAnnotation, event.rmvCallback);
+        },
         updateLabelbotLabel(event) {
             this.$emit('swap', event.annotation, event.label);
         },
