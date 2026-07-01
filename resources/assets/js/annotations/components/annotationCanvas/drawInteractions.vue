@@ -8,6 +8,7 @@ import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
+import { setOrUnsetProperty } from '@/utils';
 
 
 /**
@@ -110,12 +111,19 @@ export default {
                 });
                 this.map.addInteraction(drawInteraction);
 
+                const applyDraftColor = (feature) => {
+                    setOrUnsetProperty(feature, 'color', this.getDraftColor());
+                };
+                const overlaySource = drawInteraction.getOverlay().getSource();
+
+                overlaySource.on('addfeature', (event) => {
+                    applyDraftColor(event.feature);
+                });
+                overlaySource.getFeatures().forEach(applyDraftColor);
+
                 drawInteraction.on('drawstart', (event) => {
                     this.drawEnded = false;
-
-                    if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
-                        event.feature.set('color', this.selectedLabel.color);
-                    }
+                    applyDraftColor(event.feature);
                 });
 
                 drawInteraction.on('drawend', (e) => {
@@ -176,11 +184,7 @@ export default {
             const features = source ? source.getFeatures() : [];
 
             features.forEach((feature) => {
-                if (label && label.color && this.draftAnnotationUsesLabelColor) {
-                    feature.set('color', label.color);
-                } else {
-                    feature.unset('color');
-                }
+                setOrUnsetProperty(feature, 'color', this.draftAnnotationUsesLabelColor ? label?.color : null);
             });
         },
     },
