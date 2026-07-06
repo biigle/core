@@ -11,6 +11,14 @@
                 This is the application manual of BIIGLE. Here you can find articles on how to use the application as well as reference publications and the developer documentation.
             </p>
             <h3>
+                <a href="https://liascript.github.io/course/?https://raw.githubusercontent.com/biigle/biigle4beginners/refs/heads/main/tutorial.md" target="_blank">BIIGLE4Beginners</a>
+            </h3>
+
+            <p>
+                A self-paced online tutorial teaching you the basics of BIIGLE.
+            </p>
+
+            <h3>
                 <a href="{{route('manual-tutorials', 'login-and-account-settings')}}">Account settings</a>
             </h3>
 
