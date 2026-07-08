@@ -342,6 +342,7 @@ class LabelTreeTest extends ModelTestCase
             'label_id' => $label->id,
         ]);
         Storage::disk('annotation_storage')->put("{$guideline->id}/{$pivot->uuid}", 'image');
+        $pivot->update(['reference_image_path' => "{$guideline->id}/{$pivot->uuid}"]);
 
         $this->model->delete();
 

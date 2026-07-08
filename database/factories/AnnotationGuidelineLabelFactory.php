@@ -16,6 +16,7 @@ class AnnotationGuidelineLabelFactory extends Factory
             'shape_id' => null,
             'description' => null,
             'uuid' => $this->faker->unique()->uuid(),
+            'reference_image_path' => null,
         ];
     }
 }

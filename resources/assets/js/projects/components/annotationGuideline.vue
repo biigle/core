@@ -129,23 +129,21 @@
                     </p>
                 </div>
 
-                <div v-show="isAdmin || referenceImagePreviewLoaded" class="form-group">
+                <div v-show="isAdmin || referenceImagePreview" class="form-group">
                     <label>Reference Image</label>
                     <div class="form-group" v-if="isAdmin">
                         <button
-                            v-if="referenceImagePreview && referenceImagePreviewLoaded"
+                            v-if="referenceImagePreview"
                             class="btn btn-default btn-sm pull-right"
                             title="Remove reference image"
                             @click.prevent="removeImage"
                             ><i class="fa fa-times"></i></button>
                             <input type="file" @change="addImage" :disabled="!selectedLabel" />
                     </div>
-                    <div v-show="referenceImagePreview && referenceImagePreviewLoaded" class="well well-sm">
+                    <div v-show="referenceImagePreview" class="well well-sm">
                         <img
                             v-if="referenceImagePreview"
                             :src="referenceImagePreview"
-                            @load="referenceImagePreviewLoaded = true"
-                            @error="referenceImagePreview = null"
                             />
                     </div>
                     <p v-if="isAdmin" class="help-block">
@@ -216,7 +214,6 @@ export default {
             labelDescription: '',
             selectedShape: null,
             referenceImage: null,
-            referenceImagePreviewLoaded: false,
             referenceImagePreview: null,
             isDirty: false,
             guidelineDescription: null,
@@ -304,7 +301,6 @@ export default {
             this.labelDescription = '';
             this.selectedShape = null;
             this.referenceImage = null;
-            this.referenceImagePreviewLoaded = false;
             if (this.referenceImagePreview) {
                 if (this.referenceImagePreview.startsWith('blob:')) {
                     URL.revokeObjectURL(this.referenceImagePreview);
@@ -318,7 +314,6 @@ export default {
                 URL.revokeObjectURL(this.referenceImagePreview);
             }
             this.referenceImagePreview = null;
-            this.referenceImagePreviewLoaded = false;
             this.referenceImage = null;
             this.isDirty = true;
         },
@@ -347,7 +342,6 @@ export default {
                     if (this.referenceImagePreview?.startsWith('blob:')) {
                         URL.revokeObjectURL(this.referenceImagePreview);
                     }
-                    this.referenceImagePreviewLoaded = false;
                     this.referenceImagePreview = URL.createObjectURL(blob);
                 }, file.type);
             };
@@ -382,7 +376,9 @@ export default {
             }
             if (this.referenceImage !== null) {
                 formData.append('reference_image', this.referenceImage);
-            } else {
+            } else if (!this.referenceImagePreview) {
+                // Only request deletion if no image should be shown. Otherwise an
+                // existing image would be deleted even if the user didn't touch it.
                 formData.append('reference_image', '');
             }
 

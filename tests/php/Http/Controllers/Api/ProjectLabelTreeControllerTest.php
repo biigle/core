@@ -303,6 +303,7 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
             'label_id' => $label->id,
         ]);
         $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
 
         $this->beAdmin();
         $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}", ['force' => true])

@@ -38,19 +38,27 @@ class AnnotationGuidelineLabel extends Pivot
     protected static function booted(): void
     {
         static::deleting(function (self $guidelineLabel) {
+            if (is_null($guidelineLabel->reference_image_path)) {
+                return;
+            }
+
             // Defer storage deletion until after the DB transaction commits to avoid
             // deleting files if the transaction rolls back.
             DB::afterCommit(function () use ($guidelineLabel) {
                 Storage::disk(config('projects.annotation_guideline_disk'))
-                    ->delete("{$guidelineLabel->annotation_guideline_id}/{$guidelineLabel->uuid}");
+                    ->delete($guidelineLabel->reference_image_path);
             });
         });
     }
 
-    public function getReferenceImageUrlAttribute(): string
+    public function getReferenceImageUrlAttribute(): ?string
     {
+        if (is_null($this->reference_image_path)) {
+            return null;
+        }
+
         return Storage::disk(config('projects.annotation_guideline_disk'))
-            ->url("{$this->annotation_guideline_id}/{$this->uuid}");
+            ->url($this->reference_image_path);
     }
 
     /**

@@ -57,14 +57,21 @@ class AnnotationGuidelineLabelController extends Controller
                 ]);
             }
 
-            $disk = Storage::disk(config('projects.annotation_guideline_disk'));
-
             if (array_key_exists('reference_image', $validated)) {
+                $disk = Storage::disk(config('projects.annotation_guideline_disk'));
                 $image = $validated['reference_image'];
                 if ($image) {
-                    $disk->putFileAs("$guidelineId", $image, $guidelineLabel->uuid);
-                } elseif ($disk->exists("{$guidelineId}/{$guidelineLabel->uuid}")) {
-                    $disk->delete("{$guidelineId}/{$guidelineLabel->uuid}");
+                    $path = "{$guidelineId}/{$guidelineLabel->uuid}";
+                    if ($disk->putFileAs("$guidelineId", $image, $guidelineLabel->uuid) === false) {
+                        abort(500, 'The reference image could not be stored.');
+                    }
+                    $guidelineLabel->update(['reference_image_path' => $path]);
+                } elseif (!is_null($guidelineLabel->reference_image_path)) {
+                    $path = $guidelineLabel->reference_image_path;
+                    // Defer storage deletion until after the DB transaction commits to
+                    // avoid deleting the file if the transaction rolls back.
+                    DB::afterCommit(fn () => $disk->delete($path));
+                    $guidelineLabel->update(['reference_image_path' => null]);
                 }
             }
 
