@@ -72,11 +72,66 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $path = "/api/v1/projects/{$id}/annotation-guidelines";
 
         $this->beAdmin();
-        $this->json('POST', $path, ['description' => 'someDescription'])->assertStatus(201);
+        $this->json('POST', $path, [
+            'description' => 'someDescription',
+            'enforced' => true,
+            'only_shapes' => [Shape::polygonId(), Shape::circleId()],
+        ])->assertStatus(201);
 
         $guideline = $this->project()->annotationGuideline;
         $this->assertSame($id, $guideline->project_id);
         $this->assertSame('someDescription', $guideline->description);
+        $this->assertTrue($guideline->enforced);
+        $this->assertEquals([Shape::polygonId(), Shape::circleId()], $guideline->only_shapes);
+    }
+
+    public function testStoreCastsOnlyShapesToInt()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'only_shapes' => [(string) Shape::polygonId()],
+        ])->assertStatus(201);
+
+        $guideline = $this->project()->annotationGuideline;
+        $this->assertSame([Shape::polygonId()], $guideline->only_shapes);
+    }
+
+    public function testStoreDefaultsEnforcedToFalse()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [])->assertStatus(201);
+
+        $guideline = $this->project()->annotationGuideline;
+        $this->assertFalse($guideline->enforced);
+        $this->assertNull($guideline->only_shapes);
+    }
+
+    public function testStoreValidatesOnlyShapesUnique()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'only_shapes' => [Shape::polygonId(), Shape::polygonId()],
+        ])->assertStatus(422);
+    }
+
+    public function testStoreValidatesOnlyShapesExist()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'only_shapes' => [-1],
+        ])->assertStatus(422);
     }
 
     public function testStoreFailsIfGuidelineExists()
@@ -132,6 +187,159 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('PUT', $path)->assertStatus(200);
         $this->assertNull($guideline->fresh()->description);
+    }
+
+    public function testUpdateEnforcedAndOnlyShapes()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => false,
+            'only_shapes' => null,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, [
+            'enforced' => true,
+            'only_shapes' => [Shape::polygonId(), Shape::circleId()],
+        ])->assertStatus(200);
+
+        $guideline->refresh();
+        $this->assertTrue($guideline->enforced);
+        $this->assertEquals([Shape::polygonId(), Shape::circleId()], $guideline->only_shapes);
+    }
+
+    public function testUpdateNullOnlyShapesOnMissing()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [Shape::polygonId()],
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, ['only_shapes' => null])->assertStatus(200);
+
+        $this->assertNull($guideline->fresh()->only_shapes);
+    }
+
+    public function testUpdateClearEnforcedOnMissing()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path)->assertStatus(200);
+        $this->assertFalse($guideline->fresh()->enforced);
+    }
+
+    public function testUpdateValidatesOnlyShapesUnique()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, [
+            'only_shapes' => [Shape::polygonId(), Shape::polygonId()],
+        ])->assertStatus(422);
+    }
+
+    public function testUpdateCastsOnlyShapesToInt()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, [
+            'only_shapes' => [(string) Shape::polygonId()],
+        ])->assertStatus(200);
+
+        $this->assertSame([Shape::polygonId()], $guideline->fresh()->only_shapes);
+    }
+
+    public function testUpdateNullsLabelShapesNotInOnlyShapes()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $keepLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'shape_id' => Shape::polygonId(),
+        ]);
+        $clearLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        $noShapeLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'shape_id' => null,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, [
+            'only_shapes' => [Shape::polygonId()],
+        ])->assertStatus(200);
+
+        $this->assertSame(Shape::polygonId(), $keepLabel->fresh()->shape_id);
+        $this->assertNull($clearLabel->fresh()->shape_id);
+        $this->assertNull($noShapeLabel->fresh()->shape_id);
+    }
+
+    public function testUpdateDoesNotNullLabelShapesIfOnlyShapesMissing()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, ['description' => 'new'])->assertStatus(200);
+
+        $this->assertSame(Shape::circleId(), $label->fresh()->shape_id);
+    }
+
+    public function testUpdateDoesNotNullLabelShapesIfOnlyShapesNull()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'only_shapes' => [Shape::polygonId()],
+        ]);
+        $label = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, ['only_shapes' => null])->assertStatus(200);
+
+        $this->assertSame(Shape::circleId(), $label->fresh()->shape_id);
+    }
+
+    public function testUpdateValidatesOnlyShapesExist()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, [
+            'only_shapes' => [-1],
+        ])->assertStatus(422);
     }
 
     public function testDestroyRequiresAdmin()

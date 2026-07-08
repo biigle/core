@@ -17,6 +17,8 @@ class AnnotationGuidelineFactory extends Factory
         return [
             'project_id' => Project::factory(),
             'description' => null,
+            'enforced' => false,
+            'only_shapes' => null,
         ];
     }
 }

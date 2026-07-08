@@ -16,10 +16,12 @@ return new class extends Migration {
             $table->foreignId('project_id')
                 ->constrained()
                 ->onDelete('cascade');
-
             $table->unique('project_id');
 
+            $table->boolean('enforced');
+
             $table->text('description')->nullable();
+            $table->jsonb('only_shapes')->nullable();
         });
 
         Schema::create('annotation_guideline_label', function (Blueprint $table) {
