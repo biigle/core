@@ -59,9 +59,9 @@ class StoreAnnotationGuidelineLabel extends FormRequest
             'reference_image' => [
                 'nullable',
                 'file',
-                'mimes:jpg,png,webp',
+                'mimes:jpg',
                 'max:5120',
-                'dimensions:max_width=300,max_height=300',
+                'dimensions:max_width=1000,max_height=1000',
             ],
         ];
     }

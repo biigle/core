@@ -20,7 +20,9 @@ class DestroyProjectLabelTree extends FormRequest
 
     public function rules()
     {
-        return [];
+        return [
+            'force' => 'nullable|boolean',
+        ];
     }
 
     public function withValidator($validator)

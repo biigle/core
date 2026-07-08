@@ -90,8 +90,8 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $label = $this->labelRoot();
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
         $file = new UploadedFile(
-            __DIR__.'/../../../../../files/test-image.png',
-            'test-image.png',
+            __DIR__.'/../../../../../files/test-image.jpg',
+            'test-image.jpg',
             test: true
         );
 
@@ -102,8 +102,8 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         ])->assertStatus(201);
 
         $guidelineLabel = $guideline->labels()->where('label_id', $label->id)->first()->pivot;
-        $disk->assertExists("{$guideline->id}/{$guidelineLabel->uuid}");
-        $this->assertSame("{$guideline->id}/{$guidelineLabel->uuid}", $guidelineLabel->reference_image_path);
+        $disk->assertExists("{$guideline->id}/{$guidelineLabel->uuid}.jpg");
+        $this->assertSame("{$guideline->id}/{$guidelineLabel->uuid}.jpg", $guidelineLabel->reference_image_path);
     }
 
     public function testStoreUpdatesReferenceImage()
@@ -119,12 +119,12 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
         ]);
-        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'old content');
-        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}.jpg", 'old content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}.jpg"]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
         $file = new UploadedFile(
-            __DIR__.'/../../../../../files/test-image.png',
-            'test-image.png',
+            __DIR__.'/../../../../../files/test-image.jpg',
+            'test-image.jpg',
             test: true
         );
 
@@ -134,7 +134,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'reference_image' => $file,
         ])->assertStatus(200);
 
-        $this->assertNotEquals('old content', $disk->get("{$guideline->id}/{$guidelineLabel->uuid}"));
+        $this->assertNotEquals('old content', $disk->get("{$guideline->id}/{$guidelineLabel->uuid}.jpg"));
     }
 
     public function testStoreDeletesReferenceImageWhenNull()
@@ -214,6 +214,16 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'label_id' => $label->id,
             'reference_image' => UploadedFile::fake()->create('document.txt'),
         ])->assertStatus(302);
+
+        // Only JPEG images are allowed.
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'reference_image' => new UploadedFile(
+                __DIR__.'/../../../../../files/test-image.png',
+                'test-image.png',
+                test: true
+            ),
+        ])->assertStatus(422);
     }
 
     public function testDestroyRequiresAdmin()

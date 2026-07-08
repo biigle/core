@@ -22,13 +22,13 @@ class AnnotationGuidelineLabel extends Pivot
 
     protected $keyType = 'string';
 
+    protected $appends = ['reference_image_url'];
+
     /**
      * The attributes that should be casted to native types.
      *
      * @var list<string>
      */
-    protected $appends = ['reference_image_url'];
-
     protected $casts = [
         'label_id' => 'int',
         'shape_id' => 'int',

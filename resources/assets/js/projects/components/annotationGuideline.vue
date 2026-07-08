@@ -279,7 +279,9 @@ export default {
     methods: {
         async selectLabel(label) {
             if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
-                await this.saveLabel();
+                if (!await this.saveLabel()) {
+                    return;
+                }
             }
             this.selectedLabel = label;
         },
@@ -294,7 +296,9 @@ export default {
         },
         async deselectLabel() {
             if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
-                await this.saveLabel();
+                if (!await this.saveLabel()) {
+                    return;
+                }
             }
             this.selectedLabel = null;
         },
@@ -324,7 +328,6 @@ export default {
                 return;
             }
 
-            this.isDirty = true;
             const url = URL.createObjectURL(file);
             const img = new Image();
             img.onload = () => {
@@ -336,18 +339,28 @@ export default {
                 const canvas = document.createElement('canvas');
                 canvas.width = Math.round(w * scale);
                 canvas.height = Math.round(h * scale);
-                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                const ctx = canvas.getContext('2d');
+                // Fill white because JPEG has no alpha channel and transparent
+                // areas would otherwise turn black.
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 canvas.toBlob((blob) => {
                     if (!blob) {
                         Messages.danger('Failed to process the image.');
                         return;
                     }
-                    this.referenceImage = new File([blob], file.name, {type: blob.type});
+                    this.referenceImage = new File([blob], 'reference.jpg', {type: blob.type});
                     if (this.referenceImagePreview?.startsWith('blob:')) {
                         URL.revokeObjectURL(this.referenceImagePreview);
                     }
                     this.referenceImagePreview = URL.createObjectURL(blob);
-                }, file.type);
+                    this.isDirty = true;
+                }, 'image/jpeg', 0.9);
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                Messages.danger('Failed to load the image.');
             };
             img.src = url;
         },
@@ -369,7 +382,7 @@ export default {
         },
         async saveLabel() {
             if (this.loading || !this.isAdmin) {
-                return Promise.resolve();
+                return false;
             }
 
             let formData = new FormData();
@@ -390,7 +403,7 @@ export default {
                 try {
                     await this.createOrSaveGuideline();
                 } catch (e) {
-                    return Promise.resolve();
+                    return false;
                 }
             }
 
@@ -400,7 +413,11 @@ export default {
                     const label = response.body;
                     this.annotationGuidelineLabels.set(label.label_id, label);
                     this.isDirty = false;
-                }, handleErrorResponse)
+                    return true;
+                }, (error) => {
+                    handleErrorResponse(error);
+                    return false;
+                })
                 .finally(this.finishLoading);
         },
         createOrSaveGuideline() {

@@ -25,7 +25,7 @@ class AnnotationGuidelineLabelController extends Controller
      * @apiParam {Integer} label_id The ID of the label
      * @apiParam {Integer} shape_id (optional) The ID of the preferred shape for the label
      * @apiParam {String} description (optional) A description of the label
-     * @apiParam {File|null} reference_image (optional) The reference image for the label. Set to null to delete the previous reference image.
+     * @apiParam {File|null} reference_image (optional) The reference image for the label (JPEG, max. 5 MB, max. 300x300 px). Set to null to delete the previous reference image.
      */
     public function store(StoreAnnotationGuidelineLabel $request)
     {
@@ -61,8 +61,8 @@ class AnnotationGuidelineLabelController extends Controller
                 $disk = Storage::disk(config('projects.annotation_guideline_disk'));
                 $image = $validated['reference_image'];
                 if ($image) {
-                    $path = "{$guidelineId}/{$guidelineLabel->uuid}";
-                    if ($disk->putFileAs("$guidelineId", $image, $guidelineLabel->uuid) === false) {
+                    $path = "{$guidelineId}/{$guidelineLabel->uuid}.jpg";
+                    if ($disk->putFileAs("$guidelineId", $image, "{$guidelineLabel->uuid}.jpg") === false) {
                         abort(500, 'The reference image could not be stored.');
                     }
                     $guidelineLabel->update(['reference_image_path' => $path]);

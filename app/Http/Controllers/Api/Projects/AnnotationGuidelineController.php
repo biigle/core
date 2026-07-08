@@ -70,20 +70,26 @@ class AnnotationGuidelineController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        if ($project->annotationGuideline()->exists()) {
+        $request->validate([
+            'description' => 'nullable|string|min:1',
+        ]);
+
+        $guideline = AnnotationGuideline::firstOrCreate(
+            [
+                'project_id' => $project->id,
+            ],
+            [
+                'description' => $request->description,
+            ],
+        );
+
+        if (!$guideline->wasRecentlyCreated) {
             throw ValidationException::withMessages([
                 'id' => 'The project already has an annotation guideline.',
             ]);
         }
 
-        $request->validate([
-            'description' => 'nullable|string|min:1',
-        ]);
-
-        return AnnotationGuideline::create([
-            'project_id' => $project->id,
-            'description' => $request->description,
-        ]);
+        return $guideline;
     }
 
     /**
