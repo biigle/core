@@ -17,7 +17,7 @@
                     <span v-text="actualPosition"></span>
                 </span>
                 <i v-if="showGuidelineIcon" class="fa fa-fw fa-clipboard-list" title="This label is included in an annotation guideline"></i>
-                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
+                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle" :disabled="cantBeAddedAsFavourite">
                     <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
                 <span if="editable">
@@ -37,6 +37,7 @@
                 :show-favourites="showFavourites"
                 :labels-in-guideline="labelsInGuideline"
                 :filter-by-guideline="filterByGuideline"
+                :can-have-more-favourites="canHaveMoreFavourites"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -110,6 +111,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        canHaveMoreFavourites: {
+            type: Boolean,
+            default: true,
+        },
     },
     computed: {
         showColor() {
@@ -149,7 +154,14 @@ export default {
             };
         },
         favouriteTitle() {
+            if (this.cantBeAddedAsFavourite) {
+                return `You cannot add more than ${MAX_FAVOURITES} favourite labels`;
+            }
+
             return (this.label.favourite ? 'Remove' : 'Add') + ' as favourite';
+        },
+        cantBeAddedAsFavourite() {
+            return !this.label.favourite && !this.canHaveMoreFavourites;
         },
         editTitle() {
             return 'Edit label ' + this.label.name;

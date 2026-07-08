@@ -1,6 +1,7 @@
 <script>
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
+import ShortcutsButton from '@/annotations/components/shortcutsButton.vue';
 import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '@/annotations/components/labelbotPopup.vue';
@@ -15,7 +16,8 @@ export default {
     emits: ['update'],
     components: {
         powerToggle: PowerToggle,
-        screenshotButton: ScreenshotButton
+        screenshotButton: ScreenshotButton,
+        shortcutsButton: ShortcutsButton
     },
     props: {
         supportsJumpByFrame: {
@@ -59,6 +61,7 @@ export default {
                 'muteVideo',
                 'singleAnnotation',
                 'labelbotTimeout',
+                'draftAnnotationUsesLabelColor',
             ],
             annotationOpacity: 1,
             showMinimap: true,
@@ -76,6 +79,7 @@ export default {
             autoPauseMax: AUTO_PAUSE_INDEFINITE,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
+            draftAnnotationUsesLabelColor: true,
         };
     },
     computed: {
@@ -152,6 +156,12 @@ export default {
                 this.annotationOpacity = 1;
             }
         },
+        showDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = true;
+        },
+        hideDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = false;
+        }
     },
     watch: {
         annotationOpacity(value) {
@@ -218,6 +228,10 @@ export default {
         singleAnnotation(show) {
             this.$emit('update', 'singleAnnotation', show);
             Settings.set('singleAnnotation', show);
+        },
+        draftAnnotationUsesLabelColor(show) {
+            this.$emit('update', 'draftAnnotationUsesLabelColor', show);
+            Settings.set('draftAnnotationUsesLabelColor', show);
         },
     },
     created() {

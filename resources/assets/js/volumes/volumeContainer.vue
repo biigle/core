@@ -1,7 +1,8 @@
 <script>
+import Echo from '@/core/echo.js';
+import FilesStore from './stores/files.js';
 import FilterTab from './components/filterTab.vue';
 import ImageGrid from './components/volumeImageGrid.vue';
-import FilesStore from './stores/files.js';
 import LabelsTab from './components/labelsTab.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Settings from '@/core/models/Settings.js';
@@ -11,8 +12,9 @@ import SortingTab from './components/sortingTab.vue';
 import StatisticsModal from '@/projects/components/statisticsModal.vue';
 import VolumesApi from './api/volumes.js';
 import VolumeStatisticsApi from '@/projects/api/volumeStatistics.js';
-import {urlParams as UrlParams} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
+import {urlParams as UrlParams} from '@/core/utils.js';
+
 
 let transformUuid = function (uuid) {
     return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;
@@ -233,7 +235,7 @@ export default {
             this.startLoading();
             VolumeStatisticsApi.get({id: this.volumeId})
                 .then((response) => {
-                    this.statisticsData = response.data;
+                    this.statisticsData = response.body;
                     this.showStatisticsModal = true;
                 }, handleErrorResponse)
                 .finally(this.finishLoading);
@@ -281,9 +283,6 @@ export default {
     },
     created() {
         this.type = biigle.$require('volumes.type');
-        this.fileIds = biigle.$require('volumes.fileIds');
-        this.filterSequence = this.fileIds;
-        this.sortingSequence = this.fileIds;
         this.volumeId = biigle.$require('volumes.volumeId');
         this.settings = new Settings({
             storageKey: 'biigle.volumes.settings',
@@ -293,11 +292,37 @@ export default {
             },
         });
 
+        // A volume with lots of files is created asynchronously in a job.
+        // Listen to the websockets event that announces that all files are ready and
+        // reload the page afterwards.
+        let isAsync = biigle.$require('volumes.creatingAsync');
+        if (isAsync) {
+            Echo.getInstance().private(`volume-${this.volumeId}`)
+                .listen('.Biigle\\Events\\VolumeFilesProcessed', () => location.reload());
+
+            // Sometimes the job to process the volume files is not done when the page
+            // is requested but it is done when this code is executed. In this case, no
+            // websockets event will be fired any more. We check with an additional API
+            // call if the volume is ready now and reload if yes.
+            VolumesApi.get({id: this.volumeId})
+                .then((response) => {
+                    if (!response.body.creating_async) {
+                        location.reload();
+                    }
+                }, handleErrorResponse);
+            return;
+        }
+
+        this.fileIds = biigle.$require('volumes.fileIds');
+        this.filterSequence = this.fileIds;
+        this.sortingSequence = this.fileIds;
+
         let fileUuids = biigle.$require('volumes.fileUuids');
         let thumbUri = biigle.$require('volumes.thumbUri');
         let thumbCount = biigle.$require('volumes.thumbCount');
         let annotateUri = biigle.$require('volumes.annotateUri');
         let infoUri = biigle.$require('volumes.infoUri');
+
         // Do this here instead of a computed property so the file objects get
         // reactive. Also, this array does never change between page reloads.
         this.files = this.fileIds.map(function (id) {

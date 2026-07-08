@@ -18,7 +18,7 @@ import SettingsTab from './components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import VolumeImageAreaApi from './api/volumes.js';
-import {defineAsyncComponent} from 'vue'
+import {computed, defineAsyncComponent} from 'vue'
 import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
@@ -85,6 +85,8 @@ export default {
             showMinimap: true,
             showScaleLine: false,
             showExampleAnnotations: true,
+            draftAnnotationUsesLabelColor: true,
+            preferredUnit: 'auto',
             imagesArea: null,
             openTab: null,
             userUpdatedVolareResolution: false,
@@ -98,7 +100,7 @@ export default {
     },
     provide() {
         return {
-            labelTrees: this.labelTrees,
+            labelTrees: computed(() => this.labelTrees),
         };
     },
     computed: {
@@ -588,6 +590,9 @@ export default {
                     break;
                 case 'exampleAnnotations':
                     this.showExampleAnnotations = value;
+                    break;
+                case 'draftAnnotationUsesLabelColor':
+                    this.draftAnnotationUsesLabelColor = value;
                     break;
             }
         },

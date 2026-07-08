@@ -3,6 +3,7 @@ import DismissImageGrid from '../components/dismissImageGrid.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import FilteringTab from '../components/filteringTab.vue';
+import Keyboard from '@/core/keyboard.js';
 import LabelList from '../components/labelList.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
@@ -13,6 +14,7 @@ import SettingsTab from '../components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import SortingTab from '../components/sortingTab.vue';
+import {computed} from 'vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants.js';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab.vue';
@@ -63,15 +65,9 @@ export default {
         };
     },
     provide() {
-        const appData = {}
-
-        // Need defineProperty to maintain reactivity.
-        // See https://stackoverflow.com/questions/65718651/how-do-i-make-vue-2-provide-inject-api-reactive
-        Object.defineProperty(appData, "showAnnotationOutlines", {
-            get: () => this.showAnnotationOutlines,
-        })
-
-        return { 'outlines': appData };
+        return {
+            showAnnotationOutlines: computed(() => this.showAnnotationOutlines),
+        };
     },
     computed: {
         isInDismissStep() {
@@ -593,6 +589,7 @@ export default {
             }
         },
         resetSorting() {
+            this.handleCancelSimilaritySort();
             return this.updateSortKey(SORT_KEY.ANNOTATION_ID)
                 .then(() => this.sortingDirection = SORT_DIRECTION.DESCENDING);
         },
@@ -647,6 +644,21 @@ export default {
         },
         setUnionLogic(union) {
             this.union = union;
+        },
+        sortByOutlierShortcut() {
+            if (this.loading) {
+                return;
+            }
+            
+            this.handleCancelSimilaritySort();
+            this.updateSortKey(SORT_KEY.OUTLIER);
+        },
+        sortBySimilarityShortcut() {
+            if (this.loading) {
+                return;
+            }
+            
+            this.handleInitSimilaritySort();
         }
     },
     watch: {
@@ -690,6 +702,10 @@ export default {
                 return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
             }
         });
+        
+        Keyboard.on('x', this.resetSorting);
+        Keyboard.on('c', this.sortByOutlierShortcut);
+        Keyboard.on('v', this.sortBySimilarityShortcut);
 
         this.initializeEcho();
     },

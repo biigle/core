@@ -15,6 +15,7 @@ let defaults = {
     muteVideo: true,
     singleAnnotation: false,
     labelbotTimeout: TIMEOUTS.length - 1, // off
+    draftAnnotationUsesLabelColor: true,
 };
 
 export default new Settings({

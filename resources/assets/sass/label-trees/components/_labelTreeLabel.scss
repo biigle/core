@@ -84,7 +84,8 @@
     .label-tree-label__buttons {
         padding-top: $padding-small-vertical 0;
         position: absolute;
-        right: 5px;
+        // Make sure the buttons have enough distance to the scrollbar.
+        right: 10px;
     }
 
     .label-tree-label__favourite {
@@ -102,6 +103,11 @@
 
     .label-tree-label_position {
         pointer-events: none;
+    }
+
+    .label-tree-label__favourite:disabled {
+        color: $gray-light;
+        cursor: not-allowed;
     }
 
 }

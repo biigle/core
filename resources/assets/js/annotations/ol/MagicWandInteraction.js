@@ -277,17 +277,25 @@ class MagicWandInteraction extends PointerInteraction {
      */
     toggleActive() {
         if (this.getActive()) {
-            this.map.on(['moveend', 'change:size'], this.snapshotListener);
-            this.updateSnapshot();
+            this._startDrawing();
         } else {
-            this.map.un(['moveend', 'change:size'], this.snapshotListener);
-            this.indicatorSource.clear();
-            this.isShowingPoint = false;
-            this.isShowingCross = false;
-            if (this.sketchFeature) {
-                this.sketchSource.removeFeature(this.sketchFeature);
-                this.sketchFeature = null;
-            }
+            this._abortDrawing();
+        }
+    }
+
+    _startDrawing() {
+        this.map.on(['moveend', 'change:size'], this.snapshotListener);
+        this.updateSnapshot();
+    }
+
+    _abortDrawing() {
+        this.map.un(['moveend', 'change:size'], this.snapshotListener);
+        this.indicatorSource.clear();
+        this.isShowingPoint = false;
+        this.isShowingCross = false;
+        if (this.sketchFeature) {
+            this.sketchSource.removeFeature(this.sketchFeature);
+            this.sketchFeature = null;
         }
     }
 
@@ -325,6 +333,13 @@ class MagicWandInteraction extends PointerInteraction {
      */
     setLayer(layer) {
         this.layer = layer;
+    }
+
+    setMap(map) {
+        super.setMap(map);
+        if (!map) {
+            this._abortDrawing();
+        }
     }
 
     /**

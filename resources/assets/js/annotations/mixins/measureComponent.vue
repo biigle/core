@@ -7,17 +7,13 @@
 export default {
     props: {
         image: {
-            required: true,
+            type: Object,
+            default: null
         },
         areas: {
-            required: true,
+            type: Object,
+            default: null
         },
-    },
-    data() {
-        return {
-            unitMultipliers: [1e+3, 1, 1e-2, 1e-3, 1e-6, 1e-9],
-            unitNames: ['km', 'm', 'cm', 'mm', 'µm', 'nm'],
-        };
     },
     computed: {
         area() {
@@ -31,13 +27,12 @@ export default {
             return this.area !== -1;
         },
         pxWidthInMeter() {
+            if (!this.hasArea || !this.image) {
+                return null;
+            }
+
             return Math.sqrt(this.area / (this.image.width * this.image.height));
         },
-    },
-    methods: {
-        powerOfTen(input) {
-            return Math.pow(10, Math.floor(Math.log10(input)));
-        },
-    },
+    }
 };
 </script>

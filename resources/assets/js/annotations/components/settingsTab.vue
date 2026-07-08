@@ -2,9 +2,11 @@
 import ExportArea from './exportArea.vue';
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
+import ShortcutsButton from './shortcutsButton.vue';
 import ScreenshotButton from './screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '../components/labelbotPopup.vue';
+import { UnitNames } from '../utils.js';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -27,11 +29,16 @@ export default {
         screenshotButton: ScreenshotButton,
         powerToggle: PowerToggle,
         exportArea: ExportArea,
+        shortcutsButton: ShortcutsButton
     },
     props: {
         image: {
             type: Object,
             default: null,
+        },
+        imagesArea: {
+            type: Object,
+            default: null
         },
         imageFilenames: {
             type: Array,
@@ -60,6 +67,8 @@ export default {
                 'progressIndicator',
                 'exampleAnnotations',
                 'labelbotTimeout',
+                'draftAnnotationUsesLabelColor',
+                'preferredUnit',
             ],
             annotationOpacity: 1.0,
             cachedImagesCount: 1,
@@ -73,6 +82,8 @@ export default {
             exampleAnnotations: true,
             labelbotTimeout: TIMEOUTS.length - 1, // off
             labelbotTimeoutMax: TIMEOUTS.length - 1,
+            draftAnnotationUsesLabelColor: true,
+            preferredUnit: 'auto'
         };
     },
     computed: {
@@ -87,6 +98,9 @@ export default {
         },
         labelbotTimeoutValue() {
             return TIMEOUTS[this.labelbotTimeout];
+        },
+        unitNames() {
+            return ['auto'].concat(UnitNames);
         },
     },
     methods: {
@@ -147,6 +161,12 @@ export default {
         hideExampleAnnotations() {
             this.exampleAnnotations = false;
         },
+        showDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = true;
+        },
+        hideDraftAnnotationUsesLabelColor() {
+            this.draftAnnotationUsesLabelColor = false;
+        },
     },
     watch: {
         annotationOpacity(opacity) {
@@ -196,6 +216,14 @@ export default {
             this.$emit('change', 'exampleAnnotations', show);
             this.settings.set('exampleAnnotations', show);
         },
+        draftAnnotationUsesLabelColor(show) {
+            this.$emit('change', 'draftAnnotationUsesLabelColor', show);
+            this.settings.set('draftAnnotationUsesLabelColor', show);
+        },
+        preferredUnit(unit) {
+            this.$emit('change', 'preferredUnit', unit);
+            this.settings.set('preferredUnit', unit);
+        }
     },
     created() {
         this.restoreKeys.forEach((key) => {

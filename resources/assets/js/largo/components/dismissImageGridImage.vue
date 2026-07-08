@@ -8,7 +8,7 @@
             <i class="fas" :class="iconClass"></i>
         </div>
         <img :src="srcUrl" @error="showEmptyImage" @click="toggleSelect">
-        <img v-if="this.showAnnotationOutlines" v-show="overlayIsLoaded" :src="svgSrcUrl" @error="handleOverlayError" @load="handleOverlayLoad" class="outlines">
+        <img v-if="this.showOutlines" v-show="overlayIsLoaded" :src="svgSrcUrl" @error="handleOverlayError" @load="handleOverlayLoad" class="outlines">
         <div
             v-if="pinnable || isPinned"
             class="image-buttons-bottom"
@@ -51,7 +51,7 @@ export default {
             overlayHasError: false,
         };
     },
-    inject: ['outlines'],
+    inject: ['showAnnotationOutlines'],
     computed: {
         showAnnotationLink() {
             return this.showAnnotationRoute ? (this.showAnnotationRoute + this.image.id) : '';
@@ -73,8 +73,8 @@ export default {
             // Replace file extension by svg file format
             return this.srcUrl.replace(/.[A-Za-z]*$/, '.svg');
         },
-        showAnnotationOutlines(){
-           return !this.overlayHasError && this.outlines.showAnnotationOutlines;
+        showOutlines() {
+           return !this.overlayHasError && this.showAnnotationOutlines;
         },
     },
     methods: {

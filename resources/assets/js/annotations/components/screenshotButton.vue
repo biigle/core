@@ -1,6 +1,6 @@
 <template>
 <button
-    class="btn btn-default"
+    class="btn btn-default btn-block"
     title="Get a screenshot of the visible area 𝗣"
     @click="capture"
     >
@@ -12,7 +12,9 @@
 import Events from '@/core/events.js';
 import Messages from '@/core/messages/store.js';
 import Keyboard from '@/core/keyboard.js';
-import { trimCanvas } from '../utils';
+import MeasureComponent from '../mixins/measureComponent.vue';
+import Settings from '../stores/settings.js';
+import { trimCanvas, ScaleLineProperties } from '../utils';
 
 /**
  * A button that produces a screenshot of the map
@@ -20,6 +22,7 @@ import { trimCanvas } from '../utils';
  * @type {Object}
  */
 export default {
+    mixins: [MeasureComponent],
     props: {
         filenames: {
             type: Array,
@@ -73,11 +76,53 @@ export default {
                 this.map.renderSync();
             }
         },
+        drawScaleLine(canvas) {
+            const ratio = window.devicePixelRatio;
+            const height = 4 * ratio;
+            const x = 10 * ratio;
+            const y = canvas.height - 10 * ratio - height;
+
+            const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, Settings.get('preferredUnit'));
+            const width = scaleLineProperties.width() * ratio;
+            const ctx = canvas.getContext('2d');
+
+            // black border
+            ctx.fillStyle = '#000';
+            ctx.fillRect(x, y, width, height);
+
+            // white line
+            ctx.fillStyle = '#FFF';
+            ctx.fillRect(x + ratio, y + ratio, width - ratio * 2, height - ratio * 2);
+
+            this.drawCenteredText(canvas, scaleLineProperties.text(), x + width / 2, y - 2 * ratio);
+        },
+        drawCenteredText(canvas, text, centerX, y) {
+            const ratio = window.devicePixelRatio;
+            const ctx = canvas.getContext('2d');
+            const fontSize = 12 * ratio;
+
+            ctx.font = `${fontSize}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+
+            // black text border
+            ctx.lineWidth = 2 * ratio;
+            ctx.strokeStyle = '#000';
+            ctx.strokeText(text, centerX, y);
+
+            // white text
+            ctx.fillStyle = '#FFF';
+            ctx.fillText(text, centerX, y);
+        },
         makeBlob(canvas) {
             try {
                 canvas = trimCanvas(canvas);
             } catch (error) {
                 return Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+            }
+
+            if (this.image && this.hasArea && Settings.get('scaleLine')) {
+                this.drawScaleLine(canvas);
             }
 
             let type = 'image/png';
@@ -108,7 +153,13 @@ export default {
                 .getViewport()
                 .querySelector('.ol-layer canvas, canvas.ol-layer');
 
-            this.makeBlob(canvas).then(this.download).catch(this.handleError);
+            const clone = document.createElement('canvas');
+            clone.width = canvas.width;
+            clone.height = canvas.height;
+            const ctx = clone.getContext('2d');
+            ctx.drawImage(canvas, 0, 0);
+
+            this.makeBlob(clone).then(this.download).catch(this.handleError);
         },
         handleError(message) {
             Messages.danger(message);

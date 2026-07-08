@@ -2,6 +2,7 @@
     <settings-tab
         v-cloak
         :image="image"
+        :images-area="imagesArea"
         :current-id="imageId"
         :image-filenames="imageFilenames"
         :ids="allImagesIds"
@@ -12,14 +13,20 @@
 @push('scripts')
 <script type="text/html" id="settings-tab-template">
     <div class="annotator-tab">
-        <div class="sidebar-tab__section">
-            <button v-if="crossOrigin" class="btn btn-default" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+        <div class="sidebar-tab__section settings-tab__top-actions">
+            <button v-if="crossOrigin" class="btn btn-default btn-block" title="Screenshots are not available for remote images without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
             <screenshot-button
                 v-else
                 :current-id="currentId"
                 :filenames="imageFilenames"
                 :ids="ids"
+                :image="image"
+                :areas="imagesArea"
                 ></screenshot-button>
+
+            <shortcuts-button>
+                @include('partials.image-annotation-shortcuts')
+            </shortcuts-button>
         </div>
 
         <div class="sidebar-tab__section">
@@ -80,6 +87,24 @@
                     </power-toggle>
             </div>
         @endcan
+        <div class="sidebar-tab__section">
+            <power-toggle
+                :active="draftAnnotationUsesLabelColor"
+                title-off="Enable using the selected label color for draft annotations"
+                title-on="Disable using the selected label color for draft annotations"
+                v-on:on="showDraftAnnotationUsesLabelColor"
+                v-on:off="hideDraftAnnotationUsesLabelColor"
+            >
+                Draft Annotation Color
+            </power-toggle>
+        </div>
+
+        <div class="sidebar-tab__section">
+            <h5 title="Set the preferred unit">Preferred unit</h5>
+            <select class="form-control" v-model="preferredUnit">
+                <option v-for="unit in unitNames" :key="unit" :value="unit" v-text="unit"></option>
+            </select>
+        </div>
 
         @mixin('annotationsSettingsTab')
     </div>

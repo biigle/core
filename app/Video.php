@@ -28,6 +28,7 @@ class Video extends VolumeFile
      */
     const CODECS = [
         'h264',
+        'hevc',
         'vp8',
         'vp9',
         'av1',

@@ -66,7 +66,7 @@ export default defineConfig({
         },
     },
     build: {
-        rollupOptions: {
+        rolldownOptions: {
             // In production, Vue is loaded as an importmap in app.blade.php.
             // This is done so BIIGLE modules can reuse the same Vue version and
             // instance. Otherwise, there will be issues e.g. with template compiling.

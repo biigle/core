@@ -10,6 +10,7 @@ import VideoScreen from './components/videoScreen.vue';
 import VideoTimeline from './components/videoTimeline.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import LabelbotMixin from '@/annotations/mixins/labelbot.vue';
+import {computed} from 'vue';
 
 const proxy = {
     components: {
@@ -35,7 +36,7 @@ const proxy = {
     },
     provide() {
         return {
-            labelTrees: this.labelTrees,
+            labelTrees: computed(() => this.labelTrees),
         };
     },
     computed: {},

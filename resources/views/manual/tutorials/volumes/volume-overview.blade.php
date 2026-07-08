@@ -16,40 +16,7 @@
         <p>
             The volume overview displays files of a volume as thumbnails in a grid. This is an efficient way to handle a large amount of files in a volume, which your browser can't handle all at once. You can scroll through the files with your mouse wheel, similar to scrolling through a regular website. Each scroll action advances the rows of the thumbnail grid. In case you scroll down, the first row disappears and the last row loads the next thumbnails. You can also use the following shortcut keys to scroll the thumbnail grid:
         </p>
-        <table class="table">
-             <thead>
-                <tr>
-                    <th>Key</th>
-                    <th>Function</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><kbd>W</kbd>, <kbd>Arrow up</kbd></td>
-                    <td>Move one row up</td>
-                </tr>
-                <tr>
-                    <td><kbd>S</kbd>, <kbd>Arrow down</kbd></td>
-                    <td>Move one row down</td>
-                </tr>
-                <tr>
-                    <td><kbd>A</kbd>, <kbd>Arrow left</kbd>, <kbd>Page up</kbd></td>
-                    <td>Move one page up</td>
-                </tr>
-                <tr>
-                    <td><kbd>D</kbd>, <kbd>Arrow right</kbd>, <kbd>Page down</kbd></td>
-                    <td>Move one page down</td>
-                </tr>
-                <tr>
-                    <td><kbd>Home</kbd></td>
-                    <td>Move up to the first row</td>
-                </tr>
-                <tr>
-                    <td><kbd>End</kbd></td>
-                    <td>Move down to the last row</td>
-                </tr>
-            </tbody>
-        </table>
+        @include('partials.image-grid-shortcuts')
         <p>
             Moving a "page" up/down means that you advance as many rows in the grid backward/forward as are currently displayed.
         </p>

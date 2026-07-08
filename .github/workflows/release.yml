@@ -48,8 +48,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=biigle-docker
-          cache-to: type=gha,mode=max,scope=biigle-docker
+          cache-from: type=gha,scope=biigle-app
+          cache-to: type=gha,mode=max,scope=biigle-app
 
   build-and-push-worker:
     runs-on: ubuntu-latest
@@ -86,8 +86,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=biigle-docker
-          cache-to: type=gha,mode=max,scope=biigle-docker
+          cache-from: type=gha,scope=biigle-worker
+          cache-to: type=gha,mode=max,scope=biigle-worker
 
   build-and-push-pyworker:
     runs-on: ubuntu-latest
@@ -124,8 +124,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=biigle-docker
-          cache-to: type=gha,mode=max,scope=biigle-docker
+          cache-from: type=gha,scope=biigle-pyworker
+          cache-to: type=gha,mode=max,scope=biigle-pyworker
 
   build-and-push-web:
     runs-on: ubuntu-latest
@@ -162,5 +162,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=biigle-docker
-          cache-to: type=gha,mode=max,scope=biigle-docker
+          cache-from: type=gha,scope=biigle-web
+          cache-to: type=gha,mode=max,scope=biigle-web

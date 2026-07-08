@@ -11,23 +11,26 @@
 
 @push('scripts')
 <script type="text/html" id="settings-tab-template">
-<div class="annotator-tab settings-tab">
 
-    <div class="sidebar-tab__section">
-        <button v-if="crossOriginError" class="btn btn-default" title="Screenshots are not available for remote videos without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
+<div class="annotator-tab settings-tab">
+    <div class="sidebar-tab__section settings-tab__top-actions">
+        <button v-if="crossOriginError" class="btn btn-default btn-block" title="Screenshots are not available for remote videos without cross-origin resource sharing" disabled="disabled" ><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
         <screenshot-button
             v-else
             :current-id="currentId"
             :filenames="videoFilenames"
             :ids="ids"
             ></screenshot-button>
+            
+        <shortcuts-button>
+            @include('partials.video-annotation-shortcuts')
+        </shortcuts-button>
     </div>
 
     <div class="sidebar-tab__section">
         <h5 title="Set the opacity of annotations">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
         <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
     </div>
-
 
     @can('add-annotation', $video)
         <div class="sidebar-tab__section">
@@ -85,6 +88,17 @@
 
     <div class="sidebar-tab__section">
         <power-toggle :active="singleAnnotation" title-off="Enable always creating single-frame annotations" title-on="Disable always creating single-frame annotations" v-on:on="handleSingleAnnotation" v-on:off="handleDisableSingleAnnotation">Single-Frame Annotation</power-toggle>
+    </div>
+    <div class="sidebar-tab__section">
+        <power-toggle
+            :active="draftAnnotationUsesLabelColor"
+            title-off="Enable using the selected label color for draft annotations"
+            title-on="Disable using the selected label color for draft annotations"
+            v-on:on="showDraftAnnotationUsesLabelColor"
+            v-on:off="hideDraftAnnotationUsesLabelColor"
+        >
+            Draft Annotation Color
+        </power-toggle>
     </div>
 </div>
 </script>

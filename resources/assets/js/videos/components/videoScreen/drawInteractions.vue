@@ -1,6 +1,7 @@
 <script>
 import * as preventDoubleclick from '@/prevent-doubleclick';
 import DrawInteraction, {createBox} from '@biigle/ol/interaction/Draw';
+import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from "./snapInteraction.vue";
 import Styles from '@/annotations/stores/styles.js';
@@ -73,6 +74,9 @@ export default {
         isDrawingAlignedRectangle() {
             return this.interactionMode === 'drawAlignedRectangle';
         },
+        isDrawingMagicWand() {
+            return this.interactionMode === 'drawMagicWand';
+        },
         hasPendingAnnotation() {
             if (this.isDrawingWholeFrame) {
                 return this.pendingAnnotation.shape && this.pendingAnnotation.frames.length > 0 && this.pendingAnnotation.points.length === 0;
@@ -134,11 +138,18 @@ export default {
         drawAlignedRectangle() {
             this.draw('AlignedRectangle');
         },
+        drawMagicWand() {
+            this.draw('MagicWand');
+        },
         maybeUpdateDrawInteractionMode(mode) {
             let shape = mode.slice(4); // Remove the 'draw' prefix.
 
             if (this.isDrawingAlignedRectangle) {
                 shape = 'Rectangle';
+            }
+
+            if (this.isDrawingMagicWand) {
+                shape = 'Polygon';
             }
 
             this.resetPendingAnnotation(shape);
@@ -166,19 +177,36 @@ export default {
                         geometryFunction = createBox();
                     }
 
-                    this.drawInteraction = new DrawInteraction({
-                        source: this.pendingAnnotationSource,
-                        type: type,
-                        geometryFunction: geometryFunction,
-                        style: Styles.editing,
-                        freehandCondition: this.getFreehandCondition(mode),
-                        condition: this.updateSnapCoords
-                    });
+                    if (this.isDrawingMagicWand) {
+                        this.drawInteraction = new MagicWandInteraction({
+                            map: this.map,
+                            source: this.pendingAnnotationSource,
+                            layer: this.videoLayer,
+                            style: Styles.editing,
+                            indicatorPointStyle: Styles.editing,
+                            indicatorCrossStyle: Styles.cross,
+                            simplifyTolerant: 0.1,
+                        });
+                    } else {
+                        this.drawInteraction = new DrawInteraction({
+                            source: this.pendingAnnotationSource,
+                            type: type,
+                            geometryFunction: geometryFunction,
+                            style: Styles.editing,
+                            freehandCondition: this.getFreehandCondition(mode),
+                            condition: this.updateSnapCoords
+                        });
+                    }
+
 
                     this.map.addInteraction(this.drawInteraction);
 
-                    this.drawInteraction.on('drawstart', () => {
+                    this.drawInteraction.on('drawstart', (event) => {
                         this.drawEnded = false;
+
+                        if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
+                            event.feature.set('color', this.selectedLabel.color);
+                        }
                     });
                     this.drawInteraction.on('drawend', (e) => {
                         this.extendPendingAnnotation(e);
@@ -329,6 +357,31 @@ export default {
 
             return never;
         },
+        updateMagicWandSnapshot() {
+            if (!this.isDrawingMagicWand) {
+                return;
+            }
+
+            this.drawInteraction.updateSnapshot();
+        },
+        updateDraftAnnotationColor(label) {
+            if (!this.drawInteraction) {
+                return;
+            }
+
+            const overlay = this.drawInteraction.getOverlay();
+            const source = overlay && overlay.getSource();
+            let features = source ? source.getFeatures() : [];
+            features.push(...this.pendingAnnotationSource.getFeatures());
+
+            features.forEach((feature) => {
+                if (label && label.color && this.draftAnnotationUsesLabelColor) {
+                    feature.set('color', label.color);
+                } else {
+                    feature.unset('color');
+                }
+            });
+        },
     },
     watch: {
         mapReadyRevision: {
@@ -337,6 +390,19 @@ export default {
                 this.initPendingAnnotationLayer(this.map);
             },
         },
+        isDrawingMagicWand(drawing) {
+            if (drawing) {
+                this.video.addEventListener('seeked', this.updateMagicWandSnapshot);
+            } else {
+                this.video.removeEventListener('seeked', this.updateMagicWandSnapshot);
+            }
+        },
+        selectedLabel(label) {
+            this.updateDraftAnnotationColor(label);
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updateDraftAnnotationColor(this.selectedLabel);
+        }
     },
     created() {
         if (this.canAdd) {
@@ -347,10 +413,16 @@ export default {
             this.keyboardOn('d', this.drawCircle, 0, this.listenerSet);
             this.keyboardOn('f', this.drawLineString, 0, this.listenerSet);
             this.keyboardOn('g', this.drawPolygon, 0, this.listenerSet);
+            this.keyboardOn('Shift+g', this.drawMagicWand, 0, this.listenerSet);
             this.keyboardOn('h', this.drawWholeFrame, 0, this.listenerSet);
             this.keyboardOn('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
             this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
     },
+    beforeUnmount() {
+        if (this.video && this.updateMagicWandSnapshot) {
+            this.video.removeEventListener('seeked', this.updateMagicWandSnapshot);
+        }
+    }
 };
 </script>

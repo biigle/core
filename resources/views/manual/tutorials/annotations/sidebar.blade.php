@@ -104,7 +104,8 @@
             The settings tab allows you to customize the image annotation tool and provides some advanced features.
         </p>
         <p>
-            Click the <i class="fa fa-camera"></i> capture screenshot button to get a screenshot of the currently visible area as a downloadable image. Note that the screenshot does not include the whole image but only the visible area of your current viewport.
+            Click the <i class="fa fa-camera"></i> capture screenshot button to get a screenshot of the currently visible area as a downloadable image. Note that the screenshot does not include the whole image but only the visible area of your current viewport.<br/>
+            If the scale line switch is active and area information for the image is available through its <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">metadata</a>, the screenshot will contain a scale line in the bottom left corner.
         </p>
 
         <div class="panel panel-warning">
@@ -169,6 +170,13 @@
             The example annotations switch allows you to enable or disable the example annotation patches that are displayed in the <i class="fa fa-tags"></i> label trees tab.
         </p>
 
+        <p>
+            The draft annotation color switch enables using the selected label's color for the draft annotation. If disabled, a neutral default color is used for draft annotations.
+        </p>
+
+        <p>
+            The preferred unit dropdown controls the unit used for displaying lengths and areas. If the default value <b>auto</b> is selected, the most suitable unit is automatically calculated. If a preferred unit other than <b>auto</b> is active, the scale line indicator (including the one in screenshots) will always display the scale using the selected unit. The measure tooltip will also display lengths and areas of annotations during hovering using the preferred unit.
+        </p>
 
         @mixin('annotationsManualSidebarSettings')
     </div>

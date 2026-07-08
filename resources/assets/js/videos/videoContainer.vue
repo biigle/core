@@ -19,7 +19,7 @@ import VideoLabelsTab from './components/videoLabelsTab.vue';
 import VideoScreen from './components/videoScreen.vue';
 import VideoTimeline from './components/videoTimeline.vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
-import {markRaw} from 'vue';
+import {computed, markRaw} from 'vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
 import {AUTO_PAUSE_INDEFINITE} from './components/settingsTab.vue';
 
@@ -79,6 +79,7 @@ export default {
                 enableJumpByFrame: false,
                 muteVideo: true,
                 singleAnnotation: false,
+                draftAnnotationUsesLabelColor: true
             },
             openTab: '',
             urlParams: {
@@ -123,7 +124,7 @@ export default {
     },
     provide() {
         return {
-            labelTrees: this.labelTrees,
+            labelTrees: computed(() => this.labelTrees),
         };
     },
     computed: {

@@ -30,7 +30,7 @@ export default {
             overlayHasError: false,
         };
     },
-    inject: ['outlines'],
+    inject: ['showAnnotationOutlines'],
     computed: {
         showAnnotationLink() {
             return this.showAnnotationRoute ? (this.showAnnotationRoute + this.image.id) : '';
@@ -39,8 +39,8 @@ export default {
             // Replace file extension by svg file format
             return this.srcUrl.replace(/.[A-Za-z]*$/, '.svg');
         },
-        showOutlines(){
-            return !this.overlayHasError && this.outlines.showAnnotationOutlines;
+        showOutlines() {
+            return !this.overlayHasError && this.showAnnotationOutlines;
         }
     },
     methods: {

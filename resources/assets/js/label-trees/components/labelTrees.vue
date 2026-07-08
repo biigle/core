@@ -63,6 +63,7 @@
                 :collapsible="collapsible"
                 :labels-in-guideline="labelsInGuidelineSet"
                 :filter-by-guideline="filterByGuideline"
+                :can-have-more-favourites="canHaveMoreFavourites"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"

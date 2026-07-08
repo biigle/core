@@ -5,7 +5,6 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Http\Requests\StorePendingVolume;
 use Biigle\Http\Requests\StorePendingVolumeFromVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
-use Biigle\Http\Requests\UpdatePendingVolumeAnnotationLabels;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Project;
@@ -18,13 +17,6 @@ use Storage;
 
 class PendingVolumeController extends Controller
 {
-    /**
-     * Limit for the number of files above which volume files are created asynchronously.
-     *
-     * @var int
-     */
-    const CREATE_SYNC_LIMIT = 10000;
-
     /**
      * Creates a new pending volume associated to the specified project.
      *
@@ -166,7 +158,6 @@ class PendingVolumeController extends Controller
     {
         $pv = $request->pendingVolume;
         $volume = DB::transaction(function () use ($request, $pv) {
-
             $volume = Volume::create([
                 'name' => $request->input('name'),
                 'url' => $request->input('url'),
@@ -192,11 +183,12 @@ class PendingVolumeController extends Controller
 
             // If too many files should be created, do this asynchronously in the
             // background. Else the script will run in the 30s execution timeout.
+            $limit = config('volumes.create_sync_limit');
             $job = new CreateNewImagesOrVideos($volume, $files);
-            if (count($files) > self::CREATE_SYNC_LIMIT) {
-                Queue::pushOn('high', $job);
+            if (count($files) > $limit) {
                 $volume->creating_async = true;
                 $volume->save();
+                Queue::pushOn('high', $job);
             } else {
                 Queue::connection('sync')->push($job);
             }

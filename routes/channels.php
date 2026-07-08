@@ -1,6 +1,7 @@
 <?php
 
 use Biigle\Broadcasting\UserChannel;
+use Biigle\Broadcasting\VolumeChannel;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -15,3 +16,5 @@ use Illuminate\Support\Facades\Broadcast;
 */
 
 Broadcast::channel('user-{id}', UserChannel::class);
+
+Broadcast::channel('volume-{id}', VolumeChannel::class);

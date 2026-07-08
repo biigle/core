@@ -48,6 +48,7 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
     $router->permanentRedirect('/tutorials/volumes/image-labels', '/manual/tutorials/volumes/file-labels');
     $router->permanentRedirect('/tutorials/volumes/image-metadata', '/manual/tutorials/volumes/file-metadata');
     $router->permanentRedirect('/tutorials/volumes/remote-volumes', '/manual/tutorials/volumes/remote-locations');
+    $router->permanentRedirect('/tutorials/largo/largo', '/manual/tutorials/largo/getting-started');
 
     $router->get('/tutorials/{module}/{article?}', [
         'as' => 'manual-tutorials',

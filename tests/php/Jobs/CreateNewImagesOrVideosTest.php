@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
@@ -31,6 +32,7 @@ class CreateNewImagesOrVideosTest extends TestCase
         $this->assertCount(2, $images);
         $this->assertContains('a.jpg', $images);
         $this->assertContains('b.jpg', $images);
+        Event::assertNotDispatched(VolumeFilesProcessed::class);
     }
 
     public function testHandleVideos()
@@ -48,10 +50,12 @@ class CreateNewImagesOrVideosTest extends TestCase
         $this->assertCount(2, $images);
         $this->assertContains('a.mp4', $images);
         $this->assertContains('b.mp4', $images);
+        Event::assertNotDispatched(VolumeFilesProcessed::class);
     }
 
     public function testHandleAsync()
     {
+        Event::fake();
         $volume = VolumeTest::create([
             'media_type_id' => MediaType::imageId(),
             'attrs' => [
@@ -62,6 +66,7 @@ class CreateNewImagesOrVideosTest extends TestCase
 
         with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
         $this->assertFalse($volume->fresh()->creating_async);
+        Event::assertDispatched(VolumeFilesProcessed::class);
     }
 
     public function testHandleImageMetadata()

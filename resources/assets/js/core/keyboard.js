@@ -70,6 +70,7 @@ const IGNORED_TAGS = [
  */
 class Keyboard {
     constructor() {
+        this.enabled = true;
         this.activeListenerSetName = 'default';
         this.listenerSets = {
             'default': {},
@@ -82,6 +83,14 @@ class Keyboard {
         document.body.addEventListener('keydown', this.handleKeyDown.bind(this));
         document.body.addEventListener('keyup', this.handleKeyUp.bind(this));
         window.addEventListener('blur', this.clearPressedKeys.bind(this));
+    }
+    
+    disable() {
+        this.enabled = false;
+    }
+    
+    enable() {
+        this.enabled = true;
     }
 
     get activeListenerSet() {
@@ -171,21 +180,22 @@ class Keyboard {
     maybeRemoveModifierKeys(e) {
         if (e.altKey) {
             this.pressedKeysSet.delete('alt');
-            this.pressedKeysSet.delete('alt');
+            this.pressedCodesSet.delete('alt');
         }
         if (e.ctrlKey) {
             this.pressedKeysSet.delete('control');
-            this.pressedKeysSet.delete('control');
+            this.pressedCodesSet.delete('control');
         }
         if (e.metaKey) {
             this.pressedKeysSet.delete('meta');
-            this.pressedKeysSet.delete('meta');
+            this.pressedCodesSet.delete('meta');
         }
         if (e.shiftKey) {
             this.pressedKeysSet.delete('shift');
-            this.pressedKeysSet.delete('shift');
+            this.pressedCodesSet.delete('shift');
         }
     }
+
 
     handleKeyUp(e) {
         this.pressedKeysSet.delete(e.key.toLowerCase());
@@ -193,6 +203,10 @@ class Keyboard {
     }
 
     handleKeyEvents(e, keys) {
+        if (!this.enabled) {
+            return;
+        }
+        
         if (this.activeListenerSet.hasOwnProperty(keys)) {
             this.executeCallbacks(this.activeListenerSet[keys], e);
         }

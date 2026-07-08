@@ -205,7 +205,7 @@ class UsersController extends Controller
         $totalAnnotations = (clone $annotationQuery)->distinct()->count('image_annotations.id');
 
         if ($totalAnnotations > 0) {
-            $relativeAnnotations = $totalAnnotations / ImageAnnotation::cachedCount();
+            $relativeAnnotations = $totalAnnotations / ImageAnnotation::estimatedCount();
 
             $recentImageAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
@@ -235,7 +235,7 @@ class UsersController extends Controller
         $totalVideoAnnotations = (clone $annotationQuery)->distinct()->count('video_annotations.id');
 
         if ($totalVideoAnnotations > 0) {
-            $relativeVideoAnnotations = $totalVideoAnnotations / VideoAnnotation::cachedCount();
+            $relativeVideoAnnotations = $totalVideoAnnotations / VideoAnnotation::estimatedCount();
 
             $recentVideoAnnotations = $annotationQuery->orderBy('video_annotation_labels.created_at', 'desc')
                 ->take(10)

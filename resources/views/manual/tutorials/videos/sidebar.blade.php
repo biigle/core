@@ -99,5 +99,9 @@
         <p>
             The Single Frame Annotation switch allows you to add annotations with a single click by automatically completing them after the first frame. When enabled, additional controls for finishing and tracking are disabled.
         </p>
+
+        <p>
+            The draft annotation color switch enables using the selected label's color for the pending annotations and current draft annotation sketch. If disabled, a neutral default color is used instead. 
+        </p>
     </div>
 @endsection

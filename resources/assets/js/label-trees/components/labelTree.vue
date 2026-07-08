@@ -45,6 +45,7 @@
                 :position="index"
                 :labels-in-guideline="labelsInGuideline"
                 :filter-by-guideline="filterByGuideline"
+                :can-have-more-favourites="canHaveMoreFavourites"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -158,6 +159,10 @@ export default {
         filterByGuideline: {
             type: Boolean,
             default: false,
+        },
+        canHaveMoreFavourites: {
+            type: Boolean,
+            default: true,
         },
     },
     computed: {

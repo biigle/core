@@ -24,6 +24,8 @@ let defaults = {
     regularSamplingRows: 3,
     regularSamplingColumns: 3,
     labelbotTimeout: TIMEOUTS.length - 1, // off
+    draftAnnotationUsesLabelColor: true,
+    preferredUnit: 'auto',
 };
 
 export default new Settings({

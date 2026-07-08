@@ -1,7 +1,10 @@
-# FROM nginx:1.21-alpine
-FROM nginx@sha256:a74534e76ee1121d418fa7394ca930eb67440deda413848bc67c68138535b989
+# FROM nginx:1.29-alpine
+FROM nginx@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de
 LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
 LABEL org.opencontainers.image.source="https://github.com/biigle/core"
+
+# Add mjs as extension recognized as JavaScript. Required for the ONNX package.
+RUN sed -i 's/application\/javascript\(.*\)js;/application\/javascript\1js mjs;/' /etc/nginx/mime.types
 
 ADD .docker/vhost.conf /etc/nginx/conf.d/default.conf
 ADD .docker/ffdhe2048.txt /etc/nginx/conf.d/ffdhe2048.txt
