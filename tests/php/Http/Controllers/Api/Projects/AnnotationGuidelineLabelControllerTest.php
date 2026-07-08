@@ -12,209 +12,279 @@ use Storage;
 
 class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 {
-    public function testUpdateAndDelete()
+    public function testStoreRequiresAdmin()
     {
-        $id = $this->project()->id;
-        $as = AnnotationGuideline::create(['project' => $id, 'description' => 'someDescription']);
-        $path = "/api/v1/projects/{$id}/annotation-guideline-label";
-        $label1 = Label::factory()->create();
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
-        config(['projects.annotation_guideline_storage_disk' => 'annotation_storage']);
+        $this->doTestApiRoute('POST', $path);
+
+        $this->beEditor();
+        $this->json('POST', $path, ['label_id' => $label->id])->assertStatus(403);
+
+        $this->beAdmin();
+        $this->json('POST', $path, ['label_id' => $label->id])->assertStatus(201);
+    }
+
+    public function testStore()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape_id' => Shape::polygonId(),
+            'description' => 'some description',
+        ])->assertStatus(201);
+
+        $guidelineLabel = $guideline->labels()->where('label_id', $label->id)->first();
+        $this->assertNotNull($guidelineLabel);
+        $this->assertSame(Shape::polygonId(), $guidelineLabel->pivot->shape_id);
+        $this->assertSame('some description', $guidelineLabel->pivot->description);
+        $this->assertNotNull($guidelineLabel->pivot->uuid);
+    }
+
+    public function testStoreUpdatesExisting()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+            'shape_id' => Shape::polygonId(),
+            'description' => 'old description',
+        ]);
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape_id' => Shape::circleId(),
+            'description' => 'new description',
+        ])->assertStatus(200);
+
+        $this->assertSame(1, $guideline->labels()->count());
+        $guidelineLabel = $guideline->labels()->where('label_id', $label->id)->first();
+        $this->assertSame(Shape::circleId(), $guidelineLabel->pivot->shape_id);
+        $this->assertSame('new description', $guidelineLabel->pivot->description);
+    }
+
+    public function testStoreCreatesReferenceImage()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
         $disk = Storage::fake('annotation_storage');
 
-        $filename = 'test-image.png';
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+        $file = new UploadedFile(
+            __DIR__.'/../../../../../files/test-image.jpg',
+            'test-image.jpg',
+            test: true
+        );
 
-        $fileDir = __DIR__."/../../../../../files/";
-        $imageFile = new UploadedFile($fileDir.$filename, $filename, test: true);
-        $data = [
-            'annotation_guideline' => $as->id,
-            'label' => $label1->id,
-            'shape' => Shape::polygonId(),
-            'description' => 'labelDescription',
-            'reference_image' =>$imageFile,
-        ];
+        $this->beAdmin();
+        $this->post($path, [
+            'label_id' => $label->id,
+            'reference_image' => $file,
+        ])->assertStatus(201);
 
-        try {
-            $this->doTestApiRoute('POST', $path);
+        $guidelineLabel = $guideline->labels()->where('label_id', $label->id)->first()->pivot;
+        $disk->assertExists("{$guideline->id}/{$guidelineLabel->uuid}.jpg");
+        $this->assertSame("{$guideline->id}/{$guidelineLabel->uuid}.jpg", $guidelineLabel->reference_image_path);
+    }
 
-            $this->beGuest();
-            $this->post($path, $data)
-                ->assertStatus(403);
+    public function testStoreUpdatesReferenceImage()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        $disk = Storage::fake('annotation_storage');
 
-            $this->beUser();
-            $this->post($path, $data)
-                ->assertStatus(403);
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}.jpg", 'old content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}.jpg"]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+        $file = new UploadedFile(
+            __DIR__.'/../../../../../files/test-image.jpg',
+            'test-image.jpg',
+            test: true
+        );
 
-            $this->beEditor();
-            $this->post($path, $data)
-                ->assertStatus(403);
+        $this->beAdmin();
+        $this->post($path, [
+            'label_id' => $label->id,
+            'reference_image' => $file,
+        ])->assertStatus(200);
 
-            $this->beAdmin();
-            $this->post($path, $data)
-                ->assertStatus(200);
+        $this->assertNotEquals('old content', $disk->get("{$guideline->id}/{$guidelineLabel->uuid}.jpg"));
+    }
 
-            $asl = AnnotationGuidelineLabel::where(['annotation_guideline' => $as->id])
-                ->get()
-                ->toArray();
+    public function testStoreDeletesReferenceImageWhenNull()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        $disk = Storage::fake('annotation_storage');
 
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
-            $expected = [[
-                'id' => $asl[0]['id'],
-                'annotation_guideline' => $as->id,
-                'label' => $label1->id,
-                'shape' => Shape::polygonId(),
-                'description' => 'labelDescription',
-                'reference_image' => true,
-            ]];
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'reference_image' => null,
+        ])->assertStatus(200);
 
-            $disk->assertExists("{$id}/{$label1->id}.jpg");
+        $disk->assertMissing("{$guideline->id}/{$guidelineLabel->uuid}");
+        $this->assertNull($guidelineLabel->fresh()->reference_image_path);
+    }
 
-            $this->assertEquals($asl, $expected);
+    public function testStoreKeepsReferenceImageWhenNotProvided()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        $disk = Storage::fake('annotation_storage');
 
-            //Bad file
-            $filename = 'file.txt';
-            $fakeFile = UploadedFile::fake()->create($filename);
-            $data = [
-                'annotation_guideline' => $as['id'],
-                'label' => $label1->id,
-                'shape' => Shape::polygonId(),
-                'description' => 'labelDescription',
-                'reference_image' => $fakeFile,
-            ];
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
-            $this->post($path, $data)
-                ->assertStatus(302);
+        $this->beAdmin();
+        $this->json('POST', $path, ['label_id' => $label->id])->assertStatus(200);
 
-            //Update two other labels, the first label should not be there.
-            $label2 = Label::factory()->create();
-            $label3 = Label::factory()->create();
+        $disk->assertExists("{$guideline->id}/{$guidelineLabel->uuid}");
+        $this->assertSame("{$guideline->id}/{$guidelineLabel->uuid}", $guidelineLabel->fresh()->reference_image_path);
+    }
 
-            $data = [
-                'annotation_guideline' => $as->id,
-                'label' => $label2->id,
-                'shape' => null,
-                'description' => null,
-                'reference_image' => $imageFile,
-            ];
+    public function testStoreRequiresLabelBelongsToProject()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        // Label from a label tree not attached to the project.
+        $label = Label::factory()->create();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
-            $this->post($path, $data)
-                ->assertStatus(200);
+        $this->beAdmin();
+        $this->json('POST', $path, ['label_id' => $label->id])->assertStatus(422);
+    }
 
-            $data = [
-                'annotation_guideline' => $as->id,
-                'label' => $label3->id,
-                'shape' => Shape::circleId(),
-                'description' => 'aDifferentDescription',
-                'reference_image' => null,
-            ];
+    public function testStoreValidatesReferenceImageType()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
-            $this->post($path, $data)
-                ->assertStatus(200);
+        $this->beAdmin();
+        $this->post($path, [
+            'label_id' => $label->id,
+            'reference_image' => UploadedFile::fake()->create('document.txt'),
+        ])->assertStatus(302);
 
+        // Only JPEG images are allowed.
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'reference_image' => new UploadedFile(
+                __DIR__.'/../../../../../files/test-image.png',
+                'test-image.png',
+                test: true
+            ),
+        ])->assertStatus(422);
+    }
 
-            $asl2 = AnnotationGuidelineLabel::where(['annotation_guideline' => $as->id])
-                ->orderBy('label')
-                ->get()
-                ->toArray();
+    public function testDestroyRequiresAdmin()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels/{$label->id}";
 
-            $this->assertCount(3, $asl2);
+        $this->doTestApiRoute('DELETE', $path);
 
-            $expected = [
-                [
-                    'id' => $asl2[0]['id'],
-                    'annotation_guideline' => $as->id,
-                    'label' => $label1->id,
-                    'shape' => Shape::polygonId(),
-                    'description' => 'labelDescription',
-                    'reference_image' => true,
-                ],
-                [
-                    'id' => $asl2[1]['id'],
-                    'annotation_guideline' => $as->id,
-                    'label' => $label2->id,
-                    'shape' => null,
-                    'description' => null,
-                    'reference_image' => true,
-                ],
-                [
-                    'id' => $asl2[2]['id'],
-                    'annotation_guideline' => $as->id,
-                    'label' => $label3->id,
-                    'shape' => Shape::circleId(),
-                    'description' => 'aDifferentDescription',
-                    'reference_image' => false,
-                ],
-            ];
+        $this->beEditor();
+        $this->delete($path)->assertStatus(403);
 
-            $this->assertEquals($asl2, $expected);
+        $this->beAdmin();
+        $this->delete($path)->assertStatus(200);
+    }
 
+    public function testDestroy()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels/{$label->id}";
 
-            //Should have been uploaded
-            $disk->assertExists("{$id}/{$label1->id}.jpg");
-            $disk->assertExists("{$id}/{$label2->id}.jpg");
+        $this->beAdmin();
+        $this->delete($path)->assertStatus(200);
 
-            //Should not exist
-            $disk->assertMissing("{$id}/{$label3->id}.jpg");
+        $this->assertFalse($guideline->labels()->where('label_id', $label->id)->exists());
+    }
 
-            $path = "/api/v1/projects/{$id}/annotation-guideline-label";
-            $data = ['label' => $label1->id];
+    public function testDestroyDeletesReferenceImage()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        $disk = Storage::fake('annotation_storage');
 
-            $this->beGuest();
-            $this->delete($path, $data)
-                ->assertStatus(403);
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels/{$label->id}";
 
-            $this->beUser();
-            $this->delete($path, $data)
-                ->assertStatus(403);
+        $this->beAdmin();
+        $this->delete($path)->assertStatus(200);
 
-            $this->beEditor();
-            $this->delete($path, $data)
-                ->assertStatus(403);
-
-            $this->beAdmin();
-            $this->delete($path, $data)
-                ->assertStatus(200);
-
-            $asl = AnnotationGuidelineLabel::where(['annotation_guideline' => $as->id, 'label' => $label1->id])
-                ->get()
-                ->toArray();
-
-            $this->assertEmpty($asl);
-
-            $disk->assertMissing("{$id}/{$label1->id}.jpg");
-
-            //delete image
-            $path = "/api/v1/projects/{$id}/annotation-guideline-label/delete-image";
-
-            $data = ['label' => $label2->id];
-
-            $this->beGuest();
-            $this->delete($path, $data)
-                ->assertStatus(403);
-
-            $this->beUser();
-            $this->delete($path, $data)
-                ->assertStatus(403);
-
-            $this->beEditor();
-            $this->delete($path, $data)
-                ->assertStatus(403);
-
-            $this->beAdmin();
-            $this->delete($path, $data)
-                ->assertStatus(200);
-
-            $disk->assertMissing("{$id}/{$label2->id}.jpg");
-        } finally {
-            if (isset($label1) && $disk->exists("{$id}/{$label1->id}.jpg")) {
-                $disk->delete("{$id}/{$label1->id}.jpg");
-            }
-            if (isset($label2) && $disk->exists("{$id}/{$label2->id}.jpg")) {
-                $disk->delete("{$id}/{$label2->id}.jpg");
-            }
-            if (isset($label3) && $disk->exists("{$id}/{$label3->id}.jpg")) {
-                $disk->delete("{$id}/{$label3->id}.jpg");
-            }
-        }
+        $disk->assertMissing("{$guideline->id}/{$guidelineLabel->uuid}");
     }
 }

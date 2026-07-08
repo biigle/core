@@ -2,10 +2,12 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuidelineLabel;
+use Biigle\Http\Requests\DestroyProjectLabelTree;
 use Biigle\Http\Requests\StoreProjectLabelTree;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Illuminate\Http\Request;
+use DB;
 
 class ProjectLabelTreeController extends Controller
 {
@@ -137,26 +139,33 @@ class ProjectLabelTreeController extends Controller
     }
 
     /**
-     * Removes a label tree form the specified project.
+     * Removes a label tree from the specified project.
      *
-     * @api {delete} projects/:pid/label-trees/:lid Remove a label tree
+     * @api {delete} projects/:id/label-trees/:id2 Remove a label tree
      * @apiGroup Projects
      * @apiName DetachProjectLabelTrees
      * @apiPermission projectAdmin
+     * @apiDescription Returns 409 if the label tree has annotation guideline labels in this project. Use the `force` argument to detach the label tree and delete the guideline labels.
      *
-     * @apiParam {Number} pid The project ID.
-     * @apiParam {Number} lid The label tree ID.
+     * @apiParam {Number} id The project ID.
+     * @apiParam {Number} id2 The label tree ID.
      *
-     * @param Request $request
-     * @param  int  $pid
-     * @param  int  $lid
+     * @apiParam (Optional attributes) {Boolean} force Delete annotation guideline labels belonging to the label tree before detaching.
+     *
+     * @param DestroyProjectLabelTree $request
      * @return \Illuminate\Http\RedirectResponse|void
      */
-    public function destroy(Request $request, $pid, $lid)
+    public function destroy(DestroyProjectLabelTree $request)
     {
-        $project = Project::findOrFail($pid);
-        $this->authorize('update', $project);
-        $count = $project->labelTrees()->detach($lid);
+        $count = DB::transaction(function () use ($request) {
+            $treeId = $request->route('id2');
+            AnnotationGuidelineLabel::join('annotation_guidelines', 'annotation_guidelines.id', '=', 'annotation_guideline_label.annotation_guideline_id')
+                ->where('annotation_guidelines.project_id', $request->project->id)
+                ->whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->where('label_tree_id', $treeId))
+                ->each(fn ($gl) => $gl->delete());
+
+            return $request->project->labelTrees()->detach($treeId);
+        });
 
         if (!$this->isAutomatedRequest()) {
             return $this->fuzzyRedirect()->with('deleted', $count > 0);

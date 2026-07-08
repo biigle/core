@@ -2,8 +2,10 @@
 
 namespace Biigle;
 
+use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Storage;
 
 /**
  * This Model describes the annotation guideline of a Project
@@ -21,21 +23,26 @@ class AnnotationGuideline extends Model
      */
     protected $casts = [
         'id' => 'int',
-        'project' => 'int',
+        'project_id' => 'int',
         'description' => 'string',
     ];
 
     protected $fillable = [
-        'project',
+        'project_id',
         'description',
     ];
 
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+    protected static function booted(): void
+    {
+        static::deleting(function (self $guideline) {
+            // Defer storage deletion until after the DB transaction commits to avoid
+            // deleting files if the transaction rolls back.
+            DB::afterCommit(function () use ($guideline) {
+                Storage::disk(config('projects.annotation_guideline_disk'))
+                    ->deleteDirectory("$guideline->id");
+            });
+        });
+    }
 
     /**
      * The project this guideline belongs to.
@@ -44,16 +51,18 @@ class AnnotationGuideline extends Model
      */
     public function project()
     {
-        return $this->belongsTo(Project::class, 'project');
+        return $this->belongsTo(Project::class);
     }
 
     /**
      * The labels within this guideline.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<AnnotationGuidelineLabel, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Label, $this, AnnotationGuidelineLabel>
      */
-    public function guidelineLabels()
+    public function labels()
     {
-        return $this->hasMany(AnnotationGuidelineLabel::class, 'annotation_guideline');
+        return $this->belongsToMany(Label::class)
+            ->using(AnnotationGuidelineLabel::class)
+            ->withPivot('shape_id', 'description', 'uuid', 'reference_image_path');
     }
 }

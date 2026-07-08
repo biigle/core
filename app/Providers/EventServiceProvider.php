@@ -38,6 +38,8 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
+        \Biigle\Label::observe(new \Biigle\Observers\LabelObserver);
+        \Biigle\LabelTree::observe(new \Biigle\Observers\LabelTreeObserver);
         \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
         \Biigle\Report::observe(new \Biigle\Observers\ReportObserver);
         \Biigle\User::observe(new \Biigle\Observers\UserObserver);

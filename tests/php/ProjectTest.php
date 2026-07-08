@@ -2,6 +2,8 @@
 
 namespace Biigle\Tests;
 
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
@@ -11,6 +13,7 @@ use Biigle\Role;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 use Queue;
+use Storage;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends ModelTestCase
@@ -346,5 +349,29 @@ class ProjectTest extends ModelTestCase
         $this->assertFalse($this->model->pendingVolumes()->exists());
         PendingVolume::factory(['project_id' => $this->model->id])->create();
         $this->assertTrue($this->model->pendingVolumes()->exists());
+    }
+
+    public function testAnnotationGuideline()
+    {
+        $this->assertFalse($this->model->annotationGuideline()->exists());
+        AnnotationGuideline::factory(['project_id' => $this->model->id])->create();
+        $this->assertTrue($this->model->annotationGuideline()->exists());
+    }
+
+    public function testDeleteProjectDeletesGuidelineLabelReferenceImages()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        Storage::fake('annotation_storage');
+
+        $guideline = AnnotationGuideline::factory(['project_id' => $this->model->id])->create();
+        $pivot = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => LabelTest::create()->id,
+        ]);
+        Storage::disk('annotation_storage')->put("{$guideline->id}/{$pivot->uuid}", 'image');
+
+        $this->model->delete();
+
+        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/{$pivot->uuid}");
     }
 }

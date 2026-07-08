@@ -12,35 +12,40 @@ return new class extends Migration {
     {
         Schema::create('annotation_guidelines', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project')
+            $table->timestamps();
+            $table->foreignId('project_id')
                 ->constrained()
                 ->onDelete('cascade');
-            $table->unique('project');
-            $table->text('description')
-                ->nullable(true);
+
+            $table->unique('project_id');
+
+            $table->text('description')->nullable();
         });
 
-        Schema::create('annotation_guideline_labels', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('annotation_guideline')
+        Schema::create('annotation_guideline_label', function (Blueprint $table) {
+            $table->uuid('uuid')->primary();
+            $table->timestamps();
+
+            $table->foreignId('annotation_guideline_id')
                 ->constrained()
                 ->onDelete('cascade');
 
-            $table->foreignId('label')
+            $table->foreignId('label_id')
                 ->constrained()
                 ->onDelete('cascade');
 
-            $table->foreignId('shape')
-                ->nullable(true)
+            $table->foreignId('shape_id')
+                ->nullable()
                 ->constrained()
                 ->onDelete('set null');
 
-            $table->text('description')
-                ->nullable(true);
+            $table->text('description')->nullable();
 
-            $table->boolean('reference_image');
+            $table->string('reference_image_path')->nullable();
 
-            $table->unique(['annotation_guideline', 'label']);
+            $table->index('annotation_guideline_id');
+            $table->index('label_id');
+            $table->unique(['annotation_guideline_id', 'label_id']);
         });
     }
 
@@ -49,7 +54,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('annotation_guideline_labels');
+        Schema::dropIfExists('annotation_guideline_label');
         Schema::dropIfExists('annotation_guidelines');
     }
 };

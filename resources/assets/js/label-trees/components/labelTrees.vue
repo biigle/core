@@ -165,10 +165,6 @@ export default {
             type: Array,
             default: () => [],
         },
-        enforceGuideline: {
-            type: Boolean,
-            default: false,
-        },
     },
     computed: {
         customOrderStorageKeys() {
