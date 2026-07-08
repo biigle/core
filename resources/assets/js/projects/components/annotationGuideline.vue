@@ -180,6 +180,7 @@ import AnnotationGuidelineApi from '@/projects/api/annotationGuideline.js';
 import AnnotationGuidelineLabelApi from '@/projects/api/annotationGuidelineLabel.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.js';
 import { Dropdown } from 'uiv';
 import { handleErrorResponse } from '@/core/messages/store.js';
 
@@ -320,7 +321,6 @@ export default {
         addImage(event) {
             const file = event.target.files[0] || null;
             if (!file) {
-                this.referenceImage = null;
                 return;
             }
 
@@ -338,6 +338,10 @@ export default {
                 canvas.height = Math.round(h * scale);
                 canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
                 canvas.toBlob((blob) => {
+                    if (!blob) {
+                        Messages.danger('Failed to process the image.');
+                        return;
+                    }
                     this.referenceImage = new File([blob], file.name, {type: blob.type});
                     if (this.referenceImagePreview?.startsWith('blob:')) {
                         URL.revokeObjectURL(this.referenceImagePreview);

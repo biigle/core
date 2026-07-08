@@ -44,6 +44,7 @@ return new class extends Migration {
             $table->string('reference_image_path')->nullable();
 
             $table->index('annotation_guideline_id');
+            $table->index('label_id');
             $table->unique(['annotation_guideline_id', 'label_id']);
         });
     }
