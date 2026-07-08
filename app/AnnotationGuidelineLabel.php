@@ -27,7 +27,7 @@ class AnnotationGuidelineLabel extends Pivot
     /**
      * The attributes that should be casted to native types.
      *
-     * @var list<string>
+     * @var array<string, string>
      */
     protected $casts = [
         'label_id' => 'int',
