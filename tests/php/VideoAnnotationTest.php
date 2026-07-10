@@ -192,6 +192,53 @@ class VideoAnnotationTest extends ModelTestCase
         $this->model->interpolatePoints(0.5);
     }
 
+    public function testInterpolatePointsWithGapInsideGap()
+    {
+        $this->model->shape_id = Shape::rectangleId();
+        $this->model->points = [
+            [0, 0, 10, 0, 10, 10, 0, 10],
+            [],
+            [20, 20, 30, 20, 30, 30, 20, 30],
+        ];
+        $this->model->frames = [1.0, null, 3.0];
+
+        // The time falls into the gap of the annotation. There is nothing to
+        // interpolate.
+        $this->assertSame([], $this->model->interpolatePoints(2.0));
+    }
+
+    public function testInterpolatePointsWithGapBeforeGap()
+    {
+        $this->model->shape_id = Shape::rectangleId();
+        $this->model->points = [
+            [0, 0, 10, 0, 10, 10, 0, 10],
+            [10, 10, 20, 10, 20, 20, 10, 20],
+            [],
+            [20, 20, 30, 20, 30, 30, 20, 30],
+        ];
+        $this->model->frames = [1.0, 2.0, null, 3.0];
+
+        // The time falls between two real keyframes that both occur before the gap
+        // in the frames array.
+        $expect = [5.0, 5.0, 15.0, 5.0, 15.0, 15.0, 5.0, 15.0];
+        $this->assertSame($expect, $this->model->interpolatePoints(1.5));
+    }
+
+    public function testInterpolatePointsWithGapAfterGap()
+    {
+        $this->model->shape_id = Shape::rectangleId();
+        $this->model->points = [
+            [0, 0, 10, 0, 10, 10, 0, 10],
+            [],
+            [10, 10, 20, 10, 20, 20, 10, 20],
+            [20, 20, 30, 20, 30, 30, 20, 30],
+        ];
+        $this->model->frames = [1.0, null, 3.0, 4.0];
+
+        $expect = [15.0, 15.0, 25.0, 15.0, 25.0, 25.0, 15.0, 25.0];
+        $this->assertSame($expect, $this->model->interpolatePoints(3.5));
+    }
+
     public function testScopeAllowedBySessionHideOwn()
     {
         $ownUser = UserTest::create();
