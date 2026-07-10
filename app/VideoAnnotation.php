@@ -143,13 +143,12 @@ class VideoAnnotation extends Annotation
             }
         }
 
-
         if ($frames[$i] === $time) {
             return $this->points[$i];
         }
 
         // Time is inside gap.
-        if (array_key_exists($i + 1, $frames) && is_null($frames[$i + 1])) {
+        if (is_null($frames[$i + 1])) {
             return [];
         }
 
