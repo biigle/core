@@ -126,7 +126,9 @@ class VideoAnnotation extends Annotation
      */
     public function interpolatePoints(float $time)
     {
-        $frames = array_map('floatval', $this->frames);
+        // Keep gap frames.
+        $frames = array_map(fn ($f) => is_null($f) ? null : floatval($f), $this->frames);
+
         $startFrame = $frames[0];
         $endFrame = end($frames);
 
@@ -136,13 +138,19 @@ class VideoAnnotation extends Annotation
 
         $i = count($frames) - 1;
         for (; $i >= 0 ; $i--) {
-            if ($frames[$i] <= $time) {
+            if (!is_null($frames[$i]) && $frames[$i] <= $time) {
                 break;
             }
         }
 
+
         if ($frames[$i] === $time) {
             return $this->points[$i];
+        }
+
+        // Time is inside gap.
+        if (array_key_exists($i + 1, $frames) && is_null($frames[$i + 1])) {
+            return [];
         }
 
         $progress = ($time - $frames[$i]) / ($frames[$i + 1] - $frames[$i]);
