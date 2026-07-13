@@ -33,6 +33,9 @@ export default {
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
         },
+        isAPolygonTool() {
+            return this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill;
+        }
     },
     methods: {
         togglePolygonBrush() {
@@ -155,7 +158,7 @@ export default {
     mounted() {
         this.map.addInteraction(new DragPan({
             condition: (mapBrowserEvent) => {
-                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isUsingPolygonBrush;
+                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isAPolygonTool;
             },
         }));
     }
