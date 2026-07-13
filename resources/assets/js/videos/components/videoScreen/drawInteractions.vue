@@ -8,10 +8,12 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
-import { never, primaryAction } from '@biigle/ol/events/condition';
+import { never, noModifierKeys, primaryAction } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
+import { rightClick } from '@/annotations/ol/events/condition.js';
+import { DragPan } from '@biigle/ol/interaction';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -419,6 +421,13 @@ export default {
             this.keyboardOn('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
             this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
+    },
+    mounted() {
+        this.map.addInteraction(new DragPan({
+            condition: (mapBrowserEvent) => {
+                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isDrawing && !this.isDrawingWholeFrame;
+            },
+        }));
     },
     beforeUnmount() {
         if (this.video && this.updateMagicWandSnapshot) {

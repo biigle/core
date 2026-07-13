@@ -5,9 +5,11 @@ import Keyboard from '@/core/keyboard.js';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
-import { never } from '@biigle/ol/events/condition';
+import { never, noModifierKeys } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
+import { rightClick } from '@/annotations/ol/events/condition.js';
+import { DragPan } from '@biigle/ol/interaction';
 
 
 /**
@@ -198,6 +200,13 @@ export default {
         interactionMode(mode) {
             this.maybeUpdateDrawInteractionMode(mode)
         },
+    },
+    mounted() {
+        this.map.addInteraction(new DragPan({
+            condition: (mapBrowserEvent) => {
+                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isDrawing;
+            },
+        }));
     },
     created() {
         Keyboard.on('a', this.drawPoint, 0, this.listenerSet);
