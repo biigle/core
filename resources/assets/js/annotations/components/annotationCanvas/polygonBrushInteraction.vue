@@ -165,7 +165,7 @@ export default {
 
         this.map.addInteraction(new DragPan({
             condition: (mapBrowserEvent) => {
-                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isBrushOrWandMode;
+                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isUsingPolygonBrush;
             },
         }));
     },
