@@ -8,7 +8,7 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
-import { never } from '@biigle/ol/events/condition';
+import { never, primaryAction } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
@@ -186,6 +186,7 @@ export default {
                             indicatorPointStyle: Styles.editing,
                             indicatorCrossStyle: Styles.cross,
                             simplifyTolerant: 0.1,
+                            condition: primaryAction
                         });
                     } else {
                         this.drawInteraction = new DrawInteraction({

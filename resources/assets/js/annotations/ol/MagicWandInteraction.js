@@ -8,7 +8,6 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import { rightClick } from './events/condition';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -17,6 +16,8 @@ class MagicWandInteraction extends PointerInteraction {
     constructor(options) {
         super(options);
         this.on('change:active', this.toggleActive);
+
+        this.condition = options.condition || (() => true);
 
         // The image layer to use as source for the magic wand tool.
         this.layer = options.layer;
@@ -206,8 +207,8 @@ class MagicWandInteraction extends PointerInteraction {
      * Start drawing of a sketch.
      */
     handleDownEvent(e) {
-        if (rightClick(e)) {
-            return false;
+        if (!this.condition(e)) {
+            return;
         }
         this.downPoint[0] = Math.round(e.coordinate[0]);
         this.downPoint[1] = Math.round(e.coordinate[1]);

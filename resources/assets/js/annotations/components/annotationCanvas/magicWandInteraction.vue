@@ -4,7 +4,7 @@ import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import { DragPan } from '@biigle/ol/interaction';
 import { rightClick } from '../../ol/events/condition';
-import { noModifierKeys } from '@biigle/ol/events/condition';
+import { noModifierKeys, primaryAction } from '@biigle/ol/events/condition';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the magic wand interaction.
@@ -83,6 +83,7 @@ export default {
             indicatorPointStyle: Styles.editing,
             indicatorCrossStyle: Styles.cross,
             simplifyTolerant: 0.1,
+            condition: primaryAction,
         });
         magicWandInteraction.on('drawend', this.handleNewFeature);
         magicWandInteraction.setActive(false);
