@@ -8,7 +8,7 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
-import { setOrUnsetProperty } from '@/utils';
+import { setOrUnsetProperty } from '@/utils.js';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
