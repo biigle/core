@@ -394,9 +394,7 @@ export default {
             this.lineFeature = markRaw(new Feature(line));
             this.lineFeature.set('unselectable', true);
             if (this.noLabels) {
-                annotationFeature.set('color', Styles.blue)
-                annotationFeature.setStyle(Styles.editing)
-                this.lineFeature.set('color', Styles.blue);
+                this.lineFeature.set('color', '5bc0de');
             } else {
                 this.lineFeature.set('color', this.labels[0].color);
             }
