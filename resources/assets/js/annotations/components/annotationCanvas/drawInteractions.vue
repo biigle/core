@@ -121,7 +121,7 @@ export default {
                 });
                 overlaySource.getFeatures().forEach(applyDraftColor);
 
-                drawInteraction.on('drawstart', (event) => {
+                drawInteraction.on('drawstart', () => {
                     this.drawEnded = false;
                 });
 
