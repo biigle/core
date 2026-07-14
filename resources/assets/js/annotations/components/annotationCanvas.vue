@@ -581,7 +581,6 @@ export default {
 
             const points = this.getPoints(geometry);
             const newAnnotation = {
-                feature: e.feature, // we need this temporarily if LabelBOT returns no results
                 shape: geometry.getType(),
                 points: points,
             };
@@ -590,6 +589,8 @@ export default {
                 // The "info" color.
                 e.feature.set('color', '5bc0de');
                 e.feature.setStyle(Styles.editing);
+
+                newAnnotation.feature = e.feature, // we need this temporarily if LabelBOT returns no results
 
                 // Move feature to the LabelBOT layer so it has opacity=1 while LabelBOT
                 // is computing.
