@@ -3,7 +3,7 @@ import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
 import { DragPan } from '@biigle/ol/interaction';
-import { rightClick } from '../../ol/events/condition';
+import { rightClick } from '@/annotations/ol/events/condition.js';
 import { noModifierKeys, primaryAction } from '@biigle/ol/events/condition';
 
 /**

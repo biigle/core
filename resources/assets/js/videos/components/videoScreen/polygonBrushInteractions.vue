@@ -8,7 +8,7 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
-import { rightClick } from '../../../annotations/ol/events/condition';
+import { rightClick } from '@/annotations/ol/events/condition.js';
 import { DragPan } from '@biigle/ol/interaction';
 
 /**

@@ -5,7 +5,7 @@ import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.j
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
 import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
-import { rightClick } from '../../ol/events/condition';
+import { rightClick } from '@/annotations/ol/events/condition.js';
 import { DragPan } from '@biigle/ol/interaction';
 
 /**
