@@ -8,7 +8,7 @@ import Styles from '@/annotations/stores/styles.js';
 import { never } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
-import { setOrUnsetProperty } from '@/utils';
+import { setOrUnsetProperty } from '@/utils.js';
 
 
 /**
