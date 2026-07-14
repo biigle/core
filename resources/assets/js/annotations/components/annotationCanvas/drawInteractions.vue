@@ -123,7 +123,6 @@ export default {
 
                 drawInteraction.on('drawstart', (event) => {
                     this.drawEnded = false;
-                    applyDraftColor(event.feature);
                 });
 
                 drawInteraction.on('drawend', (e) => {

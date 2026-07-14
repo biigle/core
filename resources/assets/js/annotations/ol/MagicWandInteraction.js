@@ -131,7 +131,7 @@ class MagicWandInteraction extends PointerInteraction {
 
     setDraftColor(color) {
         this.draftColor_ = color || null;
-        [this.indicatorPoint, this.indicatorCross, this.sketchFeature].forEach((feature) => {
+        [this.indicatorPoint, this.sketchFeature].forEach((feature) => {
             setOrUnsetProperty(feature, 'color', this.draftColor_);
         });
     }
