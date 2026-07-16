@@ -1,5 +1,5 @@
-numpy==2.1.3
-opencv-contrib-python-headless==4.11.0.86
+numpy==2.2.6
+opencv-contrib-python-headless==4.12.0.88
 scipy==1.14.1
 scikit-learn==1.6.1
 matplotlib==3.8.4
@@ -7,7 +7,7 @@ PyExcelerate==0.6.7
 Pillow==12.2.0
 Shapely==2.0.7
 pandas==2.2.3
-torch==2.9.1+cpu
-torchvision==0.24.1+cpu
+torch==2.12.1
+torchvision==0.27.1
 # Only works on a GPU.
-#xformers==0.0.23
+#xformers>=0.0.34
