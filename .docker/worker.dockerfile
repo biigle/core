@@ -74,7 +74,6 @@ RUN LC_ALL=C.UTF-8 apt-get update \
         python3-pip \
         # This is required by matplotlib
         python3-packaging \
-    && pip3 install --no-cache-dir --break-system-packages --upgrade pip \
     # Install torch first to get the CPU version. It is also present in
     # requirements.txt but this is only for automatic vulnerability checks.
     && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
