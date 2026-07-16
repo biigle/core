@@ -21,6 +21,7 @@
         "ext-pgsql": "*",
         "ext-soap": "*",
         "ext-zip": "*",
+        "biigle/laravel-file-cache": "^6.0",
         "biigle/ananas": "dev-master",
         "biigle/auth-haai": "dev-main",
         "biigle/auth-lslogin": "dev-master",

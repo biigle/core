@@ -9,6 +9,9 @@
             <a href="{{ route('manual') }}" title="View the manual">Manual</a>
         </li>
         <li>
+            <a href="https://liascript.github.io/course/?https://raw.githubusercontent.com/biigle/biigle4beginners/refs/heads/main/tutorial.md" title="View the beginners tutorial" target="_blank">Tutorial <i class="fas fa-external-link-alt text-muted"></i></a>
+        </li>
+        <li>
             <a href="{{ url('doc/api/index.html') }}" title="View the API documentation">API documentation</a>
         </li>
         <li>

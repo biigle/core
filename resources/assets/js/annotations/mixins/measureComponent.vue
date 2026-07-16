@@ -15,12 +15,6 @@ export default {
             default: null
         },
     },
-    data() {
-        return {
-            unitMultipliers: [1e+3, 1, 1e-2, 1e-3, 1e-6, 1e-9],
-            unitNames: ['km', 'm', 'cm', 'mm', 'µm', 'nm'],
-        };
-    },
     computed: {
         area() {
             if (this.areas && this.image) {

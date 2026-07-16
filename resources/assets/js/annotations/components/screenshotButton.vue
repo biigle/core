@@ -82,7 +82,7 @@ export default {
             const x = 10 * ratio;
             const y = canvas.height - 10 * ratio - height;
 
-            const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
+            const scaleLineProperties = new ScaleLineProperties(this.map.getView().getResolution(), this.hasArea, this.pxWidthInMeter, Settings.get('preferredUnit'));
             const width = scaleLineProperties.width() * ratio;
             const ctx = canvas.getContext('2d');
 

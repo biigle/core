@@ -36,8 +36,20 @@ class StoreVideoAnnotation extends FormRequest
     {
         return [
             'label_id'    => 'required_without:feature_vector|integer|exists:labels,id',
-            'feature_vector' => 'required_without:label_id|array|size:384',
-            'feature_vector.*' => 'numeric',
+            // A wildcard rule (feature_vector.*) is not used here because it would be
+            // expanded to one rule per array element, which can consume excessive CPU
+            // and memory if a huge array is submitted.
+            'feature_vector' => [
+                'bail',
+                'required_without:label_id',
+                'array',
+                'size:384',
+                function ($attribute, $value, $fail) {
+                    if (array_filter($value, fn ($v) => !is_numeric($v))) {
+                        $fail("The {$attribute} must contain only numbers.");
+                    }
+                },
+            ],
             'shape_id' => 'required|integer|exists:shapes,id',
             'points' => [
                 'required_unless:shape_id,'.Shape::wholeFrameId(),

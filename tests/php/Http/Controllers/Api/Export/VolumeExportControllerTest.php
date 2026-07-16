@@ -17,7 +17,9 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->get('/api/v1/export/volumes')->assertStatus(403);
 
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/volumes')
+        $this->getJson('/api/v1/export/volumes')->assertStatus(422);
+
+        $response = $this->get("/api/v1/export/volumes?only={$volume->id}")
             ->assertStatus(200)
             ->assertHeader('content-type', 'application/zip')
             ->assertHeader('content-disposition', 'attachment; filename=biigle_volume_export.zip');
@@ -66,10 +68,59 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->assertEquals($volume1->id, $contents->pluck('id')[0]);
     }
 
+    public function testShowOnlyAndExceptMutuallyExclusive()
+    {
+        $volume = VolumeTest::create();
+        $id = $volume->id;
+        $this->beGlobalAdmin();
+        $this->getJson("/api/v1/export/volumes?only={$id}&except={$id}")->assertStatus(422);
+    }
+
+    public function testShowInvalidFilter()
+    {
+        $this->beGlobalAdmin();
+        $this->getJson('/api/v1/export/volumes?only=,')->assertStatus(422);
+        $this->getJson('/api/v1/export/volumes?only=abc')->assertStatus(422);
+        $this->getJson('/api/v1/export/volumes?only=0')->assertStatus(422);
+        $this->getJson('/api/v1/export/volumes?except=,')->assertStatus(422);
+        $this->getJson('/api/v1/export/volumes?except=abc')->assertStatus(422);
+        $this->getJson('/api/v1/export/volumes?except=0')->assertStatus(422);
+    }
+
+    public function testShowOnlyArray()
+    {
+        $volume1 = VolumeTest::create();
+        $volume2 = VolumeTest::create();
+        $id = $volume1->id;
+        $this->beGlobalAdmin();
+        $response = $this->get("/api/v1/export/volumes?only[]={$id}")->assertStatus(200);
+
+        $zip = new ZipArchive;
+        $zip->open($response->getFile()->getRealPath());
+        $contents = collect(json_decode($zip->getFromName('volumes.json')));
+        $this->assertEquals($volume1->id, $contents->pluck('id')[0]);
+        $this->assertCount(1, $contents);
+    }
+
+    public function testShowExceptArray()
+    {
+        $volume1 = VolumeTest::create();
+        $volume2 = VolumeTest::create();
+        $id = $volume1->id;
+        $this->beGlobalAdmin();
+        $response = $this->get("/api/v1/export/volumes?except[]={$id}")->assertStatus(200);
+
+        $zip = new ZipArchive;
+        $zip->open($response->getFile()->getRealPath());
+        $contents = collect(json_decode($zip->getFromName('volumes.json')));
+        $this->assertEquals($volume2->id, $contents->pluck('id')[0]);
+        $this->assertCount(1, $contents);
+    }
+
     public function testIsAllowed()
     {
         config(['sync.allowed_exports' => ['labelTrees', 'users']]);
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/volumes')->assertStatus(404);
+        $response = $this->get('/api/v1/export/volumes?only=1')->assertStatus(404);
     }
 }

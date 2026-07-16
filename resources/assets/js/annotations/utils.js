@@ -100,14 +100,21 @@ function powerOfTen(value) {
     return Math.pow(10, Math.floor(Math.log10(value)));
 }
 
+const UnitMultipliers = [1e+3, 1, 1e-2, 1e-3, 1e-6, 1e-9];
+const UnitNames = ['km', 'm', 'cm', 'mm', 'µm', 'nm'];
+
 class ScaleLineProperties
 {
-    constructor(resolution, hasArea, pxWidthInMeter, unitMultipliers, unitNames) {
+    constructor(resolution, hasArea, pxWidthInMeter, fixedUnit) {
         this._resolution = resolution;
         this._hasArea = hasArea;
         this._pxWidthInMeter = pxWidthInMeter;
-        this._unitMultipliers = unitMultipliers;
-        this._unitNames = unitNames;
+
+        if (fixedUnit && UnitNames.indexOf(fixedUnit) !== -1) {
+            this._fixedUnitIndex = UnitNames.indexOf(fixedUnit);
+        } else {
+            this._fixedUnitIndex = null;
+        }
 
         this._targetWidth = 100;
         this._leadingDigits = [1, 2, 5];
@@ -144,16 +151,24 @@ class ScaleLineProperties
     }
 
     _unitNearest() {
+        if (this._fixedUnitIndex !== null) {
+            return this._fixedUnitIndex;
+        }
+
         let smallestIndex = 0;
         let smallestDistance = Infinity;
-        for (let i = this._unitMultipliers.length - 1; i >= 0; i--) {
-            if (Math.abs(this._unitMultipliers[i] - this._scalePowerOfTen()) < smallestDistance) {
+        for (let i = UnitMultipliers.length - 1; i >= 0; i--) {
+            if (Math.abs(UnitMultipliers[i] - this._scalePowerOfTen()) < smallestDistance) {
                 smallestIndex = i;
-                smallestDistance = Math.abs(this._unitMultipliers[i] - this._scalePowerOfTen());
+                smallestDistance = Math.abs(UnitMultipliers[i] - this._scalePowerOfTen());
             }
         }
 
         return smallestIndex;
+    }
+
+    _formatValue(value) {
+        return new Intl.NumberFormat("en-US").format(value);
     }
 
     width() {
@@ -163,11 +178,12 @@ class ScaleLineProperties
     text() {
         if (this._hasArea) {
             const unitNearest = this._unitNearest();
-            return Math.round(this._scaleNearest() / this._unitMultipliers[unitNearest]) + ' ' + this._unitNames[unitNearest];
+            const length = this._scaleNearest() / UnitMultipliers[unitNearest];
+            return this._formatValue(length) + ' ' + UnitNames[unitNearest];
         }
 
-        return Math.round(this._scaleNearest()) + ' px';
+        return this._formatValue(this._scaleNearest()) + ' px';
     }
 }
 
-export {isInvalidShape, clamp, trimCanvas, ScaleLineProperties};
+export {isInvalidShape, clamp, trimCanvas, ScaleLineProperties, UnitMultipliers, UnitNames};
