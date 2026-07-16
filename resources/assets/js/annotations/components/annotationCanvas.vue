@@ -155,7 +155,7 @@ export default {
         },
         draftAnnotationUsesLabelColor: {
             type: Boolean,
-            default: true, 
+            default: true,
         },
     },
     data() {
@@ -762,6 +762,9 @@ export default {
             setTimeout(() => {
                 feature.setStyle(Styles.highlight);
             }, 200);
+        },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
         },
     },
     watch: {
