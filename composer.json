@@ -16,13 +16,12 @@
         }
     ],
     "require": {
-        "php": "^8.2",
         "ext-exif": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-soap": "*",
         "ext-zip": "*",
-        "biigle/laravel-file-cache": "^5.0",
+        "biigle/laravel-file-cache": "^6.0",
         "biigle/metadata-ifdo": "^1.0",
         "duncan3dc/bom-string": "^1.1",
         "endroid/qr-code": "^5.0",
@@ -126,7 +125,7 @@
             "composer/package-versions-deprecated": true
         },
         "platform": {
-            "php": "8.2.21"
+            "php": "8.5.7"
         }
     },
     "prefer-stable": true

@@ -174,6 +174,10 @@
             The draft annotation color switch enables using the selected label's color for the draft annotation. If disabled, a neutral default color is used for draft annotations.
         </p>
 
+        <p>
+            The preferred unit dropdown controls the unit used for displaying lengths and areas. If the default value <b>auto</b> is selected, the most suitable unit is automatically calculated. If a preferred unit other than <b>auto</b> is active, the scale line indicator (including the one in screenshots) will always display the scale using the selected unit. The measure tooltip will also display lengths and areas of annotations during hovering using the preferred unit.
+        </p>
+
         @mixin('annotationsManualSidebarSettings')
     </div>
 @endsection

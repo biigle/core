@@ -26,9 +26,7 @@ class HasPointsAttributeTest extends TestCase
         }
     }
     
-    /**
-     * @dataProvider invalidCoordinatesProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidCoordinatesProvider')]
     public function testInvalidNumberOfCoordinates($shape, $points)
     {
         $this->expectException(InvalidNumberOfCoordinatesException::class);
@@ -46,9 +44,7 @@ class HasPointsAttributeTest extends TestCase
         ];
     }
     
-    /**
-     * @dataProvider invalidPointsProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidPointsProvider')]
     public function testInvalidPoints($shape, $points)
     {
         $this->expectException(InvalidNumberOfPointsException::class);
@@ -66,9 +62,7 @@ class HasPointsAttributeTest extends TestCase
         ];
     }
     
-    /**
-     * @dataProvider invalidShapesProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidShapesProvider')]
     public function testInvalidShape($shape, $points)
     {
         $this->expectException(InvalidShapeException::class);
@@ -88,9 +82,7 @@ class HasPointsAttributeTest extends TestCase
         ];
     }
     
-    /**
-     * @dataProvider validPointsProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('validPointsProvider')]
     public function testValidPoints($shape, $points)
     {
         $this->expectNotToPerformAssertions();
