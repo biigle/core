@@ -8,13 +8,12 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
-import { never, noModifierKeys, primaryAction } from '@biigle/ol/events/condition';
+import { never, primaryAction } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
-import { rightClick } from '@/annotations/ol/events/condition.js';
-import { DragPan } from '@biigle/ol/interaction';
 import { setOrUnsetProperty } from '@/utils.js';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -433,16 +432,7 @@ export default {
         }
     },
     mounted() {
-        this.map.addInteraction(new DragPan({
-            condition: (mapBrowserEvent) => {
-                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isDrawingMagicWand;
-            }
-        }));
-        this.map.getViewport().addEventListener('contextmenu', (e) => {
-            if (this.isDrawingMagicWand) {
-                e.preventDefault();
-            }
-        });
+        addRightClickDragPanToMap(this.map, () => this.isDrawingMagicWand);
     },
     beforeUnmount() {
         if (this.video && this.updateMagicWandSnapshot) {

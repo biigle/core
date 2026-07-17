@@ -3,14 +3,14 @@ import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPo
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
-import {altKeyOnly as altKeyOnlyCondition, noModifierKeys} from '@biigle/ol/events/condition';
+import { altKeyOnly as altKeyOnlyCondition } from '@biigle/ol/events/condition';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import { rightClick } from '@/annotations/ol/events/condition.js';
-import { DragPan } from '@biigle/ol/interaction';
 import { setOrUnsetProperty } from '@/utils.js';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush
@@ -182,16 +182,7 @@ export default {
         }
     },
     mounted() {
-        this.map.addInteraction(new DragPan({
-            condition: (mapBrowserEvent) => {
-                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isAPolygonTool;
-            },
-        }));
-        this.map.getViewport().addEventListener('contextmenu', (e) => {
-            if (this.isAPolygonTool) {
-                e.preventDefault();
-            }
-        });
+        addRightClickDragPanToMap(this.map, () => this.isAPolygonTool);
     }
 };
 </script>

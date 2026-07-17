@@ -2,9 +2,8 @@
 import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
-import { DragPan } from '@biigle/ol/interaction';
-import { rightClick } from '@/annotations/ol/events/condition.js';
-import { noModifierKeys, primaryAction } from '@biigle/ol/events/condition';
+import { primaryAction } from '@biigle/ol/events/condition';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the magic wand interaction.
@@ -99,17 +98,7 @@ export default {
         magicWandInteraction.setActive(false);
         this.map.addInteraction(magicWandInteraction);
 
-        this.map.addInteraction(new DragPan({
-            condition: (mapBrowserEvent) => {
-                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isMagicWanding;
-            },
-        }));
-
-        this.map.getViewport().addEventListener('contextmenu', (e) => {
-            if (this.isMagicWanding) {
-                e.preventDefault();
-            }
-        });
+        addRightClickDragPanToMap(this.map, () => this.isMagicWanding);
     },
 };
 </script>

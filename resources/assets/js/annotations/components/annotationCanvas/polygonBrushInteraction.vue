@@ -6,7 +6,7 @@ import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
 import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
 import { rightClick } from '@/annotations/ol/events/condition.js';
-import { DragPan } from '@biigle/ol/interaction';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the polygon brush interaction.
@@ -177,17 +177,7 @@ export default {
         shiftClickSelectInteraction.setActive(false);
         this.map.addInteraction(shiftClickSelectInteraction);
 
-        this.map.addInteraction(new DragPan({
-            condition: (mapBrowserEvent) => {
-                return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && !this.isNotAPolygonTool;
-            },
-        }));
-
-        this.map.getViewport().addEventListener('contextmenu', (e) => {
-            if (!this.isNotAPolygonTool) {
-                e.preventDefault();
-            }
-        });
+        addRightClickDragPanToMap(this.map, () => !this.isNotAPolygonTool)
     },
 };
 </script>
