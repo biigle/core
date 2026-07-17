@@ -64,6 +64,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: brushRadius,
                     resizeCondition: altKeyOnly,
+                    draftColor: this.getDraftColor()
                 });
                 currentInteraction.on('drawend', this.handleNewFeature);
                 this.map.addInteraction(currentInteraction);
@@ -113,6 +114,13 @@ export default {
             shiftClickSelectInteraction.setActive(this.canModify
                 && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
         },
+        updatePolygonBrushDraftColor() {
+            if (this.isUsingPolygonEraser || this.isUsingPolygonFill) {
+                return;
+            }
+
+            currentInteraction?.setDraftColor?.(this.getDraftColor());
+        },
     },
     watch: {
         isUsingPolygonBrush() {
@@ -139,6 +147,12 @@ export default {
             if (this.isNotAPolygonTool) {
                 this.resetCurrentInteraction();
             }
+        },
+        selectedLabel() {
+            this.updatePolygonBrushDraftColor();
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updatePolygonBrushDraftColor();
         }
     },
     created() {

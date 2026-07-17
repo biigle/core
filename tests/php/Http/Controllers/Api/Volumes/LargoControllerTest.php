@@ -484,4 +484,24 @@ class LargoControllerTest extends ApiTestCase
         ])->assertStatus(200);
         Queue::assertPushed(ApplyLargoSession::class);
     }
+
+    public function testQueuePushFailureClearsJobId()
+    {
+        Queue::shouldReceive('pushOn')->once()->andThrow(new \Exception('Queue error'));
+
+        $this->withoutExceptionHandling();
+        $this->beEditor();
+        try {
+            $this->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
+                'dismissed_image_annotations' => [
+                    $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+                ],
+                'changed_image_annotations' => [],
+            ]);
+        } catch (\Exception $e) {
+            // expected
+        }
+
+        $this->assertEmpty($this->imageVolume->fresh()->attrs);
+    }
 }

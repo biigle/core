@@ -88,6 +88,7 @@ export default {
             showScaleLine: false,
             showExampleAnnotations: true,
             draftAnnotationUsesLabelColor: true,
+            preferredUnit: 'auto',
             imagesArea: null,
             openTab: null,
             userId: null,

@@ -9,7 +9,7 @@
         </p>
 
         <p>
-            LabelBOT is the automatic classification assistant of BIIGLE. It suggests labels for new annotations based on similar existing annotations, so you no longer have to select the labels yourself. This manual article explains how you can use LabelBOT and how it works under the hood.
+            LabelBOT <small class="text-muted"><a href="#ref1">[1]</a></small> is the automatic classification assistant of BIIGLE. It suggests labels for new annotations based on similar existing annotations, so you no longer have to select the labels yourself. This manual article explains how you can use LabelBOT and how it works under the hood.
         </p>
 
         <h3>How to use LabelBOT</h3>
@@ -63,5 +63,12 @@
         <p>
             Some part of the computation for LabelBOT is done in your browser. This can take several seconds on low-end or older machines. The computation will be dramatically faster if there is access to a dedicated graphics card via WebGPU. Access to WebGPU can also depend on the web browser and operating system. You can check <a href="https://webgpureport.org/">here</a> if WebGPU is available in your browser.
         </p>
+
+        <h3><a name="references"></a>References</h3>
+        <ol>
+            <li>
+                <a name="ref1"></a><a href="https://doi.org/10.1109/ACCESS.2026.3688574">G. Kourie, M. Zurowietz, D. Langenkämper, D. Brembilla and T. W. Nattkemper, LabelBOT: A Human-in-the-Loop Classification Assistance in the BIIGLE Image Annotation Tool.</a> In IEEE Access, vol. 14, pp. 65161-65180, 2026. doi: <code>10.1109/ACCESS.2026.3688574</code>
+            </li>
+        </ol>
     </div>
 @endsection
