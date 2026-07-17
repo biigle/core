@@ -18,7 +18,8 @@ class LabelSourceController extends Controller
      * objects may contain arbitrary data, depending on the label source.
      *
      * @apiParam {Number} id The label source ID
-     * @apiParam {String} query The search query for the label source.
+     *
+     * @apiParam (Required arguments) {String} query The search query for the label source.
      *
      * @param Request $request
      * @param int $id
