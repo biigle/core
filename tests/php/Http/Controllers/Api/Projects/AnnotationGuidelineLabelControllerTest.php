@@ -201,6 +201,45 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $this->json('POST', $path, ['label_id' => $label->id])->assertStatus(422);
     }
 
+    public function testStoreValidatesShapeInOnlyShapes()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [Shape::polygonId()],
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape_id' => Shape::circleId(),
+        ])->assertStatus(422);
+
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape_id' => Shape::polygonId(),
+        ])->assertStatus(201);
+    }
+
+    public function testStoreIgnoresOnlyShapesIfNotEnforced()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => false,
+            'only_shapes' => [Shape::polygonId()],
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape_id' => Shape::circleId(),
+        ])->assertStatus(201);
+    }
+
     public function testStoreValidatesReferenceImageType()
     {
         $guideline = AnnotationGuideline::factory()->create([

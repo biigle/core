@@ -5,6 +5,7 @@ use Biigle\AnnotationGuideline;
 use Biigle\Label;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class StoreAnnotationGuidelineLabel extends FormRequest
@@ -55,7 +56,12 @@ class StoreAnnotationGuidelineLabel extends FormRequest
         return [
             'label_id' => ['required', 'integer', 'exists:labels,id'],
             'description' => ['nullable', 'string'],
-            'shape_id' => ['nullable', 'integer', 'exists:shapes,id'],
+            'shape_id' => [
+                'nullable',
+                'integer',
+                'exists:shapes,id',
+                Rule::when($this->guideline->enforced && !is_null($this->guideline->only_shapes), [Rule::in($this->guideline->only_shapes)]),
+            ],
             'reference_image' => [
                 'nullable',
                 'file',

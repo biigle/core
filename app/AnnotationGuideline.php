@@ -25,11 +25,15 @@ class AnnotationGuideline extends Model
         'id' => 'int',
         'project_id' => 'int',
         'description' => 'string',
+        'enforced' => 'boolean',
+        'only_shapes' => 'array',
     ];
 
     protected $fillable = [
         'project_id',
         'description',
+        'enforced',
+        'only_shapes',
     ];
 
     protected static function booted(): void

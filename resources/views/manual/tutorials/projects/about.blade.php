@@ -89,7 +89,7 @@
         <h3><a name="guideline"></a><i class="fa fa-clipboard-list"></i> Guideline</h3>
 
         <p>
-            An annotation guideline can provide detailed instructions on how individual labels should be used for annotation. Each label of an annotation guideline can have a description, a preferred annotation shape and a reference image.
+            An annotation guideline can provide detailed instructions and constraints for new annotations in a project. There can be general instructions and instructions for individual labels. The general instructions describe the guideline and can limit the available shape tools for new annotations. The label instructions can describe a label in more detail, choose a single preferred shape tool and provide a reference image. Annotation guidelines can be enforced. If a guideline is enforced, only the selected shape tools and labels are available for new annotations in the project.
         </p>
 
         <p>
@@ -97,7 +97,7 @@
         </p>
 
         <p>
-            To create a guideline as a project admin, open the <i class="fa fa-clipboard-list"></i> Guideline tab and select one of the labels of the label tree(s) of the project. Then enter a description, choose a preferred annotation shape, select a reference image and click <button class="btn btn-success btn-xs"><i class="fa fa-clipboard-list"></i> Add</button>. A guideline can also have a general description text. To add the description, click <button class="btn btn-default btn-xs">Manage <span class="caret"></span></button> and then "Add description". You can also delete the entire guideline by clicking "Delete guideline".
+            To create a guideline as a project admin, open the <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Guideline</button> tab and add general and/or label instructions. To edit the general instructions, click <button class="btn btn-default btn-xs">Edit</button>, update the instructions and save. To edit label instructions, select a label in the label trees list. Then enter a description, choose a preferred shape tool or select a reference image and click <button class="btn btn-success btn-xs"><i class="fa fa-clipboard-list"></i> Add</button>.
         </p>
 
         <h3><a name="modify-a-project"></a>Pin or modify a project</h3>

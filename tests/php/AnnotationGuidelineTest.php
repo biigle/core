@@ -16,6 +16,8 @@ class AnnotationGuidelineTest extends ModelTestCase
     {
         $this->assertNotNull($this->model->project_id);
         $this->assertNull($this->model->description);
+        $this->assertFalse($this->model->enforced);
+        $this->assertNull($this->model->only_shapes);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
     }

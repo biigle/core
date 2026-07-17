@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use DB;
@@ -63,6 +64,8 @@ class AnnotationGuidelineController extends Controller
      * @apiName StoreAnnotationGuideline
      * @apiParam {Number} id The project ID
      * @apiParam {String} [description] Description of how to annotate.
+     * @apiParam {Boolean} [enforced] Whether the guideline restricts the available labels and shapes for new annotations.
+     * @apiParam {Number[]} [only_shapes] IDs of the shapes that should be available for new annotations. If empty, all shapes are available. Can only be set if enforced is true.
      * @apiPermission projectAdmin
      */
     public function store(Request $request, int $id)
@@ -72,6 +75,9 @@ class AnnotationGuidelineController extends Controller
 
         $request->validate([
             'description' => 'nullable|string|min:1',
+            'enforced' => 'boolean',
+            'only_shapes' => 'nullable|array|prohibited_unless:enforced,true',
+            'only_shapes.*' => 'distinct|integer|exists:shapes,id',
         ]);
 
         $guideline = AnnotationGuideline::firstOrCreate(
@@ -80,6 +86,8 @@ class AnnotationGuidelineController extends Controller
             ],
             [
                 'description' => $request->description,
+                'enforced' => $request->boolean('enforced'),
+                'only_shapes' => $this->castOnlyShapes($request->only_shapes),
             ],
         );
 
@@ -100,6 +108,8 @@ class AnnotationGuidelineController extends Controller
      * @apiName UpdateAnnotationGuideline
      * @apiParam {Number} id The guideline ID
      * @apiParam {String} [description] Description of how to annotate.
+     * @apiParam {Boolean} [enforced] Whether the guideline restricts the available labels and shapes for new annotations.
+     * @apiParam {Number[]} [only_shapes] IDs of the shapes that should be available for new annotations. If empty, all shapes are available. Can only be set if enforced is true.
      * @apiPermission projectAdmin
      */
     public function update(Request $request, int $id)
@@ -109,9 +119,41 @@ class AnnotationGuidelineController extends Controller
 
         $request->validate([
             'description' => 'nullable|string|min:1',
+            'enforced' => 'boolean',
+            'only_shapes' => 'nullable|array|prohibited_unless:enforced,true',
+            'only_shapes.*' => 'distinct|integer|exists:shapes,id',
         ]);
 
-        $guideline->update(['description' => $request->description]);
+        $onlyShapes = $this->castOnlyShapes($request->only_shapes);
+
+        $guideline->update([
+            'description' => $request->description,
+            'enforced' => $request->boolean('enforced'),
+            'only_shapes' => $onlyShapes,
+        ]);
+
+        if ($request->exists('only_shapes') && !is_null($onlyShapes)) {
+            AnnotationGuidelineLabel::where('annotation_guideline_id', $guideline->id)
+                ->whereNotNull('shape_id')
+                ->whereNotIn('shape_id', $onlyShapes)
+                ->update(['shape_id' => null]);
+        }
+    }
+
+    /**
+     * Cast the IDs of the only_shapes attribute to int.
+     *
+     * @param array|null $onlyShapes
+     *
+     * @return array|null
+     */
+    protected function castOnlyShapes(?array $onlyShapes)
+    {
+        if (empty($onlyShapes)) {
+            return null;
+        }
+
+        return array_map('intval', $onlyShapes);
     }
 
     /**
