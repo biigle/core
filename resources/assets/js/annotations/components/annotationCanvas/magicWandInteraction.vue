@@ -104,6 +104,12 @@ export default {
                 return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isMagicWanding;
             },
         }));
+
+        this.map.getViewport().addEventListener('contextmenu', (e) => {
+            if (this.isMagicWanding) {
+                e.preventDefault();
+            }
+        });
     },
 };
 </script>

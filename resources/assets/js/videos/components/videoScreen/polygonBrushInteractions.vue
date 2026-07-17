@@ -187,6 +187,11 @@ export default {
                 return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isAPolygonTool;
             },
         }));
+        this.map.getViewport().addEventListener('contextmenu', (e) => {
+            if (this.isAPolygonTool) {
+                e.preventDefault();
+            }
+        });
     }
 };
 </script>

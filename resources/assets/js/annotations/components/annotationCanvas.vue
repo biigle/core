@@ -289,12 +289,6 @@ export default {
                 },
             }));
 
-            map.getViewport().addEventListener('contextmenu', (e) => {
-                if (this.isBrushOrWandMode) {
-                    e.preventDefault();
-                }
-            });
-
             control = new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'

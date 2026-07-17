@@ -438,6 +438,11 @@ export default {
                 return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && this.isDrawingMagicWand;
             }
         }));
+        this.map.getViewport().addEventListener('contextmenu', (e) => {
+            if (this.isDrawingMagicWand) {
+                e.preventDefault();
+            }
+        });
     },
     beforeUnmount() {
         if (this.video && this.updateMagicWandSnapshot) {

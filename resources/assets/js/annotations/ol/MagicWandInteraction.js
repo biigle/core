@@ -9,6 +9,7 @@ import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { setOrUnsetProperty } from '@/utils.js';
+import { primaryAction } from '@biigle/ol/events/condition';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -18,7 +19,7 @@ class MagicWandInteraction extends PointerInteraction {
         super(options);
         this.on('change:active', this.toggleActive);
 
-        this.condition = options.condition || (() => true);
+        this.condition = options.condition || primaryAction;
 
         // The image layer to use as source for the magic wand tool.
         this.layer = options.layer;
