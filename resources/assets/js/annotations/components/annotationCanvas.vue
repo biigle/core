@@ -245,12 +245,6 @@ export default {
                     return 'Next image';
             }
         },
-        isBrushOrWandMode() {
-            return this.interactionMode === 'polygonBrush'
-                || this.interactionMode === 'polygonEraser'
-                || this.interactionMode === 'polygonFill'
-                || this.interactionMode === 'magicWand';
-        },
     },
     methods: {
         createMap() {
