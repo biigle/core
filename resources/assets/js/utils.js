@@ -66,7 +66,6 @@ function required(name) {
     throw new Error(`Missing required parameter '${name}'`);
 }
 
-export { mount, require, declare, required };
 function setOrUnsetProperty(feature, property, value) {
     if (!feature) {
         return;
@@ -79,4 +78,4 @@ function setOrUnsetProperty(feature, property, value) {
     }
 }
 
-export { mount, require, declare, setOrUnsetProperty };
+export { mount, require, required, declare, setOrUnsetProperty };

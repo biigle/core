@@ -13,6 +13,7 @@ export const LawnmowerSaveState = Object.freeze({
 export default {
     emits: [
         'restore-lawnmower-image',
+        'lawnmower-state-restored',
     ],
     props: {
         lawnmowerSaveState: {
@@ -101,6 +102,9 @@ export default {
                 // resolution watcher first!
                 this.imageSectionCenter = this.getImageSectionCenter(section);
                 this.map.getView().setCenter(this.imageSectionCenter);
+                this.map.once('rendercomplete', () => {
+                    this.$emit('lawnmower-state-restored');
+                });
                 return true;
             }
 
@@ -186,8 +190,10 @@ export default {
                 this.imageSectionCenter = state.center;
                 this.imageSection = state.imageSection;
                 view.setCenter(state.center);
-
                 this.pendingLawnmowerState = null;
+                this.map.once('rendercomplete', () => {
+                    this.$emit('lawnmower-state-restored');
+                });
             });
         },
         discardSavedLawnmowerState() {
@@ -199,6 +205,7 @@ export default {
         // Update the current image section if either the resolution or the map size
         // changed. viewExtent depends on both so we can use it as watcher.
         viewExtent() {
+            // TODO remove this (continuing doesn't seem to work then)
             if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
                 return;
             }

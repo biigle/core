@@ -100,6 +100,7 @@ export default {
             currentLawnmowerState: PlayPauseState.INACTIVE,
             lawnmowerSaveState: "",
             volare: null,
+            pauseLawnmowerAutomatically: false,
         };
     },
     provide() {
@@ -290,6 +291,7 @@ export default {
                 x: Math.round(viewport.center[0]),
                 y: Math.round(viewport.center[1]),
             });
+            this.pauseLawnmowerAfterViewportChanged();
         },
         // Handler for the select event fired by the global event bus.
         handleSelectAnnotation(annotation, shift) {
@@ -539,8 +541,21 @@ export default {
                     break;
             }
         },
+        enableAutomaticLawnmowerPausing() {
+            this.pauseLawnmowerAutomatically = true;
+        },
+        pauseLawnmowerAfterViewportChanged() {
+            if (!this.isLawnmowerAnnotationMode || !this.pauseLawnmowerAutomatically) {
+                return;
+            }
+
+            this.setLawnmowerState('paused');
+        },
         setLawnmowerState(targetState) {
             const transition = `${this.currentLawnmowerState}->${targetState}`;
+            if (targetState === 'active') {
+                this.pauseLawnmowerAutomatically = false;
+            }
 
             switch (transition) {
                 case 'active->paused':
