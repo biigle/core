@@ -185,7 +185,7 @@ export default class Annotation {
         }
 
         for (; i >= 0; i--) {
-            if (rtp(frames[i]) <= time && frames[i] !== null) {
+            if (frames[i] !== null && rtp(frames[i]) <= time) {
                 break;
             }
         }

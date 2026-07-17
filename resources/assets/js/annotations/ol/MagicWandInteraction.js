@@ -8,6 +8,7 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import { setOrUnsetProperty } from '@/utils.js';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -124,9 +125,17 @@ class MagicWandInteraction extends PointerInteraction {
         this.mapExtent_ = null;
         this.snapshotHeight_ = 0;
         this.scaleFactor_ = 0;
+        this.setDraftColor(options.draftColor);
 
         // Update the snapshot and set event listeners if the interaction is active.
         this.toggleActive();
+    }
+
+    setDraftColor(color) {
+        this.draftColor_ = color || null;
+        [this.indicatorPoint, this.sketchFeature].forEach((feature) => {
+            setOrUnsetProperty(feature, 'color', this.draftColor_);
+        });
     }
 
     /**
@@ -384,6 +393,9 @@ class MagicWandInteraction extends PointerInteraction {
                 this.sketchFeature.getGeometry().setCoordinates([points]);
             } else {
                 this.sketchFeature = new Feature(new Polygon([points]));
+                if (this.draftColor_) {
+                    this.sketchFeature.set('color', this.draftColor_);
+                }
                 if (this.sketchStyle) {
                     this.sketchFeature.setStyle(this.sketchStyle);
                 }

@@ -43,6 +43,7 @@
                 :flat="flat"
                 :showFavouriteShortcuts="showFavouriteShortcuts"
                 :position="index"
+                :can-have-more-favourites="canHaveMoreFavourites"
                 @select="emitSelect"
                 @deselect="emitDeselect"
                 @save="emitSave"
@@ -148,6 +149,10 @@ export default {
         showMoveButtonDown: {
             type: Boolean,
             default: false,
+        },
+        canHaveMoreFavourites: {
+            type: Boolean,
+            default: true,
         },
     },
     computed: {

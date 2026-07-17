@@ -775,6 +775,9 @@ export default {
                 feature.setStyle(Styles.highlight);
             }, 200);
         },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
+        },
     },
     watch: {
         image(image, oldImage) {

@@ -7,8 +7,10 @@ use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Honeypot;
+use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
+use Mockery;
 use Session;
 use TestCase;
 use View;
@@ -158,7 +160,9 @@ class RegisterControllerTest extends TestCase
         View::shouldReceive('exists')->with('privacy')->andReturn(true);
         View::shouldReceive('exists')->with('terms')->andReturn(false);
         View::shouldReceive('share')->passthru();
-        View::shouldReceive('make')->andReturn('');
+        $viewMock = Mockery::mock(ViewContract::class)->shouldIgnoreMissing();
+        $viewMock->shouldReceive('render')->andReturn('');
+        View::shouldReceive('make')->andReturn($viewMock);
         $this->get('register');
         $response = $this->post('register', [
             '_token'    => Session::token(),
@@ -192,7 +196,9 @@ class RegisterControllerTest extends TestCase
         View::shouldReceive('exists')->with('privacy')->andReturn(false);
         View::shouldReceive('exists')->with('terms')->andReturn(true);
         View::shouldReceive('share')->passthru();
-        View::shouldReceive('make')->andReturn('');
+        $viewMock = Mockery::mock(ViewContract::class)->shouldIgnoreMissing();
+        $viewMock->shouldReceive('render')->andReturn('');
+        View::shouldReceive('make')->andReturn($viewMock);
         $this->get('register');
         $response = $this->post('register', [
             '_token'    => Session::token(),

@@ -54,7 +54,7 @@ self.onmessage = function(event) {
                 self.postMessage({
                     type: 'run',
                     labelbotMessageID: event.data.labelbotMessageID,
-                    vector: output[Object.keys(output)[0]].data,
+                    vector: Array.from(output[Object.keys(output)[0]].data),
                 });
             }, (error) => {
                 self.postMessage({

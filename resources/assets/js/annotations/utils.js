@@ -96,4 +96,94 @@ function trimCanvas(canvas) {
     return copy.canvas;
 }
 
-export {isInvalidShape, clamp, trimCanvas};
+function powerOfTen(value) {
+    return Math.pow(10, Math.floor(Math.log10(value)));
+}
+
+const UnitMultipliers = [1e+3, 1, 1e-2, 1e-3, 1e-6, 1e-9];
+const UnitNames = ['km', 'm', 'cm', 'mm', 'µm', 'nm'];
+
+class ScaleLineProperties
+{
+    constructor(resolution, hasArea, pxWidthInMeter, fixedUnit) {
+        this._resolution = resolution;
+        this._hasArea = hasArea;
+        this._pxWidthInMeter = pxWidthInMeter;
+
+        if (fixedUnit && UnitNames.indexOf(fixedUnit) !== -1) {
+            this._fixedUnitIndex = UnitNames.indexOf(fixedUnit);
+        } else {
+            this._fixedUnitIndex = null;
+        }
+
+        this._targetWidth = 100;
+        this._leadingDigits = [1, 2, 5];
+    }
+
+    _scale() {
+        return this._targetWidth * this._scaleMultiplier();
+    }
+
+    _scalePowerOfTen() {
+        return powerOfTen(this._scale());
+    }
+
+    _scaleMultiplier() {
+        if (this._hasArea) {
+            return this._resolution * this._pxWidthInMeter;
+        }
+
+        return this._resolution || 0;
+    }
+
+    _scaleNearest() {
+        let smallestIndex = 0;
+        let smallestDistance = Infinity;
+        for (let i = this._leadingDigits.length - 1; i >= 0; i--) {
+            let check = this._leadingDigits[i] * this._scalePowerOfTen();
+            if (Math.abs(this._scale() - check) < smallestDistance) {
+                smallestIndex = i;
+                smallestDistance = Math.abs(this._scale() - check);
+            }
+        }
+
+        return this._leadingDigits[smallestIndex] * this._scalePowerOfTen();
+    }
+
+    _unitNearest() {
+        if (this._fixedUnitIndex !== null) {
+            return this._fixedUnitIndex;
+        }
+
+        let smallestIndex = 0;
+        let smallestDistance = Infinity;
+        for (let i = UnitMultipliers.length - 1; i >= 0; i--) {
+            if (Math.abs(UnitMultipliers[i] - this._scalePowerOfTen()) < smallestDistance) {
+                smallestIndex = i;
+                smallestDistance = Math.abs(UnitMultipliers[i] - this._scalePowerOfTen());
+            }
+        }
+
+        return smallestIndex;
+    }
+
+    _formatValue(value) {
+        return new Intl.NumberFormat("en-US").format(value);
+    }
+
+    width() {
+        return Math.round(this._scaleNearest() / this._scaleMultiplier());
+    }
+
+    text() {
+        if (this._hasArea) {
+            const unitNearest = this._unitNearest();
+            const length = this._scaleNearest() / UnitMultipliers[unitNearest];
+            return this._formatValue(length) + ' ' + UnitNames[unitNearest];
+        }
+
+        return this._formatValue(this._scaleNearest()) + ' px';
+    }
+}
+
+export {isInvalidShape, clamp, trimCanvas, ScaleLineProperties, UnitMultipliers, UnitNames};

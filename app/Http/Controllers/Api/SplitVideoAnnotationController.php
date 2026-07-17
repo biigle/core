@@ -89,7 +89,7 @@ class SplitVideoAnnotationController extends Controller
 
         $i = count($oldFrames) - 1;
         for (; $i >= 0 ; $i--) {
-            if ($oldFrames[$i] <= $time && $oldFrames[$i] !== null) {
+            if ($oldFrames[$i] !== null && $oldFrames[$i] <= $time) {
                 break;
             }
         }

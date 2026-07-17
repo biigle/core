@@ -57,7 +57,7 @@ class VolumeImport extends Import
      * @param array $parentConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve parent conflicts.
      * @return array Array containing 'volumes', 'labelTrees', 'labels' and 'users', mapping external IDs (from the import file) to IDs of the database.
      */
-    public function perform(Project $project, User $creator, array $only = null, array $newUrls = [], array $nameConflictResolution = [], array $parentConflictResolution = [])
+    public function perform(Project $project, User $creator, ?array $only = null, array $newUrls = [], array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
         return DB::transaction(function () use ($project, $creator, $only, $newUrls, $nameConflictResolution, $parentConflictResolution) {
             $volumeCandidates = $this->getVolumeImportCandidates()

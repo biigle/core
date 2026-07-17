@@ -2,6 +2,7 @@
     <settings-tab
         v-cloak
         :image="image"
+        :images-area="imagesArea"
         :current-id="imageId"
         :image-filenames="imageFilenames"
         :ids="allImagesIds"
@@ -19,8 +20,10 @@
                 :current-id="currentId"
                 :filenames="imageFilenames"
                 :ids="ids"
+                :image="image"
+                :areas="imagesArea"
                 ></screenshot-button>
-                
+
             <shortcuts-button>
                 @include('partials.image-annotation-shortcuts')
             </shortcuts-button>
@@ -94,6 +97,13 @@
             >
                 Draft Annotation Color
             </power-toggle>
+        </div>
+
+        <div class="sidebar-tab__section">
+            <h5 title="Set the preferred unit">Preferred unit</h5>
+            <select class="form-control" v-model="preferredUnit">
+                <option v-for="unit in unitNames" :key="unit" :value="unit" v-text="unit"></option>
+            </select>
         </div>
 
         @mixin('annotationsSettingsTab')
