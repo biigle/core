@@ -60,7 +60,7 @@ class StoreAnnotationGuidelineLabel extends FormRequest
                 'nullable',
                 'integer',
                 'exists:shapes,id',
-                Rule::when(!is_null($this->guideline->only_shapes), [Rule::in($this->guideline->only_shapes)]),
+                Rule::when($this->guideline->enforced && !is_null($this->guideline->only_shapes), [Rule::in($this->guideline->only_shapes)]),
             ],
             'reference_image' => [
                 'nullable',

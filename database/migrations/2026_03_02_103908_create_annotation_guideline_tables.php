@@ -18,7 +18,7 @@ return new class extends Migration {
                 ->onDelete('cascade');
             $table->unique('project_id');
 
-            $table->boolean('enforced');
+            $table->boolean('enforced')->default(false);
 
             $table->text('description')->nullable();
             $table->jsonb('only_shapes')->nullable();

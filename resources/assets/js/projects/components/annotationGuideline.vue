@@ -25,7 +25,7 @@
                 The guideline has no description.
             </p>
 
-            <div v-if="guidelineIsEnforced">
+            <div v-if="annotationGuideline?.enforced">
                 <label>Available shapes</label>
                 <div v-if="annotationGuideline?.only_shapes" class="btn-group btn-group-justified form-group">
                     <div

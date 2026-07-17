@@ -92,6 +92,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('POST', $path, [
+            'enforced' => true,
             'only_shapes' => [(string) Shape::polygonId()],
         ])->assertStatus(201);
 
@@ -119,6 +120,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('POST', $path, [
+            'enforced' => true,
             'only_shapes' => [Shape::polygonId(), Shape::polygonId()],
         ])->assertStatus(422);
     }
@@ -130,7 +132,24 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('POST', $path, [
+            'enforced' => true,
             'only_shapes' => [-1],
+        ])->assertStatus(422);
+    }
+
+    public function testStoreValidatesOnlyShapesRequiresEnforced()
+    {
+        $id = $this->project()->id;
+        $path = "/api/v1/projects/{$id}/annotation-guidelines";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'only_shapes' => [Shape::polygonId()],
+        ])->assertStatus(422);
+
+        $this->json('POST', $path, [
+            'enforced' => false,
+            'only_shapes' => [Shape::polygonId()],
         ])->assertStatus(422);
     }
 
@@ -261,6 +280,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('PUT', $path, [
+            'enforced' => true,
             'only_shapes' => [Shape::polygonId(), Shape::polygonId()],
         ])->assertStatus(422);
     }
@@ -274,6 +294,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('PUT', $path, [
+            'enforced' => true,
             'only_shapes' => [(string) Shape::polygonId()],
         ])->assertStatus(200);
 
@@ -301,6 +322,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('PUT', $path, [
+            'enforced' => true,
             'only_shapes' => [Shape::polygonId()],
         ])->assertStatus(200);
 
@@ -353,7 +375,26 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('PUT', $path, [
+            'enforced' => true,
             'only_shapes' => [-1],
+        ])->assertStatus(422);
+    }
+
+    public function testUpdateValidatesOnlyShapesRequiresEnforced()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, [
+            'only_shapes' => [Shape::polygonId()],
+        ])->assertStatus(422);
+
+        $this->json('PUT', $path, [
+            'enforced' => false,
+            'only_shapes' => [Shape::polygonId()],
         ])->assertStatus(422);
     }
 
