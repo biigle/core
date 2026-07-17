@@ -148,7 +148,7 @@ class AnnotationGuidelineController extends Controller
      */
     protected function castOnlyShapes(?array $onlyShapes)
     {
-        if (is_null($onlyShapes)) {
+        if (empty($onlyShapes)) {
             return null;
         }
 

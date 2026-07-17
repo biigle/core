@@ -5,97 +5,124 @@
             <loader :active="loading"></loader>
         </div>
         <p class="text-muted">
-            An annotation guideline can provide detailed annotation instructions and constraints for the labels of a project. <a href="/manual/tutorials/projects/about#guideline" title="Learn more about annotation guidelines" target="_blank">Lean more.</a>
+            An annotation guideline can provide detailed instructions and constraints for new annotations in a project. <a href="/manual/tutorials/projects/about#guideline" title="Learn more about annotation guidelines" target="_blank">Learn more.</a>
         </p>
     </div>
     <fieldset>
         <legend>General information</legend>
-        <div class="row">
-            <div class="col-xs-6">
-                <div v-if="annotationGuideline?.description" class="well well-sm">
-                    {{ annotationGuideline?.description }}
+        <div v-if="!isEditingGuideline">
+            <div v-if="annotationGuideline?.enforced" class="panel panel-warning">
+                <div class="panel-body text-warning">
+                    The guideline is enforced. Only allowed labels and shapes can be used in this project.
+                </div>
+            </div>
+
+            <label>Description</label>
+            <div v-if="annotationGuideline?.description" class="well well-sm">
+                {{ annotationGuideline?.description }}
+            </div>
+            <p v-else class="text-muted">
+                The guideline has no description.
+            </p>
+
+            <div v-if="guidelineIsEnforced">
+                <label>Available shapes</label>
+                <div v-if="annotationGuideline?.only_shapes" class="btn-group btn-group-justified form-group">
+                    <div
+                        v-for="[shapeId, shape] of allowedShapes"
+                        :key="shapeId"
+                        class="btn-group"
+                        >
+                        <button
+                            class="btn btn-default"
+                            :title="shape"
+                            disabled
+                            >
+                            <i
+                                class="icon icon-white"
+                                :class="`icon-${shape.toLowerCase()}`"
+                                ></i>
+                        </button>
+                    </div>
                 </div>
                 <p v-else class="text-muted">
-                    The guideline has no description.
-                </p>
-
-                <p v-if="annotationGuideline?.enforced">
-                    The guideline is <strong>enforced</strong>.
+                    All shapes are allowed.
                 </p>
             </div>
-            <div class="col-xs-6" v-if="isAdmin">
+
+
+            <div v-if="isAdmin" class="form-group">
                 <button
-                    v-if="!isEditingGuideline"
-                    class="btn btn-default pull-right"
+                    class="btn btn-default"
                     @click.prevent="editGuideline"
                     title="Edit the general information of the guideline"
                     >
                     Edit
                 </button>
-                <form v-else @submit.prevent="saveGuideline">
-                    <div class="form-group">
-                        <label for="guideline-description">Guideline description</label>
-                        <textarea
-                            id="guideline-description"
-                            class="form-control"
-                            v-model="guidelineDescription"
-                            ></textarea>
-                        <p class="help-block">
-                            The description hepls users choose if multiple guidelines are available.
-                        </p>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Enforce guideline</label>
-                        <select class="form-control" v-model="guidelineIsEnforced">
-                            <option :value="false">No</option>
-                            <option :value="true">Yes</option>
-                        </select>
-                        <p class="help-block">
-                            Enforce a guideline to restrict the available labels and shapes for new annotations.
-                        </p>
-                    </div>
-
-                    <div v-if="guidelineIsEnforced" class="form-group">
-                        <label>Limit shapes</label>
-                        <div class="btn-group btn-group-justified">
-                            <div
-                                v-for="[shapeId, shape] of availableShapes"
-                                :key="shapeId"
-                                class="btn-group"
-                                >
-                                <button
-                                    class="btn btn-default"
-                                    :class="{'active btn-info': guidelineShapes.has(shapeId)}"
-                                    :title="shape"
-                                    @click.prevent="selectGuidelineShape(shapeId)"
-                                    >
-                                    <i
-                                        class="icon"
-                                        :class="[`icon-${shape.toLowerCase()}`, guidelineShapes.has(shapeId) ? 'icon-white' : '']"
-                                        ></i>
-                                </button>
-                            </div>
-                        </div>
-                        <p class="help-block">
-                            Only selected shapes will be available for new annotations.
-                        </p>
-                    </div>
-
-                    <div class="form-group">
-                        <button class="btn btn-success" type="submit">
-                            Save
-                        </button>
-                        <button class="btn btn-default" type="button" @click="cancelEditingGuideline">
-                            Cancel
-                        </button>
-                        <button class="btn btn-danger pull-right" saveGuideline @click="deleteGuideline">
-                            Delete guideline
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
+        <form v-if="isEditingGuideline && isAdmin" @submit.prevent="saveGuideline">
+            <div class="form-group">
+                <label>Enforce guideline</label>
+                <select class="form-control" v-model="guidelineIsEnforced">
+                    <option :value="false">No</option>
+                    <option :value="true">Yes</option>
+                </select>
+                <p class="help-block">
+                    Enforce a guideline to restrict the available labels and shapes for new annotations.
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label for="guideline-description">Guideline description</label>
+                <textarea
+                    id="guideline-description"
+                    class="form-control"
+                    v-model="guidelineDescription"
+                    ></textarea>
+                <p class="help-block">
+                    The description helps users choose if multiple guidelines are available.
+                </p>
+            </div>
+
+            <div v-if="guidelineIsEnforced" class="form-group">
+                <label>Available shapes</label>
+                <div class="btn-group btn-group-justified">
+                    <div
+                        v-for="[shapeId, shape] of availableShapes"
+                        :key="shapeId"
+                        class="btn-group"
+                        >
+                        <button
+                            class="btn btn-default"
+                            :class="{'active btn-info': guidelineShapes.has(shapeId)}"
+                            :title="shape"
+                            @click.prevent="selectGuidelineShape(shapeId)"
+                            >
+                            <i
+                                class="icon"
+                                :class="[`icon-${shape.toLowerCase()}`, guidelineShapes.has(shapeId) ? 'icon-white' : '']"
+                                ></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="help-block">
+                    Limit available shapes for new annotations. Select none to allow all.
+                </p>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-success" type="submit">
+                    Save
+                </button>
+                <button class="btn btn-default" type="button" @click="cancelEditingGuideline">
+                    Cancel
+                </button>
+                <button class="btn btn-danger pull-right" type="button" @click="deleteGuideline">
+                    Delete guideline
+                </button>
+            </div>
+        </form>
     </fieldset>
     <fieldset v-if="isAdmin || hasLabels">
         <legend>Label information</legend>
@@ -120,26 +147,25 @@
                     Select a label with <i class="fa fa-clipboard-list"></i> to see guideline information.
                 </p>
                 <p class="text-info" v-if="isAdmin && !selectedLabel">
-                    Select a label to edit the guideline information.
+                    Select a label to edit the label information.
                 </p>
-                <form @submit.prevent="saveLabel" v-if="selectedLabel">
-                    <div v-if="isAdmin || labelDescription" class="form-group">
-                        <label for="label-description">Label Description</label>
+                <form @submit.prevent="saveLabel" v-if="isAdmin && selectedLabel">
+                    <div class="form-group">
+                        <label for="label-description">Label description</label>
                         <textarea
                             v-model="labelDescription"
                             id="label-description"
-                            :readonly="!isAdmin"
                             class="form-control"
                             maxlength="200"
                             @input="isDirty = true"
                         ></textarea>
-                        <p v-if="isAdmin" class="help-block">
+                        <p class="help-block">
                             Describe how objects with this label can be identified and how they should be annotated.
                         </p>
                     </div>
 
-                    <div v-if="isAdmin || selectedShape" class="form-group">
-                        <label>Label Shape</label>
+                    <div class="form-group">
+                        <label>Label shape</label>
                         <div class="btn-group btn-group-justified">
                             <div
                                 v-for="[shapeId, shape] of allowedShapes"
@@ -148,26 +174,25 @@
                                 >
                                 <button
                                     class="btn btn-default"
-                                    :class="{'active btn-info': selectedShape == shapeId}"
+                                    :class="{'active btn-info': selectedShape === shapeId}"
                                     :title="shape"
-                                    :disabled="!isAdmin"
                                     @click.prevent="selectLabelShape(shapeId)"
                                     >
                                     <i
                                         class="icon"
-                                        :class="[`icon-${shape.toLowerCase()}`, selectedShape == shapeId ? 'icon-white' : '']"
+                                        :class="[`icon-${shape.toLowerCase()}`, selectedShape === shapeId ? 'icon-white' : '']"
                                         ></i>
                                 </button>
                             </div>
                         </div>
-                        <p v-if="isAdmin" class="help-block">
+                        <p class="help-block">
                             Select a shape tool that should be used for annotations with this label.
                         </p>
                     </div>
 
-                    <div v-show="isAdmin || referenceImagePreview" class="form-group">
-                        <label>Label Reference Image</label>
-                        <div class="form-group" v-if="isAdmin">
+                    <div class="form-group">
+                        <label>Label reference image</label>
+                        <div class="form-group">
                             <button
                                 v-if="referenceImagePreview"
                                 class="btn btn-default btn-sm pull-right"
@@ -182,13 +207,12 @@
                                 :src="referenceImagePreview"
                                 />
                         </div>
-                        <p v-if="isAdmin" class="help-block">
+                        <p class="help-block">
                             Upload a reference image that helps to identify objects with this label.
                         </p>
                     </div>
 
                     <button
-                        v-if="isAdmin"
                         v-show="selectedLabel"
                         :disabled="!canSave"
                         class="btn btn-success"
@@ -197,7 +221,6 @@
                         <i class="fa fa-clipboard-list"></i> <span v-text="isInGuideline ? 'Update' : 'Add'"></span>
                     </button>
                     <button
-                        v-if="isAdmin"
                         v-show="selectedLabel && isInGuideline"
                         title="Remove this label from the guideline"
                         :disabled="loading"
@@ -207,6 +230,58 @@
                         Remove
                     </button>
                 </form>
+                <div v-if="!isAdmin && selectedLabel">
+                    <p v-if="isInGuideline">
+                        This label belongs to the annotation guideline.
+                    </p>
+
+                    <div v-if="labelDescription" class="form-group">
+                        <label for="label-description">Label description</label>
+                        <textarea
+                            v-model="labelDescription"
+                            id="label-description"
+                            readonly
+                            class="form-control"
+                            maxlength="200"
+                        ></textarea>
+                    </div>
+
+                    <div v-if="selectedShape" class="form-group">
+                        <label>Label shape</label>
+                        <div class="btn-group btn-group-justified">
+                            <div
+                                v-for="[shapeId, shape] of allowedShapes"
+                                :key="shapeId"
+                                class="btn-group"
+                                >
+                                <button
+                                    class="btn btn-default"
+                                    :class="{'active btn-info': selectedShape === shapeId}"
+                                    :title="shape"
+                                    disabled
+                                    >
+                                    <i
+                                        class="icon"
+                                        :class="[`icon-${shape.toLowerCase()}`, selectedShape === shapeId ? 'icon-white' : '']"
+                                        ></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="help-block">
+                            New annotations can only be created with this shape.
+                        </p>
+                    </div>
+
+                    <div v-show="referenceImagePreview" class="form-group">
+                        <label>Label reference image</label>
+                        <div class="well well-sm text-center">
+                            <img
+                                v-if="referenceImagePreview"
+                                :src="referenceImagePreview"
+                                />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </fieldset>
@@ -255,7 +330,6 @@ export default {
             guidelineDescription: null,
             guidelineIsEnforced: false,
             guidelineShapes: new Set(),
-            previousGuidelineDescription: null,
             isEditingGuideline: false,
         };
     },
@@ -494,8 +568,10 @@ export default {
                 enforced: this.guidelineIsEnforced,
             };
 
-            if (this.guidelineIsEnforced) {
+            if (this.guidelineIsEnforced && this.guidelineShapes.size > 0) {
                 payload.only_shapes = Array.from(this.guidelineShapes);
+            } else {
+                payload.only_shapes = null;
             }
 
             if (this.creating) {
@@ -518,10 +594,9 @@ export default {
 
             return AnnotationGuidelineApi.update({ id: this.annotationGuideline.id }, payload)
                     .then(
-                        (response) => {
+                        () => {
                             Object.assign(this.annotationGuideline, payload);
                             if (!payload.only_shapes) {
-                                this.annotationGuideline.only_shapes = null;
                                 this.guidelineShapes.clear();
                             }
                             this.maybeUnsetLabelShapes();
@@ -538,7 +613,7 @@ export default {
         maybeUnsetLabelShapes() {
             if (this.onlyShapeIds.size > 0) {
                 this.annotationGuidelineLabels.forEach((label) => {
-                    if (label.shape_id && !this.onlyShapeIds.has(`${label.shape_id}`)) {
+                    if (label.shape_id && !this.onlyShapeIds.has(Number(label.shape_id))) {
                         label.shape_id = null;
                     }
                 })
@@ -546,7 +621,6 @@ export default {
         },
         editGuideline() {
             this.isEditingGuideline = true;
-            this.previousGuidelineDescription = this.guidelineDescription;
         },
         async saveGuideline() {
             if (await this.createOrSaveGuideline()) {
@@ -554,7 +628,9 @@ export default {
             }
         },
         cancelEditingGuideline() {
-            this.guidelineDescription = this.previousGuidelineDescription;
+            this.guidelineDescription = this.annotationGuideline?.description ?? null;
+            this.guidelineIsEnforced = this.annotationGuideline?.enforced ?? false;
+            this.guidelineShapes = new Set(this.annotationGuideline?.only_shapes);
             this.isEditingGuideline = false;
         },
         deleteGuideline() {

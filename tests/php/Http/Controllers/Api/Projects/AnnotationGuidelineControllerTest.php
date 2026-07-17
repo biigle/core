@@ -224,6 +224,21 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->assertNull($guideline->fresh()->only_shapes);
     }
 
+    public function testUpdateNullOnlyShapesOnEmptyArray()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [Shape::polygonId()],
+        ]);
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}";
+
+        $this->beAdmin();
+        $this->json('PUT', $path, ['only_shapes' => []])->assertStatus(200);
+
+        $this->assertNull($guideline->fresh()->only_shapes);
+    }
+
     public function testUpdateClearEnforcedOnMissing()
     {
         $guideline = AnnotationGuideline::factory()->create([
