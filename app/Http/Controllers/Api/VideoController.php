@@ -20,12 +20,12 @@ class VideoController extends Controller
      * {
      *    "id": 1,
      *    "uuid": "01ef3e62-31ae-384c-b9d7-1b7ee64fd58a",
-     *    "filename": "video.mp4"
+     *    "filename": "video.mp4",
      *    "volume_id": 123,
      *    "size": 172889435,
      *    "mimeType": "video/mp4",
      *    "duration": 149.84,
-     *    "error": null,
+     *    "error": null
      * }
      *
      * @param int $id image id

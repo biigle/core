@@ -30,13 +30,13 @@ class LargoController extends Controller
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
-     *    dismissed_image_annotations: {
-     *       12: [1, 2, 3, 4],
-     *       24: [15, 2, 10]
+     *    "dismissed_image_annotations": {
+     *       "12": [1, 2, 3, 4],
+     *       "24": [15, 2, 10]
      *    },
-     *    changed_image_annotations: {
-     *       5: [1, 3],
-     *       13: [10],
+     *    "changed_image_annotations": {
+     *       "5": [1, 3],
+     *       "13": [10]
      *    }
      * }
      *

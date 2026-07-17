@@ -128,7 +128,7 @@ class LabelTreeController extends Controller
      *    "id": 1,
      *    "name": "Global",
      *    "description": "The global label category tree.",
-     *    "vilibility_id": 1,
+     *    "visibility_id": 1,
      *    "created_at": "2015-02-10 09:45:30",
      *    "updated_at": "2015-02-10 09:45:30"
      * }
