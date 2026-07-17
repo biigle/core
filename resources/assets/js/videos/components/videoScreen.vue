@@ -611,12 +611,6 @@ export default {
         isDefaultInteractionMode() {
             return this.interactionMode === 'default';
         },
-        isBrushOrWandMode() {
-            return this.interactionMode === 'polygonBrush'
-                || this.interactionMode === 'polygonEraser'
-                || this.interactionMode === 'polygonFill'
-                || this.interactionMode === 'drawMagicWand';
-        },
         styleObject() {
             if (this.heightOffset !== 0) {
                 return `height: calc(65% + ${this.heightOffset}px);`;

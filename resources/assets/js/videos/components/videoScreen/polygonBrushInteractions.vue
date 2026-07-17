@@ -3,7 +3,7 @@ import ModifyPolygonBrushInteraction from '@/annotations/ol/interaction/ModifyPo
 import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.js';
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
-import { altKeyOnly as altKeyOnlyCondition } from '@biigle/ol/events/condition';
+import {altKeyOnly as altKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
