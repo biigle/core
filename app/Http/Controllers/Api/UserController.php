@@ -45,14 +45,14 @@ class UserController extends Controller
      *       "firstname": "Joe",
      *       "lastname": "User",
      *       "role_id": 2,
-     *       "affiliation": "Ocean Research Centre",
+     *       "affiliation": "Ocean Research Centre"
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
      *       "lastname": "User",
      *       "role_id": 2,
-     *       "affiliation": "Biodtata Mining Group",
+     *       "affiliation": "Biodata Mining Group"
      *    }
      * ]
      *
@@ -86,14 +86,14 @@ class UserController extends Controller
      *       "firstname": "Joe",
      *       "lastname": "User",
      *       "role_id": 2,
-     *       "affiliation": "Ocean Research Centre",
+     *       "affiliation": "Ocean Research Centre"
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
      *       "lastname": "User",
      *       "role_id": 2,
-     *       "affiliation": "Biodtata Mining Group",
+     *       "affiliation": "Biodata Mining Group"
      *    }
      * ]
      *
@@ -128,7 +128,7 @@ class UserController extends Controller
      *    "firstname": "Joe",
      *    "lastname": "User",
      *    "role_id": 2,
-     *    "affiliation": "Ocean Research Centre",
+     *    "affiliation": "Ocean Research Centre"
      * }
      *
      * @param int $id
@@ -269,7 +269,6 @@ class UserController extends Controller
      * firstname: 'New'
      * lastname: 'Name'
      * affiliation: 'Biodata Mining Group'
-     * super_user_mode: 0
      *
      * @param UpdateOwnUser $request
      * @return \Illuminate\Http\RedirectResponse|void
@@ -329,7 +328,7 @@ class UserController extends Controller
      *    "email": "joe@user.com",
      *    "role_id": 2,
      *    "created_at": "2016-04-29 07:38:51",
-     *    "updated_at"; "2016-04-29 07:38:51",
+     *    "updated_at": "2016-04-29 07:38:51",
      *    "uuid": "c796ccec-c746-408f-8009-9f1f68e2aa62",
      *    "affiliation": "Biodata Mining Group"
      * }

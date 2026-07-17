@@ -12,8 +12,8 @@ class LabelTreeExportController extends Controller
      * @apiGroup Sync
      * @apiName ShowLabelTreeExport
      *
-     * @apiParam (Required arguments) {String} except Comma separated IDs of the label trees that should not be included in the export file.
-     * @apiParam (Required arguments) {String} only Comma separated IDs of the label trees that should only be included in the export file.
+     * @apiParam (Optional arguments) {String} except Comma separated IDs of the label trees that should not be included in the export file.
+     * @apiParam (Optional arguments) {String} only Comma separated IDs of the label trees that should only be included in the export file.
      * @apiDescription Either `except` or `only` must be provided. The response is a ZIP archive that can be used for the label tree import.
      * @apiPermission admin
      */

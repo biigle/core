@@ -24,13 +24,13 @@ class ProjectUserController extends Controller
      *    {
      *       "id": 1,
      *       "firstname": "Joe",
-     *       "firstname": "User",
+     *       "lastname": "User",
      *       "project_role_id": 1
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
-     *       "firstname": "User",
+     *       "lastname": "User",
      *       "project_role_id": 2
      *    }
      * ]
@@ -90,7 +90,7 @@ class ProjectUserController extends Controller
     }
 
     /**
-     * Removes a user form the specified project.
+     * Removes a user from the specified project.
      *
      * @api {delete} projects/:pid/users/:uid Remove a member
      * @apiGroup Projects

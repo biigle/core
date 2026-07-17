@@ -111,9 +111,9 @@ class FederatedSearchInstanceController extends Controller
     }
 
     /**
-     * Disonnect a remote federated search instance.
+     * Disconnect a remote federated search instance.
      *
-     * @api {delete} federated-search-instances/:id Disonnect a remote instance
+     * @api {delete} federated-search-instances/:id Disconnect a remote instance
      * @apiGroup FederatedSearch
      * @apiName DestroyInstance
      * @apiPermission admin
