@@ -97,21 +97,37 @@ class VideoAnnotation extends Annotation
             return;
         }
 
-        if (count($this->points) !== count($this->frames)) {
+        // Use a local variable because end() takes a reference and the attribute is
+        // resolved by the magic getter.
+        $points = $this->points;
+
+        if (count($points) !== count($this->frames)) {
             throw new Exception('The number of key frames does not match the number of annotation coordinates.');
         }
 
-        if (count($this->points[0] ?? []) === 0) {
-            throw new Exception('An annotation must not start with a gap.');
+        // Gaps are represented as empty arrays. This also catches the all-empty case.
+        if (empty($points[0]) || empty(end($points))) {
+            throw new Exception('An annotation must not start or end with a gap.');
         }
 
-        // Gaps are represented as empty arrays so these should be skipped.
-        // The all-empty case is already caught with the check above.
-        array_map(function ($point) {
-            if (count($point) > 0) {
+        foreach ($points as $index => $point) {
+            // This method is also called outside of the API requests, where the array
+            // structure is not checked by a form request, so it must be checked here.
+            if (!is_array($point)) {
+                throw new Exception('The annotation points must be an array of arrays of numbers.');
+            }
+
+            $isGap = empty($point);
+
+            if ($isGap !== is_null($this->frames[$index])) {
+                throw new Exception('A gap must have empty points and no key frame time.');
+            }
+
+            // Gaps have no coordinates that could be validated.
+            if (!$isGap) {
                 parent::validatePoints($point);
             }
-        }, $this->points);
+        }
     }
 
     /**

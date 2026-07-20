@@ -331,6 +331,24 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->assertSame(1, $annotation->labels()->count());
     }
 
+    public function testStoreWithGap()
+    {
+        $this->beEditor();
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11], [], [20, 21]],
+                'frames' => [0.0, null, 2.0],
+            ])
+            ->assertSuccessful();
+
+        $annotation = $this->video->annotations()->first();
+        $this->assertNotNull($annotation);
+        $this->assertSame([[10, 11], [], [20, 21]], $annotation->points);
+        $this->assertSame([0, null, 2], $annotation->frames);
+    }
+
     public function testStoreValidatePoints()
     {
         $this->beEditor();
@@ -400,6 +418,36 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'frames' => [0.0, 1.0],
             ])
             ->assertStatus(422);
+
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11], []],
+                'frames' => [0.0, 1.0],
+            ])
+            // An annotation must not end with a gap.
+            ->assertStatus(422);
+
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11], [], [20, 21]],
+                'frames' => [0.0, 1.0, 2.0],
+            ])
+            // A gap must have no key frame time.
+            ->assertStatus(422);
+
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [['10', '11']],
+                'frames' => [0.0],
+            ])
+            // Numeric strings are no valid coordinates.
+            ->assertStatus(422);
     }
 
     public function testStoreValidateFrames()
@@ -412,6 +460,34 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'points' => [[10, 11]],
                 'frames' => 1234,
             ])
+            ->assertStatus(422);
+    }
+
+    public function testStoreValidateFramesGapAtStart()
+    {
+        $this->beEditor();
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11], [12, 13]],
+                'frames' => [null, 1.0],
+            ])
+            // An annotation must not start with a gap frame.
+            ->assertStatus(422);
+    }
+
+    public function testStoreValidateFramesGapAtEnd()
+    {
+        $this->beEditor();
+        $this
+            ->postJson("/api/v1/videos/{$this->video->id}/annotations", [
+                'shape_id' => Shape::pointId(),
+                'label_id' => $this->labelRoot()->id,
+                'points' => [[10, 11], [12, 13]],
+                'frames' => [0.0, null],
+            ])
+            // An annotation must not end with a gap frame.
             ->assertStatus(422);
     }
 
@@ -930,13 +1006,13 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this
             ->putJson("api/v1/video-annotations/{$annotation->id}", [
                 'points' => [[10, 20], [30, 40]],
-                'frames' => [1.0, 10.0]
+                'frames' => [1.0, 2.0]
             ])
             ->assertStatus(200);
 
         $annotation = $annotation->fresh();
         $this->assertSame([[10, 20], [30, 40]], $annotation->points);
-        $this->assertSame([1, 10], $annotation->frames);
+        $this->assertSame([1, 2], $annotation->frames);
     }
 
     public function testUpdateValidatePoints()
@@ -980,6 +1056,106 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
     }
 
+    public function testUpdateValidateFramesNumeric()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[10, 20]],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [[10, 20]],
+                'frames' => ['not-a-number'],
+            ])
+            ->assertStatus(422);
+    }
+
+    public function testUpdateValidateFramesBounds()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [[10, 20]],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [[10, 20]],
+                'frames' => [1234],
+            ])
+            ->assertStatus(422);
+    }
+
+    public function testUpdateValidatePointsArray()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0, 2.0],
+            'points' => [[10, 20], [30, 40]],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [[10, 20], 'not-an-array'],
+                'frames' => [1.0, 2.0],
+            ])
+            ->assertStatus(422);
+
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [['10', '20'], [30, 40]],
+                'frames' => [1.0, 2.0],
+            ])
+            // Numeric strings are no valid coordinates.
+            ->assertStatus(422);
+    }
+
+    public function testUpdateValidateFramesGapAtStart()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0, 2.0],
+            'points' => [[10, 20], [30, 40]],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [[10, 20], [30, 40]],
+                'frames' => [null, 2.0],
+            ])
+            // An annotation must not start with a gap frame.
+            ->assertStatus(422);
+    }
+
+    public function testUpdateValidateFramesGapAtEnd()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::pointId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0, 2.0],
+            'points' => [[10, 20], [30, 40]],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
+                'points' => [[10, 20], [30, 40]],
+                'frames' => [1.0, null],
+            ])
+            // An annotation must not end with a gap frame.
+            ->assertStatus(422);
+    }
+
     public function testUpdateWholeFrameAnnotation()
     {
         $annotation = VideoAnnotationTest::create([
@@ -992,12 +1168,30 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $this->beAdmin();
         $this
             ->putJson("api/v1/video-annotations/{$annotation->id}", [
-                'frames' => [1.0, 2.0, null, 3.0, 4.0],
+                'frames' => [1.0, 1.1, null, 1.4, 2.0],
             ])
             ->assertStatus(200);
 
         $annotation = $annotation->fresh();
-        $this->assertSame([1, 2, null, 3, 4], $annotation->frames);
+        $this->assertSame([1, 1.1, null, 1.4, 2], $annotation->frames);
+    }
+
+    public function testUpdateWholeFrameAnnotationValidateFramesBounds()
+    {
+        $annotation = VideoAnnotationTest::create([
+            'shape_id' => Shape::wholeFrameId(),
+            'video_id' => $this->video->id,
+            'frames' => [1.0],
+            'points' => [],
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->putJson("api/v1/video-annotations/{$annotation->id}", [
+                // The video is only two seconds long.
+                'frames' => [1.0, 5.0],
+            ])
+            ->assertStatus(422);
     }
 
     public function testDestroy()

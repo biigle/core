@@ -289,14 +289,7 @@ class VideoAnnotationController extends Controller
      */
     public function update(UpdateVideoAnnotation $request)
     {
-        // from a JSON request, the array may already be decoded
-        $points = $request->input('points', []);
-
-        if (is_string($points)) {
-            $points = json_decode($points);
-        }
-
-        $request->annotation->points = $points;
+        $request->annotation->points = $request->input('points', []);
         $request->annotation->frames = $request->input('frames');
 
         try {

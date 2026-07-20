@@ -121,4 +121,69 @@ class VideoAnnotationTest extends TestCase
         $this->expectException(Exception::class);
         $data->validate();
     }
+
+    public function testValidatePointsArray4()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [10],
+            frames: [1],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectException(Exception::class);
+        $data->validate();
+    }
+
+    public function testValidatePointsWithGap()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [[10, 10], [], [20, 20]],
+            frames: [1, null, 3],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectNotToPerformAssertions();
+        $data->validate();
+    }
+
+    public function testValidatePointsGapAtEnd()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [[10, 10], []],
+            frames: [1, null],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectException(Exception::class);
+        $data->validate();
+    }
+
+    public function testValidatePointsGapWithoutNullFrame()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [[10, 10], [], [20, 20]],
+            frames: [1, 2, 3],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectException(Exception::class);
+        $data->validate();
+    }
+
+    public function testValidatePointsNullFrameWithoutGap()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::point(),
+            points: [[10, 10], [15, 15], [20, 20]],
+            frames: [1, null, 3],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectException(Exception::class);
+        $data->validate();
+    }
 }

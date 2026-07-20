@@ -2,6 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Rules\VideoAnnotationFrames;
+use Biigle\Rules\VideoAnnotationPoints;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
@@ -35,11 +37,21 @@ class UpdateVideoAnnotation extends FormRequest
     public function rules()
     {
         $validators = [
-            'frames' => 'required|array',
+            'frames' => [
+                'bail',
+                'required',
+                'array',
+                new VideoAnnotationFrames($this->annotation->video->duration),
+            ],
         ];
 
         if ($this->annotation->shape_id !== Shape::wholeFrameId()) {
-            $validators['points'] = 'required|array';
+            $validators['points'] = [
+                'bail',
+                'required',
+                'array',
+                new VideoAnnotationPoints,
+            ];
         }
 
         return $validators;
