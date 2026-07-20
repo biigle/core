@@ -108,6 +108,7 @@ export default {
         classObject() {
             return {
                 active: this.active,
+                'control-button--has-sub-controls': this.hasSubControls,
                 'control-button--open': this.showSubControls,
             };
         },
