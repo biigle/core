@@ -1,6 +1,6 @@
 FROM ghcr.io/biigle/app AS intermediate
 
-FROM pytorch/pytorch:2.12.1-cuda12.6-cudnn9-runtime
+FROM pytorch/pytorch:2.13.0-cuda12.6-cudnn9-runtime
 LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
 LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 

@@ -10,8 +10,8 @@ pandas==2.2.3
 
 # Included directly in the Dockerfiles
 #xformers>=0.0.34
-#torch==2.12.1
-#torchvision==0.27.1
+#torch==2.13.0
+#torchvision==0.28.0
 
 # Special gpu-worker requirements.
 albumentations

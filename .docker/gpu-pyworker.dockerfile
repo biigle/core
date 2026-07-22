@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.12.1-cuda12.6-cudnn9-runtime
+FROM pytorch/pytorch:2.13.0-cuda12.6-cudnn9-runtime
 
 COPY .docker/gpu-requirements.txt /tmp/requirements.txt
 
@@ -8,11 +8,6 @@ RUN apt-get update \
         build-essential \
         git \
         libvips \
-    # Install torch first to get the CPU version. It is also present in
-    # requirements.txt but this is only for automatic vulnerability checks.
-    && pip3 install --ignore-installed --no-cache-dir --break-system-packages --index-url https://download.pytorch.org/whl/cpu \
-        torch==2.12.1 \
-        torchvision==0.27.1 \
     && pip3 install --no-cache-dir --break-system-packages -r /tmp/requirements.txt \
     && apt-get purge -y \
         build-essential \
