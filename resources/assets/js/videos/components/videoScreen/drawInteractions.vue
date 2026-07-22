@@ -8,11 +8,12 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
-import { never } from '@biigle/ol/events/condition';
+import { never, primaryAction } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
 import { setOrUnsetProperty } from '@/utils.js';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -187,6 +188,7 @@ export default {
                             indicatorPointStyle: Styles.editing,
                             indicatorCrossStyle: Styles.cross,
                             simplifyTolerant: 0.1,
+                            condition: primaryAction,
                             draftColor: this.getDraftColor()
                         });
                     } else {
@@ -428,6 +430,9 @@ export default {
             this.keyboardOn('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
             this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
+    },
+    mounted() {
+        addRightClickDragPanToMap(this.map, () => this.isDrawingMagicWand);
     },
     beforeUnmount() {
         if (this.video && this.updateMagicWandSnapshot) {
