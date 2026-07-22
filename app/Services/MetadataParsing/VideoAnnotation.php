@@ -11,7 +11,7 @@ class VideoAnnotation extends Annotation
      * @param Shape $shape
      * @param array<array<float>> $points
      * @param array<LabelAndUser> $labels
-     * @param array<float|null> $frames
+     * @param array<int|float|null> $frames
      */
     public function __construct(
         public Shape $shape,
@@ -43,7 +43,7 @@ class VideoAnnotation extends Annotation
         foreach ($this->frames as $frame) {
             // null is allowed because it represents a gap in the annotation. Where gaps
             // are allowed is checked in validatePoints().
-            /** @phpstan-ignore function.alreadyNarrowedType */
+            /** @phpstan-ignore booleanAnd.alwaysFalse, function.alreadyNarrowedType */
             if (!is_null($frame) && !is_numeric($frame)) {
                 throw new Exception("Video annotation frames must be numbers, got '{$frame}'.");
             }
@@ -78,6 +78,7 @@ class VideoAnnotation extends Annotation
         foreach ($points as $index => $point) {
             // Unlike the annotations of the API requests, these are not validated by a
             // form request, so the array structure must be checked here.
+            /** @phpstan-ignore function.alreadyNarrowedType */
             if (!is_array($point)) {
                 throw new Exception('The annotation points must be an array of arrays of numbers.');
             }
