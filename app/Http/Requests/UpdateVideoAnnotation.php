@@ -2,8 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Rules\VideoAnnotationFrames;
-use Biigle\Rules\VideoAnnotationPoints;
+use Biigle\Services\VideoAnnotationValidation;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
@@ -41,7 +40,14 @@ class UpdateVideoAnnotation extends FormRequest
                 'bail',
                 'required',
                 'array',
-                new VideoAnnotationFrames($this->annotation->video->duration),
+                function ($attribute, $value, $fail) {
+                    $duration = $this->annotation->video->duration;
+                    $message = VideoAnnotationValidation::checkFrames($value, $duration);
+
+                    if (!is_null($message)) {
+                        $fail($message);
+                    }
+                },
             ],
         ];
 
@@ -50,7 +56,13 @@ class UpdateVideoAnnotation extends FormRequest
                 'bail',
                 'required',
                 'array',
-                new VideoAnnotationPoints,
+                function ($attribute, $value, $fail) {
+                    $message = VideoAnnotationValidation::checkPoints($value);
+
+                    if (!is_null($message)) {
+                        $fail($message);
+                    }
+                },
             ];
         }
 
