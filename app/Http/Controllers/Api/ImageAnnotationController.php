@@ -48,12 +48,12 @@ class ImageAnnotationController extends Controller
      *                "id": 3,
      *                "name": "My label",
      *                "parent_id": null,
-     *                "label_tree_id": 1,
+     *                "label_tree_id": 1
      *             },
      *             "user": {
      *                "id": 4,
      *                "firstname": "Graham",
-     *                "lastname": "Hahn",
+     *                "lastname": "Hahn"
      *             }
      *          }
      *       ]
@@ -151,13 +151,13 @@ class ImageAnnotationController extends Controller
      * @apiName StoreImageAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by one of
-     * the projects, the image belongs to.
+     * the projects, the image belongs to. If 'feature_vector' is given instead of 'label_id', the LabelBOT service is used to suggest a label based on the feature vector. The best matching suggestion is attached to the annotation and any further suggestions are returned in the `labelBOTLabels` attribute of the response.
      *
      * @apiParam {Number} id The image ID.
      *
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation. Required if 'feature_vector' is not provided.
-     * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction. Required if 'label_id' is not provided.
+     * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction with the LabelBOT service. Required if 'label_id' is not provided.
      * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
      * @apiParam (Required arguments) {Number[]} points Array of the initial points of the annotation. Must contain at least one point. The points array is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
@@ -192,7 +192,7 @@ class ImageAnnotationController extends Controller
      *             "id": 3,
      *             "name": "My label",
      *             "parent_id": null,
-     *             "project_id": null
+     *             "label_tree_id": 1
      *          },
      *          "user": {
      *             "id": 4,

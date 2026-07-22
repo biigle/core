@@ -232,7 +232,9 @@ class PendingVolumeController extends Controller
      * @apiName DestroyPendingVolume
      * @apiPermission projectAdminAndPendingVolumeOwner
      *
-     * @param Request $request]
+     * @apiParam {Number} id The pending volume ID.
+     *
+     * @param Request $request
      */
     public function destroy(Request $request)
     {

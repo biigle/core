@@ -16,6 +16,7 @@ class ImageAnnotationsController extends Controller
      * @apiGroup Labels
      * @apiName ShowLabelImageAnnotations
      * @apiParam {Number} id The Label ID
+     * @apiParam (Optional arguments) {Number} take Maximum number of annotations to return.
      * @apiPermission user
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs. Only annotations that are visible to the current user are returned.
      *
