@@ -97,7 +97,6 @@ export default {
             imageFilenames: {},
             labelTrees: [],
             projectIds: [],
-            currentLawnmowerState: PlayPauseState.INACTIVE,
             lawnmowerSaveState: "",
             volare: null,
             pauseLawnmowerAutomatically: false,
@@ -137,7 +136,7 @@ export default {
             return this.filteredAnnotations.filter((a) => a.selected);
         },
         isDefaultAnnotationMode() {
-            return this.annotationMode === 'default';
+            return this.annotationMode === 'default' || this.annotationMode === 'volarePaused' || this.annotationMode === 'lawnmowerPaused';
         },
         isLawnmowerAnnotationMode() {
             return this.annotationMode === 'lawnmower';
@@ -544,32 +543,15 @@ export default {
         enableAutomaticLawnmowerPausing() {
             this.pauseLawnmowerAutomatically = true;
         },
+        disableAutomaticLawnmowerPausing() {
+            this.pauseLawnmowerAutomatically = false;
+        },
         pauseLawnmowerAfterViewportChanged() {
             if (!this.isLawnmowerAnnotationMode || !this.pauseLawnmowerAutomatically) {
                 return;
             }
 
-            this.setLawnmowerState('paused');
-        },
-        setLawnmowerState(targetState) {
-            const transition = `${this.currentLawnmowerState}->${targetState}`;
-            if (targetState === 'active') {
-                this.pauseLawnmowerAutomatically = false;
-            }
-
-            switch (transition) {
-                case 'active->paused':
-                    this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
-                    break;
-                case 'paused->active':
-                    this.lawnmowerSaveState = LawnmowerSaveState.LOAD;
-                    break;
-                case 'paused->inactive':
-                    this.lawnmowerSaveState = LawnmowerSaveState.DISCARD;
-                    break;
-            }
-
-            this.currentLawnmowerState = targetState;
+            this.$refs.annotationModesTab.pauseLawnmower();
         },
         showImageWithId(imageId) {
             const index = this.imagesIds.indexOf(imageId);
@@ -709,6 +691,15 @@ export default {
                 this.openTab = '';
             }
         },
+        annotationMode(oldMode, newMode) {
+            if (newMode === 'lawnmowerPaused') {
+                this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
+            } else if (oldMode === 'lawnmowerPaused' && newMode === 'lawnmower') {
+                this.lawnmowerSaveState = LawnmowerSaveState.LOAD;
+            } else {
+                this.lawnmowerSaveState = LawnmowerSaveState.DISCARD;
+            }
+        }
     },
     created() {
         this.allImagesIds = biigle.$require('annotations.imagesIds');
@@ -796,6 +787,7 @@ export default {
             image: computed(() => this.image),
             mapResolution: computed(() => this.mapResolution),
             showImageWithId: this.showImageWithId,
+            annotationMode: computed(() => this.annotationMode),
         });
     },
 };

@@ -1,12 +1,9 @@
 <sidebar-tab name="annotation-modes" icon="th" title="Annotation modes" :highlight="!isDefaultAnnotationMode">
     <annotation-modes-tab
+        ref="annotationModesTab"
         v-on:attach-label="handleAttachAllSelected"
-        v-on:change="handleAnnotationModeChange"
-        v-on:create-sample="createSampledAnnotation"
-        v-on:lawnmower-state-requested="setLawnmowerState"
-        v-on:volare-state-requested="volare.setState"
-        :current-lawnmower-state="currentLawnmowerState"
-        :current-volare-state="volare.state"></annotation-modes-tab>
+        v-on:annotation-mode-changed="handleAnnotationModeChange"
+        v-on:create-sample="createSampledAnnotation"></annotation-modes-tab>
 </sidebar-tab>
 
 @push('scripts')
@@ -19,7 +16,7 @@
                 stopButtonTitleText="Stop cycling through all annotations 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Volare"
                 :state="currentVolareState"
-                @transitionRequested="emitVolareStateRequested"
+                @transitionRequested="updateVolareState"
             ></play-pause>
             @can('add-annotation', $image)
                 <button class="btn btn-default" :disabled="!isVolareActive || null" v-on:click="emitAttachLabel" title="Attach the currently selected label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="fa fa-plus" aria-hidden="true"></span></button>
@@ -33,7 +30,7 @@
                 stopButtonTitleText="Stop cycling through image sections 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Lawnmower"
                 :state="currentLawnmowerState"
-                @transitionRequested="emitLawnmowerStateRequested"
+                @transitionRequested="updateLawnmowerState"
             ></play-pause>
         </div>
         @can('add-annotation', $image)

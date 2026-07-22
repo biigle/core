@@ -13,7 +13,8 @@ export const LawnmowerSaveState = Object.freeze({
 export default {
     emits: [
         'restore-lawnmower-image',
-        'lawnmower-state-restored',
+        'lawnmower-pre-viewport-change',
+        'lawnmower-post-viewport-change',
     ],
     props: {
         lawnmowerSaveState: {
@@ -95,6 +96,7 @@ export default {
         },
         showImageSection(section) {
             if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
+                this.$emit('lawnmower-pre-viewport-change');
                 this.imageSection = section;
                 // Don't make imageSectionCenter a computed property because it
                 // would automatically update when the resolution changes. But we
@@ -103,7 +105,7 @@ export default {
                 this.imageSectionCenter = this.getImageSectionCenter(section);
                 this.map.getView().setCenter(this.imageSectionCenter);
                 this.map.once('rendercomplete', () => {
-                    this.$emit('lawnmower-state-restored');
+                    this.$emit('lawnmower-post-viewport-change');
                 });
                 return true;
             }
@@ -183,6 +185,8 @@ export default {
                 return;
             }
 
+            this.$emit('lawnmower-pre-viewport-change');
+
             const view = this.map.getView();
             view.setResolution(state.resolution);
 
@@ -192,7 +196,7 @@ export default {
                 view.setCenter(state.center);
                 this.pendingLawnmowerState = null;
                 this.map.once('rendercomplete', () => {
-                    this.$emit('lawnmower-state-restored');
+                    this.$emit('lawnmower-post-viewport-change');
                 });
             });
         },
@@ -206,7 +210,7 @@ export default {
         // changed. viewExtent depends on both so we can use it as watcher.
         viewExtent() {
             // TODO remove this (continuing doesn't seem to work then)
-            if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
+            if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1]) || this.lawnmowerSaveState === 'save') {
                 return;
             }
             let distance = function (p1, p2) {

@@ -12,6 +12,7 @@ export function useVolareMode({
     image = required('image'),
     mapResolution = required('mapResolution'),
     showImageWithId = required('showImageWithId'),
+    annotationMode = required('annotationMode'),
 }) {
     const focussedAnnotationIndex = ref(null);
     const resolutionWasChangedByUser = ref(false);
@@ -24,7 +25,7 @@ export function useVolareMode({
     });
 
     const volareModeIsActive = computed(() => {
-        return state.value === PlayPauseState.ACTIVE;
+        return annotationMode.value === 'volare';
     });
 
     function selectAndFocusAnnotation(annotation, keepResolution = false) {
@@ -100,31 +101,14 @@ export function useVolareMode({
         return false;
     }
 
-    function setState(targetState) {
-        const transition = `${state.value}->${targetState}`;
-
-        switch (transition) {
-            case 'active->paused':
-                pause();
-                break;
-            case 'paused->active':
-                resume();
-                break;
-            default:
-                resumeContext = null;
-        }
-
-        state.value = targetState;
-    }
-
-    function pause() {
+    function saveContext() {
         resumeContext = {
             imageId: image.value.id,
             focussedAnnotationId: focussedAnnotation.value?.id
         };
     }
 
-    function resume() {
+    function resumeFromContext() {
         if (!resumeContext) {
             return;
         }
@@ -146,22 +130,35 @@ export function useVolareMode({
         });
     }
 
+    function discardContext() {
+        resumeContext = null;
+    }
+
     watch(focussedAnnotation, (annotation) => {
         if (volareModeIsActive.value && annotation) {
             selectAndFocusAnnotation(annotation, resolutionWasChangedByUser.value);
         }
     });
     watch(() => annotationFilter?.value, updateFocussedAnnotation);
-    watch(volareModeIsActive, (enabled) => {
-        if (!enabled) {
-            resolutionWasChangedByUser.value = false;
+    watch(annotationMode, (oldMode, newMode) => {
+        if (newMode === 'volarePaused') {
+            saveContext();
+        } else if (oldMode === 'volarePaused' && newMode === 'volare') {
+            resumeFromContext();
         } else {
+            discardContext();
+        }
+    });
+    watch(volareModeIsActive, (enabled) => {
+        if (enabled) {
             updateFocussedAnnotation();
+        } else {
+            resolutionWasChangedByUser.value = false;
         }
     });
     watch(() => image?.value, () => {
         if (resuming) {
-            nextTick(resume);
+            nextTick(resumeFromContext);
         } else if (volareModeIsActive.value) {
             nextTick(updateFocussedAnnotation);
         }
@@ -176,8 +173,5 @@ export function useVolareMode({
         selectAndFocusAnnotation,
         handleNextAnnotation,
         handlePreviousAnnotation,
-        setState,
-        volareModeIsActive,
-        state: readonly(state),
     };
 }
