@@ -22,11 +22,17 @@ class VideoAnnotationPoints implements ValidationRule
             return;
         }
 
+        if (!array_is_list($value)) {
+            $fail("The {$attribute} must be a list.");
+
+            return;
+        }
+
         foreach ($value as $point) {
             // Numeric strings are rejected because VideoAnnotation::validatePoints()
             // requires int or float, too. Both checks must agree, else this rule would
             // let values through that fail later with an unhandled error.
-            if (!is_array($point) || array_filter($point, fn ($v) => !is_int($v) && !is_float($v))) {
+            if (!is_array($point) || !array_is_list($point) || array_filter($point, fn ($v) => !is_int($v) && !is_float($v))) {
                 $fail("The {$attribute} must be an array of arrays of numbers.");
 
                 return;

@@ -67,6 +67,12 @@ class VideoAnnotationFramesTest extends TestCase
         $this->assertFalse($this->passes([null]));
     }
 
+    public function testNoList()
+    {
+        $this->assertFalse($this->passes([1 => 1.0, 2 => 2.0]));
+        $this->assertFalse($this->passes([0 => 1.0, 2 => 2.0]));
+    }
+
     protected function passes(mixed $value): bool
     {
         $rules = ['frames' => new VideoAnnotationFrames(10.0)];

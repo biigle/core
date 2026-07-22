@@ -49,6 +49,13 @@ class VideoAnnotationPointsTest extends TestCase
         $this->assertTrue($this->passes([[]]));
     }
 
+    public function testNoList()
+    {
+        $this->assertFalse($this->passes([1 => [10, 11], 2 => [20, 21]]));
+        $this->assertFalse($this->passes([0 => [10, 11], 2 => [20, 21]]));
+        $this->assertFalse($this->passes([[1 => 10, 2 => 11]]));
+    }
+
     protected function passes(mixed $value): bool
     {
         $rules = ['points' => new VideoAnnotationPoints];

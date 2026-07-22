@@ -29,6 +29,12 @@ class VideoAnnotationFrames implements ValidationRule
             return;
         }
 
+        if (!array_is_list($value)) {
+            $fail("The {$attribute} must be a list.");
+
+            return;
+        }
+
         $lastIndex = count($value) - 1;
 
         foreach ($value as $index => $frame) {
