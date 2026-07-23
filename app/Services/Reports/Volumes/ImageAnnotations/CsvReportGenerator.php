@@ -70,6 +70,13 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
             }
+
+            // Annotations of deleted users have a null user_id.
+            if ($userIds->contains(null)) {
+                $csv = $this->createCsv($this->query()->whereNull('user_id'));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = 'deleted-users.csv';
+            }
         } else {
             $csv = $this->createCsv($this->query());
             $this->tmpFiles[] = $csv;

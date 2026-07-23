@@ -47,12 +47,20 @@ class ExtendedReportGenerator extends AnnotationReportGenerator
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            // Annotations of deleted users have a null user_id, which groupBy
+            // turns into an empty string key. Don't try to fetch their name.
+            $nullKey = '';
+            $ids = $rows->keys()->filter(fn ($id) => $id !== $nullKey);
+            $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
+            }
+
+            if ($rows->has($nullKey)) {
+                $this->tmpFiles[] = $this->createCsv($rows->get($nullKey), '(deleted users)');
             }
         } else {
             $this->tmpFiles[] = $this->createCsv($rows, $this->source->name);
