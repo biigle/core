@@ -2,10 +2,13 @@
 
 namespace Biigle;
 
+use Biigle\Traits\ValidatesVideoAnnotationPoints;
 use Exception;
 
 class VideoAnnotation extends Annotation
 {
+    use ValidatesVideoAnnotationPoints;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -79,39 +82,6 @@ class VideoAnnotation extends Annotation
         $points = array_map(fn ($points) => array_map(fn ($value) => round($value, 2), $points), $points);
 
         $this->attributes['points'] = json_encode($points);
-    }
-
-    /**
-     * Validate the points and frames of this annotation.
-     *
-     * @param array $points Not used
-     * @throws Exception If the points or frames are invalid.
-     */
-    public function validatePoints(array $points = [])
-    {
-        if ($this->shape_id === Shape::wholeFrameId()) {
-            if (count($this->points) !== 0) {
-                throw new Exception('Whole frame annotations cannot have point coordinates.');
-            }
-
-            return;
-        }
-
-        if (count($this->points) !== count($this->frames)) {
-            throw new Exception('The number of key frames does not match the number of annotation coordinates.');
-        }
-
-        if (count($this->points[0] ?? []) === 0) {
-            throw new Exception('An annotation must not start with a gap.');
-        }
-
-        // Gaps are represented as empty arrays so these should be skipped.
-        // The all-empty case is already caught with the check above.
-        array_map(function ($point) {
-            if (count($point) > 0) {
-                parent::validatePoints($point);
-            }
-        }, $this->points);
     }
 
     /**

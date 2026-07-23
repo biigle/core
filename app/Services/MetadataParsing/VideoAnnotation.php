@@ -3,15 +3,18 @@
 namespace Biigle\Services\MetadataParsing;
 
 use Biigle\Shape;
+use Biigle\Traits\ValidatesVideoAnnotationPoints;
 use Exception;
 
 class VideoAnnotation extends Annotation
 {
+    use ValidatesVideoAnnotationPoints;
+
     /**
      * @param Shape $shape
      * @param array<array<float>> $points
      * @param array<LabelAndUser> $labels
-     * @param array<float> $frames
+     * @param array<int|float|null> $frames
      */
     public function __construct(
         public Shape $shape,
@@ -41,39 +44,12 @@ class VideoAnnotation extends Annotation
         parent::validate();
 
         foreach ($this->frames as $frame) {
-            /** @phpstan-ignore function.alreadyNarrowedType */
-            if (!is_numeric($frame)) {
+            // null is allowed because it represents a gap in the annotation. Where gaps
+            // are allowed is checked in validatePoints().
+            /** @phpstan-ignore booleanAnd.alwaysFalse, function.alreadyNarrowedType */
+            if (!is_null($frame) && !is_numeric($frame)) {
                 throw new Exception("Video annotation frames must be numbers, got '{$frame}'.");
             }
         }
-    }
-
-    /**
-     * Similar to \Biigle\VideoAnnotation::validatePoints.
-     */
-    public function validatePoints(array $points = []): void
-    {
-        if ($this->shape_id === Shape::wholeFrameId()) {
-            if (count($this->points) !== 0) {
-                throw new Exception('Whole frame annotations cannot have point coordinates.');
-            }
-
-            return;
-        }
-
-        if (count($this->points) !== count($this->frames)) {
-            throw new Exception('The number of key frames does not match the number of annotation coordinates.');
-        }
-
-        if (count($this->points[0] ?? []) === 0) {
-            throw new Exception('An annotation must not start with a gap.');
-        }
-
-        // Gaps are represented as empty arrays
-        array_map(function ($point) {
-            if (count($point) > 0) {
-                parent::validatePoints($point);
-            }
-        }, $this->points);
     }
 }
