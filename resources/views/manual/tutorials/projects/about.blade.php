@@ -86,6 +86,20 @@
             The NetMap Display depicts labels that co-occur with other labels on the same file. Individual labels can be selected to highlight only the connections of this label. Click the <button class="btn btn-default btn-xs"><i class="fa fa-project-diagram"></i></button> button to toggle between the circular and force layouts.
         </p>
 
+        <h3><a name="guideline"></a><i class="fa fa-clipboard-list"></i> Guideline</h3>
+
+        <p>
+            An annotation guideline can provide detailed instructions and constraints for new annotations in a project. There can be general instructions and instructions for individual labels. The general instructions describe the guideline and can limit the available shape tools for new annotations. The label instructions can describe a label in more detail, choose a single preferred shape tool and provide a reference image. Annotation guidelines can be enforced. If a guideline is enforced, only the selected shape tools and labels are available for new annotations in the project.
+        </p>
+
+        <p>
+            The annotation guideline of a project can be created and edited by the project admin. If there is a guideline for a project, all its members can see the guideline.
+        </p>
+
+        <p>
+            To create a guideline as a project admin, open the <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Guideline</button> tab and add general and/or label instructions. To edit the general instructions, click <button class="btn btn-default btn-xs">Edit</button>, update the instructions and save. To edit label instructions, select a label in the label trees list. Then enter a description, choose a preferred shape tool or select a reference image and click <button class="btn btn-success btn-xs"><i class="fa fa-clipboard-list"></i> Add</button>.
+        </p>
+
         <h3><a name="modify-a-project"></a>Pin or modify a project</h3>
 
         <p>
@@ -101,6 +115,5 @@
         <p>
             Finally, project admins can delete a project with a click on <button class="btn btn-default btn-xs">Delete</button> in the <button class="btn btn-default btn-xs"><i class="fa fa-cog"></i> <span class="caret"></span></button> dropdown menu. This will detach all label trees and volumes from the project. All volumes that are not attached to another project will be deleted. Be very careful when you want to delete a project since you can destroy lots of annotations with a single action!
         </p>
-
     </div>
 @endsection
