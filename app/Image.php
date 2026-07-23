@@ -3,14 +3,21 @@
 namespace Biigle;
 
 use \Illuminate\Support\Facades\Storage;
+use Biigle\Observers\ImageObserver;
 use Exception;
 use FileCache;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Http\Response;
 use InvalidArgumentException;
 
 /**
  * This model stores information on an image file in the file system.
  */
+#[Fillable(['filename', 'volume_id', 'uuid', 'taken_at', 'lng', 'lat', 'attrs', 'tiled'])]
+#[Hidden(['labels'])]
+#[ObservedBy(ImageObserver::class)]
 class Image extends VolumeFile
 {
     /**
@@ -23,31 +30,6 @@ class Image extends VolumeFile
         'image/png',
         'image/tiff',
         'image/webp',
-    ];
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'filename',
-        'volume_id',
-        'uuid',
-        'taken_at',
-        'lng',
-        'lat',
-        'attrs',
-        'tiled',
-    ];
-
-    /**
-     * The attributes hidden in the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'labels',
     ];
 
     /**

@@ -5,6 +5,7 @@ namespace Biigle;
 use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
 use DB;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,18 +19,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $shape_id
  * @phpstan-consistent-constructor
  */
+#[Hidden(['pivot'])]
 abstract class Annotation extends Model implements AnnotationContract
 {
     use HasPointsAttribute, HasFactory;
-
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'pivot',
-    ];
 
     /**
      * The attributes that should be casted to native types.
