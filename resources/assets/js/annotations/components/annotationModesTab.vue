@@ -2,6 +2,8 @@
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
+import PlayPause from '@/core/components/playPause.vue';
+import { PlayPauseState } from '@/core/components/playPause.vue';
 import Settings from '../stores/settings.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 
@@ -14,11 +16,12 @@ export default {
     template: '#annotation-modes-tab-template',
     emits: [
         'attach-label',
-        'change',
+        'annotation-mode-changed',
         'create-sample',
     ],
     components: {
         powerToggle: PowerToggle,
+        playPause: PlayPause
     },
     data() {
         return {
@@ -26,7 +29,9 @@ export default {
             modes: [
                 'default',
                 'volare',
+                'volarePaused',
                 'lawnmower',
+                'lawnmowerPaused',
                 'randomSampling',
                 'regularSampling',
             ],
@@ -38,6 +43,8 @@ export default {
             randomSamplingNumber: 9,
             regularSamplingRows: 3,
             regularSamplingColumns: 3,
+            currentLawnmowerState: PlayPauseState.INACTIVE,
+            currentVolareState: PlayPauseState.INACTIVE,
         };
     },
     computed: {
@@ -58,8 +65,15 @@ export default {
         startVolare() {
             this.setMode('volare');
         },
+        pauseVolare() {
+            this.setMode('volarePaused');
+        },
         startLawnmower() {
             this.setMode('lawnmower');
+        },
+        pauseLawnmower() {
+            this.setMode('lawnmowerPaused');
+            this.currentLawnmowerState = PlayPauseState.PAUSED;
         },
         startRandomSampling() {
             this.setMode('randomSampling');
@@ -67,13 +81,16 @@ export default {
         startRegularSampling() {
             this.setMode('regularSampling');
         },
-        setMode(mode) {
-            if (this.modes.indexOf(mode) !== -1) {
-                this.mode = mode;
+        setMode(newMode) {
+            if (this.modes.indexOf(newMode) === -1) {
+                return;
             }
+
+            const oldMode = this.mode;
+            this.mode = newMode;
         },
         resetMode() {
-            this.mode = 'default';
+            this.setMode('default');
         },
         emitAttachLabel() {
             this.$emit('attach-label');
@@ -81,9 +98,35 @@ export default {
         emitCreateSample() {
             this.$emit('create-sample');
         },
-    },
-    watch: {
-        mode(mode, oldMode) {
+        updateLawnmowerState(targetState) {
+            switch (targetState) {
+                case PlayPauseState.INACTIVE:
+                    this.resetMode();
+                    break;
+                case PlayPauseState.ACTIVE:
+                    this.startLawnmower();
+                    break;
+                case PlayPauseState.PAUSED:
+                    this.pauseLawnmower();
+                    break;
+            }
+            this.currentLawnmowerState = targetState;
+        },
+        updateVolareState(targetState) {
+            switch (targetState) {
+                case PlayPauseState.INACTIVE:
+                    this.resetMode();
+                    break;
+                case PlayPauseState.ACTIVE:
+                    this.startVolare();
+                    break;
+                case PlayPauseState.PAUSED:
+                    this.pauseVolare();
+                    break;
+            }
+            this.currentVolareState = targetState;
+        },
+        updateKeyBinds(newMode, oldMode) {
             switch (oldMode) {
                 case 'volare':
                     Keyboard.off('Enter', this.emitAttachLabel);
@@ -94,7 +137,7 @@ export default {
                     break;
             }
 
-            switch (mode) {
+            switch (newMode) {
                 case 'volare':
                     Keyboard.on('Enter', this.emitAttachLabel);
                     break;
@@ -103,18 +146,24 @@ export default {
                     Keyboard.on('Enter', this.emitCreateSample);
                     break;
             }
-
-            // Emit event.
-            switch (mode) {
+        },
+        emitModeSignals(newMode) {
+            switch (newMode) {
                 case 'randomSampling':
-                    this.$emit('change', mode, this.randomSamplingNumber);
+                    this.$emit('annotation-mode-changed', newMode, this.randomSamplingNumber);
                     break;
                 case 'regularSampling':
-                    this.$emit('change', mode, [this.regularSamplingRows, this.regularSamplingColumns]);
+                    this.$emit('annotation-mode-changed', newMode, [this.regularSamplingRows, this.regularSamplingColumns]);
                     break;
                 default:
-                    this.$emit('change', mode);
+                    this.$emit('annotation-mode-changed', newMode);
             }
+        },
+    },
+    watch: {
+        mode(newMode, oldMode) {
+            this.updateKeyBinds(newMode, oldMode);
+            this.emitModeSignals(newMode);
         },
         randomSamplingNumber(number) {
             Settings.set('randomSamplingNumber', number);

@@ -1,10 +1,27 @@
 <script>
+export const LawnmowerSaveState = Object.freeze({
+    SAVE: 'save',
+    LOAD: 'load',
+    DISCARD: 'discard'
+});
+
 /**
  * Mixin for the annotationCanvas component that contains logic for Lawnmower Mode.
  *
  * @type {Object}
  */
 export default {
+    emits: [
+        'restore-lawnmower-image',
+        'lawnmower-pre-viewport-change',
+        'lawnmower-post-viewport-change',
+    ],
+    props: {
+        lawnmowerSaveState: {
+            type: String,
+            required: true
+        }
+    },
     data() {
         return {
             // The image section information is needed for the lawnmower cycling mode
@@ -12,6 +29,8 @@ export default {
             imageSection: [0, 0],
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
+            savedLawnmowerState: null,
+            restoringLawnmowerImageInProgress: false,
         };
     },
     computed: {
@@ -78,6 +97,7 @@ export default {
         },
         showImageSection(section) {
             if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
+                this.$emit('lawnmower-pre-viewport-change');
                 this.imageSection = section;
                 // Don't make imageSectionCenter a computed property because it
                 // would automatically update when the resolution changes. But we
@@ -85,6 +105,9 @@ export default {
                 // resolution watcher first!
                 this.imageSectionCenter = this.getImageSectionCenter(section);
                 this.map.getView().setCenter(this.imageSectionCenter);
+                this.map.once('rendercomplete', () => {
+                    this.$emit('lawnmower-post-viewport-change');
+                });
                 return true;
             }
 
@@ -118,33 +141,77 @@ export default {
                 return this.showImageSection([0, this.imageSection[1] + 1]);
             }
         },
-    },
-    watch: {
-        // Update the current image section if either the resolution or the map size
-        // changed. viewExtent depends on both so we can use it as watcher.
-        viewExtent() {
-            if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
+        getLawnmowerStorageKey() {
+            const volumeId = biigle.$require('annotations.volumeId');
+            return `lawnmower-state-${volumeId}`;
+        },
+        saveCurrentLawnmowerState() {
+            const view = this.map.getView();
+            this.savedLawnmowerState = {
+                imageId: this.image.id,
+                center: view.getCenter(),
+                resolution: view.getResolution(),
+                imageSection: [...this.imageSection]
+            };
+        },
+        loadSavedLawnmowerState() {
+            if (!this.savedLawnmowerState) {
                 return;
             }
-            let distance = function (p1, p2) {
-                return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
-            };
 
-            let nearest = Infinity;
-            let current = 0;
-            let nearestStep = [0, 0];
-            for (let y = 0; y < this.imageSectionSteps[1]; y++) {
-                for (let x = 0; x < this.imageSectionSteps[0]; x++) {
-                    current = distance(this.imageSectionCenter, this.getImageSectionCenter([x, y]));
-                    if (current < nearest) {
-                        nearestStep[0] = x;
-                        nearestStep[1] = y;
-                        nearest = current;
-                    }
-                }
+            if (this.savedLawnmowerState.imageId !== this.image?.id) {
+                this.restoringLawnmowerImageInProgress = true;
+                this.$emit('restore-lawnmower-image', this.savedLawnmowerState.imageId);
+                return;
             }
 
-            this.showImageSection(nearestStep);
+            this.applySavedLawnmowerState();
+        },
+        applySavedLawnmowerState() {
+            const state = this.savedLawnmowerState;
+            if (!state || !this.image || state.imageId !== this.image.id) {
+                return;
+            }
+
+            this.$emit('lawnmower-pre-viewport-change');
+
+            const view = this.map.getView();
+            view.setResolution(state.resolution);
+
+            this.$nextTick(() => {
+                this.imageSectionCenter = state.center;
+                this.imageSection = state.imageSection;
+                view.setCenter(state.center);
+                this.savedLawnmowerState = null;
+                this.map.once('rendercomplete', () => {
+                    this.$emit('lawnmower-post-viewport-change');
+                });
+            });
+            
+        },
+        discardSavedLawnmowerState() {
+            this.savedLawnmowerState = null;
+        },
+    },
+    watch: {
+        image() {
+            if (this.savedLawnmowerState && this.restoringLawnmowerImageInProgress) {
+                this.$nextTick(() => this.applySavedLawnmowerState());
+                this.restoringLawnmowerImageInProgress = false;
+            }
+        },
+        lawnmowerSaveState(newState) {
+            switch(newState) {
+                case LawnmowerSaveState.SAVE:
+                    this.saveCurrentLawnmowerState();
+                    break;
+                case LawnmowerSaveState.LOAD:
+                    this.loadSavedLawnmowerState();
+                    break;
+                case LawnmowerSaveState.DISCARD:
+                    this.discardSavedLawnmowerState();
+                    break;
+            }
         },
     },
 };
