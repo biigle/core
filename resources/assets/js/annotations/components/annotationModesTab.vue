@@ -73,6 +73,7 @@ export default {
         },
         pauseLawnmower() {
             this.setMode('lawnmowerPaused');
+            this.currentLawnmowerState = PlayPauseState.PAUSED;
         },
         startRandomSampling() {
             this.setMode('randomSampling');

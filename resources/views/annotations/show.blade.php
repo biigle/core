@@ -104,6 +104,7 @@
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
             v-on:close-labelbot-popup="closeLabelbotPopup"
             v-on:moveend="handleMapMoveend"
+            v-on:movestart="handleMapMovestart"
             v-on:previous="handlePrevious"
             v-on:next="handleNext"
             v-on:new="handleNewAnnotation"

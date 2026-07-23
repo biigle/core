@@ -140,7 +140,7 @@ export function useVolareMode({
         }
     });
     watch(() => annotationFilter?.value, updateFocussedAnnotation);
-    watch(annotationMode, (oldMode, newMode) => {
+    watch(annotationMode, (newMode, oldMode) => {
         if (newMode === 'volarePaused') {
             saveContext();
         } else if (oldMode === 'volarePaused' && newMode === 'volare') {

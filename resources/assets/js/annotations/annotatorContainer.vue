@@ -290,6 +290,9 @@ export default {
                 x: Math.round(viewport.center[0]),
                 y: Math.round(viewport.center[1]),
             });
+            
+        },
+        handleMapMovestart() {
             this.pauseLawnmowerAfterViewportChanged();
         },
         // Handler for the select event fired by the global event bus.
@@ -691,7 +694,7 @@ export default {
                 this.openTab = '';
             }
         },
-        annotationMode(oldMode, newMode) {
+        annotationMode(newMode, oldMode) {
             if (newMode === 'lawnmowerPaused') {
                 this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
             } else if (oldMode === 'lawnmowerPaused' && newMode === 'lawnmower') {

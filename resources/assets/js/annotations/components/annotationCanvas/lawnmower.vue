@@ -95,7 +95,9 @@ export default {
             ];
         },
         showImageSection(section) {
+            console.trace();
             if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
+                console.log("Snapping..");
                 this.$emit('lawnmower-pre-viewport-change');
                 this.imageSection = section;
                 // Don't make imageSectionCenter a computed property because it
@@ -199,21 +201,19 @@ export default {
                     this.$emit('lawnmower-post-viewport-change');
                 });
             });
+            
         },
         discardSavedLawnmowerState() {
             localStorage.removeItem(this.getLawnmowerStorageKey());
             this.pendingLawnmowerState = null;
-        }
-    },
-    watch: {
-        // Update the current image section if either the resolution or the map size
-        // changed. viewExtent depends on both so we can use it as watcher.
-        viewExtent() {
-            // TODO remove this (continuing doesn't seem to work then)
-            if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1]) || this.lawnmowerSaveState === 'save') {
+        },
+        snapToNearestImageSection() {
+            console.log(this.isLawnmowerAnnotationMode, this.imageSectionSteps[0], this.imageSectionSteps[1]);
+            if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
                 return;
             }
-            let distance = function (p1, p2) {
+
+            const distance = function (p1, p2) {
                 return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
             };
 
@@ -233,6 +233,8 @@ export default {
 
             this.showImageSection(nearestStep);
         },
+    },
+    watch: {
         image() {
             if (this.pendingLawnmowerState) {
                 this.$nextTick(() => this.applyPendingLawnmowerState());
@@ -250,6 +252,18 @@ export default {
                     this.discardSavedLawnmowerState();
                     break;
             }
+        },
+        annotationMode(newMode, oldMode) {
+            if (oldMode === 'lawnmowerPaused') {
+                // We apply the saved context, no snapping necessary
+                return;
+            }
+
+            if (newMode !== 'lawnmower') {
+                return;
+            }
+
+            // this.snapToNearestImageSection();
         }
     },
 };
