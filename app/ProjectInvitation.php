@@ -2,26 +2,14 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable(['uuid', 'expires_at', 'max_uses', 'project_id', 'role_id', 'add_to_sessions'])]
 class ProjectInvitation extends Model
 {
     use HasFactory;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'uuid',
-        'expires_at',
-        'max_uses',
-        'project_id',
-        'role_id',
-        'add_to_sessions',
-    ];
 
     /**
      * The attributes that should be casted to native types.

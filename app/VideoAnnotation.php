@@ -2,22 +2,15 @@
 
 namespace Biigle;
 
+use Biigle\Observers\VideoAnnotationObserver;
 use Exception;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[Fillable(['video_id', 'shape_id', 'points', 'frames'])]
+#[ObservedBy(VideoAnnotationObserver::class)]
 class VideoAnnotation extends Annotation
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'video_id',
-        'shape_id',
-        'points',
-        'frames',
-    ];
-
     /**
      * The attributes that should be casted to native types.
      *

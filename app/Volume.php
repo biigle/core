@@ -2,12 +2,16 @@
 
 namespace Biigle;
 
+use Biigle\Observers\VolumeObserver;
 use Biigle\Traits\HasJsonAttributes;
 use Biigle\Traits\HasMetadataFile;
 use Cache;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,6 +19,9 @@ use Illuminate\Database\Eloquent\Model;
  * A volume is a collection of images. Volumes belong to one or many
  * projects.
  */
+#[Fillable(['name', 'url', 'media_type_id', 'handle', 'creator_id', 'metadata_file_path', 'metadata_parser'])]
+#[Hidden(['pivot', 'attrs'])]
+#[ObservedBy(VolumeObserver::class)]
 class Volume extends Model
 {
     use HasJsonAttributes, HasFactory, HasMetadataFile;
@@ -38,31 +45,6 @@ class Volume extends Model
      * @var string
      */
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'url',
-        'media_type_id',
-        'handle',
-        'creator_id',
-        'metadata_file_path',
-        'metadata_parser',
-    ];
-
-    /**
-     * The attributes hidden from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'pivot',
-        'attrs',
-    ];
 
     /**
      * The attributes that should be casted to native types.

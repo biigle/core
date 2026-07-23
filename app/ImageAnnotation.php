@@ -2,10 +2,14 @@
 
 namespace Biigle;
 
+use Biigle\Observers\ImageAnnotationObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
 /**
  * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
+#[ObservedBy(ImageAnnotationObserver::class)]
 class ImageAnnotation extends Annotation
 {
     /**

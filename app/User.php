@@ -2,7 +2,10 @@
 
 namespace Biigle;
 
+use Biigle\Observers\UserObserver;
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,21 +13,11 @@ use Illuminate\Notifications\Notifiable;
 /**
  * @property string $uuid
  */
+#[Hidden(['password', 'remember_token', 'pivot', 'uuid'])]
+#[ObservedBy(UserObserver::class)]
 class User extends Authenticatable
 {
     use Notifiable, HasJsonAttributes, HasFactory;
-
-    /**
-     * The attributes hidden from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'pivot',
-        'uuid',
-    ];
 
     /**
      * The attributes that should be casted to native types.
