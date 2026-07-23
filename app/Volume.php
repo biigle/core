@@ -2,9 +2,9 @@
 
 namespace Biigle;
 
+use Biigle\Observers\VolumeObserver;
 use Biigle\Traits\HasJsonAttributes;
 use Biigle\Traits\HasMetadataFile;
-use Biigle\Observers\VolumeObserver;
 use Cache;
 use Carbon\Carbon;
 use DB;
