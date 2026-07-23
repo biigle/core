@@ -29,7 +29,8 @@ export default {
             imageSection: [0, 0],
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
-            pendingLawnmowerState: null,
+            savedLawnmowerState: null,
+            restoringLawnmowerImageInProgress: false,
         };
     },
     computed: {
@@ -95,9 +96,7 @@ export default {
             ];
         },
         showImageSection(section) {
-            console.trace();
             if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
-                console.log("Snapping..");
                 this.$emit('lawnmower-pre-viewport-change');
                 this.imageSection = section;
                 // Don't make imageSectionCenter a computed property because it
@@ -148,41 +147,28 @@ export default {
         },
         saveCurrentLawnmowerState() {
             const view = this.map.getView();
-            const state = {
+            this.savedLawnmowerState = {
                 imageId: this.image.id,
                 center: view.getCenter(),
                 resolution: view.getResolution(),
                 imageSection: [...this.imageSection]
             };
-
-            // TODO replace with local variable once we decided what "every volume remembers" means
-            localStorage.setItem(
-                this.getLawnmowerStorageKey(),
-                JSON.stringify(state)
-            );
         },
         loadSavedLawnmowerState() {
-            const raw = localStorage.getItem(this.getLawnmowerStorageKey());
-            if (!raw) {
+            if (!this.savedLawnmowerState) {
                 return;
             }
 
-            try {
-                this.pendingLawnmowerState = JSON.parse(raw);
-            } catch {
-                this.discardSavedLawnmowerState();
+            if (this.savedLawnmowerState.imageId !== this.image?.id) {
+                this.restoringLawnmowerImageInProgress = true;
+                this.$emit('restore-lawnmower-image', this.savedLawnmowerState.imageId);
                 return;
             }
 
-            if (this.pendingLawnmowerState.imageId !== this.image?.id) {
-                this.$emit('restore-lawnmower-image', this.pendingLawnmowerState.imageId);
-                return;
-            }
-
-            this.applyPendingLawnmowerState();
+            this.applySavedLawnmowerState();
         },
-        applyPendingLawnmowerState() {
-            const state = this.pendingLawnmowerState;
+        applySavedLawnmowerState() {
+            const state = this.savedLawnmowerState;
             if (!state || !this.image || state.imageId !== this.image.id) {
                 return;
             }
@@ -196,7 +182,7 @@ export default {
                 this.imageSectionCenter = state.center;
                 this.imageSection = state.imageSection;
                 view.setCenter(state.center);
-                this.pendingLawnmowerState = null;
+                this.savedLawnmowerState = null;
                 this.map.once('rendercomplete', () => {
                     this.$emit('lawnmower-post-viewport-change');
                 });
@@ -204,40 +190,14 @@ export default {
             
         },
         discardSavedLawnmowerState() {
-            localStorage.removeItem(this.getLawnmowerStorageKey());
-            this.pendingLawnmowerState = null;
-        },
-        snapToNearestImageSection() {
-            console.log(this.isLawnmowerAnnotationMode, this.imageSectionSteps[0], this.imageSectionSteps[1]);
-            if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
-                return;
-            }
-
-            const distance = function (p1, p2) {
-                return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
-            };
-
-            let nearest = Infinity;
-            let current = 0;
-            let nearestStep = [0, 0];
-            for (let y = 0; y < this.imageSectionSteps[1]; y++) {
-                for (let x = 0; x < this.imageSectionSteps[0]; x++) {
-                    current = distance(this.imageSectionCenter, this.getImageSectionCenter([x, y]));
-                    if (current < nearest) {
-                        nearestStep[0] = x;
-                        nearestStep[1] = y;
-                        nearest = current;
-                    }
-                }
-            }
-
-            this.showImageSection(nearestStep);
+            this.savedLawnmowerState = null;
         },
     },
     watch: {
         image() {
-            if (this.pendingLawnmowerState) {
-                this.$nextTick(() => this.applyPendingLawnmowerState());
+            if (this.savedLawnmowerState && this.restoringLawnmowerImageInProgress) {
+                this.$nextTick(() => this.applySavedLawnmowerState());
+                this.restoringLawnmowerImageInProgress = false;
             }
         },
         lawnmowerSaveState(newState) {
@@ -253,18 +213,6 @@ export default {
                     break;
             }
         },
-        annotationMode(newMode, oldMode) {
-            if (oldMode === 'lawnmowerPaused') {
-                // We apply the saved context, no snapping necessary
-                return;
-            }
-
-            if (newMode !== 'lawnmower') {
-                return;
-            }
-
-            // this.snapToNearestImageSection();
-        }
     },
 };
 </script>
