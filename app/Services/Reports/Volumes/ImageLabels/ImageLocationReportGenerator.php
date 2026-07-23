@@ -75,7 +75,11 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
         } elseif ($this->shouldSeparateUsers() && $imageLabels->isNotEmpty()) {
             $usedImageLabels = $usedImageLabelsQuery->pluck('labels.name', 'labels.id');
             $imageLabels = $imageLabels->groupBy('user_id');
-            $users = User::whereIn('id', $imageLabels->keys())
+            // Labels of deleted users have a null user_id, which groupBy turns
+            // into an empty string key. Don't try to fetch their name.
+            $nullKey = '';
+            $ids = $imageLabels->keys()->filter(fn ($id) => $id !== $nullKey);
+            $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
@@ -84,6 +88,13 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
                 $file = $this->createNdJSON($images, $usedImageLabels, $tmpImageLabels);
                 $this->tmpFiles[] = $file;
                 $toZip[$file->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'ndjson');
+            }
+
+            if ($imageLabels->has($nullKey)) {
+                $tmpImageLabels = $imageLabels->get($nullKey)->groupBy('image_id');
+                $file = $this->createNdJSON($images, $usedImageLabels, $tmpImageLabels);
+                $this->tmpFiles[] = $file;
+                $toZip[$file->getPath()] = 'deleted-users.ndjson';
             }
         } else {
             $usedImageLabels = $usedImageLabelsQuery->pluck('labels.name', 'labels.id');
