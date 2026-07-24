@@ -3,6 +3,7 @@ import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
+import { Input, ALL_FORMATS, UrlSource, VideoSampleSink } from 'mediabunny';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
@@ -26,6 +27,11 @@ export default {
             // parameter tracking seeking state specific for frame jump, needed because looking for seeking directly leads to error
             seekingFrame: this.seeking,
             shouldUseVideoFrameCallback: false,
+            mediabunnyInput: null,
+            mediabunnySink: null,
+            cachedBitmap: null,
+            cachedTime: null,
+            useMediabunnyFallback: true,
         };
     },
     methods: {
@@ -75,11 +81,17 @@ export default {
             this.updateMapReadyRevision();
         },
         renderVideo(force) {
+            const currentTime = this.video.currentTime;
             // Drop animation frame if the time has not changed.
             if (force || this.renderCurrentTime !== this.video.currentTime) {
                 this.renderCurrentTime = this.video.currentTime;
-                this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-                this.videoSource.changed();
+
+                if (!this.video.paused && this.useMediabunnyFallback) {
+                    this.getFrameBitmap(currentTime);
+                } else {
+                    this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+                    this.videoSource.changed();
+                }
             }
         },
         startRenderLoop() {
@@ -243,6 +255,58 @@ export default {
         toggleFirefoxFullscreen() {
             document.body.requestFullscreen();
         },
+        async initMediabunny() {
+            if (this.mediabunnyInput) {
+                this.mediabunnyInput.close();
+                this.cachedBitmap?.close();
+            }
+            this.cachedBitmap = null;
+            this.cachedTime = null;
+            this.useMediabunnyFallback = true;
+
+            try {
+                this.mediabunnyInput = new Input({
+                    source: new UrlSource(this.video.src),
+                    formats: ALL_FORMATS
+                });
+                console.log(this.video.src);
+                const track = await this.mediabunnyInput.getPrimaryVideoTrack();
+                this.mediabunnySink = new VideoSampleSink(track);
+            } catch (e) {
+                this.useMediabunnyFallback = false;
+                throw e;
+            }
+        },
+        async getFrameBitmap(time) {
+            if (!this.useMediabunnyFallback || !this.mediabunnySink) {
+                return;
+            }
+
+            const roundedTime = Math.round(time * 100) / 100;
+            if (this.cachedTime === roundedTime && this.cachedBitmap) {
+                this.drawBitmap(this.cachedBitmap);
+                return;
+            }
+
+            if (this.cachedBitmap) {
+                this.cachedBitmap.close();
+            }
+
+            const sample = await this.mediabunnySink.getSample(roundedTime);
+            const videoFrame = sample.toVideoFrame();
+            const bitmap = await createImageBitmap(videoFrame);
+            sample.close();
+            videoFrame.close();
+
+            this.cachedTime = roundedTime;
+            this.cachedBitmap = bitmap;
+            this.drawBitmap(bitmap);
+        },
+        drawBitmap(bitmap) {
+            this.videoContext.drawImage(bitmap, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+            this.videoSource.changed();
+        },
+
     },
     watch: {
         seeking(seeking) {
@@ -252,6 +316,17 @@ export default {
                 this.startRenderLoop();
             }
         },
+        video: {
+            immediate: true,
+            deep: true,
+            handler() {
+                console.log(this.video.src);
+                if (!this.video.src) {
+                    return;
+                }
+                this.initMediabunny();
+            }
+        }
     },
     created() {
         this.videoCanvas = document.createElement('canvas');
