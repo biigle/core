@@ -16,10 +16,8 @@ $control-button-active-color: #ff5e00;
     }
 
     &:not(.control-button--danger):not(.control-button--has-sub-controls) {
-        transition: background-color 0.25s ease, box-shadow 0.25s ease;
-
         &.active {
-            box-shadow: inset 0 0 0 2px $control-button-active-color;
+            background-color: $control-button-active-color;
         }
     }
 
