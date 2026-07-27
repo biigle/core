@@ -1,6 +1,5 @@
 import { ref, computed, watch, nextTick, readonly } from 'vue';
 import { required } from '@/utils.js';
-import { PlayPauseState } from '@/core/components/playPause.vue';
 
 
 export function useVolareMode({
@@ -13,12 +12,12 @@ export function useVolareMode({
     mapResolution = required('mapResolution'),
     showImageWithId = required('showImageWithId'),
     annotationMode = required('annotationMode'),
+    restoreVolarePauseState = required('restoreVolarePauseState'),
 }) {
     const focussedAnnotationIndex = ref(null);
     const resolutionWasChangedByUser = ref(false);
-    const state = ref(PlayPauseState.INACTIVE);
-    let resumeContext = null;
     let resuming = false;
+    let pageReloaded = true;
 
     const focussedAnnotation = computed(() => {
         return filteredAnnotations.value[focussedAnnotationIndex.value];
@@ -27,6 +26,36 @@ export function useVolareMode({
     const volareModeIsActive = computed(() => {
         return annotationMode.value === 'volare';
     });
+
+    function getVolareStorageKey() {
+        const volumeId = biigle.$require('annotations.volumeId');
+        return `volare-state-${volumeId}`;
+    }
+
+    function saveCurrentVolareState() {
+        const state = {
+            imageId: image.value.id,
+            focussedAnnotationId: focussedAnnotation.value?.id,
+            timestamp: Date.now(),
+        };
+
+        localStorage.setItem(
+            getVolareStorageKey(),
+            JSON.stringify(state)
+        );
+    }
+
+    function discardSavedVolareState() {
+        localStorage.removeItem(getVolareStorageKey());
+    }
+
+    function getSavedVolareState() {
+        const raw = localStorage.getItem(getVolareStorageKey());
+        if (!raw) {
+            return null;
+        }
+        return JSON.parse(raw);
+    }
 
     function selectAndFocusAnnotation(annotation, keepResolution = false) {
         selectedAnnotations.value.forEach(a => {
@@ -37,7 +66,7 @@ export function useVolareMode({
     }
 
     function updateFocussedAnnotation() {
-        if (resumeContext) {
+        if (getSavedVolareState()) {
             return;
         } else if (!volareModeIsActive.value) {
             focussedAnnotationIndex.value = null;
@@ -101,26 +130,20 @@ export function useVolareMode({
         return false;
     }
 
-    function saveContext() {
-        resumeContext = {
-            imageId: image.value.id,
-            focussedAnnotationId: focussedAnnotation.value?.id
-        };
-    }
-
-    function resumeFromContext() {
-        if (!resumeContext) {
+    function loadSavedVolareState() {
+        const state = getSavedVolareState();
+        if (!state) {
             return;
         }
 
         resuming = true;
-        if (resumeContext.imageId !== image.value.id) {
-            showImageWithId(resumeContext.imageId);
+        if (state.imageId !== image.value.id) {
+            showImageWithId(state.imageId);
             return;
         }
 
-        const savedID = resumeContext.focussedAnnotationId;
-        resumeContext = null;
+        const savedID = state.focussedAnnotationId;
+        discardSavedVolareState();
         resuming = false;
 
         focussedAnnotationIndex.value = null;
@@ -128,10 +151,6 @@ export function useVolareMode({
             const index = filteredAnnotations.value.findIndex(a => a.id === savedID);
             focussedAnnotationIndex.value = index === -1 ? 0 : index;
         });
-    }
-
-    function discardContext() {
-        resumeContext = null;
     }
 
     watch(focussedAnnotation, (annotation) => {
@@ -142,11 +161,11 @@ export function useVolareMode({
     watch(() => annotationFilter?.value, updateFocussedAnnotation);
     watch(annotationMode, (newMode, oldMode) => {
         if (newMode === 'volarePaused') {
-            saveContext();
+            saveCurrentVolareState();
         } else if (oldMode === 'volarePaused' && newMode === 'volare') {
-            resumeFromContext();
+            loadSavedVolareState();
         } else {
-            discardContext();
+            discardSavedVolareState();
         }
     });
     watch(volareModeIsActive, (enabled) => {
@@ -157,8 +176,17 @@ export function useVolareMode({
         }
     });
     watch(() => image?.value, () => {
+        const state = getSavedVolareState();
+        if (pageReloaded) {
+            if (state) {
+                restoreVolarePauseState(state.timestamp);
+            }
+            pageReloaded = false;
+            return;
+        }
+
         if (resuming) {
-            nextTick(resumeFromContext);
+            nextTick(loadSavedVolareState);
         } else if (volareModeIsActive.value) {
             nextTick(updateFocussedAnnotation);
         }

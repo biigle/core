@@ -16,12 +16,12 @@
                 stopButtonTitleText="Stop cycling through all annotations 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Volare"
                 :state="currentVolareState"
-                @transitionRequested="updateVolareState"
+                @transitionRequested="onVolarePlayPauseTransitionRequested"
             ></play-pause>
-            <span class="sidebar-tab__timestamp" v-text="volarePausedAtText"></span>
             @can('add-annotation', $image)
                 <button class="btn btn-default" :disabled="!isVolareActive || null" v-on:click="emitAttachLabel" title="Attach the currently selected label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="fa fa-plus" aria-hidden="true"></span></button>
             @endcan
+            <span class="sidebar-tab__timestamp" v-text="volarePausedAtText"></span>
         </div>
 
         <div class="sidebar-tab__section">

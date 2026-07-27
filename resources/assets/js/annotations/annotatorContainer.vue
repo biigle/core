@@ -290,7 +290,6 @@ export default {
                 x: Math.round(viewport.center[0]),
                 y: Math.round(viewport.center[1]),
             });
-
         },
         handleMapMovestart() {
             this.pauseLawnmowerAfterViewportChanged();
@@ -559,6 +558,9 @@ export default {
         pauseLawnmower(timestamp) {
             this.$refs.annotationModesTab.pauseLawnmower(timestamp);
         },
+        pauseVolare(timestamp) {
+            this.$refs.annotationModesTab.pauseVolare(timestamp);
+        },
         showImageWithId(imageId) {
             const index = this.imagesIds.indexOf(imageId);
             if (index !== -1) {
@@ -794,6 +796,7 @@ export default {
             mapResolution: computed(() => this.mapResolution),
             showImageWithId: this.showImageWithId,
             annotationMode: computed(() => this.annotationMode),
+            restoreVolarePauseState: (timestamp) => this.$refs.annotationModesTab.pauseVolare(timestamp)
         });
     },
 };

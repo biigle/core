@@ -89,8 +89,9 @@ export default {
         startVolare() {
             this.setMode('volare');
         },
-        pauseVolare() {
+        pauseVolare(timestamp) {
             this.setMode('volarePaused');
+            this.volarePausedAt = timestamp;
         },
         startLawnmower() {
             this.setMode('lawnmower');
@@ -110,8 +111,9 @@ export default {
                 return;
             }
 
-            const oldMode = this.mode;
             this.mode = newMode;
+            this.lawnmowerPausedAt = null;
+            this.volarePausedAt = null;
         },
         resetMode() {
             this.setMode('default');
@@ -137,7 +139,6 @@ export default {
         },
         onLawnmowerPlayPauseTransitionRequested(targetState) {
             this.updateLawnmowerState(targetState);
-            this.lawnmowerPausedAt = null;
         },
         updateVolareState(targetState) {
             switch (targetState) {
@@ -151,6 +152,9 @@ export default {
                     this.pauseVolare();
                     break;
             }
+        },
+        onVolarePlayPauseTransitionRequested(targetState) {
+            this.updateVolareState(targetState);
         },
         updateKeyBinds(newMode, oldMode) {
             switch (oldMode) {
