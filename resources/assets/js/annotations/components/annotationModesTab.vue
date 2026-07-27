@@ -43,8 +43,8 @@ export default {
             randomSamplingNumber: 9,
             regularSamplingRows: 3,
             regularSamplingColumns: 3,
-            currentLawnmowerState: PlayPauseState.INACTIVE,
-            currentVolareState: PlayPauseState.INACTIVE,
+            lawnmowerPausedAt: null,
+            volarePausedAt: null,
         };
     },
     computed: {
@@ -60,6 +60,30 @@ export default {
         isRegularSamplingActive() {
             return this.mode === 'regularSampling';
         },
+        lawnmowerPausedAtText() {
+            return this.lawnmowerPausedAt ? this.timeAgo(this.lawnmowerPausedAt) : null;
+        },
+        volarePausedAtText() {
+            return this.volarePausedAt ? this.timeAgo(this.volarePausedAt) : null;
+        },
+        currentLawnmowerState() {
+            if (this.mode === 'lawnmower') {
+                return PlayPauseState.ACTIVE;
+            } else if (this.mode === 'lawnmowerPaused') {
+                return PlayPauseState.PAUSED;
+            } else {
+                return PlayPauseState.INACTIVE;
+            }
+        },
+        currentVolareState() {
+            if (this.mode === 'volare') {
+                return PlayPauseState.ACTIVE;
+            } else if (this.mode === 'volarePaused') {
+                return PlayPauseState.PAUSED;
+            } else {
+                return PlayPauseState.INACTIVE;
+            }
+        }
     },
     methods: {
         startVolare() {
@@ -71,9 +95,9 @@ export default {
         startLawnmower() {
             this.setMode('lawnmower');
         },
-        pauseLawnmower() {
+        pauseLawnmower(timestamp) {
             this.setMode('lawnmowerPaused');
-            this.currentLawnmowerState = PlayPauseState.PAUSED;
+            this.lawnmowerPausedAt = timestamp;
         },
         startRandomSampling() {
             this.setMode('randomSampling');
@@ -110,7 +134,10 @@ export default {
                     this.pauseLawnmower();
                     break;
             }
-            this.currentLawnmowerState = targetState;
+        },
+        onLawnmowerPlayPauseTransitionRequested(targetState) {
+            this.updateLawnmowerState(targetState);
+            this.lawnmowerPausedAt = null;
         },
         updateVolareState(targetState) {
             switch (targetState) {
@@ -124,7 +151,6 @@ export default {
                     this.pauseVolare();
                     break;
             }
-            this.currentVolareState = targetState;
         },
         updateKeyBinds(newMode, oldMode) {
             switch (oldMode) {
@@ -158,6 +184,27 @@ export default {
                 default:
                     this.$emit('annotation-mode-changed', newMode);
             }
+        },
+        timeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            const secondsPerDay = 86400;
+
+            const units = [
+                { name: 'y', seconds: secondsPerDay * 365},
+                { name: 'd', seconds: secondsPerDay },
+                { name: 'h', seconds: 3600 },
+                { name: 'min', seconds: 60 },
+                { name: 's', seconds: 1 },
+            ];
+
+            for (const unit of units) {
+                if (seconds >= unit.seconds) {
+                    const value = Math.round(seconds / unit.seconds);
+                    return `${value}${unit.name} ago`;
+                }
+            }
+
+            return '0s ago';
         },
     },
     watch: {

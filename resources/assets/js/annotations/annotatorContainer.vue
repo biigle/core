@@ -290,7 +290,7 @@ export default {
                 x: Math.round(viewport.center[0]),
                 y: Math.round(viewport.center[1]),
             });
-            
+
         },
         handleMapMovestart() {
             this.pauseLawnmowerAfterViewportChanged();
@@ -555,6 +555,9 @@ export default {
             }
 
             this.$refs.annotationModesTab.pauseLawnmower();
+        },
+        pauseLawnmower(timestamp) {
+            this.$refs.annotationModesTab.pauseLawnmower(timestamp);
         },
         showImageWithId(imageId) {
             const index = this.imagesIds.indexOf(imageId);

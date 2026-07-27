@@ -120,6 +120,7 @@
             v-on:restore-lawnmower-image="showImageWithId"
             v-on:lawnmower-pre-viewport-change="disableAutomaticLawnmowerPausing"
             v-on:lawnmower-post-viewport-change="enableAutomaticLawnmowerPausing"
+            v-on:restore-lawnmower-pause-state="pauseLawnmower"
             ref="canvas"
             ></annotation-canvas>
     </div>

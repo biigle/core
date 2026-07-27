@@ -15,6 +15,7 @@ export default {
         'restore-lawnmower-image',
         'lawnmower-pre-viewport-change',
         'lawnmower-post-viewport-change',
+        'restore-lawnmower-pause-state',
     ],
     props: {
         lawnmowerSaveState: {
@@ -29,8 +30,8 @@ export default {
             imageSection: [0, 0],
             // Actual center point of the current image section.
             imageSectionCenter: [0, 0],
-            savedLawnmowerState: null,
             restoringLawnmowerImageInProgress: false,
+            pageReloaded: true,
         };
     },
     computed: {
@@ -147,28 +148,45 @@ export default {
         },
         saveCurrentLawnmowerState() {
             const view = this.map.getView();
-            this.savedLawnmowerState = {
+            const state = {
                 imageId: this.image.id,
                 center: view.getCenter(),
                 resolution: view.getResolution(),
-                imageSection: [...this.imageSection]
+                imageSection: [...this.imageSection],
+                timestamp: Date.now(),
             };
+
+            localStorage.setItem(
+                this.getLawnmowerStorageKey(),
+                JSON.stringify(state)
+            );
+        },
+        discardSavedLawnmowerState() {
+            localStorage.removeItem(this.getLawnmowerStorageKey());
+        },
+        getSavedLawnmowerState() {
+            const raw = localStorage.getItem(this.getLawnmowerStorageKey());
+            if (!raw) {
+                return null;
+            }
+            return JSON.parse(raw);
         },
         loadSavedLawnmowerState() {
-            if (!this.savedLawnmowerState) {
+            const state = this.getSavedLawnmowerState();
+            if (!state) {
                 return;
             }
 
-            if (this.savedLawnmowerState.imageId !== this.image?.id) {
+            if (state.imageId !== this.image?.id) {
                 this.restoringLawnmowerImageInProgress = true;
-                this.$emit('restore-lawnmower-image', this.savedLawnmowerState.imageId);
+                this.$emit('restore-lawnmower-image', state.imageId);
                 return;
             }
 
             this.applySavedLawnmowerState();
         },
         applySavedLawnmowerState() {
-            const state = this.savedLawnmowerState;
+            const state = this.getSavedLawnmowerState();
             if (!state || !this.image || state.imageId !== this.image.id) {
                 return;
             }
@@ -182,20 +200,27 @@ export default {
                 this.imageSectionCenter = state.center;
                 this.imageSection = state.imageSection;
                 view.setCenter(state.center);
-                this.savedLawnmowerState = null;
+                this.discardSavedLawnmowerState();
                 this.map.once('rendercomplete', () => {
                     this.$emit('lawnmower-post-viewport-change');
                 });
             });
-            
-        },
-        discardSavedLawnmowerState() {
-            this.savedLawnmowerState = null;
+
         },
     },
     watch: {
         image() {
-            if (this.savedLawnmowerState && this.restoringLawnmowerImageInProgress) {
+            const state = this.getSavedLawnmowerState();
+            if (this.pageReloaded) {
+                if (state) {
+                    this.$emit('restore-lawnmower-pause-state', state.timestamp);
+                }
+                this.pageReloaded = false;
+
+                return;
+            }
+
+            if (state && this.restoringLawnmowerImageInProgress) {
                 this.$nextTick(() => this.applySavedLawnmowerState());
                 this.restoringLawnmowerImageInProgress = false;
             }
