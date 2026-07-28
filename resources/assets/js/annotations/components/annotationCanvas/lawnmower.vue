@@ -147,6 +147,9 @@ export default {
             return `lawnmower-state-${volumeId}`;
         },
         saveCurrentLawnmowerState() {
+            if (this.getSavedLawnmowerState()) {
+                return;
+            }
             const view = this.map.getView();
             const state = {
                 imageId: this.image.id,

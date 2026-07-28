@@ -1,4 +1,4 @@
-import { ref, computed, watch, nextTick, readonly } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { required } from '@/utils.js';
 
 
@@ -33,6 +33,10 @@ export function useVolareMode({
     }
 
     function saveCurrentVolareState() {
+        if (getSavedVolareState()) {
+            return;
+        }
+
         const state = {
             imageId: image.value.id,
             focussedAnnotationId: focussedAnnotation.value?.id,
