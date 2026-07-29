@@ -73,6 +73,20 @@ export default {
         removeTree(tree) {
             this.startLoading();
             ProjectsApi.detachLabelTree({id: this.project.id, label_tree_id: tree.id})
+                .then(() => this.treeRemoved(tree), (response) => {
+                    if (response.status === 409) {
+                        if (confirm(`Labels of the "${tree.name}" label tree are part of the annotation guideline of this project. Detach the label tree and delete the labels from the annotation guideline?`)) {
+                            this.forceRemoveTree(tree);
+                        }
+                    } else {
+                        handleErrorResponse(response);
+                    }
+                })
+                .finally(this.finishLoading);
+        },
+        forceRemoveTree(tree) {
+            this.startLoading();
+            ProjectsApi.detachLabelTree({id: this.project.id, label_tree_id: tree.id}, {force: true})
                 .then(() => this.treeRemoved(tree), handleErrorResponse)
                 .finally(this.finishLoading);
         },
