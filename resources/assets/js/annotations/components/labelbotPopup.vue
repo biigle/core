@@ -84,6 +84,7 @@ export default {
         'update',
         'close',
         'delete',
+        'delete-pending',
         'focus',
         'grab',
         'release',
@@ -260,6 +261,9 @@ export default {
 
             if (this.noLabels) {
                  this.$parent.labelbotSource.removeFeature(this.annotation.feature);
+                 if (this.annotation.pendingAnnotation) {
+                    this.$emit('delete-pending', this.annotation.pendingAnnotation)
+                 }
             }
 
             if (this.shouldHaveProgressBar) {
@@ -293,6 +297,9 @@ export default {
                 this.$emit('delete', this.annotation);
             } else {
                 this.$parent.labelbotSource.removeFeature(this.annotation.feature);
+                if (this.annotation.pendingAnnotation) {
+                    this.$emit('delete-pending', this.annotation.pendingAnnotation);
+                }
             }
             this.emitClose();
             Events.emit('labelbot.dismissed');

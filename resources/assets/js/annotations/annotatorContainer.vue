@@ -464,7 +464,7 @@ export default {
 
             promise.then(this.setLastCreatedAnnotation)
                 .catch(handleErrorResponse)
-                // Remove the temporary annotation if saving succeeded or failed
+                // Remove the temporary annotation if saving succeeded or failed,
                 // if it's not a pending annotation
                 .finally(() => {
                     if (!pendingAnnotation) {

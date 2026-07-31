@@ -166,7 +166,7 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            // Make sure the LabelBOT image and temp feature are not sent in the API request to create the
+            // Make sure the LabelBOT image, temp feature, pending video annotation and track are not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
             annotation.labelbotImage = undefined;
@@ -176,7 +176,22 @@ export default {
             annotation.feature = undefined;
             delete annotation.feature;
 
+            let pendingVideoAnnotation;
+            let track;
+            if (annotation.pendingAnnotation) {
+                pendingVideoAnnotation = annotation.pendingAnnotation;
+                annotation.pendingAnnotation = undefined;
+                delete annotation.pendingAnnotation;
+
+                track = annotation.track;
+                annotation.track = undefined;
+                delete annotation.track;
+            }
+
+            // We save the shape in case LabelBOT returns no results
+            // as the shape property is deleted in the create API function
             const shape = annotation.shape;
+
             return this.generateFeatureVector(labelbotImage)
                 .then((featureVector) => {
                     this.labelbotRequestsInFlight += 1;
@@ -195,9 +210,16 @@ export default {
                         // We return annotation and not _annotation, because _annotation is null 
                         annotation.feature = feature;
                         annotation.labels = [];
-                        delete annotation.feature_vector;
-                        delete annotation.shape_id;
                         annotation.shape = shape;
+
+                        if (pendingVideoAnnotation) {
+                            annotation.pendingAnnotation = pendingVideoAnnotation;
+                            annotation.track = track;
+                        }
+
+                        annotation.feature_vector = undefined;
+                        delete annotation.feature_vector;
+
                         return annotation
                     }
                     return _annotation;
