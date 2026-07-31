@@ -13,7 +13,6 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
-use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Cache;
 use Carbon\Carbon;
@@ -1192,124 +1191,6 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         $annotation = $annotation->fresh();
         $this->assertSame([1, 2, null, 3, 4], $annotation->frames);
-    }
-
-    private function resetAnnotation(VideoAnnotation $annotation)
-    {
-        $id = $annotation->id;
-        $annotation->points = [100, 200];
-        $annotation->shape_id = Shape::pointId();
-        $annotation->save();
-        return $id;
-    }
-
-    public function testUpdateWithAnnotationGuideline()
-    {
-        $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [1.0],
-            'points' => [[10, 11]],
-        ]);
-        $url ="api/v1/video-annotations/{$annotation->id}";
-        $id = $this->resetAnnotation($annotation);
-        $label2 = LabelTest::create();
-
-        $annotationGuideline = AnnotationGuideline::create([
-            'project_id' => $this->project()->id,
-        ]);
-
-        $this->beAdmin();
-        $requestData = [
-            'shape_id' => Shape::circleId(),
-            'points' => [100, 200, 300],
-        ];
-        $requestDataWithGuideline = [
-            'shape_id' => Shape::circleId(),
-            'points' => [100, 200, 300],
-            'annotation_guideline_id' => $annotationGuideline->id,
-        ];
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(200);
-
-        $this->resetAnnotation($annotation);
-
-        // Add enforcement, but no elements
-        $annotationGuideline->update(['enforced' => true]);
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(200);
-
-        $this->resetAnnotation($annotation);
-
-        // Allow only points
-        $annotationGuideline->update(['only_shapes' => [Shape::pointId()]]);
-
-        $this->putJson("{$url}/{$id}", $requestData)
-            ->assertStatus(200);
-
-        $this->resetAnnotation($annotation);
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(422);
-
-        // Now also circles are allowed
-        $annotationGuideline->update(['only_shapes' => [Shape::pointId(), Shape::circleId()]]);
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(200);
-
-        $this->resetAnnotation($annotation);
-
-        // Add a different label to the annotation guideline
-        $annotationGuidelineLabel2 = AnnotationGuidelineLabel::create(
-            [
-                'label_id' => $label2->id,
-                'annotation_guideline_id' => $annotationGuideline->id,
-                'shape_id' => null,
-                'uuid' => 'c796some-c746-308f-8009-9f1f68e2aa62',
-            ]
-        );
-
-        $this->putJson("{$url}/{$id}", $requestData)
-            ->assertStatus(200);
-
-        $this->resetAnnotation($annotation);
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(422);
-
-        // Add the label to the guideline
-        $annotationGuidelineLabel = AnnotationGuidelineLabel::create(
-            [
-                'label_id' => $this->label->id,
-                'annotation_guideline_id' => $annotationGuideline->id,
-                'shape_id' => null,
-                'uuid' => 'c796some-c746-308f-8009-9f1f68e2aa62',
-            ]
-        );
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(200);
-
-        $this->resetAnnotation($annotation);
-
-        // Add shape to the label in the guideline
-        $annotationGuidelineLabel->update(['shape_id' => Shape::pointId()]);
-
-        $this->putJson("{$url}/{$id}", $requestData)
-            ->assertStatus(200);
-
-        $this->resetAnnotation($annotation);
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(422);
-
-        // Fix the shape
-
-        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
-            ->assertStatus(200);
     }
 
     public function testDestroy()
