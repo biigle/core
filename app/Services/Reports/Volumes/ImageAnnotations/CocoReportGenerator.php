@@ -70,6 +70,13 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'json');
             }
+
+            // Annotations of deleted users have a null user_id.
+            if ($userIds->contains(null)) {
+                $csv = $this->createCsv($this->query()->whereNull('user_id'));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = 'deleted-users.json';
+            }
         } else {
             $csv = $this->createCsv($this->query());
             $this->tmpFiles[] = $csv;

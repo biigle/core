@@ -4,36 +4,17 @@ namespace Biigle;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+#[Fillable(['name', 'url', 'indexed_at', 'local_token', 'remote_token'])]
+#[Hidden(['local_token', 'remote_token'])]
 class FederatedSearchInstance extends Model implements AuthenticatableContract
 {
     use Authenticatable, HasFactory;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'url',
-        'indexed_at',
-        'local_token',
-        'remote_token',
-    ];
-
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'local_token',
-        'remote_token',
-    ];
 
     /**
      * The attributes that should be casted to native types.

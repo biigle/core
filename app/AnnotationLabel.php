@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,20 +13,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $label_id
  * @property \Carbon\Carbon $created_at
  */
+#[Fillable(['label_id', 'user_id', 'annotation_id'])]
 abstract class AnnotationLabel extends Model
 {
     use HasFactory;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'label_id',
-        'user_id',
-        'annotation_id',
-    ];
 
     /**
      * The attributes that should be casted to native types.

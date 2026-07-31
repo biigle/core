@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\Traits\HasConstantInstances;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static ReportType videoLabelsCsv()
  * @method static int videoLabelsCsvId()
  */
+#[WithoutTimestamps]
 class ReportType extends Model
 {
     use HasConstantInstances, HasFactory;
@@ -67,11 +69,4 @@ class ReportType extends Model
         'videoIfdo' => 'VideoIfdo',
         'videoLabelsCsv' => 'VideoLabels\Csv',
     ];
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 }

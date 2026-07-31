@@ -8,7 +8,9 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
+import { rightClick } from '@/annotations/ol/events/condition.js';
 import { setOrUnsetProperty } from '@/utils.js';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush
@@ -33,6 +35,9 @@ export default {
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
         },
+        isAPolygonTool() {
+            return this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill;
+        }
     },
     methods: {
         togglePolygonBrush() {
@@ -71,6 +76,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     resizeCondition: altKeyOnlyCondition,
+                    condition: (event) => !rightClick(event),
                     draftColor: this.getDraftColor()
                 });
                 this.currentInteraction = this.polygonBrushInteraction;
@@ -92,7 +98,7 @@ export default {
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
                     addCondition: neverCondition,
-                    subtractCondition: noModifierKeysCondition,
+                    subtractCondition: (event) => noModifierKeysCondition(event) && !rightClick(event),
                     resizeCondition: altKeyOnlyCondition,
                 });
                 this.currentInteraction = this.polygonEraserInteraction;
@@ -114,7 +120,7 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
-                    addCondition: noModifierKeysCondition,
+                    addCondition: (event) => noModifierKeysCondition(event) && !rightClick(event),
                     subtractCondition: neverCondition,
                     resizeCondition: altKeyOnlyCondition,
                 });
@@ -175,5 +181,8 @@ export default {
             this.keyboardOn('t', this.togglePolygonFill, 0, this.listenerSet);
         }
     },
+    mounted() {
+        addRightClickDragPanToMap(this.map, () => this.isAPolygonTool);
+    }
 };
 </script>

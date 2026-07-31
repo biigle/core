@@ -2,8 +2,10 @@
 
 namespace Biigle;
 
+use Biigle\Observers\ReportObserver;
 use Biigle\Services\Reports\ReportGenerator;
 use File;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +14,7 @@ use ReflectionClass;
 use SplFileInfo;
 use Storage;
 
+#[ObservedBy(ReportObserver::class)]
 class Report extends Model
 {
     use HasFactory;

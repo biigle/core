@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use DB;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
@@ -17,20 +18,10 @@ use Ramsey\Uuid\Uuid;
  *
  * @property string $uuid
  */
+#[Hidden(['pivot', 'uuid', 'version_id'])]
 class LabelTree extends Model
 {
     use HasFactory;
-
-    /**
-     * The attributes hidden from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'pivot',
-        'uuid',
-        'version_id',
-    ];
 
     /**
      * The attributes that should be casted to native types.
