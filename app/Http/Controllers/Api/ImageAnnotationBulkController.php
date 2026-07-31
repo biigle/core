@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuideline;
 use Biigle\Http\Requests\StoreImageAnnotations;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
@@ -61,7 +62,8 @@ class ImageAnnotationBulkController extends Controller
      *        "shape_id": 1,
      *        "label_id": 1,
      *        "confidence": 1.00,
-     *        "points": [10, 11]
+     *        "points": [10, 11],
+     *        "annotation_guideline_id": 48
      *     },
      *     {
      *        "image_id": 321,
@@ -78,9 +80,24 @@ class ImageAnnotationBulkController extends Controller
      */
     public function store(StoreImageAnnotations $request)
     {
-        $annotations = collect($request->all())->map(function ($input) {
+        //Avoid having to find guideline repeatedly
+        $annotationGuidelines = [];
+        $annotations = collect($request->all())->map(function ($input) use ($annotationGuidelines) {
+            $annotationGuideline = null;
+            if (($annotationGuidelineId = $input['annotation_guideline_id'] ?? null) !== null) {
+                /** @phpstan-ignore nullCoalesce.offset */
+                $annotationGuidelines[$annotationGuidelineId] ??= AnnotationGuideline::findOrFail($annotationGuidelineId);
+                $annotationGuideline = $annotationGuidelines[$annotationGuidelineId];
+            }
+            $shapeId = $input['shape_id'];
+            $labelId = $input['label_id'];
+
+            if (!is_null($annotationGuideline) && !$annotationGuideline->validate($labelId, $shapeId)) {
+                abort(422, "Annotation uncompatible with enforced Annotation Guideline");
+            }
+
             $annotation = new ImageAnnotation;
-            $annotation->shape_id = $input['shape_id'];
+            $annotation->shape_id = $shapeId;
 
             try {
                 $annotation->validatePoints($input['points']);
@@ -88,10 +105,11 @@ class ImageAnnotationBulkController extends Controller
                 throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
             }
 
+
             $annotation->points = $input['points'];
             $annotation->image_id = $input['image_id'];
             /** @phpstan-ignore property.notFound */
-            $annotation->label_id = $input['label_id'];
+            $annotation->label_id = $labelId;
             /** @phpstan-ignore property.notFound */
             $annotation->confidence = $input['confidence'];
 

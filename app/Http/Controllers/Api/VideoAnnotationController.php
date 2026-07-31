@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuideline;
 use Biigle\Http\Requests\StoreVideoAnnotation;
 use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Biigle\Jobs\TrackObject;
@@ -163,6 +164,7 @@ class VideoAnnotationController extends Controller
      * **Ellipse:** The four points specify the end points of the semi-major and semi-minor axes of the ellipse in (counter-)clockwise ordering (depending on how the ellipse was drawn). So the first point is the end point of axis 1, the second is the end point of axis 2, the third is the other end point of axis 1 and the fourth is the other end point of axis 2.
      * **WholeFrame:** The points array must be empty for this shape.
      * @apiParam (Optional arguments) {Boolean} track Set to true to start automatic object tracking for the new annotation. This can only be done for single frame point or circle annotations. Poll the show video annotation endpoint to see when the object tracking is finished. On success, the annotation gets additional frames. On failure the annotation is deleted.
+     * @apiParam (Optional arguments) {Number} annotation_guideline_id ID of the guideline associated with the annotation.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -215,9 +217,10 @@ class VideoAnnotationController extends Controller
 
         $points = $request->input('points', []);
 
+        $shapeId = $request->input('shape_id');
         $annotation = new VideoAnnotation([
             'video_id' => $request->video->id,
-            'shape_id' => $request->input('shape_id'),
+            'shape_id' => $shapeId,
             'points' => $points,
             'frames' => $request->input('frames'),
         ]);
@@ -228,10 +231,21 @@ class VideoAnnotationController extends Controller
             throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
         }
 
+
         if ($request->has('label_id')) {
             $label = Label::findOrFail($request->input('label_id'));
+            if ($request->has('annotation_guideline_id')) {
+                $annotationGuideline = AnnotationGuideline::findOrFail($request->input('annotation_guideline_id'));
+                if (!$annotationGuideline->validate($label->id, $annotation->shape_id)) {
+                    abort(422, "Annotation uncompatible with enforced Annotation Guideline");
+                }
+            }
         } else {
-            $labels = $labelBotService->getLabelsForAnnotation($annotation, $request->video->volume_id, $request);
+            $annotationGuideline = null;
+            if ($request->has('annotation_guideline_id')) {
+                $annotationGuideline = AnnotationGuideline::findOrFail($request->input('annotation_guideline_id'));
+            }
+            $labels = $labelBotService->getLabelsForAnnotation($annotation, $request->video->volume_id, $request, $annotationGuideline, $shapeId);
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
             $label = array_shift($labels);
@@ -298,6 +312,7 @@ class VideoAnnotationController extends Controller
 
         $request->annotation->points = $points;
         $request->annotation->frames = $request->input('frames');
+
 
         try {
             $request->annotation->validatePoints();

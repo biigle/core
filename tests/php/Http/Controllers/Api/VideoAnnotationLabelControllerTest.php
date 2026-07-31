@@ -3,8 +3,11 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Events\AnnotationLabelAttached;
 use Biigle\MediaType;
+use Biigle\Shape;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -72,6 +75,133 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
             ])
             // Label is already attached.
             ->assertStatus(422);
+    }
+
+    private function cleanupAnnotationLabels($annotation)
+    {
+        $annotation->labels()->delete();
+    }
+
+    public function testStoreWithGuideline()
+    {
+
+        Event::fake();
+        $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
+        $id = $annotation->id;
+        $annotation->shape_id = Shape::pointId();
+        $annotation->save();
+
+        $url = "api/v1/video-annotations";
+
+        $annotationGuideline = AnnotationGuideline::create([
+            'project_id' => $this->project()->id,
+        ]);
+
+        $requestData = [
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.1,
+        ];
+
+        $requestDataWithGuideline = [
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.1,
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ];
+
+        $this->doTestApiRoute('POST', "{$url}/{$id}/labels");
+
+        $this->beEditor();
+        $response = $this->post("{$url}/{$id}/labels", $requestData);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestDataWithGuideline);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        // Apply enforcement but no specification
+        $annotationGuideline->update(['enforced' => true]);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestData);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestDataWithGuideline);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        // Wrong shape
+        $annotationGuideline->update(['only_shapes' => [Shape::circleId()]]);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestData);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestDataWithGuideline);
+        $response->assertStatus(422);
+
+        // Fix shape
+        $annotationGuideline->update(['only_shapes' => [Shape::circleId(), Shape::pointId()]]);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestData);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        // Add different label to guideline
+        AnnotationGuidelineLabel::create([
+            'annotation_guideline_id' => $annotationGuideline->id,
+            'label_id' => LabelTest::create()->id,
+            'uuid' => 'a556b10d-e46b-460b-b2b0-58ce1dd0c966',
+            'shape_id' => null,
+        ]);
+
+
+        $response = $this->post("{$url}/{$id}/labels", $requestData);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestDataWithGuideline);
+        $response->assertStatus(422);
+
+        $annotationGuidelineLabel = AnnotationGuidelineLabel::create([
+            'annotation_guideline_id' => $annotationGuideline->id,
+            'label_id' => $this->labelRoot()->id,
+            'uuid' => 'aa0d036f-2a5a-4015-bef3-0f815f1c4bb2',
+            'shape_id' => null,
+        ]);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestDataWithGuideline);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+
+        // Set a different shape
+        $annotationGuidelineLabel->update([
+            'shape_id' => Shape::circleId(),
+        ]);
+        $response = $this->post("{$url}/{$id}/labels", $requestData);
+        $response->assertSuccessful();
+
+        $this->cleanupAnnotationLabels($annotation);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestDataWithGuideline);
+        $response->assertStatus(422);
+
+        $annotationGuidelineLabel->update([
+            'shape_id' => Shape::pointId(),
+        ]);
+
+        $response = $this->post("{$url}/{$id}/labels", $requestDataWithGuideline);
+        $response->assertSuccessful();
+        $this->cleanupAnnotationLabels($annotation);
     }
 
     public function testDestroy()

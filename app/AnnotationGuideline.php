@@ -1,5 +1,4 @@
 <?php
-
 namespace Biigle;
 
 use DB;
@@ -68,5 +67,40 @@ class AnnotationGuideline extends Model
         return $this->belongsToMany(Label::class)
             ->using(AnnotationGuidelineLabel::class)
             ->withPivot('shape_id', 'description', 'uuid', 'reference_image_path');
+    }
+
+    /**
+     * Validates whether an annotation is compatible with an annotation guideline.
+     *
+     * @param int $labelId The ID of the desired annotation label
+     * @param int $shapeId The ID of the desired annotation shape
+     *
+     * @return bool
+     */
+    public function validate(int $labelId, int $shapeId): bool
+    {
+        if ($this->enforced) {
+            $labelInAnnotationGuideline = true;
+
+            $annotationLabels = $this->labels();
+            if ($annotationLabels->exists()) {
+                $labelInAnnotationGuideline = $annotationLabels
+                    ->wherePivot("label_id", $labelId)
+                    ->where(function ($query) use ($shapeId, $annotationLabels) {
+                        $pivotColumn = $annotationLabels->qualifyPivotColumn('shape_id');
+                        $query->where($pivotColumn, $shapeId)
+                            ->orWhereNull($pivotColumn);
+                    })
+                    ->exists();
+            }
+
+            $shapeInAnnotation = true;
+
+            if (!is_null($this->only_shapes) && count($this->only_shapes) > 0) {
+                $shapeInAnnotation = in_array($shapeId, $this->only_shapes);
+            }
+            return $labelInAnnotationGuideline && $shapeInAnnotation;
+        }
+        return true;
     }
 }

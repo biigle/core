@@ -3,6 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -276,5 +278,140 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
                 ],
             ])
             ->assertStatus(422);
+    }
+
+    public function storeWithAnnotationGuideline($url)
+    {
+
+        $label = LabelTest::create();
+        $label2 = LabelTest::create();
+        $image = ImageTest::create();
+        $this->project()->addVolumeId($image->volume_id);
+
+        $this->project()->labelTrees()->attach($label->label_tree_id);
+        $this->project()->labelTrees()->attach($label2->label_tree_id);
+
+        $lineId = Shape::lineId();
+        $pointId = Shape::pointId();
+
+        $annotationGuideline = AnnotationGuideline::create([
+            'project_id' => $this->project()->id,
+        ]);
+
+        $requestData = [[
+            'image_id' => $image->id,
+            'shape_id' => $pointId,
+            'label_id' => $label->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ],
+            [
+                'image_id' => $image->id,
+                'shape_id' => $pointId,
+                'label_id' => $label->id,
+                'confidence' => 0.5,
+                'points' => [100, 101],
+            ]];
+
+        $requestDataAnnotationGuideline = [[
+            'image_id' => $image->id,
+            'shape_id' => $pointId,
+            'label_id' => $label->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ],
+            [
+                'image_id' => $image->id,
+                'shape_id' => $pointId,
+                'label_id' => $label->id,
+                'confidence' => 0.5,
+                'points' => [100, 101],
+                'annotation_guideline_id' => $annotationGuideline->id,
+            ]];
+
+        $this->beEditor();
+
+        // Base case with guideline
+        $response = $this->postJson($url, $requestData);
+        $response->assertSuccessful();
+
+        // No enforcement
+        $response = $this->postJson($url, $requestDataAnnotationGuideline);
+        $response->assertSuccessful();
+
+        // Enforcement - No shapes
+        $annotationGuideline->update(['enforced' => true]);
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $response = $this->post($url, $requestDataAnnotationGuideline);
+        $response->assertSuccessful();
+
+        // Enforcement - one shape - wrong shape
+        $annotationGuideline->update(['only_shapes' => [$lineId]]);
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $response = $this->post($url, $requestDataAnnotationGuideline);
+        $response->assertStatus(422);
+
+        // Enforcement - one shape - correct shape
+        $annotationGuideline->update(['only_shapes' => [$pointId]]);
+        $response = $this->post($url, $requestDataAnnotationGuideline);
+        $response->assertSuccessful();
+
+        // Enforcement - with wrong label - no shape specified
+        $annotationGuideline->update(['only_shapes' => [$lineId, $pointId]]);
+        $annotationGuidelineLabel2 = AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $label2->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62',
+            ]
+        );
+
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $response = $this->post($url, $requestDataAnnotationGuideline);
+        $response->assertStatus(422);
+
+        // Enforcement - with correct label - no shape specified
+        $annotationGuidelineLabel = AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $label->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'c796ccec-c748-308f-8009-9f1f68e2aa62',
+            ]
+        );
+
+        $response = $this->post($url, $requestDataAnnotationGuideline);
+        $response->assertSuccessful();
+
+        // Enforcement - with correct label - wrong shape
+        $annotationGuidelineLabel->update(['shape_id' => $lineId]);
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $response = $this->post($url, $requestDataAnnotationGuideline);
+        $response->assertStatus(422);
+
+        // Enforcement - with correct label - correct shape
+        $annotationGuidelineLabel->update(['shape_id' => $pointId]);
+        $response = $this->post($url, $requestDataAnnotationGuideline);
+        $response->assertSuccessful();
+    }
+
+    public function testStoreWithAnnotationGuideline()
+    {
+        $this->storeWithAnnotationGuideline('api/v1/image-annotations');
+    }
+
+    public function testStoreWithAnnotationGuidelineLegacy()
+    {
+        $this->storeWithAnnotationGuideline('api/v1/annotations');
     }
 }
