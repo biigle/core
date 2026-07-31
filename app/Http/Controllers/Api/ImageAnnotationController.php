@@ -96,6 +96,26 @@ class ImageAnnotationController extends Controller
     }
 
     /**
+     * @api {get} annotations/:id Get an annotation
+     * @apiDeprecated use now (#ImageAnnotations:ShowImageAnnotation).
+     * @apiGroup Annotations
+     * @apiName ShowAnnotation
+     * @apiParam {Number} id The annotation ID.
+     * @apiPermission projectMember
+     * @apiDescription Access may be denied by an active annotation session of the volume, the annotation belongs to.
+     * @apiSuccessExample {json} Success response:
+     * {
+     *    "id":1,
+     *    "image_id":1,
+     *    "shape_id":1,
+     *    "created_at":"2015-02-13 11:59:23",
+     *    "updated_at":"2015-02-13 11:59:23",
+     *    "points": [100, 100]
+     * }
+     */
+
+
+    /**
      * Displays the annotation.
      *
      * @api {get} image-annotations/:id Get an annotation
