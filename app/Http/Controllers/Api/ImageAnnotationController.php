@@ -114,7 +114,6 @@ class ImageAnnotationController extends Controller
      * }
      */
 
-
     /**
      * Displays the annotation.
      *
