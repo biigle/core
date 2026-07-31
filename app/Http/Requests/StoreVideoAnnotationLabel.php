@@ -46,6 +46,7 @@ class StoreVideoAnnotationLabel extends FormRequest
     {
         return [
             // The label_id is already validated above.
+            'annotation_guideline_id' => 'nullable|integer',
         ];
     }
 
