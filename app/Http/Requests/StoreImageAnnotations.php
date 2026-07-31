@@ -76,6 +76,7 @@ class StoreImageAnnotations extends FormRequest
             '*.confidence' => 'required|numeric|between:0,1',
             '*.shape_id' => 'required|integer|exists:shapes,id',
             '*.points' => 'required|array',
+            '*.annotation_guideline_id' => 'nullable|integer',
         ];
     }
 

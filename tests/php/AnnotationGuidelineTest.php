@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Shape;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 use Storage;
@@ -74,5 +75,46 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->model->delete();
         $this->assertFalse($this->model->labels()->exists());
         $this->assertNotNull($label->fresh());
+    }
+
+    public function testValidate()
+    {
+        $label = LabelTest::create();
+        $label2 = LabelTest::create();
+
+        $this->assertTrue($this->model->validate($label->id, Shape::pointId()));
+
+        $this->model->update(['enforced' => true]);
+        $this->assertTrue($this->model->validate($label->id, Shape::pointId()));
+
+        $this->model->update(['only_shapes' => [Shape::lineId()]]);
+        $this->assertFalse($this->model->validate($label->id, Shape::pointId()));
+
+        $this->model->update(['only_shapes' => [Shape::lineId(), Shape::pointId()]]);
+        $this->assertTrue($this->model->validate($label->id, Shape::pointId()));
+
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label2->id,
+        ]);
+        $this->assertFalse($this->model->validate($label->id, Shape::pointId()));
+
+        $annotationGuidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+        ]);
+        $this->assertTrue($this->model->validate($label->id, Shape::pointId()));
+
+        $annotationGuidelineLabel->update([
+            'shape_id' => Shape::circleId(),
+        ]);
+
+        $this->assertFalse($this->model->validate($label->id, Shape::pointId()));
+
+        $annotationGuidelineLabel->update([
+            'shape_id' => Shape::pointId(),
+        ]);
+
+        $this->assertTrue($this->model->validate($label->id, Shape::pointId()));
     }
 }

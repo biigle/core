@@ -3,6 +3,7 @@
 namespace Biigle\Services\LabelBot;
 
 use Biigle\Annotation;
+use Biigle\AnnotationGuideline;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
@@ -28,6 +29,8 @@ class LabelBotService
         Annotation $annotation,
         int $volumeId,
         Request $request,
+        AnnotationGuideline | null $annotationGuideline,
+        int $shapeId,
     ): array {
         $user = $request->user();
         $topNLabels = [];
@@ -45,6 +48,9 @@ class LabelBotService
         Cache::increment($cacheKey);
         try {
             $topNLabels = $this->performVectorSearch($featureVector, $treeIds, $model);
+            if (!is_null($annotationGuideline)) {
+                $topNLabels = array_filter($topNLabels, fn ($labelId) => $annotationGuideline->validate($labelId, $shapeId));
+            }
         } finally {
             $count = Cache::decrement($cacheKey);
             if ($count <= 0) {

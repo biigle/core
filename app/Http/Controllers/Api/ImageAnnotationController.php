@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuideline;
 use Biigle\Http\Requests\StoreImageAnnotation;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
@@ -166,6 +167,7 @@ class ImageAnnotationController extends Controller
      * **LineString:** Like rectangle with one or more vertices.
      * **Circle:** The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: `[10, 10, 5]`.
      * **Ellipse:** The four points specify the end points of the semi-major and semi-minor axes of the ellipse in (counter-)clockwise ordering (depending on how the ellipse was drawn). So the first point is the end point of axis 1, the second is the end point of axis 2, the third is the other end point of axis 1 and the fourth is the other end point of axis 2.
+     * @apiParam (Optional arguments) {Number} annotation_guideline_id ID of the guideline associated with the annotation.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -212,7 +214,8 @@ class ImageAnnotationController extends Controller
         $points = $request->input('points');
 
         $annotation = new ImageAnnotation;
-        $annotation->shape_id = $request->input('shape_id');
+        $shapeId = $request->input('shape_id');
+        $annotation->shape_id = $shapeId;
         $image = $request->image;
         $annotation->image()->associate($image);
         try {
@@ -223,10 +226,19 @@ class ImageAnnotationController extends Controller
 
         $annotation->points = $points;
 
+        $annotationGuideline = null;
+
+        if ($request->has('annotation_guideline_id')) {
+            $annotationGuideline = AnnotationGuideline::findOrFail($request->input('annotation_guideline_id'));
+        }
+
         if ($request->has('label_id')) {
             $label = Label::findOrFail($request->input('label_id'));
+            if (!is_null($annotationGuideline) && !$annotationGuideline->validate($label->id, $annotation->shape_id)) {
+                abort(422, "Annotation uncompatible with enforced Annotation Guideline");
+            }
         } else {
-            $labels = $labelBotService->getLabelsForAnnotation($annotation, $image->volume_id, $request);
+            $labels = $labelBotService->getLabelsForAnnotation($annotation, $image->volume_id, $request, $annotationGuideline, $shapeId);
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
             $label = array_shift($labels);
@@ -235,6 +247,7 @@ class ImageAnnotationController extends Controller
                 $annotation->labelBOTLabels = $labels;
             }
         }
+
 
         $this->authorize('attach-label', [$annotation, $label]);
 
@@ -262,6 +275,7 @@ class ImageAnnotationController extends Controller
      * @apiParam {Number} id The annotation ID.
      * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
      * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
+     * @apiParam (Optional arguments) {Number} annotation_guideline_id ID of the guideline associated with the annotation.
      * @apiParamExample {json} Request example (JSON):
      * {
      *    "points": [10, 11, 20, 21],
@@ -280,10 +294,12 @@ class ImageAnnotationController extends Controller
      * @apiParam {Number} id The annotation ID.
      * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
      * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
+     * @apiParam (Optional arguments) {Number} annotation_guideline_id ID of the guideline associated with the annotation.
      * @apiParamExample {json} Request example (JSON):
      * {
      *    "points": [10, 11, 20, 21],
-     *    "shape_id": 3
+     *    "shape_id": 3,
+     *    "annotation_guideline_id": 4
      * }
      *
      * @param Request $request
@@ -300,7 +316,19 @@ class ImageAnnotationController extends Controller
 
         // from a JSON request, the array may already be decoded
         $points = $request->input('points', $annotation->points);
-        $annotation->shape_id = $request->input('shape_id', $annotation->shape_id);
+        $shapeId = $request->input('shape_id', $annotation->shape_id);
+
+        $annotationGuideline = null;
+        if ($request->has('annotation_guideline_id')) {
+            $annotationGuideline = AnnotationGuideline::findOrFail($request->input('annotation_guideline_id'));
+            $labels = $annotation->labels()->get();
+            foreach ($labels as $label) {
+                if (!$annotationGuideline->validate($label->label_id, $shapeId)) {
+                    abort(422, "Annotation uncompatible with enforced Annotation Guideline");
+                }
+            }
+        }
+        $annotation->shape_id = $shapeId;
 
         try {
             $annotation->validatePoints($points);

@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuideline;
 use Biigle\Events\AnnotationLabelAttached;
 use Biigle\Http\Requests\DestroyVideoAnnotationLabel;
 use Biigle\Http\Requests\StoreVideoAnnotationLabel;
@@ -24,6 +25,7 @@ class VideoAnnotationLabelController extends Controller
      * @apiParam {Number} id The video annotation ID.
      *
      * @apiParam (Required arguments) {Number} label_id ID of the label to be attached to the annotation.
+     * @apiParam (Optional arguments) {Number} annotation_guideline_id ID of the guideline associated with the annotation.
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -59,6 +61,15 @@ class VideoAnnotationLabelController extends Controller
 
         if ($exists) {
             abort(400, 'The user already attached this label to the annotation.');
+        }
+
+        if ($request->has('annotation_guideline_id')) {
+            $annotationGuideline = AnnotationGuideline::findOrFail($request->input('annotation_guideline_id'));
+            $shapeId = $annotationLabel->annotation()->first()->shape_id;
+
+            if (!$annotationGuideline->validate($annotationLabel->label_id, $shapeId)) {
+                abort(422, "Annotation uncompatible with enforced Annotation Guideline");
+            }
         }
 
         try {

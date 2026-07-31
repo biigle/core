@@ -47,6 +47,9 @@ class StoreImageAnnotationLabel extends FormRequest
         return [
             // The label_id is already validated above.
             'confidence'  => 'required|numeric|between:0,1',
+            'annotation_guideline_id' => 'nullable|integer',
+
+
         ];
     }
 }

@@ -1,8 +1,9 @@
 <?php
-
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 class ImageAnnotationControllerTest extends ApiTestCase
 {
     private $image;
+    private $annotation;
+    private $label;
 
     public function setUp(): void
     {
@@ -29,6 +32,14 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->annotation = ImageAnnotationTest::create([
             'image_id' => $this->image->id,
             'points' => [10, 20, 30, 40],
+        ]);
+
+        $this->label = LabelTest::create();
+
+        ImageAnnotationLabelTest::create([
+            'label_id' => $this->label->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->editor()->id,
         ]);
     }
 
@@ -118,7 +129,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $response->assertJsonFragment(['points' => [10, 20]])
             ->assertJsonFragment(['points' => [20, 30]]);
-        
+
 
         $session->users()->attach($this->editor());
         Cache::flush();
@@ -138,7 +149,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $response->assertJsonMissing(['points' => [10, 20]])
             ->assertJsonFragment(['points' => [20, 30]]);
-        
+
     }
 
     public function testShow()
@@ -327,6 +338,115 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertSame(1, $annotation->labels()->count());
     }
 
+    public function testStoreWithAnnotationGuideline()
+    {
+        $this->annotation->delete();
+        $label = LabelTest::create();
+        $label2 = LabelTest::create();
+        $this->project()->labelTrees()->attach($label->label_tree_id);
+        $this->project()->labelTrees()->attach($label2->label_tree_id);
+
+        $lineId = Shape::lineId();
+        $pointId = Shape::pointId();
+
+        $annotationGuideline = AnnotationGuideline::create([
+            'project_id' => $this->project()->id,
+        ]);
+        $url = "/api/v1/images/{$this->image->id}/annotations";
+        $requestData = [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $label->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ];
+
+        $requestDataWithGuideline = [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $label->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ];
+
+        $this->doTestApiRoute('POST', "/api/v1/images/{$this->image->id}/annotations");
+
+        $this->beEditor();
+
+        // No enforcement
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $response = $this->post($url, $requestDataWithGuideline);
+        $response->assertSuccessful();
+
+        // Enforcement - No shapes
+        $annotationGuideline->update(['enforced' => true]);
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $response = $this->post($url, $requestDataWithGuideline);
+        $response->assertSuccessful();
+
+        // Enforcement - one shape
+        $annotationGuideline->update(['only_shapes' => [$lineId]]);
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $annotationGuideline->update(['only_shapes' => [$lineId]]);
+        $response = $this->post($url, $requestDataWithGuideline);
+        $response->assertStatus(422);
+
+        // Enforcement - one shape - correct shape
+        $annotationGuideline->update(['only_shapes' => [$pointId]]);
+        $response = $this->post($url, $requestDataWithGuideline);
+        $response->assertSuccessful();
+
+        // Enforcement - with wrong label - no shape specified
+        $annotationGuideline->update(['only_shapes' => [$lineId, $pointId]]);
+        $annotationGuidelineLabel2 = AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $label2->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62',
+            ]
+        );
+
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $annotationGuideline->update(['only_shapes' => [$lineId]]);
+        $response = $this->post($url, $requestDataWithGuideline);
+        $response->assertStatus(422);
+
+        // Enforcement - with correct label - no shape specified
+        $annotationGuidelineLabel = AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $label->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'c796ccec-c748-308f-8009-9f1f68e2aa62',
+            ]
+        );
+
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        // Enforcement - with correct label - wrong shape
+        $annotationGuidelineLabel->update(['shape_id' => $lineId]);
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+        $response = $this->post($url, $requestDataWithGuideline);
+        $response->assertStatus(422);
+
+        // Enforcement - with correct label - correct shape
+        $annotationGuidelineLabel->update(["shape_id" => $pointId]);
+        $response = $this->post($url, $requestData);
+        $response->assertSuccessful();
+
+    }
+
     public function testStoreWithFeatureVectorWithoutHNSW()
     {
         $this->beEditor();
@@ -405,6 +525,103 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'labelBOTLabels' => [
                 ['id' => $differentLabel->id],
                 ['id' => $anotherDifferentLabel->id],
+            ]
+        ]);
+
+        // Now with an Annotation Guideline
+
+        // No valid label with selected shape
+        $annotationGuideline = AnnotationGuideline::create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [Shape::lineId()],
+        ]);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ]);
+        $response->assertStatus(404);
+
+        // no shape selected, should be successful
+        $annotationGuideline->update(['only_shapes' => null]);
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ]);
+        $response->assertSuccessful();
+
+        // only two labels in the guideline
+        $annotationGuideline->update(
+            ['only_shapes' => [Shape::lineId(), Shape::pointId()]]
+        );
+
+        AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $label->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'c796ccec-c748-308f-8009-9f1f68e2aa64',
+            ]
+        );
+        AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $differentLabel->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'c796ccec-c748-308f-8009-9f1f68e2aa62',
+            ]
+        );
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJson([
+            'labelBOTLabels' => [
+                ['id' => $differentLabel->id],
+            ],
+            'labels' => [
+                ['label_id' => $label->id]
+            ]
+        ]);
+
+        //Add another label, but with different shapes
+        AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $anotherDifferentLabel->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => Shape::lineId(),
+                'uuid' => 'c123ccec-c748-308f-8009-9f1f68e2aa62',
+            ]
+        );
+
+        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ]);
+        $response->assertSuccessful();
+        $response->assertJson([
+            'labelBOTLabels' => [
+                ['id' => $differentLabel->id],
+            ],
+            'labels' => [
+                ['label_id' => $label->id]
             ]
         ]);
     }
@@ -596,6 +813,132 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->annotation->refresh();
         $this->assertSame(Shape::circleId(), $this->annotation->shape_id);
+    }
+
+    private function resetAnnotation()
+    {
+        $id = $this->annotation->id;
+        $this->annotation->points = [100, 200];
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+        return $id;
+    }
+
+    public function updateChangeShapeWithAnnotationGuideline($url)
+    {
+
+        $id = $this->resetAnnotation();
+
+        $label2 = LabelTest::create();
+        $this->project()->labelTrees()->attach($this->label->label_tree_id);
+        $this->project()->labelTrees()->attach($label2->label_tree_id);
+
+        $annotationGuideline = AnnotationGuideline::create([
+            'project_id' => $this->project()->id,
+        ]);
+
+        $this->beAdmin();
+        $requestData = [
+            'shape_id' => Shape::circleId(),
+            'points' => [100, 200, 300],
+        ];
+        $requestDataWithGuideline = [
+            'shape_id' => Shape::circleId(),
+            'points' => [100, 200, 300],
+            'annotation_guideline_id' => $annotationGuideline->id,
+        ];
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(200);
+
+        $this->resetAnnotation();
+
+        // Add enforcement, but no elements
+        $annotationGuideline->update(['enforced' => true]);
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(200);
+
+        $this->resetAnnotation();
+
+        // Allow only points
+        $annotationGuideline->update(['only_shapes' => [Shape::pointId()]]);
+
+        $this->putJson("{$url}/{$id}", $requestData)
+            ->assertStatus(200);
+
+        $this->resetAnnotation();
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(422);
+
+        // Now also circles are allowed
+        $annotationGuideline->update(['only_shapes' => [Shape::pointId(), Shape::circleId()]]);
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(200);
+
+        $this->resetAnnotation();
+
+        // Add a different label to the annotation guideline
+        $annotationGuidelineLabel2 = AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $label2->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'e43f4497-489a-4401-b49c-2fab48199bf7',
+            ]
+        );
+
+        $this->putJson("{$url}/{$id}", $requestData)
+            ->assertStatus(200);
+
+        $this->resetAnnotation();
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(422);
+
+        // Add the label to the guideline
+        $annotationGuidelineLabel = AnnotationGuidelineLabel::create(
+            [
+                'label_id' => $this->label->id,
+                'annotation_guideline_id' => $annotationGuideline->id,
+                'shape_id' => null,
+                'uuid' => 'a998dab7-ae83-49b9-b432-6f63cd55d4af',
+            ]
+        );
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(200);
+
+        $this->resetAnnotation();
+
+        // Add shape to the label in the guideline
+        $annotationGuidelineLabel->update(['shape_id' => Shape::pointId()]);
+
+        $this->putJson("{$url}/{$id}", $requestData)
+            ->assertStatus(200);
+
+        $this->resetAnnotation();
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(422);
+
+        // Fix the shape
+        $annotationGuidelineLabel->update(['shape_id' => Shape::circleId()]);
+
+        $this->putJson("{$url}/{$id}", $requestDataWithGuideline)
+            ->assertStatus(200);
+    }
+
+    public function testUpdateChangeShapeWithGuideline()
+    {
+        $this->updateChangeShapeWithAnnotationGuideline('api/v1/image-annotations');
+    }
+
+    public function testUpdateChangeShapeWithGuidelineLegacy()
+    {
+        $this->updateChangeShapeWithAnnotationGuideline('api/v1/annotations');
     }
 
     public function testDestroy()
