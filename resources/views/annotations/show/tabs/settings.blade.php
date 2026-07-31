@@ -99,6 +99,13 @@
             </power-toggle>
         </div>
 
+        <div class="sidebar-tab__section">
+            <h5 title="Set the preferred unit">Preferred unit</h5>
+            <select class="form-control" v-model="preferredUnit">
+                <option v-for="unit in unitNames" :key="unit" :value="unit" v-text="unit"></option>
+            </select>
+        </div>
+
         @mixin('annotationsSettingsTab')
     </div>
 </script>

@@ -3,7 +3,7 @@
 namespace Biigle\Http\Controllers\Api\Export;
 
 use Biigle\Http\Controllers\Api\Controller as BaseController;
-use Illuminate\Http\Request;
+use Biigle\Http\Requests\ShowExport;
 
 abstract class Controller extends BaseController
 {
@@ -18,22 +18,21 @@ abstract class Controller extends BaseController
     /**
      * Handle a generic export request.
      *
-     * @param Request $request
+     * @param ShowExport $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function show(Request $request)
+    public function show(ShowExport $request)
     {
         if (!$this->isAllowed()) {
             abort(404);
         }
 
-        $this->validate($request, ['except' => 'filled', 'only' => 'filled']);
         $query = $this->getQuery();
 
         if ($request->filled('except')) {
-            $query = $query->whereNotIn('id', explode(',', $request->input('except')));
+            $query = $query->whereNotIn('id', $request->input('except'));
         } elseif ($request->filled('only')) {
-            $query = $query->whereIn('id', explode(',', $request->input('only')));
+            $query = $query->whereIn('id', $request->input('only'));
         }
 
         $export = $this->getExport($query->pluck('id')->toArray());

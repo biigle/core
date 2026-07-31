@@ -38,7 +38,7 @@ class LabelTreeImport extends Import
      * @param array $parentConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve parent conflicts.
      * @return array Array containing 'labelTrees', 'labels' and 'users', mapping external IDs (from the import file) to IDs of the database.
      */
-    public function perform(array $onlyTrees = null, array $onlyLabels = null, array $nameConflictResolution = [], array $parentConflictResolution = [])
+    public function perform(?array $onlyTrees = null, ?array $onlyLabels = null, array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
         return DB::transaction(function () use ($onlyTrees, $onlyLabels, $nameConflictResolution, $parentConflictResolution) {
             $insertTrees = $this->getInsertLabelTrees($onlyTrees);

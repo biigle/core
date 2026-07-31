@@ -6,6 +6,7 @@
 <script>
 import MeasureComponent from '../mixins/measureComponent.vue';
 import { ScaleLineProperties } from '../utils';
+import Settings from '../stores/settings';
 
 /**
  * The scale line indicator of the canvas element
@@ -21,7 +22,7 @@ export default {
     },
     computed: {
         scaleLineProperties() {
-            return new ScaleLineProperties(this.resolution, this.hasArea, this.pxWidthInMeter, this.unitMultipliers, this.unitNames);
+            return new ScaleLineProperties(this.resolution, this.hasArea, this.pxWidthInMeter, Settings.get('preferredUnit'));
         },
         width() {
             return this.scaleLineProperties.width();

@@ -11,7 +11,9 @@
 
     .label-trees__body {
         flex: 1;
-        overflow: auto;
+        overflow-y: scroll;
+        // Make sure the scrollbar does not overlap with label tree label buttons.
+        scrollbar-width: thin;
     }
 
     .typeahead {

@@ -49,6 +49,7 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
+                :can-have-more-favourites="canHaveMoreFavourites"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @add-favourite="handleAddFavourite"

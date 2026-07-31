@@ -18,7 +18,7 @@ class Controller extends BaseController
      * @param Request $request
      * @return bool
      */
-    public function isAutomatedRequest(Request $request = null)
+    public function isAutomatedRequest(?Request $request = null)
     {
         $request = $request ?: request();
 

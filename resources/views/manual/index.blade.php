@@ -11,6 +11,14 @@
                 This is the application manual of BIIGLE. Here you can find articles on how to use the application as well as reference publications and the developer documentation.
             </p>
             <h3>
+                <a href="https://liascript.github.io/course/?https://raw.githubusercontent.com/biigle/biigle4beginners/refs/heads/main/tutorial.md" target="_blank">BIIGLE4Beginners</a>
+            </h3>
+
+            <p>
+                A self-paced online tutorial teaching you the basics of BIIGLE.
+            </p>
+
+            <h3>
                 <a href="{{route('manual-tutorials', 'login-and-account-settings')}}">Account settings</a>
             </h3>
 
@@ -311,6 +319,10 @@
             <p>
                 <strong>Observations From Four Years of BIIGLE 2.0</strong><br>
                 <a href="https://doi.org/10.3389/fmars.2021.760036">Zurowietz, M., & Nattkemper, T. W. (2021). Current Trends and Future Directions of Large Scale Image and Video Annotation: Observations From Four Years of BIIGLE 2.0.</a><br>Frontiers in Marine Science, 8, 760036. doi: <code>10.3389/fmars.2021.760036</code>
+            </p>
+            <p>
+                <strong>LabelBOT</strong><br>
+                <a href="https://doi.org/10.1109/ACCESS.2026.3688574">G. Kourie, M. Zurowietz, D. Langenkämper, D. Brembilla and T. W. Nattkemper, LabelBOT: A Human-in-the-Loop Classification Assistance in the BIIGLE Image Annotation Tool.</a> <br>IEEE Access, vol. 14, pp. 65161-65180, 2026. doi: <code>10.1109/ACCESS.2026.3688574</code>
             </p>
             <p>
                 <strong>Video Object Tracking</strong><br>

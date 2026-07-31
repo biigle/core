@@ -16,7 +16,7 @@
                     <span class="fa fa-keyboard" aria-hidden="true"></span>
                     <span v-text="actualPosition"></span>
                 </span>
-                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">
+                <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle" :disabled="cantBeAddedAsFavourite">
                     <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
                 <span if="editable">
@@ -28,7 +28,7 @@
             </span>
         </div>
         <ul v-if="expandable && label.open" class="label-tree__list">
-            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" :can-have-more-favourites="canHaveMoreFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
         </ul>
     </li>
 </template>
@@ -87,6 +87,10 @@ export default {
             type: Number,
             default:-1,
         },
+        canHaveMoreFavourites: {
+            type: Boolean,
+            default: true,
+        },
     },
     computed: {
         showColor() {
@@ -121,7 +125,14 @@ export default {
             };
         },
         favouriteTitle() {
+            if (this.cantBeAddedAsFavourite) {
+                return `You cannot add more than ${MAX_FAVOURITES} favourite labels`;
+            }
+
             return (this.label.favourite ? 'Remove' : 'Add') + ' as favourite';
+        },
+        cantBeAddedAsFavourite() {
+            return !this.label.favourite && !this.canHaveMoreFavourites;
         },
         editTitle() {
             return 'Edit label ' + this.label.name;

@@ -432,7 +432,8 @@ $router->group([
 
     $router->get('{id}/files/filter/filename/{pattern}', [
         'uses' => 'Filters\FilenameController@index',
-    ]);
+    ])->where('pattern', '.*'); // Filenames may contain characters that laravel would throw an exception on,
+                                // i. e. forward slashes in remote videos, so we explictly allow all characters
 
     $router->get('{id}/file-labels', [
         'uses' => 'UsedFileLabelsController@index',

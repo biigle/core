@@ -6,7 +6,9 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\StoreVolumeLargoSession;
 use Biigle\Jobs\ApplyLargoSession;
 use Illuminate\Http\Request;
+use Queue;
 use Ramsey\Uuid\Uuid;
+use Throwable;
 
 class LargoController extends Controller
 {
@@ -60,7 +62,19 @@ class LargoController extends Controller
         $request->volume->attrs = $attrs;
         $request->volume->save();
 
-        ApplyLargoSession::dispatch($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
+        try {
+            $job = new ApplyLargoSession($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
+            Queue::pushOn($job->queue, $job);
+        } catch (Throwable $e) {
+            // We can't use DB::transaction to roll back the changes because this would
+            // allow a situation where the queue job runs before the transaction was
+            // committed.
+            $attrs = $request->volume->attrs;
+            unset($attrs['largo_job_id']);
+            $request->volume->attrs = $attrs;
+            $request->volume->save();
+            throw $e;
+        }
 
         return ['id' => $uuid];
     }

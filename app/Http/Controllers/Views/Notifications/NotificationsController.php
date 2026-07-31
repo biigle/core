@@ -15,7 +15,7 @@ class NotificationsController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $all = (boolean) $request->input('all', false);
+        $all = (bool) $request->input('all', false);
         $notifications = $all ? $user->notifications() : $user->unreadNotifications();
         $notifications = $notifications->get();
 

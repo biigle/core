@@ -163,6 +163,7 @@ class StoreVolume extends FormRequest
             File::put($this->metadataPath, $this->input('metadata_text'));
             $file = new UploadedFile($this->metadataPath, 'metadata.csv', 'text/csv', test: true);
             // Reset this so the new file will be picked up.
+            /** @phpstan-ignore unset.possiblyHookedProperty */
             unset($this->convertedFiles);
             $this->files->add(['metadata_csv' => $file]);
         }
