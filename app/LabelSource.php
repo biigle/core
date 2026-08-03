@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use App;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
@@ -10,16 +11,10 @@ use Str;
 /**
  * The source (database) of a label.
  */
+#[WithoutTimestamps]
 class LabelSource extends Model
 {
     use HasFactory;
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * Returns the label source adapter of this label source.

@@ -4,46 +4,30 @@ namespace Biigle;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+#[Fillable(['name', 'url', 'indexed_at', 'local_token', 'remote_token'])]
+#[Hidden(['local_token', 'remote_token'])]
 class FederatedSearchInstance extends Model implements AuthenticatableContract
 {
     use Authenticatable, HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'name',
-        'url',
-        'indexed_at',
-        'local_token',
-        'remote_token',
-    ];
-
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'local_token',
-        'remote_token',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'index_interval' => 'int',
-        'indexed_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'index_interval' => 'int',
+            'indexed_at' => 'datetime',
+        ];
+    }
 
     /**
      * Scope a query to all instances that are have a local token.

@@ -5,6 +5,7 @@ namespace Biigle;
 use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Traits\HasPointsAttribute;
 use DB;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,27 +19,22 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $shape_id
  * @phpstan-consistent-constructor
  */
+#[Hidden(['pivot'])]
 abstract class Annotation extends Model implements AnnotationContract
 {
     use HasPointsAttribute, HasFactory;
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $hidden = [
-        'pivot',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'points' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'points' => 'array',
+        ];
+    }
 
     /**
      * The additional labels suggested by the LabelBOT.

@@ -3,7 +3,6 @@
 namespace Biigle\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -31,21 +30,6 @@ class EventServiceProvider extends ServiceProvider
             \Biigle\Listeners\VolumeClonedListener::class,
         ],
     ];
-
-    /**
-     * Register any events for your application.
-     */
-    public function boot(): void
-    {
-        \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
-        \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
-        \Biigle\Report::observe(new \Biigle\Observers\ReportObserver);
-        \Biigle\User::observe(new \Biigle\Observers\UserObserver);
-        \Biigle\Video::observe(new \Biigle\Observers\VideoObserver);
-        \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
-        \Biigle\ImageAnnotation::observe(new \Biigle\Observers\ImageAnnotationObserver);
-        \Biigle\VideoAnnotation::observe(new \Biigle\Observers\VideoAnnotationObserver);
-    }
 
     /**
      * Determine if events and listeners should be automatically discovered.

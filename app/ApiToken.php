@@ -2,21 +2,14 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Hidden(['hash'])]
 class ApiToken extends Model
 {
     use HasFactory;
-
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'hash',
-    ];
 
     /**
      * The user, this token belongs to.

@@ -2,8 +2,10 @@
 
 namespace Biigle;
 
+use Biigle\Observers\ReportObserver;
 use Biigle\Services\Reports\ReportGenerator;
 use File;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +14,7 @@ use ReflectionClass;
 use SplFileInfo;
 use Storage;
 
+#[ObservedBy(ReportObserver::class)]
 class Report extends Model
 {
     use HasFactory;
@@ -24,17 +27,20 @@ class Report extends Model
     protected $reportGenerator;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'user_id' => 'int',
-        'type_id' => 'int',
-        'source_id' => 'int',
-        'options' => 'array',
-        'ready_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'int',
+            'type_id' => 'int',
+            'source_id' => 'int',
+            'options' => 'array',
+            'ready_at' => 'datetime',
+        ];
+    }
 
     /**
      * The user that requested the report.

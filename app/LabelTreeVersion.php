@@ -2,28 +2,26 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[WithoutTimestamps]
 class LabelTreeVersion extends Model
 {
     use HasFactory;
 
     /**
-     * Don't maintain timestamps for this model.
+     * Get the attributes that should be cast.
      *
-     * @var bool
+     * @return array<string, string>
      */
-    public $timestamps = false;
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'label_tree_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'label_tree_id' => 'int',
+        ];
+    }
 
     /**
      * The "master" label tree of this version.
