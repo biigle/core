@@ -22,13 +22,16 @@ class Announcement extends Model
     const CACHE_KEY = 'announcement';
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'show_until' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'show_until' => 'datetime',
+        ];
+    }
 
     /**
      * The "booted" method of the model.

@@ -27,17 +27,20 @@ class Report extends Model
     protected $reportGenerator;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'user_id' => 'int',
-        'type_id' => 'int',
-        'source_id' => 'int',
-        'options' => 'array',
-        'ready_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'int',
+            'type_id' => 'int',
+            'source_id' => 'int',
+            'options' => 'array',
+            'ready_at' => 'datetime',
+        ];
+    }
 
     /**
      * The user that requested the report.

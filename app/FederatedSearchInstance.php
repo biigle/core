@@ -17,14 +17,17 @@ class FederatedSearchInstance extends Model implements AuthenticatableContract
     use Authenticatable, HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'index_interval' => 'int',
-        'indexed_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'index_interval' => 'int',
+            'indexed_at' => 'datetime',
+        ];
+    }
 
     /**
      * Scope a query to all instances that are have a local token.

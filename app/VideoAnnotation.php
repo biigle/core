@@ -12,16 +12,19 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class VideoAnnotation extends Annotation
 {
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'video_id' => 'int',
-        'shape_id' => 'int',
-        'frames' => 'array',
-        'points' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'video_id' => 'int',
+            'shape_id' => 'int',
+            'frames' => 'array',
+            'points' => 'array',
+        ];
+    }
 
     /**
      * The video, this annotation belongs to.

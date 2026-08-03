@@ -12,14 +12,17 @@ class ProjectInvitation extends Model
     use HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'expires_at' => "datetime:c",
-        'add_to_sessions' => 'bool',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime:c',
+            'add_to_sessions' => 'bool',
+        ];
+    }
 
     /**
      * The accessors to append to the model's array form.

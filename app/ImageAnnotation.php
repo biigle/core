@@ -13,15 +13,18 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 class ImageAnnotation extends Annotation
 {
     /**
-    * The attributes that should be casted to native types.
-    *
-    * @var array<string, string>
-    */
-    protected $casts = [
-        'image_id' => 'int',
-        'shape_id' => 'int',
-        'points' => 'array',
-    ];
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'image_id' => 'int',
+            'shape_id' => 'int',
+            'points' => 'array',
+        ];
+    }
 
     /**
      * The image, this annotation belongs to.

@@ -26,15 +26,18 @@ class Label extends Model
     use HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'parent_id' => 'int',
-        'label_tree_id' => 'int',
-        'label_source_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'parent_id' => 'int',
+            'label_tree_id' => 'int',
+            'label_source_id' => 'int',
+        ];
+    }
 
     /**
      * Scope a query to used labels.

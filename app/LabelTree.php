@@ -24,14 +24,17 @@ class LabelTree extends Model
     use HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'visibility_id' => 'int',
-        'label_tree_version_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'visibility_id' => 'int',
+            'label_tree_version_id' => 'int',
+        ];
+    }
 
     /**
      * Check if a member can loose their admin status.

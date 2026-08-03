@@ -25,13 +25,16 @@ abstract class Annotation extends Model implements AnnotationContract
     use HasPointsAttribute, HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'points' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'points' => 'array',
+        ];
+    }
 
     /**
      * The additional labels suggested by the LabelBOT.

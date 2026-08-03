@@ -30,16 +30,19 @@ class PendingVolume extends Model
     use HasFactory, HasMetadataFile;
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'only_annotation_labels' => 'array',
-        'only_file_labels' => 'array',
-        'label_map' => 'array',
-        'user_map' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'only_annotation_labels' => 'array',
+            'only_file_labels' => 'array',
+            'label_map' => 'array',
+            'user_map' => 'array',
+        ];
+    }
 
     /**
      * Default values for attributes.
