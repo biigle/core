@@ -84,16 +84,19 @@ class Video extends VolumeFile
     const ERROR_INVALID_MOOV_POS = 6;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'attrs' => 'array',
-        'lng' => 'array',
-        'lat' => 'array',
-        'duration' => 'float',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'attrs' => 'array',
+            'lng' => 'array',
+            'lat' => 'array',
+            'duration' => 'float',
+        ];
+    }
 
     /**
      * The annotations that belong to this video.

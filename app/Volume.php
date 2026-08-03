@@ -47,14 +47,17 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'attrs' => 'array',
-        'media_type_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'attrs' => 'array',
+            'media_type_id' => 'int',
+        ];
+    }
 
     /**
      * Parses a comma separated list of filenames to an array.

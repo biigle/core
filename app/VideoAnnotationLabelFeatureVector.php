@@ -15,11 +15,14 @@ class VideoAnnotationLabelFeatureVector extends Model
     use HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'vector' => Vector::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'vector' => Vector::class,
+        ];
+    }
 }

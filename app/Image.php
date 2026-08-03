@@ -33,17 +33,20 @@ class Image extends VolumeFile
     ];
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'attrs' => 'array',
-        'lat' => 'float',
-        'lng' => 'float',
-        'tiled' => 'bool',
-        'taken_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'attrs' => 'array',
+            'lat' => 'float',
+            'lng' => 'float',
+            'tiled' => 'bool',
+            'taken_at' => 'datetime',
+        ];
+    }
 
     /**
      * The annotations on this image.

@@ -20,18 +20,21 @@ class User extends Authenticatable
     use Notifiable, HasJsonAttributes, HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'role_id' => 'int',
-        'attrs' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'login_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'role_id' => 'int',
+            'attrs' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'login_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
     /**
      * Set the email attribute and transform it to lowercase.
