@@ -125,8 +125,10 @@ return [
     | storage. By default, no PHP classes will be unserialized from your
     | cache to prevent gadget chain attacks if your APP_KEY is leaked.
     |
+    | Set to true because we need some serializable classes.
+    |
     */
 
-    'serializable_classes' => false,
+    'serializable_classes' => true,
 
 ];
