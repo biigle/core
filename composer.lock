@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c37d5f66b46a77f0272992b01c6d2960",
+    "content-hash": "ee358df05a34a158f6b2ee87df4fbe07",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -254,6 +254,60 @@
                 "source": "https://github.com/biigle/ananas"
             },
             "time": "2026-07-29T06:20:22+00:00"
+        },
+        {
+            "name": "biigle/ask-biigle",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/ask-biigle.git",
+                "reference": "f35afc493745e4fc712e8eef77d2bedd80bc9321"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/ask-biigle/zipball/f35afc493745e4fc712e8eef77d2bedd80bc9321",
+                "reference": "f35afc493745e4fc712e8eef77d2bedd80bc9321",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\Modules\\AskBiigle\\AskBiigleServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\AskBiigle\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "m.zurowietz@uni-bielefeld.de"
+                },
+                {
+                    "name": "Daniel Langenkämper",
+                    "email": "dlangenk@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "A BIIGLE module to offer help through a chat interface.",
+            "homepage": "https://biigle.de",
+            "keywords": [
+                "biigle",
+                "biigle-module"
+            ],
+            "support": {
+                "issues": "https://github.com/biigle/ask-biigle/issues",
+                "source": "https://github.com/biigle/ask-biigle"
+            },
+            "time": "2026-08-03T12:15:23+00:00"
         },
         {
             "name": "biigle/auth-haai",
@@ -13073,6 +13127,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "biigle/ananas": 20,
+        "biigle/ask-biigle": 20,
         "biigle/auth-haai": 20,
         "biigle/auth-lslogin": 20,
         "biigle/auth-nfdi": 20,
