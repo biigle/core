@@ -304,6 +304,23 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
         $this->assertSame(1, $this->annotation->image->annotations()->count());
     }
 
+    public function testStoreNoArrayItem()
+    {
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', ['abc'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors([
+                '0.image_id',
+                '0.label_id',
+                '0.confidence',
+                '0.shape_id',
+                '0.points',
+            ]);
+
+        $this->assertSame(1, $this->annotation->image->annotations()->count());
+    }
+
     public function testStoreLabelIdIsFloat()
     {
         $this->beEditor();
