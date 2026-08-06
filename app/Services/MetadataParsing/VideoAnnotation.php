@@ -42,6 +42,7 @@ class VideoAnnotation extends Annotation
     public function validate(): void
     {
         parent::validate();
+        $this->validatePoints();
 
         foreach ($this->frames as $frame) {
             // null is allowed because it represents a gap in the annotation. Where gaps

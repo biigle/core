@@ -2,6 +2,7 @@
 
 namespace Biigle\Traits;
 
+use Biigle\Rules\AnnotationPoints;
 use Biigle\Services\VideoAnnotationValidation;
 use Biigle\Shape;
 use Exception;
@@ -37,10 +38,16 @@ trait ValidatesVideoAnnotationPoints
             throw new Exception($message);
         }
 
+        $rule = new AnnotationPoints($this->shape_id);
+
         foreach ($points as $point) {
             // Gaps have no coordinates that could be validated.
             if (!empty($point)) {
-                parent::validatePoints($point);
+                $message = $rule->getErrorMessage($point);
+
+                if (!is_null($message)) {
+                    throw new Exception($message);
+                }
             }
         }
     }

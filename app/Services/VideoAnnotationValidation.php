@@ -29,7 +29,7 @@ class VideoAnnotationValidation
         }
 
         foreach ($points as $point) {
-            // Numeric strings are rejected because HasPointsAttribute requires int or
+            // Numeric strings are rejected because AnnotationPoints requires int or
             // float, too.
             if (!is_array($point) || !array_is_list($point) || array_filter($point, fn ($v) => !is_int($v) && !is_float($v))) {
                 return 'The annotation points must be an array of arrays of numbers.';

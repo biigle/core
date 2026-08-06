@@ -162,7 +162,8 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
                 'label_id' => 999,
                 'confidence' => 1.0,
             ]])
-            ->assertStatus(422);
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('label_id');
 
         $this
             ->postJson($url, [
@@ -260,6 +261,47 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $this->assertSame(2, $this->annotation->image->annotations()->count());
+    }
+
+    public function testStoreDenyWholeFrameShape()
+    {
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::wholeFrameId(),
+                    // Points that would be valid for any other shape, so the request can
+                    // only fail because of the shape.
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('0.shape_id');
+
+        $this->assertSame(1, $this->annotation->image->annotations()->count());
+    }
+
+    public function testStoreInvalidPoints()
+    {
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    // Invalid number of points for shape point.
+                    'points' => [100, 100, 200, 200],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('0.points');
+
+        $this->assertSame(1, $this->annotation->image->annotations()->count());
     }
 
     public function testStoreLabelIdIsFloat()
