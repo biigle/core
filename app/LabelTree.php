@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use DB;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
@@ -17,30 +18,23 @@ use Ramsey\Uuid\Uuid;
  *
  * @property string $uuid
  */
+#[Hidden(['pivot', 'uuid', 'version_id'])]
 class LabelTree extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes hidden from the model's JSON form.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $hidden = [
-        'pivot',
-        'uuid',
-        'version_id',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'visibility_id' => 'int',
-        'label_tree_version_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'visibility_id' => 'int',
+            'label_tree_version_id' => 'int',
+        ];
+    }
 
     /**
      * Check if a member can loose their admin status.

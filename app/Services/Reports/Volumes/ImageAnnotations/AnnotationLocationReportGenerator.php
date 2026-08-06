@@ -67,7 +67,11 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
             }
         } elseif ($this->shouldSeparateUsers() && $items->isNotEmpty()) {
             $items = $items->groupBy('user_id');
-            $users = User::whereIn('id', $items->keys())
+            // Annotations of deleted users have a null user_id, which groupBy
+            // turns into an empty string key. Don't try to fetch their name.
+            $nullKey = '';
+            $ids = $items->keys()->filter(fn ($id) => $id !== $nullKey);
+            $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
@@ -76,6 +80,12 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
                 $file = $this->createNdJSON($tmpItems);
                 $this->tmpFiles[] = $file;
                 $toZip[$file->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'ndjson');
+            }
+
+            if ($items->has($nullKey)) {
+                $file = $this->createNdJSON($items->get($nullKey));
+                $this->tmpFiles[] = $file;
+                $toZip[$file->getPath()] = 'deleted-users.ndjson';
             }
         } else {
             $file = $this->createNdJSON($items);

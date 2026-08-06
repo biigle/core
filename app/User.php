@@ -2,7 +2,10 @@
 
 namespace Biigle;
 
+use Biigle\Observers\UserObserver;
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,35 +13,28 @@ use Illuminate\Notifications\Notifiable;
 /**
  * @property string $uuid
  */
+#[Hidden(['password', 'remember_token', 'pivot', 'uuid'])]
+#[ObservedBy(UserObserver::class)]
 class User extends Authenticatable
 {
     use Notifiable, HasJsonAttributes, HasFactory;
 
     /**
-     * The attributes hidden from the model's JSON form.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'pivot',
-        'uuid',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'role_id' => 'int',
-        'attrs' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'login_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'role_id' => 'int',
+            'attrs' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'login_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
     /**
      * Set the email attribute and transform it to lowercase.

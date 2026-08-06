@@ -11,13 +11,16 @@ class FederatedSearchModel extends Model
     use HasJsonAttributes, HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'attrs' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'attrs' => 'array',
+        ];
+    }
 
     /**
      * Scope a query to all models that represent label trees.

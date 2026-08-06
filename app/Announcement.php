@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Cache;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * Announcements are broadcasts from the application administrators that should reach
  * all users of the instance.
  */
+#[Fillable(['title', 'show_until', 'body'])]
 class Announcement extends Model
 {
     use HasFactory;
@@ -20,20 +22,16 @@ class Announcement extends Model
     const CACHE_KEY = 'announcement';
 
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = ['title', 'show_until', 'body'];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'show_until' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'show_until' => 'datetime',
+        ];
+    }
 
     /**
      * The "booted" method of the model.

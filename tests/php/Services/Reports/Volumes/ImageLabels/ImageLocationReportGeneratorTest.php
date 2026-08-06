@@ -317,6 +317,98 @@ class ImageLocationReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsersWithNullUserId()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $image = ImageTest::create([
+            'lng' => 80.2,
+            'lat' => 52.5,
+        ]);
+
+        $il1 = ImageLabelTest::create([
+            'image_id' => $image->id,
+            'user_id' => $user1->id,
+        ]);
+        $il2 = ImageLabelTest::create([
+            'image_id' => $image->id,
+            'user_id' => null,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $jsonContent = [
+            'type' => 'Feature',
+            'geometry' => [
+                'type' => 'Point',
+                'coordinates' => [80.2, 52.5],
+            ],
+            'properties' => [
+                '_id' => $image->id,
+                '_filename' => $image->filename,
+                "{$il1->label->name} (#{$il1->label->id})" => 1,
+                "{$il2->label->name} (#{$il2->label->id})" => 0,
+            ],
+        ];
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(json_encode($jsonContent));
+
+        $jsonContent = [
+            'type' => 'Feature',
+            'geometry' => [
+                'type' => 'Point',
+                'coordinates' => [80.2, 52.5],
+            ],
+            'properties' => [
+                '_id' => $image->id,
+                '_filename' => $image->filename,
+                "{$il1->label->name} (#{$il1->label->id})" => 0,
+                "{$il2->label->name} (#{$il2->label->id})" => 1,
+            ],
+        ];
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with(json_encode($jsonContent));
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(File::class, fn () => $mock);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$user1->id}-joe-jack-user.ndjson");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', 'deleted-users.ndjson');
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, fn () => $mock);
+
+        $generator = new ImageLocationReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
+    }
+
     public function testRestrictToLabels()
     {
         $image = ImageTest::create();

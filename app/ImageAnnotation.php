@@ -2,22 +2,29 @@
 
 namespace Biigle;
 
+use Biigle\Observers\ImageAnnotationObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
 /**
  * An image annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
+#[ObservedBy(ImageAnnotationObserver::class)]
 class ImageAnnotation extends Annotation
 {
     /**
-    * The attributes that should be casted to native types.
-    *
-    * @var array<string, string>
-    */
-    protected $casts = [
-        'image_id' => 'int',
-        'shape_id' => 'int',
-        'points' => 'array',
-    ];
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'image_id' => 'int',
+            'shape_id' => 'int',
+            'points' => 'array',
+        ];
+    }
 
     /**
      * The image, this annotation belongs to.

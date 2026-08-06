@@ -13,3 +13,7 @@ export let penTouchXorShift = function (mapBrowserEvent) {
 export let penTouchOrShift = function (mapBrowserEvent) {
     return penOnly(mapBrowserEvent) || shiftKeyOnly(mapBrowserEvent) || touchOnly(mapBrowserEvent);
 };
+
+export let rightClick = function (mapBrowserEvent) {
+    return mapBrowserEvent.originalEvent.button === 2;
+};
