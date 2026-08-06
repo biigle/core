@@ -240,18 +240,39 @@ class VolumeControllerTest extends ApiTestCase
         $volume = $this->volume();
 
         config(['volumes.admin_storage_disks' => ['admin-test']]);
-        $disk = Storage::fake('admin-test');
-        $disk->put('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/file.txt', 'abc');
 
         $this->beGlobalAdmin();
-        
-        // invalid url (>256 characters)
+
+        // invalid url (>512 characters)
         $response = $this->json('PUT', '/api/v1/volumes/'.$volume->id, [
-            'url' => 'admin-test://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            'url' => 'admin-test://'.str_repeat('a', 513),
         ])->assertStatus(422);
-        
-        $this->assertSame('The url must not be greater than 256 characters.', $response->exception->getMessage());
+
+        $this->assertSame('The url must not be greater than 512 characters.', $response->exception->getMessage());
         Queue::assertNothingPushed();
+    }
+
+    public function testUpdateUrlMaxLength()
+    {
+        $volume = $this->volume();
+
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        $disk = Storage::fake('admin-test');
+        // Split the path in two parts because a single path segment is limited to 255
+        // characters by the filesystem.
+        $path = str_repeat('a', 249).'/'.str_repeat('b', 249);
+        $disk->put($path.'/file.txt', 'abc');
+
+        $this->beGlobalAdmin();
+
+        // valid url (exactly 512 characters)
+        $url = 'admin-test://'.$path;
+        $this->assertSame(512, strlen($url));
+
+        $this->json('PUT', '/api/v1/volumes/'.$volume->id, ['url' => $url])
+            ->assertStatus(200);
+
+        $this->assertSame($url, $volume->fresh()->url);
     }
 
     public function testUpdateUrlProviderDenylist()

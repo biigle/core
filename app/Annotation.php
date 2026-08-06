@@ -3,7 +3,6 @@
 namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
-use Biigle\Traits\HasPointsAttribute;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Hidden(['pivot'])]
 abstract class Annotation extends Model implements AnnotationContract
 {
-    use HasPointsAttribute, HasFactory;
+    use HasFactory;
 
     /**
      * Get the attributes that should be cast.

@@ -78,39 +78,6 @@ class VideoAnnotation extends Annotation
     }
 
     /**
-     * Validate the points and frames of this annotation.
-     *
-     * @param array $points Not used
-     * @throws Exception If the points or frames are invalid.
-     */
-    public function validatePoints(array $points = [])
-    {
-        if ($this->shape_id === Shape::wholeFrameId()) {
-            if (count($this->points) !== 0) {
-                throw new Exception('Whole frame annotations cannot have point coordinates.');
-            }
-
-            return;
-        }
-
-        if (count($this->points) !== count($this->frames)) {
-            throw new Exception('The number of key frames does not match the number of annotation coordinates.');
-        }
-
-        if (count($this->points[0] ?? []) === 0) {
-            throw new Exception('An annotation must not start with a gap.');
-        }
-
-        // Gaps are represented as empty arrays so these should be skipped.
-        // The all-empty case is already caught with the check above.
-        array_map(function ($point) {
-            if (count($point) > 0) {
-                parent::validatePoints($point);
-            }
-        }, $this->points);
-    }
-
-    /**
      * Get the interpolated points at a specific point of time.
      *
      * This method must be equivalent to the interpolatePoints function of the JavaScript

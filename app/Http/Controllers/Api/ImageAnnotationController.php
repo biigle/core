@@ -3,16 +3,15 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StoreImageAnnotation;
+use Biigle\Http\Requests\UpdateImageAnnotation;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Label;
 use Biigle\Services\LabelBot\LabelBotService;
 use DB;
-use Exception;
 use Generator;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class ImageAnnotationController extends Controller
@@ -215,12 +214,6 @@ class ImageAnnotationController extends Controller
         $annotation->shape_id = $request->input('shape_id');
         $image = $request->image;
         $annotation->image()->associate($image);
-        try {
-            $annotation->validatePoints($points);
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
-        }
-
         $annotation->points = $points;
 
         if ($request->has('label_id')) {
@@ -286,29 +279,13 @@ class ImageAnnotationController extends Controller
      *    "shape_id": 3
      * }
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateImageAnnotation $request
      */
-    public function update(Request $request, $id)
+    public function update(UpdateImageAnnotation $request)
     {
-        $annotation = ImageAnnotation::findOrFail($id);
-        $this->authorize('update', $annotation);
-        $request->validate([
-            'shape_id' => 'required_without:points|integer|exists:shapes,id',
-            'points' => 'required_without:shape_id|array',
-        ]);
-
-        // from a JSON request, the array may already be decoded
-        $points = $request->input('points', $annotation->points);
-        $annotation->shape_id = $request->input('shape_id', $annotation->shape_id);
-
-        try {
-            $annotation->validatePoints($points);
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
-        }
-
-        $annotation->points = $points;
+        $annotation = $request->annotation;
+        $annotation->shape_id = $request->getShapeId();
+        $annotation->points = $request->getPoints();
         $annotation->save();
     }
 
