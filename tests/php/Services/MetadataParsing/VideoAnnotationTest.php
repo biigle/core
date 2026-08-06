@@ -135,6 +135,34 @@ class VideoAnnotationTest extends TestCase
         $data->validate();
     }
 
+    public function testValidateWholeFrame()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::wholeFrame(),
+            points: [],
+            frames: [1, null, 3],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        // Whole frame annotations have no points, so the number of frames does not have
+        // to match the number of points.
+        $this->expectNotToPerformAssertions();
+        $data->validate();
+    }
+
+    public function testValidateWholeFrameWithPoints()
+    {
+        $data = new VideoAnnotation(
+            shape: Shape::wholeFrame(),
+            points: [[10, 10]],
+            frames: [1],
+            labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
+        );
+
+        $this->expectException(Exception::class);
+        $data->validate();
+    }
+
     public function testValidatePointsWithGap()
     {
         $data = new VideoAnnotation(

@@ -2,10 +2,13 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Services\VideoAnnotationValidation;
+use Biigle\Rules\VideoAnnotationFrames;
+use Biigle\Rules\VideoAnnotationGaps;
+use Biigle\Rules\VideoAnnotationPoints;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateVideoAnnotation extends FormRequest
 {
@@ -35,37 +38,53 @@ class UpdateVideoAnnotation extends FormRequest
      */
     public function rules()
     {
-        $validators = [
+        return [
             'frames' => [
                 'bail',
                 'required',
                 'array',
-                function ($attribute, $value, $fail) {
-                    $duration = $this->annotation->video->duration;
-                    $message = VideoAnnotationValidation::checkFrames($value, $duration);
-
-                    if (!is_null($message)) {
-                        $fail($message);
-                    }
-                },
+                new VideoAnnotationFrames($this->annotation->video->duration),
+            ],
+            'points' => [
+                'bail',
+                Rule::when(!$this->isWholeFrame(), 'required'),
+                'array',
+                new VideoAnnotationPoints($this->annotation->shape_id),
             ],
         ];
+    }
 
-        if ($this->annotation->shape_id !== Shape::wholeFrameId()) {
-            $validators['points'] = [
-                'bail',
-                'required',
-                'array',
-                function ($attribute, $value, $fail) {
-                    $message = VideoAnnotationValidation::checkPoints($value);
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($validator->messages()->isNotEmpty()) {
+                // Skip additional validation rules if the regular rules above failed.
+                return;
+            }
 
-                    if (!is_null($message)) {
-                        $fail($message);
-                    }
-                },
-            ];
-        }
+            // Whole frame annotations have no points, so there are no gaps to check.
+            if (!$this->isWholeFrame()) {
+                $gapsRule = new VideoAnnotationGaps($this->input('frames', []));
+                $gapsRule->validate(
+                    'points',
+                    $this->input('points', []),
+                    fn ($message) => $validator->errors()->add('points', $message)
+                );
+            }
+        });
+    }
 
-        return $validators;
+    /**
+     * Determine if the annotation is a whole frame annotation.
+     */
+    protected function isWholeFrame(): bool
+    {
+        return $this->annotation->shape_id === Shape::wholeFrameId();
     }
 }

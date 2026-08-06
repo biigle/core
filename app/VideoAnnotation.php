@@ -3,7 +3,6 @@
 namespace Biigle;
 
 use Biigle\Observers\VideoAnnotationObserver;
-use Biigle\Traits\ValidatesVideoAnnotationPoints;
 use Exception;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -12,8 +11,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 #[ObservedBy(VideoAnnotationObserver::class)]
 class VideoAnnotation extends Annotation
 {
-    use ValidatesVideoAnnotationPoints;
-
     /**
      * Get the attributes that should be cast.
      *
