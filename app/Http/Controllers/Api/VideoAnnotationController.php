@@ -12,10 +12,8 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Cache;
 use DB;
-use Exception;
 use Generator;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Queue;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -222,12 +220,6 @@ class VideoAnnotationController extends Controller
             'frames' => $request->input('frames'),
         ]);
 
-        try {
-            $annotation->validatePoints();
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
-        }
-
         if ($request->has('label_id')) {
             $label = Label::findOrFail($request->input('label_id'));
         } else {
@@ -289,22 +281,8 @@ class VideoAnnotationController extends Controller
      */
     public function update(UpdateVideoAnnotation $request)
     {
-        // from a JSON request, the array may already be decoded
-        $points = $request->input('points', []);
-
-        if (is_string($points)) {
-            $points = json_decode($points);
-        }
-
-        $request->annotation->points = $points;
+        $request->annotation->points = $request->input('points', []);
         $request->annotation->frames = $request->input('frames');
-
-        try {
-            $request->annotation->validatePoints();
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
-        }
-
         $request->annotation->save();
     }
 
