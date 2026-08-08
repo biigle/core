@@ -1,5 +1,3 @@
-$control-button-active-color: #ff5e00;
-
 .control-button {
     position: relative;
     border-radius: 2px;
@@ -15,9 +13,9 @@ $control-button-active-color: #ff5e00;
         background-color: fade-out($ol-control-color, 0.3);
     }
 
-    &:not(.control-button--danger):not(.control-button--has-sub-controls) {
+    &:not(.control-button--danger) {
         &.active {
-            background-color: $control-button-active-color;
+            background-color: $brand-info;
         }
     }
 
