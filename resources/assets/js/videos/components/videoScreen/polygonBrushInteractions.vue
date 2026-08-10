@@ -44,7 +44,7 @@ export default {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
                 this.currentInteraction = null;
-            } else if (!this.hasSelectedLabel) {
+            } else if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'polygonBrush';
@@ -70,7 +70,7 @@ export default {
             if (!isUsingPolygonBrush) {
                 this.polygonBrushRadius = this.polygonBrushInteraction.getBrushRadius();
                 this.map.removeInteraction(this.polygonBrushInteraction);
-            } else if (this.hasSelectedLabel) {
+            } else if (this.hasSelectedLabel || this.labelbotIsActive) {
                 this.polygonBrushInteraction = new PolygonBrushInteraction({
                     source: this.pendingAnnotationSource,
                     style: Styles.editing,
