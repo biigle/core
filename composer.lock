@@ -261,12 +261,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ask-biigle.git",
-                "reference": "f35afc493745e4fc712e8eef77d2bedd80bc9321"
+                "reference": "6ac4384d41f857131e322716444550199ba9d628"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ask-biigle/zipball/f35afc493745e4fc712e8eef77d2bedd80bc9321",
-                "reference": "f35afc493745e4fc712e8eef77d2bedd80bc9321",
+                "url": "https://api.github.com/repos/biigle/ask-biigle/zipball/6ac4384d41f857131e322716444550199ba9d628",
+                "reference": "6ac4384d41f857131e322716444550199ba9d628",
                 "shasum": ""
             },
             "default-branch": true,
@@ -307,7 +307,7 @@
                 "issues": "https://github.com/biigle/ask-biigle/issues",
                 "source": "https://github.com/biigle/ask-biigle"
             },
-            "time": "2026-08-03T12:15:23+00:00"
+            "time": "2026-08-05T11:39:57+00:00"
         },
         {
             "name": "biigle/auth-haai",
@@ -704,12 +704,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/kpis.git",
-                "reference": "87a4c104c4031d1dec9c8a5109abfcd1702a33d1"
+                "reference": "d45525d3c2b11071eba76d8625a269e56702c159"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/kpis/zipball/87a4c104c4031d1dec9c8a5109abfcd1702a33d1",
-                "reference": "87a4c104c4031d1dec9c8a5109abfcd1702a33d1",
+                "url": "https://api.github.com/repos/biigle/kpis/zipball/d45525d3c2b11071eba76d8625a269e56702c159",
+                "reference": "d45525d3c2b11071eba76d8625a269e56702c159",
                 "shasum": ""
             },
             "default-branch": true,
@@ -746,7 +746,7 @@
                 "issues": "https://github.com/biigle/kpis/issues",
                 "source": "https://github.com/biigle/kpis"
             },
-            "time": "2026-06-15T10:20:55+00:00"
+            "time": "2026-08-04T13:04:03+00:00"
         },
         {
             "name": "biigle/laravel-file-cache",
@@ -913,12 +913,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/magic-sam.git",
-                "reference": "7d5981c3f553d18f5a68d43698c83e8c32362bba"
+                "reference": "50245d447602bd6c9736469bb6396454ff7d1661"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/magic-sam/zipball/7d5981c3f553d18f5a68d43698c83e8c32362bba",
-                "reference": "7d5981c3f553d18f5a68d43698c83e8c32362bba",
+                "url": "https://api.github.com/repos/biigle/magic-sam/zipball/50245d447602bd6c9736469bb6396454ff7d1661",
+                "reference": "50245d447602bd6c9736469bb6396454ff7d1661",
                 "shasum": ""
             },
             "default-branch": true,
@@ -955,7 +955,7 @@
                 "issues": "https://github.com/biigle/module/issues",
                 "source": "https://github.com/biigle/module"
             },
-            "time": "2026-07-22T08:42:44+00:00"
+            "time": "2026-08-03T08:52:00+00:00"
         },
         {
             "name": "biigle/maia",
@@ -963,12 +963,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/maia.git",
-                "reference": "c1e1eb49b7dee63eafe02918b7f546f661b18a01"
+                "reference": "84e5aee22f2225b6fe3b31d503df65645174c3df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/c1e1eb49b7dee63eafe02918b7f546f661b18a01",
-                "reference": "c1e1eb49b7dee63eafe02918b7f546f661b18a01",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/84e5aee22f2225b6fe3b31d503df65645174c3df",
+                "reference": "84e5aee22f2225b6fe3b31d503df65645174c3df",
                 "shasum": ""
             },
             "default-branch": true,
@@ -998,7 +998,7 @@
                 "issues": "https://github.com/biigle/maia/issues",
                 "source": "https://github.com/biigle/maia"
             },
-            "time": "2026-07-29T06:20:34+00:00"
+            "time": "2026-08-06T13:44:02+00:00"
         },
         {
             "name": "biigle/metadata-coco",
@@ -1258,12 +1258,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/ptp.git",
-                "reference": "b0d6f952b4ffd9aa86524c9996407297b5520c19"
+                "reference": "b8ffbd32cfc78c12126bc13c774a37dc3c41ea6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/ptp/zipball/b0d6f952b4ffd9aa86524c9996407297b5520c19",
-                "reference": "b0d6f952b4ffd9aa86524c9996407297b5520c19",
+                "url": "https://api.github.com/repos/biigle/ptp/zipball/b8ffbd32cfc78c12126bc13c774a37dc3c41ea6f",
+                "reference": "b8ffbd32cfc78c12126bc13c774a37dc3c41ea6f",
                 "shasum": ""
             },
             "default-branch": true,
@@ -1304,7 +1304,7 @@
                 "issues": "https://github.com/biigle/ptp/issues",
                 "source": "https://github.com/biigle/ptp"
             },
-            "time": "2026-07-22T08:31:08+00:00"
+            "time": "2026-08-03T08:52:26+00:00"
         },
         {
             "name": "biigle/user-disks",
