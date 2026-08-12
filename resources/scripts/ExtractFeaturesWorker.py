@@ -63,7 +63,7 @@ def worker():
     with open(lock_path, 'a') as lock_file:
         fcntl.flock(lock_file, fcntl.LOCK_EX)
         try:
-            dinov2_vits14 = hub_load('facebookresearch/dinov2:main', 'dinov2_vits14')
+            dinov2_vits14 = hub_load('facebookresearch/dinov2:main', 'dinov2_vits14', trust_repo=True)
         finally:
             fcntl.flock(lock_file, fcntl.LOCK_UN)
 

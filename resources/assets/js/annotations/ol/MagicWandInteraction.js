@@ -8,6 +8,8 @@ import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
+import { setOrUnsetProperty } from '@/utils.js';
+import { primaryAction } from '@biigle/ol/events/condition';
 
 /**
  * Control for drawing polygons using fuzzy matching of colors.
@@ -16,6 +18,8 @@ class MagicWandInteraction extends PointerInteraction {
     constructor(options) {
         super(options);
         this.on('change:active', this.toggleActive);
+
+        this.condition = options.condition || primaryAction;
 
         // The image layer to use as source for the magic wand tool.
         this.layer = options.layer;
@@ -122,9 +126,17 @@ class MagicWandInteraction extends PointerInteraction {
         this.mapExtent_ = null;
         this.snapshotHeight_ = 0;
         this.scaleFactor_ = 0;
+        this.setDraftColor(options.draftColor);
 
         // Update the snapshot and set event listeners if the interaction is active.
         this.toggleActive();
+    }
+
+    setDraftColor(color) {
+        this.draftColor_ = color || null;
+        [this.indicatorPoint, this.sketchFeature].forEach((feature) => {
+            setOrUnsetProperty(feature, 'color', this.draftColor_);
+        });
     }
 
     /**
@@ -189,7 +201,7 @@ class MagicWandInteraction extends PointerInteraction {
             // Add feature to annotation source to prevent flickering feature
             this.source.addFeature(this.sketchFeature);
         }
-        
+
         this.sketchSource.removeFeature(this.sketchFeature);
 
         this.sketchFeature = null;
@@ -205,6 +217,9 @@ class MagicWandInteraction extends PointerInteraction {
      * Start drawing of a sketch.
      */
     handleDownEvent(e) {
+        if (!this.condition(e)) {
+            return;
+        }
         this.downPoint[0] = Math.round(e.coordinate[0]);
         this.downPoint[1] = Math.round(e.coordinate[1]);
         this.drawSketch();
@@ -379,6 +394,9 @@ class MagicWandInteraction extends PointerInteraction {
                 this.sketchFeature.getGeometry().setCoordinates([points]);
             } else {
                 this.sketchFeature = new Feature(new Polygon([points]));
+                if (this.draftColor_) {
+                    this.sketchFeature.set('color', this.draftColor_);
+                }
                 if (this.sketchStyle) {
                     this.sketchFeature.setStyle(this.sketchStyle);
                 }

@@ -3,14 +3,11 @@
 namespace Biigle\Services\MetadataParsing;
 
 use Biigle\Shape;
-use Biigle\Traits\HasPointsAttribute;
 use Exception;
 
 // Abstract becaus it should not be used directly.
 abstract class Annotation
 {
-    use HasPointsAttribute;
-
     /**
      * Shape ID required for point validation.
      */
@@ -51,7 +48,7 @@ abstract class Annotation
     }
 
     /**
-     * Validate the points and labels.
+     * Validate the labels.
      *
      * @throws Exception If something is invalid.
      */
@@ -60,12 +57,10 @@ abstract class Annotation
         if (empty($this->labels)) {
             throw new Exception('The annotation has no labels.');
         }
-
-        $this->validatePoints($this->points);
     }
 
     /**
-     * {@inheritdoc}
+     * Round the floats of the points array to 2 decimals.
      */
     protected function setPointsAttribute(array $points)
     {

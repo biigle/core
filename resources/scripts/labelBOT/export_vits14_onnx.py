@@ -14,5 +14,12 @@ dummy_input = torch.randn(1, 3, image_height, image_width)
 
 # Export the model to ONNX format
 onnx_model_path = 'dinov2_vits14.onnx'
-torch.onnx.export(dinov2_model, dummy_input, onnx_model_path, 
-                  input_names=['input'], output_names=['output'])
+torch.onnx.export(
+    dinov2_model,
+    dummy_input,
+    onnx_model_path,
+    input_names=['input'],
+    output_names=['output'],
+    dynamo=True,
+    external_data=False,
+)

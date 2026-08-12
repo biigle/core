@@ -29,7 +29,7 @@ class UpdatePendingVolume extends FormRequest
     {
         return [
             'name' => 'required|max:512',
-            'url' => ['required', 'string', 'max:256', new VolumeUrl],
+            'url' => ['bail', 'required', 'string', 'max:512', new VolumeUrl],
             'files' => ['required', 'array', 'min:1'],
             'handle' => ['nullable', 'max:256', new Handle],
             'import_annotations' => 'bool',

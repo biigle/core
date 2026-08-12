@@ -12,10 +12,8 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Cache;
 use DB;
-use Exception;
 use Generator;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Queue;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -41,7 +39,7 @@ class VideoAnnotationController extends Controller
      *       "updated_at": "2015-02-18 11:45:00",
      *       "video_id": 1,
      *       "shape_id": 1,
-     *       "frames": [10.0, 15.0]
+     *       "frames": [10.0, 15.0],
      *       "points": [[100, 200],[200, 300]],
      *       "labels": [
      *          {
@@ -50,12 +48,12 @@ class VideoAnnotationController extends Controller
      *                "color": "bada55",
      *                "id": 3,
      *                "name": "My label",
-     *                "parent_id": null,
+     *                "parent_id": null
      *             },
      *             "user": {
      *                "id": 4,
      *                "firstname": "Graham",
-     *                "lastname": "Hahn",
+     *                "lastname": "Hahn"
      *             }
      *          }
      *       ]
@@ -94,7 +92,7 @@ class VideoAnnotationController extends Controller
      *
      * @api {get} video-annotations/:id Show a video annotation
      * @apiGroup Videos
-     * @apiName SHowVideoAnnotation
+     * @apiName ShowVideoAnnotation
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The annotation ID.
@@ -106,7 +104,7 @@ class VideoAnnotationController extends Controller
      *    "updated_at": "2015-02-18 11:45:00",
      *    "video_id": 1,
      *    "shape_id": 1,
-     *    "frames": [10.0, 15.0]
+     *    "frames": [10.0, 15.0],
      *    "points": [[100, 200],[200, 300]],
      *    "labels": [
      *       {
@@ -115,18 +113,18 @@ class VideoAnnotationController extends Controller
      *             "color": "bada55",
      *             "id": 3,
      *             "name": "My label",
-     *             "parent_id": null,
+     *             "parent_id": null
      *          },
      *          "user": {
      *             "id": 4,
      *             "firstname": "Graham",
-     *             "lastname": "Hahn",
+     *             "lastname": "Hahn"
      *          }
      *       }
      *    ]
      * }
      *
-     * @param int $id Snnotation id
+     * @param int $id Annotation id
      * @return mixed
      */
     public function show($id)
@@ -146,13 +144,13 @@ class VideoAnnotationController extends Controller
      * @apiName StoreVideoAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by
-     * the project to which the video belongs to.
+     * the project to which the video belongs to. If 'feature_vector' is given instead of 'label_id', the LabelBOT service is used to suggest a label based on the feature vector. The best matching suggestion is attached to the annotation and any further suggestions are returned in the `labelBOTLabels` attribute of the response.
      *
      * @apiParam {Number} id The video ID.
      *
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial label of the new annotation. Required if 'feature_vector' is not provided.
-     * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction. Required if 'label_id' is not provided.
+     * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction with the LabelBOT service. Required if 'label_id' is not provided.
      * @apiParam (Required arguments) {Number[]} frames Array of the key frame times. Each key frame corresponds to one entry in the points array.
      * @apiParam (Required arguments) {Number[]} points Array of the initial points for each key frame of the annotation. The points array of each key frame is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
@@ -180,7 +178,7 @@ class VideoAnnotationController extends Controller
      *    "updated_at": "2015-02-18 11:45:00",
      *    "created_at": "2015-02-18 11:45:00",
      *    "frames": [1.0, 2.0, 3.0],
-     *    "points": [[10, 11], [20, 21], [30, 31]]
+     *    "points": [[10, 11], [20, 21], [30, 31]],
      *    "labels": [
      *       {
      *          "id": 1,
@@ -188,12 +186,12 @@ class VideoAnnotationController extends Controller
      *             "color": "bada55",
      *             "id": 3,
      *             "name": "My label",
-     *             "parent_id": null,
+     *             "parent_id": null
      *          },
      *          "user": {
      *             "id": 4,
      *             "firstname": "Graham",
-     *             "lastname": "Hahn",
+     *             "lastname": "Hahn"
      *          }
      *       }
      *    ]
@@ -221,12 +219,6 @@ class VideoAnnotationController extends Controller
             'points' => $points,
             'frames' => $request->input('frames'),
         ]);
-
-        try {
-            $annotation->validatePoints();
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
-        }
 
         if ($request->has('label_id')) {
             $label = Label::findOrFail($request->input('label_id'));
@@ -285,29 +277,15 @@ class VideoAnnotationController extends Controller
      * @apiParamExample {json} Request example (JSON):
      * {
      *    "points": [[10, 11], [20, 21]],
-     *    "frames": [5.0, 10.]
+     *    "frames": [5.0, 10.0]
      * }
      *
      * @param UpdateVideoAnnotation $request
      */
     public function update(UpdateVideoAnnotation $request)
     {
-        // from a JSON request, the array may already be decoded
-        $points = $request->input('points', []);
-
-        if (is_string($points)) {
-            $points = json_decode($points);
-        }
-
-        $request->annotation->points = $points;
+        $request->annotation->points = $request->input('points', []);
         $request->annotation->frames = $request->input('frames');
-
-        try {
-            $request->annotation->validatePoints();
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
-        }
-
         $request->annotation->save();
     }
 

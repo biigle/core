@@ -8,10 +8,12 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
-import { never } from '@biigle/ol/events/condition';
+import { never, primaryAction } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
+import { setOrUnsetProperty } from '@/utils.js';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -186,6 +188,8 @@ export default {
                             indicatorPointStyle: Styles.editing,
                             indicatorCrossStyle: Styles.cross,
                             simplifyTolerant: 0.1,
+                            condition: primaryAction,
+                            draftColor: this.getDraftColor()
                         });
                     } else {
                         this.drawInteraction = new DrawInteraction({
@@ -198,15 +202,26 @@ export default {
                         });
                     }
 
-
                     this.map.addInteraction(this.drawInteraction);
 
-                    this.drawInteraction.on('drawstart', (event) => {
-                        this.drawEnded = false;
+                    if (this.drawInteraction.setDraftColor) {
+                        this.drawInteraction.setDraftColor(this.getDraftColor());
+                    } else {
+                        const applyDraftColor = (feature) => {
+                            setOrUnsetProperty(feature, 'color', this.getDraftColor());
+                        };
 
-                        if (this.draftAnnotationUsesLabelColor && this.selectedLabel) {
-                            event.feature.set('color', this.selectedLabel.color);
-                        }
+                        const source = this.drawInteraction.getOverlay().getSource();
+                        const features = source.getFeatures() || [];
+
+                        source.on('addfeature', (event) => {
+                            applyDraftColor(event.feature);
+                        });
+                        features.forEach(applyDraftColor);
+                    }
+
+                    this.drawInteraction.on('drawstart', () => {
+                        this.drawEnded = false;
                     });
                     this.drawInteraction.on('drawend', (e) => {
                         this.extendPendingAnnotation(e);
@@ -377,21 +392,18 @@ export default {
             this.drawInteraction.updateSnapshot();
         },
         updateDraftAnnotationColor(label) {
-            if (!this.drawInteraction) {
-                return;
+            const draftColor = this.draftAnnotationUsesLabelColor ? label?.color : null;
+            let features = this.pendingAnnotationSource?.getFeatures() || [];
+
+            if (this.drawInteraction?.setDraftColor) {
+                this.drawInteraction.setDraftColor(draftColor);
+            } else if (this.drawInteraction) {
+                let currentFeatures = this.drawInteraction.getOverlay()?.getSource()?.getFeatures() || [];
+                features.push(...currentFeatures);
             }
 
-            const overlay = this.drawInteraction.getOverlay();
-            const source = overlay && overlay.getSource();
-            let features = source ? source.getFeatures() : [];
-            features.push(...this.pendingAnnotationSource.getFeatures());
-
             features.forEach((feature) => {
-                if (label && label.color && this.draftAnnotationUsesLabelColor) {
-                    feature.set('color', label.color);
-                } else {
-                    feature.unset('color');
-                }
+                setOrUnsetProperty(feature, 'color', draftColor);
             });
         },
     },
@@ -430,6 +442,9 @@ export default {
             this.keyboardOn('Enter', this.finishDrawAnnotation, 0, this.listenerSet);
             this.keyboardOn('Shift+Enter', this.finishTrackAnnotation, 0, this.listenerSet);
         }
+    },
+    mounted() {
+        addRightClickDragPanToMap(this.map, () => this.isDrawingMagicWand);
     },
     beforeUnmount() {
         if (this.video && this.updateMagicWandSnapshot) {

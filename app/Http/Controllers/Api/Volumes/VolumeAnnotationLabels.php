@@ -13,9 +13,9 @@ class VolumeAnnotationLabels extends Controller
     /**
      * Get all annotation labels and annotation count for a given volume
      *
-     * @api {get} volumes/:vid/label-count Get annotation labels with a annotation count
+     * @api {get} volumes/:id/label-count Get annotation labels with a annotation count
      * @apiGroup Volumes
-     * @apiName test
+     * @apiName GetVolumeAnnotationLabelCounts
      * @apiParam {Number} id The Volume ID
      * @apiPermission projectMember
      * @apiDescription Returns a collection of annotation labels and their counts in the volume

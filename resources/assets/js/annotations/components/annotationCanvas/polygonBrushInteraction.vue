@@ -5,6 +5,8 @@ import PolygonBrushInteraction from '@/annotations/ol/interaction/PolygonBrush.j
 import SelectInteraction from '@biigle/ol/interaction/Select';
 import Styles from '@/annotations/stores/styles.js';
 import { never, noModifierKeys, click, shiftKeyOnly, altKeyOnly } from '@biigle/ol/events/condition';
+import { rightClick } from '@/annotations/ol/events/condition.js';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the polygon brush interaction.
@@ -64,6 +66,8 @@ export default {
                     style: Styles.editing,
                     brushRadius: brushRadius,
                     resizeCondition: altKeyOnly,
+                    condition: (event) => !rightClick(event),
+                    draftColor: this.getDraftColor()
                 });
                 currentInteraction.on('drawend', this.handleNewFeature);
                 this.map.addInteraction(currentInteraction);
@@ -78,7 +82,7 @@ export default {
                     brushRadius: brushRadius,
                     allowRemove: false,
                     addCondition: never,
-                    subtractCondition: noModifierKeys,
+                    subtractCondition: (event) => noModifierKeys(event) && !rightClick(event),
                     resizeCondition: altKeyOnly,
                 });
                 currentInteraction.on('modifystart', this.handleFeatureModifyStart);
@@ -93,7 +97,7 @@ export default {
                     features: this.selectInteraction.getFeatures(),
                     style: Styles.editing,
                     brushRadius: brushRadius,
-                    addCondition: noModifierKeys,
+                    addCondition: (event) => noModifierKeys(event) && !rightClick(event),
                     subtractCondition: never,
                     resizeCondition: altKeyOnly,
                 });
@@ -112,6 +116,13 @@ export default {
         toggleShiftClickSelectInteraction() {
             shiftClickSelectInteraction.setActive(this.canModify
                 && (this.isUsingPolygonEraser || this.isUsingPolygonFill));
+        },
+        updatePolygonBrushDraftColor() {
+            if (this.isUsingPolygonEraser || this.isUsingPolygonFill) {
+                return;
+            }
+
+            currentInteraction?.setDraftColor?.(this.getDraftColor());
         },
     },
     watch: {
@@ -139,6 +150,12 @@ export default {
             if (this.isNotAPolygonTool) {
                 this.resetCurrentInteraction();
             }
+        },
+        selectedLabel() {
+            this.updatePolygonBrushDraftColor();
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updatePolygonBrushDraftColor();
         }
     },
     created() {
@@ -159,6 +176,8 @@ export default {
         shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
         shiftClickSelectInteraction.setActive(false);
         this.map.addInteraction(shiftClickSelectInteraction);
+
+        addRightClickDragPanToMap(this.map, () => !this.isNotAPolygonTool)
     },
 };
 </script>

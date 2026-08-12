@@ -27,9 +27,9 @@ class ProjectInvitationController extends Controller
      * @apiParam {Number} id The project ID.
      *
      * @apiParam (Required attributes) {Date} expires_at The date on which the project invitation will expire.
-     * @apiParam (Required attributes) {Number} role_id ID of the user role the new project members should have. Invited usery may not become project admins. Default is "editor".
+     * @apiParam (Required attributes) {Number} role_id ID of the user role the new project members should have. Invited users may not become project admins. Default is "editor".
      *
-     * @apiParam (Optional attributes) {Number} max_uses The number of times this project invitation can be used to adda user to the project.
+     * @apiParam (Optional attributes) {Number} max_uses The number of times this project invitation can be used to add a user to the project.
      * @apiParam (Optional attributes) {Boolean} add_to_sessions If set to `true`, all users joining the project will automatically be added to all annotation sessions of all volumes that belong to the project.
      *
      * @param StoreProjectInvitation $request

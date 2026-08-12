@@ -137,7 +137,7 @@ class ProjectLabelTreeController extends Controller
     }
 
     /**
-     * Removes a label tree form the specified project.
+     * Removes a label tree from the specified project.
      *
      * @api {delete} projects/:pid/label-trees/:lid Remove a label tree
      * @apiGroup Projects

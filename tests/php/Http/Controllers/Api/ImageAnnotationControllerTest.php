@@ -481,12 +481,40 @@ class ImageAnnotationControllerTest extends ApiTestCase
     public function testStoreDenyWholeFrameShape()
     {
         $this->beEditor();
-        $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => Shape::wholeFrameId(),
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
-            'points' => [1],
-        ])->assertStatus(422);
+            // Points that would be valid for any other shape, so the request can only
+            // fail because of the shape.
+            'points' => [10, 11],
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+    }
+
+    public function testUpdateDenyWholeFrameShape()
+    {
+        $this->beAdmin();
+        $this->annotation->points = [10, 11];
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::wholeFrameId(),
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::wholeFrameId(),
+            'points' => [],
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+
+        $this->annotation->refresh();
+        $this->assertSame(Shape::pointId(), $this->annotation->shape_id);
     }
 
     public function testUpdate()

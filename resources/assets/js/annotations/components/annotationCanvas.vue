@@ -45,7 +45,7 @@ import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
 import { isInvalidShape } from '../utils.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
-import {defaults as defaultInteractions} from '@biigle/ol/interaction'
+import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
@@ -155,7 +155,7 @@ export default {
         },
         draftAnnotationUsesLabelColor: {
             type: Boolean,
-            default: true, 
+            default: true,
         },
     },
     data() {
@@ -764,6 +764,9 @@ export default {
             setTimeout(() => {
                 feature.setStyle(Styles.highlight);
             }, 200);
+        },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
         },
     },
     watch: {

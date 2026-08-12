@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\Traits\HasConstantInstances;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Shape wholeFrame()
  * @method static int wholeFrameId()
  */
+#[WithoutTimestamps]
 class Shape extends Model
 {
     use HasConstantInstances, HasFactory;
@@ -42,11 +44,4 @@ class Shape extends Model
         'ellipse' => 'Ellipse',
         'wholeFrame' => 'WholeFrame',
     ];
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 }

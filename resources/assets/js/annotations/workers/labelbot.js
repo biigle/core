@@ -51,10 +51,14 @@ self.onmessage = function(event) {
     } else if (type === 'run' && MODEL) {
         MODEL.run({input: getTensor(event.data.image)})
             .then((output) => {
+                // The model has two outputs: 'output' is the last hidden state
+                // and an auto-named second output is the pooled CLS embedding (1x384)
+                // that we actually want.
+                const key = Object.keys(output).find(k => k !== 'output');
                 self.postMessage({
                     type: 'run',
                     labelbotMessageID: event.data.labelbotMessageID,
-                    vector: Array.from(output[Object.keys(output)[0]].data),
+                    vector: Array.from(output[key].data),
                 });
             }, (error) => {
                 self.postMessage({

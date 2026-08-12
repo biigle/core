@@ -18,6 +18,7 @@ class ImageAnnotationExamplesController extends Controller
      * @apiName ShowVolumesExampleAnnotations
      * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The Label ID
+     * @apiParam (Optional arguments) {Number} take Maximum number of example annotations to return.
      * @apiPermission projectMember
      * @apiDescription The similarity is based on the Levenshtein distance between the label names. Only the sibling labels and the parent label are considered. This endpoint returns the image annotations of the specified label or of the most similar sibling/parent label if no annotations exist. Only available for image volumes.
      *

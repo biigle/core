@@ -92,7 +92,9 @@ class ApiTokenController extends Controller
             return $token;
         }
 
-        return $this->fuzzyRedirect()->with('token', $token);
+        // Flash a plain array because the JSON session serializer restores objects
+        // as arrays anyway.
+        return $this->fuzzyRedirect()->with('token', $token->toArray());
     }
 
     /**

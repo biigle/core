@@ -16,7 +16,7 @@
     <div id="create-volume-form-step-5" class="col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
         <h2>Metadata import label mapping</h2>
         <p class="text-muted">
-            Each label from the metadata file must be mapped to a label in the BIIGLE database. Some labels can be mapped automatically. The rest must be mapped manually. You can also create new labels based on the metadata information.
+            Each label from the metadata file must be mapped to a label in the BIIGLE database. Some labels can be mapped automatically. To map the remaining labels manually, enter a label name to select a label that already exists in BIIGLE or click the plus button to create a new label.
         </p>
         <form role="form" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}/label-map") }}" v-on:submit="startLoading">
 

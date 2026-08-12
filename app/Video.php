@@ -2,8 +2,15 @@
 
 namespace Biigle;
 
+use Biigle\Observers\VideoObserver;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[Fillable(['filename', 'volume_id', 'uuid', 'attrs', 'duration', 'lng', 'lat', 'taken_at'])]
+#[Hidden(['attrs'])]
+#[ObservedBy(VideoObserver::class)]
 class Video extends VolumeFile
 {
     /**
@@ -77,41 +84,19 @@ class Video extends VolumeFile
     const ERROR_INVALID_MOOV_POS = 6;
 
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'filename',
-        'volume_id',
-        'uuid',
-        'attrs',
-        'duration',
-        'lng',
-        'lat',
-        'taken_at',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'attrs' => 'array',
-        'lng' => 'array',
-        'lat' => 'array',
-        'duration' => 'float',
-    ];
-
-    /**
-     * The attributes hidden from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'attrs',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'attrs' => 'array',
+            'lng' => 'array',
+            'lat' => 'array',
+            'duration' => 'float',
+        ];
+    }
 
     /**
      * The annotations that belong to this video.

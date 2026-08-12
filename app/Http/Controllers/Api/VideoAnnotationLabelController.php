@@ -32,12 +32,12 @@ class VideoAnnotationLabelController extends Controller
      *       "color": "bada55",
      *       "id": 3,
      *       "name": "My label",
-     *       "parent_id": null,
+     *       "parent_id": null
      *    },
      *    "user": {
      *       "id": 4,
      *       "firstname": "Graham",
-     *       "lastname": "Hahn",
+     *       "lastname": "Hahn"
      *    }
      * }
      *
