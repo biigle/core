@@ -20,7 +20,20 @@ trait CompileFilters
                 if ($filterName === 'filename') {
                     $operator = 'ilike';
                     $filterValues = array_map(fn ($v) => str_replace('*', '%', $v), $filterValues);
-                } else {
+                } elseif ($filterName === 'created_at' || $filterName === 'updated_at') {
+                    $filterName = "$filterValues->ref.$filterName::date";
+                    $operator = match($filterValues->operator) {
+                        'gt' => '>',
+                        'lt' => '<',
+                        'eq' => '=',
+                    };
+                    $filterValues = match($operator) {
+                        '>' => $filterValues->endOfDay(),
+                        '<' => $filterValues->startOfDay(),
+                        '=' => $filterValues,
+                    };
+                }
+                else {
                     $operator = '=';
                 }
 

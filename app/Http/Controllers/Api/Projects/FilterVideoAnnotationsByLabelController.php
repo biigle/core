@@ -49,6 +49,10 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'filename.*' => 'string',
             'volume_id' => 'array',
             'volume_id.*' => 'integer',
+            'date_before' => 'array',
+            'date_before.*' => 'date:Y-m-d',
+            'date_after' => 'array',
+            'date_after.*' => 'date:Y-m-d',
             'union' => 'boolean',
         ]);
 
@@ -58,6 +62,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
             'volume_id' => $request->input('volume_id'),
+            'date_before' => $request->input('date_before'),
+            'date_after' => $request->input('date_after'),
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
