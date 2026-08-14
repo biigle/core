@@ -5,9 +5,11 @@ namespace Biigle\Jobs;
 use Biigle\Video;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+#[DeleteWhenMissingModels]
 class ProcessNewVolumeFiles extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
@@ -26,13 +28,6 @@ class ProcessNewVolumeFiles extends Job implements ShouldQueue
      * @var array
      */
     protected $only;
-
-    /**
-     * Ignore this job if the volume does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.

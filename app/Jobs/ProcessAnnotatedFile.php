@@ -13,6 +13,7 @@ use Exception;
 use FileCache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
@@ -30,6 +31,7 @@ use SVG\Nodes\Structures\SVGGroup;
 use SVG\Nodes\SVGNodeContainer;
 use SVG\SVG;
 
+#[DeleteWhenMissingModels]
 abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 {
     use SerializesModels, InteractsWithQueue;
@@ -54,13 +56,6 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * @var int
      */
     public $tries = 3;
-
-    /**
-     * Ignore this job if the annotation does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
