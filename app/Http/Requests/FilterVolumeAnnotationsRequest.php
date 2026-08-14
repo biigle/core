@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Http\Requests\FilterAnnotationsRequest;
 use Biigle\Volume;
 
 class FilterVolumeAnnotationsRequest extends FilterAnnotationsRequest
@@ -21,7 +20,7 @@ class FilterVolumeAnnotationsRequest extends FilterAnnotationsRequest
      */
     public function authorize()
     {
-        $this->volume = Volume::findOrFail($this->route('vid'));
+        $this->volume = Volume::findOrFail($this->route('id'));
 
         return $this->user()->can('access', $this->volume);
     }

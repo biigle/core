@@ -6,6 +6,11 @@ use \Illuminate\Foundation\Http\FormRequest;
 
 class FilterAnnotationsRequest extends FormRequest
 {
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
     public function rules(): array
     {
         return [
@@ -27,7 +32,5 @@ class FilterAnnotationsRequest extends FormRequest
             'updated_at.date' => 'date_format:Y-m-d',
             'union' => 'boolean',
         ];
-;
     }
 }
-

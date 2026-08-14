@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Http\Requests\FilterAnnotationsRequest;
 use Biigle\Project;
 
 class FilterProjectAnnotationsRequest extends FilterAnnotationsRequest
@@ -21,11 +20,12 @@ class FilterProjectAnnotationsRequest extends FilterAnnotationsRequest
      */
     public function authorize()
     {
-        $this->project = Project::findOrFail($this->route('pid'));
+        $this->project = Project::findOrFail($this->route('id'));
 
         return $this->user()->can('access', $this->project);
     }
-/**
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -37,5 +37,4 @@ class FilterProjectAnnotationsRequest extends FilterAnnotationsRequest
             'volume_id.*' => 'integer',
         ]);
     }
-
 }
