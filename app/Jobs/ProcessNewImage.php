@@ -10,12 +10,14 @@ use Exception;
 use File;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image as VipsImage;
 use Log;
 
+#[DeleteWhenMissingModels]
 class ProcessNewImage extends Job implements ShouldQueue
 {
     use SerializesModels, InteractsWithQueue;
@@ -26,13 +28,6 @@ class ProcessNewImage extends Job implements ShouldQueue
      * @var int
      */
     public $tries = 2;
-
-    /**
-     * Ignore this job if the image does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * The image to process
