@@ -107,29 +107,28 @@ trait CompileFilters
     private function normalizeDateFilter(string $annotationType, string $filterName, array $value, bool $isNegated): array
     {
         $dateValue = match ($value['operator']) {
-            'gt' => Carbon::createFromFormat('Y-m-d', $value['date'])->startOfDay(),
-            'lt' => Carbon::createFromFormat('Y-m-d', $value['date'])->endOfDay(),
-            'eq' => Carbon::createFromFormat('Y-m-d', $value['date'])->startOfDay(),
+            'gt' => Carbon::createFromFormat('Y-m-d', $value['date'])->endOfDay()->toDateTimeString(),
+            'lt' => Carbon::createFromFormat('Y-m-d', $value['date'])->startOfDay()->toDateTimeString(),
+            'eq' => $value['date'],
+            'neq' => $value['date'],
+            default => throw new \Exception('Operator not recognized'),
         };
 
-        // Using ::date means that pgsql will convert all dates to date, making queries slower.
-        // Use it only for equality.
-        $field = match ($value['operator']) {
-            'eq' => $annotationType."_{$value['ref']}s.{$filterName}::date",
-            default => $annotationType."_{$value['ref']}s.{$filterName}",
-        };
+        $field = $annotationType."_{$value['ref']}s.{$filterName}";
 
         $operator = match ($value['operator']) {
             'gt' => '>',
             'lt' => '<',
             'eq' => '=',
+            'neq' => '!=',
         };
 
         return [
             'field' => $field,
             'operator' => $operator,
-            'value' => $dateValue->toDateTimeString(),
+            'value' => $dateValue,
             'negated' => $isNegated,
+            'exact_date' => str_contains($operator, '='),
         ];
     }
 
@@ -179,9 +178,17 @@ trait CompileFilters
     private function applyFilterCondition($q, array $filter, string $boolean): void
     {
         if ($filter['negated']) {
-            $q->whereNot($filter['field'], $filter['operator'], $filter['value'], $boolean);
+            if (isset($filter['exact_date']) && $filter['exact_date']) {
+                $q->whereNot(fn ($query) => $query->whereDate($filter['field'], $filter['operator'], $filter['value'], $boolean));
+            } else {
+                $q->whereNot($filter['field'], $filter['operator'], $filter['value'], $boolean);
+            }
         } else {
-            $q->where($filter['field'], $filter['operator'], $filter['value'], $boolean);
+            if (isset($filter['exact_date']) && $filter['exact_date']) {
+                $q->whereDate($filter['field'], $filter['operator'], $filter['value'], $boolean);
+            } else {
+                $q->where($filter['field'], $filter['operator'], $filter['value'], $boolean);
+            }
         }
     }
 }
