@@ -30,7 +30,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for video volumes.
      *
-     * @param Request $request
+     * @param FilterVolumeAnnotationsRequest $request
      * @param int $lid Label ID
      * @return \Illuminate\Support\Collection
      */
@@ -62,7 +62,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->where('videos.volume_id', $vid)
             ->where('video_annotation_labels.label_id', $lid)
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('video', $query, $union, $filters))
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
                     $query->where('video_annotation_labels.user_id', $request->user()->id);

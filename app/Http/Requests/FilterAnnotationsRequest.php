@@ -28,7 +28,7 @@ class FilterAnnotationsRequest extends FormRequest
             'created_at.date' => 'date_format:Y-m-d',
             'updated_at.*' => 'array:ref,operator,date',
             'updated_at.ref' => 'string:annotation,annotation_label',
-            'updated_at.operator' => 'string:gt,eq,lt',
+            'updated_at.operator' => 'string:gt,eq,neq,lt',
             'updated_at.date' => 'date_format:Y-m-d',
             'union' => 'boolean',
         ];

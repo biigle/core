@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\FilterProjectAnnotationsRequest;
 use Biigle\Project;
 use Biigle\Traits\CompileFilters;
 use Biigle\VideoAnnotation;
@@ -29,32 +30,14 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs.
      *
-     * @param Request $request
+     * @param FilterProjectAnnotationsRequest $request
      * @param  int  $pid Project ID
      * @param int $lid Label ID
      * @return \Illuminate\Support\Collection
      */
-    public function index(Request $request, $pid, $lid)
+    public function index(FilterProjectAnnotationsRequest $request, $pid, $lid)
     {
-        $project = Project::findOrFail($pid);
-        $this->authorize('access', $project);
-
-        $this->validate($request, [
-            'take' => 'integer',
-            'shape_id' => 'array',
-            'shape_id.*' => 'integer',
-            'user_id' => 'array',
-            'user_id.*' => 'integer',
-            'filename' => 'array',
-            'filename.*' => 'string',
-            'volume_id' => 'array',
-            'volume_id.*' => 'integer',
-            'date_before' => 'array',
-            'date_before.*' => 'date:Y-m-d',
-            'date_after' => 'array',
-            'date_after.*' => 'date:Y-m-d',
-            'union' => 'boolean',
-        ]);
+        $pid = $request->project->id;
 
         $take = $request->input('take');
         $filters = [
@@ -62,8 +45,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
             'volume_id' => $request->input('volume_id'),
-            'date_before' => $request->input('date_before'),
-            'date_after' => $request->input('date_after'),
+            'created_at' => $request->input('created_at'),
+            'updated_at' => $request->input('updated_at'),
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
@@ -76,7 +59,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
                     ->where('project_id', $pid);
             })
             ->where('video_annotation_labels.label_id', $lid)
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('video', $query, $union, $filters))
             ->when(!is_null($take), fn ($query) => $query->take($take))
             ->select('videos.uuid', 'video_annotations.id')
             ->distinct()

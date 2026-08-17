@@ -30,7 +30,7 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for image volumes.
      *
-     * @param Request $request
+     * @param FilterVolumeAnnotationsRequest $request
      * @param int $lid Label ID
      * @return \Illuminate\Support\Collection
      */
