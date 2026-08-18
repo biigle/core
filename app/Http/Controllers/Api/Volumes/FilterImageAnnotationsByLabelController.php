@@ -23,8 +23,8 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
-     * @apiParam (Optional arguments) {Array} created_at Array containing objects mapping field names (annotation, annotation_label) to date operators (gt, gte, eq, lt, lte) and date Y-m-d values. Example: [{"annotation": {"gt": "2026-01-01"}}] means an annotation created after 2026-01-01
-     * @apiParam (Optional arguments) {Array} updated_at Array containing objects mapping field names (annotation, annotation_label) to date operators (gt, gte, eq, lt, lte) and date Y-m-d values. Example: [{"annotation": {"gt": "2026-01-01"}}] means an annotation updated after 2026-01-01
+     * @apiParam (Optional arguments) {Array} created_at Array containing objects mapping field names (annotation, annotation_label) to date logical operators (gt, eq, neq, lt) and date Y-m-d values. Example: [{"ref" :"annotation", "operator": "gt", "date": "2026-01-01"}}] means an annotation created after 2026-01-01
+     * @apiParam (Optional arguments) {Array} updated_at Array containing objects mapping field names (annotation, annotation_label) to date logical operators (gt, eq, neq, lt) and date Y-m-d values. Example: [{"ref" :"annotation", "operator": "gt", "date": "2026-01-01"}}] means an annotation updated after 2026-01-01
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for image volumes.
