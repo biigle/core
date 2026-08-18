@@ -21,6 +21,7 @@ class FilterVolumeAnnotationsRequest extends FilterAnnotationsRequest
     public function authorize()
     {
         $this->volume = Volume::findOrFail($this->route('id'));
+        $this->labelId = intval($this->route('id2'));
 
         return $this->user()->can('access', $this->volume);
     }

@@ -21,6 +21,7 @@ class FilterProjectAnnotationsRequest extends FilterAnnotationsRequest
     public function authorize()
     {
         $this->project = Project::findOrFail($this->route('id'));
+        $this->labelId = intval($this->route('id2'));
 
         return $this->user()->can('access', $this->project);
     }
@@ -33,7 +34,7 @@ class FilterProjectAnnotationsRequest extends FilterAnnotationsRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'volume_id' => 'array',
+            'volume_id' => 'nullable|array',
             'volume_id.*' => 'integer',
         ]);
     }

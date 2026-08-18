@@ -6,7 +6,6 @@ use Biigle\Http\Requests\FilterVolumeAnnotationsRequest;
 use Biigle\ImageAnnotation;
 use Biigle\Traits\CompileFilters;
 use Biigle\Volume;
-use Illuminate\Http\Request;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
@@ -31,12 +30,12 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for image volumes.
      *
      * @param FilterVolumeAnnotationsRequest $request
-     * @param int $lid Label ID
      * @return \Illuminate\Support\Collection
      */
-    public function index(FilterVolumeAnnotationsRequest $request, $lid)
+    public function index(FilterVolumeAnnotationsRequest $request)
     {
         $vid = $request->volume->id;
+        $lid = $request->labelId;
 
         $take = $request->input('take');
 

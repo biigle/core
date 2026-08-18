@@ -224,10 +224,10 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
 
     public function testIndexCreatedUpdatedFilter()
     {
-        $pid = $this->project()->id;
-        $id = $this->volume()->id;
+        $id = $this->project()->id;
+        $vid = $this->volume()->id;
 
-        $image = ImageTest::create(['volume_id' => $id]);
+        $image = ImageTest::create(['volume_id' => $vid]);
 
         $s1 = ShapeTest::create();
 

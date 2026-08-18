@@ -7,6 +7,13 @@ use \Illuminate\Foundation\Http\FormRequest;
 class FilterAnnotationsRequest extends FormRequest
 {
     /**
+     * ID of the label to filter annotations.
+     *
+     * @var int
+     */
+    public $labelId;
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -14,23 +21,24 @@ class FilterAnnotationsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'take' => 'integer',
-            'shape_id' => 'array',
-            'shape_id.*' => 'integer',
-            'user_id' => 'array',
-            'user_id.*' => 'integer',
-            'filename' => 'array',
-            'filename.*' => 'string',
-            'created_at' => 'array',
-            'created_at.*' => 'array:ref,operator,date',
-            'created_at.ref' => 'string:annotation,annotation_label',
-            'created_at.operator' => 'string:gt,eq,lt',
-            'created_at.date' => 'date_format:Y-m-d',
-            'updated_at.*' => 'array:ref,operator,date',
-            'updated_at.ref' => 'string:annotation,annotation_label',
-            'updated_at.operator' => 'string:gt,eq,neq,lt',
-            'updated_at.date' => 'date_format:Y-m-d',
-            'union' => 'boolean',
+            'take' => 'nullable|integer',
+            'shape_id' => 'nullable|array',
+            'shape_id.*' => 'nullable|integer',
+            'user_id' => 'nullable|array',
+            'user_id.*' => 'nullable|integer',
+            'filename' => 'nullable|array',
+            'filename.*' => 'nullable|string',
+            'created_at' => 'nullable|array',
+            'created_at.*' => 'nullable|array',
+            'created_at.*.ref' => 'required_with:created_at|string|alpha_dash|max:50',
+            'created_at.*.operator' => 'required_with:created_at|string|in:eq,neq,gt,lt',
+            'created_at.*.date' => 'required_with:created_at|date_format:Y-m-d',
+            'updated_at' => 'nullable|array',
+            'updated_at.*' => 'nullable|array',
+            'updated_at.*.ref' => 'required_with:updated_at|string|alpha_dash|max:50',
+            'updated_at.*.operator' => 'required_with:updated_at|string|in:eq,neq,gt,lt',
+            'updated_at.*.date' => 'required_with:updated_at|date_format:Y-m-d',
+            'union' => 'nullable|boolean',
         ];
     }
 }

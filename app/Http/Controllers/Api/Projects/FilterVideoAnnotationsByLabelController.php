@@ -7,7 +7,6 @@ use Biigle\Http\Requests\FilterProjectAnnotationsRequest;
 use Biigle\Project;
 use Biigle\Traits\CompileFilters;
 use Biigle\VideoAnnotation;
-use Illuminate\Http\Request;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
@@ -31,13 +30,12 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs.
      *
      * @param FilterProjectAnnotationsRequest $request
-     * @param  int  $pid Project ID
-     * @param int $lid Label ID
      * @return \Illuminate\Support\Collection
      */
-    public function index(FilterProjectAnnotationsRequest $request, $pid, $lid)
+    public function index(FilterProjectAnnotationsRequest $request)
     {
         $pid = $request->project->id;
+        $lid = $request->labelId;
 
         $take = $request->input('take');
         $filters = [

@@ -6,7 +6,6 @@ use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\FilterVolumeAnnotationsRequest;
 use Biigle\Traits\CompileFilters;
 use Biigle\VideoAnnotation;
-use Illuminate\Http\Request;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
@@ -31,12 +30,12 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for video volumes.
      *
      * @param FilterVolumeAnnotationsRequest $request
-     * @param int $lid Label ID
      * @return \Illuminate\Support\Collection
      */
-    public function index(FilterVolumeAnnotationsRequest $request, $lid)
+    public function index(FilterVolumeAnnotationsRequest $request)
     {
         $vid = $request->volume->id;
+        $lid = $request->labelId;
 
         $take = $request->input('take');
         $filters = [

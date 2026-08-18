@@ -32,12 +32,12 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs.
      *
      * @param FilterProjectAnnotationsRequest $request
-     * @param int $lid Label ID
      * @return \Illuminate\Support\Collection
      */
-    public function index(FilterProjectAnnotationsRequest $request, $lid)
+    public function index(FilterProjectAnnotationsRequest $request)
     {
         $pid = $request->project->id;
+        $lid = $request->labelId;
         $take = $request->input('take');
         $filters = [
             'shape_id' => $request->input('shape_id'),
@@ -59,8 +59,7 @@ class FilterImageAnnotationsByLabelController extends Controller
             })
             ->when(!is_null($take), fn ($query) => $query->take($take))
             ->where('image_annotation_labels.label_id', $lid)
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('image', $query, $union, $filters))
-            ->select('images.uuid', 'image_annotations.id')
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('image', $query, $union, $filters)) ->select('images.uuid', 'image_annotations.id')
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')
             ->pluck('images.uuid', 'image_annotations.id');
