@@ -31,6 +31,9 @@ use SVG\Nodes\Structures\SVGGroup;
 use SVG\Nodes\SVGNodeContainer;
 use SVG\SVG;
 
+/**
+ * @template TAnnotation of Annotation
+ */
 #[DeleteWhenMissingModels]
 abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 {
@@ -211,7 +214,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     public function createSvgs(): void
     {
-        $this->getAnnotationQuery($this->file)
+        $this->getAnnotationQuery()
             // No SVGs should be generated for whole frame annotations.
             ->where('shape_id', '!=', Shape::wholeFrameId())
             ->eachById(fn ($a) => $this->createSvg($a));
@@ -370,15 +373,38 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
     /**
      * Create the feature vectors based on the Python script output.
+     *
+     * @param Collection<int, TAnnotation> $annotations
      */
     abstract protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void;
 
     /**
-     * Get the query builder for the annotations (maybe filtered by IDs).
+     * Get the query builder for all annotations of the file of this job.
      *
-     * @return Builder<covariant Annotation>
+     * @return Builder<TAnnotation>
      */
-    abstract protected function getAnnotationQuery(VolumeFile $file): Builder;
+    abstract protected function getBaseAnnotationQuery(): Builder;
+
+    /**
+     * Get the query builder for the annotations of the file that should be processed.
+     *
+     * @return Builder<TAnnotation>
+     */
+    protected function getAnnotationQuery(): Builder
+    {
+        return $this->getBaseAnnotationQuery()
+            ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
+            ->with('shape')
+            // The file of all annotations of this job is already known, so set it
+            // manually to avoid a query for each annotation (e.g. in getTargetPath()).
+            ->afterQuery(function ($annotations) {
+                if ($annotations instanceof Collection) {
+                    $annotations->each(fn ($a) => $a->setRelation('file', $this->file));
+                }
+
+                return $annotations;
+            });
+    }
 
     /**
      * Draw annotation as SVG
