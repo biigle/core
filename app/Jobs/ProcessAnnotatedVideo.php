@@ -30,7 +30,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         // of memory issues.
         // Also (if feature vectors are generated), a PNG is stored for each frame in a
         // chunk. Large chunks could comsume too much space.
-        $this->getAnnotationQuery($file)
+        $this->getAnnotationQuery()
             ->chunkById(100, fn ($a) => $this->processAnnotationChunk($a, $video));
     }
 
@@ -160,11 +160,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @return Builder<VideoAnnotation>
      */
-    protected function getAnnotationQuery(VolumeFile $file): Builder
+    protected function getBaseAnnotationQuery(): Builder
     {
-        return VideoAnnotation::where('video_id', $file->id)->when(
-            !empty($this->only),
-            fn ($q) => $q->whereIn('id', $this->only)
-        );
+        return VideoAnnotation::where('video_id', $this->file->id);
     }
 }
