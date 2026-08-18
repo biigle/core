@@ -4,7 +4,7 @@ namespace Biigle\Http\Requests;
 
 use \Illuminate\Foundation\Http\FormRequest;
 
-class FilterAnnotationsRequest extends FormRequest
+abstract class FilterAnnotationsRequest extends FormRequest
 {
     /**
      * ID of the label to filter annotations.

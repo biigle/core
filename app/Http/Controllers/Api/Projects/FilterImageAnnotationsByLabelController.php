@@ -59,7 +59,8 @@ class FilterImageAnnotationsByLabelController extends Controller
             })
             ->when(!is_null($take), fn ($query) => $query->take($take))
             ->where('image_annotation_labels.label_id', $lid)
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('image', $query, $union, $filters)) ->select('images.uuid', 'image_annotations.id')
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('image', $query, $union, $filters))
+            ->select('images.uuid', 'image_annotations.id')
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')
             ->pluck('images.uuid', 'image_annotations.id');
