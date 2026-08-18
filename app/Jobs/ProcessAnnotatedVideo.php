@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image;
 
+/**
+ * @extends ProcessAnnotatedFile<VideoAnnotation>
+ */
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 {
     /**

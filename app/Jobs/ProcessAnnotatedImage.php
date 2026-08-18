@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
 
+/**
+ * @extends ProcessAnnotatedFile<ImageAnnotation>
+ */
 class ProcessAnnotatedImage extends ProcessAnnotatedFile
 {
     /**

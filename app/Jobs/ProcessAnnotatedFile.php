@@ -31,6 +31,9 @@ use SVG\Nodes\Structures\SVGGroup;
 use SVG\Nodes\SVGNodeContainer;
 use SVG\SVG;
 
+/**
+ * @template TAnnotation of Annotation
+ */
 #[DeleteWhenMissingModels]
 abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 {
@@ -370,20 +373,22 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
     /**
      * Create the feature vectors based on the Python script output.
+     *
+     * @param Collection<int, TAnnotation> $annotations
      */
     abstract protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void;
 
     /**
      * Get the query builder for all annotations of the file of this job.
      *
-     * @return Builder<covariant Annotation>
+     * @return Builder<TAnnotation>
      */
     abstract protected function getBaseAnnotationQuery(): Builder;
 
     /**
      * Get the query builder for the annotations of the file that should be processed.
      *
-     * @return Builder<covariant Annotation>
+     * @return Builder<TAnnotation>
      */
     protected function getAnnotationQuery(): Builder
     {
