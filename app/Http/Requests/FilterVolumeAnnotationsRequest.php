@@ -7,7 +7,7 @@ use Biigle\Volume;
 class FilterVolumeAnnotationsRequest extends FilterAnnotationsRequest
 {
     /**
-     * To which project the annotations are being filtered.
+     * To which volume the annotations are being filtered.
      *
      * @var Volume
      */

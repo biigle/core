@@ -8,6 +8,7 @@ trait CompileFilters
 {
     /**
     * Compile Largo filter(s) that were requested and add them to the query
+    * @param string $annotationType 'video' or 'image' depending on the nature of the support of the request
     * @param Builder $query Query to add filters to
     * @param bool $union Whether filters are considered inclusive (OR) or exclusive (AND)
     * @param array $filters Array of filters to add to the query in the form `filterName => filterValue`
@@ -34,13 +35,13 @@ trait CompileFilters
      * Returns an array of normalized filter arrays suitable for query application.
      *
      * @param string $filterName The name of the filter to apply
-     * @param array<mixed> $filterValues The raw filter values from the request
+     * @param array $filterValues The raw filter values from the request
      *
-     * @return array<int, array<string, mixed>> An array of normalized filter arrays with keys:
-     *                                           - field: The database field name
-     *                                           - operator: The SQL operator (=, >, <, ilike, etc.)
-     *                                           - value: The filter value
-     *                                           - negated: Whether the filter should be negated
+     * @return array An array of normalized filter arrays with keys:
+     *                - field: The database field name
+     *                - operator: The SQL operator (=, >, <, ilike, etc.)
+     *                - value: The filter value
+     *                - negated: Whether the filter should be negated
      */
     private function normalizeFilterValues(string $annotationType, string $filterName, array $filterValues): array
     {
@@ -64,11 +65,11 @@ trait CompileFilters
      * @param mixed $value The raw filter value, optionally prefixed with '-' for negation
      * @param bool $isNegated Whether the filter value was prefixed with '-'
      *
-     * @return array<string, mixed> A normalized filter array with keys:
-     *                              - field: 'filename'
-     *                              - operator: 'ilike'
-     *                              - value: The filename pattern with * converted to %
-     *                              - negated: Whether the filter should be negated
+     * @return array A normalized filter array with keys:
+     *                - field: 'filename'
+     *                - operator: 'ilike'
+     *                - value: The filename pattern with * converted to %
+     *                - negated: Whether the filter should be negated
      */
     private function normalizeFilenameFilter($value, bool $isNegated): array
     {
@@ -89,20 +90,21 @@ trait CompileFilters
      * - 'gt' (greater than): uses end of day
      * - 'lt' (less than): uses start of day
      * - 'eq' (equals): uses the exact date value
+     * - 'neq' (not equals): uses the exact date value
      *
      * @param string $filterName The date field name ('created_at' or 'updated_at')
      * @param array $value An array with keys:
-     *                      - operator: The comparison operator ('gt', 'lt', 'eq')
-     *                      - ref: The table/column reference prefix
-     *                      - The value itself should be a Carbon/DateTime instance with
-     *                        startOfDay() and endOfDay() methods
+     *                      - operator: The comparison operator ('gt', 'lt', 'eq', neq)
+     *                      - ref: The table/column reference
+     *                      - date: The date of reference
      * @param bool $isNegated Whether the filter should be negated
      *
-     * @return array<string, mixed> A normalized filter array with keys:
-     *                              - field: The fully qualified field name with ::date cast
-     *                              - operator: The SQL comparison operator (>, <, =)
-     *                              - value: The date value with appropriate time boundaries
-     *                              - negated: Whether the filter should be negated
+     * @return array A normalized filter array with keys:
+     *                 - field: The fully qualified field name with ::date cast
+     *                 - operator: The SQL comparison operator (>, <, =, !=)
+     *                 - value: The date value string with appropriate time boundaries
+     *                 - negated: not used here
+     *                 - exact_date: if using equality, will force the conversion of the dates on PostrgreSQL
      */
     private function normalizeDateFilter(string $annotationType, string $filterName, array $value, bool $isNegated): array
     {
@@ -141,11 +143,11 @@ trait CompileFilters
      * @param string $value The raw filter value, optionally prefixed with '-' for negation
      * @param bool $isNegated Whether the filter value was prefixed with '-'
      *
-     * @return array<string, mixed> A normalized filter array with keys:
-     *                              - field: The database field name
-     *                              - operator: '='
-     *                              - value: The filter value without negation prefix
-     *                              - negated: Whether the filter should be negated
+     * @return array A normalized filter array with keys:
+     *               - field: The database field name
+     *               - operator: '='
+     *               - value: The filter value without negation prefix
+     *               - negated: Whether the filter should be negated
      */
     private function normalizeDefaultFilter(string $filterName, string $value, bool $isNegated): array
     {
@@ -166,11 +168,11 @@ trait CompileFilters
      *
      * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $q
      *        The query builder instance to apply the filter to
-     * @param array<string, mixed> $filter A normalized filter array with keys:
-     *                                     - field: The database field name
-     *                                     - operator: The SQL operator
-     *                                     - value: The filter value
-     *                                     - negated: Whether to use whereNot instead of where
+     * @param array $filter A normalized filter array with keys:
+     *                      - field: The database field name
+     *                      - operator: The SQL operator
+     *                      - value: The filter value
+     *                      - negated: Whether to use whereNot instead of where
      * @param string $boolean The boolean operator for combining conditions ('and' or 'or')
      *
      * @return void
