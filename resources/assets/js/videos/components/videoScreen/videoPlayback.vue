@@ -320,11 +320,9 @@ export default {
             immediate: true,
             deep: true,
             handler() {
-                console.log(this.video.src);
-                if (!this.video.src) {
-                    return;
-                }
-                this.initMediabunny();
+                this.video.addEventListener('loadedmetadata', () => {
+                    this.initMediabunny();
+                });
             }
         }
     },
