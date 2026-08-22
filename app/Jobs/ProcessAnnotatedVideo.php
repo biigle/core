@@ -8,7 +8,6 @@ use Biigle\VolumeFile;
 use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
-use FFMpeg\Media\Video;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
@@ -39,7 +38,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         // of memory issues.
         // Also (if feature vectors are generated), a PNG is stored for each frame in a
         // chunk. Large chunks could comsume too much space.
-        $this->getAnnotationQuery($file)
+        $this->getAnnotationQuery()
             ->chunkById(100, fn ($a) => $this->processAnnotationChunk($a, $path));
     }
 
@@ -123,16 +122,6 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                 );
             }
         }
-    }
-
-    /**
-     * Get the FFMpeg video instance.
-     *
-     * @param string $path
-     */
-    protected function getVideo($path)
-    {
-        return FFMpeg::create()->open($path);
     }
 
     /**
