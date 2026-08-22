@@ -18,6 +18,9 @@ use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image;
 use Throwable;
 
+/**
+ * @extends ProcessAnnotatedFile<VideoAnnotation>
+ */
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 {
     /**
@@ -237,11 +240,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @return Builder<VideoAnnotation>
      */
-    protected function getAnnotationQuery(VolumeFile $file): Builder
+    protected function getBaseAnnotationQuery(): Builder
     {
-        return VideoAnnotation::where('video_id', $file->id)->when(
-            !empty($this->only),
-            fn ($q) => $q->whereIn('id', $this->only)
-        );
+        return VideoAnnotation::where('video_id', $this->file->id);
     }
 }

@@ -165,7 +165,6 @@ class LabelTreeController extends Controller
         }
 
         return $this->fuzzyRedirect('label-trees', $tree->id)
-            ->with('newTree', $tree)
             ->with('message', 'Label tree created.')
             ->with('messageType', 'success');
     }

@@ -365,7 +365,7 @@ class UserController extends Controller
             return $user;
         }
 
-        return $this->fuzzyRedirect()->with('newUser', $user);
+        return $this->fuzzyRedirect();
     }
 
     /**

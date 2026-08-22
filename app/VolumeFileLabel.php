@@ -17,14 +17,17 @@ abstract class VolumeFileLabel extends Model
     use HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'user_id' => 'int',
-        'label_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'int',
+            'label_id' => 'int',
+        ];
+    }
 
     /**
      * The file, this volume file label belongs to.

@@ -463,6 +463,15 @@ class PendingVolumeControllerTest extends ApiTestCase
             'files' => ['1.jpg', '2.jpg'],
         ])->assertStatus(422);
 
+        // invalid url (>512 characters)
+        $response = $this->putJson("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://'.str_repeat('a', 513),
+            'files' => ['1.jpg', '2.jpg'],
+        ])->assertStatus(422);
+
+        $this->assertSame('The url must not be greater than 512 characters.', $response->exception->getMessage());
+
         // images directory dows not exist in storage disk
         $this->putJson("/api/v1/pending-volumes/{$id}", [
             'name' => 'my volume no. 1',

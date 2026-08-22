@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\Traits\HasConstantInstances;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static MediaType video()
  * @method static int videoId()
  */
+#[WithoutTimestamps]
 class MediaType extends Model
 {
     use HasConstantInstances, HasFactory;
@@ -27,11 +29,4 @@ class MediaType extends Model
         'image' => 'image',
         'video' => 'video',
     ];
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
 }
