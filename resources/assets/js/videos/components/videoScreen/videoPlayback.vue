@@ -81,18 +81,14 @@ export default {
             this.updateMapReadyRevision();
         },
         renderVideo(force) {
-            const currentTime = this.video.currentTime;
             // Drop animation frame if the time has not changed.
-            if (force || this.renderCurrentTime !== this.video.currentTime) {
-                this.renderCurrentTime = this.video.currentTime;
-
-                if (!this.video.paused && this.useMediabunnyFallback) {
-                    this.getFrameBitmap(currentTime);
-                } else {
-                    this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-                    this.videoSource.changed();
-                }
+            if (!force && this.renderCurrentTime === this.video.currentTime) {
+                return;
             }
+
+            this.renderCurrentTime = this.video.currentTime;
+            this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+            this.videoSource.changed();
         },
         startRenderLoop() {
             let render;
@@ -117,6 +113,13 @@ export default {
                 window.cancelAnimationFrame(this.animationFrameId);
             }
             this.animationFrameId = null;
+        },
+        async renderPausedFrame(time = this.video.currentTime) {
+            if (!this.video.paused || !this.useMediabunnyFallback) {
+                this.renderVideo(true);
+                return;
+            }
+            await this.getFrameBitmap(time);
         },
         setPlaying() {
             this.playing = true;
@@ -150,8 +153,12 @@ export default {
             // Update the layer (dimensions) if a new video is loaded.
             this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
         },
-        handleSeeked() {
-            this.renderVideo(true);
+        async handleSeeked() {
+            if (this.video.paused) {
+                await this.renderPausedFrame();
+            } else {
+                this.renderVideo(true);
+            }
         },
         // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
         async emitPreviousFrame() {
@@ -269,7 +276,6 @@ export default {
                     source: new UrlSource(this.video.src),
                     formats: ALL_FORMATS
                 });
-                console.log(this.video.src);
                 const track = await this.mediabunnyInput.getPrimaryVideoTrack();
                 this.mediabunnySink = new VideoSampleSink(track);
             } catch (e) {
@@ -288,15 +294,20 @@ export default {
                 return;
             }
 
-            if (this.cachedBitmap) {
-                this.cachedBitmap.close();
-            }
-
             const sample = await this.mediabunnySink.getSample(roundedTime);
             const videoFrame = sample.toVideoFrame();
             const bitmap = await createImageBitmap(videoFrame);
             sample.close();
             videoFrame.close();
+
+            if (!this.video.paused || Math.round(this.video.currentTime * 100) / 100 !== roundedTime) {
+                bitmap.close();
+                return;
+            }
+
+            if (this.cachedBitmap) {
+                this.cachedBitmap.close();
+            }
 
             this.cachedTime = roundedTime;
             this.cachedBitmap = bitmap;
