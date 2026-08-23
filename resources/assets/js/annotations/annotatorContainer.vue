@@ -416,7 +416,7 @@ export default {
                     confidence: 1,
                 };
 
-                if (this.volare.volareModeIsActive) {
+                if (this.annotationMode === 'volare') {
                     this.$refs.canvas.blinkAnnotation(annotation);
                 }
 
