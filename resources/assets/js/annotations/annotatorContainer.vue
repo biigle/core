@@ -557,7 +557,7 @@ export default {
         pauseLawnmower(timestamp) {
             this.$refs.annotationModesTab.pauseLawnmower(timestamp);
         },
-        pauseVolare(timestamp) {
+        pauseVolare() {
             this.$refs.annotationModesTab.pauseVolare(timestamp);
         },
         showImageWithId(imageId) {
@@ -748,8 +748,6 @@ export default {
         Events.on('annotations.detachLabel', this.handleDetachAnnotationLabel);
         Events.on('annotations.delete', this.handleDeleteAnnotation);
         Events.on('annotations.focus', this.focusAnnotation);
-
-        // TODO Are these necessary? Should they be moved to the new volare composable?
 
         if (UrlParams.get('annotation')) {
             let id = parseInt(UrlParams.get('annotation'));
