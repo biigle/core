@@ -30,7 +30,7 @@ const PAUSED = PlayPauseState.PAUSED;
 
 export default {
     emits: [
-        'transitionRequested'
+        'transition-requested'
     ],
     props: {
         state: {
@@ -73,11 +73,11 @@ export default {
         },
         playButtonClicked() {
             const targetState = this.is(ACTIVE) ? INACTIVE : ACTIVE;
-            this.$emit('transitionRequested', targetState);
+            this.$emit('transition-requested', targetState);
         },
         pauseButtonClicked() {
             const targetState = this.is(ACTIVE) ? PAUSED : INACTIVE;
-            this.$emit('transitionRequested', targetState);
+            this.$emit('transition-requested', targetState);
         }
     }
 }

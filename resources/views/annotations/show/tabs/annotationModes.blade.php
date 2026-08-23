@@ -16,7 +16,7 @@
                 stopButtonTitleText="Stop cycling through all annotations 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Volare"
                 :state="currentVolareState"
-                @transitionRequested="onVolarePlayPauseTransitionRequested"
+                @transition-requested="onVolarePlayPauseTransitionRequested"
             ></play-pause>
             @can('add-annotation', $image)
                 <button class="btn btn-default" :disabled="!isVolareActive || null" v-on:click="emitAttachLabel" title="Attach the currently selected label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="fa fa-plus" aria-hidden="true"></span></button>
@@ -31,7 +31,7 @@
                 stopButtonTitleText="Stop cycling through image sections 𝗘𝘀𝗰"
                 pauseButtonTitleText="Pause Lawnmower"
                 :state="currentLawnmowerState"
-                @transitionRequested="onLawnmowerPlayPauseTransitionRequested"
+                @transition-requested="onLawnmowerPlayPauseTransitionRequested"
             ></play-pause>
             <span class="sidebar-tab__timestamp" v-text="lawnmowerPausedAtText"></span>
         </div>
