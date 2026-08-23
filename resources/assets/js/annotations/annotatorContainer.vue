@@ -557,7 +557,7 @@ export default {
         pauseLawnmower(timestamp) {
             this.$refs.annotationModesTab.pauseLawnmower(timestamp);
         },
-        pauseVolare() {
+        pauseVolare(timestamp) {
             this.$refs.annotationModesTab.pauseVolare(timestamp);
         },
         showImageWithId(imageId) {
