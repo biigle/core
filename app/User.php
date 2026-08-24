@@ -4,6 +4,8 @@ namespace Biigle;
 
 use Biigle\Observers\UserObserver;
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,9 +17,9 @@ use Illuminate\Notifications\Notifiable;
  */
 #[Hidden(['password', 'remember_token', 'pivot', 'uuid'])]
 #[ObservedBy(UserObserver::class)]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable, HasJsonAttributes, HasFactory;
+    use Notifiable, HasJsonAttributes, HasFactory, MustVerifyEmailTrait;
 
     /**
      * Get the attributes that should be cast.
@@ -32,6 +34,7 @@ class User extends Authenticatable
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'login_at' => 'datetime',
+            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
