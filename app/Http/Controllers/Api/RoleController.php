@@ -34,7 +34,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return Role::all();
+        return collect(Role::cases())->map->toArray();
     }
 
     /**
@@ -58,6 +58,7 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        return Role::findOrFail($id);
+        abort_unless($role = Role::tryFrom((int) $id), 404);
+        return $role->toArray();
     }
 }

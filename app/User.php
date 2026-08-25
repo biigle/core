@@ -68,12 +68,10 @@ class User extends Authenticatable
 
     /**
      * The global role of this user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, $this>
      */
-    public function role()
+    public function getRoleAttribute(): Role
     {
-        return $this->belongsTo(Role::class);
+        return Role::from($this->role_id);
     }
 
     /**

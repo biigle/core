@@ -1,0 +1,49 @@
+<?php
+
+use Biigle\Role;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        $oldIds = DB::table('roles')->pluck('id', 'name');
+        $map = [
+            $oldIds['admin'] => Role::adminId(),
+            $oldIds['editor'] => Role::editorId(),
+            $oldIds['guest'] => Role::guestId(),
+            $oldIds['expert'] => Role::expertId(),
+        ];
+
+        // Replace foreign keys with the above IDs
+        foreach ([
+            ['users', 'role_id'],
+            ['project_user', 'project_role_id'],
+            ['label_tree_user', 'role_id'],
+            ['project_invitations', 'role_id'],
+        ] as [$table, $column]) {
+            foreach ($map as $oldId => $newId) {
+                DB::table($table)
+                    ->where($column, $oldId)
+                    ->update([$column => $newId]);
+            }
+
+            Schema::table($table, fn (Blueprint $t) => $t->dropForeign([$column]));
+        }
+        Schema::dropIfExists('roles');
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // TODO Do we need this?
+    }
+};

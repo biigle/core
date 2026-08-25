@@ -25,7 +25,7 @@ class ProjectUserController extends Controller
             Role::expert(),
             Role::editor(),
             Role::guest(),
-        ]);
+        ])->map->toArray();
 
         $roleOrder = [
             Role::guestId(),
