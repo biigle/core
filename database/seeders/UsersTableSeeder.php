@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Biigle\Role;
 use Biigle\User;
 use Illuminate\Database\Seeder;
 
@@ -16,7 +17,7 @@ class UsersTableSeeder extends Seeder
             'email'     => 'jane@user.com',
             'password'  => Hash::make('janespassword'),
         ]);
-        $jane->role()->associate(Biigle\Role::admin());
+        $jane->role_id = Role::adminId();
         $jane->save();
     }
 }

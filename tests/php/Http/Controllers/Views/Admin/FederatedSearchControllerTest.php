@@ -22,7 +22,7 @@ class FederatedSearchControllerTest extends TestCase
     public function testGetWhenLoggedIn()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get('admin/federated-search')->assertStatus(200);
     }

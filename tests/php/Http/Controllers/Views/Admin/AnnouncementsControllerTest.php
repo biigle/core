@@ -22,7 +22,7 @@ class AnnouncementsControllerTest extends TestCase
     public function testGetWhenLoggedIn()
     {
         $admin = User::factory()->create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get('admin/announcements')->assertStatus(200);
     }
@@ -41,7 +41,7 @@ class AnnouncementsControllerTest extends TestCase
     public function testNewWhenLoggedIn()
     {
         $admin = User::factory()->create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get('admin/announcements/new')->assertStatus(200);
     }

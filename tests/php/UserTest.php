@@ -118,7 +118,7 @@ class UserTest extends ModelTestCase
     public function testIsGlobalAdminAttribute()
     {
         $this->assertFalse($this->model->isGlobalAdmin);
-        $this->model->role()->associate(Role::admin());
+        $this->model->role_id = Role::adminId();
         $this->assertTrue($this->model->isGlobalAdmin);
     }
 

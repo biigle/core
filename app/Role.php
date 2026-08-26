@@ -8,6 +8,7 @@ use Override;
 /**
  * A role of a user. Users have one global role and can have many project-
  * specific roles.
+ * This used to be a eloquent db model and was turned into an enum later. To keep some compatibility, some methods were introduced.
 */
 enum Role: int implements \JsonSerializable
 {
