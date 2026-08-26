@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests;
 
+use Biigle\Enums\Role;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
 use Biigle\Project;
 use Biigle\ProjectInvitation;
-use Biigle\Enums\Role;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 use Queue;

@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\LabelTreeVersion;
 use Biigle\Enums\Role;
+use Biigle\LabelTreeVersion;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;

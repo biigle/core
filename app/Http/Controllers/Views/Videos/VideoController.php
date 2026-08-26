@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Videos;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Enums\Role;
 use Biigle\Shape;
 use Biigle\Video;
 use DB;

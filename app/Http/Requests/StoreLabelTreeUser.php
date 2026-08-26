@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\LabelTree;
 use Biigle\Enums\Role;
+use Biigle\LabelTree;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 

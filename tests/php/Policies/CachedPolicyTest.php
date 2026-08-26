@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\Policies\LabelTreePolicy;
 use Biigle\Enums\Role;
+use Biigle\Policies\LabelTreePolicy;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
 use Cache;

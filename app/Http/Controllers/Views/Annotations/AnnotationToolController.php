@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\Annotations;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Enums\Role;
 use Biigle\Shape;
 use DB;
 use Illuminate\Http\Request;

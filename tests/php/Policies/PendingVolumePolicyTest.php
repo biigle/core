@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\PendingVolume;
 use Biigle\Project;
-use Biigle\Enums\Role;
 use Biigle\User;
 use TestCase;
 

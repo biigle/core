@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\ProjectInvitation;
 use Biigle\Enums\Role;
+use Biigle\ProjectInvitation;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use TestCase;

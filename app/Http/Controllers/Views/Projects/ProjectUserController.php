@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
-use Biigle\Enums\Role;
 use Illuminate\Http\Request;
 
 class ProjectUserController extends Controller

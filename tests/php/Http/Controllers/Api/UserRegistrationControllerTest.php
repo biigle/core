@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\Role;
 use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
-use Biigle\Enums\Role;
 use Biigle\Tests\UserTest;
 use Notification;
 

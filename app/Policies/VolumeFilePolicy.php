@@ -2,9 +2,9 @@
 
 namespace Biigle\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\Label;
 use Biigle\Project;
-use Biigle\Enums\Role;
 use Biigle\User;
 use Biigle\VolumeFile;
 use Cache;

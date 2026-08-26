@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Project;
 use Biigle\Enums\Role;
+use Biigle\Project;
 use Biigle\Volume;
 use DB;
 

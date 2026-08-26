@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use Biigle\Project;
 use Biigle\Enums\Role;
+use Biigle\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

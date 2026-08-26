@@ -6,7 +6,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-
 /**
  * We decided to replace the role table and other tables that just contain static enumerated values
  * with actual PHP enums

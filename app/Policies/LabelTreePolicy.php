@@ -2,8 +2,8 @@
 
 namespace Biigle\Policies;
 
-use Biigle\LabelTree;
 use Biigle\Enums\Role;
+use Biigle\LabelTree;
 use Biigle\User;
 use Biigle\Visibility;
 use DB;

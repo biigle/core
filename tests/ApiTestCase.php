@@ -1,8 +1,8 @@
 <?php
 
 use Biigle\ApiToken;
-use Biigle\Label;
 use Biigle\Enums\Role;
+use Biigle\Label;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\ProjectTest;
