@@ -8,7 +8,7 @@ use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Project;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Volume;
 use DB;
 use Illuminate\Http\Request;

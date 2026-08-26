@@ -8,7 +8,7 @@ use Biigle\MediaType;
 use Biigle\Modules\UserDisks\UserDisk;
 use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\PendingVolume;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

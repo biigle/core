@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Role;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

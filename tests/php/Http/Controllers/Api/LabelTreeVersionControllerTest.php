@@ -4,7 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\LabelTreeVersionTest;
 

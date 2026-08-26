@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use Biigle\Project;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

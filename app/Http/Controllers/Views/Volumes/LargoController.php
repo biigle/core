@@ -5,7 +5,7 @@ namespace Biigle\Http\Controllers\Views\Volumes;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;

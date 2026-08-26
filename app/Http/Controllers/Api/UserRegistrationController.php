@@ -4,7 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

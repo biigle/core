@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Visibility;
 use ZipArchive;

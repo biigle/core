@@ -6,7 +6,7 @@ use Biigle\Jobs\PostprocessVolumeImport;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\MediaType;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Export\VolumeExport;
 use Biigle\Services\Import\VolumeImport;
 use Biigle\Tests\ImageAnnotationLabelTest;

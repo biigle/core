@@ -3,7 +3,7 @@
 namespace Biigle\Policies;
 
 use Biigle\ApiToken;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

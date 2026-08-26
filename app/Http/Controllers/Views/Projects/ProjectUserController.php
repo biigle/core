@@ -4,7 +4,7 @@ namespace Biigle\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Illuminate\Http\Request;
 
 class ProjectUserController extends Controller

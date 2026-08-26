@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\Export;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Export\LabelTreeExport;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;

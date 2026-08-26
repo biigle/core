@@ -5,7 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Views;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\ReportType;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\FederatedSearchModelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTreeTest;

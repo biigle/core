@@ -6,7 +6,7 @@ use Biigle\Http\Requests\DestroyLabelTree;
 use Biigle\Http\Requests\StoreLabelTree;
 use Biigle\Http\Requests\UpdateLabelTree;
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Visibility;
 use DB;
 use Illuminate\Http\Request;

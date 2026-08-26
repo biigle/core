@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\LabelTreeVersion;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;

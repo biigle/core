@@ -6,7 +6,7 @@ use Biigle\Events\ImagesDeleted;
 use Biigle\Events\TiledImagesDeleted;
 use Biigle\Image;
 use Biigle\MediaType;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Volume;
 use Cache;

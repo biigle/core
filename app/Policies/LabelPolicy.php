@@ -4,7 +4,7 @@ namespace Biigle\Policies;
 
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;

@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\LabelTrees;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\UserTest;

@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
 use Biigle\ProjectInvitation;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use TestCase;
 

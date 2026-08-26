@@ -4,7 +4,7 @@ namespace Biigle\Tests\Services\Import;
 
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Export\LabelTreeExport;
 use Biigle\Services\Import\LabelTreeImport;
 use Biigle\Tests\LabelTest;

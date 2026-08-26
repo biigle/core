@@ -6,7 +6,7 @@ use ApiTestCase;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
 use Biigle\MediaType;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;

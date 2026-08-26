@@ -1,7 +1,6 @@
 <?php
 
-// TODO Move this to Biigle/Enums or smth.
-namespace Biigle;
+namespace Biigle\Enums;
 
 use Override;
 

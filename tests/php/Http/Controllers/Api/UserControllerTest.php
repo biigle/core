@@ -4,7 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Auth;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Hash;

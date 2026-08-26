@@ -5,7 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\UserTest;
 use Notification;
 

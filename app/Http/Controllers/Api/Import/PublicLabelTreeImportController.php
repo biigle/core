@@ -4,7 +4,7 @@ namespace Biigle\Http\Controllers\Api\Import;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use DB;

@@ -5,7 +5,7 @@ namespace Biigle\Observers;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Report;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Exception;
 
 class ProjectObserver

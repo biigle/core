@@ -6,7 +6,7 @@ use Biigle\AnnotationSession;
 use Biigle\Http\Requests\JoinProjectInvitation;
 use Biigle\Http\Requests\StoreProjectInvitation;
 use Biigle\ProjectInvitation;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use DB;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;

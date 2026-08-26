@@ -4,7 +4,7 @@ namespace Biigle\Tests\Policies;
 
 use Biigle\PendingVolume;
 use Biigle\Project;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use TestCase;
 

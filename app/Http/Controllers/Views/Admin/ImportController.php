@@ -4,7 +4,7 @@ namespace Biigle\Http\Controllers\Views\Admin;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Label;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\LabelTreeImport;
 use Biigle\Services\Import\UserImport;

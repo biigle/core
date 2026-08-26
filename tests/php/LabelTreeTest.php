@@ -3,7 +3,7 @@
 namespace Biigle\Tests;
 
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Visibility;
 use Illuminate\Database\QueryException;
 use ModelTestCase;

@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Jobs;
 
 use Biigle\Jobs\GenerateFederatedSearchIndex;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;

@@ -5,7 +5,7 @@ namespace Biigle\Services\Import;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Biigle\Visibility;
 use Carbon\Carbon;

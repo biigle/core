@@ -3,7 +3,7 @@
 namespace Biigle\Policies;
 
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Biigle\Visibility;
 use DB;

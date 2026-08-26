@@ -5,7 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\AnnotationSession;
 use Biigle\ProjectInvitation;
-use Biigle\Role;
+use Biigle\Enums\Role;
 
 class ProjectInvitationControllerTest extends ApiTestCase
 {
@@ -38,7 +38,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
                 'expires_at' => $timestamp,
             ])
             ->assertSuccessful();
-    
+
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
         $this->assertEquals($timestamp, $invitation->expires_at);

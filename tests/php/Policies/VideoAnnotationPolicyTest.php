@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;

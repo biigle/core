@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;

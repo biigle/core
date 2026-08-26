@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use PHPUnit\Framework\TestCase;
 
 class RoleTest extends TestCase

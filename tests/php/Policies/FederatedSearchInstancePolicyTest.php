@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\FederatedSearchInstance;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\FederatedSearchInstanceTest;
 use Biigle\Tests\UserTest;
 use TestCase;

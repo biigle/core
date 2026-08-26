@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Services\Import;
 
 use Biigle\LabelTree;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Export\PublicLabelTreeExport;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use Biigle\Tests\LabelTest;

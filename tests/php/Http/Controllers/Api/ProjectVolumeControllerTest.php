@@ -6,7 +6,7 @@ use ApiTestCase;
 use Biigle\Image;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\DeleteVolume;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Tests\ProjectTest;

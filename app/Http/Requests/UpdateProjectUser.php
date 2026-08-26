@@ -3,7 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Project;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 
