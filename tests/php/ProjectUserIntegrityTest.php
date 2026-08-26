@@ -12,7 +12,7 @@ class ProjectUserIntegrityTest extends TestCase
     {
         $project = ProjectTest::create();
         $role = RoleTest::create();
-        $project->addUserId(UserTest::create()->id, $role->id);
+        $project->addUserId(UserTest::create()->id, $role->value);
         $this->expectException(QueryException::class);
         $role->delete();
     }
@@ -45,9 +45,9 @@ class ProjectUserIntegrityTest extends TestCase
         $project = ProjectTest::create();
         $user = UserTest::create();
         $role = RoleTest::create();
-        $project->addUserId($user->id, $role->id);
+        $project->addUserId($user->id, $role->value);
         $this->expectException(QueryException::class);
         // attach manually so the error-check in addUserId is circumvented
-        $project->users()->attach($user->id, ['project_role_id' => $role->id]);
+        $project->users()->attach($user->id, ['project_role_id' => $role->value]);
     }
 }

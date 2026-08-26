@@ -96,7 +96,7 @@ class UserTest extends ModelTestCase
     {
         $project = ProjectTest::create();
         $role = RoleTest::create();
-        $project->addUserId($this->model->id, $role->id);
+        $project->addUserId($this->model->id, $role->value);
 
         $p = $this->model->projects()->first();
         $this->assertSame($project->id, $p->id);
@@ -112,7 +112,7 @@ class UserTest extends ModelTestCase
 
     public function testRole()
     {
-        $this->assertSame(Role::editorId(), $this->model->role->id);
+        $this->assertSame(Role::editorId(), $this->model->role->value);
     }
 
     public function testIsGlobalAdminAttribute()

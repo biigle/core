@@ -237,7 +237,7 @@ class LabelTree extends Model
         }
 
         if ($role instanceof Role) {
-            $role = $role->id;
+            $role = $role->value;
         }
 
         $this->members()->updateExistingPivot($user, ['role_id' => $role]);
