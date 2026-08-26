@@ -8,20 +8,11 @@ use TestCase;
 
 class ProjectUserIntegrityTest extends TestCase
 {
-    public function testRoleOnDeleteRestrict()
-    {
-        $project = ProjectTest::create();
-        $role = RoleTest::create();
-        $project->addUserId(UserTest::create()->id, $role->value);
-        $this->expectException(QueryException::class);
-        $role->delete();
-    }
-
     public function testProjectOnDeleteCascade()
     {
         $project = ProjectTest::create();
         $user = UserTest::create();
-        $project->addUserId($user->id, RoleTest::create()->id);
+        $project->addUserId($user->id, Role::editorId());
 
         $this->assertSame(1, $user->projects()->count());
         $project->delete();
@@ -44,7 +35,7 @@ class ProjectUserIntegrityTest extends TestCase
     {
         $project = ProjectTest::create();
         $user = UserTest::create();
-        $role = RoleTest::create();
+        $role = Role::EDITOR;
         $project->addUserId($user->id, $role->value);
         $this->expectException(QueryException::class);
         // attach manually so the error-check in addUserId is circumvented

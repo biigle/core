@@ -8,14 +8,6 @@ use TestCase;
 
 class LabelTreeUserIntegrityTest extends TestCase
 {
-    public function testRoleOnDeleteRestrict()
-    {
-        $tree = LabelTreeTest::create();
-        $tree->addMember(UserTest::create(), Role::editor());
-        $this->expectException(QueryException::class);
-        Role::editor()->delete();
-    }
-
     public function testLabelTreeOnDeleteCascade()
     {
         $tree = LabelTreeTest::create();
