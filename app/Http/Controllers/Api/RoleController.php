@@ -30,11 +30,11 @@ class RoleController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection<int, array>
      */
     public function index()
     {
-        return collect(Role::cases())->map->toArray();
+        return collect(Role::cases())->map->toArray()->values();
     }
 
     /**
@@ -56,9 +56,10 @@ class RoleController extends Controller
      * @param  int  $id
      * @return Role
      */
-    public function show($id)
+    public function show($id): Role
     {
-        abort_unless($role = Role::tryFrom((int) $id), 404);
-        return $role->toArray();
+        $role = Role::tryFrom((int) $id);
+        abort_if($role === null, 404);
+        return $role;
     }
 }
