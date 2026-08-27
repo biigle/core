@@ -23,6 +23,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // TODO Discuss if we want to "be safe" by mapping here or if it's enough
+        // to check in psql/with the migrations that the enum used the same numbers
+        // as the db table, in which case mapping is unnecessary
         $oldIds = DB::table('roles')->pluck('id', 'name');
         $map = [
             $oldIds['admin'] => Role::adminId(),
