@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Schema;
  * with actual PHP enums
  */
 return new class extends Migration {
+    private $foreignKeys = [
+        ['users', 'role_id'],
+        ['project_user', 'project_role_id'],
+        ['label_tree_user', 'role_id'],
+        ['project_invitations', 'role_id'],
+    ];
+
     /**
      * Run the migrations.
      */
@@ -25,12 +32,7 @@ return new class extends Migration {
         ];
 
         // Replace foreign keys with the above IDs
-        foreach ([
-            ['users', 'role_id'],
-            ['project_user', 'project_role_id'],
-            ['label_tree_user', 'role_id'],
-            ['project_invitations', 'role_id'],
-        ] as [$table, $column]) {
+        foreach ($this->foreignKeys as [$table, $column]) {
             foreach ($map as $oldId => $newId) {
                 DB::table($table)
                     ->where($column, $oldId)
@@ -60,32 +62,13 @@ return new class extends Migration {
             ['id' => 4, 'name' => 'expert'],
         ]);
 
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreign('role_id')
-                ->references('id')
-                ->on('roles')
-                ->onDelete('restrict');
-        });
-
-        Schema::table('project_user', function (Blueprint $table) {
-            $table->foreign('project_role_id')
-                ->references('id')
-                ->on('roles')
-                ->onDelete('restrict');
-        });
-
-        Schema::table('label_tree_user', function (Blueprint $table) {
-            $table->foreign('role_id')
-                ->references('id')
-                ->on('roles')
-                ->onDelete('restrict');
-        });
-
-        Schema::table('project_invitations', function (Blueprint $table) {
-            $table->foreign('role_id')
-                ->references('id')
-                ->on('roles')
-                ->onDelete('restrict');
-        });
+        foreach ($this->foreignKeys as [$table, $column]) {
+            Schema::table($table, function (Blueprint $t) use ($column) {
+                $t->foreign($column)
+                    ->references('id')
+                    ->on('roles')
+                    ->onDelete('restrict');
+            });
+        }
     }
 };
