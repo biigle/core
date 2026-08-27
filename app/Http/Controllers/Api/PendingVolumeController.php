@@ -7,11 +7,11 @@ use Biigle\Http\Requests\StorePendingVolumeFromVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
-use Biigle\Project;
-use Biigle\Role;
 use Biigle\Volume;
 use DB;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Queue;
 use Storage;
 
@@ -86,20 +86,20 @@ class PendingVolumeController extends Controller
      */
     public function storeVolume(StorePendingVolumeFromVolume $request)
     {
-        $project = Project::inCommon($request->user(), $request->volume->id, [Role::adminId()])->first();
-
-        // Delete individually to trigger deletion of metadata files.
-        $project->pendingVolumes()->where('user_id', $request->user()->id)
-            ->eachById(fn ($pv) => $pv->delete());
-
-        $pv = $project->pendingVolumes()->create([
-            'volume_id' => $request->volume->id,
-            'media_type_id' => $request->volume->media_type_id,
-            'user_id' => $request->user()->id,
-            'metadata_parser' => $request->volume->metadata_parser,
-            'import_annotations' => $request->input('import_annotations', false),
-            'import_file_labels' => $request->input('import_file_labels', false),
-        ]);
+        try {
+            $pv = $request->project->pendingVolumes()->create([
+                'volume_id' => $request->volume->id,
+                'media_type_id' => $request->volume->media_type_id,
+                'user_id' => $request->user()->id,
+                'metadata_parser' => $request->volume->metadata_parser,
+                'import_annotations' => $request->input('import_annotations', false),
+                'import_file_labels' => $request->input('import_file_labels', false),
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages([
+                'id' => StorePendingVolumeFromVolume::PENDING_VOLUME_EXISTS_MESSAGE,
+            ]);
+        }
 
         $pv->update([
             'metadata_file_path' => $pv->id.'.'.pathinfo($request->volume->metadata_file_path, PATHINFO_EXTENSION),
