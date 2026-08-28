@@ -50,7 +50,7 @@ class VolumeTest extends ModelTestCase
 
     public function testMediaTypeRequired()
     {
-        $this->model->mediaType()->dissociate();
+        $this->model->media_type_id = null;
         $this->expectException(QueryException::class);
         $this->model->save();
     }

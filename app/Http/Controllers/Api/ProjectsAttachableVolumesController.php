@@ -68,6 +68,7 @@ class ProjectsAttachableVolumesController extends Controller
             $item->append('thumbnailUrl')
                 ->append('thumbnailsUrl')
                 ->makeHidden($hidden);
+            $item->setAttribute('media_type', $item->mediaType);
         });
 
         return $volumes;

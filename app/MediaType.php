@@ -49,9 +49,9 @@ enum MediaType: int implements \JsonSerializable
 
     public static function fromLabel(string $label): self
     {
-        return match (strtolower($label)) {
-            self::IMAGE->label() => self::IMAGE,
-            self::VIDEO->label() => self::VIDEO,
+        return match (strtoupper($label)) {
+            self::IMAGE->name => self::IMAGE,
+            self::VIDEO->name => self::VIDEO,
             default => throw new ValueError("Invalid media type label $label"),
         };
     }
