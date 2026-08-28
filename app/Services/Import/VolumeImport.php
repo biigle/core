@@ -436,7 +436,10 @@ class VolumeImport extends Import
      */
     protected function insertVolumes(Collection $candidates, User $creator, array $newUrls)
     {
-        $mediaTypes = MediaType::pluck('id', 'name');
+        $mediaTypes = collect(MediaType::cases())->mapWithKeys(
+            fn (MediaType $mediaType)
+            => [$mediaType->name => $mediaType->value]
+        );
 
         return $candidates
             ->map(function ($candidate) use ($creator, $newUrls, $mediaTypes) {

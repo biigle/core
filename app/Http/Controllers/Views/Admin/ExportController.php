@@ -19,7 +19,10 @@ class ExportController extends Controller
             abort(404);
         }
 
-        $mediaTypes = MediaType::pluck('id', 'name');
+        $mediaTypes = collect(MediaType::cases())->mapWithKeys(
+            fn (MediaType $mediaType)
+            => [$mediaType->name => $mediaType->value]
+        );
 
         return view('export.index', compact('allowedExports', 'mediaTypes'));
     }

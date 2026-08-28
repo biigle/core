@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Override;
+use ValueError;
 
 /**
  * Volumes can contain either images or videos as media type.
@@ -18,7 +19,7 @@ enum MediaType: int implements \JsonSerializable
         return self::IMAGE;
     }
 
-    public static function editor(): self
+    public static function video(): self
     {
         return self::VIDEO;
     }
@@ -36,6 +37,23 @@ enum MediaType: int implements \JsonSerializable
     public function label(): string
     {
         return strtolower($this->name);
+    }
+
+    public static function labels(): array
+    {
+        return array_map(
+            fn (self $type) => $type->label(),
+            self::cases()
+        );
+    }
+
+    public static function fromLabel(string $label): self
+    {
+        return match (strtolower($label)) {
+            self::IMAGE->label() => self::IMAGE,
+            self::VIDEO->label() => self::VIDEO,
+            default => throw new ValueError("Invalid media type label $label"),
+        };
     }
 
     public function toArray(): array

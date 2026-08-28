@@ -43,7 +43,6 @@ class ProjectsController extends Controller
         $hidden = ['doi'];
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
             ->orderBy('created_at', 'desc')
             ->get()
             ->each(function ($item) use ($hidden) {

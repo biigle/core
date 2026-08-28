@@ -194,7 +194,9 @@ class AddVideoVolumes extends Migration
     {
         $volume = new Volume;
         $volume->name = $name;
-        $volume->media_type_id = MediaType::videoId();
+        $volume->media_type_id = DB::table('media_types')
+                                    ->where('name', 'video')
+                                    ->value('id');
         $volume->url = $url;
         $volume->creator_id = $videos->first()->creator_id;
         $volume->created_at = $videos->first()->created_at;

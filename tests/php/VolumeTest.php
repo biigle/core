@@ -55,12 +55,6 @@ class VolumeTest extends ModelTestCase
         $this->model->save();
     }
 
-    public function testMediaTypeOnDeleteRestrict()
-    {
-        $this->expectException(QueryException::class);
-        $this->model->mediaType()->delete();
-    }
-
     public function testCreatorOnDeleteSetNull()
     {
         $this->model->creator()->delete();

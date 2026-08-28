@@ -5,6 +5,7 @@ namespace Biigle\Tests;
 use Biigle\Enums\Role;
 use PHPUnit\Framework\TestCase;
 
+// TODO Create similar tests for the other enums?
 class RoleTest extends TestCase
 {
     public function testAdmin(): void
