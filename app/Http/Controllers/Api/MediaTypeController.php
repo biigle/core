@@ -26,11 +26,11 @@ class MediaTypeController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection<int, array>
      */
     public function index()
     {
-        return MediaType::all();
+        return collect(MediaType::cases())->map->toArray()->values();
     }
 
     /**
@@ -54,6 +54,8 @@ class MediaTypeController extends Controller
      */
     public function show($id)
     {
-        return MediaType::findOrFail($id);
+        $mediaType = MediaType::tryFrom((int) $id);
+        abort_if($mediaType === null, 404);
+        return $mediaType;
     }
 }

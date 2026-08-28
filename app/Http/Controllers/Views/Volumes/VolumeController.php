@@ -114,7 +114,7 @@ class VolumeController extends Controller
         return view('volumes.edit', [
             'projects' => $projects,
             'volume' => $volume,
-            'mediaTypes' => MediaType::all(),
+            'mediaTypes' => collect(MediaType::cases())->map->toArray(),
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
             'type' => $type,

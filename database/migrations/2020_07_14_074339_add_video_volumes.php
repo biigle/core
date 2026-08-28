@@ -7,6 +7,7 @@ use Biigle\Volume;
 use Carbon\Carbon;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class AddVideoVolumes extends Migration
@@ -18,16 +19,17 @@ class AddVideoVolumes extends Migration
      */
     public function up()
     {
-        MediaType::insert([
+        $mediaTypesTable = DB::table('media_types');
+        $mediaTypesTable->insert([
             ['name' => 'image'],
             ['name' => 'video'],
         ]);
 
         Volume::query()->update([
-            'media_type_id' => MediaType::where('name', 'image')->first()->id,
+            'media_type_id' => $mediaTypesTable->where('name', 'image')->first()->id,
         ]);
 
-        MediaType::whereIn('name', ['time-series', 'location-series'])->delete();
+        $mediaTypesTable->whereIn('name', ['time-series', 'location-series'])->delete();
 
         Schema::table('videos', function (Blueprint $table) {
             $table->integer('volume_id')->unsigned()->index()->nullable();
@@ -63,6 +65,7 @@ class AddVideoVolumes extends Migration
      */
     public function down()
     {
+        $mediaTypesTable = DB::table('media_types');
         Schema::table('videos', function (Blueprint $table) {
             $table->integer('project_id')->unsigned()->index()->nullable();
             $table->foreign('project_id')
@@ -83,7 +86,7 @@ class AddVideoVolumes extends Migration
             $table->timestamps();
         });
 
-        $id = MediaType::where('name', 'video')->first()->id;
+        $id = $mediaTypesTable->where('name', 'video')->first()->id;
         Volume::where('media_type_id', $id)->eachById(function ($volume) {
             $projectId = $volume->projects()->first()->id;
             Video::where('volume_id', $volume->id)
@@ -108,16 +111,16 @@ class AddVideoVolumes extends Migration
 
         Volume::where('media_type_id', $id)->delete();
 
-        MediaType::insert([
+        $mediaTypesTable->insert([
             ['name' => 'time-series'],
             ['name' => 'location-series'],
         ]);
 
         Volume::query()->update([
-            'media_type_id' => MediaType::where('name', 'time-series')->first()->id,
+            'media_type_id' => $mediaTypesTable->where('name', 'time-series')->first()->id,
         ]);
 
-        MediaType::whereIn('name', ['image', 'video'])->delete();
+        $mediaTypesTable->whereIn('name', ['image', 'video'])->delete();
     }
 
     /**
