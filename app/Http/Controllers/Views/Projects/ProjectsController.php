@@ -48,6 +48,7 @@ class ProjectsController extends Controller
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')
                     ->append('thumbnailsUrl')
+                    ->setAttribute('media_type', $item->mediaType) // TODO no test for this
                     ->makeHidden($hidden);
             });
 

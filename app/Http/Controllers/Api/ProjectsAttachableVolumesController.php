@@ -2,8 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Enums\Role;
-use Biigle\Project;
+use Biigle\Enums\Roluse Biigle\Enums\Role;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
@@ -67,8 +66,8 @@ class ProjectsAttachableVolumesController extends Controller
         $volumes->each(function ($item) use ($hidden) {
             $item->append('thumbnailUrl')
                 ->append('thumbnailsUrl')
+                ->setAttribute('media_type', $item->mediaType) // TODO compare with others for test, test index and fuzzy search
                 ->makeHidden($hidden);
-            $item->setAttribute('media_type', $item->mediaType);
         });
 
         return $volumes;
