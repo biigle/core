@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Cache;

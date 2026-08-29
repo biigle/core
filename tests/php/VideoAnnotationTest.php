@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Exception;

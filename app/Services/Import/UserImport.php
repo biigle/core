@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\Import;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\User;
 use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;

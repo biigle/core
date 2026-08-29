@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
-use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;

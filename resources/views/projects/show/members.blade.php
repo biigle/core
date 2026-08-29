@@ -10,7 +10,7 @@
         biigle.$declare('projects.invitations', []);
     @endcan
     biigle.$declare('projects.roles', {!! $roles !!});
-    biigle.$declare('projects.defaultRole', @json(Biigle\Enums\Role::guest()->toArray()));
+    biigle.$declare('projects.defaultRole', @json(Biigle\Role::guest()->toArray()));
     biigle.$declare('projects.members', {!! $members !!});
     biigle.$declare('projects.invitationUrl', '{!!route('project-invitation', '/')!!}');
     biigle.$declare('projects.invitationQrUrl', '{!! url('api/v1/project-invitations/{id}/qr') !!}');

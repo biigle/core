@@ -2,7 +2,7 @@
 
 namespace Biigle\Policies;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
 use DB;

@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
-use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\Modules\UserDisks\UserDisk;
 use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\PendingVolume;
+use Biigle\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

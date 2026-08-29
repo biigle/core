@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Enums\Role;
 use Biigle\Project;
+use Biigle\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProjectInvitation extends FormRequest

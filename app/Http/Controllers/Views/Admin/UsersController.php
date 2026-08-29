@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\VideoAnnotation;

@@ -4,8 +4,8 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\AnnotationSession;
-use Biigle\Enums\Role;
 use Biigle\ProjectInvitation;
+use Biigle\Role;
 
 class ProjectInvitationControllerTest extends ApiTestCase
 {

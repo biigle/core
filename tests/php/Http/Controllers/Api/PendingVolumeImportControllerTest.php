@@ -3,12 +3,12 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Enums\Role;
 use Biigle\Jobs\ImportVolumeMetadata;
 use Biigle\Label as DbLabel;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Biigle\PendingVolume;
+use Biigle\Role;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;

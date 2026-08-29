@@ -2,8 +2,8 @@
 
 namespace Biigle\Policies;
 
-use Biigle\Enums\Role;
 use Biigle\PendingVolume;
+use Biigle\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;

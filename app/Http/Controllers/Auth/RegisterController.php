@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
-use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Http\Requests\StoreUser;
 use Biigle\Notifications\RegistrationConfirmation;
+use Biigle\Role;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Illuminate\Foundation\Auth\RegistersUsers;

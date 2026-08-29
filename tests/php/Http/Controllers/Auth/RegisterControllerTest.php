@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Auth;
 
-use Biigle\Enums\Role;
 use Biigle\Notifications\RegistrationConfirmation;
+use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Honeypot;

@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Enums\Role;
 use Biigle\ImageAnnotation;
+use Biigle\Role;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 

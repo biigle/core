@@ -2,7 +2,7 @@
 
 namespace Biigle\Providers;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\Services\Auth\ApiGuard;
 use Biigle\User;
 use Illuminate\Auth\TokenGuard;

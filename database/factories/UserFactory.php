@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

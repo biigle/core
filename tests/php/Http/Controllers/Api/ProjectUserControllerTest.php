@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Enums\Role;
 use Biigle\Project;
+use Biigle\Role;
 
 class ProjectUserControllerTest extends ApiTestCase
 {

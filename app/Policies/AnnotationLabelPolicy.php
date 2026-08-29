@@ -3,7 +3,7 @@
 namespace Biigle\Policies;
 
 use Biigle\AnnotationLabel;
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;

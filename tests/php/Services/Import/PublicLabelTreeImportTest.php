@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Services\Import;
 
-use Biigle\Enums\Role;
 use Biigle\LabelTree;
+use Biigle\Role;
 use Biigle\Services\Export\PublicLabelTreeExport;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use Biigle\Tests\LabelTest;

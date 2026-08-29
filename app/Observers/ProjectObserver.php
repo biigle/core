@@ -2,10 +2,10 @@
 
 namespace Biigle\Observers;
 
-use Biigle\Enums\Role;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Report;
+use Biigle\Role;
 use Exception;
 
 class ProjectObserver

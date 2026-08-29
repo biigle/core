@@ -2,13 +2,13 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Enums\Role;
 use Biigle\Http\Requests\StorePendingVolume;
 use Biigle\Http\Requests\StorePendingVolumeFromVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\Volume;
 use DB;
 use Illuminate\Http\Request;

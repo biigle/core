@@ -3,10 +3,10 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\AnnotationSession;
-use Biigle\Enums\Role;
 use Biigle\Http\Requests\JoinProjectInvitation;
 use Biigle\Http\Requests\StoreProjectInvitation;
 use Biigle\ProjectInvitation;
+use Biigle\Role;
 use DB;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;

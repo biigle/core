@@ -2,7 +2,6 @@
 
 namespace Biigle;
 
-use Biigle\Enums\Role;
 use Biigle\Observers\UserObserver;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Attributes\Hidden;

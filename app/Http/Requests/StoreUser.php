@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\Rules\Uuid4;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;

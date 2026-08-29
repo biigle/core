@@ -3,9 +3,9 @@
 namespace Biigle\Policies;
 
 use Biigle\Annotation;
-use Biigle\Enums\Role;
 use Biigle\Label;
 use Biigle\Project;
+use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
 use DB;

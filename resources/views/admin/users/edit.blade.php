@@ -33,7 +33,7 @@
         </div>
         <div class="col-sm-2 form-group{{ $errors->has('can_review') ? ' has-error' : '' }}">
             <label for="can_review">Can review</label>
-            <select class="form-control" name="can_review" id="can_review" @if ($affectedUser->role_id === \Biigle\Enums\Role::editorId()) required @else disabled title="Only editors can have this attribute" @endif>
+            <select class="form-control" name="can_review" id="can_review" @if ($affectedUser->role_id === \Biigle\Role::editorId()) required @else disabled title="Only editors can have this attribute" @endif>
                 <option value="1" @selected($affectedUser->can_review)>Yes</option>
                 <option value="0" @selected(!$affectedUser->can_review)>No</option>
             </select>
@@ -43,7 +43,7 @@
         </div>
         <div class="col-sm-2 form-group{{ $errors->has('rate_limit') ? ' has-error' : '' }}">
             <label for="rate_limit">Rate limit</label>
-            <select class="form-control" name="rate_limit" id="rate_limit" @if ($affectedUser->role_id === \Biigle\Enums\Role::editorId()) required @else disabled title="Only editors can have this attribute" @endif>
+            <select class="form-control" name="rate_limit" id="rate_limit" @if ($affectedUser->role_id === \Biigle\Role::editorId()) required @else disabled title="Only editors can have this attribute" @endif>
                 <option value="1" @selected(!$affectedUser->hasNoRateLimit)>Yes</option>
                 <option value="0" @selected($affectedUser->hasNoRateLimit)>No</option>
             </select>

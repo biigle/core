@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\Tests\ApiTokenTest;
 use Biigle\Tests\UserTest;
 use TestCase;

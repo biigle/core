@@ -2,7 +2,7 @@
 
 namespace Biigle\Console\Commands;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\User;
 use Illuminate\Console\Command;
 use Ramsey\Uuid\Uuid;

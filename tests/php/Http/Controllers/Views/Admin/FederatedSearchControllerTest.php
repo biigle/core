@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Admin;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\Tests\UserTest;
 use TestCase;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Enums;
+namespace Biigle;
 
 use Override;
 

@@ -2,7 +2,6 @@
 
 namespace Biigle;
 
-use Biigle\Enums\Role;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\Observers\ProjectObserver;
 use Cache;

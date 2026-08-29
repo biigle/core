@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Biigle\Enums\Role;
+use Biigle\Role;
 use Biigle\User;
 use Illuminate\Database\Seeder;
 

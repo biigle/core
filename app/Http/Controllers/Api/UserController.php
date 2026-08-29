@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Enums\Role;
 use Biigle\Http\Requests\DestroyOwnUser;
 use Biigle\Http\Requests\DestroyUser;
 use Biigle\Http\Requests\StoreUser;
 use Biigle\Http\Requests\UpdateOwnUser;
 use Biigle\Http\Requests\UpdateUser;
+use Biigle\Role;
 use Biigle\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
