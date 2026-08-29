@@ -436,13 +436,8 @@ class VolumeImport extends Import
      */
     protected function insertVolumes(Collection $candidates, User $creator, array $newUrls)
     {
-        $mediaTypes = collect(MediaType::cases())->mapWithKeys(
-            fn (MediaType $mediaType)
-            => [$mediaType->name => $mediaType->value]
-        );
-
         return $candidates
-            ->map(function ($candidate) use ($creator, $newUrls, $mediaTypes) {
+            ->map(function ($candidate) use ($creator, $newUrls) {
                 $volume = new Volume;
                 /** @phpstan-ignore-next-line */
                 $volume->old_id = $candidate['id'];

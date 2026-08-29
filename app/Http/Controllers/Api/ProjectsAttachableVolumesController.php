@@ -2,7 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Enums\Roluse Biigle\Enums\Role;
+use Biigle\Enums\Role;
+use Biigle\Project;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
