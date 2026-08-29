@@ -56,7 +56,7 @@ class AnnotationToolController extends Controller
             })
             ->get();
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = Shape::pluckById();
 
         $annotationSessions = $image->volume->annotationSessions()
             ->select('id', 'name', 'starts_at', 'ends_at')

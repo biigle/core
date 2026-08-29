@@ -268,7 +268,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $thumbWidth = config('thumbnails.width');
         $thumbHeight = config('thumbnails.height');
 
-        if ($shape->id === Shape::wholeFrameId()) {
+        if ($shape->value === Shape::wholeFrameId()) {
             $image = $image->resize(floatval($thumbWidth) / $image->width);
         } else {
             $padding = config('largo.patch_padding');
@@ -394,7 +394,6 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     {
         return $this->getBaseAnnotationQuery()
             ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
-            ->with('shape')
             // The file of all annotations of this job is already known, so set it
             // manually to avoid a query for each annotation (e.g. in getTargetPath()).
             ->afterQuery(function ($annotations) {
@@ -418,13 +417,13 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     protected function getSVGAnnotation(array $points, Shape $shape): SVGNodeContainer
     {
         $tuples = [];
-        if ($shape->id !== Shape::circleId()) {
+        if ($shape->value !== Shape::circleId()) {
             for ($i = 0; $i < sizeof($points) - 1; $i = $i + 2) {
                 $tuples[] = [$points[$i], $points[$i + 1]];
             }
         }
 
-        $annotation = match ($shape->id) {
+        $annotation = match ($shape->value) {
             Shape::pointId() => new SVGCircle($points[0], $points[1], 5),
             Shape::circleId() => new SVGCircle($points[0], $points[1], $points[2]),
             Shape::polygonId() => new SVGPolygon($tuples),
@@ -434,7 +433,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
             default => null,
         };
 
-        if ($shape->id !== Shape::pointId()) {
+        if ($shape->value !== Shape::pointId()) {
             $annotation->setAttribute('fill', 'none');
             $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
         }
@@ -449,7 +448,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
         $outline = clone $annotation;
 
-        if ($shape->id === Shape::pointId()) {
+        if ($shape->value === Shape::pointId()) {
             $outline->setAttribute('r', 6);
             $outline->setAttribute('fill', '#fff');
             $annotation->setAttribute('fill', '#666');
@@ -558,12 +557,12 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         usort($tuples, fn ($a, $b) => $a[0] <=> $b[0]);
 
         // Note: y-axis is inverted
-        if ($shape->id === Shape::rectangleId()) {
+        if ($shape->value === Shape::rectangleId()) {
             $assigned['LL'] = $tuples[0][1] > $tuples[1][1] ? $tuples[0] : $tuples[1];
             $assigned['UL'] = $tuples[0][1] < $tuples[1][1] ? $tuples[0] : $tuples[1];
             $assigned['LR'] = $tuples[2][1] > $tuples[3][1] ? $tuples[2] : $tuples[3];
             $assigned['UR'] = $tuples[2][1] < $tuples[3][1] ? $tuples[2] : $tuples[3];
-        } elseif ($shape->id === Shape::ellipseId()) {
+        } elseif ($shape->value === Shape::ellipseId()) {
             $assigned['L'] = $tuples[0];
             $assigned['R'] = end($tuples);
             $assigned['U'] = $tuples[1][1] < $tuples[2][1] ? $tuples[1] : $tuples[2];

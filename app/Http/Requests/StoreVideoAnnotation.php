@@ -8,6 +8,7 @@ use Biigle\Rules\VideoAnnotationPoints;
 use Biigle\Shape;
 use Biigle\Video;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreVideoAnnotation extends FormRequest
 {
@@ -53,7 +54,7 @@ class StoreVideoAnnotation extends FormRequest
                     }
                 },
             ],
-            'shape_id' => 'required|integer|exists:shapes,id',
+            'shape_id' => ['required', 'integer', Rule::in(Shape::pluckById()->keys()->all())],
             'frames' => [
                 'bail',
                 'required',

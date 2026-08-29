@@ -17,7 +17,7 @@ class ImageAnnotationFactory extends Factory
     {
         return [
             'image_id' => Image::factory(),
-            'shape_id' => Shape::factory(),
+            'shape_id' => Shape::pointId(),
             'points' => [0, 0],
         ];
     }

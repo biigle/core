@@ -21,7 +21,7 @@ class ExportController extends Controller
 
         $mediaTypes = collect(MediaType::cases())->mapWithKeys(
             fn (MediaType $mediaType)
-            => [$mediaType->name => $mediaType->value]
+            => [$mediaType->label() => $mediaType->value]
         );
 
         return view('export.index', compact('allowedExports', 'mediaTypes'));

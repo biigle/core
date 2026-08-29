@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Illuminate\Support\Collection;
 use Override;
 
 enum Shape: int implements \JsonSerializable
@@ -103,6 +104,19 @@ enum Shape: int implements \JsonSerializable
             'id' => $this->value,
             'name' => $this->label(),
         ];
+    }
+
+    /**
+     * Helper to imitate the original ->pluck('name', 'id') behaviour
+     */
+    public static function pluckById(?self $except = null): Collection
+    {
+        $collection = collect(self::cases())
+            ->mapWithKeys(fn (self $shape) => [$shape->value => $shape->label()]);
+        if ($except !== null) {
+            $collection->forget($except->value);
+        }
+        return $collection;
     }
 
     #[Override]

@@ -54,7 +54,7 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = Shape::pluckById();
 
         if (!$volume->isVideoVolume()) {
             $wholeframeId = Shape::wholeFrameId();

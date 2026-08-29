@@ -6,6 +6,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Rules\AnnotationPoints;
 use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateImageAnnotation extends FormRequest
 {
@@ -36,7 +37,7 @@ class UpdateImageAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'shape_id' => 'required_without:points|integer|exists:shapes,id',
+            'shape_id' => ['required_without:points', 'integer', Rule::in(Shape::pluckById()->keys()->all())],
             'points' => 'required_without:shape_id|array',
         ];
     }

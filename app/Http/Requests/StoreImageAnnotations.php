@@ -81,7 +81,7 @@ class StoreImageAnnotations extends FormRequest
     public function rules()
     {
         // Image annotations cannot have the whole frame shape.
-        $shapeIds = Shape::whereKeyNot(Shape::wholeFrameId())->pluck('id');
+        $shapeIds = Shape::pluckById(Shape::wholeFrame())->keys();
 
         return [
             '*.image_id' => 'required|integer',
