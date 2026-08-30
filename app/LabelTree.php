@@ -159,11 +159,11 @@ class LabelTree extends Model
     /**
      * The visibility of the label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Visibility, $this>
+     * @return Visibility
      */
-    public function visibility()
+    public function getVisibilityAttribute()
     {
-        return $this->belongsTo(Visibility::class);
+        return Visibility::from($this->visibility_id);
     }
 
     /**

@@ -58,7 +58,12 @@ enum Role: int implements \JsonSerializable
 
     public function label(): string
     {
-        return strtolower($this->name);
+        return match ($this) {
+            self::ADMIN => 'admin',
+            self::EDITOR => 'editor',
+            self::GUEST => 'guest',
+            self::EXPERT => 'expert',
+        };
     }
 
     public function toArray(): array

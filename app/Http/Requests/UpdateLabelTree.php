@@ -3,7 +3,9 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\LabelTree;
+use Biigle\Visibility;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLabelTree extends FormRequest
 {
@@ -35,7 +37,7 @@ class UpdateLabelTree extends FormRequest
     {
         return [
             'name' => 'filled|max:256',
-            'visibility_id' => 'integer|exists:visibilities,id',
+            'visibility_id' => ['integer', Rule::in(array_column(Visibility::cases(), 'value'))],
         ];
     }
 }

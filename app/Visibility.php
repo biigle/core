@@ -2,31 +2,52 @@
 
 namespace Biigle;
 
-use Biigle\Traits\HasConstantInstances;
-use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Override;
 
-/**
- * The visibility of a model.
- *
- * @method static Visibility public()
- * @method static int publicId()
- * @method static Visibility private()
- * @method static int privateId()
- */
-#[WithoutTimestamps]
-class Visibility extends Model
+enum Visibility: int implements \JsonSerializable
 {
-    use HasConstantInstances, HasFactory;
+    case PUBLIC = 1;
+    case PRIVATE = 2;
 
-    /**
-     * The constant instances of this model.
-     *
-     * @var array<string, string>
-     */
-    const INSTANCES = [
-        'public' => 'public',
-        'private' => 'private',
-    ];
+    public static function public(): self
+    {
+        return self::PUBLIC;
+    }
+
+    public static function private(): self
+    {
+        return self::PRIVATE;
+    }
+
+    public static function publicId(): int
+    {
+        return self::PUBLIC->value;
+    }
+
+    public static function privateId(): int
+    {
+        return self::PRIVATE->value;
+    }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::PUBLIC => 'public',
+            self::PRIVATE => 'private',
+        };
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->value,
+            'name' => $this->label(),
+        ];
+    }
+
+    #[Override]
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
+    }
 }

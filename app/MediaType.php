@@ -36,7 +36,10 @@ enum MediaType: int implements \JsonSerializable
 
     public function label(): string
     {
-        return strtolower($this->name);
+        return match ($this) {
+            self::IMAGE => 'image',
+            self::VIDEO => 'video',
+        };
     }
 
     public static function labels(): array

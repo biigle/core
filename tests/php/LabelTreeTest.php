@@ -45,12 +45,6 @@ class LabelTreeTest extends ModelTestCase
         self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
     }
 
-    public function testVisibilityOnDeleteRestrict()
-    {
-        $this->expectException(QueryException::class);
-        $this->model->visibility()->delete();
-    }
-
     public function testMembers()
     {
         $user = UserTest::create();

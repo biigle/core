@@ -71,7 +71,7 @@ class LabelTreesController extends Controller
             $upstreamLabelTree = null;
         }
 
-        $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->id;
+        $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->value;
 
         return view('label-trees.create', compact(
             'visibilities',
@@ -94,8 +94,8 @@ class LabelTreesController extends Controller
             ->get();
 
         $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->name,
-            Visibility::privateId() => Visibility::private()->name,
+            Visibility::publicId() => Visibility::public()->label(),
+            Visibility::privateId() => Visibility::private()->label(),
         ]);
 
         return view('label-trees.show.labels', [
