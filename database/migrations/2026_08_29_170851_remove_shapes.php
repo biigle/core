@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     private $foreignKeys = [
         ['image_annotations', 'shape_id', 'annotations_shape_id_foreign'],
         ['video_annotations', 'shape_id', 'video_annotations_shape_id_foreign'],

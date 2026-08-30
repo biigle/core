@@ -87,7 +87,7 @@ enum Shape: int implements \JsonSerializable
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::POINT => 'Point',
             self::LINE => 'LineString',
             self::POLYGON => 'Polygon',
