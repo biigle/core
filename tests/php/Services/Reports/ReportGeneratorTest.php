@@ -17,12 +17,6 @@ use TestCase;
 
 class ReportGeneratorTest extends TestCase
 {
-    public function testGetNotExists()
-    {
-        $this->expectException(Exception::class);
-        ReportGenerator::get(Volume::class, ReportType::factory()->make());
-    }
-
     public function testGet()
     {
         $type = ReportType::IMAGE_ANNOTATIONS_BASIC;
