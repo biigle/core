@@ -395,6 +395,8 @@
             :focused-popup-key="focusedPopupKey"
             :annotation="annotation"
             :timeout="labelbotTimeout"
+            @new="createNewLabelBOTAnnotation"
+            @delete-pending="handleDeleteLabelbotPendingAnnotation"
             @update="updateLabelbotLabel"
             @close="closeLabelbotPopup"
             @delete="handleDeleteLabelbotAnnotation"

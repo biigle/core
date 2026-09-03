@@ -211,10 +211,12 @@
     </div>
     <labelbot-popup
         v-for="annotation in labelbotOverlays"
-        :key="annotation.id"
+        :key="annotation.id ?? annotation.feature.ol_uid"
         :focused-popup-key="focusedPopupKey"
         :annotation="annotation"
         :timeout="labelbotTimeout"
+        @new="createNewLabelBOTAnnotation"
+        @delete-pending="handleDeleteLabelbotPendingAnnotation"
         @update="updateLabelbotLabel"
         @close="closeLabelbotPopup"
         @delete="handleDeleteLabelbotAnnotation"

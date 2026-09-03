@@ -864,6 +864,16 @@ class VideoAnnotationControllerTest extends ApiTestCase
     {
         $this->beEditor();
 
+        // Query an empty DB
+        $response = $this->json('POST', "api/v1/videos/{$this->video->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'points' => [[10, 11]],
+            'frames' => [0.0],
+        ]);
+        // We expect no content
+        $response->assertStatus(204);
+
         // Test label
         $label = LabelTest::create();
         // Label must be attached to a label tree

@@ -16,6 +16,8 @@ export default {
         'change-labelbot-focused-popup',
         'close-labelbot-popup',
         'swap',
+        'new',
+        'delete-pending',
     ],
     props: {
         labelbotState: {
@@ -55,6 +57,9 @@ export default {
         },
     },
     methods: {
+        createNewLabelBOTAnnotation(event) {
+            this.$emit('new', event.newAnnotation);
+        },
         updateLabelbotLabel(event) {
             this.$emit('swap', event.annotation, event.label);
         },
@@ -66,6 +71,9 @@ export default {
         },
         handleDeleteLabelbotAnnotation(annotation) {
             this.$emit('delete', [annotation]);
+        },
+        handleDeleteLabelbotPendingAnnotation(annotation) {
+            this.$emit('delete-pending', annotation);
         },
         getBoundingBox(imageWidth, imageHeight, points) {
             let minX = imageWidth;
