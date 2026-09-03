@@ -5,18 +5,13 @@ namespace Biigle\Jobs;
 use Biigle\Video;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\SerializesModels;
 
+#[DeleteWhenMissingModels]
 class UpdateVolumeMetadata extends Job implements ShouldQueue
 {
     use SerializesModels;
-
-    /**
-     * Ignore this job if the project or volume does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.

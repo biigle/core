@@ -11,6 +11,7 @@ use FilesystemIterator;
 use GuzzleHttp\Promise\Each;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\AwsS3V3Adapter;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +20,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 
+#[DeleteWhenMissingModels]
 class TileSingleImage extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
@@ -36,13 +38,6 @@ class TileSingleImage extends Job implements ShouldQueue
      * @var string
      */
     public $tempPath;
-
-    /**
-     * Ignore this job if the image does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
