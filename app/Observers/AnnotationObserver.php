@@ -14,7 +14,6 @@ abstract class AnnotationObserver
     public function saved(Annotation $annotation)
     {
         $this->getSavedDispatch($annotation)
-            ->onQueue(config('largo.generate_annotation_patch_queue'))
             ->delay(config('largo.patch_generation_delay'));
     }
 

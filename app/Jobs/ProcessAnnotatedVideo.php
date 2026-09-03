@@ -167,4 +167,12 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     {
         return VideoAnnotation::where('video_id', $this->file->id);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getQueueConfigKey(): string
+    {
+        return 'largo.generate_video_annotation_patch_queue';
+    }
 }
