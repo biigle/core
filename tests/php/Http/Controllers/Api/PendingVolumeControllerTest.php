@@ -371,11 +371,12 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
             'import_annotations' => true,
-        ])->assertStatus(201);
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('id')
+            ->assertJsonPath('errors.id.0', 'Only one metadata import can be performed at a time for each project and user.');
 
-        $pv = PendingVolume::where('volume_id', $id)->first();
-        $this->assertNotSame($old->id, $pv->id);
-        $this->assertNull($old->fresh());
+        $this->assertNotNull($old->fresh());
+        $this->assertSame(1, PendingVolume::count());
     }
 
     public function testStoreVolumeTwiceDifferentVolumes()
@@ -419,11 +420,11 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
             'import_annotations' => true,
-        ])->assertStatus(201);
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('id');
 
-        $pv = PendingVolume::where('volume_id', $id)->first();
-        $this->assertNotSame($old->id, $pv->id);
-        $this->assertNull($old->fresh());
+        $this->assertNotNull($old->fresh());
+        $this->assertSame(1, PendingVolume::count());
     }
 
     public function testUpdateImages()
