@@ -29,9 +29,8 @@ class StorePendingVolume extends FormRequest
      */
     public function rules(): array
     {
-
         $rules = [
-            'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
+            'media_type' => ['required', Rule::in(MediaType::labels())],
             'metadata_parser' => [
                 'required_with:metadata_file',
             ],
@@ -108,8 +107,8 @@ class StorePendingVolume extends FormRequest
     {
         // Allow a string as media_type to be more conventient.
         $type = $this->input('media_type');
-        if (in_array($type, array_keys(MediaType::INSTANCES))) {
-            $this->merge(['media_type_id' => MediaType::$type()->id]);
+        if (in_array($type, MediaType::labels())) {
+            $this->merge(['media_type_id' => MediaType::fromLabel(strtoupper($type))->value]);
         }
     }
 }

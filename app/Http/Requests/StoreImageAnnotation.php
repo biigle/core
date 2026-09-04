@@ -6,6 +6,7 @@ use Biigle\Image;
 use Biigle\Rules\AnnotationPoints;
 use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreImageAnnotation extends FormRequest
 {
@@ -52,7 +53,7 @@ class StoreImageAnnotation extends FormRequest
                 },
             ],
             'confidence'  => 'required|numeric|between:0,1',
-            'shape_id' => 'required|integer|exists:shapes,id',
+            'shape_id' => ['required', 'integer', Rule::in(Shape::pluckById()->keys()->all())],
             'points'   => [
                 'bail',
                 'required',

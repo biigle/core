@@ -2,9 +2,11 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Role;
 use Biigle\Rules\Uuid4;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreUser extends FormRequest
 {
@@ -30,7 +32,7 @@ class StoreUser extends FormRequest
             'password' => 'required|string|min:8',
             'firstname' => 'required|string|max:128',
             'lastname' => 'required|string|max:128',
-            'role_id' => 'integer|exists:roles,id',
+            'role_id' => ['integer', Rule::in([Role::adminId(), Role::editorId(), Role::guestId(), Role::expertId()])],
             'uuid' => ['nullable', new Uuid4],
             'affiliation' => 'nullable|max:255',
         ];

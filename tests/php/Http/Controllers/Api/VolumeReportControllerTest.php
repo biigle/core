@@ -186,7 +186,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         $label = LabelTest::create();
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::first()->id;
+        $typeId = ReportType::IMAGE_ANNOTATIONS_AREA->value;
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
             'type_id' => $typeId,
             'only_labels' => [-1],

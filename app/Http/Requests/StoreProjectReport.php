@@ -6,6 +6,7 @@ use Biigle\Image;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
 use Biigle\ReportType;
+use Illuminate\Validation\Rule;
 
 class StoreProjectReport extends StoreReport
 {
@@ -36,7 +37,7 @@ class StoreProjectReport extends StoreReport
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'type_id' => 'required|integer|exists:report_types,id',
+            'type_id' => ['required', 'integer', Rule::in(array_column(ReportType::cases(), 'value'))]
         ]);
     }
 

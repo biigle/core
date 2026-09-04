@@ -4,7 +4,6 @@ namespace Biigle\Tests;
 
 use Biigle\ImageAnnotation;
 use Biigle\Role;
-use Illuminate\Database\QueryException;
 use ModelTestCase;
 
 class ImageAnnotationTest extends ModelTestCase
@@ -27,12 +26,6 @@ class ImageAnnotationTest extends ModelTestCase
         $this->assertNotNull(ImageAnnotation::find($this->model->id));
         $this->model->image()->delete();
         $this->assertNull(ImageAnnotation::find($this->model->id));
-    }
-
-    public function testShapeOnDeleteRestrict()
-    {
-        $this->expectException(QueryException::class);
-        $this->model->shape()->delete();
     }
 
     public function testCastPoints()

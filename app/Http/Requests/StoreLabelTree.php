@@ -4,7 +4,9 @@ namespace Biigle\Http\Requests;
 
 use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\Visibility;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLabelTree extends FormRequest
 {
@@ -41,7 +43,7 @@ class StoreLabelTree extends FormRequest
     {
         return [
             'name' => 'required|max:256',
-            'visibility_id' => 'required|integer|exists:visibilities,id',
+            'visibility_id' => ['required', 'integer', Rule::in(array_column(Visibility::cases(), 'value'))],
             'project_id' => 'integer|exists:projects,id',
             'upstream_label_tree_id' => 'integer|exists:label_trees,id',
         ];

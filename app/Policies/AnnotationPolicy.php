@@ -119,7 +119,7 @@ class AnnotationPolicy extends CachedPolicy
                     Role::adminId(),
                 ])
                 ->pluck('project_id');
-                
+
             if ($projectIds->isEmpty()) {
                 return Response::deny("Only project editors, experts or admins may attach a label to this annotation.");
             }
@@ -131,7 +131,7 @@ class AnnotationPolicy extends CachedPolicy
             if (!$labelBelongsToProject) {
                 return Response::deny("You are not authorized to use the label '{$label->name}' because the label tree is not attached to the project.");
             }
-                    
+
             return Response::allow();
         });
     }

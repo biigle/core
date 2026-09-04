@@ -2,38 +2,81 @@
 
 namespace Biigle;
 
-use Biigle\Traits\HasConstantInstances;
-use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Override;
 
 /**
  * A role of a user. Users have one global role and can have many project-
  * specific roles.
- *
- * @method static Role admin()
- * @method static int adminId()
- * @method static Role expert()
- * @method static int expertId()
- * @method static Role editor()
- * @method static int editorId()
- * @method static Role guest()
- * @method static int guestId()
- */
-#[WithoutTimestamps]
-class Role extends Model
+ * This used to be a eloquent db model and was turned into an enum later. To keep some compatibility, some methods were introduced.
+*/
+enum Role: int implements \JsonSerializable
 {
-    use HasConstantInstances, HasFactory;
+    case ADMIN = 1;
+    case EDITOR = 2;
+    case GUEST = 3;
+    case EXPERT = 4;
 
-    /**
-     * The constant instances of this model.
-     *
-     * @var array<string, string>
-     */
-    const INSTANCES = [
-        'admin' => 'admin',
-        'expert' => 'expert',
-        'editor' => 'editor',
-        'guest' => 'guest',
-    ];
+    public static function admin(): self
+    {
+        return self::ADMIN;
+    }
+
+    public static function editor(): self
+    {
+        return self::EDITOR;
+    }
+
+    public static function guest(): self
+    {
+        return self::GUEST;
+    }
+
+    public static function expert(): self
+    {
+        return self::EXPERT;
+    }
+
+    public static function adminId(): int
+    {
+        return self::ADMIN->value;
+    }
+
+    public static function editorId(): int
+    {
+        return self::EDITOR->value;
+    }
+
+    public static function guestId(): int
+    {
+        return self::GUEST->value;
+    }
+
+    public static function expertId(): int
+    {
+        return self::EXPERT->value;
+    }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::ADMIN => 'admin',
+            self::EDITOR => 'editor',
+            self::GUEST => 'guest',
+            self::EXPERT => 'expert',
+        };
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->value,
+            'name' => $this->label()
+        ];
+    }
+
+    #[Override]
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
 }

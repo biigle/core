@@ -436,10 +436,8 @@ class VolumeImport extends Import
      */
     protected function insertVolumes(Collection $candidates, User $creator, array $newUrls)
     {
-        $mediaTypes = MediaType::pluck('id', 'name');
-
         return $candidates
-            ->map(function ($candidate) use ($creator, $newUrls, $mediaTypes) {
+            ->map(function ($candidate) use ($creator, $newUrls) {
                 $volume = new Volume;
                 /** @phpstan-ignore-next-line */
                 $volume->old_id = $candidate['id'];
@@ -456,7 +454,7 @@ class VolumeImport extends Import
                     throw new UnprocessableEntityHttpException($message);
                 }
 
-                $volume->media_type_id = $mediaTypes[$candidate['media_type_name']];
+                $volume->media_type_id = MediaType::fromLabel($candidate['media_type_name'])->value;
                 $volume->attrs = $candidate['attrs'];
                 $volume->creator_id = $creator->id;
 

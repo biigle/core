@@ -55,11 +55,11 @@ class Report extends Model
     /**
      * Type of the report.
      *
-     * @return BelongsTo<ReportType, $this>
+     * @return ReportType
      */
-    public function type(): BelongsTo
+    public function getTypeAttribute()
     {
-        return $this->belongsTo(ReportType::class);
+        return ReportType::from($this->type_id);
     }
 
     /**

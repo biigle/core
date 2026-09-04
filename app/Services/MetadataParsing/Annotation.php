@@ -23,7 +23,7 @@ abstract class Annotation
         public array $points,
         public array $labels,
     ) {
-        $this->shape_id = $shape->id;
+        $this->shape_id = $shape->value;
         $this->setPointsAttribute($points);
 
         array_walk($labels, function ($label) {
@@ -43,7 +43,7 @@ abstract class Annotation
     {
         return [
             'points' => json_encode($this->points),
-            'shape_id' => $this->shape->id,
+            'shape_id' => $this->shape->value,
         ];
     }
 

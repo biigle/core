@@ -50,15 +50,9 @@ class VolumeTest extends ModelTestCase
 
     public function testMediaTypeRequired()
     {
-        $this->model->mediaType()->dissociate();
+        $this->model->media_type_id = null;
         $this->expectException(QueryException::class);
         $this->model->save();
-    }
-
-    public function testMediaTypeOnDeleteRestrict()
-    {
-        $this->expectException(QueryException::class);
-        $this->model->mediaType()->delete();
     }
 
     public function testCreatorOnDeleteSetNull()
@@ -280,13 +274,13 @@ class VolumeTest extends ModelTestCase
         $u4 = UserTest::create();
 
         $p1 = ProjectTest::create();
-        $p1->addUserId($u1, $editor->id);
-        $p1->addUserId($u2, $editor->id);
+        $p1->addUserId($u1, $editor->value);
+        $p1->addUserId($u2, $editor->value);
         $p1->volumes()->attach($this->model);
 
         $p2 = ProjectTest::create();
-        $p2->addUserId($u2, $editor->id);
-        $p2->addUserId($u3, $editor->id);
+        $p2->addUserId($u2, $editor->value);
+        $p2->addUserId($u3, $editor->value);
         $p2->volumes()->attach($this->model);
 
         $users = $this->model->users()->get();
@@ -488,7 +482,7 @@ class VolumeTest extends ModelTestCase
     {
         $id = $this->model->id;
         $images = [];
-        
+
         // Create 40 images to ensure step = 4 (40/10 = 4, which is even)
         for ($i = 0; $i < 40; $i++) {
             $images[] = ImageTest::create(['volume_id' => $id, 'filename' => sprintf("file%03d.jpg", $i)]);
@@ -507,7 +501,7 @@ class VolumeTest extends ModelTestCase
         $this->model->flushThumbnailCache();
 
         $thumbnails = $this->model->thumbnails;
-        
+
         $this->assertCount(10, $thumbnails);
     }
 

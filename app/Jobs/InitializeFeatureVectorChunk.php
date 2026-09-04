@@ -35,7 +35,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 
         $ids = array_diff($this->imageAnnotationIds, $skipIds);
         $models = ImageAnnotation::whereIn('id', $ids)
-            ->with('file', 'labels.label', 'shape')
+            ->with('file', 'labels.label')
             ->get()
             ->keyBy('id');
 

@@ -44,7 +44,6 @@ class ProjectsAttachableVolumesController extends Controller
         $this->authorize('update', $project);
 
         $volumes = Volume::select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
             // All volumes of other projects where the user has admin rights on.
             ->whereIn('id', fn ($query) => $query->select('volume_id')
                 ->from('project_volume')
@@ -68,6 +67,7 @@ class ProjectsAttachableVolumesController extends Controller
         $volumes->each(function ($item) use ($hidden) {
             $item->append('thumbnailUrl')
                 ->append('thumbnailsUrl')
+                ->setAttribute('media_type', $item->mediaType) // TODO compare with others for test, test index and fuzzy search
                 ->makeHidden($hidden);
         });
 

@@ -31,7 +31,7 @@ class ApiTestCase extends TestCase
     private function newUser($role = null, $attrs = [])
     {
         $user = UserTest::make($attrs);
-        $user->role()->associate($role ? $role : Role::editor());
+        $user->role_id = $role ? $role->value : Role::editorId();
         $user->save();
 
         return $user;
@@ -40,7 +40,7 @@ class ApiTestCase extends TestCase
     private function newProjectUser($role)
     {
         $user = $this->newUser();
-        $this->project()->addUserId($user->id, $role->id);
+        $this->project()->addUserId($user->id, $role->value);
 
         return $user;
     }

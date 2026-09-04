@@ -27,7 +27,7 @@ class UsersControllerTest extends TestCase
     public function testGetWhenLoggedIn()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get('admin/users')->assertStatus(200);
     }
@@ -39,7 +39,7 @@ class UsersControllerTest extends TestCase
             'lastname' => 'user',
             'email' => 'jane@user.com',
         ]);
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $user = UserTest::create([
             'firstname' => 'joe',
             'lastname' => 'user',
@@ -65,7 +65,7 @@ class UsersControllerTest extends TestCase
     public function testNewWhenLoggedIn()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get('admin/users/new')->assertStatus(200);
     }
@@ -86,7 +86,7 @@ class UsersControllerTest extends TestCase
     public function testEditDoesntExist()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $response = $this->get('admin/users/edit/999')->assertStatus(404);
     }
@@ -95,7 +95,7 @@ class UsersControllerTest extends TestCase
     {
         $id = UserTest::create()->id;
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get("admin/users/edit/{$id}")->assertStatus(200);
     }
@@ -116,7 +116,7 @@ class UsersControllerTest extends TestCase
     public function testDeleteDoesntExist()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get('admin/users/delete/0')->assertStatus(404);
     }
@@ -125,7 +125,7 @@ class UsersControllerTest extends TestCase
     {
         $id = UserTest::create()->id;
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get("admin/users/delete/{$id}")->assertStatus(200);
     }
@@ -146,7 +146,7 @@ class UsersControllerTest extends TestCase
     public function testShowDoesntExist()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $response = $this->get('admin/users/999')->assertStatus(404);
     }
@@ -155,7 +155,7 @@ class UsersControllerTest extends TestCase
     {
         $id = UserTest::create()->id;
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
         $this->be($admin);
         $this->get("admin/users/{$id}")->assertStatus(200);
     }
@@ -164,7 +164,7 @@ class UsersControllerTest extends TestCase
     {
         $user = UserTest::create();
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role_id = Role::adminId();
 
         $volume = VolumeTest::create(['creator_id' => $user->id]);
         $video = VideoTest::create(['volume_id' => $volume->id]);

@@ -26,11 +26,11 @@ class ShapeController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection<int, array>
      */
     public function index()
     {
-        return Shape::all();
+        return collect(Shape::cases())->map->toArray()->values();
     }
 
     /**
@@ -54,6 +54,8 @@ class ShapeController extends Controller
      */
     public function show($id)
     {
-        return Shape::findOrFail($id);
+        $shape = Shape::tryFrom((int) $id);
+        abort_if($shape === null, 404);
+        return $shape;
     }
 }

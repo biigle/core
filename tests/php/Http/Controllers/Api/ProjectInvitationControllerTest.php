@@ -38,7 +38,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
                 'expires_at' => $timestamp,
             ])
             ->assertSuccessful();
-    
+
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
         $this->assertEquals($timestamp, $invitation->expires_at);
