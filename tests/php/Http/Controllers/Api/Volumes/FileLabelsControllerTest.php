@@ -17,7 +17,7 @@ class FileLabelsControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $id]);
         $imageLabel = ImageLabelTest::create(['image_id' => $image->id]);
         // Image without any labels, should be omitted from the response.
-        ImageTest::create(['volume_id' => $id]);
+        ImageTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/files/labels");
 
@@ -39,7 +39,7 @@ class FileLabelsControllerTest extends ApiTestCase
         $video = VideoTest::create(['volume_id' => $id]);
         $videoLabel = VideoLabelTest::create(['video_id' => $video->id]);
         // Video without any labels, should be omitted from the response.
-        VideoTest::create(['volume_id' => $id]);
+        VideoTest::create(['volume_id' => $id, 'filename' => 'abc.mp4']);
 
         $this->beGuest();
         $this->getJson("/api/v1/volumes/{$id}/files/labels")

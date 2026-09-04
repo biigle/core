@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Volume;
+use Symfony\Component\HttpFoundation\StreamedJsonResponse;
 
 class FileLabelsController extends Controller
 {
@@ -45,19 +46,24 @@ class FileLabelsController extends Controller
      * }
      *
      * @param  int  $id
-     * @return \Illuminate\Support\Collection
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */
     public function index($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        return $volume->files()
+        $query = $volume->files()
             ->has('labels')
             ->with('labels.label', 'labels.user')
-            ->select('id')
-            ->get()
-            ->keyBy('id')
-            ->map(fn ($image) => $image->labels);
+            ->select('id');
+
+        $generator = function () use ($query) {
+            foreach ($query->lazy() as $file) {
+                yield $file->id => $file->labels;
+            }
+        };
+
+        return new StreamedJsonResponse($generator());
     }
 }
