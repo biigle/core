@@ -39,6 +39,10 @@ class UpdateUserActivity
     {
         $user = auth()->user();
         if ($user && !$this->inExceptArray($request)) {
+            if (config('biigle.email_verification') && !config('biigle.offline_mode')) {
+                return;
+            }
+
             $user->login_at = new Carbon;
             $user->save();
         }
