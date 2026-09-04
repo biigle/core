@@ -15,7 +15,8 @@ class FileLabelsController extends Controller
      * @apiName VolumeIndexFileLabels
      * @apiPermission projectMember
      * @apiDescription Returns an object with the image/video IDs as keys and the arrays
-     * of file labels as values (depending on the volume media type).
+     * of file labels as values (depending on the volume media type). Files without any
+     * labels are omitted.
      *
      * @apiParam {Number} id The volume ID
      *
@@ -52,6 +53,7 @@ class FileLabelsController extends Controller
         $this->authorize('access', $volume);
 
         return $volume->files()
+            ->has('labels')
             ->with('labels.label', 'labels.user')
             ->select('id')
             ->get()
