@@ -2,15 +2,11 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Project;
-use Biigle\Role;
 use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePendingVolumeFromVolume extends FormRequest
 {
-    public const PENDING_VOLUME_EXISTS_MESSAGE = 'Only one metadata import can be performed at a time for each project and user.';
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -18,13 +14,7 @@ class StorePendingVolumeFromVolume extends FormRequest
     {
         $this->volume = Volume::findOrFail($this->route('id'));
 
-        if (!$this->user()->can('update', $this->volume)) {
-            return false;
-        }
-
-        $this->project = Project::inCommon($this->user(), $this->volume->id, [Role::adminId()])->first();
-
-        return !is_null($this->project);
+        return $this->user()->can('update', $this->volume);
     }
 
     /**
@@ -54,15 +44,6 @@ class StorePendingVolumeFromVolume extends FormRequest
             }
 
             if ($validator->errors()->isNotEmpty()) {
-                return;
-            }
-
-            $exists = $this->project->pendingVolumes()
-                ->where('user_id', $this->user()->id)
-                ->exists();
-
-            if ($exists) {
-                $validator->errors()->add('id', self::PENDING_VOLUME_EXISTS_MESSAGE);
                 return;
             }
 
