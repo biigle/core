@@ -12,6 +12,10 @@
     </thead>
     <tbody>
         <tr>
+            <td><kbd>F1</kbd>, <kbd>Q</kbd></td>
+            <td>Show keyboard shortcuts</td>
+        </tr>
+        <tr>
             <td><kbd>Arrow left</kbd></td>
             <td>Previous image</td>
         </tr>
