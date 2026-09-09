@@ -214,10 +214,6 @@ class VolumeUrlTest extends TestCase
     public function testRemoteOwnDomain()
     {
         $mock = new MockHandler([
-            new Response(200),
-            new Response(200),
-            new Response(200),
-            new Response(200),
         ]);
 
         $handler = HandlerStack::create($mock);
