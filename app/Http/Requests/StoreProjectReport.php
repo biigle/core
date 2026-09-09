@@ -37,7 +37,7 @@ class StoreProjectReport extends StoreReport
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'type_id' => ['required', 'integer', Rule::in(array_column(ReportType::cases(), 'value'))]
+            'type_id' => ['required', 'integer', Rule::enum(ReportType::class)]
         ]);
     }
 

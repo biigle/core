@@ -54,7 +54,7 @@ class StoreVideoAnnotation extends FormRequest
                     }
                 },
             ],
-            'shape_id' => ['required', 'integer', Rule::in(Shape::pluckById()->keys()->all())],
+            'shape_id' => ['required', 'integer', Rule::enum(Shape::class)],
             'frames' => [
                 'bail',
                 'required',

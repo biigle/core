@@ -53,7 +53,7 @@ class StoreImageAnnotation extends FormRequest
                 },
             ],
             'confidence'  => 'required|numeric|between:0,1',
-            'shape_id' => ['required', 'integer', Rule::in(Shape::pluckById()->keys()->all())],
+            'shape_id' => ['required', 'integer', Rule::enum(Shape::class)],
             'points'   => [
                 'bail',
                 'required',

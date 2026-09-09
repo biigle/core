@@ -32,7 +32,7 @@ class StoreUser extends FormRequest
             'password' => 'required|string|min:8',
             'firstname' => 'required|string|max:128',
             'lastname' => 'required|string|max:128',
-            'role_id' => ['integer', Rule::in([Role::adminId(), Role::editorId(), Role::guestId(), Role::expertId()])],
+            'role_id' => ['integer', Rule::enum(Rule::class)],
             'uuid' => ['nullable', new Uuid4],
             'affiliation' => 'nullable|max:255',
         ];

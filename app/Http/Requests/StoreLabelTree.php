@@ -43,7 +43,7 @@ class StoreLabelTree extends FormRequest
     {
         return [
             'name' => 'required|max:256',
-            'visibility_id' => ['required', 'integer', Rule::in(array_column(Visibility::cases(), 'value'))],
+            'visibility_id' => ['required', 'integer', Rule::enum(Visibility::class)],
             'project_id' => 'integer|exists:projects,id',
             'upstream_label_tree_id' => 'integer|exists:label_trees,id',
         ];

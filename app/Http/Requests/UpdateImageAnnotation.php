@@ -37,7 +37,7 @@ class UpdateImageAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'shape_id' => ['required_without:points', 'integer', Rule::in(Shape::pluckById()->keys()->all())],
+            'shape_id' => ['required_without:points', 'integer', Rule::enum(Shape::class)],
             'points' => 'required_without:shape_id|array',
         ];
     }

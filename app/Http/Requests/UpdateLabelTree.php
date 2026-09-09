@@ -37,7 +37,7 @@ class UpdateLabelTree extends FormRequest
     {
         return [
             'name' => 'filled|max:256',
-            'visibility_id' => ['integer', Rule::in(array_column(Visibility::cases(), 'value'))],
+            'visibility_id' => ['integer', Rule::enum(Visibility::class)],
         ];
     }
 }
