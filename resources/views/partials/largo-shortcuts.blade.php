@@ -12,7 +12,7 @@
     <tbody>
         <tr>
             <td><kbd>F1</kbd>, <kbd>Q</kbd></td>
-            <td>Show keyboard shortcuts</td>
+            <td>Show available keyboard shortcuts</td>
         </tr>
         <tr>
             <td><kbd>X</kbd></td>
