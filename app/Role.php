@@ -2,7 +2,7 @@
 
 namespace Biigle;
 
-use Override;
+use Biigle\Traits\EnumSerialization;
 
 /**
  * A role of a user. Users have one global role and can have many project-
@@ -11,6 +11,8 @@ use Override;
 */
 enum Role: int implements \JsonSerializable
 {
+    use EnumSerialization;
+
     case ADMIN = 1;
     case EDITOR = 2;
     case GUEST = 3;
@@ -64,19 +66,5 @@ enum Role: int implements \JsonSerializable
             self::GUEST => 'guest',
             self::EXPERT => 'expert',
         };
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->value,
-            'name' => $this->label()
-        ];
-    }
-
-    #[Override]
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Biigle;
 
-use Override;
+use Biigle\Traits\EnumSerialization;
 use ValueError;
 
 /**
@@ -10,6 +10,8 @@ use ValueError;
  */
 enum MediaType: int implements \JsonSerializable
 {
+    use EnumSerialization;
+
     // Values previously used in the DB model, kept for compatibility
     case IMAGE = 3;
     case VIDEO = 4;
@@ -57,19 +59,5 @@ enum MediaType: int implements \JsonSerializable
             self::VIDEO->name => self::VIDEO,
             default => throw new ValueError("Invalid media type label $label"),
         };
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->value,
-            'name' => $this->label()
-        ];
-    }
-
-    #[Override]
-    public function jsonSerialize(): mixed
-    {
-        return $this->toArray();
     }
 }

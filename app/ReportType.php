@@ -2,10 +2,12 @@
 
 namespace Biigle;
 
-use Override;
+use Biigle\Traits\EnumSerialization;
 
 enum ReportType: int implements \JsonSerializable
 {
+    use EnumSerialization;
+
     case IMAGE_ANNOTATIONS_AREA = 1;
     case IMAGE_ANNOTATIONS_BASIC = 2;
     case IMAGE_ANNOTATIONS_CSV = 3;
@@ -216,19 +218,5 @@ enum ReportType: int implements \JsonSerializable
             self::VIDEO_IFDO => 'VideoIfdo',
             self::IMAGE_ANNOTATIONS_COCO => 'ImageAnnotations\Coco',
         };
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->value,
-            'name' => $this->label(),
-        ];
-    }
-
-    #[Override]
-    public function jsonSerialize(): mixed
-    {
-        return $this->toArray();
     }
 }

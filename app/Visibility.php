@@ -2,10 +2,12 @@
 
 namespace Biigle;
 
-use Override;
+use Biigle\Traits\EnumSerialization;
 
 enum Visibility: int implements \JsonSerializable
 {
+    use EnumSerialization;
+
     case PUBLIC = 1;
     case PRIVATE = 2;
 
@@ -35,19 +37,5 @@ enum Visibility: int implements \JsonSerializable
             self::PUBLIC => 'public',
             self::PRIVATE => 'private',
         };
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->value,
-            'name' => $this->label(),
-        ];
-    }
-
-    #[Override]
-    public function jsonSerialize(): mixed
-    {
-        return $this->toArray();
     }
 }

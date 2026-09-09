@@ -2,11 +2,13 @@
 
 namespace Biigle;
 
+use Biigle\Traits\EnumSerialization;
 use Illuminate\Support\Collection;
-use Override;
 
 enum Shape: int implements \JsonSerializable
 {
+    use EnumSerialization;
+
     case POINT = 1;
     case LINE = 2;
     case POLYGON = 3;
@@ -98,14 +100,6 @@ enum Shape: int implements \JsonSerializable
         };
     }
 
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->value,
-            'name' => $this->label(),
-        ];
-    }
-
     /**
      * Helper to imitate the original ->pluck('name', 'id') behaviour
      */
@@ -117,11 +111,5 @@ enum Shape: int implements \JsonSerializable
             $collection->forget($except->value);
         }
         return $collection;
-    }
-
-    #[Override]
-    public function jsonSerialize(): mixed
-    {
-        return $this->toArray();
     }
 }
