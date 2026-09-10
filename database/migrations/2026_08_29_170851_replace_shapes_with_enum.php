@@ -1,6 +1,7 @@
 <?php
 
 use Biigle\Shape;
+use Biigle\Support\EnumMigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -28,16 +29,7 @@ return new class extends Migration {
             $oldIds['WholeFrame'] => Shape::wholeFrameId(),
         ];
 
-        foreach ($this->foreignKeys as [$table, $column, $constraint]) {
-            foreach ($map as $oldId => $newId) {
-                DB::table($table)
-                    ->where($column, $oldId)
-                    ->update([$column => $newId]);
-            }
-
-            Schema::table($table, fn (Blueprint $t) => $t->dropForeign($constraint));
-        }
-        Schema::dropIfExists('shapes');
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'shapes', $this->foreignKeys);
     }
 
     /**
@@ -60,13 +52,6 @@ return new class extends Migration {
             ['id' => Shape::wholeFrameId(), 'name' => 'WholeFrame'],
         ]);
 
-        foreach ($this->foreignKeys as [$table, $column, $constraint]) {
-            Schema::table($table, function (Blueprint $t) use ($column, $constraint) {
-                $t->foreign($column, $constraint)
-                    ->references('id')
-                    ->on('shapes')
-                    ->onDelete('restrict');
-            });
-        }
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'shapes');
     }
 };

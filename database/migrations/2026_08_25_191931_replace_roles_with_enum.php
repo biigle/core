@@ -1,15 +1,12 @@
 <?php
 
 use Biigle\Role;
+use Biigle\Support\EnumMigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * We decided to replace the role table and other tables that just contain static enumerated values
- * with actual PHP enums
- */
 return new class extends Migration {
     private $foreignKeys = [
         ['users', 'role_id'],
@@ -23,9 +20,6 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // TODO Discuss if we want to "be safe" by mapping here or if it's enough
-        // to check in psql/with the migrations that the enum used the same numbers
-        // as the db table, in which case mapping is unnecessary
         $oldIds = DB::table('roles')->pluck('id', 'name');
         $map = [
             $oldIds['admin'] => Role::adminId(),
@@ -34,17 +28,7 @@ return new class extends Migration {
             $oldIds['expert'] => Role::expertId(),
         ];
 
-        // Replace foreign keys with the above IDs
-        foreach ($this->foreignKeys as [$table, $column]) {
-            foreach ($map as $oldId => $newId) {
-                DB::table($table)
-                    ->where($column, $oldId)
-                    ->update([$column => $newId]);
-            }
-
-            Schema::table($table, fn (Blueprint $t) => $t->dropForeign([$column]));
-        }
-        Schema::dropIfExists('roles');
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'roles', $this->foreignKeys);
     }
 
     /**
@@ -65,13 +49,6 @@ return new class extends Migration {
             ['id' => Role::expertId(), 'name' => 'expert'],
         ]);
 
-        foreach ($this->foreignKeys as [$table, $column]) {
-            Schema::table($table, function (Blueprint $t) use ($column) {
-                $t->foreign($column)
-                    ->references('id')
-                    ->on('roles')
-                    ->onDelete('restrict');
-            });
-        }
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'roles');
     }
 };

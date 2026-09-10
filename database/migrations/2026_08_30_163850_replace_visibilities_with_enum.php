@@ -1,5 +1,6 @@
 <?php
 
+use Biigle\Support\EnumMigrationHelper;
 use Biigle\Visibility;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -7,6 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    private $foreignKeys = [
+        ['label_trees', 'visibility_id']
+    ];
+
     /**
      * Run the migrations.
      */
@@ -18,14 +23,7 @@ return new class extends Migration {
             $oldIds['private'] => Visibility::privateId(),
         ];
 
-        foreach ($map as $oldId => $newId) {
-            DB::table('label_trees')
-                ->where('visibility_id', $oldId)
-                ->update(['visibility_id' => $newId]);
-        }
-
-        Schema::table('label_trees', fn (Blueprint $t) => $t->dropForeign(['visibility_id']));
-        Schema::dropIfExists('visibilities');
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'visibilities', $this->foreignKeys);
     }
 
     /**
@@ -44,11 +42,6 @@ return new class extends Migration {
             ['id' => Visibility::privateId(), 'name' => 'private'],
         ]);
 
-        Schema::table('label_trees', function (Blueprint $t) {
-            $t->foreign('visibility_id')
-                ->references('id')
-                ->on('visibilities')
-                ->onDelete('restrict');
-        });
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'visibilities');
     }
 };

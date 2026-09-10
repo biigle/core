@@ -1,6 +1,7 @@
 <?php
 
 use Biigle\MediaType;
+use Biigle\Support\EnumMigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -25,16 +26,7 @@ return new class extends Migration {
             $oldIds['video'] => MediaType::videoId(),
         ];
 
-        foreach ($this->foreignKeys as [$table, $column, $constraint]) {
-            foreach ($map as $oldId => $newId) {
-                DB::table($table)
-                    ->where($column, $oldId)
-                    ->update([$column => $newId]);
-            }
-
-            Schema::table($table, fn (Blueprint $t) => $t->dropForeign($constraint));
-        }
-        Schema::dropIfExists('media_types');
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'media_types', $this->foreignKeys);
     }
 
     /**
@@ -53,13 +45,6 @@ return new class extends Migration {
             ['id' => MediaType::videoId(), 'name' => 'video'],
         ]);
 
-        foreach ($this->foreignKeys as [$table, $column, $constraint]) {
-            Schema::table($table, function (Blueprint $t) use ($column, $constraint) {
-                $t->foreign($column, $constraint)
-                    ->references('id')
-                    ->on('media_types')
-                    ->onDelete('restrict');
-            });
-        }
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'media_types');
     }
 };

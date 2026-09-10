@@ -1,12 +1,17 @@
 <?php
 
 use Biigle\ReportType;
+use Biigle\Support\EnumMigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    private $foreignKeys = [
+        ['reports', 'type_id']
+    ];
+
     /**
      * Run the migrations.
      */
@@ -33,14 +38,7 @@ return new class extends Migration {
             $oldIds['ImageAnnotations\Coco']              => ReportType::imageAnnotationsCocoId(),
         ];
 
-        foreach ($map as $oldId => $newId) {
-            DB::table('reports')
-                ->where('type_id', $oldId)
-                ->update(['type_id' => $newId]);
-        }
-
-        Schema::table('reports', fn (Blueprint $t) => $t->dropForeign(['type_id']));
-        Schema::dropIfExists('report_types');
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'report_types', $this->foreignKeys);
     }
 
     /**
@@ -66,17 +64,12 @@ return new class extends Migration {
             ['id' => ReportType::videoLabelsCsvId(),                    'name' => 'VideoLabels\Csv'],
             ['id' => ReportType::imageLabelsImageLocationId(),           'name' => 'ImageLabels\ImageLocation'],
             ['id' => ReportType::imageAnnotationsImageLocationId(),     'name' => 'ImageAnnotations\ImageLocation'],
-            ['id' => ReportType::imageAnnotationsAnnotationLocationId(),'name' => 'ImageAnnotations\AnnotationLocation'],
+            ['id' => ReportType::imageAnnotationsAnnotationLocationId(), 'name' => 'ImageAnnotations\AnnotationLocation'],
             ['id' => ReportType::imageIfdoId(),                         'name' => 'ImageIfdo'],
             ['id' => ReportType::videoIfdoId(),                         'name' => 'VideoIfdo'],
             ['id' => ReportType::imageAnnotationsCocoId(),               'name' => 'ImageAnnotations\Coco'],
         ]);
 
-        Schema::table('reports', function (Blueprint $table) {
-            $table->foreign('type_id')
-                ->references('id')
-                ->on('report_types')
-                ->onDelete('restrict');
-        });
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'report_types');
     }
 };
