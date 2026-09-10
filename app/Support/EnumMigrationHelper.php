@@ -19,6 +19,8 @@ class EnumMigrationHelper
     public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys)
     {
         foreach ($foreignKeys as $foreignKey) {
+            Schema::table($table, fn (Blueprint $t) => $t->dropForeign($constraint));
+
             [$table, $column] = $foreignKey;
             $constraint = $foreignKey[2] ?? "{$table}_{$column}_foreign";
 
@@ -27,8 +29,6 @@ class EnumMigrationHelper
                     ->where($column, $oldId)
                     ->update([$column => $newId]);
             }
-
-            Schema::table($table, fn (Blueprint $t) => $t->dropForeign($constraint));
         }
 
         Schema::dropIfExists($tableName);
