@@ -59,10 +59,10 @@ return new class extends Migration {
         });
 
         DB::table('roles')->insert([
-            ['id' => 1, 'name' => 'admin'],
-            ['id' => 2, 'name' => 'editor'],
-            ['id' => 3, 'name' => 'guest'],
-            ['id' => 4, 'name' => 'expert'],
+            ['id' => Role::adminId(), 'name' => 'admin'],
+            ['id' => Role::editorId(), 'name' => 'editor'],
+            ['id' => Role::guestId(), 'name' => 'guest'],
+            ['id' => Role::expertId(), 'name' => 'expert'],
         ]);
 
         foreach ($this->foreignKeys as [$table, $column]) {

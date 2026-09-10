@@ -49,8 +49,8 @@ return new class extends Migration {
         });
 
         DB::table('media_types')->insert([
-            ['id' => 3, 'name' => 'image'],
-            ['id' => 4, 'name' => 'video'],
+            ['id' => MediaType::imageId(), 'name' => 'image'],
+            ['id' => MediaType::videoId(), 'name' => 'video'],
         ]);
 
         foreach ($this->foreignKeys as [$table, $column, $constraint]) {

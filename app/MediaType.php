@@ -12,9 +12,8 @@ enum MediaType: int implements \JsonSerializable
 {
     use EnumSerialization;
 
-    // Values previously used in the DB model, kept for compatibility
-    case IMAGE = 3;
-    case VIDEO = 4;
+    case IMAGE = 1;
+    case VIDEO = 2;
 
     public static function image(): self
     {
