@@ -590,6 +590,8 @@ export default {
                 e.feature.set('color', '5bc0de');
                 e.feature.setStyle(Styles.editing);
 
+                newAnnotation.feature = e.feature, // we need this temporarily if LabelBOT returns no results
+
                 // Move feature to the LabelBOT layer so it has opacity=1 while LabelBOT
                 // is computing.
                 this.labelbotSource.addFeature(e.feature);
