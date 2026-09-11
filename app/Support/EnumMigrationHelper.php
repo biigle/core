@@ -9,7 +9,10 @@ use Schema;
 class EnumMigrationHelper
 {
     /**
-     * Drops the specified table from the DB and removes foreign key constraints
+     * Helper to migrate certain tables with "static" values (roles, media_types, ...) to enums:
+     * - Removes all given foreign key constraints
+     * - Changes DB values to the enum values supplied by $map
+     * - Drops the specified table
      * @param array $map [$oldId => $newId]
      * @param string $tableName
      * @param array $foreignKeys [[table name, column name, foreign key constraint name], ...]. If the
