@@ -51,7 +51,7 @@ class VolumeImportTest extends TestCase
         ]);
         $this->video = VideoTest::create(['volume_id' => $this->videoVolume->id]);
         config(['volumes.admin_storage_disks' => ['test']]);
-        $this->user = User::factory()->make(['role_id' => Role::adminId()]);
+        $this->user = User::factory()->make(['role_id' => Role::ADMIN->value]);
         $this->be($this->user);
     }
 
@@ -284,9 +284,9 @@ class VolumeImportTest extends TestCase
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $tree = $imageLabel->label->tree;
         $admin = UserTest::create();
-        $tree->addMember($admin, Role::admin());
+        $tree->addMember($admin, Role::ADMIN);
         $editor = UserTest::create();
-        $tree->addMember($editor, Role::editor());
+        $tree->addMember($editor, Role::EDITOR);
 
         $import = $this->getDefaultImport();
         $imageLabel->delete();

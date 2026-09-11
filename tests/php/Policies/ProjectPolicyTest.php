@@ -19,14 +19,14 @@ class ProjectPolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalGuest = UserTest::create(['role_id' => Role::guestId()]);
-        $this->globalEditor = UserTest::create(['role_id' => Role::editorId()]);
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->globalGuest = UserTest::create(['role_id' => Role::GUEST->value]);
+        $this->globalEditor = UserTest::create(['role_id' => Role::EDITOR->value]);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::ADMIN->value]);
 
-        $this->project->addUserId($this->guest->id, Role::guestId());
-        $this->project->addUserId($this->editor->id, Role::editorId());
-        $this->project->addUserId($this->expert->id, Role::expertId());
-        $this->project->addUserId($this->admin->id, Role::adminId());
+        $this->project->addUserId($this->guest->id, Role::GUEST->value);
+        $this->project->addUserId($this->editor->id, Role::EDITOR->value);
+        $this->project->addUserId($this->expert->id, Role::EXPERT->value);
+        $this->project->addUserId($this->admin->id, Role::ADMIN->value);
     }
 
     public function testCreate()

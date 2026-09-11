@@ -267,7 +267,7 @@ class VolumeTest extends ModelTestCase
 
     public function testUsers()
     {
-        $editor = Role::editor();
+        $editor = Role::EDITOR;
         $u1 = UserTest::create();
         $u2 = UserTest::create();
         $u3 = UserTest::create();
@@ -446,7 +446,7 @@ class VolumeTest extends ModelTestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST->value);
 
         $ids = Volume::accessibleBy($user)->pluck('id');
         $this->assertEmpty($ids);

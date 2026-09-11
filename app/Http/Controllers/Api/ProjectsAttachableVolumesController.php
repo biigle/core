@@ -50,7 +50,7 @@ class ProjectsAttachableVolumesController extends Controller
                 ->whereIn('project_id', fn ($query) => $query->select('project_id')
                     ->from('project_user')
                     ->where('user_id', $request->user()->id)
-                    ->where('project_role_id', Role::adminId())
+                    ->where('project_role_id', Role::ADMIN->value)
                     ->where('project_id', '!=', $id)))
             ->where('name', 'ilike', "%{$name}%")
             // Do not return volumes that are already attached to this project.

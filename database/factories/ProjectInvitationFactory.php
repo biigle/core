@@ -22,7 +22,7 @@ class ProjectInvitationFactory extends Factory
             'uuid' => $this->faker->unique()->uuid(),
             'expires_at' => now()->addDay(),
             'project_id' => Project::factory(),
-            'role_id' => Role::editorId(),
+            'role_id' => Role::EDITOR->value,
             'current_uses' => 0,
             'add_to_sessions' => false,
         ];

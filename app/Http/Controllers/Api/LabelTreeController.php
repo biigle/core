@@ -145,7 +145,7 @@ class LabelTreeController extends Controller
             $tree->description = $request->input('description');
             $tree->uuid = Uuid::uuid4();
             $tree->save();
-            $tree->addMember($request->user(), Role::admin());
+            $tree->addMember($request->user(), Role::ADMIN);
 
             if (isset($request->project)) {
                 $tree->projects()->attach($request->project);

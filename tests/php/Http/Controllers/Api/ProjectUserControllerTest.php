@@ -69,7 +69,7 @@ class ProjectUserControllerTest extends ApiTestCase
         // last admin cannot be removed
         $this
             ->putJson("/api/v1/projects/{$id}/users/".$this->admin()->id, [
-                'project_role_id' => Role::guestId(),
+                'project_role_id' => Role::GUEST->value,
             ])
             ->assertStatus(422)
             ->assertJsonFragment(['The last admin of '.$this->project()->name.' cannot be removed. The admin status must be passed on to another user first.']);
@@ -77,7 +77,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->assertSame(2, $this->project()->users()->find($this->editor()->id)->project_role_id);
 
         $response = $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id, [
-            'project_role_id' => Role::guestId(),
+            'project_role_id' => Role::GUEST->value,
         ]);
 
         $response->assertStatus(200);
@@ -89,24 +89,24 @@ class ProjectUserControllerTest extends ApiTestCase
         $pid = $this->project()->id;
         $id = $this->globalGuest()->id;
 
-        $this->project()->addUserId($id, Role::guestId());
+        $this->project()->addUserId($id, Role::GUEST->value);
 
         $this->beAdmin();
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::editorId(),
+                'project_role_id' => Role::EDITOR->value,
             ])
             ->assertStatus(200);
 
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::expertId(),
+                'project_role_id' => Role::EXPERT->value,
             ])
             ->assertStatus(200);
 
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::adminId(),
+                'project_role_id' => Role::ADMIN->value,
             ])
             ->assertStatus(422);
     }
@@ -145,7 +145,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $newUser = $this->project()->users()->find($id);
         $this->assertSame($id, $newUser->id);
-        $this->assertSame(Role::editorId(), $newUser->project_role_id);
+        $this->assertSame(Role::EDITOR->value, $newUser->project_role_id);
     }
 
     public function testAttachGlobalGuest()
@@ -156,7 +156,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->beAdmin();
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::editorId(),
+                'project_role_id' => Role::EDITOR->value,
             ])
             ->assertStatus(200);
 
@@ -164,7 +164,7 @@ class ProjectUserControllerTest extends ApiTestCase
 
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::expertId(),
+                'project_role_id' => Role::EXPERT->value,
             ])
             ->assertStatus(200);
 
@@ -172,7 +172,7 @@ class ProjectUserControllerTest extends ApiTestCase
 
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::adminId(),
+                'project_role_id' => Role::ADMIN->value,
             ])
             ->assertStatus(422);
     }
@@ -200,7 +200,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->project()->addUserId($this->editor()->id, Role::editorId());
+        $this->project()->addUserId($this->editor()->id, Role::EDITOR->value);
 
         // admins can delete anyone
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
@@ -210,7 +210,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->project()->addUserId($this->editor()->id, Role::editorId());
+        $this->project()->addUserId($this->editor()->id, Role::EDITOR->value);
 
         // but admins cannot delete themselves if they are the only admin left
         $response = $this->deleteJson("/api/v1/projects/{$id}/users/".$this->admin()->id);

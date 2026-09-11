@@ -39,7 +39,7 @@ class LabelTreePolicy extends CachedPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id === Role::editorId() || $user->role_id === Role::adminId();
+        return $user->role_id->value === Role::EDITOR->value || $user->role_id->value === Role::ADMIN->value;
     }
 
     /**
@@ -84,7 +84,7 @@ class LabelTreePolicy extends CachedPolicy
                 return $user->can('sudo') || DB::table(self::TABLE)
                     ->where('label_tree_id', $tree->id)
                     ->where('user_id', $user->id)
-                    ->whereIn('role_id', [Role::adminId(), Role::editorId()])
+                    ->whereIn('role_id', [Role::ADMIN->value, Role::EDITOR->value])
                     ->exists();
             }
 
@@ -106,7 +106,7 @@ class LabelTreePolicy extends CachedPolicy
                 return $user->can('sudo') || DB::table(self::TABLE)
                     ->where('label_tree_id', $tree->id)
                     ->where('user_id', $user->id)
-                    ->where('role_id', Role::adminId())
+                    ->where('role_id', Role::ADMIN->value)
                     ->exists();
             }
 

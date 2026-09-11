@@ -46,7 +46,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->assertNotNull($invitation->uuid);
         $this->assertNull($invitation->max_uses);
         $this->assertFalse($invitation->add_to_sessions);
-        $this->assertSame(Role::editorId(), $invitation->role_id);
+        $this->assertSame(Role::EDITOR->value, $invitation->role_id->value);
     }
 
     public function testStoreOptionalAttributes()
@@ -59,7 +59,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this
             ->postJson("/api/v1/projects/{$id}/invitations", [
                 'expires_at' => $timestamp,
-                'role_id' => Role::adminId(),
+                'role_id' => Role::ADMIN->value,
             ])
             ->assertStatus(422);
 
@@ -87,7 +87,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this
             ->postJson("/api/v1/projects/{$id}/invitations", [
                 'expires_at' => $timestamp,
-                'role_id' => Role::editorId(),
+                'role_id' => Role::EDITOR->value,
                 'max_uses' => 10,
                 'add_to_sessions' => true,
             ])
@@ -96,7 +96,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
         $this->assertSame(10, $invitation->max_uses);
-        $this->assertSame(Role::editorId(), $invitation->role_id);
+        $this->assertSame(Role::EDITOR->value, $invitation->role_id->value);
         $this->assertTrue($invitation->add_to_sessions);
     }
 
@@ -111,7 +111,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this
             ->postJson("/api/v1/projects/{$id}/invitations", [
                 'expires_at' => $timestamp,
-                'role_id' => Role::guestId(),
+                'role_id' => Role::GUEST->value,
                 'add_to_sessions' => true,
             ])
             ->assertStatus(422);
@@ -138,7 +138,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
     {
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role_id' => Role::guestId(),
+            'role_id' => Role::GUEST->value,
         ]);
         $id = $invitation->id;
         $this->doTestApiRoute('POST', "/api/v1/project-invitations/{$id}/join");
@@ -163,7 +163,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->assertSame(0, $invitation->current_uses);
         $projectUser = $this->project()->users()->find($this->user()->id);
         $this->assertNotNull($projectUser);
-        $this->assertSame(Role::guestId(), $projectUser->project_role_id);
+        $this->assertSame(Role::GUEST->value, $projectUser->project_role_id);
         $this->assertSame(1, $invitation->fresh()->current_uses);
     }
 
@@ -187,7 +187,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
     {
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role_id' => Role::guestId(),
+            'role_id' => Role::GUEST->value,
             'current_uses' => 1,
             'max_uses' => 1,
         ]);
@@ -205,7 +205,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
     {
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role_id' => Role::guestId(),
+            'role_id' => Role::GUEST->value,
             'expires_at' => '2022-11-09 00:00:00',
         ]);
         $id = $invitation->id;
@@ -245,7 +245,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role_id' => Role::editorId(),
+            'role_id' => Role::EDITOR->value,
             'add_to_sessions' => true,
         ]);
 
@@ -269,7 +269,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role_id' => Role::editorId(),
+            'role_id' => Role::EDITOR->value,
             'add_to_sessions' => true,
         ]);
 

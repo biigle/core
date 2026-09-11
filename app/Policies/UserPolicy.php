@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function index(User $user)
     {
-        return $user->role_id === Role::editorId() || $user->role_id === Role::adminId();
+        return $user->role_id->value === Role::EDITOR->value || $user->role_id->value === Role::ADMIN->value;
     }
 
     /**
@@ -29,7 +29,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id === Role::adminId();
+        return $user->role_id->value === Role::ADMIN->value;
     }
 
     /**
@@ -41,7 +41,7 @@ class UserPolicy
      */
     public function update(User $user, User $updateUser)
     {
-        return $user->id === $updateUser->id || $user->role_id === Role::adminId();
+        return $user->id === $updateUser->id || $user->role_id->value === Role::ADMIN->value;
     }
 
     /**

@@ -18,46 +18,6 @@ enum Role: int implements \JsonSerializable
     case GUEST = 3;
     case EXPERT = 4;
 
-    public static function admin(): self
-    {
-        return self::ADMIN;
-    }
-
-    public static function editor(): self
-    {
-        return self::EDITOR;
-    }
-
-    public static function guest(): self
-    {
-        return self::GUEST;
-    }
-
-    public static function expert(): self
-    {
-        return self::EXPERT;
-    }
-
-    public static function adminId(): int
-    {
-        return self::ADMIN->value;
-    }
-
-    public static function editorId(): int
-    {
-        return self::EDITOR->value;
-    }
-
-    public static function guestId(): int
-    {
-        return self::GUEST->value;
-    }
-
-    public static function expertId(): int
-    {
-        return self::EXPERT->value;
-    }
-
     public function label(): string
     {
         return match ($this) {

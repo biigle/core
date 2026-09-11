@@ -21,12 +21,12 @@ class VolumePolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::ADMIN->value]);
 
-        $project->addUserId($this->guest->id, Role::guestId());
-        $project->addUserId($this->editor->id, Role::editorId());
-        $project->addUserId($this->expert->id, Role::expertId());
-        $project->addUserId($this->admin->id, Role::adminId());
+        $project->addUserId($this->guest->id, Role::GUEST->value);
+        $project->addUserId($this->editor->id, Role::EDITOR->value);
+        $project->addUserId($this->expert->id, Role::EXPERT->value);
+        $project->addUserId($this->admin->id, Role::ADMIN->value);
     }
 
     public function testAccess()

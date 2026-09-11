@@ -45,7 +45,7 @@ class LabelTree extends Model
     public function memberCanLooseAdminStatus(User $member)
     {
         return $this->members()
-            ->wherePivot('role_id', Role::adminId())
+            ->wherePivot('role_id', Role::ADMIN->value)
             ->where('id', '!=', $member->id)
             ->exists();
     }

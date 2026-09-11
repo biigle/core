@@ -99,9 +99,9 @@ class RegisterController extends Controller
         $user->password = Hash::make($data['password']);
         $user->uuid = Uuid::uuid4();
         if ($this->isAdminConfirmationEnabled()) {
-            $user->role_id = Role::guestId();
+            $user->role_id = Role::GUEST->value;
         } else {
-            $user->role_id = Role::editorId();
+            $user->role_id = Role::EDITOR->value;
         }
 
         app()->make(Modules::class)->callControllerMixins('createNewUser', [

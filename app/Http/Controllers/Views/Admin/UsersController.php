@@ -42,9 +42,9 @@ class UsersController extends Controller
             ->paginate(100);
 
         $roleNames = [
-            Role::adminId() => 'Admin',
-            Role::editorId() => 'Editor',
-            Role::guestId() => 'Guest',
+            Role::ADMIN->value => 'Admin',
+            Role::EDITOR->value => 'Editor',
+            Role::GUEST->value => 'Guest',
         ];
 
         $usersCount = User::whereDate('created_at', '>=', now()->subWeek())
@@ -75,9 +75,9 @@ class UsersController extends Controller
         return view('admin.users.edit')
             ->with('affectedUser', User::findOrFail($id))
             ->with('roles', [
-                Role::admin(),
-                Role::editor(),
-                Role::guest(),
+                Role::ADMIN,
+                Role::EDITOR,
+                Role::GUEST,
             ]);
     }
 
@@ -99,7 +99,7 @@ class UsersController extends Controller
     public function show(Modules $modules, $id)
     {
         $user = User::findOrFail($id);
-        $roleClass = $this->roleClassMap($user->role_id);
+        $roleClass = $this->roleClassMap($user->role_id->value);
         $values = $this->showProject($user);
         $values = array_merge($values, $this->showVolume($user));
         $values = array_merge($values, $this->showAnnotations($user));
@@ -122,9 +122,9 @@ class UsersController extends Controller
     protected function roleClassMap($id = null)
     {
         $map = [
-            Role::adminId() => 'danger',
-            Role::editorId() => 'primary',
-            Role::guestId() => 'default',
+            Role::ADMIN->value => 'danger',
+            Role::EDITOR->value => 'primary',
+            Role::GUEST->value => 'default',
         ];
 
         if (!is_null($id)) {

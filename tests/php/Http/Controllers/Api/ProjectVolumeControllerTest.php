@@ -715,7 +715,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->post("/api/v1/projects/{$pid}/volumes/{$tid}");
         $response->assertStatus(403);
 
-        $secondProject->addUserId($this->admin()->id, Role::adminId());
+        $secondProject->addUserId($this->admin()->id, Role::ADMIN->value);
         Cache::flush();
 
         $this->assertEmpty($secondProject->fresh()->volumes);

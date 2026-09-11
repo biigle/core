@@ -222,18 +222,18 @@ class UserController extends Controller
             $user->password = bcrypt($request->input('password'));
         }
 
-        $user->role_id = $request->input('role_id', $user->role_id);
+        $user->role_id = $request->input('role_id', $user->role_id->value);
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
         $user->affiliation = $request->input('affiliation', $user->affiliation);
-        if ($request->filled('can_review') && $user->role_id === Role::editorId()) {
+        if ($request->filled('can_review') && $user->role_id->value === Role::EDITOR->value) {
             $user->canReview = (bool) $request->input('can_review');
         } else {
             $user->canReview = false;
         }
 
-        if ($request->filled('rate_limit') && $user->role_id === Role::editorId()) {
+        if ($request->filled('rate_limit') && $user->role_id->value === Role::EDITOR->value) {
             $user->hasNoRateLimit = !boolval($request->input('rate_limit'));
         } else {
             $user->hasNoRateLimit = false;
@@ -352,7 +352,7 @@ class UserController extends Controller
         $user->email = $request->input('email');
         $user->affiliation = $request->input('affiliation');
         $user->password = bcrypt($request->input('password'));
-        $user->role_id = Role::editorId();
+        $user->role_id = Role::EDITOR->value;
         if ($request->filled('uuid')) {
             $user->uuid = $request->input('uuid');
         } else {

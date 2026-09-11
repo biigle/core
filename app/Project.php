@@ -78,7 +78,7 @@ class Project extends Model
      */
     public function admins()
     {
-        return $this->users()->whereProjectRoleId(Role::adminId());
+        return $this->users()->whereProjectRoleId(Role::ADMIN->value);
     }
 
     /**
@@ -88,7 +88,7 @@ class Project extends Model
      */
     public function editors()
     {
-        return $this->users()->whereProjectRoleId(Role::editorId());
+        return $this->users()->whereProjectRoleId(Role::EDITOR->value);
     }
 
     /**
@@ -98,7 +98,7 @@ class Project extends Model
      */
     public function guests()
     {
-        return $this->users()->whereProjectRoleId(Role::guestId());
+        return $this->users()->whereProjectRoleId(Role::GUEST->value);
     }
 
     /**

@@ -12,7 +12,7 @@ class LabelTreeUserIntegrityTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
 
         $this->assertTrue($user->labelTrees()->exists());
         $tree->delete();
@@ -23,7 +23,7 @@ class LabelTreeUserIntegrityTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
 
         $this->assertTrue($tree->members()->exists());
         $user->delete();
@@ -34,9 +34,9 @@ class LabelTreeUserIntegrityTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
 
         $this->expectException(QueryException::class);
-        $tree->members()->attach($user->id, ['role_id' => Role::editorId()]);
+        $tree->members()->attach($user->id, ['role_id' => Role::EDITOR->value]);
     }
 }

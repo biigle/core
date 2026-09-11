@@ -51,7 +51,7 @@ class LabelTreeControllerTest extends TestCase
         $user = UserTest::create();
         $this->be($user);
         $response = $this->get('admin/label-trees')->assertStatus(403);
-        $user->role_id = Role::adminId();
+        $user->role_id = Role::ADMIN->value;
         $this->get('admin/label-trees')->assertStatus(200);
     }
 
@@ -63,7 +63,7 @@ class LabelTreeControllerTest extends TestCase
             'version_id' => $version->id,
         ]);
         $user = UserTest::create();
-        $user->role_id = Role::adminId();
+        $user->role_id = Role::ADMIN->value;
         $this->be($user);
         $this->get('admin/label-trees')
             ->assertStatus(200)
@@ -81,11 +81,11 @@ class LabelTreeControllerTest extends TestCase
     public function testCreate()
     {
         $this->get('label-trees/create')->assertRedirect('login');
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role_id' => Role::GUEST->value]);
         $this->be($user);
         $this->get('label-trees/create')->assertStatus(403);
 
-        $user->role_id = Role::editorId();
+        $user->role_id = Role::EDITOR->value;
         $user->save();
         $this->get('label-trees/create')->assertStatus(200);
 
@@ -103,7 +103,7 @@ class LabelTreeControllerTest extends TestCase
 
     public function testCreateProject()
     {
-        $user = UserTest::create(['role_id' => Role::editorId()]);
+        $user = UserTest::create(['role_id' => Role::EDITOR->value]);
         $this->be($user);
         $project = ProjectTest::create();
         $response = $this->get('label-trees/create?project='.$project->id);
@@ -119,13 +119,13 @@ class LabelTreeControllerTest extends TestCase
 
     public function testCreateFork()
     {
-        $user = UserTest::create(['role_id' => Role::editorId()]);
+        $user = UserTest::create(['role_id' => Role::EDITOR->value]);
         $this->be($user);
         $labelTree = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
         $response = $this->get('label-trees/create?upstream_label_tree='.$labelTree->id);
         $response->assertStatus(403);
 
-        $labelTree->addMember($user, Role::editor());
+        $labelTree->addMember($user, Role::EDITOR);
         Cache::clear();
         $response = $this->get('label-trees/create?upstream_label_tree='.$labelTree->id);
         $response->assertStatus(200);

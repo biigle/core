@@ -19,6 +19,7 @@ class ProjectInvitation extends Model
     protected function casts(): array
     {
         return [
+            'role_id' => Role::class,
             'expires_at' => 'datetime:c',
             'add_to_sessions' => 'bool',
         ];

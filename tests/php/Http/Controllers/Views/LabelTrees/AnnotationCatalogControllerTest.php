@@ -21,7 +21,7 @@ class AnnotationCatalogControllerTest extends TestCase
         $this->be($user);
         $this->get("label-trees/{$tree->id}/catalog")->assertStatus(403);
 
-        $tree->addMember($user, Role::admin());
+        $tree->addMember($user, Role::ADMIN);
         Cache::flush();
         $this->get("label-trees/{$tree->id}/catalog")->assertStatus(200);
     }

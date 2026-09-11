@@ -86,7 +86,7 @@ class PendingVolumeController extends Controller
      */
     public function storeVolume(StorePendingVolumeFromVolume $request)
     {
-        $project = Project::inCommon($request->user(), $request->volume->id, [Role::adminId()])->first();
+        $project = Project::inCommon($request->user(), $request->volume->id, [Role::ADMIN->value])->first();
 
         // Delete individually to trigger deletion of metadata files.
         $project->pendingVolumes()->where('user_id', $request->user()->id)

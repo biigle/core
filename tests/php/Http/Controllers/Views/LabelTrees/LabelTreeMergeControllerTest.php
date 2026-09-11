@@ -19,7 +19,7 @@ class LabelTreeMergeControllerTest extends TestCase
         $this->be($editor);
         $this->get("label-trees/{$baseTree->id}/merge")
             ->assertStatus(403);
-        $baseTree->addMember($editor, Role::editorId());
+        $baseTree->addMember($editor, Role::EDITOR->value);
         Cache::flush();
 
         $this->get("label-trees/{$baseTree->id}/merge")
@@ -35,12 +35,12 @@ class LabelTreeMergeControllerTest extends TestCase
         $this->be($editor);
         $this->get("label-trees/{$baseTree->id}/merge/{$mergeTree->id}")
             ->assertStatus(403);
-        $baseTree->addMember($editor, Role::editorId());
+        $baseTree->addMember($editor, Role::EDITOR->value);
         Cache::flush();
 
         $this->get("label-trees/{$baseTree->id}/merge/{$mergeTree->id}")
             ->assertStatus(403);
-        $mergeTree->addMember($editor, Role::editorId());
+        $mergeTree->addMember($editor, Role::EDITOR->value);
         Cache::flush();
 
         $this->get("label-trees/{$baseTree->id}/merge/{$mergeTree->id}")

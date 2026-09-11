@@ -22,10 +22,10 @@ return new class extends Migration {
     {
         $oldIds = DB::table('roles')->pluck('id', 'name');
         $map = [
-            $oldIds['admin'] => Role::adminId(),
-            $oldIds['editor'] => Role::editorId(),
-            $oldIds['guest'] => Role::guestId(),
-            $oldIds['expert'] => Role::expertId(),
+            $oldIds['admin'] => Role::ADMIN->value,
+            $oldIds['editor'] => Role::EDITOR->value,
+            $oldIds['guest'] => Role::GUEST->value,
+            $oldIds['expert'] => Role::EXPERT->value,
         ];
 
         EnumMigrationHelper::replaceStaticTableWithEnum($map, 'roles', $this->foreignKeys);
@@ -43,10 +43,10 @@ return new class extends Migration {
         });
 
         DB::table('roles')->insert([
-            ['id' => Role::adminId(), 'name' => 'admin'],
-            ['id' => Role::editorId(), 'name' => 'editor'],
-            ['id' => Role::guestId(), 'name' => 'guest'],
-            ['id' => Role::expertId(), 'name' => 'expert'],
+            ['id' => Role::ADMIN->value, 'name' => 'admin'],
+            ['id' => Role::EDITOR->value, 'name' => 'editor'],
+            ['id' => Role::GUEST->value, 'name' => 'guest'],
+            ['id' => Role::EXPERT->value, 'name' => 'expert'],
         ]);
 
         EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'roles');

@@ -326,7 +326,7 @@ class LabelTreeImport extends Import
             ->whereIn('uuid', $trees->pluck('uuid'))
             ->pluck('members')
             ->collapse()
-            ->filter(fn ($user) => $user['role_id'] === Role::adminId())
+            ->filter(fn ($user) => $user['role_id'] === Role::ADMIN->value)
             ->pluck('id')
             ->unique()
             ->toArray();

@@ -27,7 +27,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'role_id' => 'int',
+            'role_id' => Role::class,
             'attrs' => 'array',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -71,7 +71,7 @@ class User extends Authenticatable
      */
     public function getRoleAttribute(): Role
     {
-        return Role::from($this->role_id);
+        return Role::from($this->role_id->value);
     }
 
     /**
@@ -101,7 +101,7 @@ class User extends Authenticatable
      */
     public function getIsGlobalAdminAttribute()
     {
-        return $this->role_id === Role::adminId();
+        return $this->role_id->value === Role::ADMIN->value;
     }
 
     /**
@@ -192,7 +192,7 @@ class User extends Authenticatable
     public function getCanReviewAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role_id->value === Role::EDITOR->value &&
                 $this->getSettings('can_review', false));
     }
 
@@ -214,7 +214,7 @@ class User extends Authenticatable
     public function getHasNoRateLimitAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role_id->value === Role::EDITOR->value &&
                 $this->getSettings('disable_rate_limit', false));
     }
 

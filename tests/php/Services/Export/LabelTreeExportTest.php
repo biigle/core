@@ -18,7 +18,7 @@ class LabelTreeExportTest extends TestCase
         $tree = $label->tree;
         $user1 = UserTest::create();
         $user2 = UserTest::create();
-        $tree->addMember($user1, Role::admin());
+        $tree->addMember($user1, Role::ADMIN);
 
         $export = new LabelTreeExport([$tree->id]);
         $expect = [[
@@ -36,7 +36,7 @@ class LabelTreeExportTest extends TestCase
             ]],
             'members' => [[
                 'id' => $user1->id,
-                'role_id' => Role::adminId(),
+                'role_id' => Role::ADMIN->value,
             ]],
         ]];
 
@@ -84,7 +84,7 @@ class LabelTreeExportTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::admin());
+        $tree->addMember($user, Role::ADMIN);
         $exports = (new LabelTreeExport([$tree->id]))->getAdditionalExports();
 
         $this->assertCount(1, $exports);
@@ -97,7 +97,7 @@ class LabelTreeExportTest extends TestCase
         $version = LabelTreeVersionTest::create();
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $user = UserTest::create();
-        $version->labelTree->addMember($user, Role::admin());
+        $version->labelTree->addMember($user, Role::ADMIN);
         $exports = (new LabelTreeExport([$tree->id]))->getAdditionalExports();
 
         $this->assertCount(1, $exports);

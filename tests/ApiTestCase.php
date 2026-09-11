@@ -31,7 +31,7 @@ class ApiTestCase extends TestCase
     private function newUser($role = null, $attrs = [])
     {
         $user = UserTest::make($attrs);
-        $user->role_id = $role ? $role->value : Role::editorId();
+        $user->role_id = $role ? $role->value : Role::EDITOR->value;
         $user->save();
 
         return $user;
@@ -72,7 +72,7 @@ class ApiTestCase extends TestCase
             return $this->admin;
         }
 
-        return $this->admin = $this->newProjectUser(Role::admin());
+        return $this->admin = $this->newProjectUser(Role::ADMIN);
     }
 
     protected function beAdmin()
@@ -86,7 +86,7 @@ class ApiTestCase extends TestCase
             return $this->expert;
         }
 
-        return $this->expert = $this->newProjectUser(Role::expert());
+        return $this->expert = $this->newProjectUser(Role::EXPERT);
     }
 
     protected function beExpert()
@@ -100,7 +100,7 @@ class ApiTestCase extends TestCase
             return $this->editor;
         }
 
-        return $this->editor = $this->newProjectUser(Role::editor());
+        return $this->editor = $this->newProjectUser(Role::EDITOR);
     }
 
     protected function beEditor()
@@ -114,7 +114,7 @@ class ApiTestCase extends TestCase
             return $this->guest;
         }
 
-        return $this->guest = $this->newProjectUser(Role::guest());
+        return $this->guest = $this->newProjectUser(Role::GUEST);
     }
 
     protected function beGuest()
@@ -142,7 +142,7 @@ class ApiTestCase extends TestCase
             return $this->globalGuest;
         }
 
-        return $this->globalGuest = $this->newUser(Role::guest());
+        return $this->globalGuest = $this->newUser(Role::GUEST);
     }
 
     protected function beGlobalGuest()
@@ -156,7 +156,7 @@ class ApiTestCase extends TestCase
             return $this->globalReviewer;
         }
 
-        return $this->globalReviewer = $this->newUser(Role::editor(), [
+        return $this->globalReviewer = $this->newUser(Role::EDITOR, [
             'attrs' => ['settings' => ['can_review' => true]],
         ]);
     }
@@ -172,7 +172,7 @@ class ApiTestCase extends TestCase
             return $this->globalAdmin;
         }
 
-        return $this->globalAdmin = $this->newUser(Role::admin());
+        return $this->globalAdmin = $this->newUser(Role::ADMIN);
     }
 
     protected function beGlobalAdmin()

@@ -244,10 +244,10 @@ class ImageAnnotationTest extends ModelTestCase
     {
         $image = ImageTest::create();
         $user = UserTest::create();
-        $admin = UserTest::create(['role_id' => Role::adminId()]);
+        $admin = UserTest::create(['role_id' => Role::ADMIN->value]);
         $otherUser = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::editorId());
+        $project->addUserId($user->id, Role::EDITOR->value);
         $project->addVolumeId($image->volume_id);
 
         $a = static::create([

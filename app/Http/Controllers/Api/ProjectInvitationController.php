@@ -41,7 +41,7 @@ class ProjectInvitationController extends Controller
             'uuid' => Uuid::uuid4(),
             'project_id' => $request->project->id,
             'expires_at' => $request->input('expires_at'),
-            'role_id' => $request->input('role_id', Role::editorId()),
+            'role_id' => $request->input('role_id', Role::EDITOR->value),
             'max_uses' => $request->input('max_uses'),
             'add_to_sessions' => $request->input('add_to_sessions', false),
         ]);
@@ -77,7 +77,7 @@ class ProjectInvitationController extends Controller
             $project = $request->invitation->project;
             $userId = $request->user()->id;
             if (!$project->users()->where('user_id', $userId)->exists()) {
-                $project->addUserId($userId, $request->invitation->role_id);
+                $project->addUserId($userId, $request->invitation->role_id->value);
                 $invitation->increment('current_uses');
 
                 if ($invitation->add_to_sessions) {
