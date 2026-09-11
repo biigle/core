@@ -24,10 +24,7 @@ class VolumeReportsController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
         $sessions = $volume->annotationSessions()->orderBy('starts_at', 'desc')->get();
-        $types = ReportType::when($volume->isImageVolume(), fn ($q) => $q->where('name', 'like', 'Image%'))
-            ->when($volume->isVideoVolume(), fn ($q) => $q->where('name', 'like', 'Video%'))
-            ->orderBy('name', 'asc')
-            ->get();
+        $types = ReportType::getSortedTypes($volume->isImageVolume(), $volume->isVideoVolume());
 
         $user = $request->user();
 

@@ -127,9 +127,9 @@ class StoreVolumeLargoSession extends StoreLargoSession
             // All projects that the user and the volume have in common
             // and where the user is editor, expert or admin.
             $projects = Project::inCommon($this->user(), $volume->id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
+                Role::EDITOR->value,
+                Role::EXPERT->value,
+                Role::ADMIN->value,
             ])->pluck('id');
         }
 

@@ -47,7 +47,7 @@ class PendingVolumeController extends Controller
 
         if ($user->can('sudo')) {
             $disks = $disks->concat(config('volumes.admin_storage_disks'));
-        } elseif ($user->role_id === Role::editorId() || $user->role_id === Role::adminId()) {
+        } elseif ($user->role_id->value === Role::EDITOR->value || $user->role_id->value === Role::ADMIN->value) {
             // Also check admin role because admins could have disabled their sudo mode.
             $disks = $disks->concat(config('volumes.editor_storage_disks'));
         }

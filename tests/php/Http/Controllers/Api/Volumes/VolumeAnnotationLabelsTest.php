@@ -46,7 +46,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
 
     public function testGetVideoVolumeAnnotationLabels()
     {
-        $id = $this->volume(['media_type_id' => MediaType::video()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $vid = VideoTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
         $a = VideoAnnotationTest::create(['video_id' => $vid->id]);
         $l = LabelTest::create();
@@ -74,7 +74,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
 
     public function testGetVideoVolumeAnnotationLabelsNoLabels()
     {
-        $id = $this->volume(['media_type_id' => MediaType::video()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         VideoTest::create(['volume_id' => $this->volume()->id]);
 
         $this->beEditor();
@@ -139,7 +139,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
 
     public function testGetVideoVolumeAnnotationLabelsSorting()
     {
-        $id = $this->volume(['media_type_id' => MediaType::video()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $vid = VideoTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
         $a = VideoAnnotationTest::create(['video_id' => $vid->id]);
         $l1 = LabelTest::create(['name' => '1']);
@@ -299,7 +299,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
 
     public function testGetVideoVolumeAnnotationLabelsAnnotationSession()
     {
-        $id = $this->volume(['media_type_id' => MediaType::video()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
 
         $l1 = LabelTest::create(['name' => '1']);
@@ -461,7 +461,7 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
 
     public function testGetVideoVolumeAnnotationLabelsAnnotationSessionEdgeCaseHideOther()
     {
-        $id = $this->volume(['media_type_id' => MediaType::video()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
         $video = VideoTest::create(['volume_id' => $id]);
 
         $l1 = LabelTest::create();

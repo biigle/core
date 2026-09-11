@@ -71,7 +71,7 @@ class StoreVolume extends FormRequest
     {
         return [
             'name' => 'required|max:512',
-            'media_type' => ['filled', Rule::in(array_keys(MediaType::INSTANCES))],
+            'media_type' => ['filled', Rule::in(MediaType::labels())],
             'url' => ['bail', 'required', 'string', 'max:512', new VolumeUrl],
             'files' => [
                 'required',
@@ -143,8 +143,8 @@ class StoreVolume extends FormRequest
         // Allow a string as media_type to be more conventient.
         // Default is image to be backwards compatible with custom import scripts.
         $type = $this->input('media_type', 'image');
-        if (in_array($type, array_keys(MediaType::INSTANCES))) {
-            $this->merge(['media_type_id' => MediaType::$type()->id]);
+        if (in_array($type, MediaType::labels())) {
+            $this->merge(['media_type_id' => MediaType::fromLabel(strtoupper($type))->value]);
         }
 
         // This establishes backwards compatibility of the old 'images' attribute which

@@ -78,7 +78,7 @@ class VolumeController extends Controller
             $thumbUriTemplate = thumbnail_url(':uuid', config('videos.thumbnail_storage_disk'));
         }
 
-        $type = $volume->mediaType->name;
+        $type = $volume->mediaType->label();
 
         return view('volumes.show', compact(
             'volume',
@@ -102,7 +102,7 @@ class VolumeController extends Controller
         $this->authorize('update', $volume);
         $sessions = $volume->annotationSessions()->with('users')->get();
         $projects = $this->getProjects($request->user(), $volume);
-        $type = $volume->mediaType->name;
+        $type = $volume->mediaType->label();
 
         $parsers = collect(ParserFactory::$parsers[$type] ?? [])
             ->map(fn ($class) => [
@@ -114,7 +114,7 @@ class VolumeController extends Controller
         return view('volumes.edit', [
             'projects' => $projects,
             'volume' => $volume,
-            'mediaTypes' => MediaType::all(),
+            'mediaTypes' => collect(MediaType::cases())->map->toArray(),
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
             'type' => $type,

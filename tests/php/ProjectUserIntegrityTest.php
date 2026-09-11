@@ -8,20 +8,11 @@ use TestCase;
 
 class ProjectUserIntegrityTest extends TestCase
 {
-    public function testRoleOnDeleteRestrict()
-    {
-        $project = ProjectTest::create();
-        $role = RoleTest::create();
-        $project->addUserId(UserTest::create()->id, $role->id);
-        $this->expectException(QueryException::class);
-        $role->delete();
-    }
-
     public function testProjectOnDeleteCascade()
     {
         $project = ProjectTest::create();
         $user = UserTest::create();
-        $project->addUserId($user->id, RoleTest::create()->id);
+        $project->addUserId($user->id, Role::EDITOR->value);
 
         $this->assertSame(1, $user->projects()->count());
         $project->delete();
@@ -32,7 +23,7 @@ class ProjectUserIntegrityTest extends TestCase
     {
         $member = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($member->id, Role::guestId());
+        $project->addUserId($member->id, Role::GUEST->value);
 
         // count the project creator, too
         $this->assertSame(2, $project->users()->count());
@@ -44,10 +35,10 @@ class ProjectUserIntegrityTest extends TestCase
     {
         $project = ProjectTest::create();
         $user = UserTest::create();
-        $role = RoleTest::create();
-        $project->addUserId($user->id, $role->id);
+        $role = Role::EDITOR;
+        $project->addUserId($user->id, $role->value);
         $this->expectException(QueryException::class);
         // attach manually so the error-check in addUserId is circumvented
-        $project->users()->attach($user->id, ['project_role_id' => $role->id]);
+        $project->users()->attach($user->id, ['project_role_id' => $role->value]);
     }
 }

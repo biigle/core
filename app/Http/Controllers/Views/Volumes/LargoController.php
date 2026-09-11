@@ -35,9 +35,9 @@ class LargoController extends Controller
             // All projects that the user and the volume have in common
             // and where the user is editor, expert or admin.
             $projects = Project::inCommon($request->user(), $volume->id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
+                Role::EDITOR->value,
+                Role::EXPERT->value,
+                Role::ADMIN->value,
             ])->get();
         }
 
@@ -54,7 +54,7 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = Shape::pluckById();
 
         if (!$volume->isVideoVolume()) {
             $wholeframeId = Shape::wholeFrameId();

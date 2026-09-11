@@ -2,8 +2,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Tests\ShapeTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -199,12 +199,12 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $u1 = UserTest::create();
         $u2 = UserTest::create();
 
-        $s1 = ShapeTest::create();
-        $s2 = ShapeTest::create();
+        $s1 = Shape::point();
+        $s2 = Shape::circle();
 
-        $a1 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->id]);
-        $a2 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->id]);
-        $a3 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s2->id]);
+        $a1 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->value]);
+        $a2 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->value]);
+        $a3 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s2->value]);
 
         $l1 = VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'user_id' =>$u1->id]);
         $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id, 'user_id' =>$u2->id]);
@@ -213,7 +213,7 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
 
         //Case 1: filter by shape
-        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->id}")
+        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->value}")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid]);
 
         //Case 2: filter by user
@@ -221,21 +221,21 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
             ->assertExactJson([$a2->id => $video->uuid, $a3->id => $video->uuid]);
 
         //Case 3: filter by shape and user
-        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s2->id}&user_id[]={$u2->id}&union=0")
+        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s2->value}&user_id[]={$u2->id}&union=0")
             ->assertExactJson([$a3->id => $video->uuid]);
 
         //Case 4: combine user and shape with negatives
-        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->id}&user_id[]=-{$u2->id}&union=0")
+        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->value}&user_id[]=-{$u2->id}&union=0")
             ->assertExactJson([$a1->id => $video->uuid]);
 
         //Case 5: combine filters (excluding values and not) with union
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid, $a3->id => $video->uuid]);
 
-        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->id}&user_id[]={$u1->id}&union=1")
+        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->value}&user_id[]={$u1->id}&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid]);
 
-        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s1->id}&user_id[]={$u1->id}&union=1")
+        $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s1->value}&user_id[]={$u1->id}&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a3->id => $video->uuid]);
 
         //Case 6: combine incompatible filters: annotations should be of user1 and/or user2 at the same time

@@ -41,7 +41,7 @@ class SearchControllerTest extends TestCase
             'name' => 'private one',
             'visibility_id' => Visibility::privateId(),
         ]);
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
 
         $this->be($user);
         $this->get('search?t=label-trees')
@@ -121,8 +121,8 @@ class SearchControllerTest extends TestCase
         $project = ProjectTest::create(['name' => 'random name']);
         $project2 = ProjectTest::create(['name' => 'another project']);
         $project3 = ProjectTest::create(['name' => 'and again']);
-        $project->addUserId($user->id, Role::guestId());
-        $project2->addUserId($user->id, Role::adminId());
+        $project->addUserId($user->id, Role::GUEST->value);
+        $project2->addUserId($user->id, Role::ADMIN->value);
 
         $this->be($user);
         $response = $this->get('search')->assertStatus(200);
@@ -170,7 +170,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST->value);
 
         $volume1 = VolumeTest::create(['name' => 'my volume']);
         $project->addVolumeId($volume1->id);
@@ -218,7 +218,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST->value);
 
         $image1 = ImageTest::create(['filename' => 'my image']);
         $project->addVolumeId($image1->volume_id);
@@ -243,7 +243,7 @@ class SearchControllerTest extends TestCase
         $user = UserTest::create();
         $guest = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($guest->id, Role::guestId());
+        $project->addUserId($guest->id, Role::GUEST->value);
 
         $video1 = VideoTest::create(['filename' => 'random video']);
         $project->addVolumeId($video1->volume_id);

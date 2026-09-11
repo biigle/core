@@ -350,7 +350,7 @@ class VolumeControllerTest extends ApiTestCase
             // No update permissions in the target project.
             ->assertStatus(403);
 
-        $project->addUserId($this->admin()->id, Role::adminId());
+        $project->addUserId($this->admin()->id, Role::ADMIN->value);
 
         Cache::flush();
 
@@ -372,7 +372,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         $volume = $this->volume(['name' => 'myvolume']);
         $project = ProjectTest::create();
-        $project->addUserId($this->admin()->id, Role::adminId());
+        $project->addUserId($this->admin()->id, Role::ADMIN->value);
 
         $this->beAdmin();
 
@@ -389,7 +389,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         $volume = $this->volume(['name' => 'myvolume', 'creator_id' => $this->user()->id]);
         $project = ProjectTest::create();
-        $project->addUserId($this->admin()->id, Role::adminId());
+        $project->addUserId($this->admin()->id, Role::ADMIN->value);
 
         $this->beAdmin();
 

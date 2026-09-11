@@ -54,9 +54,9 @@ class VolumeFilePolicy extends CachedPolicy
     public function addAnnotation(User $user, VolumeFile $file)
     {
         return $this->remember("volume-file-can-add-annotation-{$user->id}-{$file->volume_id}", fn () => Project::inCommon($user, $file->volume_id, [
-            Role::editorId(),
-            Role::expertId(),
-            Role::adminId(),
+            Role::EDITOR->value,
+            Role::EXPERT->value,
+            Role::ADMIN->value,
         ])->exists());
     }
 
@@ -70,7 +70,7 @@ class VolumeFilePolicy extends CachedPolicy
     public function destroy(User $user, VolumeFile $file)
     {
         return $this->remember("volume-file-can-destroy-{$user->id}-{$file->volume_id}", fn () => Project::inCommon($user, $file->volume_id, [
-            Role::adminId(),
+            Role::ADMIN->value,
         ])->exists());
     }
 
@@ -92,9 +92,9 @@ class VolumeFilePolicy extends CachedPolicy
             // Projects, the file belongs to *and* the user is editor, expert or admin
             // of.
             $projectIds = Project::inCommon($user, $file->volume_id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
+                Role::EDITOR->value,
+                Role::EXPERT->value,
+                Role::ADMIN->value,
             ])->pluck('id');
 
             // User must be editor, expert or admin in one of the projects.

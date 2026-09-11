@@ -44,14 +44,13 @@ class ProjectsAttachableVolumesController extends Controller
         $this->authorize('update', $project);
 
         $volumes = Volume::select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
             // All volumes of other projects where the user has admin rights on.
             ->whereIn('id', fn ($query) => $query->select('volume_id')
                 ->from('project_volume')
                 ->whereIn('project_id', fn ($query) => $query->select('project_id')
                     ->from('project_user')
                     ->where('user_id', $request->user()->id)
-                    ->where('project_role_id', Role::adminId())
+                    ->where('project_role_id', Role::ADMIN->value)
                     ->where('project_id', '!=', $id)))
             ->where('name', 'ilike', "%{$name}%")
             // Do not return volumes that are already attached to this project.
@@ -68,6 +67,7 @@ class ProjectsAttachableVolumesController extends Controller
         $volumes->each(function ($item) use ($hidden) {
             $item->append('thumbnailUrl')
                 ->append('thumbnailsUrl')
+                ->setAttribute('media_type', $item->mediaType) // TODO compare with others for test, test index and fuzzy search
                 ->makeHidden($hidden);
         });
 

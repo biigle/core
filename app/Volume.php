@@ -106,11 +106,11 @@ class Volume extends Model
     /**
      * The media type of this volume.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<MediaType, $this>
+     * @return MediaType
      */
-    public function mediaType()
+    public function getMediaTypeAttribute()
     {
-        return $this->belongsTo(MediaType::class);
+        return MediaType::from($this->media_type_id);
     }
 
     /**

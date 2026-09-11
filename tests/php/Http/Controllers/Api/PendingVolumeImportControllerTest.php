@@ -468,7 +468,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
             ])->id,
         ]);
 
-        $dbLabel->tree->addMember($this->admin(), Role::admin());
+        $dbLabel->tree->addMember($this->admin(), Role::ADMIN);
 
         $this->beAdmin();
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [

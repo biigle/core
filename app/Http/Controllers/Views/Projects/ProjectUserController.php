@@ -21,23 +21,23 @@ class ProjectUserController extends Controller
         $this->authorize('access', $project);
 
         $roles = collect([
-            Role::admin(),
-            Role::expert(),
-            Role::editor(),
-            Role::guest(),
-        ]);
+            Role::ADMIN,
+            Role::EXPERT,
+            Role::EDITOR,
+            Role::GUEST,
+        ])->map->toArray();
 
         $roleOrder = [
-            Role::guestId(),
-            Role::editorId(),
-            Role::expertId(),
-            Role::adminId(),
+            Role::GUEST->value,
+            Role::EDITOR->value,
+            Role::EXPERT->value,
+            Role::ADMIN->value,
         ];
 
         $members = $project->users()
             ->select('id', 'firstname', 'lastname', 'project_role_id as role_id', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role_id, $roleOrder) - array_search($a->role_id, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role_id->value, $roleOrder) - array_search($a->role_id->value, $roleOrder))
             ->values();
 
         $userProject = $request->user()->projects()->where('id', $id)->first();

@@ -26,7 +26,7 @@ class VideoController extends Controller
         $user = $request->user();
         $volume = $video->volume;
 
-        $shapes = Shape::where('name', '!=', 'Ellipse')->pluck('name', 'id');
+        $shapes = Shape::pluckById(Shape::ellipse());
 
         if ($user->can('sudo')) {
             // Global admins have no restrictions.
@@ -37,9 +37,9 @@ class VideoController extends Controller
             // Array of all project IDs that the user and the video have in common
             // and where the user is editor, expert or admin.
             $projectIds = Project::inCommon($user, $video->volume_id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
+                Role::EDITOR->value,
+                Role::EXPERT->value,
+                Role::ADMIN->value,
             ])->pluck('id');
         }
 

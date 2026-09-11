@@ -45,7 +45,7 @@ class LabelTree extends Model
     public function memberCanLooseAdminStatus(User $member)
     {
         return $this->members()
-            ->wherePivot('role_id', Role::adminId())
+            ->wherePivot('role_id', Role::ADMIN->value)
             ->where('id', '!=', $member->id)
             ->exists();
     }
@@ -159,11 +159,11 @@ class LabelTree extends Model
     /**
      * The visibility of the label tree.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Visibility, $this>
+     * @return Visibility
      */
-    public function visibility()
+    public function getVisibilityAttribute()
     {
-        return $this->belongsTo(Visibility::class);
+        return Visibility::from($this->visibility_id);
     }
 
     /**
@@ -218,7 +218,7 @@ class LabelTree extends Model
         }
 
         if ($role instanceof Role) {
-            $role = $role->id;
+            $role = $role->value;
         }
 
         $this->members()->attach($user, ['role_id' => $role]);
@@ -237,7 +237,7 @@ class LabelTree extends Model
         }
 
         if ($role instanceof Role) {
-            $role = $role->id;
+            $role = $role->value;
         }
 
         $this->members()->updateExistingPivot($user, ['role_id' => $role]);

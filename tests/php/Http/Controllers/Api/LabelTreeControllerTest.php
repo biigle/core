@@ -81,7 +81,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'label_tree_id' => $tree->id,
         ]);
 
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
 
         $this->doTestApiRoute('GET', "/api/v1/label-trees/{$tree->id}");
 
@@ -111,7 +111,7 @@ class LabelTreeControllerTest extends ApiTestCase
                 'id' => $this->editor()->id,
                 'firstname' => $this->editor()->firstname,
                 'lastname' => $this->editor()->lastname,
-                'role_id' => Role::editorId(),
+                'role_id' => Role::EDITOR->value,
             ]);
     }
 
@@ -123,8 +123,8 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => Visibility::privateId(),
         ]);
         $id = $tree->id;
-        $tree->addMember($this->editor(), Role::editor());
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->editor(), Role::EDITOR);
+        $tree->addMember($this->admin(), Role::ADMIN);
 
         $this->doTestApiRoute('PUT', "/api/v1/label-trees/{$id}");
 
@@ -179,7 +179,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => Visibility::privateId(),
         ]);
         $id = $tree->id;
-        $tree->addMember($this->user(), Role::admin());
+        $tree->addMember($this->user(), Role::ADMIN);
         $this->beUser();
         $this->get('/');
         $response = $this->put("/api/v1/label-trees/{$id}", [
@@ -206,7 +206,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'visibility_id' => Visibility::publicId(),
         ]);
         $id = $tree->id;
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->admin(), Role::ADMIN);
         $unauthorized = ProjectTest::create();
         $authorized = ProjectTest::create();
         $tree->authorizedProjects()->attach($authorized->id);
@@ -228,7 +228,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'version_id' => $version->id,
             'visibility_id' => Visibility::privateId(),
         ]);
-        $master->addMember($this->admin(), Role::admin());
+        $master->addMember($this->admin(), Role::ADMIN);
         $this->beAdmin();
         $this
             ->putJson("/api/v1/label-trees/{$master->id}", [
@@ -247,7 +247,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'version_id' => $version->id,
             'name' => 'My Tree',
         ]);
-        $master->addMember($this->admin(), Role::admin());
+        $master->addMember($this->admin(), Role::ADMIN);
         $this->beAdmin();
         $this
             ->putJson("/api/v1/label-trees/{$master->id}", [
@@ -314,7 +314,7 @@ class LabelTreeControllerTest extends ApiTestCase
         // creator gets first label tree admin
         $member = $tree->members()->find($this->user()->id);
         $this->assertNotNull($member);
-        $this->assertSame(Role::adminId(), $member->role_id);
+        $this->assertSame(Role::ADMIN->value, $member->role_id->value);
     }
 
     public function testStoreAuthorization()
@@ -415,7 +415,7 @@ class LabelTreeControllerTest extends ApiTestCase
             // No access to private label tree.
             ->assertStatus(422);
 
-        $baseTree->addMember($this->editor(), Role::editor());
+        $baseTree->addMember($this->editor(), Role::EDITOR);
         Cache::flush();
 
         $this
@@ -456,8 +456,8 @@ class LabelTreeControllerTest extends ApiTestCase
     {
         $tree = $this->labelTree();
         $id = $tree->id;
-        $tree->addMember($this->editor(), Role::editor());
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->editor(), Role::EDITOR);
+        $tree->addMember($this->admin(), Role::ADMIN);
 
         $this->doTestApiRoute('DELETE', "/api/v1/label-trees/{$id}");
 
@@ -486,7 +486,7 @@ class LabelTreeControllerTest extends ApiTestCase
     {
         $tree = LabelTreeTest::create();
         $id = $tree->id;
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->admin(), Role::ADMIN);
 
         $this->beAdmin();
         $this->get('/');
@@ -497,7 +497,7 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $tree = LabelTreeTest::create();
         $id = $tree->id;
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->admin(), Role::ADMIN);
 
         $response = $this->delete("/api/v1/label-trees/{$id}", [
             '_redirect' => 'settings',
@@ -510,7 +510,7 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testDestroyVersion()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->admin(), Role::admin());
+        $version->labelTree->addMember($this->admin(), Role::ADMIN);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $this->beAdmin();
         $this->deleteJson("/api/v1/label-trees/{$tree->id}")
@@ -520,7 +520,7 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testDestroyVersions()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->admin(), Role::admin());
+        $version->labelTree->addMember($this->admin(), Role::ADMIN);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $this->beAdmin();
         $this->deleteJson("/api/v1/label-trees/{$version->labelTree->id}")

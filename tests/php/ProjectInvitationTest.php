@@ -18,7 +18,7 @@ class ProjectInvitationTest extends ModelTestCase
         $this->assertNotNull($this->model->uuid);
         $this->assertNotNull($this->model->expires_at);
         $this->assertNotNull($this->model->project_id);
-        $this->assertNotNull($this->model->role_id);
+        $this->assertNotNull($this->model->role_id->value);
         $this->assertNotNull($this->model->current_uses);
         $this->assertNull($this->model->max_uses);
         $this->assertFalse($this->model->add_to_sessions);

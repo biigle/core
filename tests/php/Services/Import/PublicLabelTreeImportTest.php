@@ -27,9 +27,9 @@ class PublicLabelTreeImportTest extends TestCase
         $this->labelParent = LabelTest::create(['label_tree_id' => $this->labelTree->id]);
         $this->labelChild = LabelTest::create(['label_tree_id' => $this->labelTree->id, 'parent_id' => $this->labelParent->id]);
         $this->user = UserTest::create();
-        $this->labelTree->addMember($this->user, Role::admin());
+        $this->labelTree->addMember($this->user, Role::ADMIN);
         $this->member = UserTest::create();
-        $this->labelTree->addMember($this->member, Role::editor());
+        $this->labelTree->addMember($this->member, Role::EDITOR);
     }
 
     public function tearDown(): void

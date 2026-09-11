@@ -17,7 +17,7 @@ class PublicLabelTreeExportTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::admin());
+        $tree->addMember($user, Role::ADMIN);
 
         $export = new PublicLabelTreeExport([$tree->id]);
         $expect = [
@@ -38,7 +38,7 @@ class PublicLabelTreeExportTest extends TestCase
         $version = LabelTreeVersionTest::create();
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $user = UserTest::create();
-        $tree->addMember($user, Role::admin());
+        $tree->addMember($user, Role::ADMIN);
 
         $export = new PublicLabelTreeExport([$tree->id]);
         $expect = [

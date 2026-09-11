@@ -56,7 +56,7 @@ class FullReportGeneratorTest extends TestCase
                 $al->annotation->image->filename,
                 $al->annotation_id,
                 "{$root->name} > {$child->name}",
-                $al->annotation->shape->name,
+                $al->annotation->shape->label(),
                 json_encode($al->annotation->points),
                 3.1415,
             ]);
@@ -116,7 +116,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $label1->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -127,7 +127,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $label2->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -184,7 +184,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $al1->label->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -195,7 +195,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $al2->label->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -249,7 +249,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $al1->label->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -268,7 +268,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $al2->label->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);

@@ -38,7 +38,7 @@ class ProjectInvitationPolicy extends CachedPolicy
         return $this->remember("project-invitation-can-access-{$user->id}-{$invitation->project_id}", fn () => DB::table('project_user')
             ->where('user_id', $user->id)
             ->where('project_id', $invitation->project_id)
-            ->where('project_role_id', Role::adminId())
+            ->where('project_role_id', Role::ADMIN->value)
             ->exists());
     }
 

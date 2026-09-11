@@ -35,9 +35,9 @@ class UpdateUser extends FormRequest
     public function rules()
     {
         $roles = implode(',', [
-            Role::guestId(),
-            Role::editorId(),
-            Role::adminId(),
+            Role::GUEST->value,
+            Role::EDITOR->value,
+            Role::ADMIN->value,
         ]);
 
         return [

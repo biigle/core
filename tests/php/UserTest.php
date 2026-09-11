@@ -21,7 +21,7 @@ class UserTest extends ModelTestCase
         $this->assertNotNull($this->model->lastname);
         $this->assertNotNull($this->model->password);
         $this->assertNotNull($this->model->email);
-        $this->assertNotNull($this->model->role_id);
+        $this->assertNotNull($this->model->role_id->value);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
         $this->assertNotNull($this->model->uuid);
@@ -95,8 +95,7 @@ class UserTest extends ModelTestCase
     public function testProjects()
     {
         $project = ProjectTest::create();
-        $role = RoleTest::create();
-        $project->addUserId($this->model->id, $role->id);
+        $project->addUserId($this->model->id, Role::EDITOR->value);
 
         $p = $this->model->projects()->first();
         $this->assertSame($project->id, $p->id);
@@ -106,19 +105,19 @@ class UserTest extends ModelTestCase
     public function testLabelTrees()
     {
         $this->assertFalse($this->model->labelTrees()->exists());
-        LabelTreeTest::create()->addMember($this->model, Role::editor());
+        LabelTreeTest::create()->addMember($this->model, Role::EDITOR);
         $this->assertTrue($this->model->labelTrees()->exists());
     }
 
     public function testRole()
     {
-        $this->assertSame(Role::editorId(), $this->model->role->id);
+        $this->assertSame(Role::EDITOR->value, $this->model->role->value);
     }
 
     public function testIsGlobalAdminAttribute()
     {
         $this->assertFalse($this->model->isGlobalAdmin);
-        $this->model->role()->associate(Role::admin());
+        $this->model->role_id = Role::ADMIN->value;
         $this->assertTrue($this->model->isGlobalAdmin);
     }
 
@@ -142,7 +141,7 @@ class UserTest extends ModelTestCase
     public function testCheckCanBeDeletedProjects()
     {
         $project = ProjectTest::create();
-        $project->addUserId($this->model->id, Role::guestId());
+        $project->addUserId($this->model->id, Role::GUEST->value);
 
         $this->model->checkCanBeDeleted();
         $this->expectException(HttpException::class);
@@ -153,8 +152,8 @@ class UserTest extends ModelTestCase
     {
         $tree = LabelTreeTest::create();
         $editor = self::create();
-        $tree->addMember($editor, Role::editor());
-        $tree->addMember($this->model, Role::admin());
+        $tree->addMember($editor, Role::EDITOR);
+        $tree->addMember($this->model, Role::ADMIN);
 
         $editor->checkCanBeDeleted();
         $this->expectException(HttpException::class);
@@ -197,7 +196,7 @@ class UserTest extends ModelTestCase
     public function testGetIsInSuperUserModeAttribute()
     {
         $this->assertFalse($this->model->isInSuperUserMode);
-        $this->model->role_id = Role::adminId();
+        $this->model->role_id = Role::ADMIN->value;
         $this->model->save();
         $this->assertTrue($this->model->isInSuperUserMode);
         $this->model->setSettings(['super_user_mode' => false]);
@@ -210,7 +209,7 @@ class UserTest extends ModelTestCase
     {
         $this->model->isInSuperUserMode = true;
         $this->assertFalse($this->model->isInSuperUserMode);
-        $this->model->role_id = Role::adminId();
+        $this->model->role_id = Role::ADMIN->value;
         $this->model->save();
         $this->model->isInSuperUserMode = true;
         $this->assertTrue($this->model->isInSuperUserMode);
@@ -221,7 +220,7 @@ class UserTest extends ModelTestCase
     public function testSudoAbility()
     {
         $this->assertFalse($this->model->can('sudo'));
-        $this->model->role_id = Role::adminId();
+        $this->model->role_id = Role::ADMIN->value;
         $this->model->save();
         $this->assertTrue($this->model->can('sudo'));
         $this->model->isInSuperUserMode = false;
@@ -230,19 +229,19 @@ class UserTest extends ModelTestCase
 
     public function testCanReviewAttribute()
     {
-        $this->model->role_id = Role::guestId();
+        $this->model->role_id = Role::GUEST->value;
         $this->assertFalse($this->model->canReview);
         $this->model->canReview = true;
         $this->assertFalse($this->model->canReview);
 
-        $this->model->role_id = Role::editorId();
+        $this->model->role_id = Role::EDITOR->value;
         $this->assertTrue($this->model->canReview);
         $this->assertNotNull($this->model->attrs);
         $this->model->canReview = false;
         $this->assertFalse($this->model->canReview);
         $this->assertNull($this->model->attrs);
 
-        $this->model->role_id = Role::adminId();
+        $this->model->role_id = Role::ADMIN->value;
         $this->model->canReview = false;
         $this->assertTrue($this->model->canReview);
         $this->model->isInSuperUserMode = false;
@@ -256,7 +255,7 @@ class UserTest extends ModelTestCase
         $this->model->save();
         $this->assertTrue($this->model->can('review'));
         $this->model->canReview = false;
-        $this->model->role_id = Role::adminId();
+        $this->model->role_id = Role::ADMIN->value;
         $this->model->save();
         $this->assertTrue($this->model->can('review'));
         $this->model->isInSuperUserMode = false;
@@ -274,19 +273,19 @@ class UserTest extends ModelTestCase
 
     public function testHasNoLateLimitAttribute()
     {
-        $this->model->role_id = Role::guestId();
+        $this->model->role_id = Role::GUEST->value;
         $this->assertFalse($this->model->hasNoRateLimit);
         $this->model->hasNoRateLimit = true;
         $this->assertFalse($this->model->hasNoRateLimit);
 
-        $this->model->role_id = Role::editorId();
+        $this->model->role_id = Role::EDITOR->value;
         $this->assertTrue($this->model->hasNoRateLimit);
         $this->assertNotNull($this->model->attrs);
         $this->model->hasNoRateLimit = false;
         $this->assertFalse($this->model->hasNoRateLimit);
         $this->assertNull($this->model->attrs);
 
-        $this->model->role_id = Role::adminId();
+        $this->model->role_id = Role::ADMIN->value;
         $this->model->hasNoRateLimit = false;
         $this->assertTrue($this->model->hasNoRateLimit);
         $this->model->isInSuperUserMode = false;

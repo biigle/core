@@ -2,31 +2,61 @@
 
 namespace Biigle;
 
-use Biigle\Traits\HasConstantInstances;
-use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Biigle\Traits\EnumSerialization;
+use ValueError;
 
 /**
  * Volumes can contain either images or videos as media type.
- *
- * @method static MediaType image()
- * @method static int imageId()
- * @method static MediaType video()
- * @method static int videoId()
  */
-#[WithoutTimestamps]
-class MediaType extends Model
+enum MediaType: int implements \JsonSerializable
 {
-    use HasConstantInstances, HasFactory;
+    use EnumSerialization;
 
-    /**
-     * The constant instances of this model.
-     *
-     * @var array<string, string>
-     */
-    const INSTANCES = [
-        'image' => 'image',
-        'video' => 'video',
-    ];
+    case IMAGE = 1;
+    case VIDEO = 2;
+
+    public static function image(): self
+    {
+        return self::IMAGE;
+    }
+
+    public static function video(): self
+    {
+        return self::VIDEO;
+    }
+
+    public static function imageId(): int
+    {
+        return self::IMAGE->value;
+    }
+
+    public static function videoId(): int
+    {
+        return self::VIDEO->value;
+    }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::IMAGE => 'image',
+            self::VIDEO => 'video',
+        };
+    }
+
+    public static function labels(): array
+    {
+        return array_map(
+            fn (self $type) => $type->label(),
+            self::cases()
+        );
+    }
+
+    public static function fromLabel(string $label): self
+    {
+        return match (strtoupper($label)) {
+            self::IMAGE->name => self::IMAGE,
+            self::VIDEO->name => self::VIDEO,
+            default => throw new ValueError("Invalid media type label $label"),
+        };
+    }
 }

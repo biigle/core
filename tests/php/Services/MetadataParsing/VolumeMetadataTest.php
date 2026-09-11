@@ -20,7 +20,7 @@ class VolumeMetadataTest extends TestCase
     {
         $metadata = new VolumeMetadata(MediaType::image(), 'volumename', 'volumeurl', 'volumehandle');
 
-        $this->assertEquals(MediaType::imageId(), $metadata->type->id);
+        $this->assertEquals(MediaType::imageId(), $metadata->type->value);
         $this->assertEquals('volumename', $metadata->name);
         $this->assertEquals('volumeurl', $metadata->url);
         $this->assertEquals('volumehandle', $metadata->handle);

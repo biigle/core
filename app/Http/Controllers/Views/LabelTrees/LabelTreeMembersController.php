@@ -27,23 +27,23 @@ class LabelTreeMembersController extends Controller
 
         $this->authorize('update', $tree);
 
-        $roles = collect([Role::admin(), Role::editor()]);
+        $roles = collect([Role::ADMIN, Role::EDITOR]);
 
         $roleOrder = [
-            Role::editorId(),
-            Role::adminId(),
+            Role::EDITOR->value,
+            Role::ADMIN->value,
         ];
 
         $members = $tree->members()
             ->select('id', 'firstname', 'lastname', 'label_tree_user.role_id', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role_id, $roleOrder) - array_search($a->role_id, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role_id->value, $roleOrder) - array_search($a->role_id->value, $roleOrder))
             ->values();
 
 
         $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->name,
-            Visibility::privateId() => Visibility::private()->name,
+            Visibility::publicId() => Visibility::public()->label(),
+            Visibility::privateId() => Visibility::private()->label(),
         ]);
 
         return view('label-trees.show.members', [

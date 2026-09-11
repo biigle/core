@@ -103,7 +103,7 @@ class ImageLabelControllerTest extends ApiTestCase
             'id' => $this->admin()->id,
             'firstname' => $this->admin()->firstname,
             'lastname' => $this->admin()->lastname,
-            'role_id' => $this->admin()->role_id,
+            'role_id' => $this->admin()->role_id->value,
         ]);
     }
 

@@ -30,7 +30,7 @@ class VolumeCloneController extends Controller
         } else {
             // Array of all project IDs that the user and the volume have in common.
             $projectIds = Project::inCommon($user, $volume->id)->pluck('id');
-            $destProjectQuery = $user->projects()->where('project_role_id', Role::adminId());
+            $destProjectQuery = $user->projects()->where('project_role_id', Role::ADMIN->value);
         }
 
         // Collection of projects where cloned volume can be copied to.

@@ -193,11 +193,11 @@ abstract class Annotation extends Model implements AnnotationContract
     /**
      * The shape of this annotation.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
+     * @return Shape
      */
-    public function shape()
+    public function getShapeAttribute()
     {
-        return $this->belongsTo(Shape::class);
+        return Shape::from($this->shape_id);
     }
 
     /**
@@ -213,7 +213,7 @@ abstract class Annotation extends Model implements AnnotationContract
      */
     public function getShape(): Shape
     {
-        return $this->shape;
+        return Shape::from($this->shape_id);
     }
 
     /**

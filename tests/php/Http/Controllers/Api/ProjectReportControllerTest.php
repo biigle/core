@@ -155,7 +155,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $projectId = $this->project()->id;
         // Create the volume by calling it.
         $this->volume();
-        $typeId = ReportType::first()->id;
+        $typeId = ReportType::IMAGE_ANNOTATIONS_AREA->value;
         $this->postJson("api/v1/projects/{$projectId}/reports", [
             'type_id' => $typeId,
             'only_labels' => [999],

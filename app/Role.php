@@ -2,38 +2,29 @@
 
 namespace Biigle;
 
-use Biigle\Traits\HasConstantInstances;
-use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Biigle\Traits\EnumSerialization;
 
 /**
  * A role of a user. Users have one global role and can have many project-
  * specific roles.
- *
- * @method static Role admin()
- * @method static int adminId()
- * @method static Role expert()
- * @method static int expertId()
- * @method static Role editor()
- * @method static int editorId()
- * @method static Role guest()
- * @method static int guestId()
- */
-#[WithoutTimestamps]
-class Role extends Model
+ * This used to be a eloquent db model and was turned into an enum later. To keep some compatibility, some methods were introduced.
+*/
+enum Role: int implements \JsonSerializable
 {
-    use HasConstantInstances, HasFactory;
+    use EnumSerialization;
 
-    /**
-     * The constant instances of this model.
-     *
-     * @var array<string, string>
-     */
-    const INSTANCES = [
-        'admin' => 'admin',
-        'expert' => 'expert',
-        'editor' => 'editor',
-        'guest' => 'guest',
-    ];
+    case ADMIN = 1;
+    case EDITOR = 2;
+    case GUEST = 3;
+    case EXPERT = 4;
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::ADMIN => 'admin',
+            self::EDITOR => 'editor',
+            self::GUEST => 'guest',
+            self::EXPERT => 'expert',
+        };
+    }
 }

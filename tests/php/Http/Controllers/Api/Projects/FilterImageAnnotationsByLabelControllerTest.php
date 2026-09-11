@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\ShapeTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 
@@ -87,12 +87,12 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $u1 = UserTest::create();
         $u2 = UserTest::create();
 
-        $s1 = ShapeTest::create();
-        $s2 = ShapeTest::create();
+        $s1 = Shape::point();
+        $s2 = Shape::circle();
 
-        $a1 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s1->id]);
-        $a2 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s1->id]);
-        $a3 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s2->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s1->value]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s1->value]);
+        $a3 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s2->value]);
 
         $l1 = ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'user_id' =>$u1->id]);
         $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id, 'user_id' =>$u2->id]);
@@ -101,7 +101,7 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
 
         //Case 1: filter by shape
-        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->id}")
+        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->value}")
             ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid]);
 
         //Case 2: filter by user
@@ -109,21 +109,21 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
             ->assertExactJson([$a2->id => $image->uuid, $a3->id => $image->uuid]);
 
         //Case 3: filter by shape and user
-        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s2->id}&user_id[]={$u2->id}&union=0")
+        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s2->value}&user_id[]={$u2->id}&union=0")
             ->assertExactJson([$a3->id => $image->uuid]);
 
         //Case 4: combine user and shape with negatives
-        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->id}&user_id[]=-{$u2->id}&union=0")
+        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->value}&user_id[]=-{$u2->id}&union=0")
             ->assertExactJson([$a1->id => $image->uuid]);
 
         //Case 5: combine (excluding values and not) with union
         $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=1")
             ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid, $a3->id => $image->uuid]);
 
-        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->id}&user_id[]={$u1->id}&union=1")
+        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->value}&user_id[]={$u1->id}&union=1")
             ->assertExactJson([$a1->id => $image->uuid, $a2->id => $image->uuid]);
 
-        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s1->id}&user_id[]={$u1->id}&union=1")
+        $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s1->value}&user_id[]={$u1->id}&union=1")
             ->assertExactJson([$a1->id => $image->uuid, $a3->id => $image->uuid]);
 
         //Case 6: combine incompatible filters: annotations should be of user1 and/or user2 at the same time

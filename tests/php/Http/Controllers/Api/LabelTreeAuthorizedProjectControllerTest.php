@@ -13,8 +13,8 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     public function testStore()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->editor(), Role::EDITOR);
+        $tree->addMember($this->admin(), Role::ADMIN);
 
         $this->doTestApiRoute('POST', "/api/v1/label-trees/{$tree->id}/authorized-projects");
 
@@ -51,7 +51,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     public function testStoreFormRequest()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->admin(), Role::ADMIN);
         $this->beAdmin();
         $this->get('/');
         $response = $this->post("/api/v1/label-trees/{$tree->id}/authorized-projects", [
@@ -73,7 +73,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     public function testStoreVersions()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->admin(), Role::admin());
+        $version->labelTree->addMember($this->admin(), Role::ADMIN);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $this->beAdmin();
         $this
@@ -86,7 +86,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     public function testStorePropagateVersions()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->admin(), Role::admin());
+        $version->labelTree->addMember($this->admin(), Role::ADMIN);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $this->beAdmin();
         $this
@@ -101,8 +101,8 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     {
         $project = $this->project();
         $tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
-        $tree->addMember($this->editor(), Role::editor());
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->editor(), Role::EDITOR);
+        $tree->addMember($this->admin(), Role::ADMIN);
         $tree->authorizedProjects()->attach($project->id);
         $tree->projects()->attach($project->id);
 
@@ -143,7 +143,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     public function testDestroyFormRequest()
     {
         $tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
-        $tree->addMember($this->admin(), Role::admin());
+        $tree->addMember($this->admin(), Role::ADMIN);
         $project = $this->project();
         $tree->authorizedProjects()->attach($project->id);
 
@@ -168,7 +168,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     {
         $id = $this->project()->id;
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->admin(), Role::admin());
+        $version->labelTree->addMember($this->admin(), Role::ADMIN);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $tree->authorizedProjects()->attach($id);
         $this->beAdmin();
@@ -180,7 +180,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     {
         $id = $this->project()->id;
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->admin(), Role::admin());
+        $version->labelTree->addMember($this->admin(), Role::ADMIN);
         $version->labelTree->authorizedProjects()->attach($id);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $tree->authorizedProjects()->attach($id);

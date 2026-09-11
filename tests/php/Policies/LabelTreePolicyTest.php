@@ -27,11 +27,11 @@ class LabelTreePolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalGuest = UserTest::create(['role_id' => Role::guestId()]);
-        $this->globalEditor = UserTest::create(['role_id' => Role::editorId()]);
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
-        $this->tree->addMember($this->editor, Role::editor());
-        $this->tree->addMember($this->admin, Role::admin());
+        $this->globalGuest = UserTest::create(['role_id' => Role::GUEST->value]);
+        $this->globalEditor = UserTest::create(['role_id' => Role::EDITOR->value]);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::ADMIN->value]);
+        $this->tree->addMember($this->editor, Role::EDITOR);
+        $this->tree->addMember($this->admin, Role::ADMIN);
     }
 
     public function testCreate()

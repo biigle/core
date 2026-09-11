@@ -29,7 +29,7 @@ class VideoCsvParserTest extends TestCase
         $file = new File(__DIR__."/../../../files/video-metadata.csv");
         $parser = new VideoCsvParser($file);
         $data = $parser->getMetadata();
-        $this->assertEquals(MediaType::videoId(), $data->type->id);
+        $this->assertEquals(MediaType::videoId(), $data->type->value);
         $this->assertNull($data->name);
         $this->assertNull($data->url);
         $this->assertNull($data->handle);
@@ -85,7 +85,7 @@ class VideoCsvParserTest extends TestCase
         $file = new File(__DIR__."/../../../files/test.mp4");
         $parser = new VideoCsvParser($file);
         $data = $parser->getMetadata();
-        $this->assertEquals(MediaType::videoId(), $data->type->id);
+        $this->assertEquals(MediaType::videoId(), $data->type->value);
         $this->assertCount(0, $data->getFiles());
     }
 

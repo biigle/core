@@ -76,14 +76,14 @@ class ReportGenerator
     {
         // Establish backwards compatibility with old single video reports.
         // See: https://github.com/biigle/core/issues/276
-        if ($sourceClass === Video::class && $type->id === ReportType::videoAnnotationsCsvId()) {
+        if ($sourceClass === Video::class && $type->value === ReportType::videoAnnotationsCsvId()) {
             $sourceClass = Volume::class;
         }
 
         if (class_exists($sourceClass)) {
             $reflect = new ReflectionClass($sourceClass);
             $sourceClass = Str::plural($reflect->getShortName());
-            $fullClass = __NAMESPACE__.'\\'.$sourceClass.'\\'.$type->name.'ReportGenerator';
+            $fullClass = __NAMESPACE__.'\\'.$sourceClass.'\\'.$type->label().'ReportGenerator';
 
             if (class_exists($fullClass)) {
                 return new $fullClass($options);

@@ -56,9 +56,9 @@ class LabelTreeVersionsControllerTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $editor = UserTest::create();
-        $tree->addMember($editor, Role::editorId());
+        $tree->addMember($editor, Role::EDITOR->value);
         $admin = UserTest::create();
-        $tree->addMember($admin, Role::adminId());
+        $tree->addMember($admin, Role::ADMIN->value);
 
         $this->be($editor);
         $this->get("label-trees/{$tree->id}/versions/create")->assertStatus(403);
