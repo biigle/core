@@ -291,4 +291,74 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?filename[]=test_video_001.mp4&filename[]=another_file.webm&union=1")
             ->assertExactJson([$a3->id => $video3->uuid, $a1->id => $video1->uuid]);
     }
+
+    public function testIndexCreatedUpdatedFilter()
+    {
+        $id = $this->volume()->id;
+
+        $video = VideoTest::create(['volume_id' => $id]);
+
+        $s1 = ShapeTest::create();
+
+        $a1 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->id, 'created_at' => '2025-06-11 00:01:00.000', 'updated_at' => '2025-06-11 00:01:00.000']);
+        $a2 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->id, 'created_at' => '2025-06-12 00:01:00.000', 'updated_at' => '2025-06-12 00:01:00.000']);
+        $a3 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->id, 'created_at' => '2025-06-12 00:01:00.000', 'updated_at' => '2025-06-13 00:01:00.000']);
+
+        $l1 = VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'created_at' => '2025-06-11 00:01:00.000', 'updated_at' => '2025-06-11 00:01:00.000']);
+        $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id, 'created_at' => '2025-06-12 00:01:00.000', 'updated_at' => '2025-06-12 00:01:00.000']);
+        $l4 = VideoAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $l1->label_id, 'created_at' => '2025-06-13 00:01:00.000', 'updated_at' => '2025-06-14 00:01:00.000']);
+
+        $this->beEditor();
+
+        //created_at with gt, lt, eq
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?created_at[0][ref]=annotation&created_at[0][operator]=gt&created_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a2->id => $video->uuid, $a3->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?created_at[0][ref]=annotation&created_at[0][operator]=lt&created_at[0][date]=2025-06-12");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?created_at[0][ref]=annotation&created_at[0][operator]=eq&created_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?created_at[0][ref]=annotation_label&created_at[0][operator]=gt&created_at[0][date]=2025-06-12");
+        $this->assertEqualsCanonicalizing([$a3->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?created_at[0][ref]=annotation_label&created_at[0][operator]=lt&created_at[0][date]=2025-06-13");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid, $a2->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?created_at[0][ref]=annotation_label&created_at[0][operator]=eq&created_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?created_at[0][ref]=annotation_label&created_at[0][operator]=neq&created_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a2->id => $video->uuid, $a3->id => $video->uuid], $response->json());
+
+        //updated_at
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation&updated_at[0][operator]=gt&updated_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a2->id => $video->uuid, $a3->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation&updated_at[0][operator]=lt&updated_at[0][date]=2025-06-12");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation&updated_at[0][operator]=eq&updated_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation_label&updated_at[0][operator]=gt&updated_at[0][date]=2025-06-12");
+        $this->assertEqualsCanonicalizing([$a3->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation_label&updated_at[0][operator]=lt&updated_at[0][date]=2025-06-14");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid, $a2->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation_label&updated_at[0][operator]=eq&updated_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation_label&updated_at[0][operator]=neq&updated_at[0][date]=2025-06-12");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid, $a3->id => $video->uuid], $response->json());
+
+        //combining
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation_label&updated_at[0][operator]=neq&updated_at[0][date]=2025-06-13&created_at[0][ref]=annotation_label&created_at[0][operator]=eq&created_at[0][date]=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid], $response->json());
+
+        $response = $this->get("/api/v1/volumes/{$id}/video-annotations/filter/label/{$l1->label_id}?updated_at[0][ref]=annotation_label&updated_at[0][operator]=neq&updated_at[0][date]=2025-06-13&created_at[0][ref]=annotation_label&created_at[0][operator]=eq&created_at[0][date]=2025-06-11&union=1");
+        $this->assertEqualsCanonicalizing([$a1->id => $video->uuid, $a2->id => $video->uuid,  $a3->id => $video->uuid], $response->json());
+    }
 }
