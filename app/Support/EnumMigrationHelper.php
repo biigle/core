@@ -13,6 +13,7 @@ class EnumMigrationHelper
      * - Removes all given foreign key constraints
      * - Changes DB values to the enum values supplied by $map
      * - Drops the specified table
+     * - Removes the _id suffix from the column name
      * @param array $map [$oldId => $newId]
      * @param string $tableName
      * @param array $foreignKeys [[table name, column name, foreign key constraint name], ...]. If the
@@ -31,6 +32,13 @@ class EnumMigrationHelper
                 DB::table($table)
                     ->where($column, $oldId)
                     ->update([$column => $newId]);
+            }
+
+            if (str_ends_with($column, '_id')) {
+                Schema::table($table, function (Blueprint $t) use ($column) {
+                    $newColumn = substr($column, 0, -3);
+                    $t->renameColumn($column, $newColumn);
+                });
             }
         }
 
