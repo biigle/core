@@ -22,8 +22,8 @@ return new class extends Migration {
     {
         $oldIds = DB::table('media_types')->pluck('id', 'name');
         $map = [
-            $oldIds['image'] => MediaType::imageId(),
-            $oldIds['video'] => MediaType::videoId(),
+            $oldIds['image'] => MediaType::IMAGE->value,
+            $oldIds['video'] => MediaType::VIDEO->value,
         ];
 
         EnumMigrationHelper::replaceStaticTableWithEnum($map, 'media_types', $this->foreignKeys);
@@ -41,8 +41,8 @@ return new class extends Migration {
         });
 
         DB::table('media_types')->insert([
-            ['id' => MediaType::imageId(), 'name' => 'image'],
-            ['id' => MediaType::videoId(), 'name' => 'video'],
+            ['id' => MediaType::IMAGE->value, 'name' => 'image'],
+            ['id' => MediaType::VIDEO->value, 'name' => 'video'],
         ]);
 
         EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'media_types');

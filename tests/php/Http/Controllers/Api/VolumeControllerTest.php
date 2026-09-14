@@ -100,7 +100,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::IMAGE->value])->id;
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
@@ -115,12 +115,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
         $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
         ]);
         $response->assertStatus(200);
         $this->assertSame('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
-        $this->assertSame(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
+        $this->assertSame(MediaType::IMAGE->value, $this->volume()->fresh()->media_type_id);
         Queue::assertNothingPushed();
     }
 
@@ -468,7 +468,7 @@ class VolumeControllerTest extends ApiTestCase
             ->volume([
                 'created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',
-                'media_type_id' => MediaType::videoId()
+                'media_type_id' => MediaType::VIDEO->value
             ])
             ->fresh();
 

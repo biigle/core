@@ -14,7 +14,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
         $this->video = VideoTest::create(['volume_id' => $id]);
     }
 

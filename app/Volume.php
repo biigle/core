@@ -466,7 +466,7 @@ class Volume extends Model
      */
     public function isImageVolume()
     {
-        return $this->media_type_id === MediaType::imageId();
+        return $this->media_type_id === MediaType::IMAGE->value;
     }
 
     /**
@@ -476,7 +476,7 @@ class Volume extends Model
      */
     public function isVideoVolume()
     {
-        return $this->media_type_id === MediaType::videoId();
+        return $this->media_type_id === MediaType::VIDEO->value;
     }
 
     /**

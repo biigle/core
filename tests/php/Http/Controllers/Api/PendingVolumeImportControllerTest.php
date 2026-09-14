@@ -45,7 +45,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -108,7 +108,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -141,7 +141,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -169,7 +169,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -227,7 +227,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -259,7 +259,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -328,7 +328,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -364,7 +364,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -392,7 +392,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -420,7 +420,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -455,7 +455,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -490,7 +490,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -522,7 +522,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -564,7 +564,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -627,7 +627,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -658,7 +658,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -689,7 +689,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -728,7 +728,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
@@ -781,7 +781,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -812,7 +812,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -841,7 +841,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -872,7 +872,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -904,7 +904,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -930,7 +930,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -957,7 +957,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -988,7 +988,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1015,7 +1015,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1043,7 +1043,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1086,7 +1086,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1122,7 +1122,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1160,7 +1160,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1197,7 +1197,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1234,7 +1234,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1262,7 +1262,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,

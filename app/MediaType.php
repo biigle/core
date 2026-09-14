@@ -14,27 +14,6 @@ enum MediaType: int implements \JsonSerializable
 
     case IMAGE = 1;
     case VIDEO = 2;
-
-    public static function image(): self
-    {
-        return self::IMAGE;
-    }
-
-    public static function video(): self
-    {
-        return self::VIDEO;
-    }
-
-    public static function imageId(): int
-    {
-        return self::IMAGE->value;
-    }
-
-    public static function videoId(): int
-    {
-        return self::VIDEO->value;
-    }
-
     public function label(): string
     {
         return match ($this) {

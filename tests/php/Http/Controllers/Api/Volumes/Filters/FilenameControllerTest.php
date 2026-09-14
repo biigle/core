@@ -94,7 +94,7 @@ class FilenameControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $vid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $vid = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
 
         $video = VideoTest::create([
             'volume_id' => $vid,
@@ -164,7 +164,7 @@ class FilenameControllerTest extends ApiTestCase
 
     public function testIndexCommaSeparatedVideoFilenames()
     {
-        $vid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $vid = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
 
         $video = VideoTest::create([
             'volume_id' => $vid,

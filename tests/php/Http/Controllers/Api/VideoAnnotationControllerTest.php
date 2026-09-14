@@ -23,7 +23,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
         $this->video = VideoTest::create([
             'volume_id' => $id,
             'duration' => 2,
@@ -756,7 +756,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
                 'frames' => [0.0],
                 'track' => true,
             ])->assertSuccessful();
-        
+
         $this->assertSame(10, Cache::get(TrackObject::getRateLimitCacheKey($this->editor()->id)));
         $this->assertTrue($res->json()['trackingJobLimitReached']);
     }

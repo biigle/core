@@ -21,7 +21,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         Event::fake();
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
         ]);
         $filenames = ['a.jpg', 'b.jpg'];
 
@@ -39,7 +39,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         Event::fake();
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
         ]);
         $filenames = ['a.mp4', 'b.mp4'];
 
@@ -57,7 +57,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     {
         Event::fake();
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'attrs' => [
                 'creating_async' => true,
             ],
@@ -72,7 +72,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleImageMetadata()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
         ]);
@@ -97,7 +97,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleImageMetadataEmptyCells()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
         ]);
@@ -118,7 +118,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleImageMetadataIncomplete()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
         ]);
@@ -136,7 +136,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleVideoMetadata()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -166,7 +166,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleVideoMetadataEmptyCells()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -187,7 +187,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleVideoMetadataZeroSingle()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -207,7 +207,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleVideoMetadataZero()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -228,7 +228,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleVideoMetadataBasic()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -249,7 +249,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleVideoMetadataIncomplete()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -267,7 +267,7 @@ class CreateNewImagesOrVideosTest extends TestCase
     public function testHandleMetadataDateParsing()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);

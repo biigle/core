@@ -47,7 +47,7 @@ trait HasMetadataFile
                 $to = fopen($tmpPath, 'w');
                 $from = Storage::disk($disk)->readStream($this->metadata_file_path);
                 stream_copy_to_stream($from, $to);
-                $type = ($this->media_type_id === MediaType::imageId()) ? 'image' : 'video';
+                $type = ($this->media_type_id === MediaType::IMAGE->value) ? 'image' : 'video';
 
                 $parser = new $this->metadata_parser(new SplFileInfo($tmpPath));
 

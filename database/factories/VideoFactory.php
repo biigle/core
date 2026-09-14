@@ -29,7 +29,7 @@ class VideoFactory extends VolumeFileFactory
     protected function getVolumeFactory()
     {
         return Volume::factory()->state([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
         ]);
     }
 }

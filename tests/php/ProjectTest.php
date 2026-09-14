@@ -308,20 +308,20 @@ class ProjectTest extends ModelTestCase
 
     public function testImageVolumes()
     {
-        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $v = VolumeTest::create(['media_type_id' => MediaType::VIDEO->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(0, $this->model->imageVolumes()->count());
-        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $v = VolumeTest::create(['media_type_id' => MediaType::IMAGE->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(1, $this->model->imageVolumes()->count());
     }
 
     public function testVideoVolumes()
     {
-        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $v = VolumeTest::create(['media_type_id' => MediaType::IMAGE->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(0, $this->model->videoVolumes()->count());
-        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $v = VolumeTest::create(['media_type_id' => MediaType::VIDEO->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(1, $this->model->videoVolumes()->count());
     }

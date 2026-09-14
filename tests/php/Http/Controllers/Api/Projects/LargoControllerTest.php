@@ -26,7 +26,7 @@ class LargoControllerTest extends ApiTestCase
         $this->labelRoot();
 
         $this->imageVolume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type_id' => MediaType::IMAGE->value,
         ]);
         $this->project()->addVolumeId($this->imageVolume->id);
 
@@ -39,7 +39,7 @@ class LargoControllerTest extends ApiTestCase
         ]);
 
         $this->videoVolume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type_id' => MediaType::VIDEO->value,
         ]);
         $this->project()->addVolumeId($this->videoVolume->id);
 
