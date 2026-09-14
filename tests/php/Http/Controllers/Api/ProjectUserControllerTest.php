@@ -28,7 +28,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->assertStringContainsString('"firstname":"'.$this->admin()->firstname.'"', $content);
         $this->assertStringContainsString('"lastname":"'.$this->admin()->lastname.'"', $content);
         $this->assertStringNotContainsString('"email":"'.$this->admin()->email.'"', $content);
-        $this->assertStringContainsString('project_role_id', $content);
+        $this->assertStringContainsString('project_role', $content);
         $this->assertStringNotContainsString('pivot', $content);
     }
 
@@ -62,26 +62,26 @@ class ProjectUserControllerTest extends ApiTestCase
 
         // role does not exist
         $response = $this->putJson("/api/v1/projects/{$id}/users/".$this->editor()->id, [
-            'project_role_id' => 100,
+            'project_role' => 100,
         ]);
         $response->assertStatus(422);
 
         // last admin cannot be removed
         $this
             ->putJson("/api/v1/projects/{$id}/users/".$this->admin()->id, [
-                'project_role_id' => Role::GUEST->value,
+                'project_role' => Role::GUEST->value,
             ])
             ->assertStatus(422)
             ->assertJsonFragment(['The last admin of '.$this->project()->name.' cannot be removed. The admin status must be passed on to another user first.']);
 
-        $this->assertSame(2, $this->project()->users()->find($this->editor()->id)->project_role_id);
+        $this->assertSame(2, $this->project()->users()->find($this->editor()->id)->project_role);
 
         $response = $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id, [
-            'project_role_id' => Role::GUEST->value,
+            'project_role' => Role::GUEST->value,
         ]);
 
         $response->assertStatus(200);
-        $this->assertSame(3, $this->project()->users()->find($this->editor()->id)->project_role_id);
+        $this->assertSame(3, $this->project()->users()->find($this->editor()->id)->project_role);
     }
 
     public function testUpdateGlobalGuest()
@@ -94,19 +94,19 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->beAdmin();
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::EDITOR->value,
+                'project_role' => Role::EDITOR->value,
             ])
             ->assertStatus(200);
 
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::EXPERT->value,
+                'project_role' => Role::EXPERT->value,
             ])
             ->assertStatus(200);
 
         $this
             ->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::ADMIN->value,
+                'project_role' => Role::ADMIN->value,
             ])
             ->assertStatus(422);
     }
@@ -139,13 +139,13 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => 2,
+            'project_role' => 2,
         ]);
 
         $response->assertStatus(200);
         $newUser = $this->project()->users()->find($id);
         $this->assertSame($id, $newUser->id);
-        $this->assertSame(Role::EDITOR->value, $newUser->project_role_id);
+        $this->assertSame(Role::EDITOR->value, $newUser->project_role);
     }
 
     public function testAttachGlobalGuest()
@@ -156,7 +156,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->beAdmin();
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::EDITOR->value,
+                'project_role' => Role::EDITOR->value,
             ])
             ->assertStatus(200);
 
@@ -164,7 +164,7 @@ class ProjectUserControllerTest extends ApiTestCase
 
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::EXPERT->value,
+                'project_role' => Role::EXPERT->value,
             ])
             ->assertStatus(200);
 
@@ -172,7 +172,7 @@ class ProjectUserControllerTest extends ApiTestCase
 
         $this
             ->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-                'project_role_id' => Role::ADMIN->value,
+                'project_role' => Role::ADMIN->value,
             ])
             ->assertStatus(422);
     }

@@ -14,7 +14,7 @@ class LabelTreeExport extends Export
     {
         $trees = LabelTree::with('labels', 'version')
             ->with(['members' => function ($query) {
-                $query->select('users.id', 'label_tree_user.role_id');
+                $query->select('users.id', 'label_tree_user.role');
             }])
             ->where(function ($query) {
                 $query->whereIn('id', $this->ids)

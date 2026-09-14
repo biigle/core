@@ -35,9 +35,9 @@ class LabelTreeMembersController extends Controller
         ];
 
         $members = $tree->members()
-            ->select('id', 'firstname', 'lastname', 'label_tree_user.role_id', 'affiliation')
+            ->select('id', 'firstname', 'lastname', 'label_tree_user.role', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role_id->value, $roleOrder) - array_search($a->role_id->value, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role->value, $roleOrder) - array_search($a->role->value, $roleOrder))
             ->values();
 
 

@@ -34,7 +34,7 @@ class EnumMigrationHelper
                     ->update([$column => $newId]);
             }
 
-            if (str_ends_with($column, '_id')) {
+            if (str_starts_with($column, 'role') && str_ends_with($column, '_id')) {
                 Schema::table($table, function (Blueprint $t) use ($column) {
                     $newColumn = substr($column, 0, -3);
                     $t->renameColumn($column, $newColumn);

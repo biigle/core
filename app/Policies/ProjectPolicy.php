@@ -36,7 +36,7 @@ class ProjectPolicy extends CachedPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id->value === Role::EDITOR->value || $user->role_id->value === Role::ADMIN->value;
+        return $user->role->value === Role::EDITOR->value || $user->role->value === Role::ADMIN->value;
     }
 
     /**
@@ -61,7 +61,7 @@ class ProjectPolicy extends CachedPolicy
     public function editIn(User $user, Project $project)
     {
         return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", fn () => $this->getBaseQuery($user, $project)
-            ->whereIn('project_role_id', [
+            ->whereIn('project_role', [
                 Role::EDITOR->value,
                 Role::EXPERT->value,
                 Role::ADMIN->value,
@@ -79,7 +79,7 @@ class ProjectPolicy extends CachedPolicy
     public function forceEditIn(User $user, Project $project)
     {
         return $this->remember("project-can-force-edit-in-{$user->id}-{$project->id}", fn () => $this->getBaseQuery($user, $project)
-            ->whereIn('project_role_id', [Role::EXPERT->value, Role::ADMIN->value])
+            ->whereIn('project_role', [Role::EXPERT->value, Role::ADMIN->value])
             ->exists());
     }
 
@@ -102,7 +102,7 @@ class ProjectPolicy extends CachedPolicy
             } else {
                 // admins can remove members other than themselves
                 return $isMember && $this->getBaseQuery($user, $project)
-                    ->where('project_role_id', Role::ADMIN->value)
+                    ->where('project_role', Role::ADMIN->value)
                     ->exists();
             }
         });
@@ -118,7 +118,7 @@ class ProjectPolicy extends CachedPolicy
     public function update(User $user, Project $project)
     {
         return $this->remember("project-can-update-{$user->id}-{$project->id}", fn () => $this->getBaseQuery($user, $project)
-            ->where('project_role_id', Role::ADMIN->value)
+            ->where('project_role', Role::ADMIN->value)
             ->exists());
     }
 

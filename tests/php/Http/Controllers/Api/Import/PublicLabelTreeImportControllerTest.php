@@ -64,7 +64,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
 
         $hasMember = $newTree->members()
             ->where('id', $this->user()->id)
-            ->where('label_tree_user.role_id', Role::ADMIN->value)
+            ->where('label_tree_user.role', Role::ADMIN->value)
             ->exists();
         $this->assertTrue($hasMember);
     }

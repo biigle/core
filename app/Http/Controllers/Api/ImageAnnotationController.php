@@ -75,7 +75,7 @@ class ImageAnnotationController extends Controller
             'labels:id,annotation_id,label_id,user_id',
             // Hide label_source_id and source_id.
             'labels.label:id,name,parent_id,color,label_tree_id',
-            // Hide role_id.
+            // Hide role.
             'labels.user:id,firstname,lastname',
         ];
 
@@ -197,7 +197,7 @@ class ImageAnnotationController extends Controller
      *             "id": 4,
      *             "firstname": "Graham",
      *             "lastname": "Hahn",
-     *             "role_id": 2
+     *             "role": 2
      *          }
      *       }
      *    ]

@@ -27,7 +27,7 @@ class ProjectInvitationController extends Controller
      * @apiParam {Number} id The project ID.
      *
      * @apiParam (Required attributes) {Date} expires_at The date on which the project invitation will expire.
-     * @apiParam (Required attributes) {Number} role_id ID of the user role the new project members should have. Invited users may not become project admins. Default is "editor".
+     * @apiParam (Required attributes) {Number} role ID of the user role the new project members should have. Invited users may not become project admins. Default is "editor".
      *
      * @apiParam (Optional attributes) {Number} max_uses The number of times this project invitation can be used to add a user to the project.
      * @apiParam (Optional attributes) {Boolean} add_to_sessions If set to `true`, all users joining the project will automatically be added to all annotation sessions of all volumes that belong to the project.
@@ -41,7 +41,7 @@ class ProjectInvitationController extends Controller
             'uuid' => Uuid::uuid4(),
             'project_id' => $request->project->id,
             'expires_at' => $request->input('expires_at'),
-            'role_id' => $request->input('role_id', Role::EDITOR->value),
+            'role' => $request->input('role', Role::EDITOR->value),
             'max_uses' => $request->input('max_uses'),
             'add_to_sessions' => $request->input('add_to_sessions', false),
         ]);
@@ -77,7 +77,7 @@ class ProjectInvitationController extends Controller
             $project = $request->invitation->project;
             $userId = $request->user()->id;
             if (!$project->users()->where('user_id', $userId)->exists()) {
-                $project->addUserId($userId, $request->invitation->role_id->value);
+                $project->addUserId($userId, $request->invitation->role->value);
                 $invitation->increment('current_uses');
 
                 if ($invitation->add_to_sessions) {

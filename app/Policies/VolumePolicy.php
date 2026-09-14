@@ -50,7 +50,7 @@ class VolumePolicy extends CachedPolicy
     public function editIn(User $user, Volume $volume)
     {
         return $this->remember("volume-can-edit-in-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)
-            ->whereIn('project_role_id', [
+            ->whereIn('project_role', [
                 Role::EDITOR->value,
                 Role::EXPERT->value,
                 Role::ADMIN->value,
@@ -68,7 +68,7 @@ class VolumePolicy extends CachedPolicy
     public function forceEditIn(User $user, Volume $volume)
     {
         return $this->remember("volume-can-force-edit-in-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)
-            ->whereIn('project_role_id', [Role::EXPERT->value, Role::ADMIN->value])
+            ->whereIn('project_role', [Role::EXPERT->value, Role::ADMIN->value])
             ->exists());
     }
 
@@ -82,7 +82,7 @@ class VolumePolicy extends CachedPolicy
     public function update(User $user, Volume $volume)
     {
         return $this->remember("volume-can-update-{$user->id}-{$volume->id}", fn () => $this->getBaseQuery($user, $volume)
-            ->where('project_role_id', Role::ADMIN->value)
+            ->where('project_role', Role::ADMIN->value)
             ->exists());
     }
 

@@ -17,7 +17,7 @@ class AnnouncementPolicyTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->globalAdmin = User::factory()->create(['role_id' => Role::ADMIN->value]);
+        $this->globalAdmin = User::factory()->create(['role' => Role::ADMIN->value]);
         $this->announcement = Announcement::factory()->create();
     }
 

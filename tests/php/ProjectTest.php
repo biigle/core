@@ -127,7 +127,7 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($user->id, Role::EDITOR->value);
         $user = $this->model->users()->find($user->id);
         $this->assertNotNull($user);
-        $this->assertSame(Role::EDITOR->value, $user->project_role_id);
+        $this->assertSame(Role::EDITOR->value, $user->project_role);
 
         // a user can only be added once regardless the role
         $this->expectException(QueryException::class);
@@ -156,9 +156,9 @@ class ProjectTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->addUserId($user->id, Role::ADMIN->value);
-        $this->assertSame(Role::ADMIN->value, $this->model->users()->find($user->id)->project_role_id);
+        $this->assertSame(Role::ADMIN->value, $this->model->users()->find($user->id)->project_role);
         $this->model->changeRole($user->id, Role::EDITOR->value);
-        $this->assertSame(Role::EDITOR->value, $this->model->users()->find($user->id)->project_role_id);
+        $this->assertSame(Role::EDITOR->value, $this->model->users()->find($user->id)->project_role);
     }
 
     public function testRemoveVolume()

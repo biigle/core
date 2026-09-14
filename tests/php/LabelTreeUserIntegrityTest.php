@@ -37,6 +37,6 @@ class LabelTreeUserIntegrityTest extends TestCase
         $tree->addMember($user, Role::EDITOR);
 
         $this->expectException(QueryException::class);
-        $tree->members()->attach($user->id, ['role_id' => Role::EDITOR->value]);
+        $tree->members()->attach($user->id, ['role' => Role::EDITOR->value]);
     }
 }

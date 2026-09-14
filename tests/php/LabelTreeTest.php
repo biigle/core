@@ -48,7 +48,7 @@ class LabelTreeTest extends ModelTestCase
     public function testMembers()
     {
         $user = UserTest::create();
-        $this->model->members()->attach($user->id, ['role_id' => Role::ADMIN->value]);
+        $this->model->members()->attach($user->id, ['role' => Role::ADMIN->value]);
         $this->assertNotNull($this->model->members()->find($user->id));
     }
 
@@ -110,7 +110,7 @@ class LabelTreeTest extends ModelTestCase
     {
         $this->assertFalse($this->model->members()->exists());
         $this->model->addMember(UserTest::create(), Role::ADMIN);
-        $this->assertSame(Role::ADMIN->value, $this->model->members()->first()->role_id->value);
+        $this->assertSame(Role::ADMIN->value, $this->model->members()->first()->role->value);
     }
 
     public function testAddMemberUserExists()
@@ -137,9 +137,9 @@ class LabelTreeTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->addMember($user, Role::EDITOR);
-        $this->assertSame(Role::EDITOR->value, $this->model->members()->first()->role_id->value);
+        $this->assertSame(Role::EDITOR->value, $this->model->members()->first()->role->value);
         $this->model->updateMember($user, Role::ADMIN);
-        $this->assertSame(Role::ADMIN->value, $this->model->members()->first()->role_id->value);
+        $this->assertSame(Role::ADMIN->value, $this->model->members()->first()->role->value);
     }
 
     public function testProjects()
@@ -243,7 +243,7 @@ class LabelTreeTest extends ModelTestCase
 
     public function testScopeAccessibleByAdmin()
     {
-        $user = UserTest::create(['role_id' => Role::ADMIN->value]);
+        $user = UserTest::create(['role' => Role::ADMIN->value]);
         $tree = self::create(['visibility_id' => Visibility::privateId()]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();

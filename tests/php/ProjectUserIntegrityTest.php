@@ -39,6 +39,6 @@ class ProjectUserIntegrityTest extends TestCase
         $project->addUserId($user->id, $role->value);
         $this->expectException(QueryException::class);
         // attach manually so the error-check in addUserId is circumvented
-        $project->users()->attach($user->id, ['project_role_id' => $role->value]);
+        $project->users()->attach($user->id, ['project_role' => $role->value]);
     }
 }

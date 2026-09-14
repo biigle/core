@@ -111,7 +111,7 @@ class LabelTreeControllerTest extends ApiTestCase
                 'id' => $this->editor()->id,
                 'firstname' => $this->editor()->firstname,
                 'lastname' => $this->editor()->lastname,
-                'role_id' => Role::EDITOR->value,
+                'role' => Role::EDITOR->value,
             ]);
     }
 
@@ -314,7 +314,7 @@ class LabelTreeControllerTest extends ApiTestCase
         // creator gets first label tree admin
         $member = $tree->members()->find($this->user()->id);
         $this->assertNotNull($member);
-        $this->assertSame(Role::ADMIN->value, $member->role_id->value);
+        $this->assertSame(Role::ADMIN->value, $member->role->value);
     }
 
     public function testStoreAuthorization()

@@ -183,8 +183,8 @@ class LabelTreeImportTest extends TestCase
         $members = $newTree->members()
             ->addSelect('uuid')
             ->get()
-            // Pluck after get to get the correct role_id.
-            ->pluck('role_id', 'uuid')
+            // Pluck after get to get the correct role.
+            ->pluck('role', 'uuid')
             ->map->value
             ->toArray();
 

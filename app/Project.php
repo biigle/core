@@ -35,7 +35,7 @@ class Project extends Model
                 ->join('project_volume', 'project_user.project_id', '=', 'project_volume.project_id')
                 ->whereRaw('project_user.project_id = projects.id')
                 ->where('project_user.user_id', $user->id)
-                ->when(is_array($roles), fn ($query) => $query->whereIn('project_user.project_role_id', $roles))
+                ->when(is_array($roles), fn ($query) => $query->whereIn('project_user.project_role', $roles))
                 ->where('project_volume.volume_id', $volumeId);
         });
     }
@@ -61,14 +61,14 @@ class Project extends Model
 
     /**
      * The members of this project. Every member has a project-specific
-     * `project_role_id` besides their global user role.
+     * `project_role` besides their global user role.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function users()
     {
         return $this->belongsToMany(User::class)
-            ->withPivot('project_role_id as project_role_id');
+            ->withPivot('project_role as project_role');
     }
 
     /**
@@ -78,7 +78,7 @@ class Project extends Model
      */
     public function admins()
     {
-        return $this->users()->whereProjectRoleId(Role::ADMIN->value);
+        return $this->users()->whereProjectRole(Role::ADMIN->value);
     }
 
     /**
@@ -88,7 +88,7 @@ class Project extends Model
      */
     public function editors()
     {
-        return $this->users()->whereProjectRoleId(Role::EDITOR->value);
+        return $this->users()->whereProjectRole(Role::EDITOR->value);
     }
 
     /**
@@ -98,7 +98,7 @@ class Project extends Model
      */
     public function guests()
     {
-        return $this->users()->whereProjectRoleId(Role::GUEST->value);
+        return $this->users()->whereProjectRole(Role::GUEST->value);
     }
 
     /**
@@ -132,7 +132,7 @@ class Project extends Model
      */
     public function addUserId($userId, $roleId)
     {
-        $this->users()->attach($userId, ['project_role_id' => $roleId]);
+        $this->users()->attach($userId, ['project_role' => $roleId]);
     }
 
     /**
@@ -144,7 +144,7 @@ class Project extends Model
      */
     public function changeRole($userId, $roleId)
     {
-        $this->users()->updateExistingPivot($userId, ['project_role_id' => $roleId]);
+        $this->users()->updateExistingPivot($userId, ['project_role' => $roleId]);
     }
 
     /**

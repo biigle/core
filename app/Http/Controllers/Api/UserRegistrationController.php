@@ -40,8 +40,8 @@ class UserRegistrationController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $user = User::where('role_id', Role::GUEST->value)->findOrFail($id);
-        $user->role_id = Role::EDITOR->value;
+        $user = User::where('role', Role::GUEST->value)->findOrFail($id);
+        $user->role = Role::EDITOR->value;
         $user->save();
 
         $user->notify(new RegistrationAccepted);
@@ -80,7 +80,7 @@ class UserRegistrationController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $user = User::where('role_id', Role::GUEST->value)->findOrFail($id);
+        $user = User::where('role', Role::GUEST->value)->findOrFail($id);
         $user->notifyNow(new RegistrationRejected);
         $user->delete();
 

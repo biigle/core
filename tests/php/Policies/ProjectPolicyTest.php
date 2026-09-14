@@ -19,9 +19,9 @@ class ProjectPolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalGuest = UserTest::create(['role_id' => Role::GUEST->value]);
-        $this->globalEditor = UserTest::create(['role_id' => Role::EDITOR->value]);
-        $this->globalAdmin = UserTest::create(['role_id' => Role::ADMIN->value]);
+        $this->globalGuest = UserTest::create(['role' => Role::GUEST->value]);
+        $this->globalEditor = UserTest::create(['role' => Role::EDITOR->value]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN->value]);
 
         $this->project->addUserId($this->guest->id, Role::GUEST->value);
         $this->project->addUserId($this->editor->id, Role::EDITOR->value);

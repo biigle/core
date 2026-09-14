@@ -17,7 +17,7 @@ class FederatedSearchInstancePolicyTest extends TestCase
     {
         parent::setUp();
         $this->user = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::ADMIN->value]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN->value]);
     }
 
     public function testCreate()

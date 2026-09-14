@@ -26,7 +26,7 @@ class LabelTreeVersionPolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::ADMIN->value]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN->value]);
         $this->version->labelTree->addMember($this->editor, Role::EDITOR);
         $this->version->labelTree->addMember($this->admin, Role::ADMIN);
     }

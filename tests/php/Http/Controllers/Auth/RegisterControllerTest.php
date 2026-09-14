@@ -68,7 +68,7 @@ class RegisterControllerTest extends TestCase
         $this->assertSame('a', $user->firstname);
         $this->assertSame('b', $user->lastname);
         $this->assertSame('something', $user->affiliation);
-        $this->assertSame(Role::EDITOR->value, $user->role_id->value);
+        $this->assertSame(Role::EDITOR->value, $user->role->value);
     }
 
     public function testRegisterHoneypot()
@@ -264,7 +264,7 @@ class RegisterControllerTest extends TestCase
             return true;
         });
         $this->assertNotNull($user);
-        $this->assertSame(Role::GUEST->value, $user->role_id->value);
+        $this->assertSame(Role::GUEST->value, $user->role->value);
     }
 
     public function testRegisterAdminConfirmationPossibleDuplicates()

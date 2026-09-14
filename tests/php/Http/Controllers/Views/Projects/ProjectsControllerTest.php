@@ -38,7 +38,7 @@ class ProjectsControllerTest extends TestCase
 
     public function testCreate()
     {
-        $user = UserTest::create(['role_id' => Role::GUEST->value]);
+        $user = UserTest::create(['role' => Role::GUEST->value]);
 
         // not logged in
         $response = $this->get('projects/create');
@@ -49,7 +49,7 @@ class ProjectsControllerTest extends TestCase
         // Guest is not authorized.
         $response->assertStatus(403);
 
-        $user->role_id = Role::EDITOR->value;
+        $user->role = Role::EDITOR->value;
         $user->save();
 
         $r = $response = $this->get('projects/create');

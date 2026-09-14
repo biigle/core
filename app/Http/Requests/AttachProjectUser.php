@@ -44,7 +44,7 @@ class AttachProjectUser extends FormRequest
     {
         $this->user = User::findOrFail($this->route('id2'));
 
-        if ($this->user->role_id->value === Role::GUEST->value) {
+        if ($this->user->role->value === Role::GUEST->value) {
             $roles = [
                 Role::GUEST->value,
                 Role::EDITOR->value,
@@ -62,7 +62,7 @@ class AttachProjectUser extends FormRequest
         $roles = implode(',', $roles);
 
         return [
-            'project_role_id' => "required|in:{$roles}",
+            'project_role' => "required|in:{$roles}",
         ];
     }
 
@@ -88,9 +88,9 @@ class AttachProjectUser extends FormRequest
      */
     public function messages()
     {
-        if ($this->user->role_id->value === Role::GUEST->value) {
+        if ($this->user->role->value === Role::GUEST->value) {
             return [
-                'project_role_id.in' => 'Guest users may not become project admins.',
+                'project_role.in' => 'Guest users may not become project admins.',
             ];
         }
 

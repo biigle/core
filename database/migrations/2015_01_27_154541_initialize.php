@@ -60,9 +60,9 @@ class Initialize extends Migration
             // users are primarily searched by email, so do index
             $table->string('email', 256)->index();
             // the global user role
-            $table->integer('role_id')->unsigned();
+            $table->integer('role')->unsigned();
 
-            $table->foreign('role_id')
+            $table->foreign('role')
                 ->references('id')
                 ->on('roles')
                   // dont delete role if it is in use
@@ -146,8 +146,8 @@ class Initialize extends Migration
                   // remove the member if the user is deleted
                 ->onDelete('cascade');
 
-            $table->integer('role_id')->unsigned();
-            $table->foreign('role_id')
+            $table->integer('role')->unsigned();
+            $table->foreign('role')
                 ->references('id')
                 ->on('roles')
                   // dont delete role if it is in use
@@ -228,8 +228,8 @@ class Initialize extends Migration
         | in each project.
         */
         Schema::create('project_user', function (Blueprint $table) {
-            $table->integer('project_role_id')->unsigned();
-            $table->foreign('project_role_id')
+            $table->integer('project_role')->unsigned();
+            $table->foreign('project_role')
                 ->references('id')
                 ->on('roles')
                   // dont delete role if it is in use

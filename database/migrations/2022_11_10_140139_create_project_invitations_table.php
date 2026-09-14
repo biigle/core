@@ -28,8 +28,8 @@ return new class extends Migration {
                 ->on('projects')
                 ->onDelete('cascade');
 
-            $table->integer('role_id')->unsigned();
-            $table->foreign('role_id')
+            $table->integer('role')->unsigned();
+            $table->foreign('role')
                 ->references('id')
                 ->on('roles')
                 ->onDelete('restrict');

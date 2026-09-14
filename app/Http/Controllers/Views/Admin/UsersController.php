@@ -22,7 +22,7 @@ class UsersController extends Controller
      */
     public function get(Request $request)
     {
-        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'created_at', 'role_id', 'affiliation')
+        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'created_at', 'role', 'affiliation')
             ->when($request->has('q'), function ($query) use ($request) {
                 $q = $request->get('q');
                 $query->where(function ($query) use ($q) {
@@ -99,7 +99,7 @@ class UsersController extends Controller
     public function show(Modules $modules, $id)
     {
         $user = User::findOrFail($id);
-        $roleClass = $this->roleClassMap($user->role_id->value);
+        $roleClass = $this->roleClassMap($user->role->value);
         $values = $this->showProject($user);
         $values = array_merge($values, $this->showVolume($user));
         $values = array_merge($values, $this->showAnnotations($user));

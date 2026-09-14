@@ -55,7 +55,7 @@ class LabelTreeController extends Controller
      *
      * @apiParam {Number} id The label tree ID
      *
-     * @apiDescription The `role_id` of the members is their role in this label tree and not their global role.
+     * @apiDescription The `role` of the members is their role in this label tree and not their global role.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -82,7 +82,7 @@ class LabelTreeController extends Controller
      *          "id": 1,
      *          "firstname": "Cesar",
      *          "lastname": "Beier",
-     *          "role_id": 2
+     *          "role": 2
      *       }
      *    ],
      *    "version": {

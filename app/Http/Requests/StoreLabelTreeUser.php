@@ -43,7 +43,7 @@ class StoreLabelTreeUser extends FormRequest
     public function rules()
     {
         $this->isGlobalGuest = User::where('id', $this->input('id'))
-            ->where('role_id', Role::GUEST->value)
+            ->where('role', Role::GUEST->value)
             ->exists();
 
         if ($this->isGlobalGuest) {
@@ -54,7 +54,7 @@ class StoreLabelTreeUser extends FormRequest
 
         return [
             'id' => 'required|integer|exists:users,id',
-            'role_id' => "required|integer|in:{$roles}",
+            'role' => "required|integer|in:{$roles}",
         ];
     }
 
@@ -86,12 +86,12 @@ class StoreLabelTreeUser extends FormRequest
     {
         if ($this->isGlobalGuest) {
             return [
-                'role_id.in' => 'Guest users may only be label tree editors.',
+                'role.in' => 'Guest users may only be label tree editors.',
             ];
         }
 
         return [
-            'role_id.in' => 'Label tree members may only be either admins or editors.',
+            'role.in' => 'Label tree members may only be either admins or editors.',
         ];
     }
 }

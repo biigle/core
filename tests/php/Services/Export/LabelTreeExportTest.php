@@ -36,7 +36,7 @@ class LabelTreeExportTest extends TestCase
             ]],
             'members' => [[
                 'id' => $user1->id,
-                'role_id' => Role::ADMIN->value,
+                'role' => Role::ADMIN->value,
             ]],
         ]];
 

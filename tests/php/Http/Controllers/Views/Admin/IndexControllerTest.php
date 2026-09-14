@@ -23,7 +23,7 @@ class IndexControllerTest extends TestCase
     {
         // redirect to profile settings
         $admin = UserTest::create();
-        $admin->role_id = Role::ADMIN->value;
+        $admin->role = Role::ADMIN->value;
         $this->actingAs($admin)->get('admin')->assertViewIs('admin.index');
     }
 }

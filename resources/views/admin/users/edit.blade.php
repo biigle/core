@@ -20,20 +20,20 @@
             @endif
         </div>
 
-        <div class="col-sm-2 form-group{{ $errors->has('role_id') ? ' has-error' : '' }}">
-            <label for="role_id">Role*</label>
-            <select class="form-control" name="role_id" id="role_id" required>
+        <div class="col-sm-2 form-group{{ $errors->has('role') ? ' has-error' : '' }}">
+            <label for="role">Role*</label>
+            <select class="form-control" name="role" id="role" required>
                 @foreach ($roles as $role)
-                    <option value="{{$role->value}}" @selected($affectedUser->role_id->value === $role->value)>{{ucfirst($role->label())}}</option>
+                    <option value="{{$role->value}}" @selected($affectedUser->role->value === $role->value)>{{ucfirst($role->label())}}</option>
                 @endforeach
             </select>
-            @if($errors->has('role_id'))
-                <span class="help-block">{{ $errors->first('role_id') }}</span>
+            @if($errors->has('role'))
+                <span class="help-block">{{ $errors->first('role') }}</span>
             @endif
         </div>
         <div class="col-sm-2 form-group{{ $errors->has('can_review') ? ' has-error' : '' }}">
             <label for="can_review">Can review</label>
-            <select class="form-control" name="can_review" id="can_review" @if ($affectedUser->role_id->value === \Biigle\Role::EDITOR->value) required @else disabled title="Only editors can have this attribute" @endif>
+            <select class="form-control" name="can_review" id="can_review" @if ($affectedUser->role->value === \Biigle\Role::EDITOR->value) required @else disabled title="Only editors can have this attribute" @endif>
                 <option value="1" @selected($affectedUser->can_review)>Yes</option>
                 <option value="0" @selected(!$affectedUser->can_review)>No</option>
             </select>
@@ -43,7 +43,7 @@
         </div>
         <div class="col-sm-2 form-group{{ $errors->has('rate_limit') ? ' has-error' : '' }}">
             <label for="rate_limit">Rate limit</label>
-            <select class="form-control" name="rate_limit" id="rate_limit" @if ($affectedUser->role_id->value === \Biigle\Role::EDITOR->value) required @else disabled title="Only editors can have this attribute" @endif>
+            <select class="form-control" name="rate_limit" id="rate_limit" @if ($affectedUser->role->value === \Biigle\Role::EDITOR->value) required @else disabled title="Only editors can have this attribute" @endif>
                 <option value="1" @selected(!$affectedUser->hasNoRateLimit)>Yes</option>
                 <option value="0" @selected($affectedUser->hasNoRateLimit)>No</option>
             </select>

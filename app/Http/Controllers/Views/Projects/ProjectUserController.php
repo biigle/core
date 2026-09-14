@@ -35,9 +35,9 @@ class ProjectUserController extends Controller
         ];
 
         $members = $project->users()
-            ->select('id', 'firstname', 'lastname', 'project_role_id as role_id', 'affiliation')
+            ->select('id', 'firstname', 'lastname', 'project_role as role', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role_id->value, $roleOrder) - array_search($a->role_id->value, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role->value, $roleOrder) - array_search($a->role->value, $roleOrder))
             ->values();
 
         $userProject = $request->user()->projects()->where('id', $id)->first();

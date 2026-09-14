@@ -20,7 +20,7 @@ class PendingVolumePolicyTest extends TestCase
         $this->expert = User::factory()->create();
         $this->admin = User::factory()->create();
         $this->owner = User::factory()->create();
-        $this->globalAdmin = User::factory()->create(['role_id' => Role::ADMIN->value]);
+        $this->globalAdmin = User::factory()->create(['role' => Role::ADMIN->value]);
         $this->pv = PendingVolume::factory()->create([
             'project_id' => $project->id,
             'user_id' => $this->owner->id,

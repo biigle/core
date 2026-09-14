@@ -45,7 +45,7 @@ class VolumeUrlTest extends TestCase
     {
         parent::setUp();
         config(['volumes.editor_storage_disks' => ['test']]);
-        $this->user = User::factory()->make(['role_id' => Role::EDITOR->value]);
+        $this->user = User::factory()->make(['role' => Role::EDITOR->value]);
         $this->be($this->user);
     }
 
@@ -98,7 +98,7 @@ class VolumeUrlTest extends TestCase
         $disk = Storage::fake('test');
         $disk->put('dir/elif.txt', 'abc');
 
-        $this->user->role_id = Role::ADMIN->value;
+        $this->user->role = Role::ADMIN->value;
 
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'test://dir'));

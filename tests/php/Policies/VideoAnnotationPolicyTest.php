@@ -27,7 +27,7 @@ class VideoAnnotationPolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::ADMIN->value]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN->value]);
         $this->project->addUserId($this->guest->id, Role::GUEST->value);
         $this->project->addUserId($this->editor->id, Role::EDITOR->value);
         $this->project->addUserId($this->expert->id, Role::EXPERT->value);

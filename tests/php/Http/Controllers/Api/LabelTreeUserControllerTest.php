@@ -24,30 +24,30 @@ class LabelTreeUserControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $response = $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => 999,
+            'role' => 999,
         ]);
         $response->assertStatus(422);
 
         $id = $this->admin()->id;
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$id}", [
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
         ]);
         // cannot update the own user
         $response->assertStatus(403);
 
-        $this->assertSame(1, $t->members()->where('label_tree_user.role_id', Role::ADMIN->value)->count());
+        $this->assertSame(1, $t->members()->where('label_tree_user.role', Role::ADMIN->value)->count());
         $response = $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
         ]);
         $response->assertStatus(200);
-        $this->assertSame(2, $t->members()->where('label_tree_user.role_id', Role::ADMIN->value)->count());
+        $this->assertSame(2, $t->members()->where('label_tree_user.role', Role::ADMIN->value)->count());
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::EDITOR->value,
+            'role' => Role::EDITOR->value,
         ]);
         $response->assertStatus(200);
-        $this->assertSame(1, $t->members()->where('label_tree_user.role_id', Role::ADMIN->value)->count());
+        $this->assertSame(1, $t->members()->where('label_tree_user.role', Role::ADMIN->value)->count());
     }
 
     public function testUpdateGlobalGuest()
@@ -58,7 +58,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $t->addMember($u, Role::EDITOR);
         $this->beUser();
         $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
         ])->assertStatus(422);
     }
 
@@ -72,17 +72,17 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->get('/');
         $response = $this->put("/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
         ]);
-        $this->assertSame(2, $t->members()->where('label_tree_user.role_id', Role::ADMIN->value)->count());
+        $this->assertSame(2, $t->members()->where('label_tree_user.role', Role::ADMIN->value)->count());
         $response->assertRedirect('/');
         $response->assertSessionHas('saved', true);
 
         $response = $this->put("/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::EDITOR->value,
+            'role' => Role::EDITOR->value,
             '_redirect' => 'settings',
         ]);
-        $this->assertSame(1, $t->members()->where('label_tree_user.role_id', Role::ADMIN->value)->count());
+        $this->assertSame(1, $t->members()->where('label_tree_user.role', Role::ADMIN->value)->count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
     }
@@ -108,25 +108,25 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/users", [
             'id' => $this->user()->id,
         ]);
-        // role_id is required
+        // role is required
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/users", [
-            'role_id' => Role::EDITOR->value,
+            'role' => Role::EDITOR->value,
         ]);
         // id is required
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/users", [
             'id' => $this->user()->id,
-            'role_id' => Role::GUEST->value,
+            'role' => Role::GUEST->value,
         ]);
         // wrong role
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/users", [
             'id' => $this->admin()->id,
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
         ]);
         // is already user
         $response->assertStatus(422);
@@ -134,12 +134,12 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->assertFalse($tree->members()->where('id', $this->user()->id)->exists());
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/users", [
             'id' => $this->user()->id,
-            'role_id' => Role::EDITOR->value,
+            'role' => Role::EDITOR->value,
         ]);
         $response->assertStatus(200);
         $user = $tree->members()->find($this->user()->id);
         $this->assertNotNull($user);
-        $this->assertSame(Role::EDITOR->value, $user->role_id->value);
+        $this->assertSame(Role::EDITOR->value, $user->role->value);
     }
 
     public function testStoreGlobalGuest()
@@ -149,12 +149,12 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->beUser();
         $this->json('POST', "/api/v1/label-trees/{$t->id}/users", [
             'id' => $this->globalGuest()->id,
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
         ])->assertStatus(422);
 
         $this->json('POST', "/api/v1/label-trees/{$t->id}/users", [
             'id' => $this->globalGuest()->id,
-            'role_id' => Role::EDITOR->value,
+            'role' => Role::EDITOR->value,
         ])->assertStatus(200);
     }
 
@@ -166,7 +166,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->get('/');
         $response = $this->post("/api/v1/label-trees/{$tree->id}/users", [
             'id' => $this->user()->id,
-            'role_id' => Role::EDITOR->value,
+            'role' => Role::EDITOR->value,
         ]);
         $this->assertSame(2, $tree->members()->count());
         $response->assertRedirect('/');
@@ -174,7 +174,7 @@ class LabelTreeUserControllerTest extends ApiTestCase
 
         $response = $this->post("/api/v1/label-trees/{$tree->id}/users", [
             'id' => $this->guest()->id,
-            'role_id' => Role::EDITOR->value,
+            'role' => Role::EDITOR->value,
             '_redirect' => 'settings',
         ]);
         $this->assertSame(3, $tree->members()->count());

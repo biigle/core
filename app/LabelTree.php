@@ -45,7 +45,7 @@ class LabelTree extends Model
     public function memberCanLooseAdminStatus(User $member)
     {
         return $this->members()
-            ->wherePivot('role_id', Role::ADMIN->value)
+            ->wherePivot('role', Role::ADMIN->value)
             ->where('id', '!=', $member->id)
             ->exists();
     }
@@ -175,7 +175,7 @@ class LabelTree extends Model
     {
         return $this->belongsToMany(User::class)
             ->select('id', 'firstname', 'lastname')
-            ->withPivot('role_id as role_id');
+            ->withPivot('role as role');
     }
 
     /**
@@ -221,7 +221,7 @@ class LabelTree extends Model
             $role = $role->value;
         }
 
-        $this->members()->attach($user, ['role_id' => $role]);
+        $this->members()->attach($user, ['role' => $role]);
     }
 
     /**
@@ -240,7 +240,7 @@ class LabelTree extends Model
             $role = $role->value;
         }
 
-        $this->members()->updateExistingPivot($user, ['role_id' => $role]);
+        $this->members()->updateExistingPivot($user, ['role' => $role]);
     }
 
     /**

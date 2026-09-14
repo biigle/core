@@ -42,7 +42,7 @@ class StoreProjectInvitation extends FormRequest
 
         return [
             'expires_at' => "required|date|after:today",
-            'role_id' => "in:{$roles}",
+            'role' => "in:{$roles}",
             'max_uses' => "integer|min:1",
             'add_to_sessions' => "boolean",
         ];
@@ -57,7 +57,7 @@ class StoreProjectInvitation extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if ($this->input('add_to_sessions') && intval($this->input('role_id')) === Role::GUEST->value) {
+            if ($this->input('add_to_sessions') && intval($this->input('role')) === Role::GUEST->value) {
                 $validator->errors()->add('add_to_sessions', 'Project guests cannot be added to annotation sessions. Use a different role.');
             }
         });
@@ -71,7 +71,7 @@ class StoreProjectInvitation extends FormRequest
     public function messages()
     {
         return [
-            'role_id.in' => 'Invited users may only become experts, editors or guests.',
+            'role.in' => 'Invited users may only become experts, editors or guests.',
         ];
     }
 }

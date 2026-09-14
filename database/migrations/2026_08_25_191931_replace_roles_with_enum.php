@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     private $foreignKeys = [
-        ['users', 'role_id'],
-        ['project_user', 'project_role_id'],
-        ['label_tree_user', 'role_id'],
-        ['project_invitations', 'role_id'],
+        ['users', 'role'],
+        ['project_user', 'project_role'],
+        ['label_tree_user', 'role'],
+        ['project_invitations', 'role'],
     ];
 
     /**

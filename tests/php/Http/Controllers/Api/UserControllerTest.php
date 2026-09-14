@@ -17,26 +17,26 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/users');
 
         // only editors or admins can do this
-        $user = UserTest::create(['role_id' => Role::GUEST->value]);
+        $user = UserTest::create(['role' => Role::GUEST->value]);
         $this->be($user);
         $this->get('/api/v1/users')
             ->assertStatus(403);
 
-        $user->role_id = Role::EDITOR->value;
+        $user->role = Role::EDITOR->value;
         $user->save();
 
         $this->get('/api/v1/users')
             ->assertStatus(200)
             ->assertExactJson([[
                 'id' => $user->id,
-                'role_id' => $user->role_id->value,
+                'role' => $user->role->value,
                 'firstname' => $user->firstname,
                 'lastname' => $user->lastname,
                 'affiliation' => $user->affiliation,
             ]]);
 
         // Global admins also see the email address of the users.
-        $user->role_id = Role::ADMIN->value;
+        $user->role = Role::ADMIN->value;
         $user->save();
         $this->get('/api/v1/users')
             ->assertJsonFragment(['email' => $user->email]);
@@ -56,7 +56,7 @@ class UserControllerTest extends ApiTestCase
                 'id' => $this->editor()->id,
                 'firstname' => $this->editor()->firstname,
                 'lastname' => $this->editor()->lastname,
-                'role_id' => $this->editor()->role_id->value,
+                'role' => $this->editor()->role->value,
                 'affiliation' => $this->editor()->affiliation,
             ]);
     }
@@ -174,34 +174,34 @@ class UserControllerTest extends ApiTestCase
         $this->assertSame('new@email.me', $this->guest()->fresh()->email);
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'role_id' => 999,
+            'role' => 999,
             'auth_password' => 'adminpassword',
         ]);
         // role does not exist
         $response->assertStatus(422);
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
         ]);
         // changing the role requires the admin password
         $response->assertStatus(422);
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
             'auth_password' => 'wrongpassword',
         ]);
         // wrong password
         $response->assertStatus(422);
 
-        $this->assertSame(Role::EDITOR->value, $this->guest()->fresh()->role_id->value);
+        $this->assertSame(Role::EDITOR->value, $this->guest()->fresh()->role->value);
 
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
-            'role_id' => Role::ADMIN->value,
+            'role' => Role::ADMIN->value,
             'auth_password' => 'adminpassword',
             '_redirect' => 'settings/profile',
         ]);
         $response->assertRedirect('settings/profile');
-        $this->assertSame(Role::ADMIN->value, $this->guest()->fresh()->role_id->value);
+        $this->assertSame(Role::ADMIN->value, $this->guest()->fresh()->role->value);
 
         $this->get('/');
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
@@ -266,30 +266,30 @@ class UserControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::GUEST->value,
+                'role' => Role::GUEST->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::EDITOR->value,
+                'role' => Role::EDITOR->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
-        $this->assertSame(Role::EDITOR->value, $user->fresh()->role_id->value);
+        $this->assertSame(Role::EDITOR->value, $user->fresh()->role->value);
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::EXPERT->value,
+                'role' => Role::EXPERT->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(422);
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::ADMIN->value,
+                'role' => Role::ADMIN->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
-        $this->assertSame(Role::ADMIN->value, $user->fresh()->role_id->value);
+        $this->assertSame(Role::ADMIN->value, $user->fresh()->role->value);
     }
 
     public function testUpdateCanReview()
@@ -341,14 +341,14 @@ class UserControllerTest extends ApiTestCase
         // This sets canReview to false, too.
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::GUEST->value,
+                'role' => Role::GUEST->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
 
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::EDITOR->value,
+                'role' => Role::EDITOR->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
@@ -404,14 +404,14 @@ class UserControllerTest extends ApiTestCase
         // This sets hasNoRateLimit to false, too.
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::GUEST->value,
+                'role' => Role::GUEST->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
 
         $this
             ->putJson("api/v1/users/{$user->id}", [
-                'role_id' => Role::EDITOR->value,
+                'role' => Role::EDITOR->value,
                 'auth_password' => 'adminpassword',
             ])
             ->assertStatus(200);
@@ -548,7 +548,7 @@ class UserControllerTest extends ApiTestCase
         $this->assertSame('jackson', $newUser->lastname);
         $this->assertSame('new@email.me', $newUser->email);
         $this->assertSame('My Company', $newUser->affiliation);
-        $this->assertSame(Role::EDITOR->value, $newUser->role_id->value);
+        $this->assertSame(Role::EDITOR->value, $newUser->role->value);
 
         $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
