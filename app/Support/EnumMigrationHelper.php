@@ -20,7 +20,7 @@ class EnumMigrationHelper
      * foreign key constraint name is not supplied, the default name is constructed
      * @return void
      */
-    public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys)
+    public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys, bool $dropIdSuffix = false)
     {
         foreach ($foreignKeys as $foreignKey) {
             [$table, $column] = $foreignKey;
@@ -34,7 +34,7 @@ class EnumMigrationHelper
                     ->update([$column => $newId]);
             }
 
-            if (str_starts_with($column, 'role') && str_ends_with($column, '_id')) {
+            if ($dropIdSuffix && str_ends_with($column, '_id')) {
                 Schema::table($table, function (Blueprint $t) use ($column) {
                     $newColumn = substr($column, 0, -3);
                     $t->renameColumn($column, $newColumn);
