@@ -30,7 +30,7 @@ class StorePendingVolume extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'media_type' => ['required', Rule::in(MediaType::labels())],
+            'media_type' => ['required', Rule::enum(MediaType::class)],
             'metadata_parser' => [
                 'required_with:metadata_file',
             ],
@@ -43,7 +43,7 @@ class StorePendingVolume extends FormRequest
         ];
 
         $parserClass = $this->input('metadata_parser', false);
-        if ($this->has('media_type') && $parserClass && ParserFactory::has($this->input('media_type'), $parserClass)) {
+        if ($this->has('media_type') && $parserClass && ParserFactory::has(MediaType::from($this->input('media_type'))->label(), $parserClass)) {
             $rules['metadata_file'][] = 'mimetypes:'.implode(',', $parserClass::getKnownMimeTypes());
         }
 
@@ -72,7 +72,7 @@ class StorePendingVolume extends FormRequest
             }
 
             if ($file = $this->file('metadata_file')) {
-                $type = $this->input('media_type');
+                $type = MediaType::from($this->input('media_type'))->label();
                 $parserClass = $this->input('metadata_parser');
 
                 if (!ParserFactory::has($type, $parserClass)) {
@@ -108,7 +108,7 @@ class StorePendingVolume extends FormRequest
         // Allow a string as media_type to be more conventient.
         $type = $this->input('media_type');
         if (in_array($type, MediaType::labels())) {
-            $this->merge(['media_type_id' => MediaType::fromLabel(strtoupper($type))->value]);
+            $this->merge(['media_type' => MediaType::fromLabel(strtoupper($type))->value]);
         }
     }
 }

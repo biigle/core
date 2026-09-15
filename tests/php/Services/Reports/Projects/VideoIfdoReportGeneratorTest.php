@@ -23,7 +23,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
     public function testProcessIfdoVolumesOnly()
     {
         $volume1 = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.json',
             'metadata_parser' => IfdoParser::class,
         ]);
@@ -31,7 +31,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $disk->put('mymeta.json', 'abc');
 
         $volume2 = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ]);
 
         $project = ProjectTest::create();
@@ -49,7 +49,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
     public function testThrowIfNoIfdo()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ]);
         $project = ProjectTest::create();
         $project->addVolumeId($volume->id);

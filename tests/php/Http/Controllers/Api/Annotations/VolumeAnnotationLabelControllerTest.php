@@ -61,7 +61,7 @@ class VolumeAnnotationLabelControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $tid = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
+        $tid = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
 
         $label1 = LabelTest::create();
         $video = VideoTest::create(['volume_id' => $tid]);

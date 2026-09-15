@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * A volume is a collection of images. Volumes belong to one or many
  * projects.
  */
-#[Fillable(['name', 'url', 'media_type_id', 'handle', 'creator_id', 'metadata_file_path', 'metadata_parser'])]
+#[Fillable(['name', 'url', 'media_type', 'handle', 'creator_id', 'metadata_file_path', 'metadata_parser'])]
 #[Hidden(['pivot', 'attrs'])]
 #[ObservedBy(VolumeObserver::class)]
 class Volume extends Model
@@ -55,7 +55,7 @@ class Volume extends Model
     {
         return [
             'attrs' => 'array',
-            'media_type_id' => MediaType::class,
+            'media_type' => MediaType::class,
         ];
     }
 
@@ -101,16 +101,6 @@ class Volume extends Model
     public function creator()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * The media type of this volume.
-     *
-     * @return MediaType
-     */
-    public function getMediaTypeAttribute()
-    {
-        return $this->media_type_id;
     }
 
     /**
@@ -466,7 +456,7 @@ class Volume extends Model
      */
     public function isImageVolume()
     {
-        return $this->media_type_id === MediaType::IMAGE;
+        return $this->media_type === MediaType::IMAGE;
     }
 
     /**
@@ -476,7 +466,7 @@ class Volume extends Model
      */
     public function isVideoVolume()
     {
-        return $this->media_type_id === MediaType::VIDEO;
+        return $this->media_type === MediaType::VIDEO;
     }
 
     /**

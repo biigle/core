@@ -49,7 +49,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -106,7 +106,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -163,7 +163,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -203,7 +203,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -242,7 +242,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -280,7 +280,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => false,
@@ -319,7 +319,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => false,
             'import_annotations' => true,
@@ -368,7 +368,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -425,7 +425,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -467,7 +467,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -526,7 +526,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_annotations' => true,
             'user_map' => [321 => $dbUser->id],
@@ -578,7 +578,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,

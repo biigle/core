@@ -128,7 +128,7 @@ class MetadataControllerTest extends ApiTestCase
     {
         Storage::fake('metadata');
         $id = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::VIDEO->value;
+        $this->volume()->media_type = MediaType::VIDEO->value;
         $this->volume()->save();
 
         $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata.csv", 'metadata.csv', 'text/csv', null, true);

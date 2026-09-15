@@ -69,7 +69,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'random',
-            'media_type_id' => 99999,
+            'media_type' => 99999,
             'files' => '1.jpg, 2.jpg',
         ]);
         // media type does not exist

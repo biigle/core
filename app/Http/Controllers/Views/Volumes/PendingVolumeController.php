@@ -75,7 +75,7 @@ class PendingVolumeController extends Controller
             $userDisk = null;
         }
 
-        $isImageMediaType = $pv->media_type_id === MediaType::IMAGE->value;
+        $isImageMediaType = $pv->media_type === MediaType::IMAGE->value;
         $mediaType = $isImageMediaType ? 'image' : 'video';
 
         $metadata = null;

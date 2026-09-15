@@ -38,7 +38,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get('/api/v1/volumes/')
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Only include projects to which the user has access.
             ->assertJsonMissing(['name' => $project->name]);
@@ -54,7 +54,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get('/api/v1/volumes/')
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             ->assertJsonFragment(['name' => $project->name]);
     }
@@ -75,7 +75,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get("/api/v1/volumes/{$id}")
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Only include projects to which the user has access.
             ->assertJsonMissing(['name' => $project->name]);
@@ -92,7 +92,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get("/api/v1/volumes/{$id}")
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Global admins should see all projects.
             ->assertJsonFragment(['name' => $project->name]);
@@ -100,7 +100,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $id = $this->volume(['media_type_id' => MediaType::IMAGE->value])->id;
+        $id = $this->volume(['media_type' => MediaType::IMAGE->value])->id;
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
@@ -115,12 +115,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
         $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ]);
         $response->assertStatus(200);
         $this->assertSame('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
-        $this->assertSame(MediaType::IMAGE, $this->volume()->fresh()->media_type_id);
+        $this->assertSame(MediaType::IMAGE, $this->volume()->fresh()->media_type);
         Queue::assertNothingPushed();
     }
 
@@ -362,7 +362,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertTrue($project->volumes()->exists());
         $copy = $project->volumes()->first();
         $this->assertEquals($copy->name, $this->volume()->name);
-        $this->assertEquals($copy->media_type_id, $this->volume()->media_type_id);
+        $this->assertEquals($copy->media_type, $this->volume()->media_type);
         $this->assertEquals($copy->url, $this->volume()->url);
         $this->assertTrue($copy->creating_async);
         $this->assertEquals("{$copy->id}.csv", $copy->metadata_file_path);
@@ -468,7 +468,7 @@ class VolumeControllerTest extends ApiTestCase
             ->volume([
                 'created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',
-                'media_type_id' => MediaType::VIDEO->value
+                'media_type' => MediaType::VIDEO->value
             ])
             ->fresh();
 

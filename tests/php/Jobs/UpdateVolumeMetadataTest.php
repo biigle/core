@@ -18,7 +18,7 @@ class UpdateVolumeMetadataTest extends TestCase
     public function testHandleImageAdd()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
         ]);
@@ -56,7 +56,7 @@ class UpdateVolumeMetadataTest extends TestCase
     public function testHandleImageUpdate()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
         ]);
@@ -100,7 +100,7 @@ class UpdateVolumeMetadataTest extends TestCase
     public function testHandleImageMerge()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
         ]);
@@ -141,7 +141,7 @@ class UpdateVolumeMetadataTest extends TestCase
     public function testHandleVideoAdd()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -176,7 +176,7 @@ class UpdateVolumeMetadataTest extends TestCase
     public function testHandleVideoUpdate()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -220,7 +220,7 @@ class UpdateVolumeMetadataTest extends TestCase
     public function testHandleVideoMergeWithoutTakenAt()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);
@@ -261,7 +261,7 @@ class UpdateVolumeMetadataTest extends TestCase
     public function testHandleVideoReplaceWithTakenAt()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
         ]);

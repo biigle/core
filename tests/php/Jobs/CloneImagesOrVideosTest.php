@@ -84,7 +84,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $volume = VolumeTest::create([
             'created_at' => '2022-01-09 14:37:00',
             'updated_at' => '2022-01-09 14:37:00',
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'attrs' => [
                 'creating_async' => true,
             ],
@@ -122,7 +122,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     {
         Event::fake();
         $volume = $this->volume([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh(); // Use fresh() to load even the null fields.
@@ -180,7 +180,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     {
 
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh(); // Use fresh() to load even the null fields.
@@ -229,7 +229,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $volume = $this->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ])->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
@@ -290,7 +290,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $volume = VolumeTest::create([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ])->fresh();// Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
@@ -335,7 +335,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     {
         Event::fake();
         $volume = $this ->volume([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh(); // Use fresh() to load even the null fields.
@@ -392,7 +392,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     public function testCloneVolumeImageAnnotationsWithSomeLabels()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh();// Use fresh() to load even the null fields.
@@ -432,7 +432,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     public function testCloneVolumeImageWithoutAnnotations()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh();// Use fresh() to load even the null fields.
@@ -463,7 +463,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $volume = $this ->volume([
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ])->fresh(); // Use fresh() to load even the null fields.
         $copy = $volume->replicate();
         $copy->save();
@@ -516,7 +516,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     public function testCloneVolumeVideoAnnotationsWithSomeLabels()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh();// Use fresh() to load even the null fields.
@@ -556,7 +556,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     public function testCloneVolumeVideoWithoutAnnotations()
     {
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh();// Use fresh() to load even the null fields.
@@ -584,7 +584,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
     {
         Storage::fake('metadata');
         $volume = $this->volume([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
             'metadata_parser' => ImageCsvParser::class,
@@ -619,7 +619,7 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $project = ProjectTest::create();
 
         $volume = VolumeTest::create([
-            'media_type_id' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh();// Use fresh() to load even the null fields.

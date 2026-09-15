@@ -30,7 +30,7 @@ class PendingVolumeFactory extends Factory
     public function definition(): array
     {
         return [
-            'media_type_id' => fn () => MediaType::IMAGE->value,
+            'media_type' => fn () => MediaType::IMAGE->value,
             'user_id' => User::factory(),
             'project_id' => Project::factory(),
         ];

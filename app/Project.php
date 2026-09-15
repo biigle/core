@@ -190,7 +190,7 @@ class Project extends Model
      */
     public function imageVolumes()
     {
-        return $this->volumes()->where('media_type_id', MediaType::IMAGE->value);
+        return $this->volumes()->where('media_type', MediaType::IMAGE->value);
     }
 
     /**
@@ -200,7 +200,7 @@ class Project extends Model
      */
     public function videoVolumes()
     {
-        return $this->volumes()->where('media_type_id', MediaType::VIDEO->value);
+        return $this->volumes()->where('media_type', MediaType::VIDEO->value);
     }
 
     /**
@@ -307,7 +307,7 @@ class Project extends Model
     {
         return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
             $volume = $this->volumes()
-                ->select('id', 'media_type_id')
+                ->select('id', 'media_type')
                 ->orderBy('id')
                 ->first();
 

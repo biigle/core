@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'media_type_id',
+    'media_type',
     'user_id',
     'project_id',
     'metadata_file_path',
@@ -41,7 +41,7 @@ class PendingVolume extends Model
             'only_file_labels' => 'array',
             'label_map' => 'array',
             'user_map' => 'array',
-            'media_type_id' => MediaType::class
+            'media_type' => MediaType::class
         ];
     }
 

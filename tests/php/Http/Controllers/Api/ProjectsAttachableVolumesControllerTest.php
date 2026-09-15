@@ -39,8 +39,8 @@ class ProjectsAttachableVolumesControllerTest extends ApiTestCase
         $response->assertExactJson([[
             'id' => $validVolume->id,
             'name' => $validVolume->name,
-            'media_type_id' => $validVolume->media_type_id->value,
-            'media_type' => $validVolume->mediaType,
+            'media_type_id' => $validVolume->media_type->value,
+            'media_type' => $validVolume->media_type,
             'updated_at' => $validVolume->updated_at->toJson(),
             'thumbnailUrl' => null,
             'thumbnailsUrl' => [],
@@ -77,8 +77,8 @@ class ProjectsAttachableVolumesControllerTest extends ApiTestCase
         $response->assertExactJson([[
             'id' => $validVolume->id,
             'name' => $validVolume->name,
-            'media_type_id' => $validVolume->media_type_id->value,
-            'media_type' => $validVolume->mediaType,
+            'media_type_id' => $validVolume->media_type->value,
+            'media_type' => $validVolume->media_type,
             'updated_at' => $validVolume->updated_at->toJson(),
             'thumbnailUrl' => null,
             'thumbnailsUrl' => [],

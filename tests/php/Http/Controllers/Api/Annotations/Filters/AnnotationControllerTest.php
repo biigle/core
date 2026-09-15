@@ -81,7 +81,7 @@ class AnnotationControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
 
         $video = VideoTest::create(['volume_id' => $id]);
         VideoAnnotationTest::create(['video_id' => $video->id]);
@@ -96,7 +96,7 @@ class AnnotationControllerTest extends ApiTestCase
 
     public function testIndexAnnotationSessionVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
 
         $video = VideoTest::create(['volume_id' => $id]);
         $a = VideoAnnotationTest::create([

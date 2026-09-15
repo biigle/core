@@ -46,7 +46,7 @@ class ProcessNewVolumeFilesTest extends TestCase
 
     public function testHandleVideos()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::VIDEO->value]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
         $v2 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
 
@@ -61,7 +61,7 @@ class ProcessNewVolumeFilesTest extends TestCase
 
     public function testHandleVideosWithOnly()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::VIDEO->value]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
         $v2 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
 
@@ -77,7 +77,7 @@ class ProcessNewVolumeFilesTest extends TestCase
     public function testHandleVideosQueue()
     {
         config(['videos.process_new_video_queue' => 'low']);
-        $volume = VolumeTest::create(['media_type_id' => MediaType::VIDEO->value]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
 
         Queue::fake();

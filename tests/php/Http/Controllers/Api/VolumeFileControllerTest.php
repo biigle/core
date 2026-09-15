@@ -43,7 +43,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
     public function testIndexWrongMediaTypeVideo()
     {
-        $volume = $this->volume(['media_type_id' => MediaType::VIDEO->value]);
+        $volume = $this->volume(['media_type' => MediaType::VIDEO->value]);
         ImageTest::create(['volume_id' => $volume->id]);
         $this->beGuest();
         $this->getJson("/api/v1/volumes/{$volume->id}/files")->assertExactJson([]);
@@ -173,7 +173,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
         $id =
             $this->volume([
-                'media_type_id' => MediaType::VIDEO->value,
+                'media_type' => MediaType::VIDEO->value,
                 'url' => 'test://videos',
             ])->id;
         VideoTest::create(['filename' => 'no.mp4', 'volume_id' => $id]);
@@ -228,7 +228,7 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::disk('test')->put('videos/1.mp4', 'abc');
         Storage::disk('test')->put('videos/2.mp4', 'abc');
         $id = $this->volume([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'url' => 'test://videos',
         ])->id;
         $this->beAdmin();
@@ -243,7 +243,7 @@ class VolumeFileControllerTest extends ApiTestCase
         Storage::disk('test')->makeDirectory('videos');
         Storage::disk('test')->put('videos/1.mp4', 'abc');
         $id = $this->volume([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'url' => 'test://videos',
         ])->id;
         VideoTest::create(['filename' => '1.mp4', 'volume_id' => $id]);
@@ -256,7 +256,7 @@ class VolumeFileControllerTest extends ApiTestCase
 
     public function testStoreVideoFileNotExists()
     {
-        $id = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $this->beAdmin();
         $this
             ->postJson("/api/v1/volumes/{$id}/files", ['images' => '1.mp4'])

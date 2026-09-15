@@ -143,7 +143,7 @@ class StatisticsControllerTest extends ApiTestCase
 
     public function testVideoStatistics()
     {
-        $id = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
 
         $video = VideoTest::create([
             'volume_id' => $this->volume()->id,

@@ -179,7 +179,7 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
 
     public function testSessionWithoutVideoVolumeUser()
     {
-        $id = $this->volume(['media_type_id' => MediaType::VIDEO->value])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $this->beAdmin();
 
         // Users field must be present

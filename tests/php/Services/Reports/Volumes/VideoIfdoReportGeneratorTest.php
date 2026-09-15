@@ -40,7 +40,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         ], $merge);
 
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
             'name' => 'My Cool Volume',
             'metadata_file_path' => 'mymeta.json',
             'metadata_parser' => IfdoParser::class,

@@ -27,7 +27,7 @@ import {Resource} from 'vue-resource';
  * resource.saveVolume({id: 1}, {
  *     name: "volume 1",
  *     url: "/vol/volumes/1",
- *     media_type_id: 1,
+ *     media_type: 1,
  *     images: ["1.jpg", "2.jpg"]
  * }).then(...);
  *

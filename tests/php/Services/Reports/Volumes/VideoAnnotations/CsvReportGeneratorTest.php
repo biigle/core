@@ -70,7 +70,7 @@ class CsvReportGeneratorTest extends TestCase
     {
         $volume = VolumeTest::create([
             'name' => 'My Cool Volume',
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ]);
 
         $video = VideoTest::create([
@@ -649,7 +649,7 @@ class CsvReportGeneratorTest extends TestCase
     {
         $volume = VolumeTest::create([
             'name' => 'My Cool Volume',
-            'media_type_id' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO->value,
         ]);
 
         $video = VideoTest::create([
