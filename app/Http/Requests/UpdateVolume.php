@@ -73,7 +73,7 @@ class UpdateVolume extends FormRequest
                 return;
             }
 
-            $rule = new VolumeFiles($newUrl, $this->volume->media_type_id);
+            $rule = new VolumeFiles($newUrl, $this->volume->media_type_id->value);
             if (!$rule->passes('url', $filenames)) {
                 $validator->errors()->add('url', $rule->message());
             }

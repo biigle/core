@@ -525,7 +525,7 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($this->imageVolume->name, $newImageVolume->name);
         $this->assertEquals($this->imageVolume->url, $newImageVolume->url);
         $this->assertEquals($project->creator->id, $newImageVolume->creator_id);
-        $this->assertEquals(MediaType::IMAGE->value, $newImageVolume->media_type_id);
+        $this->assertEquals(MediaType::IMAGE, $newImageVolume->media_type_id);
         $this->assertEquals(['ab' => 'cd'], $newImageVolume->attrs);
 
         $newImages = $newImageVolume->images;
@@ -548,7 +548,7 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($this->videoVolume->name, $newVideoVolume->name);
         $this->assertEquals($this->videoVolume->url, $newVideoVolume->url);
         $this->assertEquals($project->creator->id, $newVideoVolume->creator_id);
-        $this->assertEquals(MediaType::VIDEO->value, $newVideoVolume->media_type_id);
+        $this->assertEquals(MediaType::VIDEO, $newVideoVolume->media_type_id);
 
         $newVideos = $newVideoVolume->videos;
         $this->assertCount(1, $newVideos);

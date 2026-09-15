@@ -55,7 +55,7 @@ class Volume extends Model
     {
         return [
             'attrs' => 'array',
-            'media_type_id' => 'int',
+            'media_type_id' => MediaType::class,
         ];
     }
 
@@ -110,7 +110,7 @@ class Volume extends Model
      */
     public function getMediaTypeAttribute()
     {
-        return MediaType::from($this->media_type_id);
+        return $this->media_type_id;
     }
 
     /**
@@ -466,7 +466,7 @@ class Volume extends Model
      */
     public function isImageVolume()
     {
-        return $this->media_type_id === MediaType::IMAGE->value;
+        return $this->media_type_id === MediaType::IMAGE;
     }
 
     /**
@@ -476,7 +476,7 @@ class Volume extends Model
      */
     public function isVideoVolume()
     {
-        return $this->media_type_id === MediaType::VIDEO->value;
+        return $this->media_type_id === MediaType::VIDEO;
     }
 
     /**

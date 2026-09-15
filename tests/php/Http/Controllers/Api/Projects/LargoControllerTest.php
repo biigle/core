@@ -499,7 +499,6 @@ class LargoControllerTest extends ApiTestCase
     {
         Queue::shouldReceive('pushOn')->once()->andThrow(new \Exception('Queue error'));
 
-        $this->withoutExceptionHandling();
         $this->beEditor();
         try {
             $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [

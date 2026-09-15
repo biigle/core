@@ -38,7 +38,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get('/api/v1/volumes/')
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Only include projects to which the user has access.
             ->assertJsonMissing(['name' => $project->name]);
@@ -54,7 +54,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get('/api/v1/volumes/')
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             ->assertJsonFragment(['name' => $project->name]);
     }
@@ -75,7 +75,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get("/api/v1/volumes/{$id}")
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Only include projects to which the user has access.
             ->assertJsonMissing(['name' => $project->name]);
@@ -92,7 +92,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get("/api/v1/volumes/{$id}")
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Global admins should see all projects.
             ->assertJsonFragment(['name' => $project->name]);
@@ -120,7 +120,7 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertSame('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
-        $this->assertSame(MediaType::IMAGE->value, $this->volume()->fresh()->media_type_id);
+        $this->assertSame(MediaType::IMAGE, $this->volume()->fresh()->media_type_id);
         Queue::assertNothingPushed();
     }
 

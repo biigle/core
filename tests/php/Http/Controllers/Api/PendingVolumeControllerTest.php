@@ -272,7 +272,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(201);
 
         $pv = PendingVolume::where('volume_id', $id)->first();
-        $this->assertSame($this->volume()->media_type_id, $pv->media_type_id);
+        $this->assertSame($this->volume()->media_type_id->value, $pv->media_type_id);
         $this->assertSame($this->admin()->id, $pv->user_id);
         $this->assertSame("{$pv->id}.csv", $pv->metadata_file_path);
         $this->assertSame(ImageCsvParser::class, $pv->metadata_parser);
@@ -538,7 +538,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $volume = $this->project()->volumes()->first();
         $this->assertEquals('my volume no. 1', $volume->name);
         $this->assertEquals('test://images', $volume->url);
-        $this->assertEquals(MediaType::IMAGE->value, $volume->media_type_id);
+        $this->assertEquals(MediaType::IMAGE, $volume->media_type_id);
     }
 
     public function testUpdateImagesWithMetadata()
@@ -970,7 +970,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $volume = $this->project()->volumes()->first();
         $this->assertEquals('my volume no. 1', $volume->name);
         $this->assertEquals('test://videos', $volume->url);
-        $this->assertEquals(MediaType::VIDEO->value, $volume->media_type_id);
+        $this->assertEquals(MediaType::VIDEO, $volume->media_type_id);
     }
 
     public function testUpdateVideosWithMetadata()

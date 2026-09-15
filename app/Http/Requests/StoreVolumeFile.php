@@ -39,7 +39,7 @@ class StoreVolumeFile extends FormRequest
             'files' => [
                 'required',
                 'array',
-                new VolumeFiles($this->volume->url, $this->volume->media_type_id),
+                new VolumeFiles($this->volume->url, $this->volume->media_type_id->value),
                 new VolumeFileUnique($this->volume),
             ],
             // Do not validate the maximum filename length with a 'files.*' rule because
