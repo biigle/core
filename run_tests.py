@@ -16,7 +16,7 @@ COMMAND = [
 expression = re.compile(r'(Biigle\\\S+Test)')
 
 def main():
-    if "--reset" in sys.argv:
+    if "--reset" in sys.argv or "-r" in sys.argv:
         PASSED_FILE.write_text("")
 
     passed = set()

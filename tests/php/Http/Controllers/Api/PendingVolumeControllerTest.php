@@ -47,7 +47,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(201);
 
         $pv = PendingVolume::where('project_id', $id)->first();
-        $this->assertEquals(MediaType::IMAGE->value, $pv->media_type_id);
+        $this->assertEquals(MediaType::IMAGE, $pv->media_type_id);
         $this->assertEquals($this->admin()->id, $pv->user_id);
     }
 
@@ -272,7 +272,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(201);
 
         $pv = PendingVolume::where('volume_id', $id)->first();
-        $this->assertSame($this->volume()->media_type_id->value, $pv->media_type_id);
+        $this->assertSame($this->volume()->media_type_id, $pv->media_type_id);
         $this->assertSame($this->admin()->id, $pv->user_id);
         $this->assertSame("{$pv->id}.csv", $pv->metadata_file_path);
         $this->assertSame(ImageCsvParser::class, $pv->metadata_parser);

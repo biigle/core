@@ -41,6 +41,7 @@ class PendingVolume extends Model
             'only_file_labels' => 'array',
             'label_map' => 'array',
             'user_map' => 'array',
+            'media_type_id' => MediaType::class
         ];
     }
 
