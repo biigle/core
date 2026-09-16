@@ -34,10 +34,7 @@ class ProjectStatisticsController extends Controller
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->each(function ($item) {
-                $item->setAttribute('media_type', $item->media_type); // TODO no test
-            });
+            ->get(); // TODO no test for media_type
 
 
         $totalImages = Image::whereIn('images.volume_id', fn ($query) => $query->select('volume_id')

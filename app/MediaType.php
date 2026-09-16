@@ -14,6 +14,7 @@ enum MediaType: int implements \JsonSerializable
 
     case IMAGE = 1;
     case VIDEO = 2;
+
     public function label(): string
     {
         return match ($this) {

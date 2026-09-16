@@ -48,8 +48,7 @@ class ProjectsController extends Controller
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')
                     ->append('thumbnailsUrl')
-                    ->setAttribute('media_type', $item->media_type) // TODO no test for this
-                    ->makeHidden($hidden);
+                    ->makeHidden($hidden); // TODO no test for media_type
             });
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
