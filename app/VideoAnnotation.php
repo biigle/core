@@ -20,7 +20,7 @@ class VideoAnnotation extends Annotation
     {
         return [
             'video_id' => 'int',
-            'shape_id' => 'int',
+            'shape_id' => Shape::class,
             'frames' => 'array',
             'points' => 'array',
         ];
@@ -136,15 +136,15 @@ class VideoAnnotation extends Annotation
         $points2 = $points[$index2];
 
         switch ($this->shape_id) {
-            case Shape::rectangleId():
-            case Shape::ellipseId():
+            case Shape::RECTANGLE:
+            case Shape::ELLIPSE:
                 return $this->interpolationPointsToRectangle(
                     $this->interpolateNaive($points1, $points2, $progress)
                 );
-            case Shape::lineId():
-            case Shape::polygonId():
+            case Shape::LINE:
+            case Shape::POLYGON:
                 throw new Exception('Interpolation of line strings or polygons is not implemented.');
-            case Shape::wholeFrameId():
+            case Shape::WHOLE_FRAME:
                 throw new Exception('Whole frame annotations cannot be interpolated.');
             default:
                 return $this->interpolateNaive($points1, $points2, $progress);
@@ -159,11 +159,11 @@ class VideoAnnotation extends Annotation
     protected function getInterpolationPoints()
     {
         switch ($this->shape_id) {
-            case Shape::rectangleId():
-            case Shape::ellipseId():
+            case Shape::RECTANGLE:
+            case Shape::ELLIPSE:
                 return array_map([$this, 'rectangleToInterpolationPoints'], $this->points);
-            case Shape::lineId():
-            case Shape::polygonId():
+            case Shape::LINE:
+            case Shape::POLYGON:
                 return [];
             default:
                 return $this->points;

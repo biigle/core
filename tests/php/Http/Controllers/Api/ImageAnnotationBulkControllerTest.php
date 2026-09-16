@@ -96,7 +96,7 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
 
         $this->assertSame(3, $this->annotation->image->annotations()->count());
         $annotation = $this->annotation->image->annotations()->orderBy('id', 'desc')->first();
-        $this->assertSame(Shape::pointId(), $annotation->shape_id);
+        $this->assertSame(Shape::POINT, $annotation->shape_id);
         $this->assertSame([100, 100], $annotation->points);
         $this->assertSame(1, $annotation->labels()->count());
         $this->assertSame($this->labelRoot()->id, $annotation->labels()->first()->label_id);

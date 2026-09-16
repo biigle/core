@@ -21,7 +21,7 @@ class ImageAnnotation extends Annotation
     {
         return [
             'image_id' => 'int',
-            'shape_id' => 'int',
+            'shape_id' => Shape::class,
             'points' => 'array',
         ];
     }

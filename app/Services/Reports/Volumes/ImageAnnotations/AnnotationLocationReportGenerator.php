@@ -174,8 +174,8 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         $imageCenter = [$item->width / 2, $item->height / 2];
         $flatPoints = json_decode($item->points);
 
-        // GeoJSON does no support circles so we treat them as points.
-        if ($item->shape_id === Shape::circleId()) {
+        // GeoJSON does not support circles so we treat them as points.
+        if ($item->shape_id === Shape::CIRCLE->value) {
             unset($flatPoints[2]);
         }
 
@@ -251,10 +251,10 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         }, $rotatedOffsetInRadians);
 
         switch ($item->shape_id) {
-            case Shape::pointId():
-            case Shape::circleId():
+            case Shape::POINT->value:
+            case Shape::CIRCLE->value:
                 return new Point($coordinates[0]);
-            case Shape::lineId():
+            case Shape::LINE->value:
                 return new LineString($coordinates);
         }
 

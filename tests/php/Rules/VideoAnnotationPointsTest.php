@@ -11,7 +11,7 @@ class VideoAnnotationPointsTest extends TestCase
 {
     private function validate($shape, $points): bool
     {
-        $shapeId = is_null($shape) ? null : Shape::{$shape.'Id'}();
+        $shapeId = is_null($shape) ? null : Shape::{$shape.'Id'}(); // TODO
 
         $validator = Validator::make(
             ['points' => $points],

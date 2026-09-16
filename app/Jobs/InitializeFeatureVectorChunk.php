@@ -122,7 +122,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
             $image = $this->getVipsImageForPyworker($thumbnail);
 
             // Compute the crop box for the annotation within the thumbnail.
-            if ($a->shape_id === Shape::wholeFrameId()) {
+            if ($a->shape_id === Shape::WHOLE_FRAME) {
                 $box = [0, 0, $thumbWidth, $thumbHeight];
             } else {
                 if ($a instanceof VideoAnnotation) {

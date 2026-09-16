@@ -239,7 +239,7 @@ class TrackObject extends Job implements ShouldQueue
     protected function getStartWindow(VideoAnnotation $annotation)
     {
         switch ($annotation->shape_id) {
-            case Shape::pointId():
+            case Shape::POINT:
                 $points = $annotation->points[0];
                 $padding = config('videos.tracking_point_padding');
 
@@ -253,7 +253,7 @@ class TrackObject extends Job implements ShouldQueue
                     // height
                     $padding * 2,
                 ];
-            case Shape::circleId():
+            case Shape::CIRCLE:
                 $points = $annotation->points[0];
 
                 return [
@@ -282,7 +282,7 @@ class TrackObject extends Job implements ShouldQueue
     protected function getPointsFromKeyframe(VideoAnnotation $annotation, $keyframe)
     {
         switch ($annotation->shape_id) {
-            case Shape::pointId():
+            case Shape::POINT:
                 return [$keyframe[1], $keyframe[2]];
             default:
                 array_shift($keyframe);

@@ -22,7 +22,7 @@ class VideoAnnotationExportTest extends TestCase
         $expect = [
             "{$annotation->id}",
             "{$annotation->video_id}",
-            "{$annotation->shape_id}",
+            "{$annotation->shape_id->value}",
             "{$annotation->created_at}",
             "{$annotation->updated_at}",
             json_encode($annotation->points),

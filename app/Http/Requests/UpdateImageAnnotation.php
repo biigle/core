@@ -87,6 +87,6 @@ class UpdateImageAnnotation extends FormRequest
      */
     public function getShapeId(): int
     {
-        return intval($this->input('shape_id', $this->annotation->shape_id));
+        return intval($this->input('shape_id', $this->annotation->shape_id->value));
     }
 }

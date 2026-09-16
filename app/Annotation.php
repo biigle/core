@@ -197,7 +197,7 @@ abstract class Annotation extends Model implements AnnotationContract
      */
     public function getShapeAttribute()
     {
-        return Shape::from($this->shape_id);
+        return $this->shape_id;
     }
 
     /**
@@ -213,7 +213,7 @@ abstract class Annotation extends Model implements AnnotationContract
      */
     public function getShape(): Shape
     {
-        return Shape::from($this->shape_id);
+        return $this->shape_id;
     }
 
     /**

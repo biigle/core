@@ -487,7 +487,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->beAdmin();
         $this->annotation->points = [10, 11];
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape_id = Shape::POINT;
         $this->annotation->save();
 
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
@@ -504,7 +504,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             ->assertJsonValidationErrors('shape_id');
 
         $this->annotation->refresh();
-        $this->assertSame(Shape::pointId(), $this->annotation->shape_id);
+        $this->assertSame(Shape::POINT, $this->annotation->shape_id);
     }
 
     public function testUpdate()
@@ -531,15 +531,6 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $this->beAdmin();
-        // TODO I do not understand this test. Flow:
-        // setUp() calls ImageAnnotationTest::create() which internally calls
-        // ImageAnnotationFactory() which USED TO use the Shape::factory() call which used to
-        // return a RANDOM shape id that is not handled by validation, thus making this test
-        // pass. But now I had to change that random value to a fixed enum value, I chose point.
-        // Now validation will fail for any shape because [4 values] and [2 values] will cause
-        // validation failure in AnnotationPoints.php.
-        // So what is being tested here? In which scenario should this not fail?
-        // If this was just a mistake: replace [10, 15, 100, 200] with [10, 15], assertSame(2, ...) and it works
         $response = $this->put("{$url}/{$id}", ['points' => [10, 15]]);
         $response->assertStatus(200);
 
@@ -562,14 +553,14 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->beAdmin();
 
         $this->annotation->points = [0, 1, 2, 3, 4, 5, 6, 7];
-        $this->annotation->shape_id = Shape::rectangleId();
+        $this->annotation->shape_id = Shape::RECTANGLE;
         $this->annotation->save();
 
         $response = $this->json('PUT', "api/v1/image-annotations/{$this->annotation->id}", ['points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]);
         $response->assertStatus(422);
 
         $this->annotation->points = [0, 1, 2, 3, 4, 5, 6, 7];
-        $this->annotation->shape_id = Shape::lineId();
+        $this->annotation->shape_id = Shape::LINE;
         $this->annotation->save();
 
         $response = $this->json('PUT', "api/v1/image-annotations/{$this->annotation->id}", ['points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]);
@@ -589,7 +580,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     public function updateValidatePoints($url)
     {
         $id = $this->annotation->id;
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape_id = Shape::POINT;
         $this->annotation->save();
 
         $this->beAdmin();
@@ -616,7 +607,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $id = $this->annotation->id;
         $this->annotation->points = [100, 200];
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape_id = Shape::POINT;
         $this->annotation->save();
 
         $this->beEditor();
@@ -632,7 +623,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $this->annotation->refresh();
-        $this->assertSame(Shape::circleId(), $this->annotation->shape_id);
+        $this->assertSame(Shape::CIRCLE, $this->annotation->shape_id);
     }
 
     public function testDestroy()

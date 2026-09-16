@@ -194,7 +194,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     {
         $boxes = [];
         foreach ($annotations as $a) {
-            if ($a->shape_id === Shape::wholeFrameId()) {
+            if ($a->shape_id === Shape::WHOLE_FRAME) {
                 $box = [0, 0, $file->width ?: 0, $file->height ?: 0];
             } else {
                 $points = $a->getPoints();
