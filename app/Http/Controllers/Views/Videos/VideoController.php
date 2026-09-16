@@ -26,7 +26,7 @@ class VideoController extends Controller
         $user = $request->user();
         $volume = $video->volume;
 
-        $shapes = Shape::pluckById(Shape::ellipse());
+        $shapes = Shape::pluckById(except: Shape::ELLIPSE);
 
         if ($user->can('sudo')) {
             // Global admins have no restrictions.

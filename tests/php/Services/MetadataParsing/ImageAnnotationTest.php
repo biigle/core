@@ -15,7 +15,7 @@ class ImageAnnotationTest extends TestCase
     public function testGetInsertData()
     {
         $data = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [],
         );
@@ -32,7 +32,7 @@ class ImageAnnotationTest extends TestCase
     public function testValidateLabels()
     {
         $data = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [],
         );
@@ -44,7 +44,7 @@ class ImageAnnotationTest extends TestCase
     public function testValidatePoints()
     {
         $data = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10, 10],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
         );

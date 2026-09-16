@@ -40,7 +40,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -96,7 +96,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             frames: [1],
             labels: [$lau],
@@ -154,7 +154,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -194,7 +194,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -233,7 +233,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -271,7 +271,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -310,7 +310,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -349,7 +349,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label1, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -359,7 +359,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label2, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [20, 20],
             labels: [$lau],
         );
@@ -406,7 +406,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label1, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -416,7 +416,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label2, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [20, 20],
             labels: [$lau],
         );
@@ -458,7 +458,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -511,13 +511,13 @@ class ImportVolumeMetadataTest extends TestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
         $file->addAnnotation($annotation);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [20, 20],
             labels: [$lau],
         );
@@ -560,7 +560,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -569,7 +569,7 @@ class ImportVolumeMetadataTest extends TestCase
         $label2 = new Label(321, 'my other label');
         $lau2 = new LabelAndUser($label2, $user);
         $annotation2 = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau2],
         );

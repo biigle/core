@@ -471,7 +471,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function getRectangleSvgAnnotation(array $tuples): SVGRect
     {
-        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::rectangle());
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::RECTANGLE);
 
         $upperLeft = $sortedCoords['UL'];
         $width = sqrt(pow($sortedCoords['UR'][0] - $upperLeft[0], 2) + pow($sortedCoords['UR'][1] - $upperLeft[1], 2));
@@ -492,7 +492,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function getEllipseSvgAnnotation(array $tuples): SVGEllipse
     {
-        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ellipse());
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ELLIPSE);
 
         $vecLR = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
         $vecUD = [$sortedCoords['D'][0] - $sortedCoords['U'][0], $sortedCoords['D'][1] - $sortedCoords['U'][1]];

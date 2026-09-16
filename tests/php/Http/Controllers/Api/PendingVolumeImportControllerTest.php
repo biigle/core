@@ -35,7 +35,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -98,7 +98,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -131,7 +131,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -249,7 +249,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -354,7 +354,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -554,7 +554,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -771,7 +771,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -862,7 +862,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -894,7 +894,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -1067,7 +1067,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user1 = new User(321, 'joe user');
         $lau = new LabelAndUser($label1, $user1);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -1076,7 +1076,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user2 = new User(654, 'joe user');
         $lau = new LabelAndUser($label2, $user2);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -1149,7 +1149,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             // Incorrect points for the shape.
             points: [10, 10, 10],
             labels: [$lau],
@@ -1185,7 +1185,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             // Must be an array of arrays.
             points: [10, 10],
             frames: [1],
@@ -1222,7 +1222,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             // Must have the same number of elements than points.
             frames: [],

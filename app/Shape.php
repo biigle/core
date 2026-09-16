@@ -18,41 +18,6 @@ enum Shape: int implements \JsonSerializable
     case ELLIPSE = 6;
     case WHOLE_FRAME = 7;
 
-    public static function point(): self
-    {
-        return self::POINT;
-    }
-
-    public static function line(): self
-    {
-        return self::LINE;
-    }
-
-    public static function polygon(): self
-    {
-        return self::POLYGON;
-    }
-
-    public static function circle(): self
-    {
-        return self::CIRCLE;
-    }
-
-    public static function rectangle(): self
-    {
-        return self::RECTANGLE;
-    }
-
-    public static function ellipse(): self
-    {
-        return self::ELLIPSE;
-    }
-
-    public static function wholeFrame(): self
-    {
-        return self::WHOLE_FRAME;
-    }
-
     public function label(): string
     {
         return match ($this) {
@@ -70,7 +35,8 @@ enum Shape: int implements \JsonSerializable
     {
         return match (strtoupper($label)) {
             self::POINT->name => self::POINT,
-            self::LINE->name => self::LINE,
+            "LINE" => self::LINE,
+            "LINESTRING" => self::LINE,
             self::POLYGON->name => self::POLYGON,
             self::CIRCLE->name => self::CIRCLE,
             self::RECTANGLE->name => self::RECTANGLE,

@@ -199,8 +199,8 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $u1 = UserTest::create();
         $u2 = UserTest::create();
 
-        $s1 = Shape::point();
-        $s2 = Shape::circle();
+        $s1 = Shape::POINT;
+        $s2 = Shape::CIRCLE;
 
         $a1 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->value]);
         $a2 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->value]);
