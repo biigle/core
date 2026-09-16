@@ -11,7 +11,7 @@ class VideoAnnotationPointsTest extends TestCase
 {
     private function validate($shape, $points): bool
     {
-        $shapeId = is_null($shape) ? null : Shape::{$shape.'Id'}(); // TODO
+        $shapeId = is_null($shape) ? null : Shape::fromLabel($shape)->value;
 
         $validator = Validator::make(
             ['points' => $points],
@@ -32,7 +32,7 @@ class VideoAnnotationPointsTest extends TestCase
         // this rule accepts anything that is no array.
         $validator = Validator::make(
             ['points' => 'abc'],
-            ['points' => new VideoAnnotationPoints(Shape::pointId())]
+            ['points' => new VideoAnnotationPoints(Shape::POINT->value)]
         );
         $this->assertFalse($validator->fails());
     }

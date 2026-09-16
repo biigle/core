@@ -55,7 +55,7 @@ class UpdateImageAnnotation extends FormRequest
                 return;
             }
 
-            if ($this->getShapeId() === Shape::wholeFrameId()) {
+            if ($this->getShapeId() === Shape::WHOLE_FRAME->value) {
                 $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
 
                 return;

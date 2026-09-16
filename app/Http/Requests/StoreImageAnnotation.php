@@ -72,7 +72,7 @@ class StoreImageAnnotation extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if (intval($this->input('shape_id')) === Shape::wholeFrameId()) {
+            if (intval($this->input('shape_id')) === Shape::WHOLE_FRAME->value) {
                 $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
             }
         });

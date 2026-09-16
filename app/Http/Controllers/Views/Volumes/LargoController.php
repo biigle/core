@@ -57,7 +57,7 @@ class LargoController extends Controller
         $shapes = Shape::pluckById();
 
         if (!$volume->isVideoVolume()) {
-            $wholeframeId = Shape::wholeFrameId();
+            $wholeframeId = Shape::WHOLE_FRAME->value;
             unset($shapes[$wholeframeId]);
         }
 

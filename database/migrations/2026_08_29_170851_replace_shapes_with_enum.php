@@ -20,13 +20,13 @@ return new class extends Migration {
     {
         $oldIds = DB::table('shapes')->pluck('id', 'name');
         $map = [
-            $oldIds['Point']      => Shape::pointId(),
-            $oldIds['LineString'] => Shape::lineId(),
-            $oldIds['Polygon']    => Shape::polygonId(),
-            $oldIds['Circle']     => Shape::circleId(),
-            $oldIds['Rectangle']  => Shape::rectangleId(),
-            $oldIds['Ellipse']    => Shape::ellipseId(),
-            $oldIds['WholeFrame'] => Shape::wholeFrameId(),
+            $oldIds['Point']      => Shape::POINT->value,
+            $oldIds['LineString'] => Shape::LINE->value,
+            $oldIds['Polygon']    => Shape::POLYGON->value,
+            $oldIds['Circle']     => Shape::CIRCLE->value,
+            $oldIds['Rectangle']  => Shape::RECTANGLE->value,
+            $oldIds['Ellipse']    => Shape::ELLIPSE->value,
+            $oldIds['WholeFrame'] => Shape::WHOLE_FRAME->value,
         ];
 
         EnumMigrationHelper::replaceStaticTableWithEnum($map, 'shapes', $this->foreignKeys);
@@ -43,13 +43,13 @@ return new class extends Migration {
         });
 
         DB::table('shapes')->insert([
-            ['id' => Shape::pointId(),      'name' => 'Point'],
-            ['id' => Shape::lineId(),       'name' => 'LineString'],
-            ['id' => Shape::polygonId(),    'name' => 'Polygon'],
-            ['id' => Shape::circleId(),     'name' => 'Circle'],
-            ['id' => Shape::rectangleId(),  'name' => 'Rectangle'],
-            ['id' => Shape::ellipseId(),    'name' => 'Ellipse'],
-            ['id' => Shape::wholeFrameId(), 'name' => 'WholeFrame'],
+            ['id' => Shape::POINT->value,      'name' => 'Point'],
+            ['id' => Shape::LINE->value,       'name' => 'LineString'],
+            ['id' => Shape::POLYGON->value,    'name' => 'Polygon'],
+            ['id' => Shape::CIRCLE->value,     'name' => 'Circle'],
+            ['id' => Shape::RECTANGLE->value,  'name' => 'Rectangle'],
+            ['id' => Shape::ELLIPSE->value,    'name' => 'Ellipse'],
+            ['id' => Shape::WHOLE_FRAME->value, 'name' => 'WholeFrame'],
         ]);
 
         EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'shapes');

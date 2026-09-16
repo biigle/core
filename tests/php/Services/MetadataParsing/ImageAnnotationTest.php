@@ -23,7 +23,7 @@ class ImageAnnotationTest extends TestCase
         $expect = [
             'image_id' => 123,
             'points' => '[10,10]',
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
         ];
 
         $this->assertEquals($expect, $data->getInsertData(123));

@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Biigle\Traits\EnumSerialization;
 use Illuminate\Support\Collection;
+use ValueError;
 
 enum Shape: int implements \JsonSerializable
 {
@@ -52,41 +53,6 @@ enum Shape: int implements \JsonSerializable
         return self::WHOLE_FRAME;
     }
 
-    public static function pointId(): int
-    {
-        return self::POINT->value;
-    }
-
-    public static function lineId(): int
-    {
-        return self::LINE->value;
-    }
-
-    public static function polygonId(): int
-    {
-        return self::POLYGON->value;
-    }
-
-    public static function circleId(): int
-    {
-        return self::CIRCLE->value;
-    }
-
-    public static function rectangleId(): int
-    {
-        return self::RECTANGLE->value;
-    }
-
-    public static function ellipseId(): int
-    {
-        return self::ELLIPSE->value;
-    }
-
-    public static function wholeFrameId(): int
-    {
-        return self::WHOLE_FRAME->value;
-    }
-
     public function label(): string
     {
         return match ($this) {
@@ -97,6 +63,20 @@ enum Shape: int implements \JsonSerializable
             self::RECTANGLE => 'Rectangle',
             self::ELLIPSE => 'Ellipse',
             self::WHOLE_FRAME => 'WholeFrame',
+        };
+    }
+
+    public static function fromLabel(string $label)
+    {
+        return match (strtoupper($label)) {
+            self::POINT->name => self::POINT,
+            self::LINE->name => self::LINE,
+            self::POLYGON->name => self::POLYGON,
+            self::CIRCLE->name => self::CIRCLE,
+            self::RECTANGLE->name => self::RECTANGLE,
+            self::ELLIPSE->name => self::ELLIPSE,
+            "WHOLEFRAME" => self::WHOLE_FRAME,
+            default => throw new ValueError("Invalid shape label $label")
         };
     }
 
