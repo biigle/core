@@ -21,16 +21,6 @@ enum Visibility: int implements \JsonSerializable
         return self::PRIVATE;
     }
 
-    public static function publicId(): int
-    {
-        return self::PUBLIC->value;
-    }
-
-    public static function privateId(): int
-    {
-        return self::PRIVATE->value;
-    }
-
     public function label(): string
     {
         return match ($this) {

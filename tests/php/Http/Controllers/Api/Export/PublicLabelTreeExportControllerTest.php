@@ -12,7 +12,7 @@ class PublicLabelTreeExportControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $tree = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
         $tree->addMember($this->editor(), Role::EDITOR);
 
         $this->doTestApiRoute('GET', "/api/v1/public-export/label-trees/{$tree->id}");

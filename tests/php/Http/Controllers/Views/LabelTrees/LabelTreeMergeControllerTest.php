@@ -29,7 +29,7 @@ class LabelTreeMergeControllerTest extends TestCase
     public function testShow()
     {
         $baseTree = LabelTreeTest::create();
-        $mergeTree = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $mergeTree = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
         $editor = UserTest::create();
 
         $this->be($editor);

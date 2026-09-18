@@ -42,18 +42,18 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     {
         $p = $this->project();
 
-        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Test']);
-        
-        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Test']);
+        $private = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value, 'name' => 'Test']);
+
+        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value, 'name' => 'Test']);
         $authorized->authorizedProjects()->attach($p->id);
-        $authorized2 = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Tree']);
+        $authorized2 = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value, 'name' => 'Tree']);
         $authorized2->authorizedProjects()->attach($p->id);
-        
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'Test']);
+
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value, 'name' => 'Test']);
         $version = LabelTreeVersionTest::create();
         $public->version_id = $version->id;
         $public->save();
-        $public2 = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'Tree']);
+        $public2 = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value, 'name' => 'Tree']);
         $version2 = LabelTreeVersionTest::create();
         $public2->version_id = $version2->id;
         $public2->save();
@@ -92,18 +92,18 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     {
         $p = $this->project();
 
-        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'My Test']);
-        
-        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'My Test']);
+        $private = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value, 'name' => 'My Test']);
+
+        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value, 'name' => 'My Test']);
         $authorized->authorizedProjects()->attach($p->id);
-        $authorized2 = LabelTreeTest::create(['visibility_id' => Visibility::privateId(), 'name' => 'Tree']);
+        $authorized2 = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value, 'name' => 'Tree']);
         $authorized2->authorizedProjects()->attach($p->id);
-        
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'My Test']);
+
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value, 'name' => 'My Test']);
         $version = LabelTreeVersionTest::create();
         $public->version_id = $version->id;
         $public->save();
-        $public2 = LabelTreeTest::create(['visibility_id' => Visibility::publicId(), 'name' => 'Tree']);
+        $public2 = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value, 'name' => 'Tree']);
         $version2 = LabelTreeVersionTest::create();
         $public2->version_id = $version2->id;
         $public2->save();
@@ -141,10 +141,10 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     public function testStore()
     {
         $p = $this->project();
-        $private = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
-        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $private = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $authorized = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
         $authorized->authorizedProjects()->attach($p->id);
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value]);
 
         $this->doTestApiRoute('POST', "/api/v1/projects/{$p->id}/label-trees");
 
@@ -197,7 +197,7 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
     public function testStoreFormRequest()
     {
         $p = $this->project();
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
+        $public = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value]);
 
         $this->beAdmin();
         $this->get('/');

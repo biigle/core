@@ -94,8 +94,8 @@ class LabelTreesController extends Controller
             ->get();
 
         $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->label(),
-            Visibility::privateId() => Visibility::private()->label(),
+            Visibility::PUBLIC->value => Visibility::public()->label(),
+            Visibility::PRIVATE->value => Visibility::private()->label(),
         ]);
 
         return view('label-trees.show.labels', [

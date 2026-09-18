@@ -42,8 +42,8 @@ class LabelTreeMembersController extends Controller
 
 
         $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->label(),
-            Visibility::privateId() => Visibility::private()->label(),
+            Visibility::PUBLIC->value => Visibility::public()->label(),
+            Visibility::PRIVATE->value => Visibility::private()->label(),
         ]);
 
         return view('label-trees.show.members', [

@@ -16,18 +16,18 @@ class LabelTreeVersionsControllerTest extends TestCase
         $user = UserTest::create();
 
         $publicVersion = LabelTreeVersionTest::create([
-            'label_tree_id' => LabelTreeTest::create(['visibility_id' => Visibility::publicId()])->id,
+            'label_tree_id' => LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value])->id,
         ]);
         $publicTree = LabelTreeTest::create([
-            'visibility_id' => Visibility::publicId(),
+            'visibility_id' => Visibility::PUBLIC->value,
             'version_id' => $publicVersion->id,
         ]);
 
         $privateVersion = LabelTreeVersionTest::create([
-            'label_tree_id' => LabelTreeTest::create(['visibility_id' => Visibility::privateId()])->id,
+            'label_tree_id' => LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value])->id,
         ]);
         $privateTree = LabelTreeTest::create([
-            'visibility_id' => Visibility::privateId(),
+            'visibility_id' => Visibility::PRIVATE->value,
             'version_id' => $privateVersion->id,
         ]);
 

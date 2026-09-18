@@ -19,8 +19,8 @@ return new class extends Migration {
     {
         $oldIds = DB::table('visibilities')->pluck('id', 'name');
         $map = [
-            $oldIds['public']  => Visibility::publicId(),
-            $oldIds['private'] => Visibility::privateId(),
+            $oldIds['public']  => Visibility::PUBLIC->value,
+            $oldIds['private'] => Visibility::PRIVATE->value,
         ];
 
         EnumMigrationHelper::replaceStaticTableWithEnum($map, 'visibilities', $this->foreignKeys);
@@ -38,8 +38,8 @@ return new class extends Migration {
         });
 
         DB::table('visibilities')->insert([
-            ['id' => Visibility::publicId(), 'name' => 'public'],
-            ['id' => Visibility::privateId(), 'name' => 'private'],
+            ['id' => Visibility::PUBLIC->value, 'name' => 'public'],
+            ['id' => Visibility::PRIVATE->value, 'name' => 'private'],
         ]);
 
         EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'visibilities');
