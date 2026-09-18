@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * @property string $uuid
+ * @property Role $role
  */
 #[Hidden(['password', 'remember_token', 'pivot', 'uuid'])]
 #[ObservedBy(UserObserver::class)]

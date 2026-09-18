@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * A volume is a collection of images. Volumes belong to one or many
  * projects.
+ * @property MediaType $media_type
  */
 #[Fillable(['name', 'url', 'media_type', 'handle', 'creator_id', 'metadata_file_path', 'metadata_parser'])]
 #[Hidden(['pivot', 'attrs'])]
