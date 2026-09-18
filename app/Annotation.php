@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property array $points
  * @property string $created_at
- * @property int $shape_id
+ * @property Shape $shape_id
  * @phpstan-consistent-constructor
  */
 #[Hidden(['pivot'])]
@@ -31,6 +31,7 @@ abstract class Annotation extends Model implements AnnotationContract
     protected function casts(): array
     {
         return [
+            'shape_id' => Shape::class,
             'points' => 'array',
         ];
     }

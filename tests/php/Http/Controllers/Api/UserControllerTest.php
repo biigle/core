@@ -22,7 +22,7 @@ class UserControllerTest extends ApiTestCase
         $this->get('/api/v1/users')
             ->assertStatus(403);
 
-        $user->role = Role::EDITOR->value;
+        $user->role = Role::EDITOR;
         $user->save();
 
         $this->get('/api/v1/users')
@@ -36,7 +36,7 @@ class UserControllerTest extends ApiTestCase
             ]]);
 
         // Global admins also see the email address of the users.
-        $user->role = Role::ADMIN->value;
+        $user->role = Role::ADMIN;
         $user->save();
         $this->get('/api/v1/users')
             ->assertJsonFragment(['email' => $user->email]);

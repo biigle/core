@@ -41,7 +41,7 @@ class UserRegistrationController extends Controller
         }
 
         $user = User::where('role', Role::GUEST->value)->findOrFail($id);
-        $user->role = Role::EDITOR->value;
+        $user->role = Role::EDITOR;
         $user->save();
 
         $user->notify(new RegistrationAccepted);

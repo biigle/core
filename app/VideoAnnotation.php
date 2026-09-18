@@ -18,12 +18,10 @@ class VideoAnnotation extends Annotation
      */
     protected function casts(): array
     {
-        return [
+        return array_merge(parent::casts(), [
             'video_id' => 'int',
-            'shape_id' => Shape::class,
             'frames' => 'array',
-            'points' => 'array',
-        ];
+        ]);
     }
 
     /**

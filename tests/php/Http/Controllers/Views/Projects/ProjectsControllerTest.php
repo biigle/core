@@ -49,7 +49,7 @@ class ProjectsControllerTest extends TestCase
         // Guest is not authorized.
         $response->assertStatus(403);
 
-        $user->role = Role::EDITOR->value;
+        $user->role = Role::EDITOR;
         $user->save();
 
         $r = $response = $this->get('projects/create');

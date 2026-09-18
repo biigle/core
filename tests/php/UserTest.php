@@ -117,7 +117,7 @@ class UserTest extends ModelTestCase
     public function testIsGlobalAdminAttribute()
     {
         $this->assertFalse($this->model->isGlobalAdmin);
-        $this->model->role = Role::ADMIN->value;
+        $this->model->role = Role::ADMIN;
         $this->assertTrue($this->model->isGlobalAdmin);
     }
 
@@ -196,7 +196,7 @@ class UserTest extends ModelTestCase
     public function testGetIsInSuperUserModeAttribute()
     {
         $this->assertFalse($this->model->isInSuperUserMode);
-        $this->model->role = Role::ADMIN->value;
+        $this->model->role = Role::ADMIN;
         $this->model->save();
         $this->assertTrue($this->model->isInSuperUserMode);
         $this->model->setSettings(['super_user_mode' => false]);
@@ -209,7 +209,7 @@ class UserTest extends ModelTestCase
     {
         $this->model->isInSuperUserMode = true;
         $this->assertFalse($this->model->isInSuperUserMode);
-        $this->model->role = Role::ADMIN->value;
+        $this->model->role = Role::ADMIN;
         $this->model->save();
         $this->model->isInSuperUserMode = true;
         $this->assertTrue($this->model->isInSuperUserMode);
@@ -220,7 +220,7 @@ class UserTest extends ModelTestCase
     public function testSudoAbility()
     {
         $this->assertFalse($this->model->can('sudo'));
-        $this->model->role = Role::ADMIN->value;
+        $this->model->role = Role::ADMIN;
         $this->model->save();
         $this->assertTrue($this->model->can('sudo'));
         $this->model->isInSuperUserMode = false;
@@ -229,19 +229,19 @@ class UserTest extends ModelTestCase
 
     public function testCanReviewAttribute()
     {
-        $this->model->role = Role::GUEST->value;
+        $this->model->role = Role::GUEST;
         $this->assertFalse($this->model->canReview);
         $this->model->canReview = true;
         $this->assertFalse($this->model->canReview);
 
-        $this->model->role = Role::EDITOR->value;
+        $this->model->role = Role::EDITOR;
         $this->assertTrue($this->model->canReview);
         $this->assertNotNull($this->model->attrs);
         $this->model->canReview = false;
         $this->assertFalse($this->model->canReview);
         $this->assertNull($this->model->attrs);
 
-        $this->model->role = Role::ADMIN->value;
+        $this->model->role = Role::ADMIN;
         $this->model->canReview = false;
         $this->assertTrue($this->model->canReview);
         $this->model->isInSuperUserMode = false;
@@ -255,7 +255,7 @@ class UserTest extends ModelTestCase
         $this->model->save();
         $this->assertTrue($this->model->can('review'));
         $this->model->canReview = false;
-        $this->model->role = Role::ADMIN->value;
+        $this->model->role = Role::ADMIN;
         $this->model->save();
         $this->assertTrue($this->model->can('review'));
         $this->model->isInSuperUserMode = false;
@@ -273,19 +273,19 @@ class UserTest extends ModelTestCase
 
     public function testHasNoLateLimitAttribute()
     {
-        $this->model->role = Role::GUEST->value;
+        $this->model->role = Role::GUEST;
         $this->assertFalse($this->model->hasNoRateLimit);
         $this->model->hasNoRateLimit = true;
         $this->assertFalse($this->model->hasNoRateLimit);
 
-        $this->model->role = Role::EDITOR->value;
+        $this->model->role = Role::EDITOR;
         $this->assertTrue($this->model->hasNoRateLimit);
         $this->assertNotNull($this->model->attrs);
         $this->model->hasNoRateLimit = false;
         $this->assertFalse($this->model->hasNoRateLimit);
         $this->assertNull($this->model->attrs);
 
-        $this->model->role = Role::ADMIN->value;
+        $this->model->role = Role::ADMIN;
         $this->model->hasNoRateLimit = false;
         $this->assertTrue($this->model->hasNoRateLimit);
         $this->model->isInSuperUserMode = false;

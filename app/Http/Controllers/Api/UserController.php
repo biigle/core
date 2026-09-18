@@ -352,7 +352,7 @@ class UserController extends Controller
         $user->email = $request->input('email');
         $user->affiliation = $request->input('affiliation');
         $user->password = bcrypt($request->input('password'));
-        $user->role = Role::EDITOR->value;
+        $user->role = Role::EDITOR;
         if ($request->filled('uuid')) {
             $user->uuid = $request->input('uuid');
         } else {

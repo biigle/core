@@ -98,7 +98,7 @@ class VolumeUrlTest extends TestCase
         $disk = Storage::fake('test');
         $disk->put('dir/elif.txt', 'abc');
 
-        $this->user->role = Role::ADMIN->value;
+        $this->user->role = Role::ADMIN;
 
         $validator = new VolumeUrl;
         $this->assertFalse($validator->passes(null, 'test://dir'));

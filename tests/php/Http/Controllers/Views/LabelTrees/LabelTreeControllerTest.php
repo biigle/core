@@ -51,7 +51,7 @@ class LabelTreeControllerTest extends TestCase
         $user = UserTest::create();
         $this->be($user);
         $response = $this->get('admin/label-trees')->assertStatus(403);
-        $user->role = Role::ADMIN->value;
+        $user->role = Role::ADMIN;
         $this->get('admin/label-trees')->assertStatus(200);
     }
 
@@ -63,7 +63,7 @@ class LabelTreeControllerTest extends TestCase
             'version_id' => $version->id,
         ]);
         $user = UserTest::create();
-        $user->role = Role::ADMIN->value;
+        $user->role = Role::ADMIN;
         $this->be($user);
         $this->get('admin/label-trees')
             ->assertStatus(200)
@@ -85,7 +85,7 @@ class LabelTreeControllerTest extends TestCase
         $this->be($user);
         $this->get('label-trees/create')->assertStatus(403);
 
-        $user->role = Role::EDITOR->value;
+        $user->role = Role::EDITOR;
         $user->save();
         $this->get('label-trees/create')->assertStatus(200);
 
