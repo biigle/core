@@ -7,6 +7,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+/**
+ * @property array $frames
+ */
 #[Fillable(['video_id', 'shape_id', 'points', 'frames'])]
 #[ObservedBy(VideoAnnotationObserver::class)]
 class VideoAnnotation extends Annotation

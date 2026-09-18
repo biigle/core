@@ -36,7 +36,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
             $report = $job->report;
-            $this->assertEquals($typeId, $report->type_id);
+            $this->assertEquals($typeId, $report->type_id->value);
             $this->assertEquals($volumeId, $report->source_id);
             $this->assertEquals(false, $report->options['exportArea']);
             $this->assertEquals(false, $report->options['newestLabel']);
@@ -60,7 +60,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
             $report = $job->report;
-            $this->assertEquals($typeId, $report->type_id);
+            $this->assertEquals($typeId, $report->type_id->value);
             $this->assertEquals($volumeId, $report->source_id);
             $this->assertEquals(true, $report->options['exportArea']);
             $this->assertEquals(true, $report->options['newestLabel']);

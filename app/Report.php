@@ -14,6 +14,9 @@ use ReflectionClass;
 use SplFileInfo;
 use Storage;
 
+/**
+ * @property ReportType $type_id
+ */
 #[ObservedBy(ReportObserver::class)]
 class Report extends Model
 {
@@ -35,7 +38,7 @@ class Report extends Model
     {
         return [
             'user_id' => 'int',
-            'type_id' => 'int',
+            'type_id' => ReportType::class,
             'source_id' => 'int',
             'options' => 'array',
             'ready_at' => 'datetime',
@@ -59,7 +62,7 @@ class Report extends Model
      */
     public function getTypeAttribute()
     {
-        return ReportType::from($this->type_id);
+        return $this->type_id;
     }
 
     /**
