@@ -67,8 +67,8 @@ class LabelTreeProjectsController extends Controller
         }
 
         $visibilities = collect([
-            Visibility::PUBLIC->value => Visibility::public()->label(),
-            Visibility::PRIVATE->value => Visibility::private()->label(),
+            Visibility::PUBLIC->value => Visibility::PUBLIC->label(),
+            Visibility::PRIVATE->value => Visibility::PRIVATE->label(),
         ]);
 
         return view('label-trees.show.projects', [

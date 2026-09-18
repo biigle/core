@@ -53,8 +53,8 @@ class LabelTreesController extends Controller
         $this->authorize('create', LabelTree::class);
 
         $visibilities = [
-            Visibility::private(),
-            Visibility::public(),
+            Visibility::PRIVATE,
+            Visibility::PUBLIC,
         ];
 
         if ($request->filled('project')) {
@@ -94,8 +94,8 @@ class LabelTreesController extends Controller
             ->get();
 
         $visibilities = collect([
-            Visibility::PUBLIC->value => Visibility::public()->label(),
-            Visibility::PRIVATE->value => Visibility::private()->label(),
+            Visibility::PUBLIC->value => Visibility::PUBLIC->label(),
+            Visibility::PRIVATE->value => Visibility::PRIVATE->label(),
         ]);
 
         return view('label-trees.show.labels', [
