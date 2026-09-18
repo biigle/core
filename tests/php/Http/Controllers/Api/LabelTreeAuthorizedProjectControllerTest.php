@@ -127,7 +127,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $this->assertSame(1, $tree->projects()->count());
 
         $tree->authorizedProjects()->attach($project->id);
-        $tree->visibility_id = Visibility::privateId();
+        $tree->visibility_id = Visibility::PRIVATE;
         $tree->save();
 
         $this->assertSame(1, $tree->authorizedProjects()->count());

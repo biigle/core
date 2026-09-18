@@ -168,7 +168,7 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         $response->assertStatus(200);
 
-        $this->assertSame(Visibility::publicId(), $tree->fresh()->visibility_id);
+        $this->assertSame(Visibility::PUBLIC, $tree->fresh()->visibility_id);
     }
 
     public function testUpdateFormRequest()
@@ -236,7 +236,7 @@ class LabelTreeControllerTest extends ApiTestCase
             ])
             ->assertStatus(200);
 
-        $this->assertSame(Visibility::publicId(), $tree->fresh()->visibility_id);
+        $this->assertSame(Visibility::PUBLIC, $tree->fresh()->visibility_id);
     }
 
     public function testUpdatePropagateName()

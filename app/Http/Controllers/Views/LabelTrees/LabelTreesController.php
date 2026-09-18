@@ -102,7 +102,7 @@ class LabelTreesController extends Controller
             'tree' => $tree,
             'labels' => $labels,
             'visibilities' => $visibilities,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility_id === Visibility::PRIVATE,
             'wormsLabelSource' => LabelSource::where('name', 'worms')->first(),
             'activeTab' => 'labels',
         ]);
@@ -139,7 +139,7 @@ class LabelTreesController extends Controller
             'masterTree' => $tree->version->labelTree,
             'labels' => $labels,
             'projects' => $projects,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility_id === Visibility::PRIVATE,
             'activeTab' => 'labels',
         ]);
     }

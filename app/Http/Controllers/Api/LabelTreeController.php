@@ -201,7 +201,7 @@ class LabelTreeController extends Controller
                     ->where('label_tree_versions.label_tree_id', $tree->id)
                     ->update(['visibility_id' => $tree->visibility_id]);
 
-                if ($tree->visibility_id === Visibility::privateId()) {
+                if ($tree->visibility_id === Visibility::PRIVATE) {
                     $tree->detachUnauthorizedProjects();
                 }
             }

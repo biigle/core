@@ -169,7 +169,7 @@ class LabelTreeImportTest extends TestCase
         $this->assertEquals($this->labelTree->uuid, $newTree->uuid);
         $this->assertEquals($this->labelTree->name, $newTree->name);
         $this->assertEquals($this->labelTree->description, $newTree->description);
-        $this->assertEquals(Visibility::privateId(), $newTree->visibility_id);
+        $this->assertEquals(Visibility::PRIVATE, $newTree->visibility_id);
 
         $parent = $newTree->labels()->whereNull('parent_id')->first();
         $child = $newTree->labels()->whereNotNull('parent_id')->first();

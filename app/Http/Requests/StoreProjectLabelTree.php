@@ -55,7 +55,7 @@ class StoreProjectLabelTree extends FormRequest
         $validator->after(function ($validator) {
             $tree = LabelTree::find($this->input('id'));
             if ($tree) {
-                $public = $tree->visibility_id === Visibility::publicId();
+                $public = $tree->visibility_id === Visibility::PUBLIC;
                 $authorized = $tree->authorizedProjects()->where('id', $this->project->id);
 
                 if (!$public && !$authorized->exists()) {

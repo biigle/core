@@ -82,7 +82,7 @@ class PublicLabelTreeImportTest extends TestCase
         $this->assertEquals(2, LabelTree::count());
         $this->assertEquals($this->labelTree->name, $tree->name);
         $this->assertEquals($this->labelTree->description, $tree->description);
-        $this->assertEquals(Visibility::privateId(), $tree->visibility_id);
+        $this->assertEquals(Visibility::PRIVATE, $tree->visibility_id);
         $this->assertNotEquals($this->labelTree->id, $tree->id);
         $this->assertNotEquals($this->labelTree->uuid, $tree->uuid);
     }

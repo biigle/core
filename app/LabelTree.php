@@ -31,7 +31,7 @@ class LabelTree extends Model
     protected function casts(): array
     {
         return [
-            'visibility_id' => 'int',
+            'visibility_id' => Visibility::class,
             'label_tree_version_id' => 'int',
         ];
     }
@@ -163,7 +163,7 @@ class LabelTree extends Model
      */
     public function getVisibilityAttribute()
     {
-        return Visibility::from($this->visibility_id);
+        return $this->visibility_id;
     }
 
     /**
