@@ -42,7 +42,7 @@ class ReportGeneratorTest extends TestCase
 
     public function testGetAllVideoLegacyExist()
     {
-        $this->assertNotNull(ReportGenerator::get(Video::class, ReportType::videoAnnotationsCsv()));
+        $this->assertNotNull(ReportGenerator::get(Video::class, ReportType::VIDEO_ANNOTATIONS_CSV));
     }
 
     public function testHandleException()

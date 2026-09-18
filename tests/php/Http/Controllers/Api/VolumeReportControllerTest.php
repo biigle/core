@@ -422,7 +422,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreOptionsAllLabels()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::videoAnnotationsCsv();
+        $typeId = ReportType::VIDEO_ANNOTATIONS_CSV;
         $this->beGuest();
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
