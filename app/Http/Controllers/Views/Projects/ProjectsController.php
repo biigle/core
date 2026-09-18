@@ -48,7 +48,7 @@ class ProjectsController extends Controller
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')
                     ->append('thumbnailsUrl')
-                    ->makeHidden($hidden); // TODO no test for media_type
+                    ->makeHidden($hidden);
             });
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
@@ -65,7 +65,7 @@ class ProjectsController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'volumes',
-            'volumes' => $volumes,
+            'volumes' => $volumes, // TODO Test that media_type is of expected format
         ]);
     }
 }

@@ -31,7 +31,7 @@ class ProjectsControllerTest extends TestCase
         $response = $this->get("projects/{$id}");
         $response->assertStatus(200);
 
-        // diesn't exist
+        // doesn't exist
         $response = $this->get('projects/-1');
         $response->assertStatus(404);
     }
