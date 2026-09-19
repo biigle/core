@@ -3,65 +3,56 @@
 namespace Biigle\Tests;
 
 use Biigle\Role;
-use Illuminate\Database\QueryException;
-use ModelTestCase;
+use PHPUnit\Framework\TestCase;
 
-class RoleTest extends ModelTestCase
+// TODO Create similar tests for the other enums?
+class RoleTest extends TestCase
 {
-    /**
-     * The model class this class will test.
-     */
-    protected static $modelClass = Role::class;
-
-    public function testAttributes()
+    public function testAdmin(): void
     {
-        $this->assertNotNull($this->model->name);
+        $this->assertSame(Role::ADMIN, Role::ADMIN);
+        $this->assertSame(Role::ADMIN->value, Role::ADMIN->value);
     }
 
-    public function testNameRequired()
+    public function testExpert(): void
     {
-        $this->model->name = null;
-        $this->expectException(QueryException::class);
-        $this->model->save();
+        $this->assertSame(Role::EXPERT, Role::EXPERT);
+        $this->assertSame(Role::EXPERT->value, Role::EXPERT->value);
     }
 
-    public function testNameUnique()
+    public function testEditor(): void
     {
-        self::create(['name' => 'xyz']);
-        $this->expectException(QueryException::class);
-        self::create(['name' => 'xyz']);
+        $this->assertSame(Role::EDITOR, Role::EDITOR);
+        $this->assertSame(Role::EDITOR->value, Role::EDITOR->value);
     }
 
-    public function testOnDeleteRestrict()
+    public function testGuest(): void
     {
-        $project = ProjectTest::create();
-        $user = UserTest::create();
-        $project->addUserId($user->id, $this->model->id);
-        $this->expectException(QueryException::class);
-        $this->model->delete();
+        $this->assertSame(Role::GUEST, Role::GUEST);
+        $this->assertSame(Role::GUEST->value, Role::GUEST->value);
     }
 
-    public function testAdmin()
+    public function testLabel(): void
     {
-        $this->assertSame('admin', Role::admin()->name);
-        $this->assertNotNull(Role::adminId());
+        $this->assertSame('admin', Role::ADMIN->label());
+        $this->assertSame('editor', Role::EDITOR->label());
+        $this->assertSame('guest', Role::GUEST->label());
+        $this->assertSame('expert', Role::EXPERT->label());
     }
 
-    public function testExpert()
+    public function testToArray(): void
     {
-        $this->assertSame('expert', Role::expert()->name);
-        $this->assertNotNull(Role::expertId());
+        $this->assertSame([
+            'id' => 2,
+            'name' => 'editor',
+        ], Role::EDITOR->toArray());
     }
 
-    public function testEditor()
+    public function testJsonSerialize(): void
     {
-        $this->assertSame('editor', Role::editor()->name);
-        $this->assertNotNull(Role::editorId());
-    }
-
-    public function testGuest()
-    {
-        $this->assertSame('guest', Role::guest()->name);
-        $this->assertNotNull(Role::guestId());
+        $this->assertSame([
+            'id' => 2,
+            'name' => 'editor',
+        ], Role::EDITOR->jsonSerialize());
     }
 }

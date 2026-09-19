@@ -44,14 +44,14 @@ class UserController extends Controller
      *       "id": 1,
      *       "firstname": "Joe",
      *       "lastname": "User",
-     *       "role_id": 2,
+     *       "role": 2,
      *       "affiliation": "Ocean Research Centre"
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
      *       "lastname": "User",
-     *       "role_id": 2,
+     *       "role": 2,
      *       "affiliation": "Biodata Mining Group"
      *    }
      * ]
@@ -63,7 +63,7 @@ class UserController extends Controller
     {
         $this->authorize('index', User::class);
 
-        return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
+        return User::select('id', 'firstname', 'lastname', 'role', 'affiliation')
             ->where('firstname', 'ilike', "%{$pattern}%")
             ->orWhere('lastname', 'ilike', "%{$pattern}%")
             ->take(10)
@@ -85,14 +85,14 @@ class UserController extends Controller
      *       "id": 1,
      *       "firstname": "Joe",
      *       "lastname": "User",
-     *       "role_id": 2,
+     *       "role": 2,
      *       "affiliation": "Ocean Research Centre"
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
      *       "lastname": "User",
-     *       "role_id": 2,
+     *       "role": 2,
      *       "affiliation": "Biodata Mining Group"
      *    }
      * ]
@@ -104,7 +104,7 @@ class UserController extends Controller
     {
         $this->authorize('index', User::class);
 
-        return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
+        return User::select('id', 'firstname', 'lastname', 'role', 'affiliation')
             ->when($request->user()->can('sudo'), function ($query) {
                 $query->addSelect('email');
             })
@@ -127,7 +127,7 @@ class UserController extends Controller
      *    "id": 1,
      *    "firstname": "Joe",
      *    "lastname": "User",
-     *    "role_id": 2,
+     *    "role": 2,
      *    "affiliation": "Ocean Research Centre"
      * }
      *
@@ -138,7 +138,7 @@ class UserController extends Controller
     {
         $this->authorize('index', User::class);
 
-        return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
+        return User::select('id', 'firstname', 'lastname', 'role', 'affiliation')
             ->findOrFail($id);
     }
 
@@ -158,7 +158,7 @@ class UserController extends Controller
      *    "lastname": "User",
      *    "email": "joe@user.com",
      *    "affiliation": "Ocean Research Centre",
-     *    "role_id": 2,
+     *    "role": 2,
      *    "created_at": "2016-04-29 07:20:33",
      *    "updated_at": "2016-04-29 07:20:33",
      *    "role": {
@@ -190,7 +190,7 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
      * @apiParam (Attributes that can be updated) {String} affiliation The affiliation of the user.
-     * @apiParam (Attributes that can be updated) {Number} role_id Global role of the user. If the role should be changed, an additional `auth_password` field is required, containing the password of the global administrator that requests the change.
+     * @apiParam (Attributes that can be updated) {Number} role Global role of the user. If the role should be changed, an additional `auth_password` field is required, containing the password of the global administrator that requests the change.
      * @apiParam (Attributes that can be updated) {Boolean} can_review Determine if the user can review e.g. new user registrations even if they are no global admin. This can only be set for users with the editor role.
      * @apiParam (Attributes that can be updated) {Boolean} rate_limit Determine if the API rate limit is disabled for the user even if they are no global admin. This can only be set for users with the editor role.
      *
@@ -201,7 +201,7 @@ class UserController extends Controller
      * firstname: 'New'
      * lastname: 'Name'
      * affiliation: 'Biodata Mining Group'
-     * role_id: 1
+     * role: 1
      * auth_password: 'password123'
      *
      * @param UpdateUser $request
@@ -222,18 +222,18 @@ class UserController extends Controller
             $user->password = bcrypt($request->input('password'));
         }
 
-        $user->role_id = $request->input('role_id', $user->role_id);
+        $user->role = $request->input('role', $user->role->value);
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
         $user->affiliation = $request->input('affiliation', $user->affiliation);
-        if ($request->filled('can_review') && $user->role_id === Role::editorId()) {
+        if ($request->filled('can_review') && $user->role->value === Role::EDITOR->value) {
             $user->canReview = (bool) $request->input('can_review');
         } else {
             $user->canReview = false;
         }
 
-        if ($request->filled('rate_limit') && $user->role_id === Role::editorId()) {
+        if ($request->filled('rate_limit') && $user->role->value === Role::EDITOR->value) {
             $user->hasNoRateLimit = !boolval($request->input('rate_limit'));
         } else {
             $user->hasNoRateLimit = false;
@@ -326,7 +326,7 @@ class UserController extends Controller
      *    "firstname": "Joe",
      *    "lastname": "User",
      *    "email": "joe@user.com",
-     *    "role_id": 2,
+     *    "role": 2,
      *    "created_at": "2016-04-29 07:38:51",
      *    "updated_at": "2016-04-29 07:38:51",
      *    "uuid": "c796ccec-c746-408f-8009-9f1f68e2aa62",
@@ -352,7 +352,7 @@ class UserController extends Controller
         $user->email = $request->input('email');
         $user->affiliation = $request->input('affiliation');
         $user->password = bcrypt($request->input('password'));
-        $user->role_id = Role::editorId();
+        $user->role = Role::EDITOR;
         if ($request->filled('uuid')) {
             $user->uuid = $request->input('uuid');
         } else {

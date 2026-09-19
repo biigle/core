@@ -33,7 +33,7 @@ class TrackObjectTest extends TestCase
 
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => [0.5],
             'points' => [[0, 0]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
@@ -58,7 +58,7 @@ class TrackObjectTest extends TestCase
 
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => [0.5],
             'points' => [[0, 0]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
@@ -78,7 +78,7 @@ class TrackObjectTest extends TestCase
 
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => [0.5],
             'points' => [[0, 0]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
@@ -96,7 +96,7 @@ class TrackObjectTest extends TestCase
     {
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => [0.5],
             'points' => [[0, 0]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
@@ -115,7 +115,7 @@ class TrackObjectTest extends TestCase
     {
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => [0.5],
             'points' => [[0, 0]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
@@ -137,7 +137,7 @@ class TrackObjectTest extends TestCase
 
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => [0.5],
             'points' => [[0, 0]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
@@ -165,7 +165,7 @@ class TrackObjectTest extends TestCase
         Event::fake();
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::circleId(),
+            'shape_id' => Shape::CIRCLE->value,
             'frames' => [0.5],
             'points' => [[10, 10, 5]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),
@@ -194,7 +194,7 @@ class TrackObjectTest extends TestCase
         Log::shouldReceive('warning')->once();
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => [0.5],
             'points' => [[10, 10]],
         ]);
@@ -218,7 +218,7 @@ class TrackObjectTest extends TestCase
         Log::shouldReceive('warning')->once();
         $user = User::factory()->create();
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::circleId(),
+            'shape_id' => Shape::CIRCLE->value,
             'frames' => [0.5],
             'points' => [[10, 10, 5]],
             'video_id' => VideoTest::create(['filename' => 'my-video.mp4']),

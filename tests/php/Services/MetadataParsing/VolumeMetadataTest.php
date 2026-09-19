@@ -18,9 +18,9 @@ class VolumeMetadataTest extends TestCase
 {
     public function testNew()
     {
-        $metadata = new VolumeMetadata(MediaType::image(), 'volumename', 'volumeurl', 'volumehandle');
+        $metadata = new VolumeMetadata(MediaType::IMAGE, 'volumename', 'volumeurl', 'volumehandle');
 
-        $this->assertEquals(MediaType::imageId(), $metadata->type->id);
+        $this->assertEquals(MediaType::IMAGE->value, $metadata->type->value);
         $this->assertEquals('volumename', $metadata->name);
         $this->assertEquals('volumeurl', $metadata->url);
         $this->assertEquals('volumehandle', $metadata->handle);
@@ -69,7 +69,7 @@ class VolumeMetadataTest extends TestCase
         $user = new User(321, 'joe user');
         $la = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$la],
         );
@@ -103,7 +103,7 @@ class VolumeMetadataTest extends TestCase
         $user = new User(321, 'joe user');
         $la = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$la],
         );
@@ -121,7 +121,7 @@ class VolumeMetadataTest extends TestCase
         $user = new User(321, 'joe user');
         $la = new LabelAndUser($label1, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$la],
         );
@@ -130,7 +130,7 @@ class VolumeMetadataTest extends TestCase
         $label2 = new Label(456, 'my label');
         $la = new LabelAndUser($label2, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$la],
         );
@@ -182,7 +182,7 @@ class VolumeMetadataTest extends TestCase
         $user1 = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user1);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );

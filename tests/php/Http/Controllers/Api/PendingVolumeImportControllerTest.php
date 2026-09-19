@@ -35,7 +35,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -45,7 +45,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -98,7 +98,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -108,7 +108,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -131,7 +131,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -141,7 +141,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -169,7 +169,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -227,7 +227,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -249,7 +249,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -259,7 +259,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -328,7 +328,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -354,7 +354,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -364,7 +364,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -392,7 +392,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -420,7 +420,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -431,7 +431,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         // The other tests use a label from a public label tree.
         $dbLabel = DbLabel::factory()->create([
             'label_tree_id' => LabelTree::factory()->create([
-                'visibility_id' => Visibility::privateId(),
+                'visibility_id' => Visibility::PRIVATE->value,
             ])->id,
         ]);
 
@@ -455,7 +455,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -464,11 +464,11 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $dbLabel = DbLabel::factory()->create([
             'label_tree_id' => LabelTree::factory()->create([
-                'visibility_id' => Visibility::privateId(),
+                'visibility_id' => Visibility::PRIVATE->value,
             ])->id,
         ]);
 
-        $dbLabel->tree->addMember($this->admin(), Role::admin());
+        $dbLabel->tree->addMember($this->admin(), Role::ADMIN);
 
         $this->beAdmin();
         $this->putJson("/api/v1/pending-volumes/{$id}/label-map", [
@@ -490,7 +490,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -522,7 +522,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -554,7 +554,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -564,7 +564,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
         ]);
@@ -627,7 +627,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -658,7 +658,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -689,7 +689,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -728,7 +728,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
@@ -771,7 +771,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -781,7 +781,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -812,7 +812,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -841,7 +841,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -862,7 +862,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -872,7 +872,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -894,7 +894,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -904,7 +904,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -930,7 +930,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -957,7 +957,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -988,7 +988,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1015,7 +1015,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1043,7 +1043,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1067,7 +1067,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user1 = new User(321, 'joe user');
         $lau = new LabelAndUser($label1, $user1);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -1076,7 +1076,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user2 = new User(654, 'joe user');
         $lau = new LabelAndUser($label2, $user2);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -1086,7 +1086,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1122,7 +1122,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1149,7 +1149,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             // Incorrect points for the shape.
             points: [10, 10, 10],
             labels: [$lau],
@@ -1160,7 +1160,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1185,7 +1185,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             // Must be an array of arrays.
             points: [10, 10],
             frames: [1],
@@ -1197,7 +1197,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1222,7 +1222,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             // Must have the same number of elements than points.
             frames: [],
@@ -1234,7 +1234,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,
@@ -1262,7 +1262,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'volume_id' => $this->volume()->id,

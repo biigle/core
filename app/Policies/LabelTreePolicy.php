@@ -39,7 +39,7 @@ class LabelTreePolicy extends CachedPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id === Role::editorId() || $user->role_id === Role::adminId();
+        return $user->role->value === Role::EDITOR->value || $user->role->value === Role::ADMIN->value;
     }
 
     /**
@@ -52,7 +52,7 @@ class LabelTreePolicy extends CachedPolicy
     public function access(User $user, LabelTree $tree)
     {
         return $this->remember("label-tree-can-access-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return $tree->visibility_id === Visibility::publicId()
+            return $tree->visibility_id === Visibility::PUBLIC
                 || DB::table(self::TABLE)
                     ->when(!is_null($tree->version_id), function ($query) use ($tree) {
                         $query->where('label_tree_id', $tree->version->label_tree_id);
@@ -84,7 +84,7 @@ class LabelTreePolicy extends CachedPolicy
                 return $user->can('sudo') || DB::table(self::TABLE)
                     ->where('label_tree_id', $tree->id)
                     ->where('user_id', $user->id)
-                    ->whereIn('role_id', [Role::adminId(), Role::editorId()])
+                    ->whereIn('role', [Role::ADMIN->value, Role::EDITOR->value])
                     ->exists();
             }
 
@@ -106,7 +106,7 @@ class LabelTreePolicy extends CachedPolicy
                 return $user->can('sudo') || DB::table(self::TABLE)
                     ->where('label_tree_id', $tree->id)
                     ->where('user_id', $user->id)
-                    ->where('role_id', Role::adminId())
+                    ->where('role', Role::ADMIN->value)
                     ->exists();
             }
 

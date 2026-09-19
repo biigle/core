@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
@@ -36,22 +37,21 @@ class ProjectsAttachableVolumesController extends Controller
      * @param int $id Project ID
      * @param string $name Volume name
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function index(Request $request, $id, $name)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        $volumes = Volume::select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
+        $volumes = Volume::select('id', 'name', 'updated_at', 'media_type as media_type_id')
             // All volumes of other projects where the user has admin rights on.
             ->whereIn('id', fn ($query) => $query->select('volume_id')
                 ->from('project_volume')
                 ->whereIn('project_id', fn ($query) => $query->select('project_id')
                     ->from('project_user')
                     ->where('user_id', $request->user()->id)
-                    ->where('project_role_id', Role::adminId())
+                    ->where('project_role', Role::ADMIN->value)
                     ->where('project_id', '!=', $id)))
             ->where('name', 'ilike', "%{$name}%")
             // Do not return volumes that are already attached to this project.
@@ -65,12 +65,14 @@ class ProjectsAttachableVolumesController extends Controller
             ->get();
 
         $hidden = ['doi'];
-        $volumes->each(function ($item) use ($hidden) {
+
+        return $volumes->map(function ($item) use ($hidden) {
             $item->append('thumbnailUrl')
                 ->append('thumbnailsUrl')
                 ->makeHidden($hidden);
+            $data = $item->toArray();
+            $data['media_type'] = MediaType::from($item->media_type_id)->toArray(); // TODO compare with others for test, test index and fuzzy search
+            return $data;
         });
-
-        return $volumes;
     }
 }

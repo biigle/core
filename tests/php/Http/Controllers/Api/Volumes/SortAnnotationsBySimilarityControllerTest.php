@@ -91,7 +91,7 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $l1 = VideoAnnotationLabelFeatureVector::factory()->create([
             'volume_id' => $id,
         ]);
@@ -147,7 +147,7 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
     public function testIndexDuplicateVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $l1 = VideoAnnotationLabelFeatureVector::factory()->create([
             'volume_id' => $id,
         ]);

@@ -5,6 +5,7 @@ namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
+use Biigle\Shape;
 use Biigle\User;
 use DB;
 
@@ -103,11 +104,10 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 'images.filename',
                 'images.lng as longitude',
                 'images.lat as latitude',
-                'shapes.name as shape_name',
+                'image_annotations.shape_id',
                 'image_annotations.points',
                 'images.attrs',
             ])
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
@@ -146,7 +146,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_name,
+                Shape::from($row->shape_id)->label(),
                 $row->points,
                 $row->attrs,
             ]);

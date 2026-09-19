@@ -42,8 +42,7 @@ class ProjectsController extends Controller
 
         $hidden = ['doi'];
         $volumes = $project->volumes()
-            ->select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
+            ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
             ->get()
             ->each(function ($item) use ($hidden) {
@@ -66,7 +65,7 @@ class ProjectsController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'volumes',
-            'volumes' => $volumes,
+            'volumes' => $volumes, // TODO Test that media_type is of expected format
         ]);
     }
 }

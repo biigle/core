@@ -40,7 +40,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -49,7 +49,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -63,7 +63,7 @@ class ImportVolumeMetadataTest extends TestCase
         $annotations = $image->annotations;
         $this->assertCount(1, $annotations);
         $this->assertEquals([10, 10], $annotations[0]->points);
-        $this->assertEquals(Shape::pointId(), $annotations[0]->shape_id);
+        $this->assertEquals(Shape::POINT, $annotations[0]->shape_id);
         $this->assertNotNull($annotations[0]->created_at);
         $this->assertNotNull($annotations[0]->updated_at);
         $annotationLabels = $annotations[0]->labels;
@@ -96,7 +96,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             frames: [1],
             labels: [$lau],
@@ -106,7 +106,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -121,7 +121,7 @@ class ImportVolumeMetadataTest extends TestCase
         $this->assertCount(1, $annotations);
         $this->assertEquals([[10, 10]], $annotations[0]->points);
         $this->assertEquals([1], $annotations[0]->frames);
-        $this->assertEquals(Shape::pointId(), $annotations[0]->shape_id);
+        $this->assertEquals(Shape::POINT, $annotations[0]->shape_id);
         $this->assertNotNull($annotations[0]->created_at);
         $this->assertNotNull($annotations[0]->updated_at);
         $annotationLabels = $annotations[0]->labels;
@@ -154,7 +154,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -163,7 +163,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -194,7 +194,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -203,7 +203,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -233,7 +233,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -242,7 +242,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -271,7 +271,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -280,7 +280,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => false,
@@ -310,7 +310,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -319,7 +319,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => false,
             'import_annotations' => true,
@@ -349,7 +349,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label1, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -359,7 +359,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label2, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [20, 20],
             labels: [$lau],
         );
@@ -368,7 +368,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -383,7 +383,7 @@ class ImportVolumeMetadataTest extends TestCase
         $annotations = $image->annotations;
         $this->assertCount(1, $annotations);
         $this->assertEquals([10, 10], $annotations[0]->points);
-        $this->assertEquals(Shape::pointId(), $annotations[0]->shape_id);
+        $this->assertEquals(Shape::POINT, $annotations[0]->shape_id);
         $annotationLabels = $annotations[0]->labels;
         $this->assertCount(1, $annotationLabels);
         $this->assertEquals($dbLabel1->id, $annotationLabels[0]->label_id);
@@ -406,7 +406,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label1, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -416,7 +416,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label2, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [20, 20],
             labels: [$lau],
         );
@@ -425,7 +425,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -458,7 +458,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -467,7 +467,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,
@@ -511,13 +511,13 @@ class ImportVolumeMetadataTest extends TestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
         $file->addAnnotation($annotation);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [20, 20],
             labels: [$lau],
         );
@@ -526,7 +526,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_annotations' => true,
             'user_map' => [321 => $dbUser->id],
@@ -560,7 +560,7 @@ class ImportVolumeMetadataTest extends TestCase
         $lau = new LabelAndUser($label, $user);
         $file->addFileLabel($lau);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -569,7 +569,7 @@ class ImportVolumeMetadataTest extends TestCase
         $label2 = new Label(321, 'my other label');
         $lau2 = new LabelAndUser($label2, $user);
         $annotation2 = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau2],
         );
@@ -578,7 +578,7 @@ class ImportVolumeMetadataTest extends TestCase
         Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
 
         $pv = PendingVolume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'metadata_file_path' => 'mymeta.csv',
             'import_file_labels' => true,
             'import_annotations' => true,

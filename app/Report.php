@@ -14,6 +14,9 @@ use ReflectionClass;
 use SplFileInfo;
 use Storage;
 
+/**
+ * @property ReportType $type_id
+ */
 #[ObservedBy(ReportObserver::class)]
 class Report extends Model
 {
@@ -35,7 +38,7 @@ class Report extends Model
     {
         return [
             'user_id' => 'int',
-            'type_id' => 'int',
+            'type_id' => ReportType::class,
             'source_id' => 'int',
             'options' => 'array',
             'ready_at' => 'datetime',
@@ -55,11 +58,11 @@ class Report extends Model
     /**
      * Type of the report.
      *
-     * @return BelongsTo<ReportType, $this>
+     * @return ReportType
      */
-    public function type(): BelongsTo
+    public function getTypeAttribute()
     {
-        return $this->belongsTo(ReportType::class);
+        return $this->type_id;
     }
 
     /**

@@ -15,7 +15,7 @@ class VideoAnnotationTest extends TestCase
     public function testGetInsertData()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             frames: [1],
             labels: [],
@@ -24,7 +24,7 @@ class VideoAnnotationTest extends TestCase
         $expect = [
             'video_id' => 123,
             'points' => '[[10,10]]',
-            'shape_id' => Shape::pointId(),
+            'shape_id' => Shape::POINT->value,
             'frames' => '[1]',
         ];
 
@@ -34,7 +34,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidateLabels()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             frames: [1],
             labels: [],
@@ -47,7 +47,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePoints()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10, 10]],
             frames: [1],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -60,7 +60,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsArray1()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             frames: [1],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -73,7 +73,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsArray2()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[], [10, 10]],
             frames: [1, 2],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -86,7 +86,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsArray3()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[]],
             frames: [1],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -99,7 +99,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidateFramesArray1()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             frames: [],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -112,7 +112,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidateFramesArray2()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10]],
             frames: ['a'],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -125,7 +125,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsArray4()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10],
             frames: [1],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -138,7 +138,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidateWholeFrame()
     {
         $data = new VideoAnnotation(
-            shape: Shape::wholeFrame(),
+            shape: Shape::WHOLE_FRAME,
             points: [],
             frames: [1, null, 3],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -153,7 +153,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidateWholeFrameWithPoints()
     {
         $data = new VideoAnnotation(
-            shape: Shape::wholeFrame(),
+            shape: Shape::WHOLE_FRAME,
             points: [[10, 10]],
             frames: [1],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -166,7 +166,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsWithGap()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10], [], [20, 20]],
             frames: [1, null, 3],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -179,7 +179,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsGapAtEnd()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10], []],
             frames: [1, null],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -192,7 +192,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsGapWithoutNullFrame()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10], [], [20, 20]],
             frames: [1, 2, 3],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],
@@ -205,7 +205,7 @@ class VideoAnnotationTest extends TestCase
     public function testValidatePointsNullFrameWithoutGap()
     {
         $data = new VideoAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [[10, 10], [15, 15], [20, 20]],
             frames: [1, null, 3],
             labels: [new LabelAndUser(new Label(1, 'x'), new User(2, 'y'))],

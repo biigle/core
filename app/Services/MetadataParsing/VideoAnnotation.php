@@ -50,7 +50,7 @@ class VideoAnnotation extends Annotation
         $message ??= (new VideoAnnotationFrames())->getErrorMessage($this->frames);
 
         // Whole frame annotations have no points, so there are no gaps to check.
-        if ($this->shape_id !== Shape::wholeFrameId()) {
+        if ($this->shape_id !== Shape::WHOLE_FRAME->value) {
             $message ??= (new VideoAnnotationGaps($this->frames))->getErrorMessage($this->points);
         }
 

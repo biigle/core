@@ -34,7 +34,7 @@ class FileMetadataTest extends TestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -79,7 +79,7 @@ class FileMetadataTest extends TestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -91,7 +91,7 @@ class FileMetadataTest extends TestCase
         $label2 = new Label(456, 'my label');
         $lau = new LabelAndUser($label2, $user);
         $annotation2 = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -106,7 +106,7 @@ class FileMetadataTest extends TestCase
         $user1 = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user1);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -146,7 +146,7 @@ class FileMetadataTest extends TestCase
         $user1 = new User(432, 'joe user');
         $lau = new LabelAndUser($label1, $user1);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -156,7 +156,7 @@ class FileMetadataTest extends TestCase
         $user2 = new User(654, 'joe user');
         $lau = new LabelAndUser($label2, $user2);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );

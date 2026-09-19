@@ -55,7 +55,7 @@ class LabelTreeController extends Controller
      *
      * @apiParam {Number} id The label tree ID
      *
-     * @apiDescription The `role_id` of the members is their role in this label tree and not their global role.
+     * @apiDescription The `role` of the members is their role in this label tree and not their global role.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -82,7 +82,7 @@ class LabelTreeController extends Controller
      *          "id": 1,
      *          "firstname": "Cesar",
      *          "lastname": "Beier",
-     *          "role_id": 2
+     *          "role": 2
      *       }
      *    ],
      *    "version": {
@@ -145,7 +145,7 @@ class LabelTreeController extends Controller
             $tree->description = $request->input('description');
             $tree->uuid = Uuid::uuid4();
             $tree->save();
-            $tree->addMember($request->user(), Role::admin());
+            $tree->addMember($request->user(), Role::ADMIN);
 
             if (isset($request->project)) {
                 $tree->projects()->attach($request->project);
@@ -201,7 +201,7 @@ class LabelTreeController extends Controller
                     ->where('label_tree_versions.label_tree_id', $tree->id)
                     ->update(['visibility_id' => $tree->visibility_id]);
 
-                if ($tree->visibility_id === Visibility::privateId()) {
+                if ($tree->visibility_id === Visibility::PRIVATE) {
                     $tree->detachUnauthorizedProjects();
                 }
             }

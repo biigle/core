@@ -31,9 +31,9 @@ class LabelTreeImportTest extends TestCase
         $this->labelParent = LabelTest::create(['label_tree_id' => $this->labelTree->id]);
         $this->labelChild = LabelTest::create(['label_tree_id' => $this->labelTree->id, 'parent_id' => $this->labelParent->id]);
         $this->user = UserTest::create();
-        $this->labelTree->addMember($this->user, Role::admin());
+        $this->labelTree->addMember($this->user, Role::ADMIN);
         $this->member = UserTest::create();
-        $this->labelTree->addMember($this->member, Role::editor());
+        $this->labelTree->addMember($this->member, Role::EDITOR);
     }
 
     public function tearDown(): void
@@ -169,7 +169,7 @@ class LabelTreeImportTest extends TestCase
         $this->assertEquals($this->labelTree->uuid, $newTree->uuid);
         $this->assertEquals($this->labelTree->name, $newTree->name);
         $this->assertEquals($this->labelTree->description, $newTree->description);
-        $this->assertEquals(Visibility::privateId(), $newTree->visibility_id);
+        $this->assertEquals(Visibility::PRIVATE, $newTree->visibility_id);
 
         $parent = $newTree->labels()->whereNull('parent_id')->first();
         $child = $newTree->labels()->whereNotNull('parent_id')->first();
@@ -183,13 +183,14 @@ class LabelTreeImportTest extends TestCase
         $members = $newTree->members()
             ->addSelect('uuid')
             ->get()
-            // Pluck after get to get the correct role_id.
-            ->pluck('role_id', 'uuid')
+            // Pluck after get to get the correct role.
+            ->pluck('role', 'uuid')
+            ->map->value
             ->toArray();
 
         $expect = [
-            $this->user->uuid => Role::adminId(),
-            $this->member->uuid => Role::editorId(),
+            $this->user->uuid => Role::ADMIN->value,
+            $this->member->uuid => Role::EDITOR->value,
         ];
         $this->assertEquals($expect, $members);
         $this->assertCount(2, $map['users']);

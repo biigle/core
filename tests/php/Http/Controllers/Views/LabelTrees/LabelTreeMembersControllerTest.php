@@ -14,7 +14,7 @@ class LabelTreeMembersControllerTest extends TestCase
 {
     public function testShow()
     {
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
+        $tree = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value]);
         $user = UserTest::create();
 
         $this->get("label-trees/{$tree->id}/members")
@@ -26,13 +26,13 @@ class LabelTreeMembersControllerTest extends TestCase
 
         Cache::flush();
 
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
         $this->get("label-trees/{$tree->id}/members")
             ->assertStatus(403);
 
         Cache::flush();
 
-        $tree->updateMember($user, Role::admin());
+        $tree->updateMember($user, Role::ADMIN);
         $this->get("label-trees/{$tree->id}/members")
             ->assertStatus(200);
     }

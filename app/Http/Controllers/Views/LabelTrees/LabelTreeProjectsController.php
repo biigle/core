@@ -67,8 +67,8 @@ class LabelTreeProjectsController extends Controller
         }
 
         $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->name,
-            Visibility::privateId() => Visibility::private()->name,
+            Visibility::PUBLIC->value => Visibility::PUBLIC->label(),
+            Visibility::PRIVATE->value => Visibility::PRIVATE->label(),
         ]);
 
         return view('label-trees.show.projects', [
@@ -77,7 +77,7 @@ class LabelTreeProjectsController extends Controller
             'visibilities' => $visibilities,
             'authorizedProjects' => $authorizedProjects,
             'authorizedOwnProjects' => $authorizedOwnProjects,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility_id === Visibility::PRIVATE,
             'activeTab' => 'projects',
         ]);
     }
@@ -108,7 +108,7 @@ class LabelTreeProjectsController extends Controller
             'tree' => $tree,
             'masterTree' => $tree->version->labelTree,
             'projects' => $projects,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility_id === Visibility::PRIVATE,
             'activeTab' => 'projects',
         ]);
     }

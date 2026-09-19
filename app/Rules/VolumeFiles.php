@@ -115,13 +115,13 @@ class VolumeFiles implements Rule
             }
         }
 
-        if ($this->typeId === MediaType::imageId()) {
+        if ($this->typeId === MediaType::IMAGE->value) {
             if ($count !== count(preg_grep(Volume::IMAGE_FILE_REGEX, $value))) {
                 $this->message = 'Only JPEG, PNG, WebP or TIFF image formats are supported.';
 
                 return false;
             }
-        } elseif ($this->typeId === MediaType::videoId()) {
+        } elseif ($this->typeId === MediaType::VIDEO->value) {
             if ($count !== count(preg_grep(Volume::VIDEO_FILE_REGEX, $value))) {
                 $this->message = 'Only MPEG, MP4 or WebM video formats are supported.';
 

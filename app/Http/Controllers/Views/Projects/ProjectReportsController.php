@@ -38,11 +38,7 @@ class ProjectReportsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
-        $types = ReportType::when($hasImageVolume, fn ($q) => $q->where('name', 'like', 'Image%'))
-            ->when($hasVideoVolume, fn ($q) => $q->orWhere('name', 'like', 'Video%'))
-            ->orderBy('name', 'asc')
-            ->get();
-
+        $types = ReportType::getSortedTypes($hasImageVolume, $hasVideoVolume);
 
         $hasExportArea = $project->imageVolumes()
             ->whereNotNull('attrs->export_area')

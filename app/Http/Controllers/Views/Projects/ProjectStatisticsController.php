@@ -32,8 +32,7 @@ class ProjectStatisticsController extends Controller
             ->count();
 
         $volumes = $project->volumes()
-            ->select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
+            ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -50,12 +49,12 @@ class ProjectStatisticsController extends Controller
 
         $volumeNames = $project->volumes()
             ->select('id', 'name')
-            ->where('media_type_id', MediaType::imageId())
+            ->where('media_type', MediaType::IMAGE->value)
             ->get();
 
         $volumeNamesVideo = $project->volumes()
             ->select('id', 'name')
-            ->where('media_type_id', MediaType::videoId())
+            ->where('media_type', MediaType::VIDEO->value)
             ->get();
 
         return view('projects.show.statistics', [
@@ -64,7 +63,7 @@ class ProjectStatisticsController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'charts',
-            'volumes' => $volumes,
+            'volumes' => $volumes, // TODO test that media_type is of expected format
             // IMAGES
             'annotatedImages' => $imageVolumeStatistics['annotatedFiles'],
             'annotationLabels' => $imageVolumeStatistics['annotationLabels'],

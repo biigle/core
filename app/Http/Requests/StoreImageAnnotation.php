@@ -6,6 +6,7 @@ use Biigle\Image;
 use Biigle\Rules\AnnotationPoints;
 use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreImageAnnotation extends FormRequest
 {
@@ -52,7 +53,7 @@ class StoreImageAnnotation extends FormRequest
                 },
             ],
             'confidence'  => 'required|numeric|between:0,1',
-            'shape_id' => 'required|integer|exists:shapes,id',
+            'shape_id' => ['required', 'integer', Rule::enum(Shape::class)],
             'points'   => [
                 'bail',
                 'required',
@@ -71,7 +72,7 @@ class StoreImageAnnotation extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if (intval($this->input('shape_id')) === Shape::wholeFrameId()) {
+            if (intval($this->input('shape_id')) === Shape::WHOLE_FRAME->value) {
                 $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
             }
         });

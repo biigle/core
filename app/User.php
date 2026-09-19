@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * @property string $uuid
+ * @property Role $role
  */
 #[Hidden(['password', 'remember_token', 'pivot', 'uuid'])]
 #[ObservedBy(UserObserver::class)]
@@ -27,7 +28,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'role_id' => 'int',
+            'role' => Role::class,
             'attrs' => 'array',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -67,16 +68,6 @@ class User extends Authenticatable
     }
 
     /**
-     * The global role of this user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, $this>
-     */
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
-
-    /**
      * Api tokens of this user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<ApiToken, $this>
@@ -103,7 +94,7 @@ class User extends Authenticatable
      */
     public function getIsGlobalAdminAttribute()
     {
-        return $this->role_id === Role::adminId();
+        return $this->role->value === Role::ADMIN->value;
     }
 
     /**
@@ -194,7 +185,7 @@ class User extends Authenticatable
     public function getCanReviewAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role->value === Role::EDITOR->value &&
                 $this->getSettings('can_review', false));
     }
 
@@ -216,7 +207,7 @@ class User extends Authenticatable
     public function getHasNoRateLimitAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role->value === Role::EDITOR->value &&
                 $this->getSettings('disable_rate_limit', false));
     }
 

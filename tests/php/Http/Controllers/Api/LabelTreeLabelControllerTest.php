@@ -17,7 +17,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
     public function testStoreNormal()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $parent = LabelTest::create(['label_tree_id' => $tree->id]);
         $otherLabel = LabelTest::create();
 
@@ -95,7 +95,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
     public function testStoreFormRequest()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $this->beEditor();
         $this->get('/');
         $response = $this->post("/api/v1/label-trees/{$tree->id}/labels", [
@@ -119,7 +119,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
     public function testStoreLabelSource()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
 
         $this->beEditor();
         $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
@@ -163,7 +163,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
     public function testStoreLabelSourceError()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $source = LabelSourceTest::create(['name' => 'my_source']);
 
         $mock = Mockery::mock();
@@ -189,7 +189,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
     public function testStoreVersionedTree()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->editor(), Role::editor());
+        $version->labelTree->addMember($this->editor(), Role::EDITOR);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
 
         $this->beEditor();

@@ -21,7 +21,7 @@ class ProjectStatisticsControllerTest extends TestCase
         $this->be($user);
         $this->get("projects/{$id}/charts")->assertStatus(403);
 
-        $project->addUserId($user->id, Role::editorId());
+        $project->addUserId($user->id, Role::EDITOR->value);
         Cache::flush();
         $this->get("projects/{$id}/charts")->assertStatus(200);
 

@@ -27,9 +27,9 @@ class PublicLabelTreeImportTest extends TestCase
         $this->labelParent = LabelTest::create(['label_tree_id' => $this->labelTree->id]);
         $this->labelChild = LabelTest::create(['label_tree_id' => $this->labelTree->id, 'parent_id' => $this->labelParent->id]);
         $this->user = UserTest::create();
-        $this->labelTree->addMember($this->user, Role::admin());
+        $this->labelTree->addMember($this->user, Role::ADMIN);
         $this->member = UserTest::create();
-        $this->labelTree->addMember($this->member, Role::editor());
+        $this->labelTree->addMember($this->member, Role::EDITOR);
     }
 
     public function tearDown(): void
@@ -82,7 +82,7 @@ class PublicLabelTreeImportTest extends TestCase
         $this->assertEquals(2, LabelTree::count());
         $this->assertEquals($this->labelTree->name, $tree->name);
         $this->assertEquals($this->labelTree->description, $tree->description);
-        $this->assertEquals(Visibility::privateId(), $tree->visibility_id);
+        $this->assertEquals(Visibility::PRIVATE, $tree->visibility_id);
         $this->assertNotEquals($this->labelTree->id, $tree->id);
         $this->assertNotEquals($this->labelTree->uuid, $tree->uuid);
     }

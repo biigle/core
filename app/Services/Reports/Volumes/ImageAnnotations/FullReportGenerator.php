@@ -5,6 +5,7 @@ namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 use Arr;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
+use Biigle\Shape;
 use Biigle\User;
 use DB;
 
@@ -83,11 +84,10 @@ class FullReportGenerator extends AnnotationReportGenerator
                 'images.filename',
                 'image_annotations.id as annotation_id',
                 'image_annotation_labels.label_id',
-                'shapes.name as shape_name',
+                'image_annotations.shape_id',
                 'image_annotations.points',
                 'images.attrs',
             ])
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->orderBy('image_annotations.id');
 
         return $query;
@@ -111,7 +111,7 @@ class FullReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->annotation_id,
                 $this->expandLabelName($row->label_id),
-                $row->shape_name,
+                Shape::from($row->shape_id)->label(),
                 $row->points,
                 $this->getArea($row->attrs),
             ]);

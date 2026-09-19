@@ -21,7 +21,7 @@ class VolumeExportTest extends TestCase
         ]);
 
         $videoVolume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
         ]);
 
         $export = new VolumeExport([$imageVolume->id, $videoVolume->id]);

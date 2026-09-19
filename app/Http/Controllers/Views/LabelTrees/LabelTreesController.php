@@ -53,8 +53,8 @@ class LabelTreesController extends Controller
         $this->authorize('create', LabelTree::class);
 
         $visibilities = [
-            Visibility::private(),
-            Visibility::public(),
+            Visibility::PRIVATE,
+            Visibility::PUBLIC,
         ];
 
         if ($request->filled('project')) {
@@ -71,7 +71,7 @@ class LabelTreesController extends Controller
             $upstreamLabelTree = null;
         }
 
-        $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->id;
+        $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->value;
 
         return view('label-trees.create', compact(
             'visibilities',
@@ -94,15 +94,15 @@ class LabelTreesController extends Controller
             ->get();
 
         $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->name,
-            Visibility::privateId() => Visibility::private()->name,
+            Visibility::PUBLIC->value => Visibility::PUBLIC->label(),
+            Visibility::PRIVATE->value => Visibility::PRIVATE->label(),
         ]);
 
         return view('label-trees.show.labels', [
             'tree' => $tree,
             'labels' => $labels,
             'visibilities' => $visibilities,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility_id === Visibility::PRIVATE,
             'wormsLabelSource' => LabelSource::where('name', 'worms')->first(),
             'activeTab' => 'labels',
         ]);
@@ -139,7 +139,7 @@ class LabelTreesController extends Controller
             'masterTree' => $tree->version->labelTree,
             'labels' => $labels,
             'projects' => $projects,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility_id === Visibility::PRIVATE,
             'activeTab' => 'labels',
         ]);
     }

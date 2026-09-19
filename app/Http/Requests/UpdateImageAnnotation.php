@@ -6,6 +6,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Rules\AnnotationPoints;
 use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateImageAnnotation extends FormRequest
 {
@@ -36,7 +37,7 @@ class UpdateImageAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'shape_id' => 'required_without:points|integer|exists:shapes,id',
+            'shape_id' => ['required_without:points', 'integer', Rule::enum(Shape::class)],
             'points' => 'required_without:shape_id|array',
         ];
     }
@@ -54,7 +55,7 @@ class UpdateImageAnnotation extends FormRequest
                 return;
             }
 
-            if ($this->getShapeId() === Shape::wholeFrameId()) {
+            if ($this->getShapeId() === Shape::WHOLE_FRAME->value) {
                 $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
 
                 return;
@@ -86,6 +87,6 @@ class UpdateImageAnnotation extends FormRequest
      */
     public function getShapeId(): int
     {
-        return intval($this->input('shape_id', $this->annotation->shape_id));
+        return intval($this->input('shape_id', $this->annotation->shape_id->value));
     }
 }

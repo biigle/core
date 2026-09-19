@@ -47,11 +47,11 @@ class VolumeImportTest extends TestCase
         $this->image = ImageTest::create(['volume_id' => $this->imageVolume->id]);
         $this->videoVolume = VolumeTest::create([
             'url' => 'test://files',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
         ]);
         $this->video = VideoTest::create(['volume_id' => $this->videoVolume->id]);
         config(['volumes.admin_storage_disks' => ['test']]);
-        $this->user = User::factory()->make(['role_id' => Role::adminId()]);
+        $this->user = User::factory()->make(['role' => Role::ADMIN->value]);
         $this->be($this->user);
     }
 
@@ -284,9 +284,9 @@ class VolumeImportTest extends TestCase
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $tree = $imageLabel->label->tree;
         $admin = UserTest::create();
-        $tree->addMember($admin, Role::admin());
+        $tree->addMember($admin, Role::ADMIN);
         $editor = UserTest::create();
-        $tree->addMember($editor, Role::editor());
+        $tree->addMember($editor, Role::EDITOR);
 
         $import = $this->getDefaultImport();
         $imageLabel->delete();
@@ -525,7 +525,7 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($this->imageVolume->name, $newImageVolume->name);
         $this->assertEquals($this->imageVolume->url, $newImageVolume->url);
         $this->assertEquals($project->creator->id, $newImageVolume->creator_id);
-        $this->assertEquals(MediaType::imageId(), $newImageVolume->media_type_id);
+        $this->assertEquals(MediaType::IMAGE, $newImageVolume->media_type);
         $this->assertEquals(['ab' => 'cd'], $newImageVolume->attrs);
 
         $newImages = $newImageVolume->images;
@@ -548,7 +548,7 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($this->videoVolume->name, $newVideoVolume->name);
         $this->assertEquals($this->videoVolume->url, $newVideoVolume->url);
         $this->assertEquals($project->creator->id, $newVideoVolume->creator_id);
-        $this->assertEquals(MediaType::videoId(), $newVideoVolume->media_type_id);
+        $this->assertEquals(MediaType::VIDEO, $newVideoVolume->media_type);
 
         $newVideos = $newVideoVolume->videos;
         $this->assertCount(1, $newVideos);

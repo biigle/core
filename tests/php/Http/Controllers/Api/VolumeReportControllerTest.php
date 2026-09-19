@@ -18,7 +18,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStore()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsBasicId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_BASIC->value;
 
         $this->doTestApiRoute('POST', "api/v1/volumes/{$volumeId}/reports");
 
@@ -36,7 +36,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
             $report = $job->report;
-            $this->assertEquals($typeId, $report->type_id);
+            $this->assertEquals($typeId, $report->type_id->value);
             $this->assertEquals($volumeId, $report->source_id);
             $this->assertEquals(false, $report->options['exportArea']);
             $this->assertEquals(false, $report->options['newestLabel']);
@@ -49,7 +49,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreOptions()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsBasicId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_BASIC->value;
         $this->beGuest();
 
         $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
@@ -60,7 +60,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
             $report = $job->report;
-            $this->assertEquals($typeId, $report->type_id);
+            $this->assertEquals($typeId, $report->type_id->value);
             $this->assertEquals($volumeId, $report->source_id);
             $this->assertEquals(true, $report->options['exportArea']);
             $this->assertEquals(true, $report->options['newestLabel']);
@@ -72,18 +72,18 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreImageVolumeTypes()
     {
-        $volumeId = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+        $volumeId = $this->volume(['media_type' => MediaType::IMAGE->value])->id;
 
         $types = [
-            ReportType::imageAnnotationsAreaId(),
-            ReportType::imageAnnotationsBasicId(),
-            ReportType::imageAnnotationsCsvId(),
-            ReportType::imageAnnotationsExtendedId(),
-            ReportType::imageAnnotationsCocoId(),
-            ReportType::imageAnnotationsFullId(),
-            ReportType::imageAnnotationsAbundanceId(),
-            ReportType::imageLabelsBasicId(),
-            ReportType::imageLabelsCsvId(),
+            ReportType::IMAGE_ANNOTATIONS_AREA->value,
+            ReportType::IMAGE_ANNOTATIONS_BASIC->value,
+            ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            ReportType::IMAGE_ANNOTATIONS_EXTENDED->value,
+            ReportType::IMAGE_ANNOTATIONS_COCO->value,
+            ReportType::IMAGE_ANNOTATIONS_FULL->value,
+            ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value,
+            ReportType::IMAGE_LABELS_BASIC->value,
+            ReportType::IMAGE_LABELS_CSV->value,
             // imageAnnotationImageLocation is tested below
             // imageAnnotationAnnotationLocation is tested below
             // imageLabelImageLocation is tested below
@@ -101,7 +101,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreInvalidVideoAnnotations()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::videoAnnotationsCsvId();
+        $typeId = ReportType::VIDEO_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
@@ -111,7 +111,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreInvalidVideoLabels()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::videoLabelsCsvId();
+        $typeId = ReportType::VIDEO_LABELS_CSV->value;
 
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
@@ -120,8 +120,8 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreVideoVolume()
     {
-        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
-        $typeId = ReportType::videoAnnotationsCsvId();
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $typeId = ReportType::VIDEO_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
@@ -145,11 +145,11 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreVideoVolumeTypes()
     {
-        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
 
         $types = [
-            ReportType::videoAnnotationsCsvId(),
-            ReportType::videoLabelsCsvId(),
+            ReportType::VIDEO_ANNOTATIONS_CSV->value,
+            ReportType::VIDEO_LABELS_CSV->value,
             // videoIfdo is tested below
         ];
 
@@ -163,8 +163,8 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreInvalidImageAnnotations()
     {
-        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
-        $typeId = ReportType::imageAnnotationsCsvId();
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $typeId = ReportType::IMAGE_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
@@ -173,8 +173,8 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreInvalidImageLabels()
     {
-        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
-        $typeId = ReportType::imageLabelsCsvId();
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $typeId = ReportType::IMAGE_LABELS_CSV->value;
 
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
@@ -186,7 +186,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         $label = LabelTest::create();
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::first()->id;
+        $typeId = ReportType::IMAGE_ANNOTATIONS_AREA->value;
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
             'type_id' => $typeId,
             'only_labels' => [-1],
@@ -206,7 +206,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volumeId]);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::imageLabelsImageLocationId(),
+            'type_id' => ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
         ])->assertStatus(422);
 
         $image->lat = 1;
@@ -215,7 +215,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->volume()->flushGeoInfoCache();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::imageLabelsImageLocationId(),
+            'type_id' => ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
         ])->assertStatus(201);
     }
 
@@ -227,7 +227,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volumeId]);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            'type_id' => ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
         ])->assertStatus(422);
 
         $image->lat = 1;
@@ -236,7 +236,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->volume()->flushGeoInfoCache();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::imageAnnotationsImageLocationId(),
+            'type_id' => ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
         ])->assertStatus(201);
     }
 
@@ -248,7 +248,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volumeId]);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
+            'type_id' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
         ])->assertStatus(422); // Metadata missing.
 
         $image->lat = 1;
@@ -261,7 +261,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->volume()->flushGeoInfoCache();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
+            'type_id' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
         ])->assertStatus(422); // Width/height missing.
 
         $image->width = 1;
@@ -269,14 +269,14 @@ class VolumeReportControllerTest extends ApiTestCase
         $image->save();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::imageAnnotationsAnnotationLocationId(),
+            'type_id' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
         ])->assertStatus(201);
     }
 
     public function testStoreSeparateLabelTreesUsersConflict()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsBasicId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_BASIC->value;
 
         $this->beGuest();
 
@@ -291,7 +291,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreSeparateLabelTrees()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsBasicId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_BASIC->value;
 
         $this->beGuest();
 
@@ -309,7 +309,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreSeparateUsers()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsBasicId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_BASIC->value;
 
         $this->beGuest();
 
@@ -328,7 +328,7 @@ class VolumeReportControllerTest extends ApiTestCase
     {
         $volume = $this->volume();
         $volumeId = $volume->id;
-        $typeId = ReportType::imageIfdoId();
+        $typeId = ReportType::IMAGE_IFDO->value;
 
         $this->beGuest();
 
@@ -353,10 +353,10 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreVideoIfdo()
     {
         $volume = $this->volume([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
         ]);
         $volumeId = $volume->id;
-        $typeId = ReportType::videoIfdoId();
+        $typeId = ReportType::VIDEO_IFDO->value;
 
         $this->beGuest();
 
@@ -381,7 +381,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreOptionsAllLabelsAggregateChildLabels()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value;
         $this->beGuest();
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
@@ -405,7 +405,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreOptionsAllLabelsRestrictToLabels()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value;
         $this->beGuest();
         $lId = 1;
 
@@ -422,7 +422,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreOptionsAllLabels()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::videoAnnotationsCsv();
+        $typeId = ReportType::VIDEO_ANNOTATIONS_CSV;
         $this->beGuest();
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
@@ -433,7 +433,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         Queue::assertNotPushed(GenerateReportJob::class);
 
-        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value;
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
             'type_id' => $typeId,
@@ -449,7 +449,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreOptionsAllLabelsRestrictToNewestLabels()
     {
         $volumeId = $this->volume()->id;
-        $typeId = ReportType::imageAnnotationsAbundanceId();
+        $typeId = ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value;
         $this->beGuest();
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [

@@ -18,7 +18,7 @@ class VideoAnnotationPoints extends AnnotationPoints
             return null;
         }
 
-        if ($this->shapeId === Shape::wholeFrameId()) {
+        if ($this->shapeId === Shape::WHOLE_FRAME->value) {
             return count($points) === 0
                 ? null
                 : 'Whole frame annotations cannot have point coordinates.';

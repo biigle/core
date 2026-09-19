@@ -37,7 +37,7 @@ class ProcessCloneVolumeFilesTest extends TestCase
         $map = [$i2->uuid => $i1->uuid];
 
         Queue::fake();
-        
+
         with(new ProcessCloneVolumeFiles($copy, $map, []))->handle();
 
         Queue::assertPushed(
@@ -72,7 +72,7 @@ class ProcessCloneVolumeFilesTest extends TestCase
         $map = [$i3->uuid => $i1->uuid, $i4->uuid => $i2->uuid];
 
         Queue::fake();
-        
+
         with(new ProcessCloneVolumeFiles($copy, $map, [$i3->id]))->handle();
 
         Queue::assertPushed(
@@ -91,8 +91,8 @@ class ProcessCloneVolumeFilesTest extends TestCase
         $format = config('thumbnails.format');
         $spriteFormat = config('videos.sprites_format');
         $diskThumbs = Storage::fake('test-v-thumbs');
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $copy = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
+        $copy = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
 
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
         $v2 = VideoTest::create(['volume_id' => $copy->id, 'filename' => 'a.jpg']);
@@ -118,8 +118,8 @@ class ProcessCloneVolumeFilesTest extends TestCase
         $format = config('thumbnails.format');
         $spriteFormat = config('videos.sprites_format');
         $diskThumbs = Storage::fake('test-v-thumbs');
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $copy = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
+        $copy = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
 
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
         $v2 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.jpg']);
@@ -149,8 +149,8 @@ class ProcessCloneVolumeFilesTest extends TestCase
     public function testHandleVideosQueue()
     {
         config(['videos.process_new_video_queue' => 'low']);
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $copy = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
+        $copy = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
         $v2 = VideoTest::create(['volume_id' => $copy->id, 'filename' => 'a.mp4']);
         $map = [$v2->uuid => $v1->uuid];

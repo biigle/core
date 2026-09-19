@@ -26,19 +26,19 @@ class ProjectsControllerTest extends TestCase
         $response->assertStatus(403);
 
         // can't admin the project
-        $project->addUserId($user->id, Role::editorId());
+        $project->addUserId($user->id, Role::EDITOR->value);
         Cache::flush();
         $response = $this->get("projects/{$id}");
         $response->assertStatus(200);
 
-        // diesn't exist
+        // doesn't exist
         $response = $this->get('projects/-1');
         $response->assertStatus(404);
     }
 
     public function testCreate()
     {
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST->value]);
 
         // not logged in
         $response = $this->get('projects/create');
@@ -49,7 +49,7 @@ class ProjectsControllerTest extends TestCase
         // Guest is not authorized.
         $response->assertStatus(403);
 
-        $user->role_id = Role::editorId();
+        $user->role = Role::EDITOR;
         $user->save();
 
         $r = $response = $this->get('projects/create');

@@ -37,25 +37,25 @@ class StoreVolumeReport extends StoreReport
     {
         if ($this->volume->isImageVolume()) {
             $types = [
-                ReportType::imageAnnotationsAreaId(),
-                ReportType::imageAnnotationsBasicId(),
-                ReportType::imageAnnotationsCsvId(),
-                ReportType::imageAnnotationsExtendedId(),
-                ReportType::imageAnnotationsCocoId(),
-                ReportType::imageAnnotationsFullId(),
-                ReportType::imageAnnotationsAbundanceId(),
-                ReportType::imageAnnotationsImageLocationId(),
-                ReportType::imageAnnotationsAnnotationLocationId(),
-                ReportType::imageLabelsBasicId(),
-                ReportType::imageLabelsCsvId(),
-                ReportType::imageLabelsImageLocationId(),
-                ReportType::imageIfdoId(),
+                ReportType::IMAGE_ANNOTATIONS_AREA->value,
+                ReportType::IMAGE_ANNOTATIONS_BASIC->value,
+                ReportType::IMAGE_ANNOTATIONS_CSV->value,
+                ReportType::IMAGE_ANNOTATIONS_EXTENDED->value,
+                ReportType::IMAGE_ANNOTATIONS_COCO->value,
+                ReportType::IMAGE_ANNOTATIONS_FULL->value,
+                ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value,
+                ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
+                ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
+                ReportType::IMAGE_LABELS_BASIC->value,
+                ReportType::IMAGE_LABELS_CSV->value,
+                ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
+                ReportType::IMAGE_IFDO->value,
             ];
         } else {
             $types = [
-                ReportType::videoAnnotationsCsvId(),
-                ReportType::videoLabelsCsvId(),
-                ReportType::videoIfdoId(),
+                ReportType::VIDEO_ANNOTATIONS_CSV->value,
+                ReportType::VIDEO_LABELS_CSV->value,
+                ReportType::VIDEO_IFDO->value,
             ];
         }
 
@@ -77,16 +77,16 @@ class StoreVolumeReport extends StoreReport
 
         $validator->after(function ($validator) {
             $needsGeoInfo = [
-                ReportType::imageAnnotationsAnnotationLocationId(),
-                ReportType::imageAnnotationsImageLocationId(),
-                ReportType::imageLabelsImageLocationId(),
+                ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
+                ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
+                ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
             ];
 
             if ($this->isType($needsGeoInfo) && !$this->volume->hasGeoInfo()) {
                 $validator->errors()->add('id', 'The volume images have no geo coordinates.');
             }
 
-            if ($this->isType(ReportType::imageAnnotationsAnnotationLocationId())) {
+            if ($this->isType(ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value)) {
                 $hasImagesWithMetadata = $this->volume->images()
                     ->whereNotNull('attrs->metadata->yaw')
                     ->whereNotNull('attrs->metadata->distance_to_ground')
@@ -106,7 +106,7 @@ class StoreVolumeReport extends StoreReport
                 }
             }
 
-            if ($this->isType([ReportType::imageIfdoId(), ReportType::videoIfdoId()]) && $this->volume->metadata_parser !== IfdoParser::class) {
+            if ($this->isType([ReportType::IMAGE_IFDO->value, ReportType::VIDEO_IFDO->value]) && $this->volume->metadata_parser !== IfdoParser::class) {
                 $validator->errors()->add('id', 'The volume has no attached iFDO file.');
             }
         });

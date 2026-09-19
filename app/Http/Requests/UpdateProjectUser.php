@@ -43,25 +43,25 @@ class UpdateProjectUser extends FormRequest
      */
     public function rules()
     {
-        if ($this->user->role_id === Role::guestId()) {
+        if ($this->user->role->value === Role::GUEST->value) {
             $roles = [
-                Role::guestId(),
-                Role::editorId(),
-                Role::expertId()
+                Role::GUEST->value,
+                Role::EDITOR->value,
+                Role::EXPERT->value
             ];
         } else {
             $roles = [
-                Role::guestId(),
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId()
+                Role::GUEST->value,
+                Role::EDITOR->value,
+                Role::EXPERT->value,
+                Role::ADMIN->value
             ];
         }
 
         $roles = implode(',', $roles);
 
         return [
-            'project_role_id' => "required|integer|in:{$roles}",
+            'project_role' => "required|integer|in:{$roles}",
         ];
     }
 
@@ -87,9 +87,9 @@ class UpdateProjectUser extends FormRequest
      */
     public function messages()
     {
-        if ($this->user->role_id === Role::guestId()) {
+        if ($this->user->role->value === Role::GUEST->value) {
             return [
-                'project_role_id.in' => 'Guest users may not become project admins.',
+                'project_role.in' => 'Guest users may not become project admins.',
             ];
         }
 

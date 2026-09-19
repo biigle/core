@@ -24,10 +24,10 @@ import {Resource} from 'vue-resource';
  * resource.removeAuthorizedProject({id: labelTreeId, project_id: projectId}).then(...);
  *
  * Attach a user to a label tree:
- * resource.save({id: 1}, {id: 1, role_id: 2}).then(...);
+ * resource.save({id: 1}, {id: 1, role: 2}).then(...);
  *
  * Update the role of a user:
- * resource.update({id: 1, user_id: 1}, {role_id: 1}).then(...);
+ * resource.update({id: 1, user_id: 1}, {role: 1}).then(...);
  *
  * Detach a user from a label tree:
  * resource.delete({id: 1, user_id: 1}).then(...);

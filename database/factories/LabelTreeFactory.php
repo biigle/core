@@ -17,7 +17,7 @@ class LabelTreeFactory extends Factory
         return [
             'name' => $this->faker->username(),
             'description' => $this->faker->sentence(),
-            'visibility_id' => fn () => Visibility::publicId(),
+            'visibility_id' => fn () => Visibility::PUBLIC->value,
             'uuid' => $this->faker->unique()->uuid(),
         ];
     }

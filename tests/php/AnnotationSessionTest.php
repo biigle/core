@@ -678,7 +678,7 @@ class AnnotationSessionTest extends ModelTestCase
         $ownUser = UserTest::create();
         $otherUser = UserTest::create();
         $video = VideoTest::create([
-            'volume_id' => VolumeTest::create(['media_type_id' => MediaType::videoId()]),
+            'volume_id' => VolumeTest::create(['media_type' => MediaType::VIDEO->value]),
         ]);
 
         $a1 = VideoAnnotationTest::create([

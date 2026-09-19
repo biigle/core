@@ -2,46 +2,60 @@
 
 namespace Biigle;
 
-use Biigle\Traits\HasConstantInstances;
-use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Biigle\Traits\EnumSerialization;
+use Illuminate\Support\Collection;
+use ValueError;
 
-/**
- * A shape, e.g. `point` or `circle`.
- *
- * @method static Shape point()
- * @method static int pointId()
- * @method static Shape line()
- * @method static int lineId()
- * @method static Shape polygon()
- * @method static int polygonId()
- * @method static Shape circle()
- * @method static int circleId()
- * @method static Shape rectangle()
- * @method static int rectangleId()
- * @method static Shape ellipse()
- * @method static int ellipseId()
- * @method static Shape wholeFrame()
- * @method static int wholeFrameId()
- */
-#[WithoutTimestamps]
-class Shape extends Model
+enum Shape: int implements \JsonSerializable
 {
-    use HasConstantInstances, HasFactory;
+    use EnumSerialization;
+
+    case POINT = 1;
+    case LINE = 2;
+    case POLYGON = 3;
+    case CIRCLE = 4;
+    case RECTANGLE = 5;
+    case ELLIPSE = 6;
+    case WHOLE_FRAME = 7;
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::POINT => 'Point',
+            self::LINE => 'LineString',
+            self::POLYGON => 'Polygon',
+            self::CIRCLE => 'Circle',
+            self::RECTANGLE => 'Rectangle',
+            self::ELLIPSE => 'Ellipse',
+            self::WHOLE_FRAME => 'WholeFrame',
+        };
+    }
+
+    public static function fromLabel(string $label)
+    {
+        return match (strtoupper($label)) {
+            self::POINT->name => self::POINT,
+            "LINE" => self::LINE,
+            "LINESTRING" => self::LINE,
+            self::POLYGON->name => self::POLYGON,
+            self::CIRCLE->name => self::CIRCLE,
+            self::RECTANGLE->name => self::RECTANGLE,
+            self::ELLIPSE->name => self::ELLIPSE,
+            "WHOLEFRAME" => self::WHOLE_FRAME,
+            default => throw new ValueError("Invalid shape label $label")
+        };
+    }
 
     /**
-     * The constant instances of this model.
-     *
-     * @var array<string, string>
+     * Helper to imitate the original ->pluck('name', 'id') behaviour
      */
-    const INSTANCES = [
-        'point' => 'Point',
-        'line' => 'LineString',
-        'polygon' => 'Polygon',
-        'circle' => 'Circle',
-        'rectangle' => 'Rectangle',
-        'ellipse' => 'Ellipse',
-        'wholeFrame' => 'WholeFrame',
-    ];
+    public static function pluckById(?self $except = null): Collection
+    {
+        $collection = collect(self::cases())
+            ->mapWithKeys(fn (self $shape) => [$shape->value => $shape->label()]);
+        if ($except !== null) {
+            $collection->forget($except->value);
+        }
+        return $collection;
+    }
 }

@@ -32,7 +32,7 @@ class ProjectObserver
     {
         // set creator as project admin
         // this must be done *after* the project is saved so it already has an id
-        $project->addUserId($project->creator_id, Role::adminId());
+        $project->addUserId($project->creator_id, Role::ADMIN->value);
 
         // add global label trees (used by default)
         $ids = LabelTree::global()

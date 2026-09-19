@@ -56,7 +56,7 @@ class UpdatePendingVolume extends FormRequest
             }
 
             $files = $this->input('files');
-            $rule = new VolumeFiles($this->input('url'), $this->pendingVolume->media_type_id);
+            $rule = new VolumeFiles($this->input('url'), $this->pendingVolume->media_type->value);
             if (!$rule->passes('files', $files)) {
                 $validator->errors()->add('files', $rule->message());
             }

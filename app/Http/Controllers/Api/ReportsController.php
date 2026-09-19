@@ -86,10 +86,10 @@ class ReportsController extends Controller
      * @apiGroup Reports
      * @apiName IndexReports
      * @apiPermission user
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function index()
     {
-        return ReportType::all();
+        return collect(ReportType::cases())->map->toArray()->values();
     }
 }
