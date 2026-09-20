@@ -49,6 +49,11 @@ class ProjectsController extends Controller
                 $item->append('thumbnailUrl')
                     ->append('thumbnailsUrl')
                     ->makeHidden($hidden);
+            })
+            ->map(function ($volume) {
+                $data = $volume->toArray();
+                $data['media_type'] = $volume->media_type->toArray();
+                return $data;
             });
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
@@ -65,7 +70,7 @@ class ProjectsController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'volumes',
-            'volumes' => $volumes, // TODO Test that media_type is of expected format
+            'volumes' => $volumes,
         ]);
     }
 }

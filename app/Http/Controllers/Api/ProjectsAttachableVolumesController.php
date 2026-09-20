@@ -71,7 +71,7 @@ class ProjectsAttachableVolumesController extends Controller
                 ->append('thumbnailsUrl')
                 ->makeHidden($hidden);
             $data = $item->toArray();
-            $data['media_type'] = MediaType::from($item->media_type_id)->toArray(); // TODO compare with others for test, test index and fuzzy search
+            $data['media_type'] = MediaType::from($item->media_type_id)->toArray();
             return $data;
         });
     }

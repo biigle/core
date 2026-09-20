@@ -34,8 +34,12 @@ class ProjectStatisticsController extends Controller
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
-            ->get();
-
+            ->get()
+            ->map(function ($volume) {
+                $data = $volume->toArray();
+                $data['media_type'] = $volume->media_type->toArray();
+                return $data;
+            });
 
         $totalImages = Image::whereIn('images.volume_id', fn ($query) => $query->select('volume_id')
             ->from('project_volume')
@@ -63,7 +67,7 @@ class ProjectStatisticsController extends Controller
             'isPinned' => $isPinned,
             'canPin' => $canPin,
             'activeTab' => 'charts',
-            'volumes' => $volumes, // TODO test that media_type is of expected format
+            'volumes' => $volumes,
             // IMAGES
             'annotatedImages' => $imageVolumeStatistics['annotatedFiles'],
             'annotationLabels' => $imageVolumeStatistics['annotationLabels'],

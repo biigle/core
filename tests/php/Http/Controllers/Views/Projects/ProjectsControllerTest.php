@@ -2,9 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
+use Biigle\MediaType;
 use Biigle\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
 use Cache;
 use TestCase;
 
@@ -27,9 +29,20 @@ class ProjectsControllerTest extends TestCase
 
         // can't admin the project
         $project->addUserId($user->id, Role::EDITOR->value);
+        $volume = VolumeTest::create(['name' => 'test']);
+        $project->addVolumeId($volume->id);
         Cache::flush();
         $response = $this->get("projects/{$id}");
         $response->assertStatus(200);
+        // We changed media_type to enum, make sure it's still an array here
+        $volumes = json_decode($response->viewData('volumes')->toJson(), true);
+        $this->assertSame(
+            $volumes[0]['media_type'],
+            [
+                'id' => MediaType::IMAGE->value,
+                'name' => MediaType::IMAGE->label(),
+            ]
+        );
 
         // doesn't exist
         $response = $this->get('projects/-1');
