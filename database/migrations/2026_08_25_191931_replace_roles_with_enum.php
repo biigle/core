@@ -49,6 +49,6 @@ return new class extends Migration {
             ['id' => Role::EXPERT->value, 'name' => 'expert'],
         ]);
 
-        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'roles');
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'roles', true);
     }
 };

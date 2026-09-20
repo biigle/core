@@ -18,6 +18,7 @@ class EnumMigrationHelper
      * @param string $tableName
      * @param array $foreignKeys [[table name, column name, foreign key constraint name], ...]. If the
      * foreign key constraint name is not supplied, the default name is constructed
+     * @param bool $dropIdSuffix If set to `true`, remove the _id suffix from the foreign key column
      * @return void
      */
     public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys, bool $dropIdSuffix = false)
@@ -49,11 +50,20 @@ class EnumMigrationHelper
      * Creates foreign keys from a list
      * @param array $foreignKeys See `replaceStaticTableWithEnum`
      * @param string $tableName
+     * @param bool $addIdSuffix If `true`, add an _id suffix to the foreign key columns if they originally ended with _id.
+     * This assumes that the _id suffix was previously removed by setting `$dropIdSuffix` to `true` in `replaceStaticTableWithEnum`
      * @return void
      */
-    public static function createForeignKeys(array $foreignKeys, string $tableName)
+    public static function createForeignKeys(array $foreignKeys, string $tableName, bool $addIdSuffix = false)
     {
         foreach ($foreignKeys as [$table, $column]) {
+            if ($addIdSuffix && str_ends_with($column, '_id')) {
+                $oldColumn = substr($column, 0, -3);
+                Schema::table($table, function (Blueprint $t) use ($oldColumn, $column) {
+                    $t->renameColumn($oldColumn, $column);
+                });
+            }
+
             Schema::table($table, function (Blueprint $t) use ($column, $tableName) {
                 $t->foreign($column)
                     ->references('id')

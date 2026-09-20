@@ -45,6 +45,6 @@ return new class extends Migration {
             ['id' => MediaType::VIDEO->value, 'name' => 'video'],
         ]);
 
-        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'media_types');
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'media_types', true);
     }
 };
