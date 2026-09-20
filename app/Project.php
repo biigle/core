@@ -190,7 +190,7 @@ class Project extends Model
      */
     public function imageVolumes()
     {
-        return $this->volumes()->where('media_type', MediaType::IMAGE->value);
+        return $this->volumes()->where('media_type', MediaType::IMAGE);
     }
 
     /**
@@ -200,7 +200,7 @@ class Project extends Model
      */
     public function videoVolumes()
     {
-        return $this->volumes()->where('media_type', MediaType::VIDEO->value);
+        return $this->volumes()->where('media_type', MediaType::VIDEO);
     }
 
     /**

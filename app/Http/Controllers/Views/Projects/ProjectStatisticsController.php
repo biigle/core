@@ -53,12 +53,12 @@ class ProjectStatisticsController extends Controller
 
         $volumeNames = $project->volumes()
             ->select('id', 'name')
-            ->where('media_type', MediaType::IMAGE->value)
+            ->where('media_type', MediaType::IMAGE)
             ->get();
 
         $volumeNamesVideo = $project->volumes()
             ->select('id', 'name')
-            ->where('media_type', MediaType::VIDEO->value)
+            ->where('media_type', MediaType::VIDEO)
             ->get();
 
         return view('projects.show.statistics', [
