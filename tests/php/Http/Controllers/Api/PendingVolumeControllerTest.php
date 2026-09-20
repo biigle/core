@@ -65,6 +65,33 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(422);
     }
 
+    public function testStoreConcurrently()
+    {
+        $this->beAdmin();
+        $id = $this->project()->id;
+
+        $throw = true;
+        PendingVolume::creating(function () use (&$throw) {
+            if ($throw) {
+                $throw = false;
+                throw new UniqueConstraintViolationException(
+                    'testing',
+                    'insert into pending_volumes',
+                    [],
+                    new Exception('duplicate'),
+                );
+            }
+        });
+
+        $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
+            'media_type' => 'image',
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('id')
+            ->assertJsonPath('errors.id.0', 'Only a single pending volume can be created at a time for each project and user.');
+
+        $this->assertSame(0, PendingVolume::count());
+    }
+
     public function testStoreVideo()
     {
         $this->beAdmin();
