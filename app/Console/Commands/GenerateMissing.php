@@ -44,9 +44,9 @@ class GenerateMissing extends Command
     protected $description = 'Generate missing data for annotations.';
 
     /**
-     * Queue to push process jobs to.
+     * Queue to push process jobs to. If null, the default queue of each job is used.
      */
-    protected string $queue;
+    protected ?string $queue;
 
     /**
      * Whether to skip checking for missing patches.
@@ -75,7 +75,7 @@ class GenerateMissing extends Command
      */
     public function handle()
     {
-        $this->queue = $this->option('queue') ?: config('largo.generate_annotation_patch_queue');
+        $this->queue = $this->option('queue') ?: null;
         $this->skipPatches = $this->option('skip-patches');
         $this->skipVectors = $this->option('skip-vectors');
         $this->skipSvgs = $this->option('skip-svgs');
@@ -237,34 +237,26 @@ class GenerateMissing extends Command
         $percent = round($count / $total * 100, 2);
         $this->info("\nFound {$count} annotations with missing data ({$percent} %).");
         if ($pushToQueue) {
-            $this->info("Pushed {$jobCount} jobs to queue {$this->queue}.");
+            $this->info("Pushed {$jobCount} jobs to the queue.");
         }
     }
 
     protected function dispatcheProcessJob(VolumeFile $file, Collection $ids)
     {
-        if ($file instanceof Image) {
-            $ids->chunk(1000)->each(
-                fn ($chunk) =>
-                ProcessAnnotatedImage::dispatch(
-                    $file,
-                    only: $chunk->toArray(),
-                    skipPatches: $this->skipPatches,
-                    skipFeatureVectors: $this->skipVectors,
-                    skipSvgs: $this->skipSvgs
-                )->onQueue($this->queue)
+        $class = $file instanceof Image ? ProcessAnnotatedImage::class : ProcessAnnotatedVideo::class;
+
+        $ids->chunk(1000)->each(function ($chunk) use ($class, $file) {
+            $dispatch = $class::dispatch(
+                $file,
+                only: $chunk->toArray(),
+                skipPatches: $this->skipPatches,
+                skipFeatureVectors: $this->skipVectors,
+                skipSvgs: $this->skipSvgs
             );
-        } else {
-            $ids->chunk(1000)->each(
-                fn ($chunk) =>
-                ProcessAnnotatedVideo::dispatch(
-                    $file,
-                    only: $chunk->toArray(),
-                    skipPatches: $this->skipPatches,
-                    skipFeatureVectors: $this->skipVectors,
-                    skipSvgs: $this->skipSvgs
-                )->onQueue($this->queue)
-            );
-        }
+
+            if ($this->queue) {
+                $dispatch->onQueue($this->queue);
+            }
+        });
     }
 }

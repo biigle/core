@@ -328,7 +328,7 @@ export default {
                 }));
             }
         },
-        async createAnnotation(pendingAnnotation) {
+        async createAnnotation(pendingAnnotation, track = false) {
             this.updatePendingAnnotation(pendingAnnotation);
             // Save this because it is still  required when there may already be another
             // this.pendingAnnotation.
@@ -349,10 +349,14 @@ export default {
                 shape: this.shapes[pendingAnnotation.shape],
             };
 
+            if (track) {
+                newAnnotation.track = true;
+            }
+
             if (!this.labelbotIsActive) {
                 newAnnotation.label_id = this.selectedLabel.id;
 
-                return this.saveAnnotation(newAnnotation, pendingAnnotation);
+                return this.saveAnnotation(newAnnotation, pendingAnnotation, track);
             }
 
             try {
@@ -366,7 +370,7 @@ export default {
 
             const promise = this.saveLabelbotAnnotation(
                 newAnnotation,
-                (annotation) => this.saveAnnotation(annotation, pendingAnnotation)
+                (annotation) => this.saveAnnotation(annotation, pendingAnnotation, track)
             );
 
             const videoId = this.videoId;
@@ -379,10 +383,10 @@ export default {
             return promise;
 
         },
-        saveAnnotation(newAnnotation, pendingAnnotation) {
+        saveAnnotation(newAnnotation, pendingAnnotation, track = false) {
             return VideoAnnotationApi.save({id: this.videoId}, newAnnotation)
                 .then((res) => {
-                    if (pendingAnnotation.track) {
+                    if (track) {
                         this.disableJobTracking = res.body.trackingJobLimitReached;
                     }
                     return this.addCreatedAnnotation(res);
@@ -395,8 +399,7 @@ export default {
                 });
         },
         trackAnnotation(pendingAnnotation) {
-            pendingAnnotation.track = true;
-            this.createAnnotation(pendingAnnotation)
+            this.createAnnotation(pendingAnnotation, true)
                 .then(this.setAnnotationTrackingState);
         },
         setAnnotationTrackingState(annotation) {

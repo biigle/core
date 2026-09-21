@@ -84,6 +84,15 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         public int $redispatchTries = 0,
     ) {
         $this->targetDisk = $targetDisk ?: config('largo.patch_storage_disk');
+        $this->onQueue(config($this->getQueueConfigKey()));
+    }
+
+    /**
+     * Get the config key of the queue that should be used to process this job.
+     */
+    protected function getQueueConfigKey(): string
+    {
+        return 'largo.generate_annotation_patch_queue';
     }
 
     /**

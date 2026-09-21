@@ -18,6 +18,7 @@ use Biigle\Shape;
 use Biigle\Volume;
 use Exception;
 use FileCache;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
@@ -62,6 +63,29 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'image',
         ])->assertStatus(422);
+    }
+
+    public function testStoreConcurrently()
+    {
+        $this->beAdmin();
+        $id = $this->project()->id;
+
+        PendingVolume::creating(function () {
+            throw new UniqueConstraintViolationException(
+                'testing',
+                'insert into pending_volumes',
+                [],
+                new Exception('duplicate'),
+            );
+        });
+
+        $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
+            'media_type' => 'image',
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('id')
+            ->assertJsonPath('errors.id.0', 'Only a single pending volume can be created at a time for each project and user.');
+
+        $this->assertSame(0, PendingVolume::count());
     }
 
     public function testStoreVideo()
@@ -424,6 +448,61 @@ class PendingVolumeControllerTest extends ApiTestCase
         $pv = PendingVolume::where('volume_id', $id)->first();
         $this->assertNotSame($old->id, $pv->id);
         $this->assertNull($old->fresh());
+    }
+
+    public function testStoreVolumeConcurrently()
+    {
+        config([
+            'volumes.metadata_storage_disk' => 'metadata',
+            'volumes.pending_metadata_storage_disk' => 'pending-metadata',
+        ]);
+        $metaDisk = Storage::fake('metadata');
+        $metaDisk->put('metadata.csv', 'abc');
+        Storage::fake('pending-metadata');
+
+        $id = $this->volume()->id;
+        $old = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $this->beAdmin();
+        $this->volume()->update([
+            'metadata_file_path' => 'metadata.csv',
+            'metadata_parser' => ImageCsvParser::class,
+        ]);
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::POINT,
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+        Cache::store('array')->put('metadata-metadata-metadata.csv', $metadata);
+
+        PendingVolume::creating(function () {
+            throw new UniqueConstraintViolationException(
+                'testing',
+                'insert into pending_volumes',
+                [],
+                new Exception('duplicate'),
+            );
+        });
+
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_annotations' => true,
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('id')
+            ->assertJsonPath('errors.id.0', 'Only one metadata import can be performed at a time.');
+
+        $this->assertNotNull($old->fresh());
+        $this->assertSame(1, PendingVolume::count());
     }
 
     public function testUpdateImages()

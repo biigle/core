@@ -28,6 +28,7 @@ export default {
     },
     data() {
         return {
+            keyboardOffCallbacks: [],
             showKeyboardShortcutsModal: false,
         };
     },
@@ -45,7 +46,14 @@ export default {
             }
         }
     },
+    created() {
+        this.keyboardOffCallbacks.push(
+            Keyboard.on('F1', this.openKeyboardShortcutsModal),
+            Keyboard.on('q', this.openKeyboardShortcutsModal),
+        );
+    },
     beforeUnmount() {
+        this.keyboardOffCallbacks.forEach(off => off());
         Keyboard.enable();
     }
 };

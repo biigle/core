@@ -28,6 +28,16 @@ class ProcessAnnotatedVideoTest extends TestCase
         FileCache::fake();
     }
 
+    public function testConstructorDefaultQueue()
+    {
+        config([
+            'largo.generate_annotation_patch_queue' => 'annotation-patches',
+            'largo.generate_video_annotation_patch_queue' => 'video-annotation-patches',
+        ]);
+        $job = new ProcessAnnotatedVideo(new VideoModel);
+        $this->assertSame('video-annotation-patches', $job->queue);
+    }
+
     public function testHandleStorage()
     {
         $disk = Storage::fake('test');
