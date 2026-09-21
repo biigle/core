@@ -77,7 +77,7 @@ class LabelTreeProjectsController extends Controller
             'visibilities' => $visibilities,
             'authorizedProjects' => $authorizedProjects,
             'authorizedOwnProjects' => $authorizedOwnProjects,
-            'private' => $tree->visibility_id === Visibility::PRIVATE,
+            'private' => $tree->visibility === Visibility::PRIVATE,
             'activeTab' => 'projects',
         ]);
     }
@@ -108,7 +108,7 @@ class LabelTreeProjectsController extends Controller
             'tree' => $tree,
             'masterTree' => $tree->version->labelTree,
             'projects' => $projects,
-            'private' => $tree->visibility_id === Visibility::PRIVATE,
+            'private' => $tree->visibility === Visibility::PRIVATE,
             'activeTab' => 'projects',
         ]);
     }

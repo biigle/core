@@ -23,7 +23,7 @@ return new class extends Migration {
             $oldIds['private'] => Visibility::PRIVATE->value,
         ];
 
-        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'visibilities', $this->foreignKeys);
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'visibilities', $this->foreignKeys, true);
     }
 
     /**
@@ -42,6 +42,6 @@ return new class extends Migration {
             ['id' => Visibility::PRIVATE->value, 'name' => 'private'],
         ]);
 
-        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'visibilities');
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'visibilities', true);
     }
 };

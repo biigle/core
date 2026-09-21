@@ -51,7 +51,7 @@ class LabelTreeMembersController extends Controller
             'members' => $members,
             'roles' => $roles,
             'visibilities' => $visibilities,
-            'private' => $tree->visibility_id === Visibility::PRIVATE,
+            'private' => $tree->visibility === Visibility::PRIVATE,
             'activeTab' => 'members',
         ]);
     }

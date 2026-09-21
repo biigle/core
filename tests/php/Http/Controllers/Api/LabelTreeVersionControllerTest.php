@@ -56,7 +56,7 @@ class LabelTreeVersionControllerTest extends ApiTestCase
         $this->assertNotNull($versionTree);
         $this->assertSame($master->name, $versionTree->name);
         $this->assertSame('First version.', $versionTree->description);
-        $this->assertSame($master->visibility_id, $versionTree->visibility_id);
+        $this->assertSame($master->visibility, $versionTree->visibility);
         $this->assertNotEquals($master->uuid, $versionTree->uuid);
 
         $this->assertNotNull($versionTree->authorizedProjects()->find($this->project()->id));

@@ -9,7 +9,7 @@ import {Resource} from 'vue-resource';
  * resource.query().then(...);
  *
  * Create a new label tree:
- * resource.save({}, {name: "My Label Tree", visibility_id: 1, description: "tree"}).then(...);
+ * resource.save({}, {name: "My Label Tree", visibility: 1, description: "tree"}).then(...);
  *
  * Update a label tree:
  * resource.update({id: 1}, {name: 'My new name'}).then(...);

@@ -260,7 +260,7 @@ class LabelTreeImport extends Import
                 'name' => $tree['name'],
                 'description' => $tree['description'],
                 'uuid' => $tree['uuid'],
-                'visibility_id' => Visibility::PRIVATE->value,
+                'visibility' => Visibility::PRIVATE->value,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

@@ -49,7 +49,7 @@ class LabelTreeVersionPolicyTest extends TestCase
 
     public function testAccessPrivate()
     {
-        $this->version->labelTree->visibility_id = Visibility::PRIVATE->value;
+        $this->version->labelTree->visibility = Visibility::PRIVATE->value;
         $this->version->labelTree->save();
         $this->assertFalse($this->user->can('access', $this->version));
         $this->assertTrue($this->editor->can('access', $this->version));
@@ -59,7 +59,7 @@ class LabelTreeVersionPolicyTest extends TestCase
 
     public function testAccessViaProjectMembership()
     {
-        $this->version->labelTree->visibility_id = Visibility::PRIVATE->value;
+        $this->version->labelTree->visibility = Visibility::PRIVATE->value;
         $this->version->labelTree->save();
         $project = ProjectTest::create();
         $this->assertFalse($project->creator->can('access', $this->version));

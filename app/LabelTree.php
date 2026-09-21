@@ -31,7 +31,7 @@ class LabelTree extends Model
     protected function casts(): array
     {
         return [
-            'visibility_id' => Visibility::class,
+            'visibility' => Visibility::class,
             'label_tree_version_id' => 'int',
         ];
     }
@@ -58,7 +58,7 @@ class LabelTree extends Model
      */
     public function scopePublicTrees($query)
     {
-        return $query->where('visibility_id', Visibility::PUBLIC->value);
+        return $query->where('visibility', Visibility::PUBLIC->value);
     }
 
     /**
@@ -69,7 +69,7 @@ class LabelTree extends Model
      */
     public function scopePrivateTrees($query)
     {
-        return $query->where('visibility_id', Visibility::PRIVATE->value);
+        return $query->where('visibility', Visibility::PRIVATE->value);
     }
 
     /**
@@ -86,7 +86,7 @@ class LabelTree extends Model
         }
 
         return $query->where(function ($query) use ($user) {
-            $query->where('label_trees.visibility_id', Visibility::PUBLIC->value)
+            $query->where('label_trees.visibility', Visibility::PUBLIC->value)
                 // Do it like this instead of a join with label_tree_user because
                 // there can be global label trees without any members, too!
                 ->orWhere(function ($query) use ($user) {
@@ -133,7 +133,7 @@ class LabelTree extends Model
     {
         return $query->withoutVersions()
             ->whereDoesntHave('members')
-            ->where('label_trees.visibility_id', Visibility::PUBLIC->value);
+            ->where('label_trees.visibility', Visibility::PUBLIC->value);
     }
 
     /**
@@ -154,16 +154,6 @@ class LabelTree extends Model
     public function versions()
     {
         return $this->hasMany(LabelTreeVersion::class);
-    }
-
-    /**
-     * The visibility of the label tree.
-     *
-     * @return Visibility
-     */
-    public function getVisibilityAttribute()
-    {
-        return $this->visibility_id;
     }
 
     /**

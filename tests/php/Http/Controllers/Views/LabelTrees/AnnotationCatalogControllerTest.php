@@ -13,7 +13,7 @@ class AnnotationCatalogControllerTest extends TestCase
 {
     public function testIndex()
     {
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value]);
 
         $this->get("label-trees/{$tree->id}/catalog")->assertStatus(302);
 

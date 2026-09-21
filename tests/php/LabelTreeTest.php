@@ -158,8 +158,8 @@ class LabelTreeTest extends ModelTestCase
 
     public function testPublicScope()
     {
-        $public = static::create(['visibility_id' => Visibility::PUBLIC->value]);
-        $private = static::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $public = static::create(['visibility' => Visibility::PUBLIC->value]);
+        $private = static::create(['visibility' => Visibility::PRIVATE->value]);
 
         $ids = LabelTree::publicTrees()->pluck('id');
         $this->assertContains($public->id, $ids);
@@ -168,8 +168,8 @@ class LabelTreeTest extends ModelTestCase
 
     public function testPrivateScope()
     {
-        $public = static::create(['visibility_id' => Visibility::PUBLIC->value]);
-        $private = static::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $public = static::create(['visibility' => Visibility::PUBLIC->value]);
+        $private = static::create(['visibility' => Visibility::PRIVATE->value]);
 
         $ids = LabelTree::privateTrees()->pluck('id');
         $this->assertContains($private->id, $ids);
@@ -221,9 +221,9 @@ class LabelTreeTest extends ModelTestCase
     {
         $this->model->delete();
         $user = UserTest::create();
-        $tree = self::create(['visibility_id' => Visibility::PUBLIC->value]);
-        $tree2 = self::create(['visibility_id' => Visibility::PRIVATE->value]);
-        $tree3 = self::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $tree = self::create(['visibility' => Visibility::PUBLIC->value]);
+        $tree2 = self::create(['visibility' => Visibility::PRIVATE->value]);
+        $tree3 = self::create(['visibility' => Visibility::PRIVATE->value]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertSame([$tree->id], $ids);
@@ -244,7 +244,7 @@ class LabelTreeTest extends ModelTestCase
     public function testScopeAccessibleByAdmin()
     {
         $user = UserTest::create(['role' => Role::ADMIN->value]);
-        $tree = self::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $tree = self::create(['visibility' => Visibility::PRIVATE->value]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertContains($tree->id, $ids);

@@ -14,7 +14,7 @@
                     <a href="{{route('label-trees', $tree->id)}}" title="Show {{$tree->name}}">{{$tree->name}}</a>
                 @endif
             </span>
-            @if ($tree->visibility_id === Biigle\Visibility::PRIVATE->value)
+            @if ($tree->visibility === Biigle\Visibility::PRIVATE->value)
                 <span class="label label-default label-hollow" title="This label tree is private">Private</span>
             @endif
             <br>

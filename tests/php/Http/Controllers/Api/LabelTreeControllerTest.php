@@ -34,7 +34,7 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testIndexPrivate()
     {
         $tree = $this->labelTree();
-        $tree->visibility_id = Visibility::PRIVATE->value;
+        $tree->visibility = Visibility::PRIVATE->value;
         $tree->save();
 
         $this->beUser();
@@ -74,7 +74,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility_id' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE->value,
         ]);
 
         $label = LabelTest::create([
@@ -120,7 +120,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility_id' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE->value,
         ]);
         $id = $tree->id;
         $tree->addMember($this->editor(), Role::EDITOR);
@@ -144,7 +144,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
-            'visibility_id' => 999,
+            'visibility' => 999,
         ]);
         // visibility must exist
         $response->assertStatus(422);
@@ -164,11 +164,11 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertSame('this is my test', $tree->fresh()->description);
 
         $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
         ]);
         $response->assertStatus(200);
 
-        $this->assertSame(Visibility::PUBLIC, $tree->fresh()->visibility_id);
+        $this->assertSame(Visibility::PUBLIC, $tree->fresh()->visibility);
     }
 
     public function testUpdateFormRequest()
@@ -176,7 +176,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility_id' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE->value,
         ]);
         $id = $tree->id;
         $tree->addMember($this->user(), Role::ADMIN);
@@ -203,7 +203,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
         ]);
         $id = $tree->id;
         $tree->addMember($this->admin(), Role::ADMIN);
@@ -214,7 +214,7 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
-            'visibility_id' => strval(Visibility::PRIVATE->value),
+            'visibility' => strval(Visibility::PRIVATE->value),
         ]);
 
         $this->assertSame($authorized->id, $tree->projects()->pluck('id')->first());
@@ -222,21 +222,21 @@ class LabelTreeControllerTest extends ApiTestCase
 
     public function testUpdatePropagateVisibility()
     {
-        $master = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $master = LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value]);
         $version = LabelTreeVersionTest::create(['label_tree_id' => $master->id]);
         $tree = LabelTreeTest::create([
             'version_id' => $version->id,
-            'visibility_id' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE->value,
         ]);
         $master->addMember($this->admin(), Role::ADMIN);
         $this->beAdmin();
         $this
             ->putJson("/api/v1/label-trees/{$master->id}", [
-                'visibility_id' => Visibility::PUBLIC->value,
+                'visibility' => Visibility::PUBLIC->value,
             ])
             ->assertStatus(200);
 
-        $this->assertSame(Visibility::PUBLIC, $tree->fresh()->visibility_id);
+        $this->assertSame(Visibility::PUBLIC, $tree->fresh()->visibility);
     }
 
     public function testUpdatePropagateName()
@@ -274,14 +274,14 @@ class LabelTreeControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', '/api/v1/label-trees', [
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
         ]);
         // name is required
         $response->assertStatus(422);
 
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => 9999,
+            'visibility' => 9999,
         ]);
         // visibility must exist
         $response->assertStatus(422);
@@ -290,7 +290,7 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
         ]);
         // description is optional
         $response->assertSuccessful();
@@ -300,7 +300,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             // make ID a string so seeJsonEquals works
-            'visibility_id' => ''.Visibility::PUBLIC->value,
+            'visibility' => ''.Visibility::PUBLIC->value,
             'description' => 'my description',
         ]);
         $response->assertSuccessful();
@@ -322,19 +322,19 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->beGlobalGuest();
         $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
         ])->assertStatus(403);
 
         $this->beUser();
         $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
         ])->assertSuccessful();
 
         $this->beGlobalAdmin();
         $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
         ])->assertSuccessful();
     }
 
@@ -343,7 +343,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->beEditor();
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
             'description' => 'my description',
             'project_id' => $this->project()->id,
         ]);
@@ -354,7 +354,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->beAdmin();
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
             'description' => 'my description',
             'project_id' => 999,
         ]);
@@ -362,7 +362,7 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
             'description' => 'my description',
             'project_id' => $this->project()->id,
         ]);
@@ -378,14 +378,14 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->get('/');
         $response = $this->post('/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
             'description' => 'my description',
         ]);
         $this->assertSame(1, LabelTree::count());
 
         $response = $this->post('/api/v1/label-trees', [
             'name' => 'abc',
-            'visibility_id' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC->value,
             'description' => 'my description',
             '_redirect' => 'settings',
         ]);
@@ -396,7 +396,7 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testStoreFork()
     {
         $baseTree = LabelTreeTest::create([
-            'visibility_id' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE->value,
         ]);
         $baseParent = LabelTest::create(['label_tree_id' => $baseTree->id]);
         $baseChild = LabelTest::create([
@@ -409,7 +409,7 @@ class LabelTreeControllerTest extends ApiTestCase
             ->postJson('/api/v1/label-trees', [
                 'upstream_label_tree_id' => $baseTree->id,
                 'name' => 'abc',
-                'visibility_id' => Visibility::PUBLIC->value,
+                'visibility' => Visibility::PUBLIC->value,
                 'description' => 'my description',
             ])
             // No access to private label tree.
@@ -422,20 +422,20 @@ class LabelTreeControllerTest extends ApiTestCase
             ->postJson('/api/v1/label-trees', [
                 'upstream_label_tree_id' => $baseTree->id,
                 'name' => 'abc',
-                'visibility_id' => Visibility::PUBLIC->value,
+                'visibility' => Visibility::PUBLIC->value,
                 'description' => 'my description',
             ])
             // Members can fork private trees.
             ->assertSuccessful();
 
         $this->beGuest();
-        $baseTree->visibility_id = Visibility::PUBLIC->value;
+        $baseTree->visibility = Visibility::PUBLIC->value;
         $baseTree->save();
         $this
             ->postJson('/api/v1/label-trees', [
                 'upstream_label_tree_id' => $baseTree->id,
                 'name' => 'abc',
-                'visibility_id' => Visibility::PUBLIC->value,
+                'visibility' => Visibility::PUBLIC->value,
                 'description' => 'my description',
             ])
             // Everybody can fork public trees.

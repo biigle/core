@@ -32,15 +32,15 @@
                 @endif
             </div>
 
-            <div class="form-group{{ $errors->has('visibility_id') ? ' has-error' : '' }}">
-                <label for="visibility_id">Visibility</label>
-                <select class="form-control" name="visibility_id" required>
+            <div class="form-group{{ $errors->has('visibility') ? ' has-error' : '' }}">
+                <label for="visibility">Visibility</label>
+                <select class="form-control" name="visibility" required>
                     @foreach($visibilities as $visibility)
                         <option value="{{$visibility->value}}" @selected($selectedVisibility === $visibility->value)>{{$visibility->label()}}</option>
                     @endforeach
                 </select>
-                @if($errors->has('visibility_id'))
-                    <span class="help-block">{{ $errors->first('visibility_id') }}</span>
+                @if($errors->has('visibility'))
+                    <span class="help-block">{{ $errors->first('visibility') }}</span>
                 @endif
             </div>
 

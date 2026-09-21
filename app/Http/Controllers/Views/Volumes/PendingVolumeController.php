@@ -251,7 +251,7 @@ class PendingVolumeController extends Controller
 
         // Hide attributes for a more compact JSON representation.
         $labelTrees->each(function ($tree) {
-            $tree->makeHidden(['visibility_id', 'created_at', 'updated_at']);
+            $tree->makeHidden(['visibility', 'created_at', 'updated_at']);
             $tree->labels->each(function ($label) {
                 $label->makeHidden(['source_id', 'label_source_id', 'label_tree_id', 'parent_id']);
             });

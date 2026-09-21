@@ -39,7 +39,7 @@ class SearchControllerTest extends TestCase
         $tree2 = LabelTreeTest::create(['name' => 'another tree']);
         $tree3 = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE->value,
         ]);
         $tree->addMember($user, Role::EDITOR);
 
@@ -61,7 +61,7 @@ class SearchControllerTest extends TestCase
     {
         $tree = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE->value,
         ]);
 
         $project = ProjectTest::create();

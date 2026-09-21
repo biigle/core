@@ -15,10 +15,10 @@ class LabelTreeControllerTest extends TestCase
 {
     public function testShow()
     {
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::PUBLIC->value]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC->value]);
         $user = UserTest::create();
 
-        $privateTree = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $privateTree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value]);
 
         // not logged in
         $response = $this->get("label-trees/{$tree->id}");
@@ -121,7 +121,7 @@ class LabelTreeControllerTest extends TestCase
     {
         $user = UserTest::create(['role' => Role::EDITOR->value]);
         $this->be($user);
-        $labelTree = LabelTreeTest::create(['visibility_id' => Visibility::PRIVATE->value]);
+        $labelTree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value]);
         $response = $this->get('label-trees/create?upstream_label_tree='.$labelTree->id);
         $response->assertStatus(403);
 

@@ -431,7 +431,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
         // The other tests use a label from a public label tree.
         $dbLabel = DbLabel::factory()->create([
             'label_tree_id' => LabelTree::factory()->create([
-                'visibility_id' => Visibility::PRIVATE->value,
+                'visibility' => Visibility::PRIVATE->value,
             ])->id,
         ]);
 
@@ -464,7 +464,7 @@ class PendingVolumeImportControllerTest extends ApiTestCase
 
         $dbLabel = DbLabel::factory()->create([
             'label_tree_id' => LabelTree::factory()->create([
-                'visibility_id' => Visibility::PRIVATE->value,
+                'visibility' => Visibility::PRIVATE->value,
             ])->id,
         ]);
 
