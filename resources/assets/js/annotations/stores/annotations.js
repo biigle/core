@@ -76,7 +76,6 @@ class Annotations {
 
     create(imageId, annotation) {
         annotation.shape = this.inverseShapeMap[annotation.shape];
-        delete annotation.shape;
 
         return ImagesApi.saveAnnotations({id: imageId}, annotation)
             .then(this.parseResponse.bind(this))
