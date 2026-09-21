@@ -51,6 +51,20 @@
             </div>
             <div class="form-group largo-filter-select filter-select">
                 <select
+                    v-if="dateFilterSelected"
+                    class="form-control"
+                    v-model="dateLogicalValue"
+                    selected="true"
+                    required
+                >
+                    <option
+                        v-for="value in Object.keys(dateLogicalOptions)"
+                        :value="value"
+                        v-text="value"
+                    ></option>
+                </select>
+                <select
+                    v-else
                     class="form-control"
                     v-model="negate"
                     selected="true"
@@ -71,6 +85,10 @@
                     placeholder="Filename pattern (use * for wildcards)"
                     title="Enter a filename pattern. Use * as wildcard to match any characters."
                     >
+                <datepicker-dropdown
+                    v-else-if="dateFilterSelected"
+                    v-model="dateFilterSelectedValue"
+                    ></datepicker-dropdown>
                 <select
                     v-else
                     class="form-control"
@@ -102,8 +120,12 @@ import LargoProjectsApi from "../api/projects.js";
 import ProjectsApi from "../../core/api/projects.js";
 import VolumesApi from "../api/volumes.js";
 import { handleErrorResponse } from "@/core/messages/store.js";
+import DatepickerDropdown from '@/uiv/datepickerDropdown.vue';
 
 export default {
+    components: {
+        datepickerDropdown: DatepickerDropdown,
+    },
     emits: [
         'set-union-logic',
         'reset-filters',
@@ -123,17 +145,33 @@ export default {
             filterValues: {
                 Shape: availableShapes,
                 User: {},
-                Filename: {}
+                Filename: {},
+                'Annotation created': {},
+                'Label assigned': {},
+                'Annotation updated': {},
+                'Label updated': {},
             },
             filterToKeyMapping: {
                 Shape: "shape_id",
                 User: "user_id",
-                Filename: "filename"
+                Filename: "filename",
+                'Annotation created': "created_at",
+                'Label assigned': "created_at",
+                'Annotation updated': "updated_at",
+                'Label updated': "updated_at",
             },
             selectedFilter: "Shape",
             selectedFilterValue: null,
             filenamePattern: '',
             negate: false,
+            dateFilterSelectedValue: null,
+            dateLogicalOptions: {
+                "before": "lt",
+                "on": "eq",
+                "not on ": "neq",
+                "after": "gt",
+            },
+            dateLogicalValue: "before",
         };
 
         //Project-specific filters
@@ -154,6 +192,10 @@ export default {
                 return this.cleanFilenamePattern.length > 0;
             }
 
+            if (this.dateFilterSelected) {
+                return this.dateFilterSelectedValue !== null;
+            }
+
             return this.selectedFilterValue !== null;
         },
         cleanFilenamePattern() {
@@ -161,6 +203,10 @@ export default {
         },
         selectedFilenameFilter() {
             return this.selectedFilter === 'Filename';
+        },
+        dateFilterSelected() {
+            return this.filterToKeyMapping[this.selectedFilter].includes("created") ||
+                   this.filterToKeyMapping[this.selectedFilter].includes("updated");
         },
     },
 
@@ -234,6 +280,18 @@ export default {
                 filterValue = this.cleanFilenamePattern;
                 logicalString = this.negate ? 'does not match' : 'matches';
                 this.filenamePattern = '';
+            } else if (this.dateFilterSelected) {
+                this.negate = false;
+                let ref = this.selectedFilter.includes('Annotation') ? 'annotation' : 'annotation_label';
+                filterName = this.dateFilterSelectedValue ;
+
+                logicalString = this.dateLogicalValue;
+                filterValue = {
+                    'ref': ref,
+                    'operator': this.dateLogicalOptions[this.dateLogicalValue],
+                    'date': filterName,
+                };
+
             } else {
                 if (!this.selectedFilterValue) {
                     return;
