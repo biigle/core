@@ -22,7 +22,7 @@ class ImageAnnotationExportTest extends TestCase
         $expect = [
             "{$annotation->id}",
             "{$annotation->image_id}",
-            "{$annotation->shape_id->value}",
+            "{$annotation->shape->value}",
             "{$annotation->created_at}",
             "{$annotation->updated_at}",
             json_encode($annotation->points),

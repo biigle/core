@@ -90,9 +90,9 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $s1 = Shape::POINT;
         $s2 = Shape::CIRCLE;
 
-        $a1 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->value]);
-        $a2 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s1->value]);
-        $a3 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape_id' =>$s2->value]);
+        $a1 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape' =>$s1->value]);
+        $a2 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape' =>$s1->value]);
+        $a3 = VideoAnnotationTest::create(['video_id' => $video->id, 'shape' =>$s2->value]);
 
         $l1 = VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'user_id' =>$u1->id]);
         $l2 = VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id, 'user_id' =>$u2->id]);
@@ -101,7 +101,7 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $this->beEditor();
 
         //Case 1: filter by shape
-        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->value}")
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape[]={$s1->value}")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid]);
 
         //Case 2: filter by user
@@ -109,21 +109,21 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
             ->assertExactJson([$a2->id => $video->uuid, $a3->id => $video->uuid]);
 
         //Case 3: filter by shape and user
-        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s2->value}&user_id[]={$u2->id}&union=0")
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape[]={$s2->value}&user_id[]={$u2->id}&union=0")
             ->assertExactJson([$a3->id => $video->uuid]);
 
         //Case 4: combine user and shape with negatives
-        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s2->value}&user_id[]=-{$u2->id}&union=0")
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape[]=-{$s2->value}&user_id[]=-{$u2->id}&union=0")
             ->assertExactJson([$a1->id => $video->uuid]);
 
         //Case 5: combine filters (excluding values and not) with union
         $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]={$u2->id}&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid, $a3->id => $video->uuid]);
 
-        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]={$s1->value}&user_id[]={$u1->id}&union=1")
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape[]={$s1->value}&user_id[]={$u1->id}&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid]);
 
-        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape_id[]=-{$s1->value}&user_id[]={$u1->id}&union=1")
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?shape[]=-{$s1->value}&user_id[]={$u1->id}&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a3->id => $video->uuid]);
 
         //Case 6: combine incompatible filters: annotations should be of user1 and/or user2 at the same time
@@ -133,7 +133,7 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]=-{$u1->id}&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid, $a3->id => $video->uuid]);
 
-        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]=-{$u1->id}&shape_id[]=1&union=1")
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?user_id[]={$u1->id}&user_id[]=-{$u1->id}&shape[]=1&union=1")
             ->assertExactJson([$a1->id => $video->uuid, $a2->id => $video->uuid, $a3->id => $video->uuid]);
 
         //Case 7: combine with a 'not' case

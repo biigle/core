@@ -216,7 +216,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     {
         $this->getAnnotationQuery()
             // No SVGs should be generated for whole frame annotations.
-            ->where('shape_id', '!=', Shape::WHOLE_FRAME->value)
+            ->where('shape', '!=', Shape::WHOLE_FRAME->value)
             ->eachById(fn ($a) => $this->createSvg($a));
     }
 

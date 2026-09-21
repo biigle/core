@@ -21,14 +21,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreValidation()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10], [20, 20]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [2.0, 4.0],
             'points' => [[30, 30], [40, 40]],
@@ -59,7 +59,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             // Other annotation must belong to the same video.
             ->assertStatus(422);
 
-        $a2->update(['video_id' => $this->video->id, 'shape_id' => Shape::CIRCLE->value]);
+        $a2->update(['video_id' => $this->video->id, 'shape' => Shape::CIRCLE->value]);
         $this
             ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
@@ -67,7 +67,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             // The shapes must match.
             ->assertStatus(422);
 
-        $a2->update(['shape_id' => Shape::POINT->value]);
+        $a2->update(['shape' => Shape::POINT->value]);
         $this
             ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
@@ -82,14 +82,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreValidateOverlap()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10], [20, 20]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.5, 2.5],
             'points' => [[30, 30], [40, 40]],
@@ -148,14 +148,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreBefore()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [3.0, 4.0],
             'points' => [[10, 10], [20, 20]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[30, 30], [40, 40]],
@@ -176,14 +176,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreAfter()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10], [20, 20]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [3.0, 4.0],
             'points' => [[30, 30], [40, 40]],
@@ -204,7 +204,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreMergeLabels()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[10, 10]],
@@ -215,7 +215,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [2.0],
             'points' => [[20, 20]],
@@ -254,14 +254,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreTouching()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10], [20, 20]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [2.09, 3.0],
             'points' => [[30, 30], [40, 40]],
@@ -282,14 +282,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreSingleFrameTouching()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[10, 10]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[30, 30]],
@@ -307,14 +307,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreWholeFrame()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::WHOLE_FRAME->value,
+            'shape' => Shape::WHOLE_FRAME->value,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::WHOLE_FRAME->value,
+            'shape' => Shape::WHOLE_FRAME->value,
             'video_id' => $this->video->id,
             'frames' => [2.0],
             'points' => [],

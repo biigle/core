@@ -34,7 +34,7 @@ class Annotations {
     }
 
     resolveShape(annotation) {
-        annotation.shape = this.shapeMap[annotation.shape_id];
+        annotation.shape = this.shapeMap[annotation.shape];
 
         return annotation;
     }
@@ -75,7 +75,7 @@ class Annotations {
     }
 
     create(imageId, annotation) {
-        annotation.shape_id = this.inverseShapeMap[annotation.shape];
+        annotation.shape = this.inverseShapeMap[annotation.shape];
         delete annotation.shape;
 
         return ImagesApi.saveAnnotations({id: imageId}, annotation)

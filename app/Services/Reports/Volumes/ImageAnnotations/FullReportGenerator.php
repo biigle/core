@@ -84,7 +84,7 @@ class FullReportGenerator extends AnnotationReportGenerator
                 'images.filename',
                 'image_annotations.id as annotation_id',
                 'image_annotation_labels.label_id',
-                'image_annotations.shape_id',
+                'image_annotations.shape',
                 'image_annotations.points',
                 'images.attrs',
             ])
@@ -111,7 +111,7 @@ class FullReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->annotation_id,
                 $this->expandLabelName($row->label_id),
-                Shape::from($row->shape_id)->label(),
+                Shape::from($row->shape)->label(),
                 $row->points,
                 $this->getArea($row->attrs),
             ]);

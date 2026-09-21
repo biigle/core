@@ -49,7 +49,7 @@ class UpdateVideoAnnotation extends FormRequest
                 'bail',
                 Rule::when(!$this->isWholeFrame(), 'required'),
                 'array',
-                new VideoAnnotationPoints($this->annotation->shape_id->value),
+                new VideoAnnotationPoints($this->annotation->shape->value),
             ],
         ];
     }
@@ -85,6 +85,6 @@ class UpdateVideoAnnotation extends FormRequest
      */
     protected function isWholeFrame(): bool
     {
-        return $this->annotation->shape_id === Shape::WHOLE_FRAME;
+        return $this->annotation->shape === Shape::WHOLE_FRAME;
     }
 }

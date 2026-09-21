@@ -96,14 +96,14 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $query = $this
             ->initQuery([
                 'image_annotations.id as annotation_id',
-                'image_annotations.shape_id',
+                'image_annotations.shape',
                 'image_annotation_labels.label_id',
                 'labels.name as label_name',
                 'image_annotations.image_id',
                 'image_annotations.points',
             ])
             // We can only compute the area from annotations that have an area.
-            ->whereIn('image_annotations.shape_id', [
+            ->whereIn('image_annotations.shape', [
                 Shape::CIRCLE->value,
                 Shape::RECTANGLE->value,
                 Shape::POLYGON->value,
@@ -129,7 +129,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $csv->put($title);
         $csv->putCsv([
             'annotation_id',
-            'shape_id',
+            'shape',
             'shape_name',
             'label_ids',
             'label_names',
@@ -146,8 +146,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
         foreach ($rows as $row) {
             $csv->putCsv([
                 $row->id,
-                $row->shape_id,
-                Shape::from($row->shape_id)->label(),
+                $row->shape,
+                Shape::from($row->shape)->label(),
                 implode(', ', $row->label_ids),
                 implode(', ', $row->label_names),
                 $row->image_id,
@@ -183,8 +183,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
             } else {
                 $annotation = new StdClass();
                 $annotation->id = $row->annotation_id;
-                $annotation->shape_id = $row->shape_id;
-                $annotation->shape_name = Shape::from($row->shape_id)->label();
+                $annotation->shape = $row->shape;
+                $annotation->shape_name = Shape::from($row->shape)->label();
                 $annotation->label_ids = [$row->label_id];
                 $annotation->label_names = [$row->label_name];
                 $annotation->image_id = $row->image_id;
@@ -218,7 +218,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $annotation->height_m = '';
         $annotation->area_sqm = '';
 
-        switch ($annotation->shape_id) {
+        switch ($annotation->shape) {
             case Shape::CIRCLE->value:
                 // width and height are the diameter
                 $annotation->width_px = 2 * $points[2];

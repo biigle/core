@@ -19,7 +19,7 @@ class AreaReportGeneratorTest extends TestCase
 {
     private $columns = [
         'annotation_id',
-        'shape_id',
+        'shape',
         'shape_name',
         'label_ids',
         'label_names',
@@ -53,7 +53,7 @@ class AreaReportGeneratorTest extends TestCase
 
         // Should not be included.
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'image_id' => $image->id,
             'points' => [100, 100],
         ]);
@@ -95,7 +95,7 @@ class AreaReportGeneratorTest extends TestCase
         ]);
 
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::CIRCLE->value,
+            'shape' => Shape::CIRCLE->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100],
         ]);
@@ -152,7 +152,7 @@ class AreaReportGeneratorTest extends TestCase
         ]);
 
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::RECTANGLE->value,
+            'shape' => Shape::RECTANGLE->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
@@ -206,7 +206,7 @@ class AreaReportGeneratorTest extends TestCase
 
         // It's a simple parallelogram so the area can be easily calculated manually.
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::POLYGON->value,
+            'shape' => Shape::POLYGON->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100, 200, 200, 100, 200, 0],
         ]);
@@ -260,7 +260,7 @@ class AreaReportGeneratorTest extends TestCase
 
         // It's a simple parallelogram so the area can be easily calculated manually.
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::ELLIPSE->value,
+            'shape' => Shape::ELLIPSE->value,
             'image_id' => $image->id,
             'points' => [0, 100, 100, 100, 50, 200, 50, 0],
         ]);
@@ -318,7 +318,7 @@ class AreaReportGeneratorTest extends TestCase
         ]);
 
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::RECTANGLE->value,
+            'shape' => Shape::RECTANGLE->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
@@ -368,7 +368,7 @@ class AreaReportGeneratorTest extends TestCase
         $image = ImageTest::create();
 
         $annotation = ImageAnnotationTest::create([
-            'shape_id' => Shape::RECTANGLE->value,
+            'shape' => Shape::RECTANGLE->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
@@ -437,7 +437,7 @@ class AreaReportGeneratorTest extends TestCase
         $image = ImageTest::create();
 
         $annotation = ImageAnnotationTest::create([
-            'shape_id' => Shape::RECTANGLE->value,
+            'shape' => Shape::RECTANGLE->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
@@ -504,7 +504,7 @@ class AreaReportGeneratorTest extends TestCase
         $image = ImageTest::create();
 
         $annotation = ImageAnnotationTest::create([
-            'shape_id' => Shape::RECTANGLE->value,
+            'shape' => Shape::RECTANGLE->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100, 300, 200, 300, 200, 100],
         ]);
@@ -579,7 +579,7 @@ class AreaReportGeneratorTest extends TestCase
 
         // It's a simple open box so the length can be easily calculated manually.
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::LINE->value,
+            'shape' => Shape::LINE->value,
             'image_id' => $image->id,
             'points' => [100, 100, 100, 200, 200, 200, 200, 100],
         ]);

@@ -24,7 +24,7 @@ class VideoAnnotationTest extends TestCase
         $expect = [
             'video_id' => 123,
             'points' => '[[10,10]]',
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
             'frames' => '[1]',
         ];
 

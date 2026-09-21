@@ -108,7 +108,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'image_annotations.points',
             'image_annotations.id as annotation_id',
             'image_annotation_labels.created_at',
-            'image_annotations.shape_id'
+            'image_annotations.shape'
         ];
 
         if ($this->shouldGetAttributeColumn()) {
@@ -145,7 +145,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'filename',
             'image_longitude',
             'image_latitude',
-            'shape_id',
+            'shape',
             'shape_name',
             'points',
         ];
@@ -172,8 +172,8 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_id,
-                Shape::from($row->shape_id)->label(),
+                $row->shape,
+                Shape::from($row->shape)->label(),
                 $row->points,
             ];
 

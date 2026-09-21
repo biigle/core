@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property array $points
  * @property string $created_at
- * @property Shape $shape_id
+ * @property Shape $shape
  * @phpstan-consistent-constructor
  */
 #[Hidden(['pivot'])]
@@ -31,7 +31,7 @@ abstract class Annotation extends Model implements AnnotationContract
     protected function casts(): array
     {
         return [
-            'shape_id' => Shape::class,
+            'shape' => Shape::class,
             'points' => 'array',
         ];
     }
@@ -192,16 +192,6 @@ abstract class Annotation extends Model implements AnnotationContract
     abstract public function getFileIdAttribute();
 
     /**
-     * The shape of this annotation.
-     *
-     * @return Shape
-     */
-    public function getShapeAttribute()
-    {
-        return $this->shape_id;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getPoints(): array
@@ -214,7 +204,7 @@ abstract class Annotation extends Model implements AnnotationContract
      */
     public function getShape(): Shape
     {
-        return $this->shape_id;
+        return $this->shape;
     }
 
     /**

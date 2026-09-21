@@ -257,7 +257,7 @@ class VolumeImport extends Import
                 return $this->expectColumnsInCsv('image_annotations.csv', [
                     'id',
                     'image_id',
-                    'shape_id',
+                    'shape',
                     'created_at',
                     'updated_at',
                     'points',
@@ -288,7 +288,7 @@ class VolumeImport extends Import
                 return $this->expectColumnsInCsv('video_annotations.csv', [
                     'id',
                     'video_id',
-                    'shape_id',
+                    'shape',
                     'created_at',
                     'updated_at',
                     'points',
@@ -671,7 +671,7 @@ class VolumeImport extends Import
                 $oldIds[] = (int) $line[0];
                 $annotations[] = [
                     'image_id' => $imageIdMap[$line[1]],
-                    'shape_id' => (int) $line[2],
+                    'shape' => (int) $line[2],
                     'created_at' => $line[3],
                     'updated_at' => $line[4],
                     'points' => $line[5],
@@ -762,7 +762,7 @@ class VolumeImport extends Import
                 $oldIds[] = (int) $line[0];
                 $annotations[] = [
                     'video_id' => $videoIdMap[$line[1]],
-                    'shape_id' => (int) $line[2],
+                    'shape' => (int) $line[2],
                     'created_at' => $line[3],
                     'updated_at' => $line[4],
                     'points' => $line[5],

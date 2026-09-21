@@ -37,8 +37,8 @@ class UpdateImageAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'shape_id' => ['required_without:points', 'integer', Rule::enum(Shape::class)],
-            'points' => 'required_without:shape_id|array',
+            'shape' => ['required_without:points', 'integer', Rule::enum(Shape::class)],
+            'points' => 'required_without:shape|array',
         ];
     }
 
@@ -56,7 +56,7 @@ class UpdateImageAnnotation extends FormRequest
             }
 
             if ($this->getShapeId() === Shape::WHOLE_FRAME->value) {
-                $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
+                $validator->errors()->add('shape', 'Image annotations cannot have shape WholeFrame.');
 
                 return;
             }
@@ -87,6 +87,6 @@ class UpdateImageAnnotation extends FormRequest
      */
     public function getShapeId(): int
     {
-        return intval($this->input('shape_id', $this->annotation->shape_id->value));
+        return intval($this->input('shape', $this->annotation->shape->value));
     }
 }

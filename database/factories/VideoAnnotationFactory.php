@@ -19,7 +19,7 @@ class VideoAnnotationFactory extends Factory
             'frames' => [],
             'points' => [],
             'video_id' => Video::factory(),
-            'shape_id' => Shape::POINT->value,
+            'shape' => Shape::POINT->value,
         ];
     }
 }

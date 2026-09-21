@@ -63,7 +63,7 @@ class ImportVolumeMetadataTest extends TestCase
         $annotations = $image->annotations;
         $this->assertCount(1, $annotations);
         $this->assertEquals([10, 10], $annotations[0]->points);
-        $this->assertEquals(Shape::POINT, $annotations[0]->shape_id);
+        $this->assertEquals(Shape::POINT, $annotations[0]->shape);
         $this->assertNotNull($annotations[0]->created_at);
         $this->assertNotNull($annotations[0]->updated_at);
         $annotationLabels = $annotations[0]->labels;
@@ -121,7 +121,7 @@ class ImportVolumeMetadataTest extends TestCase
         $this->assertCount(1, $annotations);
         $this->assertEquals([[10, 10]], $annotations[0]->points);
         $this->assertEquals([1], $annotations[0]->frames);
-        $this->assertEquals(Shape::POINT, $annotations[0]->shape_id);
+        $this->assertEquals(Shape::POINT, $annotations[0]->shape);
         $this->assertNotNull($annotations[0]->created_at);
         $this->assertNotNull($annotations[0]->updated_at);
         $annotationLabels = $annotations[0]->labels;
@@ -383,7 +383,7 @@ class ImportVolumeMetadataTest extends TestCase
         $annotations = $image->annotations;
         $this->assertCount(1, $annotations);
         $this->assertEquals([10, 10], $annotations[0]->points);
-        $this->assertEquals(Shape::POINT, $annotations[0]->shape_id);
+        $this->assertEquals(Shape::POINT, $annotations[0]->shape);
         $annotationLabels = $annotations[0]->labels;
         $this->assertCount(1, $annotationLabels);
         $this->assertEquals($dbLabel1->id, $annotationLabels[0]->label_id);

@@ -74,7 +74,7 @@ class LinkVideoAnnotation extends FormRequest
                 $validator->errors()->add('annotation_id', 'The two annotations must not overlap.');
             }
 
-            if ($this->firstAnnotation->shape_id !== $this->secondAnnotation->shape_id) {
+            if ($this->firstAnnotation->shape !== $this->secondAnnotation->shape) {
                 $validator->errors()->add('annotation_id', 'The two annotations must have the same shape.');
             }
         });

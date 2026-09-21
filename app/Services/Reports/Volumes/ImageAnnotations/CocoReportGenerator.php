@@ -104,7 +104,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 'images.filename',
                 'images.lng as longitude',
                 'images.lat as latitude',
-                'image_annotations.shape_id',
+                'image_annotations.shape',
                 'image_annotations.points',
                 'images.attrs',
             ])
@@ -146,7 +146,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                Shape::from($row->shape_id)->label(),
+                Shape::from($row->shape)->label(),
                 $row->points,
                 $row->attrs,
             ]);

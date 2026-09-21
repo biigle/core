@@ -283,17 +283,17 @@ abstract class IfdoReportGenerator extends VolumeReportGenerator
      */
     protected function getGeometryName(Annotation $annotation)
     {
-        if ($annotation->shape_id === Shape::POINT) {
+        if ($annotation->shape === Shape::POINT) {
             return 'single-pixel';
-        } elseif ($annotation->shape_id === Shape::LINE) {
+        } elseif ($annotation->shape === Shape::LINE) {
             return 'polyline';
-        } elseif ($annotation->shape_id === Shape::CIRCLE) {
+        } elseif ($annotation->shape === Shape::CIRCLE) {
             return 'circle';
-        } elseif ($annotation->shape_id === Shape::RECTANGLE) {
+        } elseif ($annotation->shape === Shape::RECTANGLE) {
             return 'rectangle';
-        } elseif ($annotation->shape_id === Shape::ELLIPSE) {
+        } elseif ($annotation->shape === Shape::ELLIPSE) {
             return 'ellipse';
-        } elseif ($annotation->shape_id === Shape::WHOLE_FRAME) {
+        } elseif ($annotation->shape === Shape::WHOLE_FRAME) {
             return 'whole-image';
         } else {
             return 'polygon';

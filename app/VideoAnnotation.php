@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 /**
  * @property array $frames
  */
-#[Fillable(['video_id', 'shape_id', 'points', 'frames'])]
+#[Fillable(['video_id', 'shape', 'points', 'frames'])]
 #[ObservedBy(VideoAnnotationObserver::class)]
 class VideoAnnotation extends Annotation
 {
@@ -136,7 +136,7 @@ class VideoAnnotation extends Annotation
         $points1 = $points[$index1];
         $points2 = $points[$index2];
 
-        switch ($this->shape_id) {
+        switch ($this->shape) {
             case Shape::RECTANGLE:
             case Shape::ELLIPSE:
                 return $this->interpolationPointsToRectangle(
@@ -159,7 +159,7 @@ class VideoAnnotation extends Annotation
      */
     protected function getInterpolationPoints()
     {
-        switch ($this->shape_id) {
+        switch ($this->shape) {
             case Shape::RECTANGLE:
             case Shape::ELLIPSE:
                 return array_map([$this, 'rectangleToInterpolationPoints'], $this->points);
