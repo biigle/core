@@ -17,6 +17,7 @@ use Ramsey\Uuid\Uuid;
  * that are authorized to use the tree. This list is maintained by label tree admins.
  *
  * @property string $uuid
+ * @property Visibility $visibility
  */
 #[Hidden(['pivot', 'uuid', 'version_id'])]
 class LabelTree extends Model
