@@ -15,7 +15,7 @@ use SplFileInfo;
 use Storage;
 
 /**
- * @property ReportType $type_id
+ * @property ReportType $type
  */
 #[ObservedBy(ReportObserver::class)]
 class Report extends Model
@@ -38,7 +38,7 @@ class Report extends Model
     {
         return [
             'user_id' => 'int',
-            'type_id' => ReportType::class,
+            'type' => ReportType::class,
             'source_id' => 'int',
             'options' => 'array',
             'ready_at' => 'datetime',
@@ -53,16 +53,6 @@ class Report extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(\Biigle\User::class);
-    }
-
-    /**
-     * Type of the report.
-     *
-     * @return ReportType
-     */
-    public function getTypeAttribute()
-    {
-        return $this->type_id;
     }
 
     /**

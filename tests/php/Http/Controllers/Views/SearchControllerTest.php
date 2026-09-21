@@ -271,12 +271,12 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsVolume()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'user_id' => $r1->user_id,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,
@@ -300,7 +300,7 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsVideo()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::VIDEO_ANNOTATIONS_CSV->value,
+            'type' => ReportType::VIDEO_ANNOTATIONS_CSV->value,
             'source_id' => VideoTest::create()->id,
             'source_type' => Video::class,
             'source_name' => 'my video',
@@ -327,12 +327,12 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsWhereExists()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,
         ]);

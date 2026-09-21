@@ -110,7 +110,7 @@ class StoreReport extends FormRequest
      */
     protected function isType($allowed)
     {
-        $id = intval($this->input('type_id'));
+        $id = intval($this->input('type'));
 
         if (is_array($allowed)) {
             return in_array($id, $allowed);

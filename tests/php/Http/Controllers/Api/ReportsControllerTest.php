@@ -13,7 +13,7 @@ class ReportsControllerTest extends ApiTestCase
     {
         config(['reports.storage_disk' => 'test']);
         $report = ReportTest::create([
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
         ]);
 
         $this->doTestApiRoute('GET', "api/v1/reports/{$report->id}");

@@ -37,7 +37,7 @@ class StoreProjectReport extends StoreReport
     public function rules()
     {
         return array_merge(parent::rules(), [
-            'type_id' => ['required', 'integer', Rule::enum(ReportType::class)]
+            'type' => ['required', 'integer', Rule::enum(ReportType::class)]
         ]);
     }
 
@@ -89,9 +89,9 @@ class StoreProjectReport extends StoreReport
         ];
 
         if ($this->isType($imageReports) && !$this->project->imageVolumes()->exists()) {
-            $validator->errors()->add('type_id', 'The project does not contain any image volumes.');
+            $validator->errors()->add('type', 'The project does not contain any image volumes.');
         } elseif ($this->isType($videoReports) && !$this->project->videoVolumes()->exists()) {
-            $validator->errors()->add('type_id', 'The project does not contain any video volumes.');
+            $validator->errors()->add('type', 'The project does not contain any video volumes.');
         }
     }
 

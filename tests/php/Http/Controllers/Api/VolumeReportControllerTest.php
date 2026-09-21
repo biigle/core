@@ -31,12 +31,12 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
         ])->assertStatus(201);
 
         Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
             $report = $job->report;
-            $this->assertEquals($typeId, $report->type_id->value);
+            $this->assertEquals($typeId, $report->type->value);
             $this->assertEquals($volumeId, $report->source_id);
             $this->assertEquals(false, $report->options['exportArea']);
             $this->assertEquals(false, $report->options['newestLabel']);
@@ -53,14 +53,14 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'export_area' => true,
             'newest_label' => true,
         ])->assertStatus(201);
 
         Queue::assertPushedOn('high', function (GenerateReportJob $job) use ($typeId, $volumeId, $response) {
             $report = $job->report;
-            $this->assertEquals($typeId, $report->type_id->value);
+            $this->assertEquals($typeId, $report->type->value);
             $this->assertEquals($volumeId, $report->source_id);
             $this->assertEquals(true, $report->options['exportArea']);
             $this->assertEquals(true, $report->options['newestLabel']);
@@ -93,7 +93,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         foreach ($types as $typeId) {
             $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-                'type_id' => $typeId,
+                'type' => $typeId,
             ])->assertStatus(201);
         }
     }
@@ -104,7 +104,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $typeId = ReportType::VIDEO_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
-        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type' => $typeId])
             ->assertStatus(422);
     }
 
@@ -114,7 +114,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $typeId = ReportType::VIDEO_LABELS_CSV->value;
 
         $this->beGuest();
-        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type' => $typeId])
             ->assertStatus(422);
     }
 
@@ -128,17 +128,17 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertStatus(422);
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'export_area' => true,
         ])->assertStatus(422);
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'aggregate_child_labels' => true,
         ])->assertStatus(422);
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
         ])->assertStatus(201);
         Queue::assertPushed(GenerateReportJob::class);
     }
@@ -156,7 +156,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         foreach ($types as $typeId) {
             $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-                'type_id' => $typeId,
+                'type' => $typeId,
             ])->assertStatus(201);
         }
     }
@@ -167,7 +167,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $typeId = ReportType::IMAGE_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
-        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type' => $typeId])
             ->assertStatus(422);
     }
 
@@ -177,7 +177,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $typeId = ReportType::IMAGE_LABELS_CSV->value;
 
         $this->beGuest();
-        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type' => $typeId])
             ->assertStatus(422);
     }
 
@@ -188,12 +188,12 @@ class VolumeReportControllerTest extends ApiTestCase
         $volumeId = $this->volume()->id;
         $typeId = ReportType::IMAGE_ANNOTATIONS_AREA->value;
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'only_labels' => [-1],
         ])->assertStatus(422);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'only_labels' => [$label->id],
         ])->assertStatus(201);
     }
@@ -206,7 +206,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volumeId]);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
+            'type' => ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
         ])->assertStatus(422);
 
         $image->lat = 1;
@@ -215,7 +215,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->volume()->flushGeoInfoCache();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
+            'type' => ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
         ])->assertStatus(201);
     }
 
@@ -227,7 +227,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volumeId]);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
         ])->assertStatus(422);
 
         $image->lat = 1;
@@ -236,7 +236,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->volume()->flushGeoInfoCache();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
         ])->assertStatus(201);
     }
 
@@ -248,7 +248,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volumeId]);
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
         ])->assertStatus(422); // Metadata missing.
 
         $image->lat = 1;
@@ -261,7 +261,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->volume()->flushGeoInfoCache();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
         ])->assertStatus(422); // Width/height missing.
 
         $image->width = 1;
@@ -269,7 +269,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $image->save();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
         ])->assertStatus(201);
     }
 
@@ -281,7 +281,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'separate_label_trees' => true,
             'separate_users' => true,
         ])->assertStatus(422);
@@ -296,7 +296,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'separate_label_trees' => true,
         ])->assertStatus(201);
 
@@ -314,7 +314,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'separate_users' => true,
         ])->assertStatus(201);
 
@@ -333,7 +333,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
         ])->assertStatus(422);
 
         $volume->update([
@@ -345,7 +345,7 @@ class VolumeReportControllerTest extends ApiTestCase
         Cache::flush();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
         ])->assertStatus(201);
         Queue::assertPushed(GenerateReportJob::class);
     }
@@ -361,7 +361,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
         ])->assertStatus(422);
 
         $volume->update([
@@ -373,7 +373,7 @@ class VolumeReportControllerTest extends ApiTestCase
         Cache::flush();
 
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
         ])->assertStatus(201);
         Queue::assertPushed(GenerateReportJob::class);
     }
@@ -385,7 +385,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'all_labels' => true,
             'aggregate_child_labels' => true,
         ])->assertUnprocessable()
@@ -393,7 +393,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         // aggregate_child_labels option must not be present if all_labels is used
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'all_labels' => true,
             'aggregate_child_labels' => false,
         ])->assertUnprocessable()
@@ -410,7 +410,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $lId = 1;
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'all_labels' => true,
             'only_labels' => [$lId],
         ])->assertUnprocessable()
@@ -426,17 +426,17 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'all_labels' => true,
         ])->assertUnprocessable()
-            ->assertJsonValidationErrors(['all_labels', 'type_id']);
+            ->assertJsonValidationErrors(['all_labels', 'type']);
 
         Queue::assertNotPushed(GenerateReportJob::class);
 
         $typeId = ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value;
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'all_labels' => true,
         ])->assertSuccessful();
 
@@ -453,7 +453,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'all_labels' => true,
             'newest_label' => true,
         ])->assertUnprocessable()
@@ -461,7 +461,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         // newest_label option must not be present if all_labels is used
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
-            'type_id' => $typeId,
+            'type' => $typeId,
             'all_labels' => true,
             'newest_label' => false,
         ])->assertUnprocessable()
