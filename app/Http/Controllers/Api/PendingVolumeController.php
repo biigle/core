@@ -56,11 +56,11 @@ class PendingVolumeController extends Controller
     public function store(StorePendingVolume $request)
     {
         try {
-            $pv = DB::transaction(fn () => $request->project->pendingVolumes()->create([
+            $pv = $request->project->pendingVolumes()->create([
                 'media_type_id' => $request->input('media_type_id'),
                 'user_id' => $request->user()->id,
                 'metadata_parser' => $request->input('metadata_parser', null),
-            ]));
+            ]);
         } catch (UniqueConstraintViolationException) {
             throw ValidationException::withMessages([
                 'id' => 'Only a single pending volume can be created at a time for each project and user.',
