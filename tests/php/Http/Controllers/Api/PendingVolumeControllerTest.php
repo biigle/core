@@ -70,17 +70,13 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $id = $this->project()->id;
 
-        $throw = true;
-        PendingVolume::creating(function () use (&$throw) {
-            if ($throw) {
-                $throw = false;
-                throw new UniqueConstraintViolationException(
-                    'testing',
-                    'insert into pending_volumes',
-                    [],
-                    new Exception('duplicate'),
-                );
-            }
+        PendingVolume::creating(function () {
+            throw new UniqueConstraintViolationException(
+                'testing',
+                'insert into pending_volumes',
+                [],
+                new Exception('duplicate'),
+            );
         });
 
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
@@ -490,17 +486,13 @@ class PendingVolumeControllerTest extends ApiTestCase
         $file->addAnnotation($annotation);
         Cache::store('array')->put('metadata-metadata-metadata.csv', $metadata);
 
-        $throw = true;
-        PendingVolume::creating(function () use (&$throw) {
-            if ($throw) {
-                $throw = false;
-                throw new UniqueConstraintViolationException(
-                    'testing',
-                    'insert into pending_volumes',
-                    [],
-                    new Exception('duplicate'),
-                );
-            }
+        PendingVolume::creating(function () {
+            throw new UniqueConstraintViolationException(
+                'testing',
+                'insert into pending_volumes',
+                [],
+                new Exception('duplicate'),
+            );
         });
 
         $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
