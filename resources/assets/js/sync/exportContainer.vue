@@ -2,9 +2,12 @@
 import EntityChooser from './components/entityChooser.vue';
 import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.js';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
+import {requestVolumeExport} from './volumeExport.js';
+import {Http} from 'vue-resource';
 import {Tabs} from 'uiv';
 import {Tab} from 'uiv';
 
@@ -39,6 +42,7 @@ export default {
                 users: [],
             },
             currentTab: 0,
+            volumeExportDescription: '',
             volumeIconMap: {},
         };
     },
@@ -117,6 +121,23 @@ export default {
         },
         handleChosenVolumes(volumes) {
             this.chosenEntities.volumes = volumes;
+        },
+        requestVolumeExport() {
+            if (this.hasNoChosenVolumes) {
+                return;
+            }
+
+            this.startLoading();
+            return requestVolumeExport({
+                chosen: this.chosenEntities.volumes,
+                description: this.volumeExportDescription,
+                entities: this.entities.volumes,
+                messages: Messages,
+                post: Http.post.bind(Http),
+                url: this.exportApiUrl + '/volumes',
+            })
+                .catch(handleErrorResponse)
+                .finally(this.finishLoading);
         },
         handleChosenLabelTrees(labelTrees) {
             this.chosenEntities.labelTrees = labelTrees;
