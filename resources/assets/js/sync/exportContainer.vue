@@ -6,7 +6,7 @@ import Messages from '@/core/messages/store.js';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
-import {requestVolumeExport} from './volumeExport.js';
+import {getEntitySelection, requestVolumeExport} from './volumeExport.js';
 import {Http} from 'vue-resource';
 import {Tabs} from 'uiv';
 import {Tab} from 'uiv';
@@ -123,10 +123,6 @@ export default {
             this.chosenEntities.volumes = volumes;
         },
         requestVolumeExport() {
-            if (this.hasNoChosenVolumes) {
-                return;
-            }
-
             this.startLoading();
             return requestVolumeExport({
                 chosen: this.chosenEntities.volumes,
@@ -148,14 +144,12 @@ export default {
         getQueryString(name) {
             let entities = this.entities[name];
             let chosenEntities = this.chosenEntities[name];
+            let selection = getEntitySelection(entities, chosenEntities);
 
-            if ((entities.length / 2) > chosenEntities.length) {
-                return '?only=' + (chosenEntities.map((e) => e.id).join(',') || -1);
-            } else if (entities.length > chosenEntities.length) {
-                return '?except=' + entities
-                    .filter((e) => chosenEntities.indexOf(e) === -1)
-                    .map((e) => e.id)
-                    .join(',');
+            if (selection.only) {
+                return '?only=' + (selection.only.join(',') || -1);
+            } else if (selection.except.length > 0) {
+                return '?except=' + selection.except.join(',');
             }
 
             return '';
