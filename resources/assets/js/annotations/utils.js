@@ -1,3 +1,5 @@
+import Feature from '@biigle/ol/Feature';
+import LineString from '@biigle/ol/geom/LineString';
 import { rightClick } from '@/annotations/ol/events/condition.js';
 import { noModifierKeys } from '@biigle/ol/events/condition';
 import { DragPan } from '@biigle/ol/interaction';
@@ -210,3 +212,103 @@ function addRightClickDragPanToMap(map, condition) {
 }
 
 export { isInvalidShape, clamp, trimCanvas, ScaleLineProperties, UnitMultipliers, UnitNames, addRightClickDragPanToMap };
+
+export const LABEL_TOOLTIP_MODES = Object.freeze({
+    OFF: 'off',
+    HOVER: 'hover',
+    ALWAYS: 'always',
+});
+
+export function normalizeLabelTooltipMode(value) {
+    if (value === true || value === 'true' || value === LABEL_TOOLTIP_MODES.HOVER) {
+        return LABEL_TOOLTIP_MODES.HOVER;
+    }
+
+    if (value === LABEL_TOOLTIP_MODES.ALWAYS) {
+        return LABEL_TOOLTIP_MODES.ALWAYS;
+    }
+
+    return LABEL_TOOLTIP_MODES.OFF;
+}
+
+export function shouldShowPersistentLabelTooltips(mode, playing = false) {
+    return mode === LABEL_TOOLTIP_MODES.ALWAYS && !playing;
+}
+
+export function getInitialAnnotationOverlayPlacement(
+    annotationExtent,
+    viewportExtent,
+    resolution,
+    tooltipSize,
+    gap = 15,
+    centered = false
+) {
+    const centerY = (annotationExtent[1] + annotationExtent[3]) / 2;
+    const rightSpace = (viewportExtent[2] - annotationExtent[2]) / resolution;
+    const horizontalWidth = centered ? tooltipSize[0] / 2 : tooltipSize[0];
+    const useRightSide = rightSpace >= horizontalWidth + gap;
+    const position = useRightSide
+        ? [annotationExtent[2], centerY]
+        : [annotationExtent[0], centerY];
+    const positioning = centered ? 'center-center' : (useRightSide ? 'center-left' : 'center-right');
+    const offset = [useRightSide ? gap : -gap, 0];
+    // Preserve the LabelBOT fallback for annotations spanning the viewport.
+    if (centered && (position[0] - viewportExtent[0]) / resolution < horizontalWidth + gap) {
+        offset[0] = gap;
+    }
+    const bottomOverflow = (viewportExtent[1] - centerY) / resolution + tooltipSize[1] / 2;
+    const topOverflow = tooltipSize[1] / 2 - (viewportExtent[3] - centerY) / resolution;
+
+    if (bottomOverflow > 0) {
+        offset[1] = -bottomOverflow;
+    } else if (topOverflow > 0) {
+        offset[1] = topOverflow;
+    }
+
+    return {position, positioning, offset};
+}
+
+/** Update the screen-space offset while an annotation overlay is dragged. */
+export function dragAnnotationOverlay(overlay, startOffset, startPosition, event) {
+    overlay.setOffset([
+        startOffset[0] + event.clientX - startPosition[0],
+        startOffset[1] + event.clientY - startPosition[1],
+    ]);
+}
+
+/** Anchor a dragged overlay without changing its screen position. */
+export function anchorAnnotationOverlay(overlay, map) {
+    const position = overlay.getPosition();
+    const offset = overlay.getOffset();
+    const resolution = map.getView().getResolution();
+    const realPosition = [position[0] + offset[0] * resolution, position[1] - offset[1] * resolution];
+    const newPosition = overlay._annotationGeometry.getClosestPoint(realPosition);
+    overlay.setPosition(newPosition);
+    overlay.setOffset([
+        (realPosition[0] - newPosition[0]) / resolution,
+        (newPosition[1] - realPosition[1]) / resolution,
+    ]);
+}
+
+/** Create the connector shared by LabelBOT and persistent label tooltips. */
+export function createAnnotationOverlayConnector(overlay, map, color, style, shouldUpdate = () => true) {
+    const position = overlay.getPosition();
+    const line = new LineString([position, position]);
+    const feature = new Feature(line);
+    feature.set('unselectable', true);
+    feature.set('color', color);
+    feature.setStyle(style);
+    feature._updateCoordinates = () => {
+        if (!shouldUpdate()) return;
+
+        const position = overlay.getPosition();
+        const offset = overlay.getOffset();
+        const resolution = map.getView().getResolution();
+        const end = [position[0] + offset[0] * resolution, position[1] - offset[1] * resolution];
+        const start = overlay._annotationGeometry.getClosestPoint(end);
+        line.setCoordinates([start, end]);
+    };
+    feature._updateCoordinates();
+
+    return feature;
+}
