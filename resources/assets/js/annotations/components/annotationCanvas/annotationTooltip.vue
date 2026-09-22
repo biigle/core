@@ -1,7 +1,9 @@
 <script>
 import LabelTooltip from '../labelTooltip.vue';
 import MeasureTooltip from '../measureTooltip.vue';
+import PersistentLabelTooltips from '../../mixins/persistentLabelTooltips.vue';
 import {markRaw} from 'vue';
+import {LABEL_TOOLTIP_MODES} from '../../utils.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the annotation tooltip.
@@ -9,14 +11,15 @@ import {markRaw} from 'vue';
  * @type {Object}
  */
 export default {
+    mixins: [PersistentLabelTooltips],
     components: {
         labelTooltip: LabelTooltip,
         measureTooltip: MeasureTooltip,
     },
     props: {
         showLabelTooltip: {
-            type: Boolean,
-            default: false,
+            type: String,
+            default: LABEL_TOOLTIP_MODES.OFF,
         },
         showMeasureTooltip: {
             type: Boolean,
@@ -25,7 +28,10 @@ export default {
     },
     computed: {
         showAnnotationTooltip() {
-            return this.isDefaultInteractionMode && (this.showLabelTooltip || this.showMeasureTooltip);
+            return this.isDefaultInteractionMode && (this.showHoverLabelTooltip || this.showMeasureTooltip);
+        },
+        showHoverLabelTooltip() {
+            return this.showLabelTooltip === LABEL_TOOLTIP_MODES.HOVER;
         },
     },
     data() {

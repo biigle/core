@@ -10,10 +10,18 @@
         <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
     </div>
     <label-tooltip
-        :show="showLabelTooltip"
+        :show="showHoverLabelTooltip"
         :position="mousePosition"
         :features="hoveredFeatures"
         ></label-tooltip>
+    <persistent-label-tooltip
+        v-for="feature in visiblePersistentLabelTooltipFeatures"
+        :key="feature.getId()"
+        :feature="feature"
+        :line-source="persistentLabelTooltipLineSource"
+        :map="map"
+        :show="showPersistentLabelTooltips"
+        ></persistent-label-tooltip>
     <measure-tooltip
         :show="showMeasureTooltip"
         :position="mousePosition"

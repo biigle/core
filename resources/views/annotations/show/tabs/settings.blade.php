@@ -65,7 +65,10 @@
         </div>
 
         <div class="sidebar-tab__section">
-            <power-toggle :active="labelTooltip" title-off="Show label tooltip" title-on="Hide label tooltip" v-on:on="showLabelTooltip" v-on:off="hideLabelTooltip">Label Tooltip</power-toggle>
+            <h5 title="Choose when annotation label tooltips are shown">Label Tooltip</h5>
+            <select class="form-control" v-model="labelTooltip">
+                <option v-for="mode in labelTooltipModes" :key="mode" :value="mode" v-text="mode"></option>
+            </select>
         </div>
 
         <div class="sidebar-tab__section">

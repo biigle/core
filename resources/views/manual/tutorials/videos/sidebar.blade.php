@@ -77,7 +77,7 @@
         </p>
 
         <p>
-            The label tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the names of the labels that are attached to these annotations.
+            The label tooltip setting controls when the names of labels attached to annotations are displayed. Choose <i>hover</i> to show a tooltip for annotations below the cursor, <i>always</i> to show draggable tooltips for all visible annotations while the video is paused, or <i>off</i> to hide label tooltips. Always-visible tooltips are hidden during video playback.
         </p>
 
         <p>

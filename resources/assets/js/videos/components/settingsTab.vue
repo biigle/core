@@ -5,6 +5,10 @@ import ShortcutsButton from '@/annotations/components/shortcutsButton.vue';
 import ScreenshotButton from '@/annotations/components/screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '@/annotations/components/labelbotPopup.vue';
+import {
+    LABEL_TOOLTIP_MODES,
+    normalizeLabelTooltipMode,
+} from '@/annotations/utils.js';
 
 // Determines the maximum number of configurable seconds for the auto pause option.
 // The max is this value -1. If this value is reached, playback should not resume at all
@@ -67,7 +71,7 @@ export default {
             showMinimap: true,
             autoplayDraw: 0,
             autoPause: 0,
-            showLabelTooltip: false,
+            showLabelTooltip: LABEL_TOOLTIP_MODES.OFF,
             showMousePosition: false,
             playbackRate: 1.0,
             jumpStep: 5.0,
@@ -99,6 +103,9 @@ export default {
         labelbotTimeoutValue() {
             return TIMEOUTS[this.labelbotTimeout];
         },
+        labelTooltipModes() {
+            return Object.values(LABEL_TOOLTIP_MODES);
+        },
     },
     methods: {
         handleShowMinimap() {
@@ -106,12 +113,6 @@ export default {
         },
         handleHideMinimap() {
             this.showMinimap = false;
-        },
-        handleShowLabelTooltip() {
-            this.showLabelTooltip = true;
-        },
-        handleHideLabelTooltip() {
-            this.showLabelTooltip = false;
         },
         handleShowMousePosition() {
             this.showMousePosition = true;
@@ -190,9 +191,10 @@ export default {
             this.$emit('update', 'autoPause', value);
             Settings.set('autoPause', value);
         },
-        showLabelTooltip(show) {
-            this.$emit('update', 'showLabelTooltip', show);
-            Settings.set('showLabelTooltip', show);
+        showLabelTooltip(mode) {
+            mode = normalizeLabelTooltipMode(mode);
+            this.$emit('update', 'showLabelTooltip', mode);
+            Settings.set('showLabelTooltip', mode);
         },
         showMousePosition(show) {
             this.$emit('update', 'showMousePosition', show);
@@ -236,7 +238,9 @@ export default {
     },
     created() {
         this.restoreKeys.forEach((key) => {
-            this[key] = Settings.get(key);
+            this[key] = key === 'showLabelTooltip'
+                ? normalizeLabelTooltipMode(Settings.get(key))
+                : Settings.get(key);
         });
 
         Keyboard.on('o', this.toggleAnnotationOpacity);
