@@ -114,4 +114,53 @@ class GenerateVolumeExportJobTest extends TestCase
         $this->assertNull($export->fresh()->ready_at);
         Notification::assertNothingSent();
     }
+
+    public function testHandleRetryKeepsReadyArchiveAndRetriesNotification(): void
+    {
+        Storage::fake('volume-exports');
+        Notification::fake();
+        config(['sync.volume_export_storage_disk' => 'volume-exports']);
+        $user = User::factory()->create();
+        $export = new VolumeExport;
+        $export->user()->associate($user);
+        $export->volume_ids = [];
+        $export->ready_at = now();
+        $export->save();
+        Storage::disk('volume-exports')->put("{$export->id}.zip", 'archive');
+
+        (new GenerateVolumeExportJob($export))->handle();
+
+        Storage::disk('volume-exports')->assertExists("{$export->id}.zip");
+        Notification::assertSentTo($user, VolumeExportReady::class);
+    }
+
+    public function testHandleCleansTemporaryArchiveIfStorageDiskFails(): void
+    {
+        Notification::fake();
+        $directory = sys_get_temp_dir().'/biigle-volume-export-'.uniqid();
+        mkdir($directory);
+        config([
+            'sync.tmp_storage' => $directory,
+            'sync.volume_export_storage_disk' => 'volume-exports',
+        ]);
+        $export = new VolumeExport;
+        $export->user()->associate(User::factory()->create());
+        $export->volume_ids = [];
+        $export->save();
+        Storage::shouldReceive('disk')->once()->andThrow(new RuntimeException);
+
+        try {
+            (new GenerateVolumeExportJob($export))->handle();
+            $this->fail('Storage disk failure did not fail the job.');
+        } catch (RuntimeException) {
+            // Expected.
+        }
+
+        $files = glob("{$directory}/*");
+        array_map('unlink', $files);
+        rmdir($directory);
+        $this->assertEmpty($files);
+        $this->assertNull($export->fresh()->ready_at);
+        Notification::assertNothingSent();
+    }
 }

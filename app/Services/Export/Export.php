@@ -2,6 +2,8 @@
 
 namespace Biigle\Services\Export;
 
+use File;
+use Throwable;
 use ZipArchive;
 
 class Export
@@ -37,15 +39,27 @@ class Export
         array_unshift($exports, $this);
 
         try {
-            foreach ($exports as $export) {
-                $export->addToZip($zip);
+            try {
+                foreach ($exports as $export) {
+                    $export->addToZip($zip);
+                }
+
+                $zip->close();
+            } finally {
+                foreach ($exports as $export) {
+                    $export->cleanUp();
+                }
+            }
+        } catch (Throwable $exception) {
+            try {
+                $zip->close();
+            } catch (Throwable) {
+                // Preserve the original exception.
+            } finally {
+                File::delete($path);
             }
 
-            $zip->close();
-        } finally {
-            foreach ($exports as $export) {
-                $export->cleanUp();
-            }
+            throw $exception;
         }
 
         return $path;

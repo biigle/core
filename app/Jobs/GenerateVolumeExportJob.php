@@ -50,11 +50,18 @@ class GenerateVolumeExportJob extends Job
             return;
         }
 
+        if ($export->ready_at) {
+            $export->user->notify(new VolumeExportReady($export));
+
+            return;
+        }
+
         $path = (new VolumeExportGenerator($export->volume_ids))->getArchive();
         $filename = $export->getStorageFilename();
-        $disk = Storage::disk(config('sync.volume_export_storage_disk'));
 
         try {
+            $disk = Storage::disk(config('sync.volume_export_storage_disk'));
+
             if (!$disk->putFileAs('', new SplFileInfo($path), $filename)) {
                 throw new RuntimeException('Could not store volume export.');
             }
