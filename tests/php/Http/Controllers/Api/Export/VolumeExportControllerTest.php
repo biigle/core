@@ -4,12 +4,128 @@ namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
 use Biigle\Jobs\GenerateVolumeExportJob;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\User;
 use Biigle\VolumeExport;
 use Queue;
+use Storage;
 
 class VolumeExportControllerTest extends ApiTestCase
 {
+    public function testShowAuthorizationAndReadiness()
+    {
+        $owner = $this->globalAdmin();
+        $export = $this->createExport($owner);
+
+        $this->doTestApiRoute('GET', "/api/v1/export/volumes/{$export->id}");
+
+        $this->beAdmin();
+        $this->getJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(403);
+
+        $other = UserTest::create(['role_id' => Role::adminId()]);
+        $this->be($other);
+        $this->getJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(403);
+
+        $this->be($owner);
+        $this->getJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(404);
+    }
+
+    public function testShowDownloadsReadyExportRepeatedly()
+    {
+        config(['sync.volume_export_storage_disk' => 'test']);
+        $disk = Storage::fake('test');
+        $owner = $this->globalAdmin();
+        $export = $this->createExport($owner, now());
+        $content = str_repeat('archive', 2000);
+        $disk->put($export->getStorageFilename(), $content);
+        $this->be($owner);
+
+        $this->get("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(200)
+            ->assertHeader('content-type', 'application/zip')
+            ->assertHeader('content-disposition', 'attachment; filename=biigle_volume_export.zip')
+            ->assertStreamedContent($content);
+
+        $this->get("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(200)
+            ->assertStreamedContent($content);
+
+        $disk->assertExists($export->getStorageFilename());
+    }
+
+    public function testShowReadyExportWithoutFileReturnsNotFound()
+    {
+        config(['sync.volume_export_storage_disk' => 'test']);
+        Storage::fake('test');
+        $owner = $this->globalAdmin();
+        $export = $this->createExport($owner, now());
+        $this->be($owner);
+
+        $this->getJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(404);
+    }
+
+    public function testDestroyAuthorizationAndReadyExportCleanup()
+    {
+        config(['sync.volume_export_storage_disk' => 'test']);
+        $disk = Storage::fake('test');
+        $owner = $this->globalAdmin();
+        $export = $this->createExport($owner, now());
+        $disk->put($export->getStorageFilename(), 'archive');
+
+        $this->doTestApiRoute('DELETE', "/api/v1/export/volumes/{$export->id}");
+
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(403);
+
+        $other = UserTest::create(['role_id' => Role::adminId()]);
+        $this->be($other);
+        $this->deleteJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(403);
+
+        $this->be($owner);
+        $this->deleteJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(200);
+
+        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $disk->assertMissing($export->getStorageFilename());
+    }
+
+    public function testDestroyPendingExport()
+    {
+        config(['sync.volume_export_storage_disk' => 'test']);
+        $disk = Storage::fake('test');
+        $owner = $this->globalAdmin();
+        $export = $this->createExport($owner);
+        $this->be($owner);
+
+        $this->deleteJson("/api/v1/export/volumes/{$export->id}")
+            ->assertStatus(200);
+
+        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $disk->assertMissing($export->getStorageFilename());
+    }
+
+    public function testDeletingOwnerCleansUpExports()
+    {
+        config(['sync.volume_export_storage_disk' => 'test']);
+        $disk = Storage::fake('test');
+        $owner = $this->globalAdmin();
+        $export = $this->createExport($owner, now());
+        $disk->put($export->getStorageFilename(), 'archive');
+
+        $owner->delete();
+
+        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $disk->assertMissing($export->getStorageFilename());
+    }
+
     public function testStoreAuthorization()
     {
         $this->doTestApiRoute('POST', '/api/v1/export/volumes');
@@ -140,5 +256,16 @@ class VolumeExportControllerTest extends ApiTestCase
 
         $this->assertDatabaseCount('volume_exports', 0);
         Queue::assertNothingPushed();
+    }
+
+    private function createExport(User $owner, $readyAt = null): VolumeExport
+    {
+        $export = new VolumeExport;
+        $export->user()->associate($owner);
+        $export->volume_ids = [];
+        $export->ready_at = $readyAt;
+        $export->save();
+
+        return $export;
     }
 }

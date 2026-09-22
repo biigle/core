@@ -26,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         \Biigle\VideoAnnotation::class => \Biigle\Policies\AnnotationPolicy::class,
         \Biigle\VideoAnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
         \Biigle\VideoLabel::class => \Biigle\Policies\VolumeFileLabelPolicy::class,
+        \Biigle\VolumeExport::class => \Biigle\Policies\VolumeExportPolicy::class,
     ];
 
     /**

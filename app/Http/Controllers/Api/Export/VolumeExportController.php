@@ -7,9 +7,56 @@ use Biigle\Jobs\GenerateVolumeExportJob;
 use Biigle\Services\Export\VolumeExport;
 use Biigle\Volume;
 use Biigle\VolumeExport as VolumeExportModel;
+use Illuminate\Http\Response;
+use Storage;
 
 class VolumeExportController extends Controller
 {
+    /**
+     * Download a completed volume export.
+     *
+     * @param int $id
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function download($id)
+    {
+        $export = VolumeExportModel::findOrFail($id);
+        $this->authorize('access', $export);
+
+        if (!$export->ready_at) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $disk = Storage::disk(config('sync.volume_export_storage_disk'));
+        $path = $export->getStorageFilename();
+
+        if (!$disk->exists($path)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return $disk->download($path, $this->getExportFilename(), [
+            'Content-Type' => 'application/zip',
+        ])->setCallback(function () use ($disk, $path) {
+            $stream = $disk->readStream($path);
+            while (!feof($stream)) {
+                echo fread($stream, 8192);
+            }
+            fclose($stream);
+        });
+    }
+
+    /**
+     * Delete a volume export.
+     *
+     * @param int $id
+     */
+    public function destroy($id): void
+    {
+        $export = VolumeExportModel::findOrFail($id);
+        $this->authorize('destroy', $export);
+        $export->delete();
+    }
+
     /**
      * @api {post} export/volumes Request volume export
      * @apiGroup Sync
