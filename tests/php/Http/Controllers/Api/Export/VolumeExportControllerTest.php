@@ -14,7 +14,7 @@ use Storage;
 
 class VolumeExportControllerTest extends ApiTestCase
 {
-    public function testShowAuthorizationAndReadiness()
+    public function testDownloadAuthorizationAndReadiness()
     {
         $owner = $this->globalAdmin();
         $export = $this->createExport($owner);
@@ -35,7 +35,7 @@ class VolumeExportControllerTest extends ApiTestCase
             ->assertStatus(404);
     }
 
-    public function testShowDownloadsReadyExportRepeatedly()
+    public function testDownloadReadyExportRepeatedly()
     {
         config(['sync.volume_export_storage_disk' => 'test']);
         $disk = Storage::fake('test');
@@ -58,7 +58,7 @@ class VolumeExportControllerTest extends ApiTestCase
         $disk->assertExists($export->getStorageFilename());
     }
 
-    public function testShowReadyExportWithoutFileReturnsNotFound()
+    public function testDownloadReadyExportWithoutFileReturnsNotFound()
     {
         config(['sync.volume_export_storage_disk' => 'test']);
         Storage::fake('test');
