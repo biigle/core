@@ -3,124 +3,142 @@
 namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
+use Biigle\Jobs\GenerateVolumeExportJob;
 use Biigle\Tests\VolumeTest;
-use ZipArchive;
+use Biigle\VolumeExport;
+use Queue;
 
 class VolumeExportControllerTest extends ApiTestCase
 {
-    public function testShow()
+    public function testStoreAuthorization()
     {
-        $volume = VolumeTest::create();
-        $this->doTestApiRoute('GET', '/api/v1/export/volumes');
+        $this->doTestApiRoute('POST', '/api/v1/export/volumes');
 
         $this->beAdmin();
-        $this->get('/api/v1/export/volumes')->assertStatus(403);
-
-        $this->beGlobalAdmin();
-        $this->getJson('/api/v1/export/volumes')->assertStatus(422);
-
-        $response = $this->get("/api/v1/export/volumes?only={$volume->id}")
-            ->assertStatus(200)
-            ->assertHeader('content-type', 'application/zip')
-            ->assertHeader('content-disposition', 'attachment; filename=biigle_volume_export.zip');
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('volumes.json')));
-        $this->assertEquals($volume->id, $contents->pluck('id')[0]);
-        $this->assertNotFalse($zip->getFromName('users.json'));
-        $this->assertNotFalse($zip->getFromName('label_trees.json'));
-        $this->assertNotFalse($zip->getFromName('images.csv'));
-        $this->assertNotFalse($zip->getFromName('image_labels.csv'));
-        $this->assertNotFalse($zip->getFromName('image_annotations.csv'));
-        $this->assertNotFalse($zip->getFromName('image_annotation_labels.csv'));
-        $this->assertNotFalse($zip->getFromName('videos.csv'));
-        $this->assertNotFalse($zip->getFromName('video_labels.csv'));
-        $this->assertNotFalse($zip->getFromName('video_annotations.csv'));
-        $this->assertNotFalse($zip->getFromName('video_annotation_labels.csv'));
+        $this->postJson('/api/v1/export/volumes', ['only' => [1]])
+            ->assertStatus(403);
     }
 
-    public function testShowExcept()
-    {
-        $volume1 = VolumeTest::create();
-        $volume2 = VolumeTest::create();
-        $id = $volume1->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/volumes?except={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('volumes.json')));
-        $this->assertEquals($volume2->id, $contents->pluck('id')[0]);
-    }
-
-    public function testShowOnly()
-    {
-        $volume1 = VolumeTest::create();
-        $volume2 = VolumeTest::create();
-        $id = $volume1->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/volumes?only={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('volumes.json')));
-        $this->assertEquals($volume1->id, $contents->pluck('id')[0]);
-    }
-
-    public function testShowOnlyAndExceptMutuallyExclusive()
+    public function testStorePersistsRequest()
     {
         $volume = VolumeTest::create();
-        $id = $volume->id;
-        $this->beGlobalAdmin();
-        $this->getJson("/api/v1/export/volumes?only={$id}&except={$id}")->assertStatus(422);
+        VolumeTest::create();
+        $user = $this->globalAdmin();
+        $this->be($user);
+
+        $this->postJson('/api/v1/export/volumes', [
+            'description' => 'For migration',
+            'only' => [$volume->id],
+        ])
+            ->assertStatus(201)
+            ->assertJson([
+                'user_id' => $user->id,
+                'description' => 'For migration',
+                'volume_ids' => [$volume->id],
+                'ready_at' => null,
+            ])
+            ->assertJsonMissingPath('user');
+
+        $export = VolumeExport::firstOrFail();
+        $this->assertSame($user->id, $export->user_id);
+        $this->assertSame('For migration', $export->description);
+        $this->assertSame([$volume->id], $export->volume_ids);
+        $this->assertNull($export->ready_at);
     }
 
-    public function testShowInvalidFilter()
+    public function testStorePersistsExceptSelection()
+    {
+        $excluded = VolumeTest::create();
+        $included = VolumeTest::create();
+        $this->beGlobalAdmin();
+
+        $this->postJson('/api/v1/export/volumes', [
+            'except' => (string) $excluded->id,
+        ])->assertStatus(201);
+
+        $this->assertSame([$included->id], VolumeExport::firstOrFail()->volume_ids);
+    }
+
+    public function testStoreQueuesGeneration()
+    {
+        config(['sync.generate_volume_export_queue' => 'volume-exports']);
+        $volume = VolumeTest::create();
+        $this->beGlobalAdmin();
+
+        $response = $this->postJson('/api/v1/export/volumes', [
+            'only' => [$volume->id],
+        ])->assertStatus(201);
+
+        Queue::assertPushedOn('volume-exports', function (GenerateVolumeExportJob $job) use ($response) {
+            $response->assertJson(['id' => $job->export->id]);
+
+            return true;
+        });
+    }
+
+    public function testStoreRejectsLongDescription()
     {
         $this->beGlobalAdmin();
-        $this->getJson('/api/v1/export/volumes?only=,')->assertStatus(422);
-        $this->getJson('/api/v1/export/volumes?only=abc')->assertStatus(422);
-        $this->getJson('/api/v1/export/volumes?only=0')->assertStatus(422);
-        $this->getJson('/api/v1/export/volumes?except=,')->assertStatus(422);
-        $this->getJson('/api/v1/export/volumes?except=abc')->assertStatus(422);
-        $this->getJson('/api/v1/export/volumes?except=0')->assertStatus(422);
+
+        $this->postJson('/api/v1/export/volumes', [
+            'description' => str_repeat('a', 256),
+            'only' => [1],
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('volume_exports', 0);
     }
 
-    public function testShowOnlyArray()
+    public function testStoreAllowsNoDescription()
     {
-        $volume1 = VolumeTest::create();
-        $volume2 = VolumeTest::create();
-        $id = $volume1->id;
+        $volume = VolumeTest::create();
         $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/volumes?only[]={$id}")->assertStatus(200);
 
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('volumes.json')));
-        $this->assertEquals($volume1->id, $contents->pluck('id')[0]);
-        $this->assertCount(1, $contents);
+        $this->postJson('/api/v1/export/volumes', [
+            'only' => [$volume->id],
+        ])
+            ->assertStatus(201)
+            ->assertJson(['description' => null]);
+
+        $this->assertNull(VolumeExport::firstOrFail()->description);
     }
 
-    public function testShowExceptArray()
+    public function testStoreValidatesSelection()
     {
-        $volume1 = VolumeTest::create();
-        $volume2 = VolumeTest::create();
-        $id = $volume1->id;
         $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/volumes?except[]={$id}")->assertStatus(200);
 
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('volumes.json')));
-        $this->assertEquals($volume2->id, $contents->pluck('id')[0]);
-        $this->assertCount(1, $contents);
+        $this->postJson('/api/v1/export/volumes')->assertStatus(422);
+        $this->postJson('/api/v1/export/volumes', ['only' => [1], 'except' => [1]])
+            ->assertStatus(422);
+        $this->postJson('/api/v1/export/volumes', ['only' => ','])->assertStatus(422);
+        $this->postJson('/api/v1/export/volumes', ['only' => 'abc'])->assertStatus(422);
+        $this->postJson('/api/v1/export/volumes', ['only' => 0])->assertStatus(422);
+        $this->postJson('/api/v1/export/volumes', ['except' => ','])->assertStatus(422);
+        $this->postJson('/api/v1/export/volumes', ['except' => 'abc'])->assertStatus(422);
+        $this->postJson('/api/v1/export/volumes', ['except' => 0])->assertStatus(422);
+
+        $this->assertDatabaseCount('volume_exports', 0);
+        Queue::assertNothingPushed();
     }
 
-    public function testIsAllowed()
+    public function testStoreIsAllowed()
     {
         config(['sync.allowed_exports' => ['labelTrees', 'users']]);
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/volumes?only=1')->assertStatus(404);
+
+        $this->postJson('/api/v1/export/volumes', ['only' => [1]])
+            ->assertStatus(404);
+
+        $this->assertDatabaseCount('volume_exports', 0);
+    }
+
+    public function testGetDoesNotCreateExport()
+    {
+        $this->beGlobalAdmin();
+
+        $this->getJson('/api/v1/export/volumes?only=1')
+            ->assertStatus(405);
+
+        $this->assertDatabaseCount('volume_exports', 0);
+        Queue::assertNothingPushed();
     }
 }

@@ -52,7 +52,7 @@ $router->resource('api-tokens', 'ApiTokenController', [
 
 $router->get('export/users', 'Export\UserExportController@show');
 $router->get('export/label-trees', 'Export\LabelTreeExportController@show');
-$router->get('export/volumes', 'Export\VolumeExportController@show');
+$router->post('export/volumes', 'Export\VolumeExportController@store');
 
 $router->resource('federated-search-instances', 'FederatedSearchInstanceController', [
     'only' => ['store', 'update', 'destroy'],

@@ -27,6 +27,22 @@ abstract class Controller extends BaseController
             abort(404);
         }
 
+        $export = $this->getExport($this->getIds($request));
+
+        return response()
+            ->download($export->getArchive(), $this->getExportFilename(), [
+                'Content-Type' => 'application/zip',
+            ])
+            ->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Resolve the requested model IDs.
+     *
+     * @return array<int>
+     */
+    protected function getIds(ShowExport $request): array
+    {
         $query = $this->getQuery();
 
         if ($request->filled('except')) {
@@ -35,13 +51,7 @@ abstract class Controller extends BaseController
             $query = $query->whereIn('id', $request->input('only'));
         }
 
-        $export = $this->getExport($query->pluck('id')->toArray());
-
-        return response()
-            ->download($export->getArchive(), $this->getExportFilename(), [
-                'Content-Type' => 'application/zip',
-            ])
-            ->deleteFileAfterSend(true);
+        return $query->pluck('id')->toArray();
     }
 
     /**
