@@ -112,6 +112,19 @@ class VolumeExportControllerTest extends ApiTestCase
         $disk->assertMissing($export->getStorageFilename());
     }
 
+    public function testDestroyFromSearchRedirectsBack()
+    {
+        $owner = $this->globalAdmin();
+        $export = $this->createExport($owner);
+        $this->be($owner);
+
+        $this->from('/search?t=exports')
+            ->post("/api/v1/export/volumes/{$export->id}", ['_method' => 'DELETE'])
+            ->assertRedirect('/search?t=exports');
+
+        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+    }
+
     public function testDeletingOwnerCleansUpExports()
     {
         config(['sync.volume_export_storage_disk' => 'test']);

@@ -50,11 +50,17 @@ class VolumeExportController extends Controller
      *
      * @param int $id
      */
-    public function destroy($id): void
+    public function destroy($id)
     {
         $export = VolumeExportModel::findOrFail($id);
         $this->authorize('destroy', $export);
         $export->delete();
+
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()
+                ->with('message', 'Volume export deleted.')
+                ->with('messageType', 'success');
+        }
     }
 
     /**

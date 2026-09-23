@@ -18,6 +18,7 @@ use Biigle\Tests\VolumeTest;
 use Biigle\Video;
 use Biigle\Visibility;
 use Biigle\Volume;
+use Biigle\VolumeExport;
 use TestCase;
 
 class SearchControllerTest extends TestCase
@@ -342,5 +343,72 @@ class SearchControllerTest extends TestCase
             ->assertStatus(200)
             ->assertSeeText('my volume')
             ->assertDontSeeText('my project');
+    }
+
+    public function testIndexExportsSudoOnly()
+    {
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get('search')->assertDontSee('>Exports <');
+        $this->get('search?t=exports')->assertDontSee('>Exports <');
+
+        $sudo = UserTest::create(['role_id' => Role::adminId()]);
+        $this->be($sudo);
+        $this->get('search')->assertSee('>Exports <', false);
+    }
+
+    public function testIndexExportsOwnershipFilteringAndActions()
+    {
+        $sudo = UserTest::create(['role_id' => Role::adminId()]);
+        $pending = $this->createExport($sudo, 'Migration Pending');
+        $ready = $this->createExport($sudo, 'Migration Ready', now());
+        $this->createExport($sudo, 'Unrelated');
+        $this->createExport(UserTest::create(['role_id' => Role::adminId()]), 'Migration Foreign', now());
+        $this->be($sudo);
+
+        $response = $this->get('search?t=exports&q=mIGRATION')->assertStatus(200);
+        $response->assertSeeText('Migration Pending')
+            ->assertSeeText('Migration Ready')
+            ->assertSeeText('Pending for')
+            ->assertSeeText('Ready on')
+            ->assertSeeText('Created on')
+            ->assertDontSeeText('Unrelated')
+            ->assertDontSeeText('Migration Foreign')
+            ->assertSee("api/v1/export/volumes/{$ready->id}")
+            ->assertSee("api/v1/export/volumes/{$pending->id}");
+        $response->assertSee("href=\"http://localhost:8000/api/v1/export/volumes/{$ready->id}\"", false)
+            ->assertDontSee("href=\"http://localhost:8000/api/v1/export/volumes/{$pending->id}\"", false);
+        $this->assertSame(2, substr_count($response->getContent(), 'method="POST" style="display: inline-block;"'));
+
+        $this->get('search?t=exports&q=missing')
+            ->assertSeeText("We couldn't find any exports matching 'missing'.");
+
+        $this->get('search?t=exports')
+            ->assertSeeText('Unrelated')
+            ->assertDontSeeText('Migration Foreign');
+    }
+
+    public function testIndexExportsPaginationKeepsSearch()
+    {
+        $sudo = UserTest::create(['role_id' => Role::adminId()]);
+        for ($i = 0; $i < 11; $i++) {
+            $this->createExport($sudo, "Batch {$i}");
+        }
+        $this->be($sudo);
+
+        $this->get('search?t=exports&q=Batch')
+            ->assertSee('q=Batch&amp;t=exports&amp;page=2', false);
+    }
+
+    private function createExport($user, $description, $readyAt = null): VolumeExport
+    {
+        $export = new VolumeExport;
+        $export->user()->associate($user);
+        $export->description = $description;
+        $export->volume_ids = [];
+        $export->ready_at = $readyAt;
+        $export->save();
+
+        return $export;
     }
 }
