@@ -9,7 +9,6 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Label;
 use Biigle\Services\LabelBot\LabelBotService;
-use Biigle\Shape;
 use DB;
 use Generator;
 use Illuminate\Http\Request;
@@ -285,7 +284,7 @@ class ImageAnnotationController extends Controller
     public function update(UpdateImageAnnotation $request)
     {
         $annotation = $request->annotation;
-        $annotation->shape = Shape::from($request->getShapeId());
+        $annotation->shape = $request->getShape();
         $annotation->points = $request->getPoints();
         $annotation->save();
     }

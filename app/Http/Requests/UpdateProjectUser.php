@@ -43,7 +43,7 @@ class UpdateProjectUser extends FormRequest
      */
     public function rules()
     {
-        if ($this->user->role->value === Role::GUEST->value) {
+        if ($this->user->role === Role::GUEST) {
             $roles = [
                 Role::GUEST->value,
                 Role::EDITOR->value,
@@ -87,7 +87,7 @@ class UpdateProjectUser extends FormRequest
      */
     public function messages()
     {
-        if ($this->user->role->value === Role::GUEST->value) {
+        if ($this->user->role === Role::GUEST) {
             return [
                 'project_role.in' => 'Guest users may not become project admins.',
             ];

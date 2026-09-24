@@ -30,7 +30,7 @@ class LabelPolicy extends CachedPolicy
             return $sudo || DB::table('label_tree_user')
                 ->where('label_tree_id', $label->label_tree_id)
                 ->where('user_id', $user->id)
-                ->whereIn('role', [Role::ADMIN->value, Role::EDITOR->value])
+                ->whereIn('role', [Role::ADMIN, Role::EDITOR])
                 ->exists();
         });
     }

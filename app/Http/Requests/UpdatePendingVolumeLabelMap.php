@@ -85,7 +85,7 @@ class UpdatePendingVolumeLabelMap extends FormRequest
                     // All public and all accessible private label trees.
                     $query->select('id')
                         ->from('label_trees')
-                        ->where('visibility', Visibility::PUBLIC->value)
+                        ->where('visibility', Visibility::PUBLIC)
                         ->union(
                             DB::table('label_tree_user')
                                 ->select('label_tree_id as id')

@@ -55,7 +55,7 @@ class UpdateImageAnnotation extends FormRequest
                 return;
             }
 
-            if ($this->getShapeId() === Shape::WHOLE_FRAME->value) {
+            if ($this->getShape() === Shape::WHOLE_FRAME) {
                 $validator->errors()->add('shape', 'Image annotations cannot have shape WholeFrame.');
 
                 return;
@@ -64,7 +64,7 @@ class UpdateImageAnnotation extends FormRequest
             // Attributes that are not updated must be validated with the current values
             // of the annotation, too, because e.g. a new shape may be invalid for the
             // existing points.
-            $rule = new AnnotationPoints($this->getShapeId());
+            $rule = new AnnotationPoints($this->getShape()->value);
 
             $rule->validate(
                 'points',
@@ -83,10 +83,14 @@ class UpdateImageAnnotation extends FormRequest
     }
 
     /**
-     * Get the new shape ID of the annotation.
+     * Get the new shape of the annotation.
      */
-    public function getShapeId(): int
+    public function getShape(): Shape
     {
-        return intval($this->input('shape', $this->annotation->shape->value));
+        if (!$this->has('shape')) {
+            return $this->annotation->shape;
+        }
+
+        return Shape::from(intval($this->input('shape')));
     }
 }

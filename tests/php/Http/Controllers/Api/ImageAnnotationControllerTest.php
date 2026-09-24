@@ -546,6 +546,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->assertSame(2, sizeof($this->annotation->points));
         $this->assertSame(25, $this->annotation->points[1]);
+        // The shape is kept if only the points are updated.
+        $this->assertSame(Shape::POINT, $this->annotation->shape);
     }
 
     public function testUpdateInvalidPoints()
@@ -624,6 +626,17 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->annotation->refresh();
         $this->assertSame(Shape::CIRCLE, $this->annotation->shape);
+
+        // Form-encoded requests send the shape as string.
+        $this
+            ->put("{$url}/{$id}", [
+                'shape' => (string) Shape::POINT->value,
+                'points' => [100, 200],
+            ])
+            ->assertStatus(200);
+
+        $this->annotation->refresh();
+        $this->assertSame(Shape::POINT, $this->annotation->shape);
     }
 
     public function testDestroy()

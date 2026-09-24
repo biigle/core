@@ -43,7 +43,7 @@ class StoreLabelTreeUser extends FormRequest
     public function rules()
     {
         $this->isGlobalGuest = User::where('id', $this->input('id'))
-            ->where('role', Role::GUEST->value)
+            ->where('role', Role::GUEST)
             ->exists();
 
         if ($this->isGlobalGuest) {

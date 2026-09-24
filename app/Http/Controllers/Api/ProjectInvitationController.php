@@ -77,7 +77,7 @@ class ProjectInvitationController extends Controller
             $project = $request->invitation->project;
             $userId = $request->user()->id;
             if (!$project->users()->where('user_id', $userId)->exists()) {
-                $project->addUserId($userId, $request->invitation->role->value);
+                $project->addUserId($userId, $request->invitation->role);
                 $invitation->increment('current_uses');
 
                 if ($invitation->add_to_sessions) {

@@ -23,7 +23,7 @@ class Project extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param User $user
      * @param int $volumeId
-     * @param array $roles Array of role IDs to restrict the project membership to. Default is any role.
+     * @param array<Role|int> $roles Array of roles to restrict the project membership to. Default is any role.
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -78,7 +78,7 @@ class Project extends Model
      */
     public function admins()
     {
-        return $this->users()->whereProjectRole(Role::ADMIN->value);
+        return $this->users()->whereProjectRole(Role::ADMIN);
     }
 
     /**
@@ -88,7 +88,7 @@ class Project extends Model
      */
     public function editors()
     {
-        return $this->users()->whereProjectRole(Role::EDITOR->value);
+        return $this->users()->whereProjectRole(Role::EDITOR);
     }
 
     /**
@@ -98,7 +98,7 @@ class Project extends Model
      */
     public function guests()
     {
-        return $this->users()->whereProjectRole(Role::GUEST->value);
+        return $this->users()->whereProjectRole(Role::GUEST);
     }
 
     /**
@@ -127,24 +127,24 @@ class Project extends Model
      * Adds the user with the given role to this project.
      *
      * @param int $userId
-     * @param int $roleId
+     * @param Role|int $role
      * @return void
      */
-    public function addUserId($userId, $roleId)
+    public function addUserId($userId, $role)
     {
-        $this->users()->attach($userId, ['project_role' => $roleId]);
+        $this->users()->attach($userId, ['project_role' => $role]);
     }
 
     /**
      * Changes the role of an existing user in this project.
      *
      * @param int $userId
-     * @param int $roleId
+     * @param Role|int $role
      * @return void
      */
-    public function changeRole($userId, $roleId)
+    public function changeRole($userId, $role)
     {
-        $this->users()->updateExistingPivot($userId, ['project_role' => $roleId]);
+        $this->users()->updateExistingPivot($userId, ['project_role' => $role]);
     }
 
     /**
