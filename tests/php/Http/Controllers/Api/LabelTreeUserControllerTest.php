@@ -87,6 +87,31 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $response->assertSessionHas('saved', true);
     }
 
+    public function testUpdateFormRequestLastAdmin()
+    {
+        $t = LabelTreeTest::create();
+        $u = $this->admin();
+        $t->addMember($u, Role::ADMIN);
+
+        $this->beGlobalAdmin();
+        $this->get('/');
+        // Form-encoded requests send the role as string.
+        $this
+            ->put("/api/v1/label-trees/{$t->id}/users/{$u->id}", [
+                'role' => (string) Role::ADMIN->value,
+            ])
+            ->assertRedirect('/')
+            ->assertSessionHas('saved', true)
+            ->assertSessionHasNoErrors();
+
+        $this
+            ->put("/api/v1/label-trees/{$t->id}/users/{$u->id}", [
+                'role' => (string) Role::EDITOR->value,
+            ])
+            ->assertSessionHasErrors('role');
+        $this->assertSame(1, $t->members()->where('label_tree_user.role', Role::ADMIN->value)->count());
+    }
+
     public function testStore()
     {
         $tree = LabelTreeTest::create();

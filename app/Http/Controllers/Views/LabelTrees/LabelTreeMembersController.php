@@ -30,14 +30,14 @@ class LabelTreeMembersController extends Controller
         $roles = collect([Role::ADMIN, Role::EDITOR]);
 
         $roleOrder = [
-            Role::EDITOR->value,
-            Role::ADMIN->value,
+            Role::EDITOR,
+            Role::ADMIN,
         ];
 
         $members = $tree->members()
             ->select('id', 'firstname', 'lastname', 'label_tree_user.role', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role->value, $roleOrder) - array_search($a->role->value, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role, $roleOrder, true) - array_search($a->role, $roleOrder, true))
             ->values();
 
 

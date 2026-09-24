@@ -44,7 +44,7 @@ class AttachProjectUser extends FormRequest
     {
         $this->user = User::findOrFail($this->route('id2'));
 
-        if ($this->user->role->value === Role::GUEST->value) {
+        if ($this->user->role === Role::GUEST) {
             $roles = [
                 Role::GUEST->value,
                 Role::EDITOR->value,
@@ -88,7 +88,7 @@ class AttachProjectUser extends FormRequest
      */
     public function messages()
     {
-        if ($this->user->role->value === Role::GUEST->value) {
+        if ($this->user->role === Role::GUEST) {
             return [
                 'project_role.in' => 'Guest users may not become project admins.',
             ];

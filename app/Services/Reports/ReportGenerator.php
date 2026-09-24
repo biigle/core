@@ -76,7 +76,7 @@ class ReportGenerator
     {
         // Establish backwards compatibility with old single video reports.
         // See: https://github.com/biigle/core/issues/276
-        if ($sourceClass === Video::class && $type->value === ReportType::VIDEO_ANNOTATIONS_CSV->value) {
+        if ($sourceClass === Video::class && $type === ReportType::VIDEO_ANNOTATIONS_CSV) {
             $sourceClass = Volume::class;
         }
 

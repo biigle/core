@@ -708,6 +708,36 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame(0, VideoAnnotationLabelFeatureVector::count());
     }
 
+    public function testHandleSvgSkipsWholeFrame()
+    {
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $point = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape' => Shape::POINT->value,
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $point->id]);
+        $wholeFrame = VideoAnnotationTest::create([
+            'points' => [],
+            'frames' => [1],
+            'shape' => Shape::WHOLE_FRAME->value,
+            'video_id' => $point->video_id,
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $wholeFrame->id]);
+        $job = new ProcessAnnotatedVideoStub(
+            $point->video,
+            skipFeatureVectors: true,
+            skipPatches: true
+        );
+        $job->mock = $video;
+
+        $job->handle();
+        $prefix = fragment_uuid_path($point->video->uuid);
+        $disk->assertExists("{$prefix}/v-{$point->id}.svg");
+        $disk->assertMissing("{$prefix}/v-{$wholeFrame->id}.svg");
+    }
+
     public function testHandleMultipleAnnotations()
     {
         $disk = Storage::fake('test');

@@ -37,9 +37,9 @@ class VideoController extends Controller
             // Array of all project IDs that the user and the video have in common
             // and where the user is editor, expert or admin.
             $projectIds = Project::inCommon($user, $video->volume_id, [
-                Role::EDITOR->value,
-                Role::EXPERT->value,
-                Role::ADMIN->value,
+                Role::EDITOR,
+                Role::EXPERT,
+                Role::ADMIN,
             ])->pluck('id');
         }
 

@@ -28,16 +28,16 @@ class ProjectUserController extends Controller
         ])->map->toArray();
 
         $roleOrder = [
-            Role::GUEST->value,
-            Role::EDITOR->value,
-            Role::EXPERT->value,
-            Role::ADMIN->value,
+            Role::GUEST,
+            Role::EDITOR,
+            Role::EXPERT,
+            Role::ADMIN,
         ];
 
         $members = $project->users()
             ->select('id', 'firstname', 'lastname', 'project_role as role', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role->value, $roleOrder) - array_search($a->role->value, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role, $roleOrder, true) - array_search($a->role, $roleOrder, true))
             ->values();
 
         $userProject = $request->user()->projects()->where('id', $id)->first();

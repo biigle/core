@@ -222,18 +222,18 @@ class UserController extends Controller
             $user->password = bcrypt($request->input('password'));
         }
 
-        $user->role = $request->input('role', $user->role->value);
+        $user->role = $request->input('role', $user->role);
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
         $user->affiliation = $request->input('affiliation', $user->affiliation);
-        if ($request->filled('can_review') && $user->role->value === Role::EDITOR->value) {
+        if ($request->filled('can_review') && $user->role === Role::EDITOR) {
             $user->canReview = (bool) $request->input('can_review');
         } else {
             $user->canReview = false;
         }
 
-        if ($request->filled('rate_limit') && $user->role->value === Role::EDITOR->value) {
+        if ($request->filled('rate_limit') && $user->role === Role::EDITOR) {
             $user->hasNoRateLimit = !boolval($request->input('rate_limit'));
         } else {
             $user->hasNoRateLimit = false;

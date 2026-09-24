@@ -78,9 +78,9 @@ class AnnotationPolicy extends CachedPolicy
                         ->where("{$table}.id", $annotation->file_id);
                 })
                 ->whereIn('project_role', [
-                    Role::EDITOR->value,
-                    Role::EXPERT->value,
-                    Role::ADMIN->value,
+                    Role::EDITOR,
+                    Role::EXPERT,
+                    Role::ADMIN,
                 ])
                 ->exists();
         });
@@ -114,9 +114,9 @@ class AnnotationPolicy extends CachedPolicy
                         ->where("{$table}.id", $annotation->file_id);
                 })
                 ->whereIn('project_role', [
-                    Role::EDITOR->value,
-                    Role::EXPERT->value,
-                    Role::ADMIN->value,
+                    Role::EDITOR,
+                    Role::EXPERT,
+                    Role::ADMIN,
                 ])
                 ->pluck('project_id');
 
@@ -168,7 +168,7 @@ class AnnotationPolicy extends CachedPolicy
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role', [Role::EXPERT->value, Role::ADMIN->value])
+                    ->whereIn('project_role', [Role::EXPERT, Role::ADMIN])
                     ->exists();
             } else {
                 // Editors may delete only those annotations that have their own label
@@ -177,9 +177,9 @@ class AnnotationPolicy extends CachedPolicy
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
                     ->whereIn('project_role', [
-                        Role::EDITOR->value,
-                        Role::EXPERT->value,
-                        Role::ADMIN->value,
+                        Role::EDITOR,
+                        Role::EXPERT,
+                        Role::ADMIN,
                     ])
                     ->exists();
             }

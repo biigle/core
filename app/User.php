@@ -94,7 +94,7 @@ class User extends Authenticatable
      */
     public function getIsGlobalAdminAttribute()
     {
-        return $this->role->value === Role::ADMIN->value;
+        return $this->role === Role::ADMIN;
     }
 
     /**
@@ -185,7 +185,7 @@ class User extends Authenticatable
     public function getCanReviewAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role->value === Role::EDITOR->value &&
+            ($this->role === Role::EDITOR &&
                 $this->getSettings('can_review', false));
     }
 
@@ -207,7 +207,7 @@ class User extends Authenticatable
     public function getHasNoRateLimitAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role->value === Role::EDITOR->value &&
+            ($this->role === Role::EDITOR &&
                 $this->getSettings('disable_rate_limit', false));
     }
 

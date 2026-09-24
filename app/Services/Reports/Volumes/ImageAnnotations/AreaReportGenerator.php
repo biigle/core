@@ -104,11 +104,11 @@ class AreaReportGenerator extends AnnotationReportGenerator
             ])
             // We can only compute the area from annotations that have an area.
             ->whereIn('image_annotations.shape', [
-                Shape::CIRCLE->value,
-                Shape::RECTANGLE->value,
-                Shape::POLYGON->value,
-                Shape::ELLIPSE->value,
-                Shape::LINE->value,
+                Shape::CIRCLE,
+                Shape::RECTANGLE,
+                Shape::POLYGON,
+                Shape::ELLIPSE,
+                Shape::LINE,
             ])
             ->orderBy('image_annotation_labels.id');
 

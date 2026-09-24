@@ -99,7 +99,7 @@ class UsersController extends Controller
     public function show(Modules $modules, $id)
     {
         $user = User::findOrFail($id);
-        $roleClass = $this->roleClassMap($user->role->value);
+        $roleClass = $this->roleClassMap($user->role);
         $values = $this->showProject($user);
         $values = array_merge($values, $this->showVolume($user));
         $values = array_merge($values, $this->showAnnotations($user));
@@ -115,11 +115,11 @@ class UsersController extends Controller
     /**
      * Determines the Boostrap label class for a role label.
      *
-     * @param int $id
+     * @param Role|null $role
      *
      * @return string|array
      */
-    protected function roleClassMap($id = null)
+    protected function roleClassMap(?Role $role = null)
     {
         $map = [
             Role::ADMIN->value => 'danger',
@@ -127,8 +127,8 @@ class UsersController extends Controller
             Role::GUEST->value => 'default',
         ];
 
-        if (!is_null($id)) {
-            return $map[$id];
+        if (!is_null($role)) {
+            return $map[$role->value];
         }
 
         return $map;

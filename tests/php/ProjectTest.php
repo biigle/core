@@ -134,6 +134,15 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($user->id, Role::ADMIN->value);
     }
 
+    public function testAddUserIdEnum()
+    {
+        $user = UserTest::create();
+        $this->model->addUserId($user->id, Role::EXPERT);
+        $user = $this->model->users()->find($user->id);
+        $this->assertNotNull($user);
+        $this->assertSame(Role::EXPERT->value, $user->project_role);
+    }
+
     public function testRemoveUserId()
     {
         $admin = UserTest::create();
@@ -159,6 +168,14 @@ class ProjectTest extends ModelTestCase
         $this->assertSame(Role::ADMIN->value, $this->model->users()->find($user->id)->project_role);
         $this->model->changeRole($user->id, Role::EDITOR->value);
         $this->assertSame(Role::EDITOR->value, $this->model->users()->find($user->id)->project_role);
+    }
+
+    public function testChangeRoleEnum()
+    {
+        $user = UserTest::create();
+        $this->model->addUserId($user->id, Role::ADMIN);
+        $this->model->changeRole($user->id, Role::GUEST);
+        $this->assertSame(Role::GUEST->value, $this->model->users()->find($user->id)->project_role);
     }
 
     public function testRemoveVolume()
@@ -304,6 +321,13 @@ class ProjectTest extends ModelTestCase
 
         $projects = Project::inCommon($user, $v->id, [Role::ADMIN->value])->pluck('id');
         $this->assertEmpty($projects);
+
+        $projects = Project::inCommon($user, $v->id, [Role::ADMIN])->pluck('id');
+        $this->assertEmpty($projects);
+
+        $projects = Project::inCommon($user, $v->id, [Role::EDITOR, Role::GUEST])->pluck('id');
+        $this->assertSame(1, $projects->count());
+        $this->assertSame($this->model->id, $projects[0]);
     }
 
     public function testImageVolumes()

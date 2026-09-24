@@ -51,7 +51,7 @@ class UpdateVideoMetadata extends Command
     {
         $this->dryRun = $this->option('dry-run');
         $volumeId = $this->option('volume');
-        $query = Volume::where('media_type', MediaType::VIDEO->value);
+        $query = Volume::where('media_type', MediaType::VIDEO);
 
         if ($volumeId) {
             $this->processVolume($query->find($volumeId));

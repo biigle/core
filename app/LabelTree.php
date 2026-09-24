@@ -46,7 +46,7 @@ class LabelTree extends Model
     public function memberCanLooseAdminStatus(User $member)
     {
         return $this->members()
-            ->wherePivot('role', Role::ADMIN->value)
+            ->wherePivot('role', Role::ADMIN)
             ->where('id', '!=', $member->id)
             ->exists();
     }
@@ -59,7 +59,7 @@ class LabelTree extends Model
      */
     public function scopePublicTrees($query)
     {
-        return $query->where('visibility', Visibility::PUBLIC->value);
+        return $query->where('visibility', Visibility::PUBLIC);
     }
 
     /**
@@ -70,7 +70,7 @@ class LabelTree extends Model
      */
     public function scopePrivateTrees($query)
     {
-        return $query->where('visibility', Visibility::PRIVATE->value);
+        return $query->where('visibility', Visibility::PRIVATE);
     }
 
     /**
@@ -87,7 +87,7 @@ class LabelTree extends Model
         }
 
         return $query->where(function ($query) use ($user) {
-            $query->where('label_trees.visibility', Visibility::PUBLIC->value)
+            $query->where('label_trees.visibility', Visibility::PUBLIC)
                 // Do it like this instead of a join with label_tree_user because
                 // there can be global label trees without any members, too!
                 ->orWhere(function ($query) use ($user) {
@@ -134,7 +134,7 @@ class LabelTree extends Model
     {
         return $query->withoutVersions()
             ->whereDoesntHave('members')
-            ->where('label_trees.visibility', Visibility::PUBLIC->value);
+            ->where('label_trees.visibility', Visibility::PUBLIC);
     }
 
     /**
@@ -208,10 +208,6 @@ class LabelTree extends Model
             $user = $user->id;
         }
 
-        if ($role instanceof Role) {
-            $role = $role->value;
-        }
-
         $this->members()->attach($user, ['role' => $role]);
     }
 
@@ -225,10 +221,6 @@ class LabelTree extends Model
     {
         if ($user instanceof User) {
             $user = $user->id;
-        }
-
-        if ($role instanceof Role) {
-            $role = $role->value;
         }
 
         $this->members()->updateExistingPivot($user, ['role' => $role]);

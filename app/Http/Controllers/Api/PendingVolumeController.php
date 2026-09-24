@@ -94,7 +94,7 @@ class PendingVolumeController extends Controller
      */
     public function storeVolume(StorePendingVolumeFromVolume $request)
     {
-        $project = Project::inCommon($request->user(), $request->volume->id, [Role::ADMIN->value])->first();
+        $project = Project::inCommon($request->user(), $request->volume->id, [Role::ADMIN])->first();
 
         try {
             $pv = DB::transaction(function () use ($project, $request) {
