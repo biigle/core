@@ -1,6 +1,7 @@
 <?php
 
 namespace Biigle\Traits;
+
 use Illuminate\Support\Collection;
 
 /**

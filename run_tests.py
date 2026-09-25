@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+This helper script runs the backend tests using php artisan test and stops on the first failure.
+Tests that passed are written to passed_tests.txt.
+When run again, tests present in passed_tests.txt are skipped.
+When run with -r, passed_tests.txt is cleaned.
+"""
+
+
 import re
 import subprocess
 import sys
