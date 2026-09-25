@@ -54,8 +54,6 @@ class ShapeController extends Controller
      */
     public function show($id)
     {
-        $shape = Shape::tryFrom((int) $id);
-        abort_if($shape === null, 404);
-        return $shape;
+        return Shape::findOrFail($id);
     }
 }

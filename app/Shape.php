@@ -2,13 +2,13 @@
 
 namespace Biigle;
 
+use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
-use Illuminate\Support\Collection;
 use ValueError;
 
 enum Shape: int implements \JsonSerializable
 {
-    use EnumSerialization;
+    use EnumSerialization, EloquentEnum;
 
     case POINT = 1;
     case LINE = 2;
@@ -44,18 +44,5 @@ enum Shape: int implements \JsonSerializable
             "WHOLEFRAME" => self::WHOLE_FRAME,
             default => throw new ValueError("Invalid shape label $label")
         };
-    }
-
-    /**
-     * Helper to imitate the original ->pluck('name', 'id') behaviour
-     */
-    public static function pluckById(?self $except = null): Collection
-    {
-        $collection = collect(self::cases())
-            ->mapWithKeys(fn (self $shape) => [$shape->value => $shape->label()]);
-        if ($except !== null) {
-            $collection->forget($except->value);
-        }
-        return $collection;
     }
 }

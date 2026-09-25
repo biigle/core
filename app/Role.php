@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
 
 /**
@@ -11,7 +12,7 @@ use Biigle\Traits\EnumSerialization;
 */
 enum Role: int implements \JsonSerializable
 {
-    use EnumSerialization;
+    use EnumSerialization, EloquentEnum;
 
     case ADMIN = 1;
     case EDITOR = 2;

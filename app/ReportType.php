@@ -2,11 +2,12 @@
 
 namespace Biigle;
 
+use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
 
 enum ReportType: int implements \JsonSerializable
 {
-    use EnumSerialization;
+    use EnumSerialization, EloquentEnum;
 
     case IMAGE_ANNOTATIONS_AREA = 1;
     case IMAGE_ANNOTATIONS_BASIC = 2;

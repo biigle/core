@@ -58,8 +58,6 @@ class RoleController extends Controller
      */
     public function show($id): Role
     {
-        $role = Role::tryFrom((int) $id);
-        abort_if($role === null, 404);
-        return $role;
+        return Role::findOrFail($id);
     }
 }

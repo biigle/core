@@ -54,8 +54,6 @@ class VisibilityController extends Controller
      */
     public function show($id)
     {
-        $visibility = Visibility::tryFrom((int) $id);
-        abort_if($visibility === null, 404);
-        return $visibility;
+        return Visibility::findOrFail($id);
     }
 }

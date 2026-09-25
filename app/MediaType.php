@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
 use ValueError;
 
@@ -10,7 +11,7 @@ use ValueError;
  */
 enum MediaType: int implements \JsonSerializable
 {
-    use EnumSerialization;
+    use EnumSerialization, EloquentEnum;
 
     case IMAGE = 1;
     case VIDEO = 2;

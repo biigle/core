@@ -2,11 +2,12 @@
 
 namespace Biigle;
 
+use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
 
 enum Visibility: int implements \JsonSerializable
 {
-    use EnumSerialization;
+    use EnumSerialization, EloquentEnum;
 
     case PUBLIC = 1;
     case PRIVATE = 2;

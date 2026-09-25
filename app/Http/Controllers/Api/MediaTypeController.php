@@ -54,8 +54,6 @@ class MediaTypeController extends Controller
      */
     public function show($id)
     {
-        $mediaType = MediaType::tryFrom((int) $id);
-        abort_if($mediaType === null, 404);
-        return $mediaType;
+        return MediaType::findOrFail($id);
     }
 }
