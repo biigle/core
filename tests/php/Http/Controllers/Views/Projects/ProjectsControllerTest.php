@@ -34,15 +34,10 @@ class ProjectsControllerTest extends TestCase
         Cache::flush();
         $response = $this->get("projects/{$id}");
         $response->assertStatus(200);
-        // We changed media_type to enum, make sure it's still an array here
+
         $volumes = json_decode($response->viewData('volumes')->toJson(), true);
-        $this->assertSame(
-            $volumes[0]['media_type'],
-            [
-                'id' => MediaType::IMAGE->value,
-                'name' => MediaType::IMAGE->label(),
-            ]
-        );
+        $this->assertSame($volumes[0]['media_type'], MediaType::IMAGE->value);
+        $this->assertSame($volumes[0]['media_type_label'], MediaType::IMAGE->label());
 
         // doesn't exist
         $response = $this->get('projects/-1');

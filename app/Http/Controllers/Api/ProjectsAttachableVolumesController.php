@@ -42,6 +42,7 @@ class ProjectsAttachableVolumesController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
+        $hidden = ['doi'];
 
         $volumes = Volume::select('id', 'name', 'updated_at', 'media_type')
             // All volumes of other projects where the user has admin rights on.
@@ -61,17 +62,14 @@ class ProjectsAttachableVolumesController extends Controller
                 ->from('project_volume')
                 ->where('project_id', $id))
             ->distinct()
-            ->get();
-
-        $hidden = ['doi'];
-
-        return $volumes->map(function ($item) use ($hidden) {
-            $item->append('thumbnailUrl')
+            ->get()
+            ->each(function ($item) use ($hidden) {
+                $item->append('thumbnailUrl')
                 ->append('thumbnailsUrl')
-                ->makeHidden($hidden);
-            $data = $item->toArray();
-            $data['media_type'] = $item->media_type->toArray();
-            return $data;
-        });
+                ->makeHidden($hidden)
+                ->setAttribute('media_type_label', $item->media_type->label());
+            });
+
+        return $volumes;
     }
 }

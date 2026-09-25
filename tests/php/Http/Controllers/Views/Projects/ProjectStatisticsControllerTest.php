@@ -29,14 +29,10 @@ class ProjectStatisticsControllerTest extends TestCase
         Cache::flush();
         $response = $this->get("projects/{$id}/charts");
         $response->assertStatus(200);
+
         $volumes = json_decode($response->viewData('volumes')->toJson(), true);
-        $this->assertSame(
-            $volumes[0]['media_type'],
-            [
-                'id' => MediaType::IMAGE->value,
-                'name' => MediaType::IMAGE->label(),
-            ]
-        );
+        $this->assertSame($volumes[0]['media_type'], MediaType::IMAGE->value);
+        $this->assertSame($volumes[0]['media_type_label'], MediaType::IMAGE->label());
 
         // doesn't exist
         $this->get('projects/-1/charts')->assertStatus(404);

@@ -48,12 +48,8 @@ class ProjectsController extends Controller
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')
                     ->append('thumbnailsUrl')
-                    ->makeHidden($hidden);
-            })
-            ->map(function ($volume) {
-                $data = $volume->toArray();
-                $data['media_type'] = $volume->media_type->toArray();
-                return $data;
+                    ->makeHidden($hidden)
+                    ->setAttribute('media_type_label', $item->media_type->label());
             });
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
