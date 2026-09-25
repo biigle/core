@@ -65,9 +65,9 @@ class ProjectsAttachableVolumesController extends Controller
             ->get()
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')
-                ->append('thumbnailsUrl')
-                ->makeHidden($hidden)
-                ->setAttribute('media_type_label', $item->media_type->label());
+                    ->append('thumbnailsUrl')
+                    ->makeHidden($hidden)
+                    ->setAttribute('media_type_label', $item->media_type->label());
             });
 
         return $volumes;

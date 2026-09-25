@@ -35,7 +35,7 @@ class ProjectStatisticsController extends Controller
             ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->each(function($item) {
+            ->each(function ($item) {
                 $item->setAttribute('media_type_label', $item->media_type->label());
             });
 
