@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
@@ -44,7 +43,7 @@ class ProjectsAttachableVolumesController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        $volumes = Volume::select('id', 'name', 'updated_at', 'media_type as media_type_id')
+        $volumes = Volume::select('id', 'name', 'updated_at', 'media_type')
             // All volumes of other projects where the user has admin rights on.
             ->whereIn('id', fn ($query) => $query->select('volume_id')
                 ->from('project_volume')
@@ -71,7 +70,7 @@ class ProjectsAttachableVolumesController extends Controller
                 ->append('thumbnailsUrl')
                 ->makeHidden($hidden);
             $data = $item->toArray();
-            $data['media_type'] = MediaType::from($item->media_type_id)->toArray();
+            $data['media_type'] = $item->media_type->toArray();
             return $data;
         });
     }
