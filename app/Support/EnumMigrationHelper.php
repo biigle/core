@@ -14,6 +14,16 @@ class EnumMigrationHelper
      * - Changes DB values to the enum values supplied by $map
      * - Drops the specified table
      * - Removes the _id suffix from the column name
+     *
+     * To update all values atomically, an SQL query like this is built:
+     * UPDATE table_name
+     * SET column_name = CASE column_name
+     *  when old1 then new1
+     *  when old2 then new2
+     *  ...
+     *  else column_name
+     * end
+     * where column_name in (old1, old2, ...);
      * @param array $map [$oldId => $newId]
      * @param string $tableName
      * @param array $foreignKeys [[table name, column name, foreign key constraint name], ...]. If the
@@ -22,6 +32,13 @@ class EnumMigrationHelper
      */
     public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys)
     {
+        $cases = '';
+        $ids = [];
+        foreach ($map as $oldId => $newId) {
+            $cases .= "WHEN $oldId THEN $newId ";
+            $ids[] = $oldId;
+        }
+
         foreach ($foreignKeys as $foreignKey) {
             [$table, $column] = $foreignKey;
             $constraint = $foreignKey[2] ?? "{$table}_{$column}_foreign";
@@ -30,8 +47,10 @@ class EnumMigrationHelper
 
             foreach ($map as $oldId => $newId) {
                 DB::table($table)
-                    ->where($column, $oldId)
-                    ->update([$column => $newId]);
+                    ->whereIn($column, $ids)
+                    ->update([
+                        DB::raw("(CASE $column $cases END)")
+                    ]);
             }
 
             if (str_ends_with($column, '_id')) {
