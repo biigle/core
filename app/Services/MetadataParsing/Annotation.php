@@ -11,7 +11,7 @@ abstract class Annotation
     /**
      * Shape ID required for point validation.
      */
-    public int $shape_id;
+    public int $shape;
 
     /**
      * @param Shape $shape
@@ -19,11 +19,11 @@ abstract class Annotation
      * @param array<LabelAndUser> $labels
      */
     public function __construct(
-        public Shape $shape,
+        Shape $shape,
         public array $points,
         public array $labels,
     ) {
-        $this->shape_id = $shape->id;
+        $this->shape = $shape->value;
         $this->setPointsAttribute($points);
 
         array_walk($labels, function ($label) {
@@ -43,7 +43,7 @@ abstract class Annotation
     {
         return [
             'points' => json_encode($this->points),
-            'shape_id' => $this->shape->id,
+            'shape' => $this->shape,
         ];
     }
 

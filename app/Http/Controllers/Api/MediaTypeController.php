@@ -26,11 +26,11 @@ class MediaTypeController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection<int, array>
      */
     public function index()
     {
-        return MediaType::all();
+        return collect(MediaType::cases())->map->toArray()->values();
     }
 
     /**

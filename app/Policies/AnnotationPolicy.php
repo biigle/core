@@ -77,10 +77,10 @@ class AnnotationPolicy extends CachedPolicy
                         ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
                         ->where("{$table}.id", $annotation->file_id);
                 })
-                ->whereIn('project_role_id', [
-                    Role::editorId(),
-                    Role::expertId(),
-                    Role::adminId(),
+                ->whereIn('project_role', [
+                    Role::EDITOR,
+                    Role::EXPERT,
+                    Role::ADMIN,
                 ])
                 ->exists();
         });
@@ -113,13 +113,13 @@ class AnnotationPolicy extends CachedPolicy
                         ->join($table, 'project_volume.volume_id', '=', "{$table}.volume_id")
                         ->where("{$table}.id", $annotation->file_id);
                 })
-                ->whereIn('project_role_id', [
-                    Role::editorId(),
-                    Role::expertId(),
-                    Role::adminId(),
+                ->whereIn('project_role', [
+                    Role::EDITOR,
+                    Role::EXPERT,
+                    Role::ADMIN,
                 ])
                 ->pluck('project_id');
-                
+
             if ($projectIds->isEmpty()) {
                 return Response::deny("Only project editors, experts or admins may attach a label to this annotation.");
             }
@@ -131,7 +131,7 @@ class AnnotationPolicy extends CachedPolicy
             if (!$labelBelongsToProject) {
                 return Response::deny("You are not authorized to use the label '{$label->name}' because the label tree is not attached to the project.");
             }
-                    
+
             return Response::allow();
         });
     }
@@ -168,7 +168,7 @@ class AnnotationPolicy extends CachedPolicy
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
+                    ->whereIn('project_role', [Role::EXPERT, Role::ADMIN])
                     ->exists();
             } else {
                 // Editors may delete only those annotations that have their own label
@@ -176,10 +176,10 @@ class AnnotationPolicy extends CachedPolicy
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role_id', [
-                        Role::editorId(),
-                        Role::expertId(),
-                        Role::adminId(),
+                    ->whereIn('project_role', [
+                        Role::EDITOR,
+                        Role::EXPERT,
+                        Role::ADMIN,
                     ])
                     ->exists();
             }

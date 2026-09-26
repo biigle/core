@@ -35,7 +35,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 
         $ids = array_diff($this->imageAnnotationIds, $skipIds);
         $models = ImageAnnotation::whereIn('id', $ids)
-            ->with('file', 'labels.label', 'shape')
+            ->with('file', 'labels.label')
             ->get()
             ->keyBy('id');
 
@@ -122,7 +122,7 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
             $image = $this->getVipsImageForPyworker($thumbnail);
 
             // Compute the crop box for the annotation within the thumbnail.
-            if ($a->shape_id === Shape::wholeFrameId()) {
+            if ($a->shape === Shape::WHOLE_FRAME) {
                 $box = [0, 0, $thumbWidth, $thumbHeight];
             } else {
                 if ($a instanceof VideoAnnotation) {

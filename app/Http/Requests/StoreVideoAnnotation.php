@@ -8,6 +8,7 @@ use Biigle\Rules\VideoAnnotationPoints;
 use Biigle\Shape;
 use Biigle\Video;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreVideoAnnotation extends FormRequest
 {
@@ -53,7 +54,7 @@ class StoreVideoAnnotation extends FormRequest
                     }
                 },
             ],
-            'shape_id' => 'required|integer|exists:shapes,id',
+            'shape' => ['required', 'integer', Rule::enum(Shape::class)],
             'frames' => [
                 'bail',
                 'required',
@@ -62,9 +63,9 @@ class StoreVideoAnnotation extends FormRequest
             ],
             'points' => [
                 'bail',
-                'required_unless:shape_id,'.Shape::wholeFrameId(),
+                'required_unless:shape,'.Shape::WHOLE_FRAME->value,
                 'array',
-                new VideoAnnotationPoints($this->input('shape_id')),
+                new VideoAnnotationPoints($this->input('shape')),
             ],
             'track' => 'filled|boolean',
         ];
@@ -85,7 +86,7 @@ class StoreVideoAnnotation extends FormRequest
             }
 
             $frameCount = count($this->input('frames', []));
-            $isWholeFrame = intval($this->input('shape_id')) === Shape::wholeFrameId();
+            $isWholeFrame = intval($this->input('shape')) === Shape::WHOLE_FRAME->value;
 
             if ($isWholeFrame && $frameCount > 2) {
                 $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
@@ -112,11 +113,11 @@ class StoreVideoAnnotation extends FormRequest
                 }
 
                 $allowedShapes = [
-                    Shape::pointId(),
-                    Shape::circleId(),
+                    Shape::POINT->value,
+                    Shape::CIRCLE->value,
                 ];
 
-                if (!in_array(intval($this->input('shape_id')), $allowedShapes)) {
+                if (!in_array(intval($this->input('shape')), $allowedShapes)) {
                     $validator->errors()->add('id', 'Only point and circle annotations can be tracked.');
                 }
 
@@ -150,9 +151,9 @@ class StoreVideoAnnotation extends FormRequest
         $radius = 0;
         $points = $this->input('points')[0];
 
-        if (intval($this->input('shape_id')) === Shape::pointId()) {
+        if (intval($this->input('shape')) === Shape::POINT->value) {
             $radius = config('videos.tracking_point_padding');
-        } elseif (intval($this->input('shape_id')) === Shape::circleId()) {
+        } elseif (intval($this->input('shape')) === Shape::CIRCLE->value) {
             $radius = $points[2];
         } else {
             return false;

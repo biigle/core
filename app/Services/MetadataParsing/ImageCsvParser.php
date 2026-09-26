@@ -11,7 +11,7 @@ class ImageCsvParser extends CsvParser
      */
     public function getMetadata(): VolumeMetadata
     {
-        $data = new VolumeMetadata(MediaType::image());
+        $data = new VolumeMetadata(MediaType::IMAGE);
 
         $file = $this->getCsvIterator();
         $line = $file->current();

@@ -14,14 +14,14 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $this->video = VideoTest::create(['volume_id' => $id]);
     }
 
     public function testStore()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10], [20, 20]],
@@ -80,7 +80,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStorePoint()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10], [20, 20]],
@@ -106,7 +106,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ];
 
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => $points,
@@ -129,7 +129,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreCircle()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10, 5], [20, 20, 10]],
@@ -150,7 +150,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreLineString()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10, 20, 20], [20, 20, 10, 10]],
@@ -168,7 +168,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStorePolygon()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10, 20, 20, 30, 30], [30, 30, 20, 20, 10, 10]],
@@ -186,7 +186,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreWholeFrame()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [],
@@ -206,7 +206,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStorePointAtGap()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, null, 2.0],
             'points' => [[10, 10], [], [20, 20]],
@@ -227,7 +227,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStorePointAtFrame()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 1.5, 2.0],
             'points' => [[10, 10], [15, 15], [20, 20]],
@@ -255,7 +255,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ];
 
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, null, 2.0, 3.0],
             'points' => $points,
@@ -285,7 +285,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
         ];
 
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0, null, 3.0],
             'points' => $points,
@@ -308,7 +308,7 @@ class SplitVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreWholeFrameAtFrame()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
             'video_id' => $this->video->id,
             'frames' => [1.0, 1.5, 2.0],
             'points' => [],

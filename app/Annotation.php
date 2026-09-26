@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property array $points
  * @property string $created_at
- * @property int $shape_id
+ * @property Shape $shape
  * @phpstan-consistent-constructor
  */
 #[Hidden(['pivot'])]
@@ -31,6 +31,7 @@ abstract class Annotation extends Model implements AnnotationContract
     protected function casts(): array
     {
         return [
+            'shape' => Shape::class,
             'points' => 'array',
         ];
     }
@@ -189,16 +190,6 @@ abstract class Annotation extends Model implements AnnotationContract
      * @return int
      */
     abstract public function getFileIdAttribute();
-
-    /**
-     * The shape of this annotation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
-     */
-    public function shape()
-    {
-        return $this->belongsTo(Shape::class);
-    }
 
     /**
      * {@inheritdoc}

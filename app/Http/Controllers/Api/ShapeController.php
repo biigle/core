@@ -26,11 +26,11 @@ class ShapeController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection<int, array>
      */
     public function index()
     {
-        return Shape::all();
+        return collect(Shape::cases())->map->toArray()->values();
     }
 
     /**

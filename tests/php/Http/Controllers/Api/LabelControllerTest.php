@@ -22,7 +22,7 @@ class LabelControllerTest extends ApiTestCase
             'label_tree_id' => $tree->id,
         ]);
         $sibling = LabelTest::create(['label_tree_id' => $tree->id]);
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
 
         $this->doTestApiRoute('PUT', "/api/v1/labels/{$label->id}");
 
@@ -66,7 +66,7 @@ class LabelControllerTest extends ApiTestCase
     public function testUpdateVersionedTree()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->editor(), Role::editor());
+        $version->labelTree->addMember($this->editor(), Role::EDITOR);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
         $this->beEditor();
@@ -77,7 +77,7 @@ class LabelControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::editor());
+        $label->tree->addMember($this->editor(), Role::EDITOR);
 
         $this->doTestApiRoute('DELETE', "/api/v1/labels/{$label->id}");
 
@@ -114,7 +114,7 @@ class LabelControllerTest extends ApiTestCase
     public function testDestroyFormRequest()
     {
         $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::editor());
+        $label->tree->addMember($this->editor(), Role::EDITOR);
 
         $this->beEditor();
         $this->get('/');
@@ -124,7 +124,7 @@ class LabelControllerTest extends ApiTestCase
         $response->assertSessionHas('deleted', true);
 
         $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::editor());
+        $label->tree->addMember($this->editor(), Role::EDITOR);
 
         $response = $this->delete("/api/v1/labels/{$label->id}", [
             '_redirect' => 'settings',
@@ -137,7 +137,7 @@ class LabelControllerTest extends ApiTestCase
     public function testDestroyVersionedTree()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->editor(), Role::editor());
+        $version->labelTree->addMember($this->editor(), Role::EDITOR);
         $tree = LabelTreeTest::create(['version_id' => $version->id]);
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
         $this->beEditor();

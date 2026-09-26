@@ -40,7 +40,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         ], $merge);
 
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
             'name' => 'My Cool Volume',
             'metadata_file_path' => 'mymeta.json',
             'metadata_parser' => IfdoParser::class,
@@ -64,7 +64,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'video_id' => $video->id,
             'points' => [[150, 150], [200, 200]],
             'frames' => [100.0, 200.0],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -134,7 +134,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'video_id' => $video->id,
             'points' => [[150, 150]],
             'frames' => [100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -345,7 +345,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'video_id' => $video->id,
             'points' => [[150, 150]],
             'frames' => [100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -451,7 +451,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'video_id' => $video->id,
             'points' => [[150, 150]],
             'frames' => [100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -530,7 +530,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'video_id' => $video->id,
             'points' => [[150, 150]],
             'frames' => [100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -609,7 +609,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         ]);
         $a1 = VideoAnnotationTest::create([
             'video_id' => $video1->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -629,7 +629,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         ]);
         $a2 = VideoAnnotationTest::create([
             'video_id' => $video2->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al2 = VideoAnnotationLabelTest::create([
             'label_id' => $label2->id,
@@ -749,7 +749,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'video_id' => $video->id,
             'points' => [[150, 150]],
             'frames' => [100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -853,7 +853,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
             'video_id' => $video->id,
             'points' => [[150, 150]],
             'frames' => [100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -927,7 +927,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $a1 = VideoAnnotationTest::create([
             'video_id' => $video->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al1 = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -937,7 +937,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $a2 = VideoAnnotationTest::create([
             'video_id' => $video->id,
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
         ]);
         $al2 = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -947,7 +947,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $a3 = VideoAnnotationTest::create([
             'video_id' => $video->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $al3 = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -957,7 +957,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $a4 = VideoAnnotationTest::create([
             'video_id' => $video->id,
-            'shape_id' => Shape::ellipseId(),
+            'shape' => Shape::ELLIPSE->value,
         ]);
         $al4 = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -967,7 +967,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $a5 = VideoAnnotationTest::create([
             'video_id' => $video->id,
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON->value,
         ]);
         $al5 = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -977,7 +977,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $a6 = VideoAnnotationTest::create([
             'video_id' => $video->id,
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
         ]);
         $al6 = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -987,7 +987,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
 
         $a7 = VideoAnnotationTest::create([
             'video_id' => $video->id,
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE->value,
         ]);
         $al7 = VideoAnnotationLabelTest::create([
             'label_id' => $label->id,

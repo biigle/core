@@ -15,7 +15,7 @@ export default class Annotation {
         this._frames = ref(args.frames);
         this._points = args.points;
         this.video_id = args.video_id;
-        this.shape_id = args.shape_id;
+        this.shape_id = args.shape;
         this.created_at = args.created_at;
         this.updated_at = args.updated_at;
         this.screenshotPromise = args.screenshotPromise;

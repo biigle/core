@@ -47,7 +47,7 @@ class PendingVolumeController extends Controller
 
         if ($user->can('sudo')) {
             $disks = $disks->concat(config('volumes.admin_storage_disks'));
-        } elseif ($user->role_id === Role::editorId() || $user->role_id === Role::adminId()) {
+        } elseif ($user->role === Role::EDITOR || $user->role === Role::ADMIN) {
             // Also check admin role because admins could have disabled their sudo mode.
             $disks = $disks->concat(config('volumes.editor_storage_disks'));
         }
@@ -75,7 +75,7 @@ class PendingVolumeController extends Controller
             $userDisk = null;
         }
 
-        $isImageMediaType = $pv->media_type_id === MediaType::imageId();
+        $isImageMediaType = $pv->media_type === MediaType::IMAGE;
         $mediaType = $isImageMediaType ? 'image' : 'video';
 
         $metadata = null;
@@ -251,7 +251,7 @@ class PendingVolumeController extends Controller
 
         // Hide attributes for a more compact JSON representation.
         $labelTrees->each(function ($tree) {
-            $tree->makeHidden(['visibility_id', 'created_at', 'updated_at']);
+            $tree->makeHidden(['visibility', 'created_at', 'updated_at']);
             $tree->labels->each(function ($label) {
                 $label->makeHidden(['source_id', 'label_source_id', 'label_tree_id', 'parent_id']);
             });

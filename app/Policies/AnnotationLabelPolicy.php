@@ -45,10 +45,10 @@ class AnnotationLabelPolicy extends CachedPolicy
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role_id', [
-                        Role::editorId(),
-                        Role::expertId(),
-                        Role::adminId(),
+                    ->whereIn('project_role', [
+                        Role::EDITOR,
+                        Role::EXPERT,
+                        Role::ADMIN,
                     ])
                     ->exists();
             } else {
@@ -56,7 +56,7 @@ class AnnotationLabelPolicy extends CachedPolicy
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
+                    ->whereIn('project_role', [Role::EXPERT, Role::ADMIN])
                     ->exists();
             }
         });

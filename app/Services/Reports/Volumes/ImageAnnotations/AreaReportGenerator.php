@@ -96,21 +96,19 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $query = $this
             ->initQuery([
                 'image_annotations.id as annotation_id',
-                'shapes.id as shape_id',
-                'shapes.name as shape_name',
+                'image_annotations.shape',
                 'image_annotation_labels.label_id',
                 'labels.name as label_name',
                 'image_annotations.image_id',
                 'image_annotations.points',
             ])
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             // We can only compute the area from annotations that have an area.
-            ->whereIn('shapes.id', [
-                Shape::circleId(),
-                Shape::rectangleId(),
-                Shape::polygonId(),
-                Shape::ellipseId(),
-                Shape::lineId(),
+            ->whereIn('image_annotations.shape', [
+                Shape::CIRCLE,
+                Shape::RECTANGLE,
+                Shape::POLYGON,
+                Shape::ELLIPSE,
+                Shape::LINE,
             ])
             ->orderBy('image_annotation_labels.id');
 
@@ -131,7 +129,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $csv->put($title);
         $csv->putCsv([
             'annotation_id',
-            'shape_id',
+            'shape',
             'shape_name',
             'label_ids',
             'label_names',
@@ -148,8 +146,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
         foreach ($rows as $row) {
             $csv->putCsv([
                 $row->id,
-                $row->shape_id,
-                $row->shape_name,
+                $row->shape,
+                Shape::from($row->shape)->label(),
                 implode(', ', $row->label_ids),
                 implode(', ', $row->label_names),
                 $row->image_id,
@@ -185,8 +183,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
             } else {
                 $annotation = new StdClass();
                 $annotation->id = $row->annotation_id;
-                $annotation->shape_id = $row->shape_id;
-                $annotation->shape_name = $row->shape_name;
+                $annotation->shape = $row->shape;
+                $annotation->shape_name = Shape::from($row->shape)->label();
                 $annotation->label_ids = [$row->label_id];
                 $annotation->label_names = [$row->label_name];
                 $annotation->image_id = $row->image_id;
@@ -220,15 +218,15 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $annotation->height_m = '';
         $annotation->area_sqm = '';
 
-        switch ($annotation->shape_id) {
-            case Shape::circleId():
+        switch ($annotation->shape) {
+            case Shape::CIRCLE->value:
                 // width and height are the diameter
                 $annotation->width_px = 2 * $points[2];
                 $annotation->height_px = $annotation->width_px;
                 $annotation->area_sqpx = pow($points[2], 2) * M_PI;
                 break;
 
-            case Shape::rectangleId():
+            case Shape::RECTANGLE->value:
                 // A --- B
                 // |     |
                 // D --- C
@@ -243,7 +241,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $annotation->area_sqpx = $dim1 * $dim2;
                 break;
 
-            case Shape::polygonId():
+            case Shape::POLYGON->value:
                 // See: http://www.mathopenref.com/coordpolygonarea.html and
                 // http://www.mathopenref.com/coordpolygonarea2.html
                 // For a description of the polygon area algorithm.
@@ -272,7 +270,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $annotation->area_sqpx = abs($area / 2);
                 break;
 
-            case Shape::ellipseId():
+            case Shape::ELLIPSE->value:
                 // $a and $b are *double* the lengths of the semi-major axis and the
                 // semi-minor axis, respectively.
                 // See: https://www.math.hmc.edu/funfacts/ffiles/10006.3.shtml
@@ -295,7 +293,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 // Divide by 4 because $a and $b each are double the lengths.
                 $annotation->area_sqpx = M_PI * $a * $b / 4;
                 break;
-            case Shape::lineId():
+            case Shape::LINE->value:
                 $totalPoints = count($points);
                 $length = 0;
 

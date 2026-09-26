@@ -79,7 +79,7 @@ class CocoReportGeneratorTest extends TestCase
                 $al->annotation->image->filename,
                 null,
                 null,
-                $al->annotation->shape->name,
+                $al->annotation->shape->label(),
                 json_encode($al->annotation->points),
                 json_encode(['image' => 'attrs'])
             ]);
@@ -153,7 +153,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -168,7 +168,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -252,7 +252,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -267,7 +267,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -346,7 +346,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -361,7 +361,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -411,7 +411,7 @@ class CocoReportGeneratorTest extends TestCase
         $volName = Str::slug($image->volume->name);
 
         $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
-        
+
         $al1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => null // deleted user
@@ -441,7 +441,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -456,7 +456,7 @@ class CocoReportGeneratorTest extends TestCase
                 $annotation->image->filename,
                 null,
                 null,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null
             ]);
@@ -485,6 +485,6 @@ class CocoReportGeneratorTest extends TestCase
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);
         $generator->generateReport('my/path');
-    
+
     }
 }

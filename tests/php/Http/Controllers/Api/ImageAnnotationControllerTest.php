@@ -118,7 +118,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $response->assertJsonFragment(['points' => [10, 20]])
             ->assertJsonFragment(['points' => [20, 30]]);
-        
+
 
         $session->users()->attach($this->editor());
         Cache::flush();
@@ -138,7 +138,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $response->assertJsonMissing(['points' => [10, 20]])
             ->assertJsonFragment(['points' => [20, 30]]);
-        
+
     }
 
     public function testShow()
@@ -232,28 +232,28 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => 99999,
+            'shape' => 99999,
             'points' => '',
         ]);
         // shape does not exist
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE->value,
             'label_id' => 99999,
         ]);
         // label is required
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $label->id,
         ]);
         // confidence required
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $label->id,
             'confidence' => 2,
         ]);
@@ -261,7 +261,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $label->id,
             'confidence' => -1,
         ]);
@@ -269,7 +269,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => [],
@@ -278,7 +278,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -291,7 +291,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         Cache::flush();
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
             'label_id' => $label->id,
             'confidence' => 1,
             'points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44],
@@ -300,7 +300,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE->value,
             'label_id' => $label->id,
             'confidence' => 1,
             'points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44],
@@ -309,7 +309,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -344,7 +344,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         ]);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'confidence' => 0.5,
             'points' => [10, 11],
         ]);
@@ -352,7 +352,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 10),
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -361,7 +361,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -392,7 +392,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         ]);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -444,7 +444,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         config(['labelbot.ignore_label_trees' => [' '.$label3->label_tree_id]]);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -459,7 +459,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11, 12, 13],
@@ -472,7 +472,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             // Points that would be valid for any other shape, so the request can only
@@ -480,31 +480,31 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'points' => [10, 11],
         ])
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
     }
 
     public function testUpdateDenyWholeFrameShape()
     {
         $this->beAdmin();
         $this->annotation->points = [10, 11];
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape = Shape::POINT;
         $this->annotation->save();
 
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
         ])
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
 
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
             'points' => [],
         ])
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
 
         $this->annotation->refresh();
-        $this->assertSame(Shape::pointId(), $this->annotation->shape_id);
+        $this->assertSame(Shape::POINT, $this->annotation->shape);
     }
 
     public function testUpdate()
@@ -531,12 +531,12 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $this->beAdmin();
-        $response = $this->put("{$url}/{$id}", ['points' => [10, 15, 100, 200]]);
+        $response = $this->put("{$url}/{$id}", ['points' => [10, 15]]);
         $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
 
-        $this->assertSame(4, sizeof($this->annotation->points));
+        $this->assertSame(2, sizeof($this->annotation->points));
         $this->assertSame(15, $this->annotation->points[1]);
 
         $response = $this->json('PUT', "{$url}/{$id}", ['points' => [20, 25]]);
@@ -546,6 +546,8 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->assertSame(2, sizeof($this->annotation->points));
         $this->assertSame(25, $this->annotation->points[1]);
+        // The shape is kept if only the points are updated.
+        $this->assertSame(Shape::POINT, $this->annotation->shape);
     }
 
     public function testUpdateInvalidPoints()
@@ -553,14 +555,14 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->beAdmin();
 
         $this->annotation->points = [0, 1, 2, 3, 4, 5, 6, 7];
-        $this->annotation->shape_id = Shape::rectangleId();
+        $this->annotation->shape = Shape::RECTANGLE;
         $this->annotation->save();
 
         $response = $this->json('PUT', "api/v1/image-annotations/{$this->annotation->id}", ['points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]);
         $response->assertStatus(422);
 
         $this->annotation->points = [0, 1, 2, 3, 4, 5, 6, 7];
-        $this->annotation->shape_id = Shape::lineId();
+        $this->annotation->shape = Shape::LINE;
         $this->annotation->save();
 
         $response = $this->json('PUT', "api/v1/image-annotations/{$this->annotation->id}", ['points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]]);
@@ -580,7 +582,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     public function updateValidatePoints($url)
     {
         $id = $this->annotation->id;
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape = Shape::POINT;
         $this->annotation->save();
 
         $this->beAdmin();
@@ -607,23 +609,34 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $id = $this->annotation->id;
         $this->annotation->points = [100, 200];
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape = Shape::POINT;
         $this->annotation->save();
 
         $this->beEditor();
         // invalid points for a circle
-        $this->putJson("{$url}/{$id}", ['shape_id' => Shape::circleId()])
+        $this->putJson("{$url}/{$id}", ['shape' => Shape::CIRCLE->value])
             ->assertStatus(422);
 
         $this
             ->putJson("{$url}/{$id}", [
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [100, 200, 300],
             ])
             ->assertStatus(200);
 
         $this->annotation->refresh();
-        $this->assertSame(Shape::circleId(), $this->annotation->shape_id);
+        $this->assertSame(Shape::CIRCLE, $this->annotation->shape);
+
+        // Form-encoded requests send the shape as string.
+        $this
+            ->put("{$url}/{$id}", [
+                'shape' => (string) Shape::POINT->value,
+                'points' => [100, 200],
+            ])
+            ->assertStatus(200);
+
+        $this->annotation->refresh();
+        $this->assertSame(Shape::POINT, $this->annotation->shape);
     }
 
     public function testDestroy()

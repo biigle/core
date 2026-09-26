@@ -9,7 +9,7 @@
 @push('scripts')
 <script type="module">
     biigle.$declare('labelTrees.labelTree', {!! $tree !!});
-    biigle.$declare('labelTrees.privateVisibilityId', {!! \Biigle\Visibility::privateId() !!});
+    biigle.$declare('labelTrees.privateVisibilityId', {!! \Biigle\Visibility::PRIVATE->value !!});
     biigle.$declare('labelTrees.userId', {!! $user->id !!});
     biigle.$declare('labelTrees.redirectUrl', '{{route('home')}}');
 </script>

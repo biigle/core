@@ -27,7 +27,7 @@ import {Resource} from 'vue-resource';
  * resource.saveVolume({id: 1}, {
  *     name: "volume 1",
  *     url: "/vol/volumes/1",
- *     media_type_id: 1,
+ *     media_type: 1,
  *     images: ["1.jpg", "2.jpg"]
  * }).then(...);
  *
@@ -38,10 +38,10 @@ import {Resource} from 'vue-resource';
  * resource.detachVolume({id: 1, volume_id: 12}).then(...);
  *
  * Attach a user to a project:
- * resource.save({id: 1, user_id: 1}, {project_role_id: 2}).then(...);
+ * resource.save({id: 1, user_id: 1}, {project_role: 2}).then(...);
  *
  * Update the role of a user:
- * resource.update({id: 1, user_id: 1}, {project_role_id: 1}).then(...);
+ * resource.update({id: 1, user_id: 1}, {project_role: 1}).then(...);
  *
  * Detach a user from a project:
  * resource.delete({id: 1, user_id: 1}).then(...);

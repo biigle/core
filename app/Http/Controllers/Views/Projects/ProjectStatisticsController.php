@@ -32,11 +32,12 @@ class ProjectStatisticsController extends Controller
             ->count();
 
         $volumes = $project->volumes()
-            ->select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
+            ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
-            ->get();
-
+            ->get()
+            ->each(function ($item) {
+                $item->setAttribute('media_type_label', $item->media_type->label());
+            });
 
         $totalImages = Image::whereIn('images.volume_id', fn ($query) => $query->select('volume_id')
             ->from('project_volume')
@@ -50,12 +51,12 @@ class ProjectStatisticsController extends Controller
 
         $volumeNames = $project->volumes()
             ->select('id', 'name')
-            ->where('media_type_id', MediaType::imageId())
+            ->where('media_type', MediaType::IMAGE)
             ->get();
 
         $volumeNamesVideo = $project->volumes()
             ->select('id', 'name')
-            ->where('media_type_id', MediaType::videoId())
+            ->where('media_type', MediaType::VIDEO)
             ->get();
 
         return view('projects.show.statistics', [

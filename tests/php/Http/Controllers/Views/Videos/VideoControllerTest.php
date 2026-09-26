@@ -10,7 +10,7 @@ class VideoControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $video = VideoTest::create(['volume_id' => $id]);
 
         $this->beUser();
@@ -23,7 +23,7 @@ class VideoControllerTest extends ApiTestCase
 
     public function testShowPopup()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $video = VideoTest::create(['volume_id' => $id]);
 
         $this->get('videos/popup')->assertStatus(302);

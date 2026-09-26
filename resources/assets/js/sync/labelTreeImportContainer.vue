@@ -29,7 +29,7 @@ export default{
             let chosenIds = [];
             this.chosenLabelTrees.forEach((labelTree) => {
                 labelTree.members.forEach((member) => {
-                    if (member.role_id === this.adminRoleId && chosenIds.indexOf(member.id) === -1) {
+                    if (member.role === this.adminRoleId && chosenIds.indexOf(member.id) === -1) {
                         chosenIds.push(member.id);
                     }
                 });

@@ -41,7 +41,7 @@
         <form v-if="editing" v-cloak class="form-inline label-tree-info-form" v-on:submit.prevent="saveChanges">
             <div class="form-group">
                 <input class="form-control label-tree-name" type="text" title="Label tree name" placeholder="Name" v-model="name"/>
-                <select class="form-control" title="Label tree visibility" v-model="visibility_id">
+                <select class="form-control" title="Label tree visibility" v-model="visibility">
                     @foreach ($visibilities as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
                     @endforeach

@@ -6,6 +6,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Rules\AnnotationPoints;
 use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateImageAnnotation extends FormRequest
 {
@@ -36,8 +37,8 @@ class UpdateImageAnnotation extends FormRequest
     public function rules()
     {
         return [
-            'shape_id' => 'required_without:points|integer|exists:shapes,id',
-            'points' => 'required_without:shape_id|array',
+            'shape' => ['required_without:points', 'integer', Rule::enum(Shape::class)],
+            'points' => 'required_without:shape|array',
         ];
     }
 
@@ -54,8 +55,8 @@ class UpdateImageAnnotation extends FormRequest
                 return;
             }
 
-            if ($this->getShapeId() === Shape::wholeFrameId()) {
-                $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
+            if ($this->getShape() === Shape::WHOLE_FRAME) {
+                $validator->errors()->add('shape', 'Image annotations cannot have shape WholeFrame.');
 
                 return;
             }
@@ -63,7 +64,7 @@ class UpdateImageAnnotation extends FormRequest
             // Attributes that are not updated must be validated with the current values
             // of the annotation, too, because e.g. a new shape may be invalid for the
             // existing points.
-            $rule = new AnnotationPoints($this->getShapeId());
+            $rule = new AnnotationPoints($this->getShape()->value);
 
             $rule->validate(
                 'points',
@@ -82,10 +83,14 @@ class UpdateImageAnnotation extends FormRequest
     }
 
     /**
-     * Get the new shape ID of the annotation.
+     * Get the new shape of the annotation.
      */
-    public function getShapeId(): int
+    public function getShape(): Shape
     {
-        return intval($this->input('shape_id', $this->annotation->shape_id));
+        if (!$this->has('shape')) {
+            return $this->annotation->shape;
+        }
+
+        return Shape::from(intval($this->input('shape')));
     }
 }

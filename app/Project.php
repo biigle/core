@@ -23,7 +23,7 @@ class Project extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param User $user
      * @param int $volumeId
-     * @param array $roles Array of role IDs to restrict the project membership to. Default is any role.
+     * @param array<Role|int> $roles Array of roles to restrict the project membership to. Default is any role.
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -35,7 +35,7 @@ class Project extends Model
                 ->join('project_volume', 'project_user.project_id', '=', 'project_volume.project_id')
                 ->whereRaw('project_user.project_id = projects.id')
                 ->where('project_user.user_id', $user->id)
-                ->when(is_array($roles), fn ($query) => $query->whereIn('project_user.project_role_id', $roles))
+                ->when(is_array($roles), fn ($query) => $query->whereIn('project_user.project_role', $roles))
                 ->where('project_volume.volume_id', $volumeId);
         });
     }
@@ -61,14 +61,14 @@ class Project extends Model
 
     /**
      * The members of this project. Every member has a project-specific
-     * `project_role_id` besides their global user role.
+     * `project_role` besides their global user role.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function users()
     {
         return $this->belongsToMany(User::class)
-            ->withPivot('project_role_id as project_role_id');
+            ->withPivot('project_role as project_role');
     }
 
     /**
@@ -78,7 +78,7 @@ class Project extends Model
      */
     public function admins()
     {
-        return $this->users()->whereProjectRoleId(Role::adminId());
+        return $this->users()->whereProjectRole(Role::ADMIN);
     }
 
     /**
@@ -88,7 +88,7 @@ class Project extends Model
      */
     public function editors()
     {
-        return $this->users()->whereProjectRoleId(Role::editorId());
+        return $this->users()->whereProjectRole(Role::EDITOR);
     }
 
     /**
@@ -98,7 +98,7 @@ class Project extends Model
      */
     public function guests()
     {
-        return $this->users()->whereProjectRoleId(Role::guestId());
+        return $this->users()->whereProjectRole(Role::GUEST);
     }
 
     /**
@@ -127,24 +127,24 @@ class Project extends Model
      * Adds the user with the given role to this project.
      *
      * @param int $userId
-     * @param int $roleId
+     * @param Role|int $role
      * @return void
      */
-    public function addUserId($userId, $roleId)
+    public function addUserId($userId, $role)
     {
-        $this->users()->attach($userId, ['project_role_id' => $roleId]);
+        $this->users()->attach($userId, ['project_role' => $role]);
     }
 
     /**
      * Changes the role of an existing user in this project.
      *
      * @param int $userId
-     * @param int $roleId
+     * @param Role|int $role
      * @return void
      */
-    public function changeRole($userId, $roleId)
+    public function changeRole($userId, $role)
     {
-        $this->users()->updateExistingPivot($userId, ['project_role_id' => $roleId]);
+        $this->users()->updateExistingPivot($userId, ['project_role' => $role]);
     }
 
     /**
@@ -190,7 +190,7 @@ class Project extends Model
      */
     public function imageVolumes()
     {
-        return $this->volumes()->where('media_type_id', MediaType::imageId());
+        return $this->volumes()->where('media_type', MediaType::IMAGE);
     }
 
     /**
@@ -200,7 +200,7 @@ class Project extends Model
      */
     public function videoVolumes()
     {
-        return $this->volumes()->where('media_type_id', MediaType::videoId());
+        return $this->volumes()->where('media_type', MediaType::VIDEO);
     }
 
     /**
@@ -307,7 +307,7 @@ class Project extends Model
     {
         return Cache::remember("project-thumbnail-url-{$this->id}", 3600, function () {
             $volume = $this->volumes()
-                ->select('id', 'media_type_id')
+                ->select('id', 'media_type')
                 ->orderBy('id')
                 ->first();
 

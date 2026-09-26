@@ -30,7 +30,7 @@ class PublicLabelTreeImport extends Import
             $tree->name = $importTree['name'];
             $tree->description = $importTree['description'];
             $tree->uuid = Uuid::uuid4();
-            $tree->visibility_id = Visibility::privateId();
+            $tree->visibility = Visibility::PRIVATE;
             $tree->save();
             $this->importLabels($tree);
 

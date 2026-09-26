@@ -47,7 +47,7 @@ class PendingVolumeController extends Controller
      *    "id": 2,
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
-     *    "media_type_id": 1,
+     *    "media_type": 1,
      *    "user_id": 2,
      *    "project_id": 3,
      *    "volume_id": null
@@ -57,7 +57,7 @@ class PendingVolumeController extends Controller
     {
         try {
             $pv = $request->project->pendingVolumes()->create([
-                'media_type_id' => $request->input('media_type_id'),
+                'media_type' => $request->input('media_type'),
                 'user_id' => $request->user()->id,
                 'metadata_parser' => $request->input('metadata_parser', null),
             ]);
@@ -94,7 +94,7 @@ class PendingVolumeController extends Controller
      */
     public function storeVolume(StorePendingVolumeFromVolume $request)
     {
-        $project = Project::inCommon($request->user(), $request->volume->id, [Role::adminId()])->first();
+        $project = Project::inCommon($request->user(), $request->volume->id, [Role::ADMIN])->first();
 
         try {
             $pv = DB::transaction(function () use ($project, $request) {
@@ -104,7 +104,7 @@ class PendingVolumeController extends Controller
 
                 return $project->pendingVolumes()->create([
                     'volume_id' => $request->volume->id,
-                    'media_type_id' => $request->volume->media_type_id,
+                    'media_type' => $request->volume->media_type,
                     'user_id' => $request->user()->id,
                     'metadata_parser' => $request->volume->metadata_parser,
                     'import_annotations' => $request->input('import_annotations', false),
@@ -161,7 +161,7 @@ class PendingVolumeController extends Controller
      *    "id": 2,
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
-     *    "media_type_id": 1,
+     *    "media_type": 1,
      *    "user_id": 2,
      *    "project_id": 3,
      *    "volume_id": 4,
@@ -177,7 +177,7 @@ class PendingVolumeController extends Controller
             $volume = Volume::create([
                 'name' => $request->input('name'),
                 'url' => $request->input('url'),
-                'media_type_id' => $pv->media_type_id,
+                'media_type' => $pv->media_type,
                 'handle' => $request->input('handle'),
                 'creator_id' => $request->user()->id,
             ]);

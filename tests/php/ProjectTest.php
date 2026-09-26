@@ -71,7 +71,7 @@ class ProjectTest extends ModelTestCase
     public function testUsers()
     {
         $user = UserTest::create();
-        $this->model->addUserId($user->id, Role::adminId());
+        $this->model->addUserId($user->id, Role::ADMIN->value);
 
         $this->assertNotNull($this->model->users()->find($user->id));
     }
@@ -80,8 +80,8 @@ class ProjectTest extends ModelTestCase
     {
         $admin = UserTest::create();
         $member = UserTest::create();
-        $this->model->addUserId($admin->id, Role::adminId());
-        $this->model->addUserId($member->id, Role::editorId());
+        $this->model->addUserId($admin->id, Role::ADMIN->value);
+        $this->model->addUserId($member->id, Role::EDITOR->value);
         // the creator doesn't count
         $this->model->creator->delete();
 
@@ -93,8 +93,8 @@ class ProjectTest extends ModelTestCase
     {
         $editor = UserTest::create();
         $member = UserTest::create();
-        $this->model->addUserId($editor->id, Role::editorId());
-        $this->model->addUserId($member->id, Role::guestId());
+        $this->model->addUserId($editor->id, Role::EDITOR->value);
+        $this->model->addUserId($member->id, Role::GUEST->value);
 
         // count the project creator, too
         $this->assertSame(3, $this->model->users()->count());
@@ -104,7 +104,7 @@ class ProjectTest extends ModelTestCase
     public function testGuests()
     {
         $member = UserTest::create();
-        $this->model->addUserId($member->id, Role::guestId());
+        $this->model->addUserId($member->id, Role::GUEST->value);
 
         // count the project creator, too
         $this->assertSame(2, $this->model->users()->count());
@@ -124,20 +124,29 @@ class ProjectTest extends ModelTestCase
         $user = UserTest::create();
         $this->assertNull($this->model->users()->find($user->id));
 
-        $this->model->addUserId($user->id, Role::editorId());
+        $this->model->addUserId($user->id, Role::EDITOR->value);
         $user = $this->model->users()->find($user->id);
         $this->assertNotNull($user);
-        $this->assertSame(Role::editorId(), $user->project_role_id);
+        $this->assertSame(Role::EDITOR->value, $user->project_role);
 
         // a user can only be added once regardless the role
         $this->expectException(QueryException::class);
-        $this->model->addUserId($user->id, Role::adminId());
+        $this->model->addUserId($user->id, Role::ADMIN->value);
+    }
+
+    public function testAddUserIdEnum()
+    {
+        $user = UserTest::create();
+        $this->model->addUserId($user->id, Role::EXPERT);
+        $user = $this->model->users()->find($user->id);
+        $this->assertNotNull($user);
+        $this->assertSame(Role::EXPERT->value, $user->project_role);
     }
 
     public function testRemoveUserId()
     {
         $admin = UserTest::create();
-        $this->model->addUserId($admin->id, Role::adminId());
+        $this->model->addUserId($admin->id, Role::ADMIN->value);
         $this->assertNotNull($this->model->users()->find($admin->id));
         $this->assertTrue($this->model->removeUserId($admin->id));
         $this->assertNull($this->model->users()->find($admin->id));
@@ -147,7 +156,7 @@ class ProjectTest extends ModelTestCase
     public function testCheckUserCanBeRemoved()
     {
         $user = UserTest::create();
-        $this->model->addUserId($user->id, Role::editorId());
+        $this->model->addUserId($user->id, Role::EDITOR->value);
         $this->assertTrue($this->model->userCanBeRemoved($user->id));
         $this->assertFalse($this->model->userCanBeRemoved($this->model->creator->id));
     }
@@ -155,10 +164,18 @@ class ProjectTest extends ModelTestCase
     public function testChangeRole()
     {
         $user = UserTest::create();
-        $this->model->addUserId($user->id, Role::adminId());
-        $this->assertSame(Role::adminId(), $this->model->users()->find($user->id)->project_role_id);
-        $this->model->changeRole($user->id, Role::editorId());
-        $this->assertSame(Role::editorId(), $this->model->users()->find($user->id)->project_role_id);
+        $this->model->addUserId($user->id, Role::ADMIN->value);
+        $this->assertSame(Role::ADMIN->value, $this->model->users()->find($user->id)->project_role);
+        $this->model->changeRole($user->id, Role::EDITOR->value);
+        $this->assertSame(Role::EDITOR->value, $this->model->users()->find($user->id)->project_role);
+    }
+
+    public function testChangeRoleEnum()
+    {
+        $user = UserTest::create();
+        $this->model->addUserId($user->id, Role::ADMIN);
+        $this->model->changeRole($user->id, Role::GUEST);
+        $this->assertSame(Role::GUEST->value, $this->model->users()->find($user->id)->project_role);
     }
 
     public function testRemoveVolume()
@@ -294,7 +311,7 @@ class ProjectTest extends ModelTestCase
         $v = VolumeTest::create();
         $user = UserTest::create();
         $this->model->volumes()->attach($v);
-        $this->model->addUserId($user->id, Role::guestId());
+        $this->model->addUserId($user->id, Role::GUEST->value);
         $p = self::create();
         $p->volumes()->attach($v);
 
@@ -302,26 +319,33 @@ class ProjectTest extends ModelTestCase
         $this->assertSame(1, $projects->count());
         $this->assertSame($this->model->id, $projects[0]);
 
-        $projects = Project::inCommon($user, $v->id, [Role::adminId()])->pluck('id');
+        $projects = Project::inCommon($user, $v->id, [Role::ADMIN->value])->pluck('id');
         $this->assertEmpty($projects);
+
+        $projects = Project::inCommon($user, $v->id, [Role::ADMIN])->pluck('id');
+        $this->assertEmpty($projects);
+
+        $projects = Project::inCommon($user, $v->id, [Role::EDITOR, Role::GUEST])->pluck('id');
+        $this->assertSame(1, $projects->count());
+        $this->assertSame($this->model->id, $projects[0]);
     }
 
     public function testImageVolumes()
     {
-        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $v = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(0, $this->model->imageVolumes()->count());
-        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $v = VolumeTest::create(['media_type' => MediaType::IMAGE->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(1, $this->model->imageVolumes()->count());
     }
 
     public function testVideoVolumes()
     {
-        $v = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $v = VolumeTest::create(['media_type' => MediaType::IMAGE->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(0, $this->model->videoVolumes()->count());
-        $v = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $v = VolumeTest::create(['media_type' => MediaType::VIDEO->value]);
         $this->model->addVolumeId($v->id);
         $this->assertSame(1, $this->model->videoVolumes()->count());
     }
@@ -330,7 +354,7 @@ class ProjectTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->assertFalse(Project::accessibleBy($user)->exists());
-        $this->model->addUserId($user->id, Role::guestId());
+        $this->model->addUserId($user->id, Role::GUEST->value);
         $this->assertTrue(Project::accessibleBy($user)->exists());
     }
 

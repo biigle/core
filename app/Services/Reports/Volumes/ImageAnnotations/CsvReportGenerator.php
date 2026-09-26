@@ -5,6 +5,7 @@ namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
+use Biigle\Shape;
 use Biigle\User;
 
 class CsvReportGenerator extends AnnotationReportGenerator
@@ -104,11 +105,10 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'images.filename',
             'images.lng as longitude',
             'images.lat as latitude',
-            'shapes.id as shape_id',
-            'shapes.name as shape_name',
             'image_annotations.points',
             'image_annotations.id as annotation_id',
             'image_annotation_labels.created_at',
+            'image_annotations.shape'
         ];
 
         if ($this->shouldGetAttributeColumn()) {
@@ -116,7 +116,6 @@ class CsvReportGenerator extends AnnotationReportGenerator
         }
         $query = $this
             ->initQuery($itemsToSelect)
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
@@ -146,7 +145,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'filename',
             'image_longitude',
             'image_latitude',
-            'shape_id',
+            'shape',
             'shape_name',
             'points',
         ];
@@ -173,8 +172,8 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_id,
-                $row->shape_name,
+                $row->shape,
+                Shape::from($row->shape)->label(),
                 $row->points,
             ];
 

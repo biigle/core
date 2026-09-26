@@ -102,7 +102,7 @@ class StoreReport extends FormRequest
     }
 
     /**
-     * Check if the requested reporty type ID is in the supplied array.
+     * Check if the requested report type ID is in the supplied array.
      *
      * @param array|int $allowed
      *
@@ -110,7 +110,7 @@ class StoreReport extends FormRequest
      */
     protected function isType($allowed)
     {
-        $id = intval($this->input('type_id'));
+        $id = intval($this->input('type'));
 
         if (is_array($allowed)) {
             return in_array($id, $allowed);
@@ -127,12 +127,12 @@ class StoreReport extends FormRequest
     protected function isAllowedForExportArea()
     {
         return $this->isType([
-            ReportType::imageAnnotationsAreaId(),
-            ReportType::imageAnnotationsBasicId(),
-            ReportType::imageAnnotationsCsvId(),
-            ReportType::imageAnnotationsExtendedId(),
-            ReportType::imageAnnotationsFullId(),
-            ReportType::imageAnnotationsAbundanceId(),
+            ReportType::IMAGE_ANNOTATIONS_AREA->value,
+            ReportType::IMAGE_ANNOTATIONS_BASIC->value,
+            ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            ReportType::IMAGE_ANNOTATIONS_EXTENDED->value,
+            ReportType::IMAGE_ANNOTATIONS_FULL->value,
+            ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value,
         ]);
     }
 
@@ -144,8 +144,8 @@ class StoreReport extends FormRequest
     protected function isAllowedForSkipAttributes()
     {
         return $this->isType([
-            ReportType::imageAnnotationsCsvId(),
-            ReportType::videoAnnotationsCsvId(),
+            ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            ReportType::VIDEO_ANNOTATIONS_CSV->value,
         ]);
     }
 
@@ -157,7 +157,7 @@ class StoreReport extends FormRequest
     protected function isAllowedForAggregateChildLabels()
     {
         return $this->isType([
-            ReportType::imageAnnotationsAbundanceId(),
+            ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value,
         ]);
     }
 
@@ -169,7 +169,7 @@ class StoreReport extends FormRequest
     protected function isAllowedForAllLabels()
     {
         return $this->isType([
-            ReportType::imageAnnotationsAbundanceId(),
+            ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value,
         ]);
     }
 
@@ -181,8 +181,8 @@ class StoreReport extends FormRequest
     protected function isAllowedForStripIfdo()
     {
         return $this->isType([
-            ReportType::imageIfdoId(),
-            ReportType::videoIfdoId(),
+            ReportType::IMAGE_IFDO->value,
+            ReportType::VIDEO_IFDO->value,
         ]);
     }
 }

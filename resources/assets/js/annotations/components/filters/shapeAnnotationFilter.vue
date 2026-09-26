@@ -26,7 +26,7 @@ export default {
             }
 
             return annotations.filter((annotation) => {
-                return annotation.shape_id === this.selectedItem.id;
+                return annotation.shape === this.selectedItem.id;
             });
         },
     },
