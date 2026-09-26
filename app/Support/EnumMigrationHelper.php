@@ -18,12 +18,11 @@ class EnumMigrationHelper
      * To update all values atomically, an SQL query like this is built:
      * UPDATE table_name
      * SET column_name = CASE column_name
-     *  when old1 then new1
-     *  when old2 then new2
+     *  WHEN old1 THEN new1
+     *  WHEN old2 THEN new2
      *  ...
-     *  else column_name
-     * end
-     * where column_name in (old1, old2, ...);
+     * END
+     * WHERE column_name IN (old1, old2, ...);
      * @param array $map [$oldId => $newId]
      * @param string $tableName
      * @param array $foreignKeys [[table name, column name, foreign key constraint name], ...]. If the
@@ -35,6 +34,9 @@ class EnumMigrationHelper
         $cases = '';
         $ids = [];
         foreach ($map as $oldId => $newId) {
+            if ((int) $oldId === (int) $newId) {
+                continue;
+            }
             $cases .= "WHEN $oldId THEN $newId ";
             $ids[] = $oldId;
         }
@@ -45,11 +47,11 @@ class EnumMigrationHelper
 
             Schema::table($table, fn (Blueprint $t) => $t->dropForeign($constraint));
 
-            foreach ($map as $oldId => $newId) {
+            if ($cases !== '') {
                 DB::table($table)
                     ->whereIn($column, $ids)
                     ->update([
-                        DB::raw("(CASE $column $cases END)")
+                        $column => DB::raw("(CASE $column $cases END)")
                     ]);
             }
 
