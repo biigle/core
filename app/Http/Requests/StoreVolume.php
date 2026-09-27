@@ -140,11 +140,13 @@ class StoreVolume extends FormRequest
      */
     protected function prepareForValidation()
     {
-        // Allow a string as media_type to be more conventient.
+        // Allow a string as media_type to be more convenient.
         // Default is image to be backwards compatible with custom import scripts.
-        $type = $this->input('media_type', 'image');
-        if (in_array($type, MediaType::labels())) {
-            $this->merge(['media_type' => MediaType::fromLabel(strtoupper($type))->value]);
+        $mediaType = $this->input('media_type') !== null
+            ? MediaType::tryFromValueOrLabel($this->input('media_type'))
+            : MediaType::IMAGE;
+        if ($mediaType) {
+            $this->merge(['media_type' => $mediaType->value]);
         }
 
         // This establishes backwards compatibility of the old 'images' attribute which

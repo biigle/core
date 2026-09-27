@@ -518,4 +518,20 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertSame($content[1], $video->id);
         $this->assertSame($content[2], $video3->id);
     }
+
+    public function testStoreInvalidMediaType()
+    {
+        $project = ProjectTest::create();
+        $project->addUserId($this->admin()->id, Role::ADMIN->value);
+
+        $this->beAdmin();
+        $response = $this->json('POST', "/api/v1/projects/{$project->id}/volumes", [
+            'name' => 'test volume',
+            'media_type' => 'whatever',
+            'url' => 'admin-test://volumes',
+            'files' => ['file.jpg'],
+        ]);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['media_type']);
+    }
 }

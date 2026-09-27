@@ -4,7 +4,6 @@ namespace Biigle;
 
 use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
-use ValueError;
 
 /**
  * Volumes can contain either images or videos as media type.
@@ -32,12 +31,18 @@ enum MediaType: int implements \JsonSerializable
         );
     }
 
-    public static function fromLabel(string $label): self
+    public static function tryFromValueOrLabel(mixed $key): ?self
     {
-        return match (strtoupper($label)) {
-            self::IMAGE->name => self::IMAGE,
-            self::VIDEO->name => self::VIDEO,
-            default => throw new ValueError("Invalid media type label $label"),
-        };
+        if (is_numeric($key)) {
+            return self::tryFrom((int) $key);
+        } elseif (is_string($key)) {
+            return match (strtolower($key)) {
+                self::IMAGE->label() => self::IMAGE,
+                self::VIDEO->label() => self::VIDEO,
+                default => null,
+            };
+        }
+
+        return null;
     }
 }

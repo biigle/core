@@ -17,11 +17,11 @@ class EnumMigrationHelper
      *
      * To update all values atomically, an SQL query like this is built:
      * UPDATE table_name
-     * SET column_name = CASE column_name
+     * SET column_name = (CASE column_name
      *  WHEN old1 THEN new1
      *  WHEN old2 THEN new2
      *  ...
-     * END
+     * END) <-- part in parenthesis is built
      * WHERE column_name IN (old1, old2, ...);
      * @param array $map [$oldId => $newId]
      * @param string $tableName
@@ -51,7 +51,7 @@ class EnumMigrationHelper
                 DB::table($table)
                     ->whereIn($column, $ids)
                     ->update([
-                        $column => DB::raw("(CASE $column $cases END)")
+                        $column => DB::raw("CASE $column $cases END")
                     ]);
             }
 

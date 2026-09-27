@@ -42,8 +42,13 @@ class StorePendingVolume extends FormRequest
             ],
         ];
 
+        // media_type might be a string or an int id
+        // prepareForValidation turns it into an id
+        // if the string doesn't map to a type (typo 'imge' for example)
+        // then $this->input('media_type') will be that incorrect string
         $parserClass = $this->input('metadata_parser', false);
-        if ($this->has('media_type') && $parserClass && ParserFactory::has(MediaType::from($this->input('media_type'))->label(), $parserClass)) {
+        $mediaType = MediaType::tryFromValueOrLabel($this->input('media_type'));
+        if ($mediaType && $parserClass && ParserFactory::has($mediaType->label(), $parserClass)) {
             $rules['metadata_file'][] = 'mimetypes:'.implode(',', $parserClass::getKnownMimeTypes());
         }
 
@@ -106,9 +111,9 @@ class StorePendingVolume extends FormRequest
     protected function prepareForValidation()
     {
         // Allow a string as media_type to be more conventient.
-        $type = $this->input('media_type');
-        if (in_array($type, MediaType::labels())) {
-            $this->merge(['media_type' => MediaType::fromLabel(strtoupper($type))->value]);
+        $mediaType = MediaType::tryFromValueOrLabel($this->input('media_type'));
+        if ($mediaType) {
+            $this->merge(['media_type' => $mediaType->value]);
         }
     }
 }

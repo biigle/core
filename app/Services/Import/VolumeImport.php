@@ -22,6 +22,7 @@ use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 use SplFileObject;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use ValueError;
 
 class VolumeImport extends Import
 {
@@ -454,7 +455,11 @@ class VolumeImport extends Import
                     throw new UnprocessableEntityHttpException($message);
                 }
 
-                $volume->media_type = MediaType::fromLabel($candidate['media_type_name']);
+                $mediaType = MediaType::tryFromValueOrLabel($candidate['media_type_name']);
+                if ($mediaType === null) {
+                    throw new ValueError("Invalid media type");
+                }
+                $volume->media_type = $mediaType;
                 $volume->attrs = $candidate['attrs'];
                 $volume->creator_id = $creator->id;
 
