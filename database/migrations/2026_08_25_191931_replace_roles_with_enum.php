@@ -28,7 +28,7 @@ return new class extends Migration {
             $oldIds['expert'] => Role::EXPERT->value,
         ];
 
-        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'roles', $this->foreignKeys, true);
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'roles', $this->foreignKeys);
     }
 
     /**
@@ -49,6 +49,6 @@ return new class extends Migration {
             ['id' => Role::EXPERT->value, 'name' => 'expert'],
         ]);
 
-        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'roles', true);
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'roles');
     }
 };

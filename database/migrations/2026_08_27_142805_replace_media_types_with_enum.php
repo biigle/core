@@ -26,7 +26,7 @@ return new class extends Migration {
             $oldIds['video'] => MediaType::VIDEO->value,
         ];
 
-        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'media_types', $this->foreignKeys, true);
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'media_types', $this->foreignKeys);
     }
 
     /**
@@ -45,6 +45,6 @@ return new class extends Migration {
             ['id' => MediaType::VIDEO->value, 'name' => 'video'],
         ]);
 
-        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'media_types', true);
+        EnumMigrationHelper::createForeignKeys($this->foreignKeys, 'media_types');
     }
 };
