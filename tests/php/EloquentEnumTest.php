@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests;
 
+use Biigle\Tests\Fixtures\TestEnum;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use TestCase;
