@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
+use Illuminate\Support\Collection;
 
 enum ReportType: int implements \JsonSerializable
 {
@@ -26,8 +27,12 @@ enum ReportType: int implements \JsonSerializable
     case VIDEO_IFDO = 15;
     case IMAGE_ANNOTATIONS_COCO = 16;
 
-    public static function getSortedTypes(bool $imageReports, bool $videoReports): \Illuminate\Support\Collection
+    public static function getSortedTypes(bool $imageReports, bool $videoReports): Collection
     {
+        if (!$imageReports && !$videoReports) {
+            return collect();
+        }
+
         $cases = collect(self::cases());
 
         if ($imageReports xor $videoReports) {
