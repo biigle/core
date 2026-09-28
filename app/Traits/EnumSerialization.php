@@ -3,6 +3,7 @@
 namespace Biigle\Traits;
 
 /**
+ * Provides `jsonSerialize()` and `toArray()` methods for enums implementing `label()` for each case
  * @mixin \BackedEnum
  */
 trait EnumSerialization
