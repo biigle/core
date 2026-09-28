@@ -1,7 +1,10 @@
 <?php
 
+namespace Biigle\Tests;
+
 use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
+use TestCase;
 
 enum TestEnum: int
 {

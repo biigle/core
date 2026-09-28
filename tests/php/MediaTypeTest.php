@@ -1,7 +1,10 @@
 <?php
 
+namespace Biigle\Tests;
+
 use Biigle\MediaType;
 use PHPUnit\Framework\Attributes\DataProvider;
+use TestCase;
 
 class MediaTypeTest extends TestCase
 {

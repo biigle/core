@@ -1,7 +1,10 @@
 <?php
 
+namespace Biigle\Tests;
+
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use TestCase;
 
 class EloquentEnumTest extends TestCase
 {

@@ -43,14 +43,14 @@ class VideoAnnotation extends Annotation
     {
         parent::validate();
 
-        $message = (new VideoAnnotationPoints($this->shape))->getErrorMessage($this->points);
+        $message = (new VideoAnnotationPoints($this->shape->value))->getErrorMessage($this->points);
 
         // The duration is not known at this point, so the frame times are not checked
         // against it.
         $message ??= (new VideoAnnotationFrames())->getErrorMessage($this->frames);
 
         // Whole frame annotations have no points, so there are no gaps to check.
-        if ($this->shape !== Shape::WHOLE_FRAME->value) {
+        if ($this->shape !== Shape::WHOLE_FRAME) {
             $message ??= (new VideoAnnotationGaps($this->frames))->getErrorMessage($this->points);
         }
 
