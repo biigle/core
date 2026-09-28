@@ -161,10 +161,6 @@ class UserController extends Controller
      *    "role": 2,
      *    "created_at": "2016-04-29 07:20:33",
      *    "updated_at": "2016-04-29 07:20:33",
-     *    "role": {
-     *       "id": 2,
-     *       "name": "editor"
-     *    }
      * }
      *
      * @param Request $request
