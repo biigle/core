@@ -101,15 +101,16 @@ class StoreVolume extends FormRequest
             }
 
             $files = $this->input('files');
-            $rule = new VolumeFiles($this->input('url'), $this->input('media_type'));
+            $mediaType = MediaType::from($this->input('media_type'));
+            $rule = new VolumeFiles($this->input('url'), $mediaType);
             if (!$rule->passes('files', $files)) {
                 $validator->errors()->add('files', $rule->message());
             }
 
             if ($file = $this->file('metadata_csv')) {
-                $type = MediaType::from($this->input('media_type'))->label();
+                $mediaTypeLabel = $mediaType->label();
 
-                $parser = match ($type) {
+                $parser = match ($mediaTypeLabel) {
                     'video' => new VideoCsvParser($file),
                     default => new ImageCsvParser($file),
                 };
@@ -121,7 +122,7 @@ class StoreVolume extends FormRequest
                     return;
                 }
 
-                $rule = match ($type) {
+                $rule = match ($mediaTypeLabel) {
                     'video' => new VideoMetadata,
                     default => new ImageMetadata,
                 };
