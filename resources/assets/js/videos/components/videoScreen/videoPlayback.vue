@@ -88,8 +88,7 @@ export default {
             }
 
             this.renderCurrentTime = this.video.currentTime;
-            this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-            this.videoSource.changed();
+            this.drawBitmap(this.video);
         },
         startRenderLoop() {
             let render;
