@@ -32,6 +32,7 @@ export default {
             cachedBitmap: null,
             cachedTime: null,
             useMediabunnyFallback: true,
+            mediabunnyInitPromise: null,
         };
     },
     methods: {
@@ -284,7 +285,12 @@ export default {
             }
         },
         async getFrameBitmap(time) {
+            if (this.mediabunnyInitPromise) {
+                await this.mediabunnyInitPromise;
+            }
+
             if (!this.useMediabunnyFallback || !this.mediabunnySink) {
+                this.renderVideo(true);
                 return;
             }
 
@@ -331,9 +337,14 @@ export default {
             immediate: true,
             deep: true,
             handler() {
-                this.video.addEventListener('loadedmetadata', () => {
-                    this.initMediabunny();
-                });
+                const init = () => {
+                    this.mediabunnyInitPromise = this.initMediabunny();
+                }
+                if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+                    init();
+                } else {
+                    this.video.addEventListener('loadedmetadata', init, {once: true});
+                }
             }
         }
     },
