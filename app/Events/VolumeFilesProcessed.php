@@ -7,8 +7,10 @@ use Biigle\Volume;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\SerializesModels;
 
+#[DeleteWhenMissingModels]
 class VolumeFilesProcessed implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -19,13 +21,6 @@ class VolumeFilesProcessed implements ShouldBroadcastNow
      * @var Volume
      */
     public $volume;
-
-    /**
-     * Ignore this event if the volume does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new event instance.

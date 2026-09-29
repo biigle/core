@@ -10,6 +10,7 @@ use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
 use FileCache;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
@@ -20,6 +21,7 @@ use Jcupitt\Vips\Image as VipsImage;
 use Log;
 use Throwable;
 
+#[DeleteWhenMissingModels]
 class ProcessNewVideo extends Job implements ShouldQueue
 {
     use SerializesModels, InteractsWithQueue;
@@ -49,13 +51,6 @@ class ProcessNewVideo extends Job implements ShouldQueue
      * @var FFProbe|null
      */
     protected $ffprobe;
-
-    /**
-     * Ignore this job if the video does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new instance.
