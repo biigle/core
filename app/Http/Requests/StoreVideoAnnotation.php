@@ -2,6 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\AnnotationGuideline;
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Rules\VideoAnnotationFrames;
 use Biigle\Rules\VideoAnnotationGaps;
 use Biigle\Rules\VideoAnnotationPoints;
@@ -11,12 +13,19 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVideoAnnotation extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The video on which the annotation should be created.
      *
      * @var Video
      */
     public $video;
+
+    /**
+     * The enforced annotation guideline that applies to the new annotation.
+     */
+    public ?AnnotationGuideline $guideline = null;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -67,6 +76,7 @@ class StoreVideoAnnotation extends FormRequest
                 new VideoAnnotationPoints($this->input('shape_id')),
             ],
             'track' => 'filled|boolean',
+            'guideline_id' => 'nullable|integer',
         ];
     }
 
@@ -127,6 +137,33 @@ class StoreVideoAnnotation extends FormRequest
                     $validator->errors()->add('points', 'An annotation to track must be fully contained by the video boundaries.');
                 }
             }
+
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $this->guideline = $this->validateGuideline(
+                $validator,
+                $this->video->volume_id,
+                $this->integer('guideline_id') ?: null
+            );
+
+            if (is_null($this->guideline)) {
+                return;
+            }
+
+            $labelId = $this->integer('label_id') ?: null;
+            if (!is_null($labelId)) {
+                $this->validateGuidelineLabel($validator, $this->guideline, $labelId);
+            }
+
+            // Without label_id, this rejects shapes that are not allowed for any label.
+            $this->validateGuidelineShape(
+                $validator,
+                $this->guideline,
+                $this->integer('shape_id'),
+                $labelId
+            );
         });
     }
 
