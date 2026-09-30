@@ -348,7 +348,8 @@ export default {
 
             // We add temporarily the feature to the pending annotation
             // so in case LabelBOT did not return any results, the unique id of 
-            // the feature could be used as LabelBOT popup id
+            // the feature could be used as LabelBOT popup id and also we need the geometry of the feature
+            // to place the LabelBOT's empty overlay/popup correctly.
             this.pendingAnnotation.feature = e.feature;
 
             // The LabelBOT image is always created because the user could decide to

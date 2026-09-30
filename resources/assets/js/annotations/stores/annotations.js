@@ -80,6 +80,7 @@ class Annotations {
 
         return ImagesApi.saveAnnotations({id: imageId}, annotation)
             .then((response) =>  {
+                // If LabelBOT is active and returns no result we receive 204 and return null
                 if (response.status === 204) return null;
 
                 return Promise.resolve(this.parseResponse(response))
