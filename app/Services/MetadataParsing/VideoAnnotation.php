@@ -2,6 +2,9 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Biigle\Rules\VideoAnnotationFrames;
+use Biigle\Rules\VideoAnnotationGaps;
+use Biigle\Rules\VideoAnnotationPoints;
 use Biigle\Shape;
 use Exception;
 
@@ -11,7 +14,7 @@ class VideoAnnotation extends Annotation
      * @param Shape $shape
      * @param array<array<float>> $points
      * @param array<LabelAndUser> $labels
-     * @param array<float> $frames
+     * @param array<int|float|null> $frames
      */
     public function __construct(
         public Shape $shape,
@@ -40,40 +43,19 @@ class VideoAnnotation extends Annotation
     {
         parent::validate();
 
-        foreach ($this->frames as $frame) {
-            /** @phpstan-ignore function.alreadyNarrowedType */
-            if (!is_numeric($frame)) {
-                throw new Exception("Video annotation frames must be numbers, got '{$frame}'.");
-            }
-        }
-    }
+        $message = (new VideoAnnotationPoints($this->shape_id))->getErrorMessage($this->points);
 
-    /**
-     * Similar to \Biigle\VideoAnnotation::validatePoints.
-     */
-    public function validatePoints(array $points = []): void
-    {
-        if ($this->shape_id === Shape::wholeFrameId()) {
-            if (count($this->points) !== 0) {
-                throw new Exception('Whole frame annotations cannot have point coordinates.');
-            }
+        // The duration is not known at this point, so the frame times are not checked
+        // against it.
+        $message ??= (new VideoAnnotationFrames())->getErrorMessage($this->frames);
 
-            return;
+        // Whole frame annotations have no points, so there are no gaps to check.
+        if ($this->shape_id !== Shape::wholeFrameId()) {
+            $message ??= (new VideoAnnotationGaps($this->frames))->getErrorMessage($this->points);
         }
 
-        if (count($this->points) !== count($this->frames)) {
-            throw new Exception('The number of key frames does not match the number of annotation coordinates.');
+        if (!is_null($message)) {
+            throw new Exception($message);
         }
-
-        if (count($this->points[0] ?? []) === 0) {
-            throw new Exception('An annotation must not start with a gap.');
-        }
-
-        // Gaps are represented as empty arrays
-        array_map(function ($point) {
-            if (count($point) > 0) {
-                parent::validatePoints($point);
-            }
-        }, $this->points);
     }
 }

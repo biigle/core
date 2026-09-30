@@ -2,6 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Rules\VideoAnnotationFrames;
+use Biigle\Rules\VideoAnnotationGaps;
+use Biigle\Rules\VideoAnnotationPoints;
 use Biigle\Shape;
 use Biigle\Video;
 use Illuminate\Foundation\Http\FormRequest;
@@ -36,17 +39,33 @@ class StoreVideoAnnotation extends FormRequest
     {
         return [
             'label_id'    => 'required_without:feature_vector|integer|exists:labels,id',
-            'feature_vector' => 'required_without:label_id|array|size:384',
-            'feature_vector.*' => 'numeric',
+            // A wildcard rule (feature_vector.*) is not used here because it would be
+            // expanded to one rule per array element, which can consume excessive CPU
+            // and memory if a huge array is submitted.
+            'feature_vector' => [
+                'bail',
+                'required_without:label_id',
+                'array',
+                'size:384',
+                function ($attribute, $value, $fail) {
+                    if (array_filter($value, fn ($v) => !is_numeric($v))) {
+                        $fail("The {$attribute} must contain only numbers.");
+                    }
+                },
+            ],
             'shape_id' => 'required|integer|exists:shapes,id',
+            'frames' => [
+                'bail',
+                'required',
+                'array',
+                new VideoAnnotationFrames($this->video->duration),
+            ],
             'points' => [
+                'bail',
                 'required_unless:shape_id,'.Shape::wholeFrameId(),
                 'array',
+                new VideoAnnotationPoints($this->input('shape_id')),
             ],
-            'points.*' => 'array',
-            'points.*.*' => 'numeric',
-            'frames' => 'required|array',
-            'frames.*' => 'required|numeric|min:0|max:'.$this->video->duration,
             'track' => 'filled|boolean',
         ];
     }
@@ -66,11 +85,21 @@ class StoreVideoAnnotation extends FormRequest
             }
 
             $frameCount = count($this->input('frames', []));
+            $isWholeFrame = intval($this->input('shape_id')) === Shape::wholeFrameId();
 
-            if ($this->input('shape_id') === Shape::wholeFrameId() && $frameCount > 2) {
+            if ($isWholeFrame && $frameCount > 2) {
                 $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
             }
 
+            // Whole frame annotations have no points, so there are no gaps to check.
+            if (!$isWholeFrame) {
+                $gapsRule = new VideoAnnotationGaps($this->input('frames', []));
+                $gapsRule->validate(
+                    'points',
+                    $this->input('points', []),
+                    fn ($message) => $validator->errors()->add('points', $message)
+                );
+            }
 
             if ($this->shouldTrack()) {
                 if ($frameCount !== 1) {

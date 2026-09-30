@@ -2,42 +2,27 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Pgvector\Laravel\Vector;
 
+#[Fillable(['id', 'annotation_id', 'label_id', 'label_tree_id', 'volume_id', 'vector'])]
+#[WithoutTimestamps]
 class VideoAnnotationLabelFeatureVector extends Model
 {
     use HasFactory;
 
     /**
-     * Don't maintain timestamps for this model.
+     * Get the attributes that should be cast.
      *
-     * @var bool
+     * @return array<string, string>
      */
-    public $timestamps = false;
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'vector' => Vector::class,
-    ];
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'id',
-        'annotation_id',
-        'label_id',
-        'label_tree_id',
-        'volume_id',
-        'vector',
-    ];
-
+    protected function casts(): array
+    {
+        return [
+            'vector' => Vector::class,
+        ];
+    }
 }

@@ -1,3 +1,7 @@
+import { rightClick } from '@/annotations/ol/events/condition.js';
+import { noModifierKeys } from '@biigle/ol/events/condition';
+import { DragPan } from '@biigle/ol/interaction';
+
 /**
  * This function checks for invalid annotation shapes.
  *
@@ -103,8 +107,7 @@ function powerOfTen(value) {
 const UnitMultipliers = [1e+3, 1, 1e-2, 1e-3, 1e-6, 1e-9];
 const UnitNames = ['km', 'm', 'cm', 'mm', 'µm', 'nm'];
 
-class ScaleLineProperties
-{
+class ScaleLineProperties {
     constructor(resolution, hasArea, pxWidthInMeter, fixedUnit) {
         this._resolution = resolution;
         this._hasArea = hasArea;
@@ -186,4 +189,24 @@ class ScaleLineProperties
     }
 }
 
-export {isInvalidShape, clamp, trimCanvas, ScaleLineProperties, UnitMultipliers, UnitNames};
+/**
+ * Adds right click panning with the given condition to the map. Prevents right click for opening the context menu. 
+ * 
+ * @param map The ol map used for displaying videos/images
+ * @param condition Condition for enabling right click panning
+ */
+function addRightClickDragPanToMap(map, condition) {
+    map.addInteraction(new DragPan({
+        condition: (mapBrowserEvent) => {
+            return rightClick(mapBrowserEvent) && noModifierKeys(mapBrowserEvent) && condition();
+        }
+    }));
+
+    map.getViewport().addEventListener('contextmenu', (e) => {
+        if (condition()) {
+            e.preventDefault();
+        }
+    });
+}
+
+export { isInvalidShape, clamp, trimCanvas, ScaleLineProperties, UnitMultipliers, UnitNames, addRightClickDragPanToMap };

@@ -37,7 +37,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \Biigle\Http\Middleware\VerifyCsrfToken::class,
+            \Biigle\Http\Middleware\PreventRequestForgery::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Biigle\Http\Middleware\UpdateUserActivity::class,
         ],

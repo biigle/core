@@ -8,8 +8,10 @@ use Biigle\VideoAnnotation;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\SerializesModels;
 
+#[DeleteWhenMissingModels]
 class ObjectTrackingSucceeded implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -27,13 +29,6 @@ class ObjectTrackingSucceeded implements ShouldBroadcastNow
      * @var VideoAnnotation
      */
     public $annotation;
-
-    /**
-     * Ignore this event if the annotation does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new event instance.

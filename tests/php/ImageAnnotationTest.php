@@ -4,8 +4,6 @@ namespace Biigle\Tests;
 
 use Biigle\ImageAnnotation;
 use Biigle\Role;
-use Biigle\Shape;
-use Exception;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 
@@ -68,68 +66,6 @@ class ImageAnnotationTest extends ModelTestCase
         $label = $this->model->labels()->first();
         $this->assertSame(0.5, $label->confidence);
         $this->assertSame($user->id, $label->user->id);
-    }
-
-    public function testValidatePointsInteger()
-    {
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10, 'a']);
-    }
-
-    public function testValidatePointsPoint()
-    {
-        $this->model->shape_id = Shape::pointId();
-        $this->model->validatePoints([10.5, 10.5]);
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10, 10, 20, 20]);
-    }
-
-    public function testValidatePointsCircle()
-    {
-        $this->model->shape_id = Shape::circleId();
-        $this->model->validatePoints([10, 10, 20]);
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10, 10]);
-    }
-
-    public function testValidatePointsRectangle()
-    {
-        $this->model->shape_id = Shape::rectangleId();
-        $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10, 10]);
-    }
-
-    public function testValidatePointsEllipse()
-    {
-        $this->model->shape_id = Shape::ellipseId();
-        $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10, 10]);
-    }
-
-    public function testValidatePointsLine()
-    {
-        $this->model->shape_id = Shape::lineId();
-        $this->model->validatePoints([10, 10, 20, 20]);
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10]);
-    }
-
-    public function testValidatePointsPolygon()
-    {
-        $this->model->shape_id = Shape::polygonId();
-        $this->model->validatePoints([10, 10, 20, 20, 30, 30, 10, 10]);
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10, 10]);
-    }
-
-    public function testValidatePointsPolygonFirstLastEqual()
-    {
-        $this->model->shape_id = Shape::polygonId();
-        $this->model->validatePoints([10, 10, 20, 20, 30, 30, 10, 10]);
-        $this->expectException(Exception::class);
-        $this->model->validatePoints([10, 10, 20, 20, 30, 30]);
     }
 
     public function testScopeAllowedBySessionHideOwn()

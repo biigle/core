@@ -391,7 +391,6 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         $this->assertSame(2, LabelTree::count());
         $response->assertRedirect('/settings');
-        $response->assertSessionHas('newTree');
     }
 
     public function testStoreFork()

@@ -17,17 +17,20 @@ class AnnotationSession extends Model
     use HasFactory;
 
     /**
-     * The attributes that should be casted to native types.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'starts_at' => 'datetime',
-        'ends_at' => 'datetime',
-        'hide_other_users_annotations' => 'boolean',
-        'hide_own_annotations' => 'boolean',
-        'volume_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'starts_at' => 'datetime',
+            'ends_at' => 'datetime',
+            'hide_other_users_annotations' => 'boolean',
+            'hide_own_annotations' => 'boolean',
+            'volume_id' => 'int',
+        ];
+    }
 
     /**
      * The accessors to append to the model's array form.

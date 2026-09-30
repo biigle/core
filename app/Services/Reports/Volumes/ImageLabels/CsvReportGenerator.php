@@ -55,7 +55,11 @@ class CsvReportGenerator extends VolumeReportGenerator
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            // Labels of deleted users have a null user_id, which groupBy turns
+            // into an empty string key. Don't try to fetch their name.
+            $nullKey = '';
+            $ids = $rows->keys()->filter(fn ($id) => $id !== $nullKey);
+            $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
@@ -63,6 +67,12 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $csv = $this->createCsv($rows->get($id));
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
+            }
+
+            if ($rows->has($nullKey)) {
+                $csv = $this->createCsv($rows->get($nullKey));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = 'deleted-users.csv';
             }
         } else {
             $csv = $this->createCsv($rows);

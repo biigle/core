@@ -33,6 +33,25 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->get("pending-volumes/{$pv->id}")->assertStatus(200);
     }
 
+    public function testShowWithBackslashInOldUrl()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+        ]);
+        $url = 'https://example.com\\0924S_ABC_1';
+
+        $this->beAdmin();
+        $response = $this
+            ->withSession(['_old_input' => ['url' => $url]])
+            ->get("pending-volumes/{$pv->id}");
+
+        $response
+            ->assertOk()
+            ->assertViewHas('oldUrl', $url)
+            ->assertSee('https:\/\/example.com\\\\0924S_ABC_1', false);
+    }
+
     public function testShowWithVolumeRedirectToSelectAnnotationLabels()
     {
         $pv = PendingVolume::factory()->create([

@@ -11,10 +11,12 @@ use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\VolumeFile;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
+#[DeleteWhenMissingModels]
 class ImportVolumeMetadata extends Job implements ShouldQueue
 {
     use SerializesModels, InteractsWithQueue;
@@ -25,13 +27,6 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
      * @var integer
      */
     public static $insertChunkSize = 5000;
-
-    /**
-     * Ignore this job if the pending volume does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * The number of times the job may be attempted.

@@ -75,7 +75,7 @@ class LabelTreeVersionController extends Controller
      *
      * @api {put} label-tree-versions/:id Update a label tree version
      * @apiGroup Label Trees
-     * @apiName UpdateLabelTreeVersionss
+     * @apiName UpdateLabelTreeVersions
      * @apiPermission labelTreeAdmin
      *
      * @apiParam {Number} id The label tree version ID.
@@ -95,7 +95,7 @@ class LabelTreeVersionController extends Controller
      *
      * @api {delete} label-tree-versions/:id Delete a label tree version
      * @apiGroup Label Trees
-     * @apiName DestroyLabelTreeVersionss
+     * @apiName DestroyLabelTreeVersions
      * @apiPermission labelTreeAdmin
      * @apiDescription A label tree version cannot be deleted if it contains labels that are still used somewhere.
      *

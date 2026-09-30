@@ -357,6 +357,111 @@ class CsvReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsersWithNullUserId()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $image = ImageTest::create();
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user1->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => null,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('putCsv')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $al1->id,
+                $al1->label->id,
+                $al1->label->name,
+                $al1->label->name,
+                $al1->user_id,
+                $al1->user->firstname,
+                $al1->user->lastname,
+                $annotation->image_id,
+                $annotation->image->filename,
+                null,
+                null,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+                $annotation->id,
+                $al1->created_at,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $al2->id,
+                $al2->label->id,
+                $al2->label->name,
+                $al2->label->name,
+                null,
+                null,
+                null,
+                $annotation->image_id,
+                $annotation->image->filename,
+                null,
+                null,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+                $annotation->id,
+                $al2->created_at,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', 'deleted-users.csv');
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, fn () => $mock);
+
+        $generator = new CsvReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
+    }
+
     public function testGenerateReportWithDeletedUser()
     {
         $user = UserTest::create([

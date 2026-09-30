@@ -239,7 +239,7 @@ class VolumeController extends Controller
      *
      * @param int $id
      * @return object
-     * @api {get} volumes{/id}/files/annotation-timestamps Get file ids sorted by recently annotated
+     * @api {get} volumes/:id/files/annotation-timestamps Get file ids sorted by recently annotated
      * @apiGroup Volumes
      * @apiName VolumeSortByAnnotated
      * @apiPermission projectMember
@@ -248,9 +248,9 @@ class VolumeController extends Controller
      *
      * @apiSuccessExample {json} Success response:
      * {
-     *  1: 1,
-     *  2: 2,
-     *  3: 3,
+     *  "1": 1,
+     *  "2": 2,
+     *  "3": 3
      * }
      *
      */

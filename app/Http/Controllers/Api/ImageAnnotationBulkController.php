@@ -6,9 +6,6 @@ use Biigle\Http\Requests\StoreImageAnnotations;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use DB;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class ImageAnnotationBulkController extends Controller
 {
@@ -81,13 +78,6 @@ class ImageAnnotationBulkController extends Controller
         $annotations = collect($request->all())->map(function ($input) {
             $annotation = new ImageAnnotation;
             $annotation->shape_id = $input['shape_id'];
-
-            try {
-                $annotation->validatePoints($input['points']);
-            } catch (Exception $e) {
-                throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
-            }
-
             $annotation->points = $input['points'];
             $annotation->image_id = $input['image_id'];
             /** @phpstan-ignore property.notFound */

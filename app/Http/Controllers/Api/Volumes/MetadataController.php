@@ -19,7 +19,9 @@ class MetadataController extends Controller
      * @apiGroup Volumes
      * @apiName ShowVolumeMetadata
      * @apiPermission projectMember
-     ~
+     *
+     * @apiParam {Number} id The volume ID.
+     *
      * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\StreamedResponse
@@ -102,7 +104,9 @@ class MetadataController extends Controller
      * @apiPermission projectAdmin
      * @apiDescription This does not delete the metadata that was already attached to the
      * volume files.
-     ~
+     *
+     * @apiParam {Number} id The volume ID.
+     *
      * @param int $id
      */
     public function destroy($id)

@@ -108,7 +108,7 @@
                             icon="fa-check"
                             title="Disable the single-frame annotation option to create multi-frame annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-check"
@@ -122,7 +122,7 @@
                             icon="fa-project-diagram"
                             title="Disable the single-frame annotation option to track annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-project-diagram"
@@ -197,7 +197,7 @@
                             icon="fa-project-diagram"
                             title="Disable the single-frame annotation option to track annotations"
                             :disabled="true"
-                            ></control-button> 
+                            ></control-button>
                         <control-button
                             v-else
                             icon="fa-project-diagram"
@@ -795,6 +795,9 @@ export default {
         },
         keyboardOn() {
             this.keyboardOffCallbacks.push(Keyboard.on.apply(Keyboard, arguments));
+        },
+        getDraftColor() {
+            return this.draftAnnotationUsesLabelColor ? this.selectedLabel?.color : null;
         },
     },
     watch: {

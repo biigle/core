@@ -2,6 +2,9 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Biigle\Rules\AnnotationPoints;
+use Exception;
+
 class ImageAnnotation extends Annotation
 {
     /**
@@ -12,5 +15,19 @@ class ImageAnnotation extends Annotation
         return array_merge(parent::getInsertData($id), [
             'image_id' => $id,
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate(): void
+    {
+        parent::validate();
+
+        $message = (new AnnotationPoints($this->shape_id))->getErrorMessage($this->points);
+
+        if (!is_null($message)) {
+            throw new Exception($message);
+        }
     }
 }

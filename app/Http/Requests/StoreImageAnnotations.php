@@ -4,7 +4,10 @@ namespace Biigle\Http\Requests;
 
 use Biigle\Image;
 use Biigle\Label;
+use Biigle\Rules\AnnotationPoints;
+use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreImageAnnotations extends FormRequest
 {
@@ -30,6 +33,13 @@ class StoreImageAnnotations extends FormRequest
     public $images;
 
     /**
+     * Unique label IDs of this request.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    public $labelIds;
+
+    /**
      * The labels that should be attached to the new annotations.
      *
      * @var \Illuminate\Database\Eloquent\Collection<int, Label>
@@ -52,13 +62,13 @@ class StoreImageAnnotations extends FormRequest
 
         $this->images = Image::findMany($this->imageIds, ['id', 'volume_id']);
 
-        $labelIds = $input->pluck('label_id')
+        $this->labelIds = $input->pluck('label_id')
             ->unique()
             // Filter because the IDs are validated *after* authorization and could be
             // e.g. random strings here.
             ->filter(fn ($id) => is_numeric($id));
 
-        $this->labels = Label::findMany($labelIds)->keyBy('id');
+        $this->labels = Label::findMany($this->labelIds)->keyBy('id');
 
         return $this->images->reduce(fn ($carry, $image) => $carry && $this->user()->can('add-annotation', $image), true);
     }
@@ -70,12 +80,15 @@ class StoreImageAnnotations extends FormRequest
      */
     public function rules()
     {
+        // Image annotations cannot have the whole frame shape.
+        $shapeIds = Shape::whereKeyNot(Shape::wholeFrameId())->pluck('id');
+
         return [
-            '*.image_id' => 'required|integer|exists:images,id',
-            '*.label_id' => 'required|integer|exists:labels,id',
+            '*.image_id' => 'required|integer',
+            '*.label_id' => 'required|integer',
             '*.confidence' => 'required|numeric|between:0,1',
-            '*.shape_id' => 'required|integer|exists:shapes,id',
-            '*.points' => 'required|array',
+            '*.shape_id' => ['bail', 'required', 'integer', Rule::in($shapeIds)],
+            '*.points' => 'bail|required|array',
         ];
     }
 
@@ -93,12 +106,26 @@ class StoreImageAnnotations extends FormRequest
         }
 
         $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            foreach ($this->all() as $index => $annotation) {
+                (new AnnotationPoints($annotation['shape_id']))->validate(
+                    'points',
+                    $annotation['points'],
+                    fn ($message) => $validator->errors()->add("$index.points", $message)
+                );
+            }
+
+            // Check images and labels once and not each time for every input item
+            // via an "exists" rule.
             if ($this->imageIds->count() !== $this->images->count()) {
                 $validator->errors()->add('image_id', 'The image id does not exist.');
             }
 
-            if ($this->imageIds->count() !== $this->images->count()) {
-                $validator->errors()->add('image_id', 'The image id does not exist.');
+            if ($this->labelIds->count() !== $this->labels->count()) {
+                $validator->errors()->add('label_id', 'The label id does not exist.');
             }
         });
     }

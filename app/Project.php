@@ -3,23 +3,19 @@
 namespace Biigle;
 
 use Biigle\Jobs\DeleteVolume;
+use Biigle\Observers\ProjectObserver;
 use Cache;
 use DB;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Hidden(['pivot'])]
+#[ObservedBy(ProjectObserver::class)]
 class Project extends Model
 {
     use HasFactory;
-
-    /**
-     * The attributes hidden from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'pivot',
-    ];
 
     /**
      * Scope a query to all projects that the user and the volume with the given ID have in common.

@@ -3,55 +3,46 @@
 namespace Biigle;
 
 use Biigle\Traits\HasMetadataFile;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable([
+    'media_type_id',
+    'user_id',
+    'project_id',
+    'metadata_file_path',
+    'metadata_parser',
+    'volume_id',
+    'import_annotations',
+    'import_file_labels',
+    'only_annotation_labels',
+    'only_file_labels',
+    'label_map',
+    'user_map',
+    'importing',
+])]
+#[Hidden(['metadata_file_path'])]
 class PendingVolume extends Model
 {
     use HasFactory, HasMetadataFile;
 
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'media_type_id',
-        'user_id',
-        'project_id',
-        'metadata_file_path',
-        'metadata_parser',
-        'volume_id',
-        'import_annotations',
-        'import_file_labels',
-        'only_annotation_labels',
-        'only_file_labels',
-        'label_map',
-        'user_map',
-        'importing',
-    ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'metadata_file_path',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'only_annotation_labels' => 'array',
-        'only_file_labels' => 'array',
-        'label_map' => 'array',
-        'user_map' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'only_annotation_labels' => 'array',
+            'only_file_labels' => 'array',
+            'label_map' => 'array',
+            'user_map' => 'array',
+        ];
+    }
 
     /**
      * Default values for attributes.

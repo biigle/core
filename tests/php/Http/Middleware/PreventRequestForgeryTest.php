@@ -4,19 +4,19 @@ namespace Biigle\Tests\Http\Middleware;
 
 use ApiTestCase;
 use App;
-use Biigle\Http\Middleware\VerifyCsrfToken;
+use Biigle\Http\Middleware\PreventRequestForgery;
 use Biigle\Tests\ApiTokenTest;
 use Closure;
 use Illuminate\Session\TokenMismatchException;
 
-class VerifyCsrfTokenTest extends ApiTestCase
+class PreventRequestForgeryTest extends ApiTestCase
 {
     public function setUp(): void
     {
         parent::setUp();
 
         // We need this because it is disabled in unit tests by default.
-        App::bind(VerifyCsrfToken::class, VerifyCsrfTokenStub::class);
+        App::bind(PreventRequestForgery::class, PreventRequestForgeryStub::class);
 
         $this->token = ApiTokenTest::create([
             // 'test_token', hashed with 4 rounds as defined in phpunit.xml
@@ -56,7 +56,7 @@ class VerifyCsrfTokenTest extends ApiTestCase
     }
 }
 
-class VerifyCsrfTokenStub extends VerifyCsrfToken
+class PreventRequestForgeryStub extends PreventRequestForgery
 {
     public function runningUnitTests()
     {

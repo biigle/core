@@ -166,6 +166,40 @@ class ProjectVolumeControllerTest extends ApiTestCase
                 in_array('2.jpg', $job->filenames));
     }
 
+    public function testStoreUrlMaxLength()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+
+        // invalid url (>512 characters)
+        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://'.str_repeat('a', 506),
+            'media_type' => 'image',
+            'files' => '1.jpg',
+        ])->assertStatus(422);
+
+        $this->assertSame('The url must not be greater than 512 characters.', $response->exception->getMessage());
+
+        // Split the path in two parts because a single path segment is limited to 255
+        // characters by the filesystem.
+        $path = str_repeat('a', 252).'/'.str_repeat('b', 252);
+        Storage::disk('test')->put($path.'/1.jpg', 'abc');
+
+        // valid url (exactly 512 characters)
+        $url = 'test://'.$path;
+        $this->assertSame(512, strlen($url));
+
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => $url,
+            'media_type' => 'image',
+            'files' => '1.jpg',
+        ])->assertStatus(201);
+
+        $this->assertSame($url, Volume::orderBy('id', 'desc')->first()->url);
+    }
+
     public function testStoreHandle()
     {
         Storage::disk('test')->makeDirectory('images');

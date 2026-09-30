@@ -2,33 +2,29 @@
 
 namespace Biigle;
 
+use Biigle\Observers\VideoAnnotationObserver;
 use Exception;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[Fillable(['video_id', 'shape_id', 'points', 'frames'])]
+#[ObservedBy(VideoAnnotationObserver::class)]
 class VideoAnnotation extends Annotation
 {
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'video_id',
-        'shape_id',
-        'points',
-        'frames',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'video_id' => 'int',
-        'shape_id' => 'int',
-        'frames' => 'array',
-        'points' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'video_id' => 'int',
+            'shape_id' => 'int',
+            'frames' => 'array',
+            'points' => 'array',
+        ];
+    }
 
     /**
      * The video, this annotation belongs to.
@@ -82,39 +78,6 @@ class VideoAnnotation extends Annotation
     }
 
     /**
-     * Validate the points and frames of this annotation.
-     *
-     * @param array $points Not used
-     * @throws Exception If the points or frames are invalid.
-     */
-    public function validatePoints(array $points = [])
-    {
-        if ($this->shape_id === Shape::wholeFrameId()) {
-            if (count($this->points) !== 0) {
-                throw new Exception('Whole frame annotations cannot have point coordinates.');
-            }
-
-            return;
-        }
-
-        if (count($this->points) !== count($this->frames)) {
-            throw new Exception('The number of key frames does not match the number of annotation coordinates.');
-        }
-
-        if (count($this->points[0] ?? []) === 0) {
-            throw new Exception('An annotation must not start with a gap.');
-        }
-
-        // Gaps are represented as empty arrays so these should be skipped.
-        // The all-empty case is already caught with the check above.
-        array_map(function ($point) {
-            if (count($point) > 0) {
-                parent::validatePoints($point);
-            }
-        }, $this->points);
-    }
-
-    /**
      * Get the interpolated points at a specific point of time.
      *
      * This method must be equivalent to the interpolatePoints function of the JavaScript
@@ -126,7 +89,9 @@ class VideoAnnotation extends Annotation
      */
     public function interpolatePoints(float $time)
     {
-        $frames = array_map('floatval', $this->frames);
+        // Keep gap frames.
+        $frames = array_map(fn ($f) => is_null($f) ? null : floatval($f), $this->frames);
+
         $startFrame = $frames[0];
         $endFrame = end($frames);
 
@@ -136,13 +101,18 @@ class VideoAnnotation extends Annotation
 
         $i = count($frames) - 1;
         for (; $i >= 0 ; $i--) {
-            if ($frames[$i] <= $time) {
+            if (!is_null($frames[$i]) && $frames[$i] <= $time) {
                 break;
             }
         }
 
         if ($frames[$i] === $time) {
             return $this->points[$i];
+        }
+
+        // Time is inside gap.
+        if (is_null($frames[$i + 1])) {
+            return [];
         }
 
         $progress = ($time - $frames[$i]) / ($frames[$i + 1] - $frames[$i]);

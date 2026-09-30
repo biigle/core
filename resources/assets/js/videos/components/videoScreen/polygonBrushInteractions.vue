@@ -8,6 +8,9 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 import {noModifierKeys as noModifierKeysCondition} from '@biigle/ol/events/condition';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
+import { rightClick } from '@/annotations/ol/events/condition.js';
+import { setOrUnsetProperty } from '@/utils.js';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the polygon brush
@@ -19,6 +22,7 @@ export default {
     data() {
         return {
             polygonBrushRadius: 50,
+            currentInteraction: null,
         };
     },
     computed: {
@@ -31,12 +35,16 @@ export default {
         isUsingPolygonFill() {
             return this.interactionMode === 'polygonFill';
         },
+        isAPolygonTool() {
+            return this.isUsingPolygonBrush || this.isUsingPolygonEraser || this.isUsingPolygonFill;
+        }
     },
     methods: {
         togglePolygonBrush() {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
-            } else if (!this.hasSelectedLabel) {
+                this.currentInteraction = null;
+            } else if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'polygonBrush';
@@ -45,6 +53,7 @@ export default {
         togglePolygonEraser() {
             if (this.isUsingPolygonEraser) {
                 this.resetInteractionMode();
+                this.currentInteraction = null;
             } else if (this.canModify) {
                 this.interactionMode = 'polygonEraser';
             }
@@ -52,6 +61,7 @@ export default {
         togglePolygonFill() {
             if (this.isUsingPolygonFill) {
                 this.resetInteractionMode();
+                this.currentInteraction = null;
             } else if (this.canModify) {
                 this.interactionMode = 'polygonFill';
             }
@@ -60,13 +70,16 @@ export default {
             if (!isUsingPolygonBrush) {
                 this.polygonBrushRadius = this.polygonBrushInteraction.getBrushRadius();
                 this.map.removeInteraction(this.polygonBrushInteraction);
-            } else if (this.hasSelectedLabel) {
+            } else if (this.hasSelectedLabel || this.labelbotIsActive) {
                 this.polygonBrushInteraction = new PolygonBrushInteraction({
                     source: this.pendingAnnotationSource,
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     resizeCondition: altKeyOnlyCondition,
+                    condition: (event) => !rightClick(event),
+                    draftColor: this.getDraftColor()
                 });
+                this.currentInteraction = this.polygonBrushInteraction;
                 this.polygonBrushInteraction.on('drawend', this.extendPendingAnnotation);
                 this.pendingAnnotation.shape = 'Polygon';
                 this.map.addInteraction(this.polygonBrushInteraction);
@@ -85,9 +98,10 @@ export default {
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
                     addCondition: neverCondition,
-                    subtractCondition: noModifierKeysCondition,
+                    subtractCondition: (event) => noModifierKeysCondition(event) && !rightClick(event),
                     resizeCondition: altKeyOnlyCondition,
                 });
+                this.currentInteraction = this.polygonEraserInteraction;
                 this.polygonEraserInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonEraserInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonEraserInteraction);
@@ -106,10 +120,11 @@ export default {
                     style: Styles.editing,
                     brushRadius: this.polygonBrushRadius,
                     allowRemove: false,
-                    addCondition: noModifierKeysCondition,
+                    addCondition: (event) => noModifierKeysCondition(event) && !rightClick(event),
                     subtractCondition: neverCondition,
                     resizeCondition: altKeyOnlyCondition,
                 });
+                this.currentInteraction = this.polygonFillInteraction;
                 this.polygonFillInteraction.on('modifystart', this.handleModifyStart);
                 this.polygonFillInteraction.on('modifyend', this.handleModifyEnd);
                 this.map.addInteraction(this.polygonFillInteraction);
@@ -127,6 +142,23 @@ export default {
                 multi: true,
             });
             this.shiftClickSelectInteraction.on('select', this.handleFeatureSelect);
+        },
+        updatePolygonBrushDraftColor() {
+            const draftColor = this.getDraftColor();
+            if (!this.isUsingPolygonEraser && !this.isUsingPolygonFill) {
+                this.currentInteraction?.setDraftColor?.(draftColor);
+            }
+            this.pendingAnnotationSource?.getFeatures().forEach( (feature) => {
+                setOrUnsetProperty(feature, 'color', draftColor);
+            });
+        },
+    },
+    watch: {
+        selectedLabel() {
+            this.updatePolygonBrushDraftColor();
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updatePolygonBrushDraftColor();
         },
     },
     created() {
@@ -149,5 +181,8 @@ export default {
             this.keyboardOn('t', this.togglePolygonFill, 0, this.listenerSet);
         }
     },
+    mounted() {
+        addRightClickDragPanToMap(this.map, () => this.isAPolygonTool);
+    }
 };
 </script>

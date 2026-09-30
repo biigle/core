@@ -9,6 +9,8 @@ parameters:
     # Level 9 is the highest level
     level: 5
 
+    parseModelCastsMethod: true
+
     ignoreErrors:
         - '#PHPDoc tag @apiParam#'
 #

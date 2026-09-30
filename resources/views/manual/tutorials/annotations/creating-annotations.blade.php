@@ -208,6 +208,11 @@
             Polygons that were drawn with the brush tool are best edited with the polygon eraser and fill tools. Head over to the <a href="{{route('manual-tutorials', ['annotations', 'editing-annotations'])}}">next manual section</a> to learn more.
         </p>
 
+        <p>
+            If any of the polygon brush/fill/eraser tools or the magic wand tool is active, dragging of the map is possible
+            using right click.
+        </p>
+
         @mixin('manualCreatingPolygons')
     </div>
 @endsection

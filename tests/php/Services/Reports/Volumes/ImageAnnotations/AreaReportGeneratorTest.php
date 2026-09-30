@@ -499,6 +499,74 @@ class AreaReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsersWithNullUserId()
+    {
+        $image = ImageTest::create();
+
+        $annotation = ImageAnnotationTest::create([
+            'shape_id' => Shape::rectangleId(),
+            'image_id' => $image->id,
+            'points' => [100, 100, 100, 300, 200, 300, 200, 100],
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => null,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with("{$al1->user->firstname} {$al1->user->lastname}");
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with('(deleted users)');
+
+        $mock->shouldReceive('putCsv')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $annotation->id,
+                Shape::rectangleId(), 'Rectangle',
+                $al1->label_id, $al1->label->name,
+                $image->id, $image->filename,
+                '', '', '',
+                200, 100, 20000,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $annotation->id,
+                Shape::rectangleId(), 'Rectangle',
+                $al2->label_id, $al2->label->name,
+                $image->id, $image->filename,
+                '', '', '',
+                200, 100, 20000,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AreaReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
     public function testGenerateReportLineString()
     {
         $volume = VolumeTest::create([

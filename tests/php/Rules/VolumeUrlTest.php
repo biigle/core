@@ -44,6 +44,7 @@ class VolumeUrlTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        config(['app.url' => 'https://biigle.de']);
         config(['volumes.editor_storage_disks' => ['test']]);
         $this->user = User::factory()->make(['role_id' => Role::editorId()]);
         $this->be($this->user);
@@ -147,7 +148,7 @@ class VolumeUrlTest extends TestCase
         $client = new Client(['handler' => $handler]);
         app()->bind(Client::class, fn () => $client);
         $validator = new VolumeUrl;
-        $this->assertFalse($validator->passes(null, 'http://localhost'));
+        $this->assertFalse($validator->passes(null, 'http://example.com'));
         $this->assertStringContainsString('The remote volume URL does not seem to exist', $validator->message());
     }
 
@@ -159,11 +160,11 @@ class VolumeUrlTest extends TestCase
         $client = new Client(['handler' => $handler]);
         app()->bind(Client::class, fn () => $client);
         $validator = new VolumeUrl;
-        $this->assertFalse($validator->passes(null, 'http://localhost'));
+        $this->assertFalse($validator->passes(null, 'http://example.com'));
         $this->assertStringContainsString('The remote volume URL returned an error response', $validator->message());
     }
 
-    public function testRemoteOk()
+    public function testRemoteSubdomainOk()
     {
         $mock = new MockHandler([
             new Response(404),
@@ -179,11 +180,11 @@ class VolumeUrlTest extends TestCase
         app()->bind(Client::class, fn () => $client);
 
         $validator = new VolumeUrl;
-        $this->assertTrue($validator->passes(null, 'http://localhost'));
+        $this->assertTrue($validator->passes(null, 'http://files.biigle.de'));
 
         $request = $container[0]['request'];
         $this->assertSame('HEAD', $request->getMethod());
-        $this->assertSame('http://localhost', (string) $request->getUri());
+        $this->assertSame('http://files.biigle.de', (string) $request->getUri());
     }
 
     public function testRemoteOfflineMode()
@@ -210,6 +211,29 @@ class VolumeUrlTest extends TestCase
         $this->assertFalse($validator->passes(null, 'https://drive.google.com'));
     }
 
+    public function testRemoteOwnDomain()
+    {
+        $mock = new MockHandler([
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        app()->bind(Client::class, fn () => $client);
+
+        $urls = [
+            'https://biigle.de',
+            'http://biigle.de',
+            'https://biigle.de:8000/volumes/1',
+            'https://BIIGLE.DE/volumes/1',
+        ];
+
+        foreach ($urls as $url) {
+            $validator = new VolumeUrl;
+            $this->assertFalse($validator->passes(null, $url));
+            $this->assertStringContainsString('own domain', $validator->message());
+        }
+    }
+
     public function testRemoteProviderTraversals()
     {
         $mock = new MockHandler([
@@ -227,11 +251,11 @@ class VolumeUrlTest extends TestCase
 
         $validator = new VolumeUrl;
         foreach ($this->traversalAttempts as $attempt) {
-            $this->assertFalse($validator->passes(null, 'http://localhost/'.$attempt));
+            $this->assertFalse($validator->passes(null, 'http://example.com/'.$attempt));
             $this->assertStringContainsString('Volume URLs with path traversal instructions are not allowed.', $validator->message());
         }
         foreach ($this->validPathAttempts as $attempt) {
-            $this->assertFalse($validator::pathHasDirectoryTraversal(null, 'http://localhost/'.$attempt));
+            $this->assertFalse($validator::pathHasDirectoryTraversal(null, 'http://example.com/'.$attempt));
         }
     }
 }

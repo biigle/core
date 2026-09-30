@@ -62,4 +62,16 @@ let declare = function (namespace, object) {
     return object;
 };
 
-export {mount, require, declare};
+function setOrUnsetProperty(feature, property, value) {
+    if (!feature) {
+        return;
+    }
+
+    if (value !== null && value !== undefined) {
+        feature.set(property, value);
+    } else {
+        feature.unset(property);
+    }
+}
+
+export {mount, require, declare, setOrUnsetProperty};

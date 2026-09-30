@@ -27,6 +27,13 @@ class ProcessAnnotatedImageTest extends TestCase
         FileCache::fake();
     }
 
+    public function testConstructorDefaultQueue()
+    {
+        config(['largo.generate_annotation_patch_queue' => 'annotation-patches']);
+        $job = new ProcessAnnotatedImage(new Image);
+        $this->assertSame('annotation-patches', $job->queue);
+    }
+
     public function testHandleStorage()
     {
         $disk = Storage::fake('test');

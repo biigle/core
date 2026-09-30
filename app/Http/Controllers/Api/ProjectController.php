@@ -102,7 +102,6 @@ class ProjectController extends Controller
         }
 
         return $this->fuzzyRedirect('project', $project->id)
-            ->with('newProject', $project)
             ->with('message', 'Project created.')
             ->with('messageType', 'success');
     }

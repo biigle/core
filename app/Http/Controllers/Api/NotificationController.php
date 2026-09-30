@@ -37,7 +37,7 @@ class NotificationController extends Controller
      *
      * @api {put} notifications/all Mark all notifications as read
      * @apiGroup Notifications
-     * @apiName UpdateReadNotifications
+     * @apiName UpdateAllReadNotifications
      * @apiPermission user
      *
      * @param Request $request

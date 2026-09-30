@@ -4,10 +4,12 @@ namespace Biigle\Jobs;
 
 use Biigle\Image;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Storage;
 
+#[DeleteWhenMissingModels]
 class CloneImageThumbnails extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
@@ -30,13 +32,6 @@ class CloneImageThumbnails extends Job implements ShouldQueue
      * @var Image
      */
     public $image;
-
-    /**
-     * Ignore this job if the image does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     public function __construct(Image $img, String $prefix)
     {

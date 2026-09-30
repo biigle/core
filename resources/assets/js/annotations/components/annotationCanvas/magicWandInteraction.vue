@@ -2,6 +2,8 @@
 import Keyboard from '@/core/keyboard.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Styles from '@/annotations/stores/styles.js';
+import { primaryAction } from '@biigle/ol/events/condition';
+import { addRightClickDragPanToMap } from '@/annotations/utils.js';
 
 /**
  * Mixin for the annotationCanvas component that contains logic for the magic wand interaction.
@@ -58,12 +60,21 @@ export default {
             } else {
                 this.requireSelectedLabel();
             }
+        },
+        updateMagicWandDraftColor() {
+            magicWandInteraction?.setDraftColor(this.getDraftColor());
         }
     },
     watch: {
         isMagicWanding(isMagicWanding) {
             this.toggleMagicWandInteraction(isMagicWanding);
         },
+        selectedLabel() {
+            this.updateMagicWandDraftColor();
+        },
+        draftAnnotationUsesLabelColor() {
+            this.updateMagicWandDraftColor();
+        }
     },
     created() {
         this.$watch('image', this.maybeUpdateMagicWandSnapshot);
@@ -80,10 +91,14 @@ export default {
             indicatorPointStyle: Styles.editing,
             indicatorCrossStyle: Styles.cross,
             simplifyTolerant: 0.1,
+            condition: primaryAction,
+            draftColor: this.getDraftColor()
         });
         magicWandInteraction.on('drawend', this.handleNewFeature);
         magicWandInteraction.setActive(false);
         this.map.addInteraction(magicWandInteraction);
+
+        addRightClickDragPanToMap(this.map, () => this.isMagicWanding);
     },
 };
 </script>
