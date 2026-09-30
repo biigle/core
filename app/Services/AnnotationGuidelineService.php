@@ -6,6 +6,7 @@ use Biigle\AnnotationGuideline;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
+use DB;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -19,18 +20,33 @@ class AnnotationGuidelineService
      * Get the guidelines (enforced and informational) of the projects that the user and
      * the volume have in common.
      *
-     * @param bool $editable Only include projects where the user can create annotations.
-     * The enforced guidelines of these projects can be chosen for new annotations.
+     * Each guideline has the additional attribute `can_annotate` (whether the user can
+     * create annotations in the project of the guideline). Guidelines that are enforced
+     * and where `can_annotate` is true can be chosen for new annotations.
      *
      * @return Collection<int, AnnotationGuideline>
      */
-    public function getGuidelines(User $user, int $volumeId, bool $editable = false): Collection
+    public function getGuidelines(User $user, int $volumeId): Collection
     {
-        return once(fn () => AnnotationGuideline::whereIn(
-            'project_id',
-            Project::inCommon($user, $volumeId, $editable ? $this->getEditRoles() : null)
-                ->select('id')
-        )->get());
+        return once(function () use ($user, $volumeId) {
+            $editRoles = $this->getEditRoles();
+
+            return AnnotationGuideline::whereIn(
+                'project_id',
+                Project::inCommon($user, $volumeId)->select('id')
+            )
+                ->addSelect([
+                    'project_role_id' => DB::table('project_user')
+                        ->select('project_role_id')
+                        ->whereColumn('project_id', 'annotation_guidelines.project_id')
+                        ->where('user_id', $user->id),
+                ])
+                ->get()
+                ->each(function (AnnotationGuideline $guideline) use ($editRoles) {
+                    $guideline->can_annotate = in_array($guideline->project_role_id, $editRoles);
+                    unset($guideline->project_role_id);
+                });
+        });
     }
 
     /**

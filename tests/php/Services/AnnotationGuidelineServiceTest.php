@@ -53,40 +53,37 @@ class AnnotationGuidelineServiceTest extends TestCase
         $this->assertSame([$g1->id, $g2->id, $g3->id], $ids);
     }
 
-    public function testGetGuidelinesEditable()
+    public function testGetGuidelinesCanAnnotate()
     {
         $g1 = $this->createGuideline($this->editorProject, true);
         $g2 = $this->createGuideline($this->expertProject, false);
-        $this->createGuideline($this->guestProject, true);
-        $this->createGuideline($this->otherProject, true);
+        $g3 = $this->createGuideline($this->guestProject, true);
 
-        $ids = $this->service->getGuidelines($this->user, $this->volume->id, true)
-            ->pluck('id')
-            ->sort()
-            ->values()
-            ->all();
+        $guidelines = $this->service->getGuidelines($this->user, $this->volume->id)
+            ->keyBy('id');
 
-        $this->assertSame([$g1->id, $g2->id], $ids);
+        $this->assertTrue($guidelines[$g1->id]->can_annotate);
+        $this->assertTrue($guidelines[$g2->id]->can_annotate);
+        $this->assertFalse($guidelines[$g3->id]->can_annotate);
+        $this->assertArrayNotHasKey('project_role_id', $guidelines[$g1->id]->toArray());
     }
 
     public function testGetGuidelinesMemoized()
     {
         $this->createGuideline($this->editorProject, true);
         $this->service->getGuidelines($this->user, $this->volume->id);
-        $this->service->getGuidelines($this->user, $this->volume->id, true);
-        $this->createGuideline($this->guestProject, true);
+        $this->createGuideline($this->expertProject, true);
 
         $this->assertCount(1, $this->service->getGuidelines($this->user, $this->volume->id));
-        $this->assertCount(1, $this->service->getGuidelines($this->user, $this->volume->id, true));
     }
 
     public function testGetGuidelinesMemoizedPerArguments()
     {
         $this->createGuideline($this->editorProject, true);
-        $this->createGuideline($this->guestProject, true);
+        $otherUser = UserTest::create();
 
-        $this->assertCount(2, $this->service->getGuidelines($this->user, $this->volume->id));
-        $this->assertCount(1, $this->service->getGuidelines($this->user, $this->volume->id, true));
+        $this->assertCount(0, $this->service->getGuidelines($otherUser, $this->volume->id));
+        $this->assertCount(1, $this->service->getGuidelines($this->user, $this->volume->id));
     }
 
     public function testMustUseGuidelineNoGuidelines()
