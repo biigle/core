@@ -276,6 +276,7 @@ class ImageAnnotationController extends Controller
      * @apiParam {Number} id The annotation ID.
      * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
      * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
+     * @apiParam (Optional arguments) {Number} guideline_id ID of the enforced annotation guideline that applies if the shape is changed. The new shape must be allowed by the guideline for all labels of the annotation. Required for a shape change if all projects of the volume (where the user can create annotations) have an enforced guideline. See the "Get annotation guidelines" endpoint of volumes.
      * @apiParamExample {json} Request example (JSON):
      * {
      *    "points": [10, 11, 20, 21],

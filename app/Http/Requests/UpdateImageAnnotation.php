@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\ImageAnnotation;
 use Biigle\Rules\AnnotationPoints;
 use Biigle\Shape;
@@ -9,6 +10,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateImageAnnotation extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The annotation that should be updated.
      *
@@ -38,6 +41,7 @@ class UpdateImageAnnotation extends FormRequest
         return [
             'shape_id' => 'required_without:points|integer|exists:shapes,id',
             'points' => 'required_without:shape_id|array',
+            'guideline_id' => 'nullable|integer',
         ];
     }
 
@@ -70,6 +74,35 @@ class UpdateImageAnnotation extends FormRequest
                 $this->getPoints(),
                 fn ($message) => $validator->errors()->add('points', $message)
             );
+        });
+
+        $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            // Only a new shape can violate the guideline, new points can't.
+            $shapeId = $this->getShapeId();
+            if ($shapeId === intval($this->annotation->shape_id)) {
+                return;
+            }
+
+            $guideline = $this->validateGuideline(
+                $validator,
+                $this->annotation->image->volume_id,
+                $this->integer('guideline_id') ?: null
+            );
+
+            if (is_null($guideline)) {
+                return;
+            }
+
+            $labelIds = $this->annotation->labels()->distinct()->pluck('label_id');
+
+            // Identical error messages are only added once.
+            foreach ($labelIds as $labelId) {
+                $this->validateGuidelineShape($validator, $guideline, $shapeId, $labelId);
+            }
         });
     }
 

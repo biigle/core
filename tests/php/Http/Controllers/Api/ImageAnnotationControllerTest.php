@@ -818,6 +818,119 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertSame(Shape::pointId(), $this->annotation->shape_id);
     }
 
+    public function testUpdateGuidelineRequired()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        $this->annotation->points = [10, 11];
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+
+        $this->beEditor();
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::circleId(),
+            'points' => [10, 11, 5],
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::circleId(),
+            'points' => [10, 11, 5],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateGuidelinePointsOnly()
+    {
+        $this->createGuideline(['enforced' => true]);
+        $this->annotation->points = [10, 11];
+        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->save();
+
+        $this->beEditor();
+        // New points of the same shape don't require a guideline.
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'points' => [20, 21],
+        ])
+            ->assertStatus(200);
+
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::pointId(),
+            'points' => [30, 31],
+        ])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateGuidelineOnlyShapes()
+    {
+        $guideline = $this->createGuideline([
+            'enforced' => true,
+            'only_shapes' => [Shape::circleId()],
+        ]);
+        $this->annotation->points = [10, 20, 30, 40];
+        $this->annotation->shape_id = Shape::lineId();
+        $this->annotation->save();
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $this->annotation->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $this->beEditor();
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::pointId(),
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::circleId(),
+            'points' => [10, 11, 5],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateGuidelineLabelShape()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        $this->annotation->points = [10, 20, 30, 40];
+        $this->annotation->shape_id = Shape::lineId();
+        $this->annotation->save();
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $this->annotation->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $this->annotation->id,
+            'label_id' => $this->labelChild()->id,
+        ]);
+
+        $this->beEditor();
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::pointId(),
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            // The shape of labelRoot does not match.
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+
+        $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
+            'shape_id' => Shape::circleId(),
+            'points' => [10, 11, 5],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(200);
+    }
+
     public function testUpdate()
     {
         $this->update('api/v1/image-annotations');
