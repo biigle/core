@@ -695,7 +695,7 @@ export default {
             let source = this.annotationSource;
 
             let newFeature = this.createFeature(annotation);
-            let oldFeature = source.getFeatureById(annotation.id)
+            let oldFeature = source.getFeatureById(annotation.id);
 
             source.removeFeature(oldFeature);
             source.addFeature(newFeature);

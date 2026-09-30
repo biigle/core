@@ -5,7 +5,7 @@ import Styles from '../../stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { LABELBOT_STATES } from '../../mixins/labelbot.vue';
-import { clamp, trimCanvas } from '../../utils.js'
+import { clamp, trimCanvas } from '../../utils.js';
 
 // DINOv2 image input size.
 const INPUT_SIZE = 224;

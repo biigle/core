@@ -18,7 +18,7 @@ import SettingsTab from './components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import VolumeImageAreaApi from './api/volumes.js';
-import {computed, defineAsyncComponent} from 'vue'
+import {computed, defineAsyncComponent} from 'vue';
 import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
@@ -659,7 +659,7 @@ export default {
                     Messages.danger('Invalid shape. Circle needs non-zero radius');
                     return;
                 case 'LineString':
-                    shape = 'Line'
+                    shape = 'Line';
                     count = 2;
                     break;
                 case 'Polygon':

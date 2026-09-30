@@ -16,5 +16,5 @@ export default {
             biigle.$require('admin.videoAnnotationWeek'),
         ];
     },
-}
+};
 </script>

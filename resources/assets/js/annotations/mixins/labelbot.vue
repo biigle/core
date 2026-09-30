@@ -139,7 +139,7 @@ export default {
             const index = this.labelbotOverlays.indexOf(annotation);
             if (index !== -1) {
                 this.labelbotOverlays.splice(index, 1);
-                const lastOverlay = this.labelbotOverlays[this.labelbotOverlays.length - 1]
+                const lastOverlay = this.labelbotOverlays[this.labelbotOverlays.length - 1];
 
                 if (lastOverlay) {
                     this.focusedPopupKey = lastOverlay.id ?? lastOverlay.feature.ol_uid;
@@ -206,7 +206,7 @@ export default {
                     }
                     if (!_annotation) {
                         // We need to parse the ol_uid to int to be used as pop key
-                        feature.ol_uid = parseInt(feature.ol_uid)
+                        feature.ol_uid = parseInt(feature.ol_uid);
                         
                         // We return annotation and not _annotation, because _annotation is null 
                         annotation.feature = feature;
@@ -221,7 +221,7 @@ export default {
                         annotation.feature_vector = undefined;
                         delete annotation.feature_vector;
 
-                        return annotation
+                        return annotation;
                     }
                     return _annotation;
                 })

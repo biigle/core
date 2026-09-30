@@ -93,7 +93,7 @@ class Annotations {
 
                         return annotation;
                     });
-            })
+            });
     }
 
     update(annotation) {

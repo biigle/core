@@ -439,7 +439,7 @@ export default {
         },
         selectTypeaheadLabel(label) {
             if (this.noLabels) {
-                this.createAndClose(label)
+                this.createAndClose(label);
             } else {
                 this.updateAndClose(label);
             }

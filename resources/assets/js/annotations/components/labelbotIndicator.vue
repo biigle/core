@@ -22,5 +22,5 @@ export default {
             return this.labelbotState || '';
         },
     },
-}
+};
 </script>

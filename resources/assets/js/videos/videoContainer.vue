@@ -33,7 +33,7 @@ class VideoTooLargeError extends VideoError {}
 
 // Used to round and parse the video current time from the URL, as it is stored as an int
 // there (without decimal dot).
-const URL_CURRENT_TIME_DIVISOR = 1e4
+const URL_CURRENT_TIME_DIVISOR = 1e4;
 
 export default {
     mixins: [LoaderMixin, Labelbot],
@@ -241,7 +241,7 @@ export default {
             if (this.labelbotOverlayCount > 0) {
                 this.labelbotOverlays.forEach((overlay) => {
                     this.removeAnnotation(overlay.pendingAnnotation);
-                })
+                });
                 this.closeAllLabelbotPopups();
             }
 
@@ -709,7 +709,7 @@ export default {
                 }, { once: true });
             });
 
-            videoPromise.finally(() => { this.attemptWithCors = false });
+            videoPromise.finally(() => { this.attemptWithCors = false; });
 
             // Try requesting video by using CORS
             this.video.setAttribute('crossOrigin', '');
@@ -864,7 +864,7 @@ export default {
                     Messages.danger('Invalid shape. Circle needs non-zero radius');
                     return;
                 case 'LineString':
-                    shape = 'Line'
+                    shape = 'Line';
                     count = 2;
                     break;
                 case 'Polygon':
@@ -967,7 +967,7 @@ export default {
             if (this.labelbotOverlayCount > 0) {
                 this.labelbotOverlays.forEach((overlay) => {
                     this.removeAnnotation(overlay.pendingAnnotation);
-                })
+                });
                 this.closeAllLabelbotPopups();
             }
         }
