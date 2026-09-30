@@ -2,12 +2,15 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreImageAnnotationLabel extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The annotation to which the label should be attached.
      *
@@ -47,6 +50,42 @@ class StoreImageAnnotationLabel extends FormRequest
         return [
             // The label_id is already validated above.
             'confidence'  => 'required|numeric|between:0,1',
+            'guideline_id' => 'nullable|integer',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $guideline = $this->validateGuideline(
+                $validator,
+                $this->annotation->image->volume_id,
+                $this->integer('guideline_id') ?: null
+            );
+
+            if (is_null($guideline)) {
+                return;
+            }
+
+            $this->validateGuidelineLabel($validator, $guideline, $this->label->id);
+
+            $this->validateGuidelineShape(
+                $validator,
+                $guideline,
+                $this->annotation->shape_id,
+                $this->label->id,
+                'label_id'
+            );
+        });
     }
 }
