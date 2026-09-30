@@ -36,6 +36,13 @@ class AnnotationGuideline extends Model
         'only_shapes',
     ];
 
+    /**
+     * Shape IDs (or null) of the guideline labels, keyed by label ID.
+     *
+     * @var array<int, int|null>|null
+     */
+    protected ?array $labelShapes = null;
+
     protected static function booted(): void
     {
         static::deleting(function (self $guideline) {
@@ -68,5 +75,58 @@ class AnnotationGuideline extends Model
         return $this->belongsToMany(Label::class)
             ->using(AnnotationGuidelineLabel::class)
             ->withPivot('shape_id', 'description', 'uuid', 'reference_image_path');
+    }
+
+    /**
+     * Determine if the guideline allows the label.
+     */
+    public function allowsLabel(int $labelId): bool
+    {
+        if (!$this->enforced) {
+            return true;
+        }
+
+        $labelShapes = $this->getLabelShapes();
+
+        return empty($labelShapes) || array_key_exists($labelId, $labelShapes);
+    }
+
+    /**
+     * Determine if the guideline allows the shape (optionally in combination with a
+     * label).
+     */
+    public function allowsShape(int $shapeId, ?int $labelId = null): bool
+    {
+        if (!$this->enforced) {
+            return true;
+        }
+
+        if (!is_null($labelId)) {
+            $labelShapes = $this->getLabelShapes();
+            $labelShapeId = $labelShapes[$labelId] ?? null;
+            if (!is_null($labelShapeId)) {
+                return $shapeId === $labelShapeId;
+            }
+        }
+
+        return is_null($this->only_shapes) || in_array($shapeId, $this->only_shapes, true);
+    }
+
+    /**
+     * Get the shape IDs of the guideline labels, keyed by label ID.
+     *
+     * @return array<int, int|null>
+     */
+    protected function getLabelShapes(): array
+    {
+        // Memoized because the checks may run many times for a single request (e.g.
+        // bulk annotation creation or Largo).
+        if (is_null($this->labelShapes)) {
+            $this->labelShapes = AnnotationGuidelineLabel::where('annotation_guideline_id', $this->id)
+                ->pluck('shape_id', 'label_id')
+                ->all();
+        }
+
+        return $this->labelShapes;
     }
 }

@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Shape;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 use Storage;
@@ -74,5 +75,96 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->model->delete();
         $this->assertFalse($this->model->labels()->exists());
         $this->assertNotNull($label->fresh());
+    }
+
+    public function testAllowsLabelNotEnforced()
+    {
+        $label = LabelTest::create();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+        ]);
+
+        $this->assertTrue($this->model->allowsLabel($label->id));
+    }
+
+    public function testAllowsLabelWithoutGuidelineLabels()
+    {
+        $this->model->update(['enforced' => true]);
+        $label = LabelTest::create();
+
+        $this->assertTrue($this->model->allowsLabel($label->id));
+    }
+
+    public function testAllowsLabel()
+    {
+        $this->model->update(['enforced' => true]);
+        $label = LabelTest::create();
+        $otherLabel = LabelTest::create();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+        ]);
+
+        $this->assertTrue($this->model->allowsLabel($label->id));
+        $this->assertFalse($this->model->allowsLabel($otherLabel->id));
+    }
+
+    public function testAllowsShapeNotEnforced()
+    {
+        $label = LabelTest::create();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+            'shape_id' => Shape::pointId(),
+        ]);
+
+        $this->assertTrue($this->model->allowsShape(Shape::rectangleId(), $label->id));
+    }
+
+    public function testAllowsShapeWithoutRestrictions()
+    {
+        $this->model->update(['enforced' => true]);
+        $label = LabelTest::create();
+
+        $this->assertTrue($this->model->allowsShape(Shape::rectangleId()));
+        $this->assertTrue($this->model->allowsShape(Shape::rectangleId(), $label->id));
+    }
+
+    public function testAllowsShapeOnlyShapes()
+    {
+        $this->model->update([
+            'enforced' => true,
+            'only_shapes' => [Shape::pointId(), Shape::circleId()],
+        ]);
+        $label = LabelTest::create();
+
+        $this->assertTrue($this->model->allowsShape(Shape::pointId()));
+        $this->assertTrue($this->model->allowsShape(Shape::circleId(), $label->id));
+        $this->assertFalse($this->model->allowsShape(Shape::rectangleId()));
+        $this->assertFalse($this->model->allowsShape(Shape::rectangleId(), $label->id));
+    }
+
+    public function testAllowsShapeLabelShape()
+    {
+        $this->model->update([
+            'enforced' => true,
+            'only_shapes' => [Shape::pointId(), Shape::circleId()],
+        ]);
+        $label = LabelTest::create();
+        $labelWithoutShape = LabelTest::create();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+            'shape_id' => Shape::pointId(),
+        ]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $labelWithoutShape->id,
+        ]);
+
+        $this->assertTrue($this->model->allowsShape(Shape::pointId(), $label->id));
+        $this->assertFalse($this->model->allowsShape(Shape::circleId(), $label->id));
+        $this->assertTrue($this->model->allowsShape(Shape::circleId(), $labelWithoutShape->id));
+        $this->assertFalse($this->model->allowsShape(Shape::rectangleId(), $labelWithoutShape->id));
     }
 }
