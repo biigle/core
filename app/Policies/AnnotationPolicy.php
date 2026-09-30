@@ -102,7 +102,10 @@ class AnnotationPolicy extends CachedPolicy
     {
         $table = $this->getFileModelTableName($annotation);
 
-        return $this->remember("{$table}-annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label, $table) {
+        // The result only depends on the file and not the annotation itself. The
+        // annotation ID must not be used here because it is null for new annotations
+        // (e.g. in the bulk API) and the cached result would be reused for other files.
+        return $this->remember("{$table}-annotation-can-attach-label-{$user->id}-{$annotation->file_id}-{$label->id}", function () use ($user, $annotation, $label, $table) {
             // Projects, the annotation belongs to *and* the user is editor, expert or admin of.
             $projectIds = DB::table('project_user')
                 ->where('user_id', $user->id)
