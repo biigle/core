@@ -13,6 +13,7 @@ export default {
     emits: [
         'seek',
         'start-seeking',
+        'start-playing',
     ],
     data() {
         return {
@@ -127,6 +128,7 @@ export default {
         },
         play() {
             this.video.play();
+            this.$emit('start-playing');
         },
         pause() {
             this.video.pause();

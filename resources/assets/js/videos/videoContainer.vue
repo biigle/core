@@ -256,6 +256,8 @@ export default {
         },
         startSeeking() {
             this.seeking = true;
+            // We close LabelBOT's popup(s) if the jumpy by frame option is enabled too
+            this.closeLabelbotPopups();
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -340,8 +342,6 @@ export default {
             pendingAnnotation.feature = undefined;
             delete pendingAnnotation.feature;
 
-            const track = pendingAnnotation.track
-
             this.updatePendingAnnotation(pendingAnnotation);
             // Save this because it is still  required when there may already be another
             // this.pendingAnnotation.
@@ -374,11 +374,12 @@ export default {
 
             try {
                 newAnnotation.labelbotImage = await pendingAnnotation.screenshotPromise;
-                // We need to add the feature, the pending annotation and track to the new annotation
+                // We need to add the feature and the pending annotation to the new annotation
                 // in case LabelBOT returns no results
                 newAnnotation.feature = pendingAnnotationFeature;
                 newAnnotation.pendingAnnotation = pendingAnnotation;
-                newAnnotation.track = track;
+                // We wrap it inside an arrow function to prevent immediate execution
+                newAnnotation.removeCallback = () => this.removeAnnotation(pendingAnnotation);
             } catch (e) {
                 Messages.danger(e.message);
                 this.removeAnnotation(pendingAnnotation);
@@ -402,11 +403,12 @@ export default {
 
         },
         saveAnnotation(newAnnotation, pendingAnnotation, track = false) {
-            let pendingEmptyLabelBOTAnnotation = false;
+            let labelBotReturnedNoResults = false;
             return VideoAnnotationApi.save({id: this.videoId}, newAnnotation)
                 .then((res) => {
+                    // If LabelBOT is active and returns no result we receive 204 and return null
                     if (res.status === 204) {
-                        pendingEmptyLabelBOTAnnotation = true;
+                        labelBotReturnedNoResults = true;
                         return null;
                     }
 
@@ -419,7 +421,7 @@ export default {
                     this.disableJobTracking = res.status === 429;
                 })
                 .finally(() => {
-                    if (!pendingEmptyLabelBOTAnnotation) {
+                    if (!labelBotReturnedNoResults) {
                         this.removeAnnotation(pendingAnnotation);
                     }
                 });
@@ -774,12 +776,7 @@ export default {
                 return;
             }
 
-            if (this.labelbotOverlayCount > 0) {
-                this.labelbotOverlays.forEach((overlay) => {
-                    this.removeAnnotation(overlay.pendingAnnotation);
-                })
-                this.closeAllLabelbotPopups();
-            }
+            this.closeLabelbotPopups();
 
             this.reset();
             let length = this.videoIds.length;
@@ -792,12 +789,7 @@ export default {
                 return;
             }
 
-            if (this.labelbotOverlayCount > 0) {
-                this.labelbotOverlays.forEach((overlay) => {
-                    this.removeAnnotation(overlay.pendingAnnotation);
-                })
-                this.closeAllLabelbotPopups();
-            }
+            this.closeLabelbotPopups();
 
             this.reset();
             let length = this.videoIds.length;
@@ -935,12 +927,7 @@ export default {
                 return;
             }
 
-            if (this.labelbotOverlayCount > 0) {
-                this.labelbotOverlays.forEach((overlay) => {
-                    this.removeAnnotation(overlay.pendingAnnotation);
-                })
-                this.closeAllLabelbotPopups();
-            }
+            this.closeLabelbotPopups();
 
             if (this.video.paused) {
                 if (this.autoPauseTimeout) {
@@ -976,6 +963,14 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
+        closeLabelbotPopups() {
+            if (this.labelbotOverlayCount > 0) {
+                this.labelbotOverlays.forEach((overlay) => {
+                    this.removeAnnotation(overlay.pendingAnnotation);
+                })
+                this.closeAllLabelbotPopups();
+            }
+        }
     },
     watch: {
         'settings.playbackRate'(rate) {

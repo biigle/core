@@ -84,7 +84,6 @@ export default {
         'update',
         'close',
         'delete',
-        'delete-pending',
         'focus',
         'grab',
         'release',
@@ -112,7 +111,7 @@ export default {
             shouldHaveProgressBar: true,
             maybeGetsAttention: false,
             typeaheadFocused: false,
-            pendingAnnotation: false,
+            annotationWithoutLabel: false,
             selectedLabel: null,
             overlay: null,
             lineFeature: null,
@@ -198,24 +197,22 @@ export default {
     },
     methods: {
         createAndClose(label) {
-            this.pendingAnnotation = false;
+            this.annotationWithoutLabel = false;
 
             const annotation = { ...this.annotation };
             annotation.label_id = label.id;
-            const feature = annotation.feature;
 
-            let removeCallback = () => {
-                try {
-                    this.$parent.labelbotSource.removeFeature(feature);
-                } catch (e) {
-                    // ignore
-                }
-            };
+            const removeCallback = annotation.removeCallback;
+            annotation.removeCallback = undefined;
+            delete annotation.removeCallback;
 
+            annotation.feature = undefined;
             delete annotation.feature;
+
+            annotation.labels = undefined;
             delete annotation.labels;
 
-            this.$emit('new', { newAnnotation: annotation, rmvCallback: removeCallback});
+            this.$emit('new', { newAnnotation: annotation, removeCallback: removeCallback});
             this.emitClose();
         },
         updateAndClose(label) {
@@ -260,10 +257,9 @@ export default {
             if (!this.isFocused) return;
 
             if (this.noLabels) {
-                 this.$parent.labelbotSource.removeFeature(this.annotation.feature);
-                 if (this.annotation.pendingAnnotation) {
-                    this.$emit('delete-pending', this.annotation.pendingAnnotation)
-                 }
+                this.annotation.removeCallback();
+                this.emitClose();
+                return;
             }
 
             if (this.shouldHaveProgressBar) {
@@ -296,10 +292,8 @@ export default {
             if (this.labels.length > 0) {
                 this.$emit('delete', this.annotation);
             } else {
-                this.$parent.labelbotSource.removeFeature(this.annotation.feature);
-                if (this.annotation.pendingAnnotation) {
-                    this.$emit('delete-pending', this.annotation.pendingAnnotation);
-                }
+                // In this case we delete the feature from the openLayer source
+                this.annotation.removeCallback();
             }
             this.emitClose();
             Events.emit('labelbot.dismissed');
@@ -347,7 +341,7 @@ export default {
             let annotationFeature;
             if (this.noLabels) {
                 annotationFeature = this.annotation.feature;
-                this.pendingAnnotation = true;
+                this.annotationWithoutLabel = true;
             } else {
                 annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
             }
@@ -401,6 +395,7 @@ export default {
             this.lineFeature = markRaw(new Feature(line));
             this.lineFeature.set('unselectable', true);
             if (this.noLabels) {
+                // The "info" color.
                 this.lineFeature.set('color', '5bc0de');
             } else {
                 this.lineFeature.set('color', this.labels[0].color);
@@ -478,6 +473,10 @@ export default {
     mounted() {
         this.createOverlay(this.$parent);
 
+        if (this.noLabels) {
+            this.enterTypeahead();
+        }
+
         this.$refs.popupTypeahead?.$refs.input?.addEventListener("keydown", this.handleTypeaheadKey);
     },
     beforeUnmount() {
@@ -495,10 +494,9 @@ export default {
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');
         }
-        // We can't use a plain else here because the pending annotation state
-        // may change if the annotation gets a label via the typeahead.
-        else if (this.pendingAnnotation) { 
-            this.$parent.labelbotSource.removeFeature(this.annotation.feature);
+        // We can't use a plain else here because the annotation may get a label via the typeahead.
+        else if (this.annotationWithoutLabel) { 
+            this.annotation.removeCallback();
         }
     },
 };

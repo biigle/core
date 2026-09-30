@@ -68,7 +68,6 @@
       :draft-annotation-uses-label-color="settings.draftAnnotationUsesLabelColor"
       v-on:swap="swapAnnotationLabelTo"
       v-on:new="createLabelBOTAnnotation"
-      v-on:delete-pending="removeAnnotation"
       v-on:close-labelbot-popup="closeLabelbotPopup"
       v-on:init-map="handleInitMap"
       v-on:create-annotation="createAnnotation"
@@ -94,6 +93,7 @@
       v-on:is-invalid-shape="handleInvalidShape"
       v-on:popout="handleVideoPopout"
       v-on:cancel-auto-play="cancelAutoPlay"
+      v-on:start-playing="closeLabelbotPopups"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

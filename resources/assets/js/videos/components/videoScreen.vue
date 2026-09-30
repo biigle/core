@@ -391,12 +391,11 @@
         </div>
         <labelbot-popup
             v-for="annotation in labelbotOverlays"
-            :key="annotation.id"
+            :key="annotation.id ?? annotation.feature.ol_uid"
             :focused-popup-key="focusedPopupKey"
             :annotation="annotation"
             :timeout="labelbotTimeout"
-            @new="createNewLabelBOTAnnotation"
-            @delete-pending="handleDeleteLabelbotPendingAnnotation"
+            @new="createNewLabelbotAnnotation"
             @update="updateLabelbotLabel"
             @close="closeLabelbotPopup"
             @delete="handleDeleteLabelbotAnnotation"
@@ -444,6 +443,7 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
+        'start-playing',
     ],
     mixins: [
         VideoPlayback,

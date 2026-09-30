@@ -142,7 +142,7 @@ export default {
                 const lastOverlay = this.labelbotOverlays[this.labelbotOverlays.length - 1]
 
                 if (lastOverlay) {
-                    this.focusedPopupKey = lastOverlay.id ?? lastOverlay.feature.ol_uid; 
+                    this.focusedPopupKey = lastOverlay.id ?? lastOverlay.feature.ol_uid;
                 } else {
                     Keyboard.setActiveSet('default');
                 }
@@ -166,7 +166,7 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            // Make sure the LabelBOT image, temp feature, pending video annotation and track are not sent in the API request to create the
+            // Make sure the LabelBOT image, feature, pending video annotation and track are not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
             annotation.labelbotImage = undefined;
@@ -176,6 +176,7 @@ export default {
             annotation.feature = undefined;
             delete annotation.feature;
 
+            // Needed only in case of video annotations
             let pendingVideoAnnotation;
             let track;
             if (annotation.pendingAnnotation) {

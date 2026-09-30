@@ -439,12 +439,13 @@ export default {
             annotation.confidence = 1;
 
             let promise;
-            let pendingAnnotation = false;
+            let labelBotReturnedNoResults = false;
             // We check for label_id in case LabelBOT returns no results
-            // and the user input a label in the typeahead, so we skip this step
+            // and the user inputs a label in the typeahead, so we skip this step
             // and save the annotation with its label.
             if (!annotation.label_id && this.labelbotIsActive) {
                 let imageId = this.imageId;
+                annotation.removeCallback = removeCallback;
                 promise = this.saveLabelbotAnnotation(
                     annotation,
                     (annotation) => AnnotationsStore.create(imageId, annotation)
@@ -452,7 +453,7 @@ export default {
 
                 promise.then((annotation) => {
                     if (imageId === this.imageId) {
-                        pendingAnnotation = annotation.labels?.length === 0
+                        labelBotReturnedNoResults = annotation.labels?.length === 0;
                         this.showLabelbotPopup(annotation);
                     }
                 });
@@ -463,12 +464,18 @@ export default {
                 promise = AnnotationsStore.create(this.imageId, annotation);
             }
 
-            promise.then(this.setLastCreatedAnnotation)
+            promise
+                .then((annotation) => {
+                    if (!labelBotReturnedNoResults) {
+                        this.setLastCreatedAnnotation(annotation);
+                    }
+                })
                 .catch(handleErrorResponse)
-                // Remove the temporary annotation if saving succeeded or failed,
-                // if it's not a pending annotation
+                // Remove the temporary annotation if saving succeeded or failed.
+                // But we ignore removing if LabelBOT returns no results because we need the temporary
+                // feature element to create the empty LabelBOT's popup
                 .finally(() => {
-                    if (!pendingAnnotation) {
+                    if (!labelBotReturnedNoResults) {
                         removeCallback();
                     }
                 });
@@ -556,9 +563,6 @@ export default {
             Promise.all(toCache).catch(function () {});
         },
         setLastCreatedAnnotation(annotation) {
-            if (!annotation.id) {
-                return;
-            }
             if (this.lastCreatedAnnotationTimeout) {
                 window.clearTimeout(this.lastCreatedAnnotationTimeout);
             }
