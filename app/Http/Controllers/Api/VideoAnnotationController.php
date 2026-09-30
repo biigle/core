@@ -144,7 +144,7 @@ class VideoAnnotationController extends Controller
      * @apiName StoreVideoAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by
-     * the project to which the video belongs to. If 'feature_vector' is given instead of 'label_id', the LabelBOT service is used to suggest a label based on the feature vector. The best matching suggestion is attached to the annotation and any further suggestions are returned in the `labelBOTLabels` attribute of the response.
+     * the project to which the video belongs to. If 'feature_vector' is given instead of 'label_id', the LabelBOT service is used to suggest a label based on the feature vector. The best matching suggestion is attached to the annotation. All suggestions (including the attached label) are returned in the `labelBOTLabels` attribute of the response, sorted by similarity.
      *
      * @apiParam {Number} id The video ID.
      *
@@ -226,11 +226,8 @@ class VideoAnnotationController extends Controller
             $labels = $labelBotService->getLabelsForAnnotation($annotation, $request->video->volume_id, $request);
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
-            $label = array_shift($labels);
-            if (!empty($labels)) {
-                // Attach the remaining labels (if any).
-                $annotation->labelBOTLabels = $labels;
-            }
+            $annotation->labelBOTLabels = $labels;
+            $label = $labelBotService->chooseLabelByGuideline($labels, $request->integer('shape_id'));
         }
 
         $this->authorize('attach-label', [$annotation, $label]);

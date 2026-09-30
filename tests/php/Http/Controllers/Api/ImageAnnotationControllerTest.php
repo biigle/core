@@ -3,13 +3,17 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\Role;
 use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
 use Cache;
 use Carbon\Carbon;
 use Illuminate\Testing\TestResponse;
@@ -403,6 +407,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         // than feature vector of anotherDifferentLabel, so it is ranked higher.
         $response->assertJson([
             'labelBOTLabels' => [
+                ['id' => $label->id],
                 ['id' => $differentLabel->id],
                 ['id' => $anotherDifferentLabel->id],
             ]
@@ -451,8 +456,9 @@ class ImageAnnotationControllerTest extends ApiTestCase
         ]);
 
         $response->assertSuccessful();
-        $response->assertJsonPath('labelBOTLabels.0.id', $label2->id);
-        $response->assertJsonMissingPath('labelBOTLabels.1');
+        $response->assertJsonPath('labelBOTLabels.0.id', $label1->id);
+        $response->assertJsonPath('labelBOTLabels.1.id', $label2->id);
+        $response->assertJsonMissingPath('labelBOTLabels.2');
     }
 
     public function testStoreValidatePoints()
@@ -478,6 +484,311 @@ class ImageAnnotationControllerTest extends ApiTestCase
             // Points that would be valid for any other shape, so the request can only
             // fail because of the shape.
             'points' => [10, 11],
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+    }
+
+    public function testStoreGuidelineRequired()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineOptional()
+    {
+        $this->createGuideline(['enforced' => true]);
+        // The editor can annotate in this project, too, and it has no guideline.
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+        $project->addUserId($this->editor()->id, Role::editorId());
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineNotExists()
+    {
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => -1,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+    }
+
+    public function testStoreGuidelineNotEnforced()
+    {
+        $guideline = $this->createGuideline(['enforced' => false]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineOtherProject()
+    {
+        // The editor is no member of this project.
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $project->id,
+            'enforced' => true,
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+    }
+
+    public function testStoreGuidelineGuestProject()
+    {
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+        $project->addUserId($this->editor()->id, Role::guestId());
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $project->id,
+            'enforced' => true,
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+    }
+
+    public function testStoreGuidelineLabel()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelChild()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('label_id');
+
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineOnlyShapes()
+    {
+        $guideline = $this->createGuideline([
+            'enforced' => true,
+            'only_shapes' => [Shape::circleId()],
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::circleId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11, 5],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineLabelShape()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('shape_id');
+
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::circleId(),
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => [10, 11, 5],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreWithFeatureVectorGuideline()
+    {
+        [$label1, $label2] = $this->createLabelBotLabels();
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label2->id,
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful()
+            // label1 is the best match but not allowed by the guideline.
+            ->assertJsonPath('labels.0.label_id', $label2->id)
+            ->assertJsonPath('labelBOTLabels.0.id', $label1->id)
+            ->assertJsonPath('labelBOTLabels.1.id', $label2->id)
+            ->assertJsonMissingPath('labelBOTLabels.2');
+    }
+
+    public function testStoreWithFeatureVectorGuidelineShape()
+    {
+        [$label1, $label2] = $this->createLabelBotLabels();
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label1->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label2->id,
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful()
+            // label1 is the best match but requires another shape.
+            ->assertJsonPath('labels.0.label_id', $label2->id);
+    }
+
+    public function testStoreWithFeatureVectorGuidelineNoneAllowed()
+    {
+        $this->createLabelBotLabels();
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(404);
+
+        $this->assertSame(1, $this->image->annotations()->count());
+    }
+
+    public function testStoreWithFeatureVectorGuidelineOnlyShapes()
+    {
+        $this->createLabelBotLabels();
+        $guideline = $this->createGuideline([
+            'enforced' => true,
+            'only_shapes' => [Shape::circleId()],
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+            'guideline_id' => $guideline->id,
         ])
             ->assertStatus(422)
             ->assertJsonValidationErrors('shape_id');
@@ -674,5 +985,39 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->beAdmin();
         $response = $this->delete("{$url}/{$id}");
         $response->assertStatus(404);
+    }
+
+    protected function createGuideline(array $attrs = []): AnnotationGuideline
+    {
+        return AnnotationGuideline::factory()->create(array_merge([
+            'project_id' => $this->project()->id,
+        ], $attrs));
+    }
+
+    /**
+     * Create two labels with feature vectors where the first is the best LabelBOT match
+     * for the feature vector range(1, 384).
+     */
+    protected function createLabelBotLabels(): array
+    {
+        $label1 = LabelTest::create();
+        $this->project()->labelTrees()->attach($label1->label_tree_id);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $label1->id,
+            'label_tree_id' => $label1->label_tree_id,
+            'vector' => range(1, 384),
+        ]);
+
+        $label2 = LabelTest::create();
+        $this->project()->labelTrees()->attach($label2->label_tree_id);
+        ImageAnnotationLabelFeatureVector::factory()->create([
+            'volume_id' => $this->volume()->id,
+            'label_id' => $label2->id,
+            'label_tree_id' => $label2->label_tree_id,
+            'vector' => range(384, 384 * 2 - 1),
+        ]);
+
+        return [$label1, $label2];
     }
 }

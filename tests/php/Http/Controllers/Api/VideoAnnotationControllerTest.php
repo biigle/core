@@ -936,6 +936,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
         // than feature vector of anotherDifferentLabel, so it is ranked higher.
         $response->assertJson([
             'labelBOTLabels' => [
+                ['id' => $label->id],
                 ['id' => $differentLabel->id],
                 ['id' => $anotherDifferentLabel->id],
             ]
@@ -984,8 +985,9 @@ class VideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $response->assertSuccessful();
-        $response->assertJsonPath('labelBOTLabels.0.id', $label2->id);
-        $response->assertJsonMissingPath('labelBOTLabels.1');
+        $response->assertJsonPath('labelBOTLabels.0.id', $label1->id);
+        $response->assertJsonPath('labelBOTLabels.1.id', $label2->id);
+        $response->assertJsonMissingPath('labelBOTLabels.2');
     }
 
     public function testUpdate()

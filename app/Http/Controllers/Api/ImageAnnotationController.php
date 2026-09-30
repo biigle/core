@@ -150,7 +150,7 @@ class ImageAnnotationController extends Controller
      * @apiName StoreImageAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree used by one of
-     * the projects, the image belongs to. If 'feature_vector' is given instead of 'label_id', the LabelBOT service is used to suggest a label based on the feature vector. The best matching suggestion is attached to the annotation and any further suggestions are returned in the `labelBOTLabels` attribute of the response.
+     * the projects, the image belongs to. If 'feature_vector' is given instead of 'label_id', the LabelBOT service is used to suggest a label based on the feature vector. The best matching suggestion (that is allowed by the annotation guideline, if any) is attached to the annotation. All suggestions (including the attached label) are returned in the `labelBOTLabels` attribute of the response, sorted by similarity.
      *
      * @apiParam {Number} id The image ID.
      *
@@ -165,6 +165,8 @@ class ImageAnnotationController extends Controller
      * **LineString:** Like rectangle with one or more vertices.
      * **Circle:** The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: `[10, 10, 5]`.
      * **Ellipse:** The four points specify the end points of the semi-major and semi-minor axes of the ellipse in (counter-)clockwise ordering (depending on how the ellipse was drawn). So the first point is the end point of axis 1, the second is the end point of axis 2, the third is the other end point of axis 1 and the fourth is the other end point of axis 2.
+     *
+     * @apiParam (Optional arguments) {Number} guideline_id ID of the enforced annotation guideline that applies to the new annotation. The label and shape must be allowed by the guideline. If LabelBOT is used, the best matching suggestion that is allowed by the guideline is attached. Required if all projects of the volume (where the user can create annotations) have an enforced guideline. See the "Get annotation guidelines" endpoint of volumes.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -222,11 +224,12 @@ class ImageAnnotationController extends Controller
             $labels = $labelBotService->getLabelsForAnnotation($annotation, $image->volume_id, $request);
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
-            $label = array_shift($labels);
-            if (!empty($labels)) {
-                // Attach the remaining labels (if any).
-                $annotation->labelBOTLabels = $labels;
-            }
+            $annotation->labelBOTLabels = $labels;
+            $label = $labelBotService->chooseLabelByGuideline(
+                $labels,
+                $request->integer('shape_id'),
+                $request->guideline
+            );
         }
 
         $this->authorize('attach-label', [$annotation, $label]);
