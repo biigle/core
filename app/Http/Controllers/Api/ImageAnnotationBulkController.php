@@ -50,6 +50,7 @@ class ImageAnnotationBulkController extends Controller
      *
      * @apiParam (Required arguments) {Number} image_id ID of the image to which the annotation should belong.
      * @apiParam (Required arguments) {Mixed} . All required arguments of the "Create a new annotation" endpoint.
+     * @apiParam (Optional arguments) {Number} guideline_id ID of the enforced annotation guideline that applies to the new annotation. See the "Create a new annotation" endpoint. The guideline is validated separately for each annotation.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * [
@@ -65,7 +66,8 @@ class ImageAnnotationBulkController extends Controller
      *        "shape_id": 3,
      *        "label_id": 5,
      *        "confidence": 1.00,
-     *        "points": [10, 11, 20, 21]
+     *        "points": [10, 11, 20, 21],
+     *        "guideline_id": 2
      *     }
      * ]
      *

@@ -3,10 +3,14 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
+use Biigle\Role;
 use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
 
 class ImageAnnotationBulkControllerTest extends ApiTestCase
 {
@@ -319,6 +323,173 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
             ]);
 
         $this->assertSame(1, $this->annotation->image->annotations()->count());
+    }
+
+    public function testStoreGuidelineRequired()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('0.guideline_id');
+
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                    'guideline_id' => $guideline->id,
+                ],
+            ])
+            ->assertStatus(200);
+
+        $this->assertSame(2, $this->annotation->image->annotations()->count());
+    }
+
+    public function testStoreGuidelineNotExists()
+    {
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                    'guideline_id' => -1,
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('0.guideline_id');
+    }
+
+    public function testStoreGuidelineLabel()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                    'guideline_id' => $guideline->id,
+                ],
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelChild()->id,
+                    'confidence' => 1.0,
+                    'guideline_id' => $guideline->id,
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('1.label_id')
+            ->assertJsonMissingValidationErrors('0.label_id');
+
+        $this->assertSame(1, $this->annotation->image->annotations()->count());
+    }
+
+    public function testStoreGuidelineShape()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [Shape::circleId()],
+        ]);
+
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                    'guideline_id' => $guideline->id,
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('0.shape_id');
+
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::circleId(),
+                    'points' => [100, 100, 10],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                    'guideline_id' => $guideline->id,
+                ],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreGuidelinePerVolume()
+    {
+        AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+
+        // The image belongs to a volume of another project without guideline.
+        $image = ImageTest::create();
+        $project = ProjectTest::create();
+        $project->addVolumeId($image->volume_id);
+        $project->addUserId($this->editor()->id, Role::editorId());
+        $project->labelTrees()->attach($this->labelTree()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $image->id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('1.guideline_id')
+            ->assertJsonMissingValidationErrors('0.guideline_id');
     }
 
     public function testStoreLabelIdIsFloat()
