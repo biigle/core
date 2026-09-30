@@ -73,7 +73,9 @@ class LabelBotService
             return $labels[0];
         }
 
-        $label = array_find($labels, fn (Label $label) =>
+        $label = array_find(
+            $labels,
+            fn (Label $label) =>
             $guideline->allowsLabel($label->id)
             && $guideline->allowsShape($shapeId, $label->id)
         );

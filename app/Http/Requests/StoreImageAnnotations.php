@@ -31,7 +31,7 @@ class StoreImageAnnotations extends FormRequest
     /**
      * The images on which the annotations should be created.
      *
-     * @var \Illuminate\Database\Eloquent\Collection<\Biigle\Image>
+     * @var \Illuminate\Database\Eloquent\Collection<int, \Biigle\Image>
      */
     public $images;
 
@@ -131,7 +131,9 @@ class StoreImageAnnotations extends FormRequest
             if ($this->labelIds->count() !== $this->labels->count()) {
                 $validator->errors()->add('label_id', 'The label id does not exist.');
             }
+        });
 
+        $validator->after(function ($validator) {
             if ($validator->errors()->isNotEmpty()) {
                 return;
             }
@@ -141,7 +143,7 @@ class StoreImageAnnotations extends FormRequest
             foreach ($this->all() as $index => $annotation) {
                 $guideline = $this->validateGuideline(
                     $validator,
-                    $this->images->find($annotation['image_id'])->volume_id,
+                    $this->images->find(intval($annotation['image_id']))->volume_id,
                     intval($annotation['guideline_id'] ?? 0) ?: null,
                     "{$index}.guideline_id"
                 );
