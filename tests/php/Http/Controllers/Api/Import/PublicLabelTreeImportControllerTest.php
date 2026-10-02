@@ -4,7 +4,6 @@ namespace Biigle\Tests\Http\Controllers\Api\Import;
 
 use ApiTestCase;
 use Biigle\Role;
-use Biigle\Services\Export\PublicLabelTreeExport;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use Biigle\Tests\LabelTreeTest;
@@ -17,14 +16,10 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
     public function testStoreValidation()
     {
         $mock = Mockery::mock(ArchiveManager::class);
-        $mock->shouldReceive('store')->once()->andReturn('123abc');
-        $mock->shouldReceive('delete')->once()->with('123abc');
+        $mock->shouldNotReceive('store');
         $this->app->bind(ArchiveManager::class, fn () => $mock);
 
-        $labelTree = LabelTreeTest::create();
-        $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
-
-        $wrongFile = new UploadedFile($path, 'file.txt', 'text/plain', null, true);
+        $wrongFile = UploadedFile::fake()->create('file.txt', 1, 'text/plain');
 
         $this->doTestApiRoute('POST', '/api/v1/label-trees/import');
 
@@ -53,10 +48,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
         $managerMock->shouldReceive('delete')->once()->with('123abc');
         $this->app->bind(ArchiveManager::class, fn () => $managerMock);
 
-        $labelTree = LabelTreeTest::create();
-        $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
-
-        $file = new UploadedFile($path, 'label-tree.zip', 'application/zip', null, true);
+        $file = UploadedFile::fake()->create('label-tree.zip');
 
         $this->beUser();
         $this->postJson('/api/v1/label-trees/import', ['archive' => $file])
@@ -75,10 +67,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
         $mock->shouldReceive('store')->once()->andThrow(Exception::class);
         $this->app->bind(ArchiveManager::class, fn () => $mock);
 
-        $labelTree = LabelTreeTest::create();
-        $path = (new PublicLabelTreeExport([$labelTree->id]))->getArchive();
-
-        $file = new UploadedFile($path, 'label-tree.zip', 'application/zip', null, true);
+        $file = UploadedFile::fake()->create('label-tree.zip');
 
         $this->beUser();
         $this->postJson('/api/v1/label-trees/import', ['archive' => $file])
