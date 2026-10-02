@@ -3,8 +3,12 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\MediaType;
+use Biigle\Role;
 use Biigle\Shape;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
@@ -20,19 +24,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreValidation()
     {
-        $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [1.0, 2.0],
-            'points' => [[10, 10], [20, 20]],
-        ]);
-
-        $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [2.0, 4.0],
-            'points' => [[30, 30], [40, 40]],
-        ]);
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
 
         $this->doTestApiRoute('POST', "api/v1/video-annotations/{$a1->id}/link");
 
@@ -81,19 +73,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreValidateOverlap()
     {
-        $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [1.0, 2.0],
-            'points' => [[10, 10], [20, 20]],
-        ]);
-
-        $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [1.5, 2.5],
-            'points' => [[30, 30], [40, 40]],
-        ]);
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
+        $a2->update(['frames' => [1.5, 2.5]]);
 
         $this->beEditor();
         $this
@@ -147,19 +128,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreBefore()
     {
-        $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [3.0, 4.0],
-            'points' => [[10, 10], [20, 20]],
-        ]);
-
-        $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [1.0, 2.0],
-            'points' => [[30, 30], [40, 40]],
-        ]);
+        // The annotation that is linked starts after the other annotation.
+        [$a2, $a1] = $this->createAnnotations(Shape::pointId());
 
         $this->beEditor();
         $this
@@ -170,24 +140,12 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
         $a1->refresh();
         $this->assertSame([1, 2, null, 3, 4], $a1->frames);
-        $this->assertSame([[30, 30], [40, 40], [], [10, 10], [20, 20]], $a1->points);
+        $this->assertSame([[10, 10], [20, 20], [], [30, 30], [40, 40]], $a1->points);
     }
 
     public function testStoreAfter()
     {
-        $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [1.0, 2.0],
-            'points' => [[10, 10], [20, 20]],
-        ]);
-
-        $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [3.0, 4.0],
-            'points' => [[30, 30], [40, 40]],
-        ]);
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
 
         $this->beEditor();
         $this
@@ -253,19 +211,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreTouching()
     {
-        $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [1.0, 2.0],
-            'points' => [[10, 10], [20, 20]],
-        ]);
-
-        $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
-            'video_id' => $this->video->id,
-            'frames' => [2.09, 3.0],
-            'points' => [[30, 30], [40, 40]],
-        ]);
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
+        $a2->update(['frames' => [2.09, 3.0]]);
 
         $this->beEditor();
         $this
@@ -330,5 +277,192 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         $a1->refresh();
         $this->assertSame([1, null, 2], $a1->frames);
         $this->assertEmpty($a1->points);
+    }
+
+    public function testStoreGuidelineRequired()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreGuidelineOptional()
+    {
+        $this->createGuideline(['enforced' => true]);
+        // The editor can annotate in this project, too, and it has no guideline.
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+        $project->addUserId($this->editor()->id, Role::editorId());
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreGuidelineNotExists()
+    {
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+                'guideline_id' => -1,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+    }
+
+    public function testStoreGuidelineNotEnforced()
+    {
+        $guideline = $this->createGuideline(['enforced' => false]);
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testStoreGuidelineLabel()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+        // The label of the second annotation is not allowed.
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelChild()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('annotation_id');
+
+        $this->assertNotNull($a2->fresh());
+    }
+
+    public function testStoreGuidelineOnlyShapes()
+    {
+        $guideline = $this->createGuideline([
+            'enforced' => true,
+            'only_shapes' => [Shape::circleId()],
+        ]);
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('annotation_id');
+
+        $this->assertNotNull($a2->fresh());
+    }
+
+    public function testStoreGuidelineLabelShape()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelChild()->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        // The label of the second annotation requires another shape.
+        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelChild()->id);
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$a1->id}/link", [
+                'annotation_id' => $a2->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('annotation_id');
+
+        $this->assertNotNull($a2->fresh());
+    }
+
+    protected function createGuideline(array $attrs = []): AnnotationGuideline
+    {
+        return AnnotationGuideline::factory()->create(array_merge([
+            'project_id' => $this->project()->id,
+        ], $attrs));
+    }
+
+    /**
+     * Create two annotations that can be linked (optionally with one label each).
+     */
+    protected function createAnnotations(int $shapeId, ?int $label1Id = null, ?int $label2Id = null): array
+    {
+        $a1 = VideoAnnotationTest::create([
+            'shape_id' => $shapeId,
+            'video_id' => $this->video->id,
+            'frames' => [1.0, 2.0],
+            'points' => [[10, 10], [20, 20]],
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'shape_id' => $shapeId,
+            'video_id' => $this->video->id,
+            'frames' => [3.0, 4.0],
+            'points' => [[30, 30], [40, 40]],
+        ]);
+
+        if (!is_null($label1Id)) {
+            VideoAnnotationLabelTest::create([
+                'annotation_id' => $a1->id,
+                'label_id' => $label1Id,
+                'user_id' => $this->editor()->id,
+            ]);
+        }
+
+        if (!is_null($label2Id)) {
+            VideoAnnotationLabelTest::create([
+                'annotation_id' => $a2->id,
+                'label_id' => $label2Id,
+                'user_id' => $this->editor()->id,
+            ]);
+        }
+
+        return [$a1, $a2];
     }
 }
