@@ -22,7 +22,7 @@ trait EloquentEnum
     public static function pluckById(?self $except = null): Collection
     {
         $collection = collect(self::cases())
-            ->mapWithKeys(fn (self $shape) => [$shape->value => $shape->label()]);
+            ->mapWithKeys(fn (self $case) => [$case->value => $case->label()]);
         if ($except !== null) {
             $collection->forget($except->value);
         }
