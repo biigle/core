@@ -60,6 +60,7 @@ export default {
     template: '#annotation-canvas-template',
     emits: [
         'moveend',
+        'movestart',
         'update',
         'select',
         'previous',
@@ -910,6 +911,7 @@ export default {
 
         this.map.on('change:size', this.updateMapSize);
         this.map.on('moveend', this.updateMapView);
+        this.map.on('movestart', () => this.$emit('movestart'));
         this.map.on('pointermove', this.updateMousePosition);
 
         this.selectInteraction.on('select', this.handleFeatureSelect);
