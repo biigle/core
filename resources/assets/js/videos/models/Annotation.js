@@ -15,7 +15,7 @@ export default class Annotation {
         this._frames = ref(args.frames);
         this._points = args.points;
         this.video_id = args.video_id;
-        this.shape = args.shape;
+        this._shapeId = args.shape;
         this.created_at = args.created_at;
         this.updated_at = args.updated_at;
         this.screenshotPromise = args.screenshotPromise;
@@ -143,7 +143,7 @@ export default class Annotation {
             SHAPE_CACHE = biigle.$require('annotations.shapes');
         }
 
-        return SHAPE_CACHE[this.shape];
+        return SHAPE_CACHE[this._shapeId];
     }
 
     _newRevision() {
