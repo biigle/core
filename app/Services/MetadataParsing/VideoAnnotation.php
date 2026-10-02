@@ -17,7 +17,7 @@ class VideoAnnotation extends Annotation
      * @param array<int|float|null> $frames
      */
     public function __construct(
-        Shape $shape,
+        public Shape $shape,
         public array $points,
         public array $labels,
         public array $frames,
