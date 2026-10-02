@@ -13,6 +13,12 @@
         background-color: fade-out($ol-control-color, 0.3);
     }
 
+    &:not(.control-button--danger) {
+        &.active {
+            background-color: $brand-info;
+        }
+    }
+
     &:focus {
         color: white;
     }

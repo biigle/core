@@ -14,10 +14,12 @@ use DB;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
+#[DeleteWhenMissingModels]
 class UpdateFederatedSearchIndex extends Job implements ShouldQueue
 {
     use SerializesModels;
@@ -28,13 +30,6 @@ class UpdateFederatedSearchIndex extends Job implements ShouldQueue
      * @var FederatedSearchInstance
      */
     public $instance;
-
-    /**
-     * Ignore this job if the volume does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Retry a failed job after 5 minutes.

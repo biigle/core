@@ -5,6 +5,7 @@
         </span>
     </a>
     <template #dropdown>
+        @mixin('navbarHelpItemTop')
         <li>
             <a href="{{ route('manual') }}" title="View the manual">Manual</a>
         </li>

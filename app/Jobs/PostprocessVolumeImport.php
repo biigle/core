@@ -50,17 +50,13 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
         Image::whereIn('images.volume_id', $this->ids)
             ->whereHas('annotations')
             ->eachById(function ($image) use ($delay) {
-                ProcessAnnotatedImage::dispatch($image)
-                    ->delay($delay)
-                    ->onQueue(config('largo.generate_annotation_patch_queue'));
+                ProcessAnnotatedImage::dispatch($image)->delay($delay);
             }, 1000);
 
         Video::whereIn('videos.volume_id', $this->ids)
             ->whereHas('annotations')
             ->eachById(function ($video) use ($delay) {
-                ProcessAnnotatedVideo::dispatch($video)
-                    ->delay($delay)
-                    ->onQueue(config('largo.generate_annotation_patch_queue'));
+                ProcessAnnotatedVideo::dispatch($video)->delay($delay);
             }, 1000);
     }
 }

@@ -5,19 +5,14 @@ namespace Biigle\Jobs;
 use Biigle\AnnotationLabel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+#[DeleteWhenMissingModels]
 abstract class CopyAnnotationFeatureVector extends Job
 {
     use SerializesModels, InteractsWithQueue;
-
-    /**
-     * Ignore this job if the annotation does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Copy the feature vector of the annotation associated with the annotation label
