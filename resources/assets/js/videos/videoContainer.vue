@@ -339,7 +339,6 @@ export default {
         },
         async createAnnotation(pendingAnnotation, track = false) {
             const pendingAnnotationFeature = pendingAnnotation.feature;
-            pendingAnnotation.feature = undefined;
             delete pendingAnnotation.feature;
 
             this.updatePendingAnnotation(pendingAnnotation);

@@ -169,11 +169,9 @@ export default {
             // Make sure the LabelBOT image, feature, pending video annotation and track are not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
-            annotation.labelbotImage = undefined;
             delete annotation.labelbotImage;
 
             const feature = annotation.feature;
-            annotation.feature = undefined;
             delete annotation.feature;
 
             // Needed only in case of video annotations
@@ -181,11 +179,9 @@ export default {
             let track;
             if (annotation.pendingAnnotation) {
                 pendingVideoAnnotation = annotation.pendingAnnotation;
-                annotation.pendingAnnotation = undefined;
                 delete annotation.pendingAnnotation;
 
                 track = annotation.track;
-                annotation.track = undefined;
                 delete annotation.track;
             }
 
@@ -218,7 +214,6 @@ export default {
                             annotation.track = track;
                         }
 
-                        annotation.feature_vector = undefined;
                         delete annotation.feature_vector;
 
                         return annotation;

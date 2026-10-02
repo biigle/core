@@ -203,13 +203,8 @@ export default {
             annotation.label_id = label.id;
 
             const removeCallback = annotation.removeCallback;
-            annotation.removeCallback = undefined;
             delete annotation.removeCallback;
-
-            annotation.feature = undefined;
             delete annotation.feature;
-
-            annotation.labels = undefined;
             delete annotation.labels;
 
             this.$emit('new', { newAnnotation: annotation, removeCallback: removeCallback});
