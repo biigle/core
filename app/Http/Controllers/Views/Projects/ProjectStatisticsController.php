@@ -37,7 +37,6 @@ class ProjectStatisticsController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-
         $totalImages = Image::whereIn('images.volume_id', fn ($query) => $query->select('volume_id')
             ->from('project_volume')
             ->where('project_id', $project->id))->count();
@@ -57,6 +56,7 @@ class ProjectStatisticsController extends Controller
             ->select('id', 'name')
             ->where('media_type_id', MediaType::videoId())
             ->get();
+
 
         return view('projects.show.statistics', [
             'project' => $project,

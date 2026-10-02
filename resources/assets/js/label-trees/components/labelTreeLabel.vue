@@ -1,6 +1,6 @@
 <template>
-    <li class="label-tree-label" :class="classObject">
-        <div class="label-tree-label__name" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">
+    <li v-show="!shouldBeFilteredByGuideline" class="label-tree-label" :class="classObject">
+        <div class="label-tree-label__name" :class="nameClass" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">
             <span v-if="editing">
                 <input type="color" class="form-control input-sm label-tree-color-input" v-model="newColor" />
                 <input type="text" v-model="newName" v-on:keydown.enter="saveThis" class="form-control input-sm label-tree-label__name-input">
@@ -16,6 +16,7 @@
                     <span class="fa fa-keyboard" aria-hidden="true"></span>
                     <span v-text="actualPosition"></span>
                 </span>
+                <i v-if="showGuidelineIcon" class="fa fa-fw fa-clipboard-list" title="This label is included in an annotation guideline"></i>
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle" :disabled="cantBeAddedAsFavourite">
                     <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
@@ -28,7 +29,22 @@
             </span>
         </div>
         <ul v-if="expandable && label.open" class="label-tree__list">
-            <label-tree-label :key="child.id" :label="child" :editable="editable" :show-favourites="showFavourites" :can-have-more-favourites="canHaveMoreFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>
+            <label-tree-label
+                v-for="child in filteredChildren"
+                :key="child.id"
+                :label="child"
+                :editable="editable"
+                :show-favourites="showFavourites"
+                :labels-in-guideline="labelsInGuideline"
+                :filter-by-guideline="filterByGuideline"
+                :can-have-more-favourites="canHaveMoreFavourites"
+                @select="emitSelect"
+                @deselect="emitDeselect"
+                @save="emitSave"
+                @delete="emitDelete"
+                @add-favourite="emitAddFavourite"
+                @remove-favourite="emitRemoveFavourite"
+                ></label-tree-label>
         </ul>
     </li>
 </template>
@@ -83,9 +99,17 @@ export default {
             type: Boolean,
             default: false,
         },
-        position:{
+        position: {
             type: Number,
-            default:-1,
+            default: -1,
+        },
+        labelsInGuideline: {
+            type: Set,
+            default: () => new Set(),
+        },
+        filterByGuideline: {
+            type: Boolean,
+            default: false,
         },
         canHaveMoreFavourites: {
             type: Boolean,
@@ -124,6 +148,11 @@ export default {
                 'selected': this.label.favourite,
             };
         },
+        nameClass() {
+            return {
+                'text-muted': this.hasGuideline && !this.isInGuideline,
+            };
+        },
         favouriteTitle() {
             if (this.cantBeAddedAsFavourite) {
                 return `You cannot add more than ${MAX_FAVOURITES} favourite labels`;
@@ -141,14 +170,33 @@ export default {
             return 'Remove label ' + this.label.name;
         },
         expandable() {
-            return !this.flat && !!this.label.children;
+            return !this.flat && (this.filteredChildren && this.filteredChildren.length > 0);
         },
         showEditButton() {
             return this.editable && this.hover && !this.editing;
         },
         actualPosition() {
             return (this.position + 1) % MAX_FAVOURITES;
-        }
+        },
+        hasGuideline() {
+            return this.labelsInGuideline.size > 0;
+        },
+        isInGuideline() {
+            return this.labelsInGuideline.has(this.label.id);
+        },
+        shouldBeFilteredByGuideline() {
+            return this.filterByGuideline && !this.isInGuideline && !this.label.childrenInGuideline;
+        },
+        showGuidelineIcon() {
+            return this.hasGuideline && this.isInGuideline && !this.filterByGuideline
+        },
+        filteredChildren() {
+            if (this.filterByGuideline) {
+                return this.label.children?.filter(child => this.labelsInGuideline.has(child.id) || child.childrenInGuideline);
+            }
+
+            return this.label.children;
+        },
     },
     methods: {
         toggleSelect(e) {
