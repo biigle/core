@@ -99,9 +99,9 @@ class LinkVideoAnnotation extends FormRequest
 
             // The linked annotation gets all labels of both annotations.
             $labelIds = VideoAnnotationLabel::whereIn('annotation_id', [
-                    $this->firstAnnotation->id,
-                    $this->secondAnnotation->id,
-                ])
+                $this->firstAnnotation->id,
+                $this->secondAnnotation->id,
+            ])
                 ->distinct()
                 ->pluck('label_id');
 
