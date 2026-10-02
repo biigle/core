@@ -165,6 +165,8 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // dangling annotations are deleted)!
         [$dismissed, $changed] = $this->ignoreNullChanges($dismissed, $changed);
 
+        $this->lockAnnotations($dismissed, $changed, ImageAnnotation::class);
+
         // Change labels first, then dismiss to keep the opportunity to copy feature
         // vectors. If labels are deleted first, the feature vectors will be immediately
         // deleted, too, and nothing can be copied any more.
@@ -185,12 +187,51 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // dangling annotations are deleted)!
         [$dismissed, $changed] = $this->ignoreNullChanges($dismissed, $changed);
 
+        $this->lockAnnotations($dismissed, $changed, VideoAnnotation::class);
+
         // Change labels first, then dismiss to keep the opportunity to copy feature
         // vectors. If labels are deleted first, the feature vectors will be immediately
         // deleted, too, and nothing can be copied any more.
         $this->applyChangedLabels($this->user, $changed, VideoAnnotation::class, VideoAnnotationLabel::class);
         $this->applyDismissedLabels($this->user, $dismissed, $this->force, VideoAnnotationLabel::class);
         $this->deleteDanglingAnnotations($dismissed, $changed, VideoAnnotation::class);
+    }
+
+    /**
+     * Acquire row locks on all affected annotations in ascending ID order.
+     *
+     * This must happen before any annotation labels are inserted or deleted. The FK
+     * checks of the inserts take KEY SHARE locks on the annotations in arbitrary order.
+     * Two concurrent jobs could then deadlock when they try to lock the annotations for
+     * deletion later. Locking up front also serializes concurrent jobs that affect the
+     * same annotations for the whole sequence of changing labels, dismissing labels and
+     * deleting dangling annotations.
+     *
+     * The locks are held until the transaction commits. While the job runs, labels can
+     * still be attached to the locked annotations but any other updates (e.g. changing
+     * the shape) or deletions of the annotations block until the job is finished.
+     *
+     * @param array $dismissed
+     * @param array $changed
+     * @param string $annotationModel The annotation model class.
+     */
+    protected function lockAnnotations($dismissed, $changed, $annotationModel)
+    {
+        $ids = array_unique(array_merge(...array_values($dismissed), ...array_values($changed)));
+        // Sort globally so the lock order is consistent across chunks.
+        sort($ids);
+        $chunkSize = config('biigle.db_param_limit');
+
+        foreach (array_chunk($ids, $chunkSize) as $chunk) {
+            // Use NO KEY UPDATE instead of UPDATE because it still serializes
+            // concurrent jobs but doesn't conflict with the KEY SHARE locks of label
+            // inserts. Otherwise users could not attach labels to these annotations
+            // while the (possibly long-running) job holds the lock.
+            $annotationModel::whereIn('id', $chunk)
+                ->orderBy('id')
+                ->lock('for no key update')
+                ->pluck('id');
+        }
     }
 
     /**
@@ -415,10 +456,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
         $toDeleteQuery = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $affected)
             ->whereDoesntHave('labels');
 
-        // Acquire row locks in ascending ID order before deleting. Without this, two
-        // concurrent jobs can deadlock: PostgreSQL's FK check on the annotation labels
-        // table causes each job's DELETE to wait for the other's insert-transaction,
-        // forming a circular lock dependency.
+        // Upgrade the locks of lockAnnotations() in a separate statement before the
+        // delete. A label attached concurrently by a user would otherwise not be seen
+        // by the snapshot of the delete statement and the annotation (including the
+        // new label) would be deleted. With the lock acquired first, the delete takes
+        // a fresh snapshot that sees the new label. This can't deadlock with other
+        // jobs because they are already serialized by lockAnnotations().
         $toDeleteQuery->clone()->orderBy('id')->lockForUpdate()->pluck('id');
 
         $toDeleteArgs = $toDeleteQuery->clone()->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
