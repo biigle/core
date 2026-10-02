@@ -108,10 +108,8 @@ class StoreVolume extends FormRequest
             }
 
             if ($file = $this->file('metadata_csv')) {
-                $mediaTypeLabel = $mediaType->label();
-
-                $parser = match ($mediaTypeLabel) {
-                    'video' => new VideoCsvParser($file),
+                $parser = match ($mediaType) {
+                    MediaType::VIDEO => new VideoCsvParser($file),
                     default => new ImageCsvParser($file),
                 };
 
@@ -122,8 +120,8 @@ class StoreVolume extends FormRequest
                     return;
                 }
 
-                $rule = match ($mediaTypeLabel) {
-                    'video' => new VideoMetadata,
+                $rule = match ($mediaType) {
+                    MediaType::VIDEO => new VideoMetadata,
                     default => new ImageMetadata,
                 };
 
