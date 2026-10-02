@@ -7,7 +7,6 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Jobs\PostprocessVolumeImport;
-use Biigle\Label;
 use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Rules\VolumeUrl;
@@ -22,7 +21,6 @@ use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;
 use SplFileObject;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
-use ValueError;
 
 class VolumeImport extends Import
 {
@@ -455,9 +453,10 @@ class VolumeImport extends Import
                     throw new UnprocessableEntityHttpException($message);
                 }
 
-                $mediaType = MediaType::tryFromValueOrLabel($candidate['media_type_name']);
+                $candidateMediaType = $candidate['media_type_name'];
+                $mediaType = MediaType::tryFromValueOrLabel($candidateMediaType);
                 if ($mediaType === null) {
-                    throw new ValueError("Invalid media type");
+                    throw new UnprocessableEntityHttpException("Invalid media type '$candidateMediaType'");
                 }
                 $volume->media_type = $mediaType;
                 $volume->attrs = $candidate['attrs'];
