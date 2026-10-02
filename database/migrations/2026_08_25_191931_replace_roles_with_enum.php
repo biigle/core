@@ -28,7 +28,7 @@ return new class extends Migration {
             $oldIds['expert'] => Role::EXPERT->value,
         ];
 
-        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'roles', $this->foreignKeys);
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'roles', $this->foreignKeys, validationMin: 1, validationMax: 4);
     }
 
     /**

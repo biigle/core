@@ -14,6 +14,7 @@ class EnumMigrationHelper
      * - Changes DB values to the enum values supplied by $map
      * - Drops the specified table
      * - Removes the _id suffix from the column name
+     * - Adds a validation constraint for each renamed column, checking that values are within enum [min, max]
      *
      * To update all values atomically, an SQL query like this is built:
      * ```UPDATE table_name
@@ -27,9 +28,11 @@ class EnumMigrationHelper
      * @param string $tableName Name of the table to be removed
      * @param array $foreignKeys [[table name, column name, foreign key constraint name], ...]. If the
      * foreign key constraint name is not supplied, the default name is constructed
+     * @param int $validationMin Used to add a DB constraint for the values. min and max should correspond to the min and max enum values.
+     * @param int $validationMax See $validationMin
      * @return void
      */
-    public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys): void
+    public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys, int $validationMin, int $validationMax): void
     {
         [$cases, $ids] = self::buildCaseMapping($map);
         foreach ($foreignKeys as $foreignKey) {
@@ -51,7 +54,14 @@ class EnumMigrationHelper
                 Schema::table($table, function (Blueprint $t) use ($column, $newColumn) {
                     $t->renameColumn($column, $newColumn);
                 });
+            } else {
+                $newColumn = $column;
             }
+
+            $rangeConstraintName = "{$table}_{$newColumn}_check";
+            $expression = "$newColumn BETWEEN {$validationMin} AND {$validationMax}";
+            DB::statement("ALTER TABLE $table ADD CONSTRAINT $rangeConstraintName CHECK ($expression) NOT VALID");
+            DB::statement("ALTER TABLE $table VALIDATE CONSTRAINT $rangeConstraintName");
         }
 
         Schema::dropIfExists($tableName);
@@ -90,6 +100,8 @@ class EnumMigrationHelper
         foreach ($foreignKeys as [$table, $column]) {
             if (str_ends_with($column, '_id')) {
                 $oldColumn = substr($column, 0, -3);
+                $rangeConstraintName = "{$table}_{$oldColumn}_check";
+                DB::statement("ALTER TABLE {$table} DROP CONSTRAINT IF EXISTS {$rangeConstraintName}");
                 Schema::table($table, function (Blueprint $t) use ($oldColumn, $column) {
                     $t->renameColumn($oldColumn, $column);
                 });

@@ -29,7 +29,7 @@ return new class extends Migration {
             $oldIds['WholeFrame'] => Shape::WHOLE_FRAME->value,
         ];
 
-        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'shapes', $this->foreignKeys);
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'shapes', $this->foreignKeys, validationMin: 1, validationMax: 7);
     }
 
     /**

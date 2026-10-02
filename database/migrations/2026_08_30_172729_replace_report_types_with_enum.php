@@ -38,7 +38,7 @@ return new class extends Migration {
             $oldIds['ImageAnnotations\Coco']              => ReportType::IMAGE_ANNOTATIONS_COCO->value,
         ];
 
-        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'report_types', $this->foreignKeys);
+        EnumMigrationHelper::replaceStaticTableWithEnum($map, 'report_types', $this->foreignKeys, validationMin: 1, validationMax: 16);
     }
 
     /**
