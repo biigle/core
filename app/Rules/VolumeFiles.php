@@ -33,11 +33,11 @@ class VolumeFiles implements Rule
     protected $url;
 
     /**
-     * The media type ID.
+     * The media type.
      *
-     * @var int
+     * @var MediaType
      */
-    protected $typeId;
+    protected $type;
 
     /**
      * Number of sample images to check for existence.
@@ -62,7 +62,7 @@ class VolumeFiles implements Rule
             $url = rtrim($url, '/');
         }
         $this->url = $url;
-        $this->typeId = $mediaType->value;
+        $this->type = $mediaType;
         $this->sampleCount = $sampleCount;
     }
 
@@ -115,13 +115,13 @@ class VolumeFiles implements Rule
             }
         }
 
-        if ($this->typeId === MediaType::IMAGE->value) {
+        if ($this->type === MediaType::IMAGE) {
             if ($count !== count(preg_grep(Volume::IMAGE_FILE_REGEX, $value))) {
                 $this->message = 'Only JPEG, PNG, WebP or TIFF image formats are supported.';
 
                 return false;
             }
-        } elseif ($this->typeId === MediaType::VIDEO->value) {
+        } elseif ($this->type === MediaType::VIDEO) {
             if ($count !== count(preg_grep(Volume::VIDEO_FILE_REGEX, $value))) {
                 $this->message = 'Only MPEG, MP4 or WebM video formats are supported.';
 
