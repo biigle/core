@@ -51,13 +51,17 @@
 
 <script>
 import Events from '@/core/events';
-import Feature from '@biigle/ol/Feature';
 import Keyboard from '@/core/keyboard';
-import LineString from '@biigle/ol/geom/LineString';
 import Overlay from '@biigle/ol/Overlay';
 import Styles from '../stores/styles.js';
 import Typeahead from '@/label-trees/components/labelTypeahead.vue';
 import {debounce} from '@/core/utils.js';
+import {
+    anchorAnnotationOverlay,
+    createAnnotationOverlayConnector,
+    dragAnnotationOverlay,
+    getInitialAnnotationOverlayPlacement,
+} from '../utils.js';
 import {markRaw} from 'vue';
 import {unByKey} from '@biigle/ol/Observable';
 
@@ -264,10 +268,7 @@ export default {
         handleDrag(e) {
             // During dragging, update the popup position only by modifying the offset.
             // The position is updated when dragging ended.
-            this.overlay.setOffset([
-                this.dragStartOverlayOffset[0] + e.clientX - this.dragStartMousePosition[0],
-                this.dragStartOverlayOffset[1] + e.clientY - this.dragStartMousePosition[1],
-            ]);
+            dragAnnotationOverlay(this.overlay, this.dragStartOverlayOffset, this.dragStartMousePosition, e);
             this.lineFeature._updateCoordinates();
         },
         endDrag() {
@@ -278,26 +279,13 @@ export default {
             // When dragging is finished, update the popup position to the closest point
             // on the annotation and recalculate the offset so the popup stays where it
             // was dragged. This feels most natural during zooming.
-            const currentPosition = this.overlay.getPosition();
-            const currentOffset = this.overlay.getOffset();
-            const resolution = this.overlay.getMap().getView().getResolution();
-            const realPosition = [
-                currentPosition[0] + currentOffset[0] * resolution,
-                currentPosition[1] - currentOffset[1] * resolution,
-            ];
-            const newPosition = this.overlay._annotationGeometry.getClosestPoint(realPosition);
-            this.overlay.setPosition(newPosition);
-            this.overlay.setOffset([
-                (realPosition[0] - newPosition[0]) / resolution,
-                (newPosition[1] - realPosition[1]) / resolution,
-            ]);
-
+            anchorAnnotationOverlay(this.overlay, this.overlay.getMap());
         },
         createOverlay(annotationCanvas) {
             const annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
             const annotationGeometry = annotationFeature.getGeometry();
             const annotationExtent = annotationGeometry.getExtent();
-            let popupPosition = [
+            const popupPosition = [
                 annotationExtent[2],
                 (annotationExtent[1] + annotationExtent[3]) / 2,
             ];
@@ -313,52 +301,20 @@ export default {
             this.overlay._annotationGeometry = annotationGeometry;
             annotationCanvas.map.addOverlay(overlay);
 
-            // Check if the popup must be moved so it is fully contained in the viewport.
-            // This must be done after the element was added to the map so the offsetWidth
-            // and offsetHeight are known.
-            const mapExtent = annotationCanvas.map.getView().calculateExtent(annotationCanvas.map.getSize());
-            const resolution = annotationCanvas.map.getView().getResolution();
-            const shouldSwapX = ((mapExtent[2] - popupPosition[0]) / resolution) < (OVERLAY_OFFSET + this.$el.offsetWidth / 2);
-            if (shouldSwapX) {
-                popupPosition = [annotationExtent[0], popupPosition[1]];
-                overlay.setPosition(popupPosition);
-                overlay.setOffset([-OVERLAY_OFFSET, 0]);
-            }
+            const placement = getInitialAnnotationOverlayPlacement(
+                annotationExtent,
+                annotationCanvas.map.getView().calculateExtent(annotationCanvas.map.getSize()),
+                annotationCanvas.map.getView().getResolution(),
+                [this.$el.offsetWidth, this.$el.offsetHeight],
+                OVERLAY_OFFSET,
+                true
+            );
+            overlay.setPosition(placement.position);
+            overlay.setOffset(placement.offset);
 
-            // If the annotation is as wide as the viewport, the popup could now overflow
-            // in the other direction. Here is a check if the popup should be moved yet
-            // again so it remains visible.
-            const shouldMoveX = ((popupPosition[0] - mapExtent[0]) / resolution) < (OVERLAY_OFFSET + this.$el.offsetWidth / 2);
-            if (shouldMoveX) {
-                overlay.setOffset([OVERLAY_OFFSET, 0]);
-            }
-
-            const yOverflowBottom = (mapExtent[1] - popupPosition[1]) / resolution + this.$el.offsetHeight / 2;
-            const yOverflowTop = this.$el.offsetHeight / 2 - (mapExtent[3] - popupPosition[1]) / resolution;
-            if (yOverflowBottom > 0) {
-                overlay.setOffset([overlay.getOffset()[0], -yOverflowBottom]);
-            } else if (yOverflowTop > 0) {
-                overlay.setOffset([overlay.getOffset()[0], yOverflowTop]);
-            }
-
-            const line = new LineString([popupPosition, popupPosition]);
-            this.lineFeature = markRaw(new Feature(line));
-            this.lineFeature.set('unselectable', true);
-            this.lineFeature.set('color', this.labels[0].color);
-            this.lineFeature.setStyle(Styles.editing);
-
-            this.lineFeature._updateCoordinates = () => {
-                const position = overlay.getPosition();
-                const offset = overlay.getOffset();
-                const resolution = annotationCanvas.map.getView().getResolution();
-                const end = [
-                    position[0] + offset[0] * resolution,
-                    position[1] - offset[1] * resolution,
-                ];
-                const start = annotationGeometry.getClosestPoint(end);
-                line.setCoordinates([start, end]);
-            };
-            this.lineFeature._updateCoordinates();
+            this.lineFeature = markRaw(createAnnotationOverlayConnector(
+                overlay, annotationCanvas.map, this.labels[0].color, Styles.editing
+            ));
 
             annotationCanvas.labelbotSource.addFeature(this.lineFeature);
 

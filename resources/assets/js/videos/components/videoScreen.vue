@@ -6,9 +6,17 @@
             ></minimap>
         <label-tooltip
             :features="hoveredFeatures"
-            :show="showLabelTooltip"
+            :show="showTooltip"
             :position="mousePosition"
             ></label-tooltip>
+        <persistent-label-tooltip
+            v-for="feature in visiblePersistentLabelTooltipFeatures"
+            :key="feature.getId()"
+            :feature="feature"
+            :line-source="persistentLabelTooltipLineSource"
+            :map="map"
+            :show="showPersistentLabelTooltips"
+            ></persistent-label-tooltip>
         <div class="controls">
             <div v-if="showPrevNext" class="btn-group">
                 <control-button
@@ -431,6 +439,7 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {markRaw} from 'vue';
+import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 
 export default {
     emits: [
@@ -522,8 +531,8 @@ export default {
             type: Object,
         },
         showLabelTooltip: {
-            type: Boolean,
-            default: false,
+            type: String,
+            default: LABEL_TOOLTIP_MODES.OFF,
         },
         showMinimap: {
             type: Boolean,
