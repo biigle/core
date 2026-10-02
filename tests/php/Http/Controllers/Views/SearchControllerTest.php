@@ -232,10 +232,34 @@ class SearchControllerTest extends TestCase
         $response->assertSeeText('other image');
         $response->assertDontSeeText('third image');
 
-        $response = $this->get('search?t=images&q=my')->assertStatus(200);
+        // An empty term arrives as null because of ConvertEmptyStringsToNull,
+        // and must still list everything.
+        $response = $this->get('search?t=images&q=')->assertStatus(200);
+        $response->assertSeeText('my image');
+        $response->assertSeeText('other image');
+        $response->assertDontSeeText('third image');
+
+        $response = $this->get('search?t=images&q=my+i')->assertStatus(200);
         $response->assertSeeText('my image');
         $response->assertDontSeeText('other image');
         $response->assertDontSeeText('third image');
+    }
+
+    public function testIndexAnnotationsQueryTooShort()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::guestId());
+
+        $image = ImageTest::create(['filename' => 'my image']);
+        $project->addVolumeId($image->volume_id);
+
+        $this->be($user);
+        // A substring match cannot use an index, so terms that are too short to
+        // narrow anything down are rejected instead of scanned.
+        $response = $this->get('search?t=images&q=my')->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertSeeText('at least 3 characters');
     }
 
     public function testIndexVideos()
