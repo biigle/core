@@ -5,6 +5,8 @@ namespace Biigle\Tests\Http\Controllers\Views;
 use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
 use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VolumeTest;
@@ -92,6 +94,34 @@ class DashboardControllerTest extends TestCase
 
         $items = $controller->annotationsActivityItems($user, 3);
         $this->assertCount(3, $items);
+    }
+
+    public function testAnnotationsActivityItemsManyLabelsOfSameImage()
+    {
+        $controller = new DashboardController;
+        $user = UserTest::create();
+
+        // The most recent annotation labels all belong to the same image, so the
+        // controller must look at more than the first batch of annotation labels to
+        // find the second image.
+        $old = ImageAnnotationLabelTest::create([
+            'user_id' => $user->id,
+            'created_at' => '2022-01-01 00:00:00',
+        ]);
+
+        $image = ImageTest::create();
+        for ($i = 0; $i < 51; $i++) {
+            ImageAnnotationLabelTest::create([
+                'user_id' => $user->id,
+                'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id])->id,
+                'created_at' => '2022-01-02 00:00:00',
+            ]);
+        }
+
+        $items = $controller->annotationsActivityItems($user, 2);
+        $this->assertCount(2, $items);
+        $this->assertSame($image->id, $items[0]['item']->id);
+        $this->assertSame($old->annotation->image_id, $items[1]['item']->id);
     }
 
     public function testVideosActivityItems()
