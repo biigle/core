@@ -106,6 +106,39 @@ class ImageAnnotationBulkControllerTest extends ApiTestCase
         $this->assertSame($this->labelRoot()->id, $annotation->labels()->first()->label_id);
     }
 
+    public function testStoreLabelTreeNotAvailableForOtherImage()
+    {
+        // The editor can annotate the image of this project but the label tree of the
+        // label is not attached to the project.
+        $project = ProjectTest::create();
+        $project->addUserId($this->editor()->id, Role::editorId());
+        $image = ImageTest::create();
+        $project->addVolumeId($image->volume_id);
+
+        $this->beEditor();
+        $this
+            ->postJson('api/v1/image-annotations', [
+                [
+                    'image_id' => $this->annotation->image_id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+                [
+                    'image_id' => $image->id,
+                    'shape_id' => Shape::pointId(),
+                    'points' => [100, 100],
+                    'label_id' => $this->labelRoot()->id,
+                    'confidence' => 1.0,
+                ],
+            ])
+            ->assertStatus(403);
+
+        $this->assertSame(1, $this->annotation->image->annotations()->count());
+        $this->assertSame(0, $image->annotations()->count());
+    }
+
     public function testStoreValidation()
     {
         $this->storeValidation('api/v1/image-annotations');
