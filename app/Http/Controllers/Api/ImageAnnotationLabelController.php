@@ -138,6 +138,7 @@ class ImageAnnotationLabelController extends Controller
      * @apiParam {Number} id The annotation ID.
      * @apiParam (Required arguments) {Number} label_id The ID of the label category to attach to the annotation.
      * @apiParam (Required arguments) {Number} confidence The level of confidence for this annotation label.
+     * @apiParam (Optional arguments) {Number} guideline_id ID of the enforced annotation guideline that applies. The label must be allowed by the guideline and match the shape of the annotation. Required if all projects of the volume (where the user can create annotations) have an enforced guideline. See the "Get annotation guidelines" endpoint of volumes.
      * @apiParamExample {String} Request example:
      * label_id: 1
      * confidence: 0.75

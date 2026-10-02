@@ -417,6 +417,10 @@ $router->group([
         $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
 
+    $router->get('{id}/annotation-guidelines', [
+        'uses' => 'AnnotationGuidelineController@index',
+    ]);
+
     $router->get('{id}/export-area', [
         'uses' => 'ExportAreaController@show',
     ]);

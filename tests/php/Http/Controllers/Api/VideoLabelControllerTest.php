@@ -3,6 +3,11 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
+use Biigle\Role;
+use Biigle\Shape;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
 use Illuminate\Support\Str;
@@ -119,6 +124,128 @@ class VideoLabelControllerTest extends ApiTestCase
             'label_id' => Str::random(2)
         ]);
         $response->assertStatus(422);
+    }
+
+    public function testStoreGuidelineRequired()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+        $id = $this->video->id;
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/videos/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this->json('POST', "/api/v1/videos/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineOptional()
+    {
+        AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+        // The editor can annotate in this project, too, and it has no guideline.
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+        $project->addUserId($this->editor()->id, Role::editorId());
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/videos/{$this->video->id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineNotExists()
+    {
+        $this->beEditor();
+        $this->json('POST', "/api/v1/videos/{$this->video->id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'guideline_id' => -1,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+    }
+
+    public function testStoreGuidelineNotEnforced()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => false,
+        ]);
+        $id = $this->video->id;
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/videos/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this->json('POST', "/api/v1/videos/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineLabel()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+        $id = $this->video->id;
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/videos/{$id}/labels", [
+            'label_id' => $this->labelChild()->id,
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('label_id');
+
+        $this->json('POST', "/api/v1/videos/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'guideline_id' => $guideline->id,
+        ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineIgnoreShapes()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [Shape::circleId()],
+        ]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/videos/{$this->video->id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'guideline_id' => $guideline->id,
+        ])
+            // File labels have no shape.
+            ->assertSuccessful();
     }
 
     public function testDestroy()

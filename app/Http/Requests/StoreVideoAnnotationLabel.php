@@ -2,12 +2,15 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Label;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVideoAnnotationLabel extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The annotation to which the label should be attached.
      *
@@ -46,6 +49,7 @@ class StoreVideoAnnotationLabel extends FormRequest
     {
         return [
             // The label_id is already validated above.
+            'guideline_id' => 'nullable|integer',
         ];
     }
 
@@ -69,7 +73,29 @@ class StoreVideoAnnotationLabel extends FormRequest
 
             if ($alreadyExists) {
                 $validator->errors()->add('label_id', 'The user already attached this label to the annotation.');
+
+                return;
             }
+
+            $guideline = $this->validateGuideline(
+                $validator,
+                $this->annotation->video->volume_id,
+                $this->integer('guideline_id') ?: null
+            );
+
+            if (is_null($guideline)) {
+                return;
+            }
+
+            $this->validateGuidelineLabel($validator, $guideline, $this->label->id);
+
+            $this->validateGuidelineShape(
+                $validator,
+                $guideline,
+                $this->annotation->shape_id,
+                $this->label->id,
+                'label_id'
+            );
         });
     }
 }
