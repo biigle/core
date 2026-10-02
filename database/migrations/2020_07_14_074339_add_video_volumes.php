@@ -18,17 +18,16 @@ class AddVideoVolumes extends Migration
      */
     public function up()
     {
-        $mediaTypesTable = DB::table('media_types');
-        $mediaTypesTable->insert([
+        DB::table('media_types')->insert([
             ['name' => 'image'],
             ['name' => 'video'],
         ]);
 
         Volume::query()->update([
-            'media_type_id' => $mediaTypesTable->where('name', 'image')->first()->id,
+            'media_type_id' => DB::table('media_types')->where('name', 'image')->first()->id,
         ]);
 
-        $mediaTypesTable->whereIn('name', ['time-series', 'location-series'])->delete();
+        DB::table('media_types')->whereIn('name', ['time-series', 'location-series'])->delete();
 
         Schema::table('videos', function (Blueprint $table) {
             $table->integer('volume_id')->unsigned()->index()->nullable();
@@ -64,7 +63,6 @@ class AddVideoVolumes extends Migration
      */
     public function down()
     {
-        $mediaTypesTable = DB::table('media_types');
         Schema::table('videos', function (Blueprint $table) {
             $table->integer('project_id')->unsigned()->index()->nullable();
             $table->foreign('project_id')
@@ -85,7 +83,7 @@ class AddVideoVolumes extends Migration
             $table->timestamps();
         });
 
-        $id = $mediaTypesTable->where('name', 'video')->first()->id;
+        $id = DB::table('media_types')->where('name', 'video')->first()->id;
         Volume::where('media_type_id', $id)->eachById(function ($volume) {
             $projectId = $volume->projects()->first()->id;
             Video::where('volume_id', $volume->id)
@@ -110,16 +108,16 @@ class AddVideoVolumes extends Migration
 
         Volume::where('media_type_id', $id)->delete();
 
-        $mediaTypesTable->insert([
+        DB::table('media_types')->insert([
             ['name' => 'time-series'],
             ['name' => 'location-series'],
         ]);
 
         Volume::query()->update([
-            'media_type_id' => $mediaTypesTable->where('name', 'time-series')->first()->id,
+            'media_type_id' => DB::table('media_types')->where('name', 'time-series')->first()->id,
         ]);
 
-        $mediaTypesTable->whereIn('name', ['image', 'video'])->delete();
+        DB::table('media_types')->whereIn('name', ['image', 'video'])->delete();
     }
 
     /**
