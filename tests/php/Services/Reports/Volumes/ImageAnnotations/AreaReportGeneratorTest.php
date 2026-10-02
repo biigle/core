@@ -19,7 +19,7 @@ class AreaReportGeneratorTest extends TestCase
 {
     private $columns = [
         'annotation_id',
-        'shape',
+        'shape_id',
         'shape_name',
         'label_ids',
         'label_names',

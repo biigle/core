@@ -129,7 +129,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $csv->put($title);
         $csv->putCsv([
             'annotation_id',
-            'shape',
+            'shape_id',
             'shape_name',
             'label_ids',
             'label_names',

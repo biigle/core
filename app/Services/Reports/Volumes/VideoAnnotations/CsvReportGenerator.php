@@ -249,7 +249,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             'lastname',
             'video_id',
             'video_filename',
-            'shape',
+            'shape_id',
             'shape_name',
             'points',
             'frames',

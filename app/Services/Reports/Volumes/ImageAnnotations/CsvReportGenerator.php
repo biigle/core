@@ -145,7 +145,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'filename',
             'image_longitude',
             'image_latitude',
-            'shape',
+            'shape_id',
             'shape_name',
             'points',
         ];
