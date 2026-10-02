@@ -43,7 +43,7 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testInterpolatePointsPoint()
     {
-        $this->model->shape_id = Shape::pointId();
+        $this->model->shape = Shape::POINT;
         $this->model->points = [[0, 0], [10, 10]];
         $this->model->frames = [0.0, 1.0];
         $this->assertSame([5.0, 5.0], $this->model->interpolatePoints(0.5));
@@ -51,7 +51,7 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testInterpolatePointsInt()
     {
-        $this->model->shape_id = Shape::pointId();
+        $this->model->shape = Shape::POINT;
         $this->model->points = [[0, 0], [10, 10]];
         $this->model->frames = [0, 1];
         $this->assertSame([10, 10], $this->model->interpolatePoints(1));
@@ -59,7 +59,7 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testInterpolatePointsRectangle()
     {
-        $this->model->shape_id = Shape::rectangleId();
+        $this->model->shape = Shape::RECTANGLE;
         $this->model->points = [
             [0, 0, 10, 0, 20, 20, 0, 20],
             [20, 10, 20, 20, 0, 20, 0, 10],
@@ -72,7 +72,7 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testInterpolatePointsCircle()
     {
-        $this->model->shape_id = Shape::circleId();
+        $this->model->shape = Shape::CIRCLE;
         $this->model->points = [[0, 0, 5], [10, 10, 10]];
         $this->model->frames = [0.0, 1.0];
         $this->assertSame([5.0, 5.0, 7.5], $this->model->interpolatePoints(0.5));
@@ -80,28 +80,28 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testInterpolatePointsLineString()
     {
-        $this->model->shape_id = Shape::lineId();
+        $this->model->shape = Shape::LINE;
         $this->expectException(Exception::class);
         $this->model->interpolatePoints(0.5);
     }
 
     public function testInterpolatePointsPolygon()
     {
-        $this->model->shape_id = Shape::polygonId();
+        $this->model->shape = Shape::POLYGON;
         $this->expectException(Exception::class);
         $this->model->interpolatePoints(0.5);
     }
 
     public function testInterpolatePointsWholeFrame()
     {
-        $this->model->shape_id = Shape::wholeFrameId();
+        $this->model->shape = Shape::WHOLE_FRAME;
         $this->expectException(Exception::class);
         $this->model->interpolatePoints(0.5);
     }
 
     public function testInterpolatePointsWithGapInsideGap()
     {
-        $this->model->shape_id = Shape::rectangleId();
+        $this->model->shape = Shape::RECTANGLE;
         $this->model->points = [
             [0, 0, 10, 0, 10, 10, 0, 10],
             [],
@@ -116,7 +116,7 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testInterpolatePointsWithGapBeforeGap()
     {
-        $this->model->shape_id = Shape::rectangleId();
+        $this->model->shape = Shape::RECTANGLE;
         $this->model->points = [
             [0, 0, 10, 0, 10, 10, 0, 10],
             [10, 10, 20, 10, 20, 20, 10, 20],
@@ -133,7 +133,7 @@ class VideoAnnotationTest extends ModelTestCase
 
     public function testInterpolatePointsWithGapAfterGap()
     {
-        $this->model->shape_id = Shape::rectangleId();
+        $this->model->shape = Shape::RECTANGLE;
         $this->model->points = [
             [0, 0, 10, 0, 10, 10, 0, 10],
             [],
@@ -329,10 +329,10 @@ class VideoAnnotationTest extends ModelTestCase
     {
         $video = VideoTest::create();
         $user = UserTest::create();
-        $admin = UserTest::create(['role_id' => Role::adminId()]);
+        $admin = UserTest::create(['role' => Role::ADMIN->value]);
         $otherUser = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::editorId());
+        $project->addUserId($user->id, Role::EDITOR->value);
         $project->addVolumeId($video->volume_id);
 
         $a = static::create([

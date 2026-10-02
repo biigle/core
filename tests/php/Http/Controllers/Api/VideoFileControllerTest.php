@@ -16,7 +16,7 @@ class VideoFileControllerTest extends ApiTestCase
         $disk = Storage::persistentFake('test');
         $disk->put('files/video.mp4', 'testvideo');
         try {
-            $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+            $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
             $video = VideoTest::create([
                 'filename' => 'video.mp4',
                 'volume_id' => $id,
@@ -40,7 +40,7 @@ class VideoFileControllerTest extends ApiTestCase
     {
         // Use persistent fake because it does not support temporary URLs.
         $disk = Storage::persistentFake('test');
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
             'volume_id' => $id,
@@ -57,7 +57,7 @@ class VideoFileControllerTest extends ApiTestCase
         $disk = Storage::persistentFake('test');
         $disk->put('files/video.mp4', 'testvideo');
         try {
-            $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+            $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
             $video = VideoTest::create([
                 'filename' => 'video.mp4',
                 'volume_id' => $id,
@@ -80,7 +80,7 @@ class VideoFileControllerTest extends ApiTestCase
     public function testShowRemote()
     {
         $id = $this->volume([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
             'url' => 'https://domain.tld',
         ])->id;
         $video = VideoTest::create([
@@ -95,7 +95,7 @@ class VideoFileControllerTest extends ApiTestCase
 
     public function testShowTempUrl()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
             'volume_id' => $id,
@@ -114,7 +114,7 @@ class VideoFileControllerTest extends ApiTestCase
 
     public function testShowNotProcessed()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',
             'volume_id' => $id,
@@ -128,7 +128,7 @@ class VideoFileControllerTest extends ApiTestCase
     {
         $id = $this->volume([
             'url' => 'abcd://videos',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
         ])->id;
         $video = VideoTest::create([
             'filename' => 'video.mp4',

@@ -61,7 +61,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -129,7 +129,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -337,7 +337,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -437,7 +437,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -510,7 +510,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $image = ImageTest::create(['volume_id' => $volume->id]);
         $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'points' => [150, 150],
         ]);
         $al1 = ImageAnnotationLabelTest::create([
@@ -521,7 +521,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
         $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'points' => [50, 50],
         ]);
         $al2 = ImageAnnotationLabelTest::create([
@@ -592,7 +592,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -670,7 +670,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         ]);
         $a1 = ImageAnnotationTest::create([
             'image_id' => $image1->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -690,7 +690,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         ]);
         $a2 = ImageAnnotationTest::create([
             'image_id' => $image2->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label2->id,
@@ -807,7 +807,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -909,7 +909,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -1016,7 +1016,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
         $a = ImageAnnotationTest::create([
             'image_id' => $image->id,
             'points' => [150, 150],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -1089,7 +1089,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
         $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $al1 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -1099,7 +1099,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
         $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
         ]);
         $al2 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -1109,7 +1109,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
         $a3 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $al3 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -1119,7 +1119,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
         $a4 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::ellipseId(),
+            'shape' => Shape::ELLIPSE->value,
         ]);
         $al4 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -1129,7 +1129,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
         $a5 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON->value,
         ]);
         $al5 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,
@@ -1139,7 +1139,7 @@ class ImageIfdoReportGeneratorTest extends TestCase
 
         $a6 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE->value,
         ]);
         $al6 = ImageAnnotationLabelTest::create([
             'label_id' => $label->id,

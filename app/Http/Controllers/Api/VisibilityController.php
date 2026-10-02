@@ -26,11 +26,11 @@ class VisibilityController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function index()
     {
-        return Visibility::all();
+        return collect(Visibility::cases())->map->toArray()->values();
     }
 
     /**

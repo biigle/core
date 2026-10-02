@@ -37,7 +37,7 @@ class FileLabelsController extends Controller
      *          },
      *          "user": {
      *             "id": 1,
-     *             "role_id": 2,
+     *             "role": 2,
      *             "firstname": "Joe",
      *             "lastname": "User"
      *          }

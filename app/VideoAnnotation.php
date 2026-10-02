@@ -7,7 +7,10 @@ use Exception;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
-#[Fillable(['video_id', 'shape_id', 'points', 'frames'])]
+/**
+ * @property array $frames
+ */
+#[Fillable(['video_id', 'shape', 'points', 'frames'])]
 #[ObservedBy(VideoAnnotationObserver::class)]
 class VideoAnnotation extends Annotation
 {
@@ -18,12 +21,10 @@ class VideoAnnotation extends Annotation
      */
     protected function casts(): array
     {
-        return [
+        return array_merge(parent::casts(), [
             'video_id' => 'int',
-            'shape_id' => 'int',
             'frames' => 'array',
-            'points' => 'array',
-        ];
+        ]);
     }
 
     /**
@@ -135,16 +136,16 @@ class VideoAnnotation extends Annotation
         $points1 = $points[$index1];
         $points2 = $points[$index2];
 
-        switch ($this->shape_id) {
-            case Shape::rectangleId():
-            case Shape::ellipseId():
+        switch ($this->shape) {
+            case Shape::RECTANGLE:
+            case Shape::ELLIPSE:
                 return $this->interpolationPointsToRectangle(
                     $this->interpolateNaive($points1, $points2, $progress)
                 );
-            case Shape::lineId():
-            case Shape::polygonId():
+            case Shape::LINE:
+            case Shape::POLYGON:
                 throw new Exception('Interpolation of line strings or polygons is not implemented.');
-            case Shape::wholeFrameId():
+            case Shape::WHOLE_FRAME:
                 throw new Exception('Whole frame annotations cannot be interpolated.');
             default:
                 return $this->interpolateNaive($points1, $points2, $progress);
@@ -158,12 +159,12 @@ class VideoAnnotation extends Annotation
      */
     protected function getInterpolationPoints()
     {
-        switch ($this->shape_id) {
-            case Shape::rectangleId():
-            case Shape::ellipseId():
+        switch ($this->shape) {
+            case Shape::RECTANGLE:
+            case Shape::ELLIPSE:
                 return array_map([$this, 'rectangleToInterpolationPoints'], $this->points);
-            case Shape::lineId():
-            case Shape::polygonId():
+            case Shape::LINE:
+            case Shape::POLYGON:
                 return [];
             default:
                 return $this->points;

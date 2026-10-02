@@ -44,7 +44,7 @@ class ProjectInvitationControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $invitation = ProjectInvitation::factory()->create();
-        $invitation->project->addUserId($user->id, Role::editorId());
+        $invitation->project->addUserId($user->id, Role::EDITOR->value);
         $this->be($user);
         $this->get("project-invitations/{$invitation->uuid}")
             ->assertRedirect("projects/{$invitation->project->id}")

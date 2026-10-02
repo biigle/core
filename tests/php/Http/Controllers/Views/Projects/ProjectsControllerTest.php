@@ -2,9 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
+use Biigle\MediaType;
 use Biigle\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\VolumeTest;
 use Cache;
 use TestCase;
 
@@ -26,19 +28,25 @@ class ProjectsControllerTest extends TestCase
         $response->assertStatus(403);
 
         // can't admin the project
-        $project->addUserId($user->id, Role::editorId());
+        $project->addUserId($user->id, Role::EDITOR->value);
+        $volume = VolumeTest::create(['name' => 'test']);
+        $project->addVolumeId($volume->id);
         Cache::flush();
         $response = $this->get("projects/{$id}");
         $response->assertStatus(200);
 
-        // diesn't exist
+        $volumes = json_decode($response->viewData('volumes')->toJson(), true);
+        $this->assertSame($volumes[0]['media_type'], MediaType::IMAGE->value);
+        $this->assertSame($volumes[0]['media_type_label'], MediaType::IMAGE->label());
+
+        // doesn't exist
         $response = $this->get('projects/-1');
         $response->assertStatus(404);
     }
 
     public function testCreate()
     {
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST->value]);
 
         // not logged in
         $response = $this->get('projects/create');
@@ -49,7 +57,7 @@ class ProjectsControllerTest extends TestCase
         // Guest is not authorized.
         $response->assertStatus(403);
 
-        $user->role_id = Role::editorId();
+        $user->role = Role::EDITOR;
         $user->save();
 
         $r = $response = $this->get('projects/create');

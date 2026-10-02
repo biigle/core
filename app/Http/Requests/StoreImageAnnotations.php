@@ -81,13 +81,13 @@ class StoreImageAnnotations extends FormRequest
     public function rules()
     {
         // Image annotations cannot have the whole frame shape.
-        $shapeIds = Shape::whereKeyNot(Shape::wholeFrameId())->pluck('id');
+        $shapeIds = Shape::pluckById(except: Shape::WHOLE_FRAME)->keys();
 
         return [
             '*.image_id' => 'required|integer',
             '*.label_id' => 'required|integer',
             '*.confidence' => 'required|numeric|between:0,1',
-            '*.shape_id' => ['bail', 'required', 'integer', Rule::in($shapeIds)],
+            '*.shape' => ['bail', 'required', 'integer', Rule::in($shapeIds)],
             '*.points' => 'bail|required|array',
         ];
     }
@@ -111,7 +111,7 @@ class StoreImageAnnotations extends FormRequest
             }
 
             foreach ($this->all() as $index => $annotation) {
-                (new AnnotationPoints($annotation['shape_id']))->validate(
+                (new AnnotationPoints($annotation['shape']))->validate(
                     'points',
                     $annotation['points'],
                     fn ($message) => $validator->errors()->add("$index.points", $message)

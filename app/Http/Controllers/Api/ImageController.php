@@ -23,7 +23,7 @@ class ImageController extends Controller
      *    "volume":{
      *       "id":1,
      *       "name":"Test volume",
-     *       "media_type_id":2,
+     *       "media_type":2,
      *       "creator_id":1,
      *       "created_at":"2015-05-04 07:34:04",
      *       "updated_at":"2015-05-04 07:34:04",

@@ -38,9 +38,9 @@ class NewUser extends Command
         $u->uuid = Uuid::uuid4();
 
         if ($this->confirm('Should the user be global admin? [y|N]')) {
-            $u->role_id = Role::adminId();
+            $u->role = Role::ADMIN;
         } else {
-            $u->role_id = Role::editorId();
+            $u->role = Role::EDITOR;
         }
 
         if ($this->confirm('Do you wish to auto-generate a password? [y|N]')) {

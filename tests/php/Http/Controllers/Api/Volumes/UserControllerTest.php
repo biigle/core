@@ -23,7 +23,7 @@ class UserControllerTest extends ApiTestCase
             ->select('id', 'firstname', 'lastname', 'affiliation')
             ->get()
             ->map(function ($item) {
-                unset($item->project_role_id);
+                unset($item->project_role);
 
                 return $item;
             })

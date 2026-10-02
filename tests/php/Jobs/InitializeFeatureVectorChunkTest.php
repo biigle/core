@@ -140,7 +140,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'points' => [100, 100],
             'image_id' => $image->id,
         ]);
@@ -160,7 +160,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
             'points' => [100, 100, 10],
             'image_id' => $image->id,
         ]);
@@ -180,7 +180,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON->value,
             'points' => [100, 90, 110, 100, 100, 110, 90, 100],
             'image_id' => $image->id,
         ]);
@@ -200,7 +200,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
             'image_id' => $image->id,
         ]);
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);

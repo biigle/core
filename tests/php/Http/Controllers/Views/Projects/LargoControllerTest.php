@@ -20,7 +20,7 @@ class LargoControllerTest extends ApiTestCase
         $this->get("projects/{$id}/largo")->assertStatus(404);
         $volume = $this->volume();
         $this->get("projects/{$id}/largo")->assertStatus(200);
-        $volume->media_type_id = MediaType::videoId();
+        $volume->media_type = MediaType::VIDEO;
         $volume->save();
         $this->get("projects/{$id}/largo")->assertStatus(200);
 

@@ -21,10 +21,10 @@ class RoleControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::adminId());
+        $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::ADMIN->value);
 
         $this->beUser();
-        $response = $this->get('/api/v1/roles/'.Role::adminId());
+        $response = $this->get('/api/v1/roles/'.Role::ADMIN->value);
         $content = $response->getContent();
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);

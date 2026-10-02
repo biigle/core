@@ -28,32 +28,32 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
             ]),
@@ -316,7 +316,7 @@ class AnnotationReportGeneratorTest extends TestCase
         $generator->setSource($f->session->volume);
         $results = $generator->initQuery()->get();
         $this->assertCount(4, $results);
-       
+
         $this->assertEqualsCanonicalizing(
             [$f->al1->label->label_tree_id,
                 $f->al2->label->label_tree_id,
@@ -534,38 +534,38 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             // created before annotation session started
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-04',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
@@ -625,38 +625,38 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             // created before annotation session started
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-04',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
@@ -721,38 +721,38 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             // created before annotation session started
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-04',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
@@ -802,32 +802,32 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
             ]),
@@ -880,32 +880,32 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
             ]),
@@ -960,32 +960,32 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
             ]),
@@ -1043,38 +1043,38 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [150, 150],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             // created before annotation session started
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-04',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT->value,
                 'points' => [50, 50],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::polygonId(),
+                'shape' => Shape::POLYGON->value,
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
             ]),
             ImageAnnotationTest::create([
-                'shape_id' => Shape::circleId(),
+                'shape' => Shape::CIRCLE->value,
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
                 'created_at' => '2016-10-05',
@@ -1118,7 +1118,7 @@ class AnnotationReportGeneratorTest extends TestCase
             $this->assertNotContains($id, $ids);
         }
     }
-    
+
     private function annotationLabelFixture(): object
     {
         $volume = VolumeTest::create();
@@ -1176,7 +1176,7 @@ class AnnotationReportGeneratorTest extends TestCase
             ])->id,
             'user_id' => $userId,
         ]);
-        
+
         return (object) compact('volume', 'session', 'userId', 'image', 'a', 'al1', 'al2', 'al3', 'al4', 'al5');
     }
 }

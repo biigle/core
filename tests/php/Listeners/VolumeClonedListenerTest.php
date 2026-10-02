@@ -25,7 +25,7 @@ class VolumeClonedListenerTest extends TestCase
         $project = Project::factory()->create();
 
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh();// Use fresh() to load even the null fields.
@@ -48,7 +48,7 @@ class VolumeClonedListenerTest extends TestCase
         $project = Project::factory()->create();
 
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
             'created_at' => '2022-11-09 14:37:00',
             'updated_at' => '2022-11-09 14:37:00',
         ])->fresh();// Use fresh() to load even the null fields.

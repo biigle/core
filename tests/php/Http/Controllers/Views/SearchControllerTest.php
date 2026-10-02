@@ -39,9 +39,9 @@ class SearchControllerTest extends TestCase
         $tree2 = LabelTreeTest::create(['name' => 'another tree']);
         $tree3 = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::privateId(),
+            'visibility' => Visibility::PRIVATE->value,
         ]);
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
 
         $this->be($user);
         $this->get('search?t=label-trees')
@@ -61,7 +61,7 @@ class SearchControllerTest extends TestCase
     {
         $tree = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::privateId(),
+            'visibility' => Visibility::PRIVATE->value,
         ]);
 
         $project = ProjectTest::create();
@@ -121,8 +121,8 @@ class SearchControllerTest extends TestCase
         $project = ProjectTest::create(['name' => 'random name']);
         $project2 = ProjectTest::create(['name' => 'another project']);
         $project3 = ProjectTest::create(['name' => 'and again']);
-        $project->addUserId($user->id, Role::guestId());
-        $project2->addUserId($user->id, Role::adminId());
+        $project->addUserId($user->id, Role::GUEST->value);
+        $project2->addUserId($user->id, Role::ADMIN->value);
 
         $this->be($user);
         $response = $this->get('search')->assertStatus(200);
@@ -170,7 +170,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST->value);
 
         $volume1 = VolumeTest::create(['name' => 'my volume']);
         $project->addVolumeId($volume1->id);
@@ -218,7 +218,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST->value);
 
         $image1 = ImageTest::create(['filename' => 'my image']);
         $project->addVolumeId($image1->volume_id);
@@ -243,7 +243,7 @@ class SearchControllerTest extends TestCase
         $user = UserTest::create();
         $guest = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($guest->id, Role::guestId());
+        $project->addUserId($guest->id, Role::GUEST->value);
 
         $video1 = VideoTest::create(['filename' => 'random video']);
         $project->addVolumeId($video1->volume_id);
@@ -271,12 +271,12 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsVolume()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'user_id' => $r1->user_id,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,
@@ -300,7 +300,7 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsVideo()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::videoAnnotationsCsvId(),
+            'type' => ReportType::VIDEO_ANNOTATIONS_CSV->value,
             'source_id' => VideoTest::create()->id,
             'source_type' => Video::class,
             'source_name' => 'my video',
@@ -327,12 +327,12 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsWhereExists()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV->value,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,
         ]);

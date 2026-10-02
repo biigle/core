@@ -34,7 +34,7 @@ class SortAnnotationsByOutliersControllerTest extends ApiTestCase
             'volume_id' => $v1->id,
         ]);
 
-        $v2 = Volume::factory()->create(['media_type_id' => MediaType::videoId()]);
+        $v2 = Volume::factory()->create(['media_type' => MediaType::VIDEO->value]);
         $this->project()->addVolumeId($v2->id);
 
         $l5 = VideoAnnotationLabelFeatureVector::factory()->create([

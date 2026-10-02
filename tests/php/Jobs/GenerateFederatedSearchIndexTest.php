@@ -32,7 +32,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
         (new GenerateFederatedSearchIndex)->handle();
         $expectTrees = [
             [
@@ -60,7 +60,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
     public function testHandleLabelTreeVersion()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember(UserTest::create(), Role::editor());
+        $tree->addMember(UserTest::create(), Role::EDITOR);
         $version = LabelTreeVersionTest::create(['label_tree_id' => $tree->id]);
         LabelTreeTest::create(['version_id' => $version->id]);
         (new GenerateFederatedSearchIndex)->handle();
@@ -113,7 +113,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         $globalTree = LabelTreeTest::create();
         $project->labelTrees()->attach($globalTree);
         $tree = LabelTreeTest::create();
-        $tree->addMember(UserTest::create(), Role::editor());
+        $tree->addMember(UserTest::create(), Role::EDITOR);
         $project->labelTrees()->attach($tree);
         (new GenerateFederatedSearchIndex)->handle();
         $index = Cache::get(config('biigle.federated_search.cache_key'));
@@ -156,7 +156,7 @@ class GenerateFederatedSearchIndexTest extends TestCase
         $user = UserTest::create();
         $project = ProjectTest::create();
         $tree = LabelTreeTest::create();
-        $tree->addMember($project->creator, Role::admin());
+        $tree->addMember($project->creator, Role::ADMIN);
         (new GenerateFederatedSearchIndex)->handle();
         $expect = [
             [

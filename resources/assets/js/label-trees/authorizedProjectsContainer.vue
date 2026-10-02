@@ -26,7 +26,7 @@ export default {
     },
     computed: {
         isPrivate() {
-            return this.labelTree.visibility_id === this.privateId;
+            return this.labelTree.visibility === this.privateId;
         },
         authorizableProjects() {
             return this.ownProjects.filter((project) => {

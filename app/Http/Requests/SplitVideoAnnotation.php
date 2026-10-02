@@ -60,13 +60,13 @@ class SplitVideoAnnotation extends FormRequest
     {
         $validator->after(function ($validator) {
             $allowedShapes = [
-                Shape::pointId(),
-                Shape::rectangleId(),
-                Shape::circleId(),
-                Shape::wholeFrameId(),
+                Shape::POINT,
+                Shape::RECTANGLE,
+                Shape::CIRCLE,
+                Shape::WHOLE_FRAME,
             ];
 
-            if (!in_array($this->annotation->shape_id, $allowedShapes)) {
+            if (!in_array($this->annotation->shape, $allowedShapes)) {
                 $validator->errors()->add('id', 'Only point, rectangle or circle annotations can be split.');
             }
         });

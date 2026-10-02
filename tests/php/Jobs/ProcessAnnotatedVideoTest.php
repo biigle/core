@@ -45,7 +45,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [],
             'frames' => [0, 10],
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -71,7 +71,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [],
             'frames' => [0, 10],
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video, targetDisk: 'test2');
         $job->mock = $video;
@@ -102,7 +102,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             // Should handle floats correctly.
             'points' => [[100.4, 100.4], [200, 200]],
             'frames' => [1, 2],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -135,7 +135,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             // dimension.
             'points' => [[300, 300, 200], [400, 400, 200]],
             'frames' => [1, 2],
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -171,7 +171,7 @@ class ProcessAnnotatedVideoTest extends TestCase
                 [200, 200, 250, 300, 300, 200, 200, 200],
             ],
             'frames' => [1, 2],
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -204,7 +204,7 @@ class ProcessAnnotatedVideoTest extends TestCase
                 [200, 200, 250, 300, 300, 200],
             ],
             'frames' => [1, 2],
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -234,7 +234,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100, 100, 300, 300, 300, 300, 100]],
             'frames' => [1],
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -264,7 +264,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100, 100, 300, 300, 300, 300, 100]],
             'frames' => [1],
-            'shape_id' => Shape::ellipseId(),
+            'shape' => Shape::ELLIPSE->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -294,7 +294,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -325,7 +325,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[0, 0]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -351,7 +351,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[1000, 750]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -380,7 +380,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[50, 50]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -406,7 +406,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[60, 60, 10]],
             'frames' => [1],
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -512,7 +512,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $annotationLabel = VideoAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -542,7 +542,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $annotationLabel1 = VideoAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -574,7 +574,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $annotationLabel = VideoAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -618,7 +618,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [],
             'frames' => [1],
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME->value,
             'video_id' => $video->id,
         ]);
         $annotationLabel = VideoAnnotationLabelTest::create([
@@ -642,7 +642,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
         $job = new ProcessAnnotatedVideoStub(
@@ -666,7 +666,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
         $job = new ProcessAnnotatedVideoStub(
@@ -691,7 +691,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
         $job = new ProcessAnnotatedVideoStub(
@@ -708,6 +708,36 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame(0, VideoAnnotationLabelFeatureVector::count());
     }
 
+    public function testHandleSvgSkipsWholeFrame()
+    {
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $point = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape' => Shape::POINT->value,
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $point->id]);
+        $wholeFrame = VideoAnnotationTest::create([
+            'points' => [],
+            'frames' => [1],
+            'shape' => Shape::WHOLE_FRAME->value,
+            'video_id' => $point->video_id,
+        ]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $wholeFrame->id]);
+        $job = new ProcessAnnotatedVideoStub(
+            $point->video,
+            skipFeatureVectors: true,
+            skipPatches: true
+        );
+        $job->mock = $video;
+
+        $job->handle();
+        $prefix = fragment_uuid_path($point->video->uuid);
+        $disk->assertExists("{$prefix}/v-{$point->id}.svg");
+        $disk->assertMissing("{$prefix}/v-{$wholeFrame->id}.svg");
+    }
+
     public function testHandleMultipleAnnotations()
     {
         $disk = Storage::fake('test');
@@ -715,13 +745,13 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation1 = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
         $annotation2 = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'video_id' => $annotation1->video_id,
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
@@ -750,13 +780,13 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation1 = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
         $annotation2 = VideoAnnotationTest::create([
             'points' => [[200, 200]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'video_id' => $annotation1->video_id,
         ]);
         VideoAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
@@ -788,7 +818,7 @@ class ProcessAnnotatedVideoTest extends TestCase
             // rectangle.
             'points' => [[844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44]],
             'frames' => [0],
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video, targetDisk: 'test2');
         $job->mock = $video;
@@ -810,7 +840,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -829,7 +859,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100]],
             'frames' => [1],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
@@ -850,7 +880,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $annotation = VideoAnnotationTest::create([
             'points' => [[300, 300, 400, 300]],
             'frames' => [1],
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE->value,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video, skipPatches: true, skipSvgs: true);
         $job->mock = $videoMock;

@@ -48,7 +48,7 @@ class VolumeAnnotationControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
 
         $video = VideoTest::create(['volume_id' => $id]);
         $annotation = VideoAnnotationTest::create([

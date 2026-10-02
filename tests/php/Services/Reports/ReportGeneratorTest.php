@@ -17,15 +17,9 @@ use TestCase;
 
 class ReportGeneratorTest extends TestCase
 {
-    public function testGetNotExists()
-    {
-        $this->expectException(Exception::class);
-        ReportGenerator::get(Volume::class, ReportType::factory()->make());
-    }
-
     public function testGet()
     {
-        $type = ReportType::whereName('ImageAnnotations\Basic')->first();
+        $type = ReportType::IMAGE_ANNOTATIONS_BASIC;
         $this->assertInstanceOf(
             BasicReportGenerator::class,
             ReportGenerator::get(Volume::class, $type)
@@ -34,21 +28,21 @@ class ReportGeneratorTest extends TestCase
 
     public function testGetAllVolumeExist()
     {
-        foreach (ReportType::get() as $type) {
+        foreach (collect(ReportType::cases()) as $type) {
             $this->assertNotNull(ReportGenerator::get(Volume::class, $type));
         }
     }
 
     public function testGetAllProjectExist()
     {
-        foreach (ReportType::get() as $type) {
+        foreach (collect(ReportType::cases()) as $type) {
             $this->assertNotNull(ReportGenerator::get(Project::class, $type));
         }
     }
 
     public function testGetAllVideoLegacyExist()
     {
-        $this->assertNotNull(ReportGenerator::get(Video::class, ReportType::videoAnnotationsCsv()));
+        $this->assertNotNull(ReportGenerator::get(Video::class, ReportType::VIDEO_ANNOTATIONS_CSV));
     }
 
     public function testHandleException()

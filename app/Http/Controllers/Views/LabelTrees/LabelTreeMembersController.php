@@ -27,23 +27,23 @@ class LabelTreeMembersController extends Controller
 
         $this->authorize('update', $tree);
 
-        $roles = collect([Role::admin(), Role::editor()]);
+        $roles = collect([Role::ADMIN, Role::EDITOR]);
 
         $roleOrder = [
-            Role::editorId(),
-            Role::adminId(),
+            Role::EDITOR,
+            Role::ADMIN,
         ];
 
         $members = $tree->members()
-            ->select('id', 'firstname', 'lastname', 'label_tree_user.role_id', 'affiliation')
+            ->select('id', 'firstname', 'lastname', 'label_tree_user.role', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role_id, $roleOrder) - array_search($a->role_id, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role, $roleOrder, true) - array_search($a->role, $roleOrder, true))
             ->values();
 
 
         $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->name,
-            Visibility::privateId() => Visibility::private()->name,
+            Visibility::PUBLIC->value => Visibility::PUBLIC->label(),
+            Visibility::PRIVATE->value => Visibility::PRIVATE->label(),
         ]);
 
         return view('label-trees.show.members', [
@@ -51,7 +51,7 @@ class LabelTreeMembersController extends Controller
             'members' => $members,
             'roles' => $roles,
             'visibilities' => $visibilities,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility === Visibility::PRIVATE,
             'activeTab' => 'members',
         ]);
     }
