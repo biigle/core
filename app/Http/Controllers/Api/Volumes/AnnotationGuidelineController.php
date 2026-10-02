@@ -16,7 +16,7 @@ class AnnotationGuidelineController extends Controller
      * @apiGroup Volumes
      * @apiName IndexVolumeAnnotationGuidelines
      * @apiPermission projectMember
-     * @apiDescription Returns the annotation guidelines of all projects that the user and the volume have in common. `can_annotate` indicates whether the user can create annotations in the project of the guideline. The ID of a guideline with `enforced: true` and `can_annotate: true` can be sent as `guideline_id` when annotations are created or modified. If `must_use_guideline` is true, a `guideline_id` is required.
+     * @apiDescription Returns the annotation guidelines of all projects that the user and the volume have in common. `can_annotate` indicates whether the user can create annotations in the project of the guideline. The ID of a guideline with `enforced: true` and `can_annotate: true` can be sent as `guideline_id` when annotations are created or modified and when labels are attached files. If `must_use_guideline` is true, a `guideline_id` is required.
      *
      * @apiParam {Number} id The volume ID.
      *
