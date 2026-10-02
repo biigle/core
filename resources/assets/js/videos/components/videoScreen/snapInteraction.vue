@@ -11,6 +11,6 @@ export default {
             return this.video.videoHeight;
         }
     }
-}
+};
 
 </script>

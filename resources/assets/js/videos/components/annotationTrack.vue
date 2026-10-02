@@ -7,7 +7,7 @@ const LANE_MARGIN_BOTTOM = 5;
 
 import SvgAnnotation from '../models/SvgAnnotation.js';
 import {KEYFRAME_HEIGHT} from '../models/SvgAnnotation.js';
-import { SVG } from '@svgdotjs/svg.js'
+import { SVG } from '@svgdotjs/svg.js';
 
 export default {
     emits: [

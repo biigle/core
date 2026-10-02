@@ -33,7 +33,7 @@ class VideoTooLargeError extends VideoError {}
 
 // Used to round and parse the video current time from the URL, as it is stored as an int
 // there (without decimal dot).
-const URL_CURRENT_TIME_DIVISOR = 1e4
+const URL_CURRENT_TIME_DIVISOR = 1e4;
 
 export default {
     mixins: [LoaderMixin, Labelbot],
@@ -238,6 +238,13 @@ export default {
                 return Promise.resolve();
             }
 
+            if (this.labelbotOverlayCount > 0) {
+                this.labelbotOverlays.forEach((overlay) => {
+                    this.removeAnnotation(overlay.pendingAnnotation);
+                });
+                this.closeAllLabelbotPopups();
+            }
+
             let promise = new Promise((resolve, reject) => {
                 this.video.addEventListener('seeked', resolve);
                 this.video.addEventListener('error', reject);
@@ -249,6 +256,8 @@ export default {
         },
         startSeeking() {
             this.seeking = true;
+            // We close LabelBOT's popup(s) if the jumpy by frame option is enabled too
+            this.closeLabelbotPopups();
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -329,6 +338,10 @@ export default {
             }
         },
         async createAnnotation(pendingAnnotation, track = false) {
+            const pendingAnnotationFeature = pendingAnnotation.feature;
+            pendingAnnotation.feature = undefined;
+            delete pendingAnnotation.feature;
+
             this.updatePendingAnnotation(pendingAnnotation);
             // Save this because it is still  required when there may already be another
             // this.pendingAnnotation.
@@ -361,6 +374,12 @@ export default {
 
             try {
                 newAnnotation.labelbotImage = await pendingAnnotation.screenshotPromise;
+                // We need to add the feature and the pending annotation to the new annotation
+                // in case LabelBOT returns no results
+                newAnnotation.feature = pendingAnnotationFeature;
+                newAnnotation.pendingAnnotation = pendingAnnotation;
+                // We wrap it inside an arrow function to prevent immediate execution
+                newAnnotation.removeCallback = () => this.removeAnnotation(pendingAnnotation);
             } catch (e) {
                 Messages.danger(e.message);
                 this.removeAnnotation(pendingAnnotation);
@@ -384,8 +403,15 @@ export default {
 
         },
         saveAnnotation(newAnnotation, pendingAnnotation, track = false) {
+            let labelBotReturnedNoResults = false;
             return VideoAnnotationApi.save({id: this.videoId}, newAnnotation)
                 .then((res) => {
+                    // If LabelBOT is active and returns no result we receive 204 and return null
+                    if (res.status === 204) {
+                        labelBotReturnedNoResults = true;
+                        return null;
+                    }
+
                     if (track) {
                         this.disableJobTracking = res.body.trackingJobLimitReached;
                     }
@@ -395,7 +421,24 @@ export default {
                     this.disableJobTracking = res.status === 429;
                 })
                 .finally(() => {
-                    this.removeAnnotation(pendingAnnotation);
+                    if (!labelBotReturnedNoResults) {
+                        this.removeAnnotation(pendingAnnotation);
+                    }
+                });
+        },
+        createLabelBOTAnnotation(annotation) {
+            let newAnnotation = {
+                label_id: annotation.label_id,
+                points: annotation.points,
+                frames: annotation.frames,
+                shape_id: annotation.shape_id,
+            };
+
+            this.saveAnnotation(newAnnotation, annotation.pendingAnnotation)
+                .then((savedAnnotation) => {
+                    if (annotation.track) {
+                        this.setAnnotationTrackingState(savedAnnotation);
+                    }
                 });
         },
         trackAnnotation(pendingAnnotation) {
@@ -403,7 +446,9 @@ export default {
                 .then(this.setAnnotationTrackingState);
         },
         setAnnotationTrackingState(annotation) {
-            if (annotation) {
+            // If LabelBOT returns no result, then the annotation has no id
+            // Tracking state will be set later, if a label was assigned to the pending annotation
+            if (annotation && annotation.id) {
                 annotation.startTracking();
             }
         },
@@ -664,7 +709,7 @@ export default {
                 }, { once: true });
             });
 
-            videoPromise.finally(() => { this.attemptWithCors = false });
+            videoPromise.finally(() => { this.attemptWithCors = false; });
 
             // Try requesting video by using CORS
             this.video.setAttribute('crossOrigin', '');
@@ -730,6 +775,9 @@ export default {
             if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
+
+            this.closeLabelbotPopups();
+
             this.reset();
             let length = this.videoIds.length;
             let index = (this.videoIds.indexOf(this.videoId) + length - 1) % length;
@@ -740,6 +788,9 @@ export default {
             if (!this.hasSiblingVideos || this.labelbotIsComputing) {
                 return;
             }
+
+            this.closeLabelbotPopups();
+
             this.reset();
             let length = this.videoIds.length;
             let index = (this.videoIds.indexOf(this.videoId) + length + 1) % length;
@@ -813,7 +864,7 @@ export default {
                     Messages.danger('Invalid shape. Circle needs non-zero radius');
                     return;
                 case 'LineString':
-                    shape = 'Line'
+                    shape = 'Line';
                     count = 2;
                     break;
                 case 'Polygon':
@@ -876,6 +927,8 @@ export default {
                 return;
             }
 
+            this.closeLabelbotPopups();
+
             if (this.video.paused) {
                 if (this.autoPauseTimeout) {
                     this.cancelAutoPlay();
@@ -910,6 +963,14 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
+        closeLabelbotPopups() {
+            if (this.labelbotOverlayCount > 0) {
+                this.labelbotOverlays.forEach((overlay) => {
+                    this.removeAnnotation(overlay.pendingAnnotation);
+                });
+                this.closeAllLabelbotPopups();
+            }
+        }
     },
     watch: {
         'settings.playbackRate'(rate) {

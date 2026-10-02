@@ -106,5 +106,5 @@ export default {
         this.chart = markRaw(init(this.$refs.root, 'dark', { renderer: 'svg' }));
         this.chart.setOption(this.option);
     },
-}
+};
 </script>
