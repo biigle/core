@@ -31,7 +31,6 @@ class ImageControllerTest extends ApiTestCase
         $response = $this->get('/api/v1/images/-1');
         $response->assertStatus(404);
 
-        $this->withoutExceptionHandling();
         $response = $this->get("/api/v1/images/{$id}");
         $response->assertStatus(200);
         $content = $response->getContent();
