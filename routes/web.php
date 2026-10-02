@@ -11,7 +11,7 @@
 |
 */
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 // PUBLIC ROUTES --------------------------------------------------------------
 $router->post('heartbeat', 'Views\HeartbeatController@store');
@@ -63,7 +63,8 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
 
 // PROTECTED ROUTES -----------------------------------------------------------
 
-$router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router) {
+$protectedMiddleware = config('biigle.email_verification') && !config('biigle.offline_mode') ? ['auth', 'verified'] : ['auth'];
+$router->group(['namespace' => 'Views', 'middleware' => $protectedMiddleware], function ($router) {
     $router->group(['namespace' => 'Notifications', 'prefix' => 'notifications'], function ($router) {
         $router->get('/', [
             'as' => 'notifications',
