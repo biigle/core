@@ -1,6 +1,6 @@
 @if ($type === 'images')
 
-<h2 class="lead">{{number_format($imageResultCount)}} image results</h2>
+<h2 class="lead">@if($imageResultCountCapped)more than {{number_format($fileResultCountCap)}}@else{{number_format($imageResultCount)}}@endif image results</h2>
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $image)
         <li class="col-xs-4">
@@ -17,11 +17,15 @@
 
     @if ($results->isEmpty())
         <p class="well well-lg text-center">
-            We couldn't find any images
-            @if ($query)
-                matching '{{$query}}'.
+            @if ($fileQueryTooShort)
+                Please use at least {{$minFileQueryLength}} characters to search for images.
             @else
-                for you.
+                We couldn't find any images
+                @if ($query)
+                    matching '{{$query}}'.
+                @else
+                    for you.
+                @endif
             @endif
         </p>
     @endif
