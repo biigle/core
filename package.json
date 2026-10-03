@@ -4,7 +4,6 @@
     "dev": "vite",
     "build": "vite build",
     "prod": "vite build",
-    "test:js": "node --test tests/js/**/*.test.js",
     "lint": "eslint --ext .js,.vue resources/assets/js/"
   },
   "devDependencies": {
