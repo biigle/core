@@ -19,53 +19,12 @@
         <div class="row">
             <div class="col-xs-6">
                 <div class="form-group">
-                    <label>Report type</label>
-                    @if ($hasImageVolume)
-                        <div class="btn-group btn-group-justified">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('ImageAnnotations')" :class="{active: wantsType('ImageAnnotations')}">Image annotation report</button>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
-                            </div>
-                            <div class="btn-group">
-                                @if ($hasIfdos)
-                                    <button type="button" class="btn btn-default" title="Request an image iFDO report" v-on:click="selectType('ImageIfdo')" :class="{active: wantsType('ImageIfdo')}">Image iFDO report</button>
-                                @else
-                                    <button type="button" class="btn btn-default" title="iFDO reports are only available for projects having volumes with attached iFDO files" disabled>Image iFDO report</button>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-                @if ($hasImageVolume && $hasVideoVolume)
-                </div>
-                <div class="form-group">
-                @endif
-                    @if ($hasVideoVolume)
-                        <div class="btn-group btn-group-justified">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Request a video annotation report" v-on:click="selectType('VideoAnnotations')" :class="{active: wantsType('VideoAnnotations')}">Video annotation report</button>
-                            </div>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default" title="Request a video label report" v-on:click="selectType('VideoLabels')" :class="{active: wantsType('VideoLabels')}">Video label report</button>
-                            </div>
-                            <div class="btn-group">
-                                @if ($hasIfdos)
-                                    <button type="button" class="btn btn-default" title="Request a video iFDO report" v-on:click="selectType('VideoIfdo')" :class="{active: wantsType('VideoIfdo')}">Video iFDO report</button>
-                                @else
-                                    <button type="button" class="btn btn-default" title="iFDO reports are only available for projects having volumes with attached iFDO files" disabled>Video iFDO report</button>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-                </div>
-                <div class="form-group" :class="{'has-error': errors.id}">
-                    <div v-if="hasAvailableVariants">
-                        <label for="report-variant">Report variant</label>
-                        <select id="report-variant" class="form-control" v-model="selectedVariant" required="" :disabled="onlyOneAvailableVariant || null">
-                            <option v-for="variant in availableVariants" :value="variant" v-text="variant"></option>
-                        </select>
-                    </div>
+                    <label for="report-type">Report type</label>
+                    <select id="report-type" class="form-control" v-model="selectedReportTypeName" required="">
+                        @foreach ($reportTypes as $type)
+                            <option value="{{$type->name}}" @disabled(!$hasIfdos && str_ends_with($type->name, 'Ifdo'))>{{str_replace('Ifdo', 'iFDO', Str::headline(str_replace('\\', ' ', $type->name)))}}</option>
+                        @endforeach
+                    </select>
                     @include('partials.reportTypeInfo')
                     <div class="help-block" v-if="errors.id" v-text="getError('id')"></div>
                 </div>

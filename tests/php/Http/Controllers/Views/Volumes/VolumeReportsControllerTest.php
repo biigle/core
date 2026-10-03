@@ -21,4 +21,18 @@ class VolumeReportsControllerTest extends ApiTestCase
         $response = $this->get("volumes/{$id}/reports")
             ->assertStatus(200);
     }
+
+    public function testShowUsesSingleReportTypeSelector()
+    {
+        $id = $this->volume()->id;
+        $this->beGuest();
+
+        $response = $this->get("volumes/{$id}/reports")
+            ->assertStatus(200)
+            ->assertSee('<select id="report-type"', false)
+            ->assertDontSee('id="report-variant"', false)
+            ->assertDontSee('btn-group btn-group-justified', false);
+
+        $this->assertSame(1, substr_count($response->getContent(), 'id="report-type"'));
+    }
 }
