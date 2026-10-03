@@ -41,10 +41,10 @@ class ProjectReportsControllerTest extends ApiTestCase
         $response = $this->get("projects/{$id}/reports")
             ->assertStatus(200)
             ->assertSee('<select id="report-type"', false)
+            ->assertSee('<option value="ImageAnnotations\\Csv"', false)
+            ->assertSee('<option value="VideoAnnotations\\Csv"', false)
             ->assertDontSee('id="report-variant"', false)
-            ->assertDontSee('btn-group btn-group-justified', false)
-            ->assertSee('ImageAnnotations', false)
-            ->assertSee('VideoAnnotations', false);
+            ->assertDontSee('btn-group btn-group-justified', false);
 
         $this->assertSame(1, substr_count($response->getContent(), 'id="report-type"'));
     }

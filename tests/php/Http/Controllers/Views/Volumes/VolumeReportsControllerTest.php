@@ -30,6 +30,8 @@ class VolumeReportsControllerTest extends ApiTestCase
         $response = $this->get("volumes/{$id}/reports")
             ->assertStatus(200)
             ->assertSee('<select id="report-type"', false)
+            ->assertSee('<option value="ImageAnnotations\\Csv"', false)
+            ->assertDontSee('<option value="VideoAnnotations\\Csv"', false)
             ->assertDontSee('id="report-variant"', false)
             ->assertDontSee('btn-group btn-group-justified', false);
 
