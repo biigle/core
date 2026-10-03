@@ -1,7 +1,17 @@
 <template>
-<div
+<annotation-overlay
+    v-slot="{startDrag}"
     class="labelbot-popup"
     :class="classObject"
+    centered
+    dragging-class="labelbot-popup--dragging"
+    :connector-color="labels[0].color"
+    :feature="feature"
+    :gap="overlayOffset"
+    :line-source="lineSource"
+    :map="map"
+    :z-index="overlayZIndex"
+    @dragstart="handleDragStart"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
     @mousemove="handleMouseMove"
@@ -46,24 +56,15 @@
                 ></typeahead>
         </li>
     </ul>
-</div>
+</annotation-overlay>
 </template>
 
 <script>
+import AnnotationOverlay from './annotationOverlay.vue';
 import Events from '@/core/events';
 import Keyboard from '@/core/keyboard';
-import Overlay from '@biigle/ol/Overlay';
-import Styles from '../stores/styles.js';
 import Typeahead from '@/label-trees/components/labelTypeahead.vue';
 import {debounce} from '@/core/utils.js';
-import {
-    anchorAnnotationOverlay,
-    createAnnotationOverlayConnector,
-    dragAnnotationOverlay,
-    getInitialAnnotationOverlayPlacement,
-} from '../utils.js';
-import {markRaw} from 'vue';
-import {unByKey} from '@biigle/ol/Observable';
 
 // Defined in CSS.
 const OVERLAY_MAX_WIDTH = 300;
@@ -87,6 +88,7 @@ export default {
         'release',
     ],
     components: {
+        annotationOverlay: AnnotationOverlay,
         typeahead: Typeahead,
     },
     props: {
@@ -95,6 +97,18 @@ export default {
             required: true,
         },
         annotation: {
+            type: Object,
+            required: true,
+        },
+        feature: {
+            type: Object,
+            required: true,
+        },
+        lineSource: {
+            type: Object,
+            required: true,
+        },
+        map: {
             type: Object,
             required: true,
         },
@@ -110,12 +124,6 @@ export default {
             maybeGetsAttention: false,
             typeaheadFocused: false,
             selectedLabel: null,
-            overlay: null,
-            lineFeature: null,
-            listenerKeys: [],
-            dragging: false,
-            dragStartMousePosition: [0, 0],
-            dragStartOverlayOffset: [0, 0],
         };
     },
     computed: {
@@ -156,9 +164,14 @@ export default {
         classObject() {
             return {
                 'labelbot-popup--focused': this.isFocused,
-                'labelbot-popup--dragging': this.dragging,
                 'labelbot-popup--typing': this.typeaheadFocused,
             };
+        },
+        overlayOffset() {
+            return OVERLAY_OFFSET;
+        },
+        overlayZIndex() {
+            return this.isFocused ? 100 : null;
         },
         popupKey() {
             return this.annotation.id;
@@ -173,16 +186,6 @@ export default {
             return {
                 'animation-duration': this.timeoutValue,
             };
-        },
-    },
-    watch: {
-        dragging() {
-            if (this.dragging && this.shouldHaveProgressBar) {
-                this.shouldHaveProgressBar = false;
-            }
-        },
-        isFocused(isFocused) {
-            this.overlay.getElement().parentNode.style.zIndex = isFocused ? 100 : '';
         },
     },
     methods: {
@@ -224,6 +227,9 @@ export default {
                 }
             }, 100, 'labelbot-popup-attention');
         },
+        handleDragStart() {
+            this.shouldHaveProgressBar = false;
+        },
         handleEsc() {
             if (!this.isFocused) return;
 
@@ -257,69 +263,6 @@ export default {
             this.$emit('delete', this.annotation);
             this.emitClose();
             Events.emit('labelbot.dismissed');
-        },
-        startDrag(e) {
-            this.dragging = true;
-            this.$parent.$el.addEventListener('mousemove', this.handleDrag);
-            this.$parent.$el.addEventListener('mouseup', this.endDrag);
-            this.dragStartMousePosition = [e.clientX, e.clientY];
-            this.dragStartOverlayOffset = this.overlay.getOffset();
-        },
-        handleDrag(e) {
-            // During dragging, update the popup position only by modifying the offset.
-            // The position is updated when dragging ended.
-            dragAnnotationOverlay(this.overlay, this.dragStartOverlayOffset, this.dragStartMousePosition, e);
-            this.lineFeature._updateCoordinates();
-        },
-        endDrag() {
-            this.dragging = false;
-            this.$parent.$el.removeEventListener('mousemove', this.handleDrag);
-            this.$parent.$el.removeEventListener('mouseup', this.endDrag);
-
-            // When dragging is finished, update the popup position to the closest point
-            // on the annotation and recalculate the offset so the popup stays where it
-            // was dragged. This feels most natural during zooming.
-            anchorAnnotationOverlay(this.overlay, this.overlay.getMap());
-        },
-        createOverlay(annotationCanvas) {
-            const annotationFeature = annotationCanvas.annotationSource.getFeatureById(this.annotation.id);
-            const annotationGeometry = annotationFeature.getGeometry();
-            const annotationExtent = annotationGeometry.getExtent();
-            const popupPosition = [
-                annotationExtent[2],
-                (annotationExtent[1] + annotationExtent[3]) / 2,
-            ];
-
-            const overlay = new Overlay({
-                element: this.$el,
-                positioning: 'center-center',
-                position: popupPosition,
-                offset: [OVERLAY_OFFSET, 0],
-                insertFirst: false, // last added overlay appears on top
-            });
-            this.overlay = markRaw(overlay);
-            this.overlay._annotationGeometry = annotationGeometry;
-            annotationCanvas.map.addOverlay(overlay);
-
-            const placement = getInitialAnnotationOverlayPlacement(
-                annotationExtent,
-                annotationCanvas.map.getView().calculateExtent(annotationCanvas.map.getSize()),
-                annotationCanvas.map.getView().getResolution(),
-                [this.$el.offsetWidth, this.$el.offsetHeight],
-                OVERLAY_OFFSET,
-                true
-            );
-            overlay.setPosition(placement.position);
-            overlay.setOffset(placement.offset);
-
-            this.lineFeature = markRaw(createAnnotationOverlayConnector(
-                overlay, annotationCanvas.map, this.labels[0].color, Styles.editing
-            ));
-
-            annotationCanvas.labelbotSource.addFeature(this.lineFeature);
-
-            this.listenerKeys.push(annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateCoordinates));
-            this.listenerKeys.push(annotationGeometry.on('change', this.lineFeature._updateCoordinates));
         },
         selectLabel1() {
             if (this.isFocused) {
@@ -368,15 +311,9 @@ export default {
         }
     },
     mounted() {
-        this.createOverlay(this.$parent);
-
         this.$refs.popupTypeahead?.$refs.input?.addEventListener("keydown", this.handleTypeaheadKey);
     },
     beforeUnmount() {
-        this.$parent.map.removeOverlay(this.overlay);
-        this.$parent.labelbotSource.removeFeature(this.lineFeature);
-        this.listenerKeys.forEach(unByKey);
-
         Keyboard.off('Escape', this.handleEsc, 'labelbot');
         Keyboard.off('Backspace', this.deleteLabelAnnotation, 'labelbot');
         Keyboard.off('Tab', this.enterTypeahead, 'labelbot');

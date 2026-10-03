@@ -15,12 +15,12 @@
         :features="hoveredFeatures"
         ></label-tooltip>
     <persistent-label-tooltip
-        v-for="feature in visiblePersistentLabelTooltipFeatures"
+        v-for="feature in persistentLabelTooltips.visibleFeatures"
         :key="feature.getId()"
         :feature="feature"
-        :line-source="persistentLabelTooltipLineSource"
+        :line-source="persistentLabelTooltips.lineSource"
         :map="map"
-        :show="showPersistentLabelTooltips"
+        :show="persistentLabelTooltips.show"
         ></persistent-label-tooltip>
     <measure-tooltip
         :show="showMeasureTooltip"
@@ -222,6 +222,9 @@
         :key="annotation.id"
         :focused-popup-key="focusedPopupKey"
         :annotation="annotation"
+        :feature="annotationSource.getFeatureById(annotation.id)"
+        :line-source="labelbotSource"
+        :map="map"
         :timeout="labelbotTimeout"
         @update="updateLabelbotLabel"
         @close="closeLabelbotPopup"

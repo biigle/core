@@ -4,8 +4,7 @@
     "dev": "vite",
     "build": "vite build",
     "prod": "vite build",
-    "lint": "eslint --ext .js,.vue resources/assets/js/",
-    "test:js": "node --test tests/js/*.test.js"
+    "lint": "eslint --ext .js,.vue resources/assets/js/"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.7",

@@ -1,8 +1,8 @@
 <script>
 import LabelTooltip from '@/annotations/components/labelTooltip.vue';
-import PersistentLabelTooltips from '@/annotations/mixins/persistentLabelTooltips.vue';
-import {markRaw} from 'vue';
-import {LABEL_TOOLTIP_MODES, shouldShowPersistentLabelTooltips} from '@/annotations/utils.js';
+import {PersistentLabelTooltip, usePersistentLabelTooltips} from '@/annotations/components/persistentLabelTooltips.js';
+import {computed, markRaw} from 'vue';
+import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the tooltips.
@@ -10,23 +10,21 @@ import {LABEL_TOOLTIP_MODES, shouldShowPersistentLabelTooltips} from '@/annotati
  * @type {Object}
  */
 export default {
-    mixins: [PersistentLabelTooltips],
     components: {
         labelTooltip: LabelTooltip,
+        persistentLabelTooltip: PersistentLabelTooltip,
     },
     data() {
         return {
             // Used to determine when to notify watchers for hovered annotations.
             hoveredFeaturesHash: '',
             hoveredFeatures: [],
+            persistentLabelTooltips: null,
         };
     },
     computed: {
         showTooltip() {
             return this.isDefaultInteractionMode && this.showLabelTooltip === LABEL_TOOLTIP_MODES.HOVER;
-        },
-        showPersistentLabelTooltips() {
-            return shouldShowPersistentLabelTooltips(this.showLabelTooltip, this.playing);
         },
     },
     methods: {
@@ -68,6 +66,23 @@ export default {
                 this.updateTooltipEventListeners(this.map);
             },
         },
+    },
+    created() {
+        this.persistentLabelTooltips = usePersistentLabelTooltips({
+            annotationSource: computed(() => {
+                this.mapReadyRevision;
+                return this.annotationSource;
+            }),
+            map: computed(() => this.map),
+            mapReadyRevision: computed(() => this.mapReadyRevision),
+            mode: computed(() => this.showLabelTooltip),
+        });
+    },
+    mounted() {
+        this.persistentLabelTooltips.mount();
+    },
+    beforeUnmount() {
+        this.persistentLabelTooltips.unmount();
     },
 };
 </script>
