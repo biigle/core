@@ -64,4 +64,35 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
         usort($json, fn ($a, $b) => $a['user_id'] <=> $b['user_id']);
         $this->assertEquals($json, $expected);
     }
+
+    public function testGetUsersWithAnnotationsDistinct(): void
+    {
+        $user2 = UserTest::create();
+        $user3 = UserTest::create();
+
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'user_id' => $user2->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'user_id' => $user2->id]);
+        // Label of a deleted user.
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'user_id' => null]);
+
+        $videoVolume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $this->project()->addVolumeId($videoVolume->id);
+        $video = VideoTest::create(['volume_id' => $videoVolume->id]);
+        $a3 = VideoAnnotationTest::create(['video_id' => $video->id]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a3->id, 'user_id' => $user2->id]);
+
+        // Annotation in a volume of another project.
+        $a4 = ImageAnnotationTest::create();
+        ImageAnnotationLabelTest::create(['annotation_id' => $a4->id, 'user_id' => $user3->id]);
+
+        $this->beEditor();
+        $this->get('api/v1/projects/'.$this->project()->id.'/users-with-annotations')
+            ->assertStatus(200)
+            ->assertExactJson([
+                ['user_id' => $user2->id, 'name' => "{$user2->firstname} {$user2->lastname}"],
+            ]);
+    }
 }
