@@ -20,8 +20,13 @@ class CopyImageAnnotationFeatureVector extends CopyAnnotationFeatureVector
      */
     protected function updateOrCreateFeatureVector(array $attributes): void
     {
-        $idArray = ['id' => $attributes['id']];
-        unset($attributes['id']);
-        ImageAnnotationLabelFeatureVector::updateOrCreate($idArray, $attributes);
+        // Same conversion as the Vector cast of the model, which is not applied by
+        // upsert().
+        $attributes['vector'] = (string) $attributes['vector'];
+        ImageAnnotationLabelFeatureVector::upsert(
+            [$attributes],
+            ['id'],
+            ['annotation_id', 'label_id', 'label_tree_id', 'volume_id', 'vector']
+        );
     }
 }
