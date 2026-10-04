@@ -38,7 +38,13 @@ class FullReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        if ($this->shouldSeparateLabelTrees() || $this->shouldSeparateUsers()) {
+            $rows = $this->query()->get();
+        } else {
+            // The rows are not grouped so they can be streamed to keep the memory
+            // usage low for large volumes.
+            $rows = $this->query()->cursor();
+        }
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
@@ -96,7 +102,7 @@ class FullReportGenerator extends AnnotationReportGenerator
     /**
      * Create a CSV file for a single sheet of the spreadsheet of this report.
      *
-     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param \Illuminate\Support\Enumerable $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
      * @return CsvFile
      */
