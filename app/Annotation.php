@@ -67,21 +67,22 @@ abstract class Annotation extends Model implements AnnotationContract
             return $query;
         }
 
-        $table = $this->getTable();
+        $ownerKeyName = $this->file()->getQualifiedOwnerKeyName();
+        $ownerTable = explode('.', $ownerKeyName)[0];
 
-        return $query->whereIn("{$table}.id", function ($query) use ($user, $table) {
-            $ownerKeyName = $this->file()->getQualifiedOwnerKeyName();
-            $ownerTable = explode('.', $ownerKeyName)[0];
-            $foreignKeyName = $this->file()->getQualifiedForeignKeyName();
-
-            $query->select("{$table}.id")
-                ->from($table)
-                ->join($ownerTable, $ownerKeyName, '=', $foreignKeyName)
-                ->join('project_volume', 'project_volume.volume_id', '=', "{$ownerTable}.volume_id")
-                ->whereIn('project_volume.project_id', function ($query) use ($user) {
-                    $query->select('project_id')
-                        ->from('project_user')
-                        ->where('user_id', $user->id);
+        // Restrict the files instead of the annotations. This is much faster than
+        // restricting the annotations with a join on the (huge) annotation table.
+        return $query->whereIn($this->file()->getQualifiedForeignKeyName(), function ($query) use ($user, $ownerKeyName, $ownerTable) {
+            $query->select($ownerKeyName)
+                ->from($ownerTable)
+                ->whereIn("{$ownerTable}.volume_id", function ($query) use ($user) {
+                    $query->select('volume_id')
+                        ->from('project_volume')
+                        ->whereIn('project_id', function ($query) use ($user) {
+                            $query->select('project_id')
+                                ->from('project_user')
+                                ->where('user_id', $user->id);
+                        });
                 });
         });
     }
