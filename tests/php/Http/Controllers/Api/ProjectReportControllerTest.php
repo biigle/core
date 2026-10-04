@@ -98,6 +98,10 @@ class ProjectReportControllerTest extends ApiTestCase
 
             return true;
         });
+
+        $this->json('POST', "api/v1/projects/{$projectId}/reports", [
+            'type_id' => ReportType::videoMetadataId(),
+        ])->assertStatus(201);
     }
 
     public function testStoreNoVideoVolumes()
@@ -108,6 +112,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $types = [
             ReportType::videoAnnotationsCsvId(),
             ReportType::videoLabelsCsvId(),
+            ReportType::videoMetadataId(),
             ReportType::videoIfdoId(),
         ];
 

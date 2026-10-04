@@ -46,6 +46,7 @@ export default {
                 'annotation_session_id',
                 'only_labels',
             ],
+            'VideoMetadata': [],
             'ImageIfdo': [
                 'export_area',
                 'newest_label',

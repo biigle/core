@@ -40,6 +40,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static int videoIfdoId()
  * @method static ReportType videoLabelsCsv()
  * @method static int videoLabelsCsvId()
+ * @method static ReportType videoMetadata()
+ * @method static int videoMetadataId()
  */
 #[WithoutTimestamps]
 class ReportType extends Model
@@ -68,5 +70,6 @@ class ReportType extends Model
         'videoAnnotationsCsv' => 'VideoAnnotations\Csv',
         'videoIfdo' => 'VideoIfdo',
         'videoLabelsCsv' => 'VideoLabels\Csv',
+        'videoMetadata' => 'VideoMetadata',
     ];
 }

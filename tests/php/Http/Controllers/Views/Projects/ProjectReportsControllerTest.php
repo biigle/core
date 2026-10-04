@@ -43,6 +43,7 @@ class ProjectReportsControllerTest extends ApiTestCase
             ->assertSee('<select id="report-type"', false)
             ->assertSee('<option value="ImageAnnotations\\Csv"', false)
             ->assertSee('<option value="VideoAnnotations\\Csv"', false)
+            ->assertSee('<option value="VideoMetadata"', false)
             ->assertDontSee('id="report-variant"', false)
             ->assertDontSee('btn-group btn-group-justified', false);
 

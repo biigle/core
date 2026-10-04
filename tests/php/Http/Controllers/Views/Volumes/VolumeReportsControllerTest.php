@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
+use Biigle\MediaType;
 
 class VolumeReportsControllerTest extends ApiTestCase
 {
@@ -36,5 +37,16 @@ class VolumeReportsControllerTest extends ApiTestCase
             ->assertDontSee('btn-group btn-group-justified', false);
 
         $this->assertSame(1, substr_count($response->getContent(), 'id="report-type"'));
+    }
+
+    public function testShowVideoMetadataReport()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $this->beGuest();
+
+        $this->get("volumes/{$id}/reports")
+            ->assertStatus(200)
+            ->assertSee('<option value="VideoMetadata"', false)
+            ->assertSee('exports the current metadata for every video', false);
     }
 }

@@ -45,6 +45,7 @@
                 <ul>
                     <li><a href="#video-label-csv-report">CSV</a></li>
                 </ul>
+                <strong><a href="#video-metadata-report">Video metadata report</a></strong>
                 <strong><a href="#ifdo-reports">iFDO reports</a></strong>
             </div>
         </div>
@@ -393,6 +394,34 @@ Animalia
             <li><strong>Label name</strong></li>
             <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
             <li><strong>Creation date</strong></li>
+        </ol>
+
+        <h3><a name="video-metadata-report"></a>Video metadata report</h3>
+        <p>
+            The video metadata report is a CSV file containing the current metadata stored in BIIGLE. It contains one row per metadata sample, ordered by video ID and then by the zero-based sample index. Video-level values are repeated in every sample row. Sampled values are aligned by their array index; missing values are empty cells. If sampled arrays have different lengths, rows are generated through the highest available index. A video without sampled metadata is included once with an empty sample index and empty sample fields.
+        </p>
+        <p>
+            Project reports are ZIP archives containing one CSV file for each video volume. The columns are fixed in this order:
+        </p>
+        <ol>
+            <li><code>video_id</code></li>
+            <li><code>uuid</code></li>
+            <li><code>volume_id</code></li>
+            <li><code>filename</code></li>
+            <li><code>duration</code></li>
+            <li><code>width</code></li>
+            <li><code>height</code></li>
+            <li><code>file_size</code></li>
+            <li><code>mime_type</code></li>
+            <li><code>error</code> (the video processing error state)</li>
+            <li><code>sample_index</code></li>
+            <li><code>taken_at</code></li>
+            <li><code>longitude</code></li>
+            <li><code>latitude</code></li>
+            <li><code>gps_altitude</code></li>
+            <li><code>distance_to_ground</code></li>
+            <li><code>area</code></li>
+            <li><code>yaw</code></li>
         </ol>
 
         <h3><a name="image-ifdo-reports"></a><a name="ifdo-reports"></a>iFDO reports</h3>

@@ -84,6 +84,7 @@ class StoreProjectReport extends StoreReport
         $videoReports = [
             ReportType::videoAnnotationsCsvId(),
             ReportType::videoLabelsCsvId(),
+            ReportType::videoMetadataId(),
             ReportType::videoIfdoId(),
         ];
 

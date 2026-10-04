@@ -55,6 +55,7 @@ class StoreVolumeReport extends StoreReport
             $types = [
                 ReportType::videoAnnotationsCsvId(),
                 ReportType::videoLabelsCsvId(),
+                ReportType::videoMetadataId(),
                 ReportType::videoIfdoId(),
             ];
         }

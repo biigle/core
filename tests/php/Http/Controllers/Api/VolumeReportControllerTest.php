@@ -150,6 +150,7 @@ class VolumeReportControllerTest extends ApiTestCase
         $types = [
             ReportType::videoAnnotationsCsvId(),
             ReportType::videoLabelsCsvId(),
+            ReportType::videoMetadataId(),
             // videoIfdo is tested below
         ];
 
@@ -169,6 +170,16 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", ['type_id' => $typeId])
             ->assertStatus(422);
+    }
+
+    public function testStoreInvalidVideoMetadata()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => ReportType::videoMetadataId(),
+        ])->assertStatus(422);
     }
 
     public function testStoreInvalidImageLabels()
