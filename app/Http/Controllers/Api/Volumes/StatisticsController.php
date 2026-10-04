@@ -27,7 +27,6 @@ class StatisticsController extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
-        $volumeName = $volume->select('id', 'name')->get();
 
         if ($volume->isVideoVolume()) {
             $type = 'video';
