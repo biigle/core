@@ -775,6 +775,103 @@ class ApplyLargoSessionTest extends TestCase
         $this->assertFalse(ImageAnnotation::whereIn('id', $annotationIds)->exists());
     }
 
+    public function testChunkChangedAnnotations()
+    {
+        Queue::fake();
+        config(['biigle.db_param_limit' => 5]);
+
+        $user = UserTest::create();
+        $image = ImageTest::create();
+        $this->setJobId($image, 'job_id');
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+
+        $annotations = [];
+        for ($i = 0; $i < 7; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+            $annotations[] = $annotation;
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $annotation->id,
+                'user_id' => $user->id,
+                'label_id' => $label1->id,
+            ]);
+        }
+        // Two annotations already have the new label.
+        foreach ([$annotations[0], $annotations[5]] as $annotation) {
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $annotation->id,
+                'user_id' => $user->id,
+                'label_id' => $label2->id,
+            ]);
+        }
+
+        $annotationIds = collect($annotations)->pluck('id')->toArray();
+        $dismissed = [$label1->id => $annotationIds];
+        $changed = [$label2->id => $annotationIds];
+
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
+        $job->handle();
+
+        foreach ($annotations as $annotation) {
+            $this->assertNotNull($annotation->fresh());
+            $this->assertSame([$label2->id], $annotation->labels()->pluck('label_id')->all());
+        }
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
+    }
+
+    public function testChunkDeleteDanglingAnnotations()
+    {
+        Queue::fake();
+        config(['biigle.db_param_limit' => 5]);
+
+        $user = UserTest::create();
+        $image = ImageTest::create();
+        $this->setJobId($image, 'job_id');
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+
+        $annotations = [];
+        for ($i = 0; $i < 7; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+            $annotations[] = $annotation;
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $annotation->id,
+                'user_id' => $user->id,
+                'label_id' => $label1->id,
+            ]);
+        }
+        // This annotation keeps a label of another user.
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotations[6]->id,
+            'label_id' => $label1->id,
+        ]);
+
+        $annotationIds = collect($annotations)->pluck('id')->toArray();
+        $dismissed = [$label1->id => $annotationIds];
+        // Changes for annotations that no longer exist are ignored.
+        $changed = [$label2->id => [$annotationIds[0], 999999]];
+        $annotations[0]->delete();
+        Queue::fake();
+
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
+        $job->handle();
+
+        $expect = [];
+        foreach (array_slice($annotations, 1, 5) as $annotation) {
+            $this->assertNull($annotation->fresh());
+            $expect[$annotation->id] = $image->uuid;
+        }
+        $this->assertNotNull($annotations[6]->fresh());
+
+        Queue::assertPushed(RemoveImageAnnotationPatches::class, 1);
+        Queue::assertPushed(RemoveImageAnnotationPatches::class, function ($job) use ($expect) {
+            $args = (fn () => $this->annotationIds)->call($job);
+            ksort($args);
+
+            return $args === $expect;
+        });
+    }
+
     protected function setJobId(VolumeFile $file, string $id): void
     {
         $attrs = $file->volume->attrs ?? [];
