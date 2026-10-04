@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
+use Pgvector\Laravel\Vector;
 
 /**
  * @extends ProcessAnnotatedFile<ImageAnnotation>
@@ -59,22 +60,49 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
     {
         $annotations = $annotations->load('labels.label')->keyBy('id');
+        // Write the feature vectors in batches with a single query each instead of a
+        // query for each feature vector.
+        $vectors = [];
         foreach ($output as $row) {
             $annotation = $annotations->get($row[0]);
+            // Same conversion as the Vector cast of the model, which is not applied
+            // by upsert().
+            $vector = (string) new Vector($row[1]);
 
             foreach ($annotation->labels as $al) {
-                ImageAnnotationLabelFeatureVector::updateOrCreate(
-                    ['id' => $al->id],
-                    [
-                        'annotation_id' => $annotation->id,
-                        'label_id' => $al->label_id,
-                        'label_tree_id' => $al->label->label_tree_id,
-                        'volume_id' => $this->file->volume_id,
-                        'vector' => $row[1],
-                    ]
-                );
+                $vectors[$al->id] = [
+                    'id' => $al->id,
+                    'annotation_id' => $annotation->id,
+                    'label_id' => $al->label_id,
+                    'label_tree_id' => $al->label->label_tree_id,
+                    'volume_id' => $this->file->volume_id,
+                    'vector' => $vector,
+                ];
+            }
+
+            if (count($vectors) >= static::FEATURE_VECTOR_BATCH_SIZE) {
+                $this->upsertFeatureVectors($vectors);
+                $vectors = [];
             }
         }
+
+        $this->upsertFeatureVectors($vectors);
+    }
+
+    /**
+     * Insert or update feature vectors.
+     */
+    protected function upsertFeatureVectors(array $vectors): void
+    {
+        if (empty($vectors)) {
+            return;
+        }
+
+        ImageAnnotationLabelFeatureVector::upsert(
+            array_values($vectors),
+            ['id'],
+            ['annotation_id', 'label_id', 'label_tree_id', 'volume_id', 'vector']
+        );
     }
 
     /**
