@@ -168,11 +168,14 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
+        // Stream the raw file rows so not all files must be held in memory as models.
         $volume->images()
             ->orderBy('id')
             ->when(!empty($selectedImageIds), fn ($query) => $query->whereIn('id', $selectedImageIds))
-            ->get()->map(function ($image) use ($copy) {
-                $original = $image->getRawOriginal();
+            ->toBase()
+            ->cursor()
+            ->map(function ($image) use ($copy) {
+                $original = (array) $image;
                 $original['volume_id'] = $copy->id;
                 $original['uuid'] = (string)Uuid::uuid4();
                 $this->uuidMap[$original['uuid']] = $image->uuid;
@@ -314,11 +317,14 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
+        // Stream the raw file rows so not all files must be held in memory as models.
         $volume->videos()
             ->orderBy('id')
             ->when(!empty($selectedVideoIds), fn ($query) => $query->whereIn('id', $selectedVideoIds))
-            ->get()->map(function ($video) use ($copy) {
-                $original = $video->getRawOriginal();
+            ->toBase()
+            ->cursor()
+            ->map(function ($video) use ($copy) {
+                $original = (array) $video;
                 $original['volume_id'] = $copy->id;
                 $original['uuid'] = (string)Uuid::uuid4();
                 unset($original['id']);

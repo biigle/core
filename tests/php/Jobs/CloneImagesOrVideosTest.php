@@ -22,6 +22,7 @@ use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -76,6 +77,62 @@ class CloneImagesOrVideosTest extends ApiTestCase
             $volume->makeHidden($ignore)->toArray(),
             $copy->makeHidden($ignore)->toArray()
         );
+    }
+
+    public function testCloneFilesCopiesAllColumns()
+    {
+        Event::fake();
+        foreach ([MediaType::imageId(), MediaType::videoId()] as $mediaTypeId) {
+            $volume = VolumeTest::create(['media_type_id' => $mediaTypeId])->fresh();
+            $isImage = $volume->isImageVolume();
+            $table = $isImage ? 'images' : 'videos';
+            $copy = $volume->replicate();
+            $copy->save();
+            $project = ProjectTest::create();
+            $project->addVolumeId($copy->id);
+
+            $files = [];
+            foreach (['c.jpg', 'a.jpg', 'b.jpg'] as $index => $filename) {
+                if ($isImage) {
+                    $files[] = ImageTest::create([
+                        'filename' => $filename,
+                        'volume_id' => $volume->id,
+                        'taken_at' => '2024-01-0'.($index + 1).' 10:00:00',
+                        'lng' => 1.5 + $index,
+                        'lat' => 5.3,
+                        'tiled' => $index === 1,
+                        'attrs' => ['size' => $index, 'metadata' => ['yaw' => 90]],
+                    ]);
+                } else {
+                    $files[] = VideoTest::create([
+                        'filename' => $filename,
+                        'volume_id' => $volume->id,
+                        'taken_at' => ['2024-01-0'.($index + 1).' 10:00:00'],
+                        'lng' => [1.5 + $index],
+                        'lat' => [5.3],
+                        'duration' => 10.5,
+                        'attrs' => ['size' => $index, 'metadata' => ['yaw' => [90]]],
+                    ]);
+                }
+            }
+
+            $request = new Request(['project' => $project, 'volume' => $volume]);
+            with(new CloneImagesOrVideos($request, $copy))->handle();
+
+            $strip = fn ($row) => array_diff_key((array) $row, ['id' => 1, 'uuid' => 1, 'volume_id' => 1]);
+            $original = DB::table($table)->where('volume_id', $volume->id)->orderBy('id')->get();
+            $cloned = DB::table($table)->where('volume_id', $copy->id)->orderBy('id')->get();
+            $this->assertCount(3, $cloned);
+            $this->assertSame($original->map($strip)->all(), $cloned->map($strip)->all());
+
+            $expectedMap = [];
+            foreach ($cloned as $index => $file) {
+                $this->assertNotSame($original[$index]->uuid, $file->uuid);
+                $expectedMap[$file->uuid] = $original[$index]->uuid;
+            }
+
+            Queue::assertPushed(ProcessCloneVolumeFiles::class, fn ($job) => (fn () => $this->volume->id === $copy->id && $this->uuidMap === $expectedMap)->call($job));
+        }
     }
 
     public function testCloneVideoVolume()
