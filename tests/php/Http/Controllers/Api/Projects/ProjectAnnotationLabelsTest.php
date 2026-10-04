@@ -157,4 +157,38 @@ class ProjectAnnotationLabelsTest extends ApiTestCase
                 ]
             );
     }
+
+    public function testGetProjectAnnotationLabelsSumImagesAndVideos()
+    {
+        $id = $this->project()->id;
+        $l = LabelTest::create();
+        $img = ImageTest::create(['volume_id' => $this->volume()->id, 'filename' => 'abc.jpg']);
+        $a1 = ImageAnnotationTest::create(['image_id' => $img]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $img]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l->id]);
+
+        $videoVolume = VolumeTest::create(['media_type_id' => MediaType::video(), 'creator_id' => $this->volume()->creator_id]);
+        $this->project()->volumes()->attach($videoVolume->id);
+        $vid = VideoTest::create(['volume_id' => $videoVolume, 'filename' => 'abc.mp4']);
+        $a3 = VideoAnnotationTest::create(['video_id' => $vid]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $l->id]);
+
+        // Annotation in a volume that does not belong to the project.
+        $a4 = ImageAnnotationTest::create();
+        ImageAnnotationLabelTest::create(['annotation_id' => $a4->id, 'label_id' => $l->id]);
+
+        $this->beEditor();
+        $response = $this->getJson("/api/v1/projects/{$id}/label-count")
+            ->assertStatus(200)
+            ->assertExactJson([[
+                "id" => $l->id,
+                "color" => $l->color,
+                "name" => $l->name,
+                "label_tree_id" => $l->label_tree_id,
+                "count" => 3,
+            ]]);
+
+        $this->assertSame(3, $response->json()[0]['count']);
+    }
 }
