@@ -252,7 +252,6 @@ export default {
             if (!this.isFocused) return;
 
             if (this.noLabels) {
-                this.annotation.removeCallback();
                 this.emitClose();
                 return;
             }
@@ -286,10 +285,8 @@ export default {
 
             if (this.labels.length > 0) {
                 this.$emit('delete', this.annotation);
-            } else {
-                // In this case we delete the feature from the openLayer source
-                this.annotation.removeCallback();
             }
+            // In case of no labels the deletion is happened before unmount
             this.emitClose();
             Events.emit('labelbot.dismissed');
         },

@@ -256,8 +256,8 @@ export default {
         },
         startSeeking() {
             this.seeking = true;
-            // We close LabelBOT's popup(s) if the jumpy by frame option is enabled too
-            this.closeLabelbotPopups();
+            // We close LabelBOT popups if the jump by frame option is enabled too
+            this.closeAllLabelbotPopups();
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -776,7 +776,7 @@ export default {
                 return;
             }
 
-            this.closeLabelbotPopups();
+            this.closeAllLabelbotPopups();
 
             this.reset();
             let length = this.videoIds.length;
@@ -789,7 +789,7 @@ export default {
                 return;
             }
 
-            this.closeLabelbotPopups();
+            this.closeAllLabelbotPopups();
 
             this.reset();
             let length = this.videoIds.length;
@@ -927,7 +927,7 @@ export default {
                 return;
             }
 
-            this.closeLabelbotPopups();
+            this.closeAllLabelbotPopups();
 
             if (this.video.paused) {
                 if (this.autoPauseTimeout) {
@@ -963,14 +963,6 @@ export default {
             window.clearTimeout(this.autoPauseTimeoutId);
             this.autoPauseTimeout = 0;
         },
-        closeLabelbotPopups() {
-            if (this.labelbotOverlayCount > 0) {
-                this.labelbotOverlays.forEach((overlay) => {
-                    this.removeAnnotation(overlay.pendingAnnotation);
-                });
-                this.closeAllLabelbotPopups();
-            }
-        }
     },
     watch: {
         'settings.playbackRate'(rate) {
