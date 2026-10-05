@@ -420,7 +420,7 @@ export default {
                     }
                 });
         },
-        createLabelBOTAnnotation(annotation) {
+        createRestoredLabelbotAnnotation(annotation) {
             let newAnnotation = {
                 label_id: annotation.label_id,
                 points: annotation.points,

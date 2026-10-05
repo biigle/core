@@ -395,7 +395,7 @@
             :focused-popup-key="focusedPopupKey"
             :annotation="annotation"
             :timeout="labelbotTimeout"
-            @new="createNewLabelbotAnnotation"
+            @create-restored-labelbot-annotation="createRestoredLabelbotAnnotation"
             @update="updateLabelbotLabel"
             @close="closeLabelbotPopup"
             @delete="handleDeleteLabelbotAnnotation"
@@ -444,6 +444,7 @@ export default {
         'initMap',
         'cancel-auto-play',
         'close-all-labelbot-popups',
+        'create-restored-labelbot-annotation',
     ],
     mixins: [
         VideoPlayback,

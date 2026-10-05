@@ -59,8 +59,8 @@ export default {
         },
     },
     methods: {
-        createNewLabelbotAnnotation(event) {
-            this.$emit('new', event.newAnnotation, event.removeCallback);
+        createRestoredLabelbotAnnotation(event) {
+            this.$emit('create-restored-labelbot-annotation', event.newAnnotation, event.removeCallback);
         },
         updateLabelbotLabel(event) {
             this.$emit('swap', event.annotation, event.label);

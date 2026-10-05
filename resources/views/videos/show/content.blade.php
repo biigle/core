@@ -67,7 +67,7 @@
       :labelbot-timeout="labelbotTimeout"
       :draft-annotation-uses-label-color="settings.draftAnnotationUsesLabelColor"
       v-on:swap="swapAnnotationLabelTo"
-      v-on:new="createLabelBOTAnnotation"
+      v-on:create-restored-labelbot-annotation="createRestoredLabelbotAnnotation"
       v-on:close-labelbot-popup="closeLabelbotPopup"
       v-on:close-all-labelbot-popups="closeAllLabelbotPopups"
       v-on:init-map="handleInitMap"

@@ -80,7 +80,7 @@ export const TIMEOUTS = [
 
 export default {
     emits: [
-        'new',
+        'create-restored-labelbot-annotation',
         'update',
         'close',
         'delete',
@@ -201,8 +201,8 @@ export default {
             // eslint-disable-next-line no-unused-vars
             const {removeCallback, feature, labels, ...annotation} = this.annotation;
             annotation.label_id = label.id;
-
-            this.$emit('new', { newAnnotation: annotation, removeCallback: removeCallback});
+            console.log("send create restored labelbot annotation from popup")
+            this.$emit('create-restored-labelbot-annotation', { newAnnotation: annotation, removeCallback: removeCallback});
             this.emitClose();
         },
         updateAndClose(label) {

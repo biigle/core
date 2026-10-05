@@ -215,7 +215,7 @@
         :focused-popup-key="focusedPopupKey"
         :annotation="annotation"
         :timeout="labelbotTimeout"
-        @new="createNewLabelbotAnnotation"
+        @create-restored-labelbot-annotation="createRestoredLabelbotAnnotation"
         @update="updateLabelbotLabel"
         @close="closeLabelbotPopup"
         @delete="handleDeleteLabelbotAnnotation"
