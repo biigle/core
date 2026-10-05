@@ -201,9 +201,6 @@ export default {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
                     if (!savedAnnotation) {
-                        // We need to parse the ol_uid to int to be used as pop key
-                        feature.ol_uid = parseInt(feature.ol_uid);
-                        
                         // We return annotation and not savedAnnotation, because savedAnnotation is null 
                         annotation.feature = feature;
                         annotation.labels = [];

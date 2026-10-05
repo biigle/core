@@ -29,8 +29,11 @@ export default {
                 return [];
             },
         },
+        // When LabelBOT returns no results,
+        // we use the id of the OpenLayer feature, which is a string and 
+        // we don't parse it to Number to avoid colliding with real annotation ids if more than one popup is opened.
         focusedPopupKey: {
-            type: Number,
+            type: [String, Number],
             default: -1,
         },
         labelbotTimeout: {

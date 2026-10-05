@@ -93,7 +93,7 @@ export default {
     },
     props: {
         focusedPopupKey: {
-            type: Number,
+            type: [Number, String],
             required: true,
         },
         annotation: {
