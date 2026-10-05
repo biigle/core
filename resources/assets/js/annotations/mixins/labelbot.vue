@@ -166,13 +166,17 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            // Make sure the LabelBOT image, feature and pending video annotation are not sent in the API request to create the
+            // Make sure the LabelBOT image, feature, pending video annotation and the remove callback function are not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
             delete annotation.labelbotImage;
 
             const feature = annotation.feature;
             delete annotation.feature;
+
+            // JSON serialisation drops functions, but we drop the callback manually anyway
+            const removeCallback = annotation.removeCallback;
+            delete annotation.removeCallback;
 
             // Needed only in case of video annotations
             let pendingVideoAnnotation;
@@ -205,6 +209,7 @@ export default {
                         annotation.feature = feature;
                         annotation.labels = [];
                         annotation.shape = shape;
+                        annotation.removeCallback = removeCallback;
 
                         if (pendingVideoAnnotation) {
                             annotation.pendingAnnotation = pendingVideoAnnotation;

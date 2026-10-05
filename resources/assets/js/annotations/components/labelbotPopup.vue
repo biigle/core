@@ -198,14 +198,9 @@ export default {
     methods: {
         createAndClose(label) {
             this.annotationWithoutLabel = false;
-
-            const annotation = { ...this.annotation };
+            // eslint-disable-next-line no-unused-vars
+            const {removeCallback, feature, labels, ...annotation} = this.annotation;
             annotation.label_id = label.id;
-
-            const removeCallback = annotation.removeCallback;
-            delete annotation.removeCallback;
-            delete annotation.feature;
-            delete annotation.labels;
 
             this.$emit('new', { newAnnotation: annotation, removeCallback: removeCallback});
             this.emitClose();
