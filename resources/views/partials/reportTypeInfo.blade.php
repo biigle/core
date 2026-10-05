@@ -43,6 +43,9 @@
 <div class="help-block" v-cloak v-if="wantsCombination('VideoMetadata', '')">
     The video metadata report exports the current metadata for every video as sample-oriented CSV rows. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#video-metadata-report">report schema</a>.
 </div>
+<div class="help-block" v-cloak v-if="wantsCombination('ImageMetadata', '')">
+    The image metadata report exports the current metadata for every image as CSV rows. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#image-metadata-report">report schema</a>.
+</div>
 <div class="help-block" v-if="wantsCombination('ImageIfdo', '')">
     The iFDO report returns the iFDO file that was attached to a volume with added information about annotations and image labels. See the <a target="_blank" href="https://www.marine-imaging.com/fair/ifdos/iFDO-overview">iFDO specification for more information</a>.
 </div>

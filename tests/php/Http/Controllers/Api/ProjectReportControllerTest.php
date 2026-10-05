@@ -142,6 +142,7 @@ class ProjectReportControllerTest extends ApiTestCase
             ReportType::imageLabelsBasicId(),
             ReportType::imageLabelsCsvId(),
             ReportType::imageLabelsImageLocationId(),
+            ReportType::imageMetadataId(),
             ReportType::imageIfdoId(),
         ];
 
@@ -151,6 +152,17 @@ class ProjectReportControllerTest extends ApiTestCase
                 'type_id' => $typeId,
             ])->assertStatus(422);
         }
+    }
+
+    public function testStoreImageMetadata()
+    {
+        $projectId = $this->project()->id;
+        $this->volume(['media_type_id' => MediaType::imageId()]);
+        $this->beGuest();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+            'type_id' => ReportType::imageMetadataId(),
+        ])->assertStatus(201);
     }
 
     public function testStoreOnlyLabels()

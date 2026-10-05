@@ -49,4 +49,15 @@ class VolumeReportsControllerTest extends ApiTestCase
             ->assertSee('<option value="VideoMetadata"', false)
             ->assertSee('exports the current metadata for every video', false);
     }
+
+    public function testShowImageMetadataReport()
+    {
+        $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+        $this->beGuest();
+
+        $this->get("volumes/{$id}/reports")
+            ->assertStatus(200)
+            ->assertSee('<option value="ImageMetadata"', false)
+            ->assertSee('exports the current metadata for every image', false);
+    }
 }

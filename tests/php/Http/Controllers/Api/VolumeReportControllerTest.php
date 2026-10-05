@@ -84,6 +84,7 @@ class VolumeReportControllerTest extends ApiTestCase
             ReportType::imageAnnotationsAbundanceId(),
             ReportType::imageLabelsBasicId(),
             ReportType::imageLabelsCsvId(),
+            ReportType::imageMetadataId(),
             // imageAnnotationImageLocation is tested below
             // imageAnnotationAnnotationLocation is tested below
             // imageLabelImageLocation is tested below
@@ -179,6 +180,16 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->beGuest();
         $this->postJson("api/v1/volumes/{$volumeId}/reports", [
             'type_id' => ReportType::videoMetadataId(),
+        ])->assertStatus(422);
+    }
+
+    public function testStoreInvalidImageMetadata()
+    {
+        $volumeId = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+
+        $this->beGuest();
+        $this->postJson("api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => ReportType::imageMetadataId(),
         ])->assertStatus(422);
     }
 

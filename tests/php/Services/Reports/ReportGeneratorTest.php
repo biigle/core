@@ -4,9 +4,11 @@ namespace Biigle\Tests\Services\Reports;
 
 use Biigle\Project;
 use Biigle\ReportType;
+use Biigle\Services\Reports\Projects\ImageMetadataReportGenerator as ProjectImageMetadataReportGenerator;
 use Biigle\Services\Reports\Projects\VideoMetadataReportGenerator as ProjectVideoMetadataReportGenerator;
 use Biigle\Services\Reports\ReportGenerator;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\BasicReportGenerator;
+use Biigle\Services\Reports\Volumes\ImageMetadataReportGenerator;
 use Biigle\Services\Reports\Volumes\VideoMetadataReportGenerator;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
@@ -57,6 +59,18 @@ class ReportGeneratorTest extends TestCase
         $this->assertInstanceOf(
             ProjectVideoMetadataReportGenerator::class,
             ReportGenerator::get(Project::class, ReportType::videoMetadata())
+        );
+    }
+
+    public function testGetImageMetadata()
+    {
+        $this->assertInstanceOf(
+            ImageMetadataReportGenerator::class,
+            ReportGenerator::get(Volume::class, ReportType::imageMetadata())
+        );
+        $this->assertInstanceOf(
+            ProjectImageMetadataReportGenerator::class,
+            ReportGenerator::get(Project::class, ReportType::imageMetadata())
         );
     }
 

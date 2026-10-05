@@ -49,6 +49,7 @@ export default {
                 'only_labels',
             ],
             'VideoMetadata': [],
+            'ImageMetadata': [],
             'ImageIfdo': [
                 'export_area',
                 'newest_label',

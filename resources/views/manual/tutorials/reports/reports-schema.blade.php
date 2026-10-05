@@ -35,6 +35,7 @@
                     <li><a href="#image-label-csv-report">CSV</a></li>
                     <li><a href="#image-label-image-location-report">ImageLocation</a></li>
                 </ul>
+                <strong><a href="#image-metadata-report">Image metadata report</a></strong>
             </div>
             <div class="col-xs-6">
                 <strong><a href="#video-annotation-reports">Video annotation reports</a></strong>
@@ -335,6 +336,33 @@ Animalia
             <li><strong>_filename</strong><br>The filename of the image.</li>
             <li>Additional properties list the image labels that have been used in the volume and whether a label was attached to an image (<code>1</code>) or not (<code>0</code>). The format of the property title is "<strong>label_name (#label_id)</strong>"</li>
         </ul>
+
+        <h3><a name="image-metadata-report"></a>Image metadata report</h3>
+        <p>
+            The image metadata report is a CSV file containing the current metadata stored in BIIGLE. It contains one row for every image, ordered by image ID. Images without metadata are included and unavailable values are represented by empty cells. For <code>area</code>, image metadata takes precedence over the area computed by laser point detection; the value is empty if neither is available.
+        </p>
+        <p>
+            Project reports are ZIP archives containing one CSV file for each image volume. The columns are fixed in this order:
+        </p>
+        <ol>
+            <li><code>image_id</code></li>
+            <li><code>uuid</code></li>
+            <li><code>volume_id</code></li>
+            <li><code>filename</code></li>
+            <li><code>taken_at</code></li>
+            <li><code>longitude</code></li>
+            <li><code>latitude</code></li>
+            <li><code>width</code></li>
+            <li><code>height</code></li>
+            <li><code>file_size</code></li>
+            <li><code>mime_type</code></li>
+            <li><code>tiled</code></li>
+            <li><code>tiling_in_progress</code></li>
+            <li><code>gps_altitude</code></li>
+            <li><code>distance_to_ground</code></li>
+            <li><code>area</code></li>
+            <li><code>yaw</code></li>
+        </ol>
 
         <h3><a name="video-annotation-reports"></a>Video annotation reports</h3>
         <h4><a name="video-annotation-csv-report"></a>CSV</h4>

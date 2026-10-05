@@ -49,6 +49,7 @@ class StoreVolumeReport extends StoreReport
                 ReportType::imageLabelsBasicId(),
                 ReportType::imageLabelsCsvId(),
                 ReportType::imageLabelsImageLocationId(),
+                ReportType::imageMetadataId(),
                 ReportType::imageIfdoId(),
             ];
         } else {

@@ -34,6 +34,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static int imageLabelsCsvId()
  * @method static ReportType imageLabelsImageLocation()
  * @method static int imageLabelsImageLocationId()
+ * @method static ReportType imageMetadata()
+ * @method static int imageMetadataId()
  * @method static ReportType videoAnnotationsCsv()
  * @method static int videoAnnotationsCsvId()
  * @method static ReportType videoIfdo()
@@ -67,6 +69,7 @@ class ReportType extends Model
         'imageLabelsBasic' => 'ImageLabels\Basic',
         'imageLabelsCsv' => 'ImageLabels\Csv',
         'imageLabelsImageLocation' => 'ImageLabels\ImageLocation',
+        'imageMetadata' => 'ImageMetadata',
         'videoAnnotationsCsv' => 'VideoAnnotations\Csv',
         'videoIfdo' => 'VideoIfdo',
         'videoLabelsCsv' => 'VideoLabels\Csv',
