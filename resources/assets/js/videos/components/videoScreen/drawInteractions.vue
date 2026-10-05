@@ -239,7 +239,7 @@ export default {
                 return;
             }
             // We need to pause the video otherwise no annotation would be
-            // visible as an anchor for the  labelbot popup.
+            // visible as an anchor for the LabelBOT popup.
             this.pause();
             this.$emit('seek', lastFrame);
         },
@@ -248,7 +248,7 @@ export default {
                 if (this.hasPendingAnnotation) {
                     if (this.labelbotIsActive) {
                         // If we don't seek to the last frame, no annotation would be
-                        // visible as an anchor for the  labelbot popup.
+                        // visible as an anchor for the LabelBOT popup.
                         this.seekToLastFrame(this.pendingAnnotation);
                     }
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
@@ -269,7 +269,7 @@ export default {
                 if (this.hasPendingAnnotation) {
                     if (this.labelbotIsActive) {
                         // If we don't seek to the last frame, no annotation would be
-                        // visible as an anchor for the  labelbot popup.
+                        // visible as an anchor for the LabelBOT popup.
                         this.seekToLastFrame(this.pendingAnnotation);
                     }
                     this.$emit('track-annotation', this.pendingAnnotation);

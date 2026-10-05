@@ -592,7 +592,7 @@ export default {
 
                 // We add temporarily the feature to the annotation
                 // so in case LabelBOT did not return any results, the unique id of 
-                // the feature could be used as LabelBOT popup id and also we need the geometry of the feature
+                // the feature could be used as LabelBOT's popup id and also we need the geometry of the feature
                 // to place the LabelBOT's empty overlay/popup correctly.
                 newAnnotation.feature = e.feature;
 
