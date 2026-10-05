@@ -8,6 +8,7 @@ use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
@@ -565,6 +566,36 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame(range(0, 383), $vectors[1]->vector->toArray());
     }
 
+    public function testGenerateFeatureVectorBatches()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock(3);
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = VideoTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 3; $i++) {
+            $annotation = VideoAnnotationTest::create(['video_id' => $file->id, 'points' => [[200, 200]], 'frames' => [1], 'shape_id' => Shape::pointId()]);
+            $annotationLabels[] = VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        // The labels of one annotation may be split across batches.
+        $annotationLabels[] = VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+
+        $job = new ProcessAnnotatedVideoBatchStub($file);
+        $job->mock = $video;
+        $job->handle();
+
+        $vectors = VideoAnnotationLabelFeatureVector::orderBy('id')->get();
+        $this->assertSame(array_map(fn ($al) => $al->id, $annotationLabels), $vectors->pluck('id')->all());
+        foreach ($vectors as $index => $vector) {
+            $this->assertSame($annotationLabels[$index]->annotation_id, $vector->annotation_id);
+            $this->assertSame($annotationLabels[$index]->label_id, $vector->label_id);
+            $this->assertSame($annotationLabels[$index]->label->label_tree_id, $vector->label_tree_id);
+            $this->assertSame($file->volume_id, $vector->volume_id);
+            $this->assertSame(range(0, 383), $vector->vector->toArray());
+        }
+    }
+
     public function testGenerateFeatureVectorUpdate()
     {
         Storage::fake('test');
@@ -916,4 +947,9 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     {
         return $this->featureVector ?: range(0, 383);
     }
+}
+
+class ProcessAnnotatedVideoBatchStub extends ProcessAnnotatedVideoStub
+{
+    const FEATURE_VECTOR_BATCH_SIZE = 2;
 }

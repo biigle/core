@@ -7,6 +7,7 @@ use Biigle\MediaType;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -139,6 +140,52 @@ class StatisticsControllerTest extends ApiTestCase
             ]
         ];
         $response->assertExactJson($expect);
+    }
+
+    public function testImageStatisticsAggregates()
+    {
+        $id = $this->volume()->id;
+        $image1 = ImageTest::create(['volume_id' => $id]);
+        $image2 = ImageTest::create(['volume_id' => $id, 'filename' => 'test-image2.jpg']);
+        $user = UserTest::create();
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+        $label3 = LabelTest::create();
+
+        $a1 = ImageAnnotationTest::create(['image_id' => $image1->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $label1->id, 'user_id' => $user->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $label2->id, 'user_id' => $user->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image1->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $label3->id, 'user_id' => $user->id]);
+        $a3 = ImageAnnotationTest::create(['image_id' => $image2->id]);
+        // Label of a deleted user.
+        ImageAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $label1->id, 'user_id' => null]);
+
+        $this->beGuest();
+        $response = $this->get("/api/v1/volumes/{$id}/statistics")->assertStatus(200);
+
+        $yearmonth = $a1->created_at->format('Y-m');
+        $fullname = "{$user->firstname} {$user->lastname}";
+
+        $response->assertJsonPath('annotatedFiles', 2);
+        $response->assertJsonPath('totalFiles', 2);
+        $response->assertJsonPath('annotationTimeSeries', [
+            ['user_id' => $user->id, 'fullname' => $fullname, 'count' => 3, 'yearmonth' => $yearmonth],
+            ['user_id' => null, 'fullname' => ' ', 'count' => 1, 'yearmonth' => $yearmonth],
+        ]);
+        $response->assertJsonPath('volumeAnnotations', [
+            ['user_id' => $user->id, 'fullname' => $fullname, 'count' => 3, 'volume_id' => $id],
+            ['user_id' => null, 'fullname' => ' ', 'count' => 1, 'volume_id' => $id],
+        ]);
+        $response->assertJsonPath('annotationLabels', [
+            ['id' => $label1->id, 'name' => $label1->name, 'count' => 2, 'color' => $label1->color],
+            ['id' => $label2->id, 'name' => $label2->name, 'count' => 1, 'color' => $label2->color],
+            ['id' => $label3->id, 'name' => $label3->name, 'count' => 1, 'color' => $label3->color],
+        ]);
+        $response->assertJsonPath('sourceTargetLabels', [
+            $label1->id => [$label2->id, $label3->id],
+            $label2->id => [$label3->id],
+        ]);
     }
 
     public function testVideoStatistics()

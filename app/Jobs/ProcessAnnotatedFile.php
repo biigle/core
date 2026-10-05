@@ -40,6 +40,13 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     use SerializesModels, InteractsWithQueue;
 
     /**
+     * Number of feature vectors that are written to the database with a single query.
+     *
+     * @var int
+     */
+    const FEATURE_VECTOR_BATCH_SIZE = 1000;
+
+    /**
      * The maximum number of times the job may be redispatched.
      *
      * A job is redispatched when another job is currently downloading the same file.

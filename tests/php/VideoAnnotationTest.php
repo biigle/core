@@ -344,6 +344,33 @@ class VideoAnnotationTest extends ModelTestCase
         $this->assertTrue(VideoAnnotation::visibleFor($admin)->where('video_annotations.id', $a->id)->exists());
     }
 
+    public function testScopeVisibleForMultipleProjects()
+    {
+        $file = VideoTest::create();
+        $otherFile = VideoTest::create();
+        $user = UserTest::create();
+        $project1 = ProjectTest::create();
+        $project2 = ProjectTest::create();
+        // The user is member of project 2 only. The volume belongs to both projects.
+        $project2->addUserId($user->id, Role::guestId());
+        $project1->addVolumeId($file->volume_id);
+        $project2->addVolumeId($file->volume_id);
+        $project1->addVolumeId($otherFile->volume_id);
+
+        $a1 = static::create(['video_id' => $file->id]);
+        $a2 = static::create(['video_id' => $file->id]);
+        static::create(['video_id' => $otherFile->id]);
+
+        // Join the files like the controllers do.
+        $ids = VideoAnnotation::visibleFor($user)
+            ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
+            ->orderBy('video_annotations.id')
+            ->pluck('video_annotations.id')
+            ->all();
+
+        $this->assertSame([$a1->id, $a2->id], $ids);
+    }
+
     public function testScopeWithLabel()
     {
         $al1 = VideoAnnotationLabelTest::create();

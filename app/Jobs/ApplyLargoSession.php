@@ -346,25 +346,31 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // in the next step.
         // This is built as a map of annotation ID and label ID pair keys to make the
         // existence check later much faster.
-        $alreadyThere = $labelModel::select('annotation_id', 'label_id')
-            ->where('user_id', $user->id)
-            ->where(function ($query) use ($changed) {
-                foreach ($changed as $labelId => $annotationIds) {
-                    $query->orWhere(function ($query) use ($labelId, $annotationIds) {
-                        $query->where('label_id', $labelId)
-                            ->whereIn('annotation_id', $annotationIds);
+        // The annotation IDs are chunked because they may exceed the parameter limit of
+        // a single database query.
+        $chunkSize = config('biigle.db_param_limit') - 2;
+        $alreadyThere = [];
+        foreach ($changed as $labelId => $annotationIds) {
+            foreach (array_chunk($annotationIds, $chunkSize) as $chunk) {
+                $labelModel::select('annotation_id', 'label_id')
+                    ->where('user_id', $user->id)
+                    ->where('label_id', $labelId)
+                    ->whereIn('annotation_id', $chunk)
+                    ->get()
+                    ->each(function ($label) use (&$alreadyThere) {
+                        $alreadyThere["{$label->annotation_id}-{$label->label_id}"] = true;
                     });
-                }
-            })
-            ->get()
-            ->map(fn ($label) => "{$label->annotation_id}-{$label->label_id}")
-            ->flip()
-            ->toArray();
+            }
+        }
 
         $annotationIds = array_unique(array_merge(...$changed));
-        $existingAnnotations = $annotationModel::whereIn('id', $annotationIds)
-            ->pluck('id')
-            ->toArray();
+        $existingAnnotations = [];
+        foreach (array_chunk($annotationIds, config('biigle.db_param_limit')) as $chunk) {
+            $existingAnnotations = array_merge(
+                $existingAnnotations,
+                $annotationModel::whereIn('id', $chunk)->pluck('id')->toArray()
+            );
+        }
 
         $newAnnotationLabels = [];
         $now = Carbon::now();
@@ -449,11 +455,16 @@ class ApplyLargoSession extends Job implements ShouldQueue
         }
 
         $affected = array_values(array_unique(array_merge($dismissed, $changed)));
+        // Sort globally so the lock order is consistent across chunks.
+        sort($affected);
+        // The annotation IDs are chunked because they may exceed the parameter limit of
+        // a single database query.
+        $chunks = array_chunk($affected, config('biigle.db_param_limit'));
 
         $relation = (new $annotationModel)->file();
         $fileTable = $relation->getRelated()->getTable();
 
-        $toDeleteQuery = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $affected)
+        $toDeleteQuery = fn ($chunk) => $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $chunk)
             ->whereDoesntHave('labels');
 
         // Upgrade the locks of lockAnnotations() in a separate statement before the
@@ -462,14 +473,21 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // new label) would be deleted. With the lock acquired first, the delete takes
         // a fresh snapshot that sees the new label. This can't deadlock with other
         // jobs because they are already serialized by lockAnnotations().
-        $toDeleteQuery->clone()->orderBy('id')->lockForUpdate()->pluck('id');
+        foreach ($chunks as $chunk) {
+            $toDeleteQuery($chunk)->orderBy('id')->lockForUpdate()->pluck('id');
+        }
 
-        $toDeleteArgs = $toDeleteQuery->clone()->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
-            ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
-            ->toArray();
+        $toDeleteArgs = [];
+        foreach ($chunks as $chunk) {
+            $toDeleteArgs += $toDeleteQuery($chunk)->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
+                ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
+                ->toArray();
+        }
 
         if (!empty($toDeleteArgs)) {
-            $toDeleteQuery->delete();
+            foreach ($chunks as $chunk) {
+                $toDeleteQuery($chunk)->delete();
+            }
             // The annotation model observer does not fire for this query so we
             // dispatch the remove patch job manually here.
             if ($annotationModel === ImageAnnotation::class) {
