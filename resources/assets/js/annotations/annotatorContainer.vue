@@ -452,8 +452,8 @@ export default {
                 );
 
                 promise.then((annotation) => {
+                    labelBotReturnedNoResults = annotation.labels?.length === 0;
                     if (imageId === this.imageId) {
-                        labelBotReturnedNoResults = annotation.labels?.length === 0;
                         this.showLabelbotPopup(annotation);
                     }
                 });
