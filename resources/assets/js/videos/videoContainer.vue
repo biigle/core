@@ -431,6 +431,7 @@ export default {
                 points: annotation.points,
                 frames: annotation.frames,
                 shape_id: annotation.shape_id,
+                track: annotation.track,
             };
 
             this.saveAnnotation(newAnnotation, annotation.pendingAnnotation)

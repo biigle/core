@@ -166,7 +166,7 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            // Make sure the LabelBOT image, feature, pending video annotation and track are not sent in the API request to create the
+            // Make sure the LabelBOT image, feature and pending video annotation are not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
             delete annotation.labelbotImage;
@@ -181,8 +181,8 @@ export default {
                 pendingVideoAnnotation = annotation.pendingAnnotation;
                 delete annotation.pendingAnnotation;
 
+                // We don't delete the track property because its needed by the video controller
                 track = annotation.track;
-                delete annotation.track;
             }
 
             // We save the shape in case LabelBOT returns no results
@@ -196,15 +196,15 @@ export default {
 
                     return saveCallback(annotation);
                 })
-                .then(_annotation => {
+                .then(savedAnnotation => {
                     if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
-                    if (!_annotation) {
+                    if (!savedAnnotation) {
                         // We need to parse the ol_uid to int to be used as pop key
                         feature.ol_uid = parseInt(feature.ol_uid);
                         
-                        // We return annotation and not _annotation, because _annotation is null 
+                        // We return annotation and not savedAnnotation, because savedAnnotation is null 
                         annotation.feature = feature;
                         annotation.labels = [];
                         annotation.shape = shape;
@@ -218,7 +218,7 @@ export default {
 
                         return annotation;
                     }
-                    return _annotation;
+                    return savedAnnotation;
                 })
                 .catch((e) => {
                     if (e.status === 429) {
