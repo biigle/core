@@ -13,7 +13,7 @@ export default {
     emits: [
         'seek',
         'start-seeking',
-        'start-playing',
+        'close-all-labelbot-popups',
     ],
     data() {
         return {
@@ -109,6 +109,7 @@ export default {
         },
         setPlaying() {
             this.playing = true;
+            this.$emit('close-all-labelbot-popups');
             if (!this.animationFrameId) {
                 this.startRenderLoop();
             }
@@ -128,7 +129,6 @@ export default {
         },
         play() {
             this.video.play();
-            this.$emit('start-playing');
         },
         pause() {
             this.video.pause();

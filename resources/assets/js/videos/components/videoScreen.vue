@@ -443,7 +443,7 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
-        'start-playing',
+        'close-all-labelbot-popups',
     ],
     mixins: [
         VideoPlayback,

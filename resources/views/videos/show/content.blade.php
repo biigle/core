@@ -69,6 +69,7 @@
       v-on:swap="swapAnnotationLabelTo"
       v-on:new="createLabelBOTAnnotation"
       v-on:close-labelbot-popup="closeLabelbotPopup"
+      v-on:close-all-labelbot-popups="closeAllLabelbotPopups"
       v-on:init-map="handleInitMap"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"
@@ -93,7 +94,6 @@
       v-on:is-invalid-shape="handleInvalidShape"
       v-on:popout="handleVideoPopout"
       v-on:cancel-auto-play="cancelAutoPlay"
-      v-on:start-playing="closeLabelbotPopups"
       ></video-screen>
 <video-timeline
       ref="videoTimeline"

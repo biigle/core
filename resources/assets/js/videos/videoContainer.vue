@@ -238,12 +238,7 @@ export default {
                 return Promise.resolve();
             }
 
-            if (this.labelbotOverlayCount > 0) {
-                this.labelbotOverlays.forEach((overlay) => {
-                    this.removeAnnotation(overlay.pendingAnnotation);
-                });
-                this.closeAllLabelbotPopups();
-            }
+            this.closeAllLabelbotPopups();
 
             let promise = new Promise((resolve, reject) => {
                 this.video.addEventListener('seeked', resolve);
@@ -256,7 +251,7 @@ export default {
         },
         startSeeking() {
             this.seeking = true;
-            // We close LabelBOT popups if the jump by frame option is enabled too
+            // We close LabelBOT's popups if the jump by frame option is enabled too
             this.closeAllLabelbotPopups();
         },
         selectAnnotation(annotation, time, shift) {
@@ -953,6 +948,7 @@ export default {
                     if (this.autoPauseTimeout > 0 && this.settings.autoPause < AUTO_PAUSE_INDEFINITE) {
                         this.autoPauseTimeoutId = window.setTimeout(() => {
                             this.video.play();
+                            this.closeAllLabelbotPopups(); // We close all labelbot popups if played
                             this.autoPauseTimeout = 0;
                         }, this.autoPauseTimeout);
                     }
