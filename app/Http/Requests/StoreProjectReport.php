@@ -72,6 +72,7 @@ class StoreProjectReport extends StoreReport
             ReportType::IMAGE_ANNOTATIONS_CSV,
             ReportType::IMAGE_ANNOTATIONS_EXTENDED,
             ReportType::IMAGE_ANNOTATIONS_COCO,
+            ReportType::IMAGE_ANNOTATIONS_YOLO,
             ReportType::IMAGE_ANNOTATIONS_FULL,
             ReportType::IMAGE_ANNOTATIONS_ABUNDANCE,
             ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION,
