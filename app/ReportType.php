@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static int imageAnnotationsExtendedId()
  * @method static ReportType imageAnnotationsCoco()
  * @method static int imageAnnotationsCocoId()
+ * @method static ReportType imageAnnotationsYolo()
+ * @method static int imageAnnotationsYoloId()
  * @method static ReportType imageAnnotationsFull()
  * @method static int imageAnnotationsFullId()
  * @method static ReportType imageAnnotationsImageLocation()
@@ -59,6 +61,7 @@ class ReportType extends Model
         'imageAnnotationsCsv' => 'ImageAnnotations\Csv',
         'imageAnnotationsExtended' => 'ImageAnnotations\Extended',
         'imageAnnotationsCoco' => 'ImageAnnotations\Coco',
+        'imageAnnotationsYolo' => 'ImageAnnotations\Yolo',
         'imageAnnotationsFull' => 'ImageAnnotations\Full',
         'imageAnnotationsImageLocation' => 'ImageAnnotations\ImageLocation',
         'imageIfdo' => 'ImageIfdo',

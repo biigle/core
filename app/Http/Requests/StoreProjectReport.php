@@ -71,6 +71,7 @@ class StoreProjectReport extends StoreReport
             ReportType::imageAnnotationsCsvId(),
             ReportType::imageAnnotationsExtendedId(),
             ReportType::imageAnnotationsCocoId(),
+            ReportType::imageAnnotationsYoloId(),
             ReportType::imageAnnotationsFullId(),
             ReportType::imageAnnotationsAbundanceId(),
             ReportType::imageAnnotationsImageLocationId(),

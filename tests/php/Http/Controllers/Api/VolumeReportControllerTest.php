@@ -80,6 +80,7 @@ class VolumeReportControllerTest extends ApiTestCase
             ReportType::imageAnnotationsCsvId(),
             ReportType::imageAnnotationsExtendedId(),
             ReportType::imageAnnotationsCocoId(),
+            ReportType::imageAnnotationsYoloId(),
             ReportType::imageAnnotationsFullId(),
             ReportType::imageAnnotationsAbundanceId(),
             ReportType::imageLabelsBasicId(),
@@ -468,5 +469,86 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertJsonValidationErrors(['newest_label']);
 
         Queue::assertNotPushed(GenerateReportJob::class);
+    }
+
+    public function testStoreYoloOptions()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsYoloId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'yolo_image_path' => '/my/images',
+            'yolo_train_split' => 0.8,
+            'yolo_val_split' => 0.2,
+        ])->assertStatus(201);
+
+        Queue::assertPushed(function (GenerateReportJob $job) {
+            $this->assertSame('/my/images', $job->report->options['yoloImagePath']);
+            $this->assertEquals([0.8, 0.2, 0], $job->report->options['yoloSplit']);
+
+            return true;
+        });
+    }
+
+    public function testStoreYoloDefaultSplit()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsYoloId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+        ])->assertStatus(201);
+
+        Queue::assertPushed(function (GenerateReportJob $job) {
+            $this->assertNull($job->report->options['yoloImagePath']);
+            $this->assertSame([0.7, 0.2, 0.1], $job->report->options['yoloSplit']);
+
+            return true;
+        });
+    }
+
+    public function testStoreYoloInvalidSplit()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsYoloId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'yolo_train_split' => 0.8,
+            'yolo_val_split' => 0.3,
+        ])->assertJsonValidationErrors(['yolo_train_split']);
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'yolo_train_split' => 1.5,
+        ])->assertJsonValidationErrors(['yolo_train_split']);
+
+        Queue::assertNotPushed(GenerateReportJob::class);
+    }
+
+    public function testStoreYoloOptionsIgnoredForOtherTypes()
+    {
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::imageAnnotationsCsvId();
+        $this->beGuest();
+
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+            'type_id' => $typeId,
+            'yolo_image_path' => '/my/images',
+            'yolo_train_split' => 0.7,
+            'yolo_val_split' => 0.2,
+            'yolo_test_split' => 0.1,
+        ])->assertStatus(201);
+
+        Queue::assertPushed(function (GenerateReportJob $job) {
+            $this->assertArrayNotHasKey('yoloImagePath', $job->report->options);
+            $this->assertArrayNotHasKey('yoloSplit', $job->report->options);
+
+            return true;
+        });
     }
 }

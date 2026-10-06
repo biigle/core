@@ -73,7 +73,7 @@
                     The requested report will be prepared. You will get notified when it is ready.
                 </div>
                 <div class="form-group clearfix">
-                    <button class="btn btn-success pull-right" type="submit" :disabled="loading || null">Request this report</button>
+                    <button class="btn btn-success pull-right" type="submit" :disabled="loading || !hasValidYoloSplit || null">Request this report</button>
                 </div>
             </div>
             <div class="col-xs-6">
@@ -163,6 +163,7 @@
                     </div>
                 </div>
                 @include('partials.restrictLabels')
+                @include('partials.yoloReportOptions', ['help' => 'Directory that contains the images of all volumes on your computer.'])
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
                     <div class="checkbox">
                         <label :class="{'text-muted': disableAllLabelsOption}">

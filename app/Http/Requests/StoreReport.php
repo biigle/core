@@ -25,7 +25,11 @@ class StoreReport extends FormRequest
             'disable_notifications' => "nullable|boolean",
             'strip_ifdo' => "nullable|boolean",
             'all_labels' => 'nullable|boolean',
-            'skip_attributes' => 'nullable|boolean'
+            'skip_attributes' => 'nullable|boolean',
+            'yolo_image_path' => 'nullable|string|max:512',
+            'yolo_train_split' => 'nullable|numeric|between:0,1',
+            'yolo_val_split' => 'nullable|numeric|between:0,1',
+            'yolo_test_split' => 'nullable|numeric|between:0,1',
         ];
     }
 
@@ -56,6 +60,13 @@ class StoreReport extends FormRequest
 
             if ($this->input('separate_label_trees', false) && $this->input('separate_users', false)) {
                 $validator->errors()->add('separate_label_trees', 'Only one of separate_label_trees or separate_users may be specified.');
+            }
+
+            if ($this->isAllowedForYolo() && $validator->errors()->isEmpty()) {
+                $sum = array_sum($this->getYoloSplit());
+                if (abs($sum - 1) > 0.001) {
+                    $validator->errors()->add('yolo_train_split', 'The train, validation and test splits must add up to 1.');
+                }
             }
         });
     }
@@ -96,6 +107,11 @@ class StoreReport extends FormRequest
 
         if ($this->isAllowedForSkipAttributes()) {
             $options['skipAttributes'] = boolval($this->input('skip_attributes', false));
+        }
+
+        if ($this->isAllowedForYolo()) {
+            $options['yoloImagePath'] = $this->input('yolo_image_path');
+            $options['yoloSplit'] = $this->getYoloSplit();
         }
 
         return $options;
@@ -171,6 +187,35 @@ class StoreReport extends FormRequest
         return $this->isType([
             ReportType::imageAnnotationsAbundanceId(),
         ]);
+    }
+
+    /**
+     * Check if the YOLO options may be configured for the requested report type.
+     *
+     * @return boolean
+     */
+    protected function isAllowedForYolo()
+    {
+        return $this->isType(ReportType::imageAnnotationsYoloId());
+    }
+
+    /**
+     * Get the train, validation and test split for a YOLO report.
+     *
+     * The report form only submits non-zero values. If none of the splits is given,
+     * the default split is used. Otherwise missing splits are zero.
+     *
+     * @return array
+     */
+    protected function getYoloSplit()
+    {
+        $keys = ['yolo_train_split', 'yolo_val_split', 'yolo_test_split'];
+
+        if (!$this->hasAny($keys)) {
+            return [0.7, 0.2, 0.1];
+        }
+
+        return array_map(fn ($key) => floatval($this->input($key, 0)), $keys);
     }
 
     /**
