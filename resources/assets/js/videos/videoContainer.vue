@@ -363,7 +363,8 @@ export default {
             if (!this.labelbotIsActive) {
                 newAnnotation.label_id = this.selectedLabel.id;
 
-                return this.saveAnnotation(newAnnotation, pendingAnnotation, track);
+                return this.saveAnnotation(newAnnotation, pendingAnnotation, track)
+                    .catch(handleErrorResponse);
             }
 
             try {
@@ -381,20 +382,17 @@ export default {
                 return;
             }
 
-            const promise = this.saveLabelbotAnnotation(
+            const videoId = this.videoId;
+            return this.saveLabelbotAnnotation(
                 newAnnotation,
                 (annotation) => this.saveAnnotation(annotation, pendingAnnotation, track)
-            );
-
-            const videoId = this.videoId;
-            promise.then((annotation) => {
-                if (videoId === this.videoId) {
-                    this.showLabelbotPopup(annotation);
-                }
-            });
-
-            return promise;
-
+            )
+                .then((annotation) => {
+                    if (videoId === this.videoId) {
+                        this.showLabelbotPopup(annotation);
+                    }
+                })
+                .catch(handleErrorResponse);
         },
         saveAnnotation(newAnnotation, pendingAnnotation, track = false) {
             let labelBotReturnedNoResults = false;
@@ -411,8 +409,8 @@ export default {
                     }
                     return this.addCreatedAnnotation(res);
                 }, (res) => {
-                    handleErrorResponse(res);
                     this.disableJobTracking = res.status === 429;
+                    throw res;
                 })
                 .finally(() => {
                     if (!labelBotReturnedNoResults) {
