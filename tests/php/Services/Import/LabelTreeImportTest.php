@@ -2,9 +2,10 @@
 
 namespace Biigle\Tests\Services\Import;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\Role;
 use Biigle\Services\Export\LabelTreeExport;
 use Biigle\Services\Import\LabelTreeImport;
 use Biigle\Tests\LabelTest;
@@ -12,7 +13,6 @@ use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\UserTest;
 use Biigle\User;
-use Biigle\Visibility;
 use Exception;
 use File;
 use Ramsey\Uuid\Uuid;

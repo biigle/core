@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
-use Biigle\MediaType;
-use Biigle\Role;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;

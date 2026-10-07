@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\MediaType;
 use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Tests\VolumeTest;

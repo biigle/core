@@ -2,12 +2,12 @@
 
 namespace Biigle\Services\Import;
 
+use Biigle\Enums\MediaType;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Jobs\PostprocessVolumeImport;
-use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Rules\VolumeUrl;
 use Biigle\User;

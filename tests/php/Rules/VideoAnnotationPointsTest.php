@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Rules;
 
+use Biigle\Enums\Shape;
 use Biigle\Rules\VideoAnnotationPoints;
-use Biigle\Shape;
 use Illuminate\Support\Facades\Validator;
 use TestCase;
 

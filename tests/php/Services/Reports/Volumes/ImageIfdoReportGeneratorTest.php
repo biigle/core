@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Services\Reports\Volumes;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelSource;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Services\Reports\Volumes\ImageIfdoReportGenerator;
-use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageLabelTest;

@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Enums\MediaType;
 use Biigle\Traits\HasMetadataFile;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;

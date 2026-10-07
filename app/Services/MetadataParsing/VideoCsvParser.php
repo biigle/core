@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class VideoCsvParser extends CsvParser
 {

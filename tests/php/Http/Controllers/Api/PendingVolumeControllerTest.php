@@ -3,8 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\Jobs\CreateNewImagesOrVideos;
-use Biigle\MediaType;
 use Biigle\PendingVolume;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
@@ -14,7 +15,6 @@ use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
-use Biigle\Shape;
 use Biigle\Volume;
 use Exception;
 use FileCache;

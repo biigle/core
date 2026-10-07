@@ -2,10 +2,10 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Biigle\Enums\Shape;
 use Biigle\Rules\VideoAnnotationFrames;
 use Biigle\Rules\VideoAnnotationGaps;
 use Biigle\Rules\VideoAnnotationPoints;
-use Biigle\Shape;
 use Exception;
 
 class VideoAnnotation extends Annotation

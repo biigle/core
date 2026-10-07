@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Shape;
 use Biigle\Rules\GreaterThan;
 use Biigle\Rules\LessThan;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
 

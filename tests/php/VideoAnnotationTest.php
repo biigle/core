@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Role;
-use Biigle\Shape;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\VideoAnnotation;
 use Exception;
 use ModelTestCase;

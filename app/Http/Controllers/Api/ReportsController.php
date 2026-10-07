@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Enums\ReportType;
 use Biigle\Report;
-use Biigle\ReportType;
 use Illuminate\Http\Response;
 use Storage;
 

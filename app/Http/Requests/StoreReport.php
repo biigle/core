@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\ReportType;
+use Biigle\Enums\ReportType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreReport extends FormRequest

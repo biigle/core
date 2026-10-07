@@ -2,8 +2,8 @@
 
 namespace Biigle\Rules;
 
+use Biigle\Enums\MediaType;
 use Biigle\FileCache\GenericFile;
-use Biigle\MediaType;
 use Biigle\Volume;
 use Exception;
 use FileCache;

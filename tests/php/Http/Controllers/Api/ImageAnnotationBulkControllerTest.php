@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Role;
-use Biigle\Shape;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;

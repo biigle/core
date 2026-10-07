@@ -2,10 +2,10 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
-use Biigle\Shape;
 use Biigle\User;
 
 class CsvReportGenerator extends AnnotationReportGenerator

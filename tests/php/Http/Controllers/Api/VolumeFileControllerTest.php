@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Exception;

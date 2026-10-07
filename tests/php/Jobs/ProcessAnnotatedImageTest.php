@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\Shape;
 use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Image;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ProcessAnnotatedImage;
-use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Bus;

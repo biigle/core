@@ -2,12 +2,12 @@
 
 namespace Biigle\Services\Import;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
-use Biigle\Role;
 use Biigle\User;
-use Biigle\Visibility;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;

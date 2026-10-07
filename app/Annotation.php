@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
+use Biigle\Enums\Shape;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

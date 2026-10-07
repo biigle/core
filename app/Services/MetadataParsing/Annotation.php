@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Exception;
 
 // Abstract becaus it should not be used directly.

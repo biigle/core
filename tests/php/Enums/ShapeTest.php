@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Tests;
+namespace Biigle\Tests\Enums;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ValueError;

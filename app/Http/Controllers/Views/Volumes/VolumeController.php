@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
+use Biigle\Enums\MediaType;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
-use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\User;

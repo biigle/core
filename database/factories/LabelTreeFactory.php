@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\Visibility;
+use Biigle\Enums\Visibility;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LabelTreeFactory extends Factory

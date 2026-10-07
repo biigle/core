@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\UpdateVolumeMetadata;
-use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Illuminate\Http\UploadedFile;

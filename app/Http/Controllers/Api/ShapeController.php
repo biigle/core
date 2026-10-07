@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 
 class ShapeController extends Controller
 {

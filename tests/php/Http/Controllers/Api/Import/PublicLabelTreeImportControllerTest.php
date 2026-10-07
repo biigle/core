@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Import;
 
 use ApiTestCase;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use Biigle\Tests\LabelTreeTest;

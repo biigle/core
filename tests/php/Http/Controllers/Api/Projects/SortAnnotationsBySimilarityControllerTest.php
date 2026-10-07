@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
 use Biigle\ImageAnnotationLabelFeatureVector;
-use Biigle\MediaType;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\Volume;
 

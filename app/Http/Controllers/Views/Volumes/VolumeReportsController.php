@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
+use Biigle\Enums\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
-use Biigle\ReportType;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 

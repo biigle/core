@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Tests;
+namespace Biigle\Tests\Enums;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use TestCase;
 

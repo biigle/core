@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\CloneImageThumbnails;
 use Biigle\Jobs\CloneVideoThumbnails;
 use Biigle\Jobs\ProcessCloneVolumeFiles;
-use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;

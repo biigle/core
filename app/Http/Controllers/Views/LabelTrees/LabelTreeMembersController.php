@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\LabelTrees;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
-use Biigle\Role;
-use Biigle\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 

@@ -2,7 +2,7 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Exception;
