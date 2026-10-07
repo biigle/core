@@ -40,8 +40,8 @@ class EnumMigrationHelper
         // silently fall into the valid enum range. This check is also what allows the
         // range constraint below to skip the validation scan.
         $unmapped = DB::table($tableName)
-            ->pluck('id')
-            ->diff(array_keys($map));
+            ->whereNotIn('id', array_keys($map))
+            ->pluck('id');
 
         if ($unmapped->isNotEmpty()) {
             throw new RuntimeException("Table {$tableName} contains IDs without enum mapping: {$unmapped->implode(', ')}");
