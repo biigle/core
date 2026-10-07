@@ -20,17 +20,17 @@ class PendingVolumePolicyTest extends TestCase
         $this->expert = User::factory()->create();
         $this->admin = User::factory()->create();
         $this->owner = User::factory()->create();
-        $this->globalAdmin = User::factory()->create(['role' => Role::ADMIN->value]);
+        $this->globalAdmin = User::factory()->create(['role' => Role::ADMIN]);
         $this->pv = PendingVolume::factory()->create([
             'project_id' => $project->id,
             'user_id' => $this->owner->id,
         ]);
 
-        $project->addUserId($this->guest->id, Role::GUEST->value);
-        $project->addUserId($this->editor->id, Role::EDITOR->value);
-        $project->addUserId($this->expert->id, Role::EXPERT->value);
-        $project->addUserId($this->admin->id, Role::ADMIN->value);
-        $project->addUserId($this->owner->id, Role::ADMIN->value);
+        $project->addUserId($this->guest->id, Role::GUEST);
+        $project->addUserId($this->editor->id, Role::EDITOR);
+        $project->addUserId($this->expert->id, Role::EXPERT);
+        $project->addUserId($this->admin->id, Role::ADMIN);
+        $project->addUserId($this->owner->id, Role::ADMIN);
     }
 
     public function testAccess()

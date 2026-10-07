@@ -72,7 +72,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreImageVolumeTypes()
     {
-        $volumeId = $this->volume(['media_type' => MediaType::IMAGE->value])->id;
+        $volumeId = $this->volume(['media_type' => MediaType::IMAGE])->id;
 
         $types = [
             ReportType::IMAGE_ANNOTATIONS_AREA->value,
@@ -120,7 +120,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreVideoVolume()
     {
-        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $typeId = ReportType::VIDEO_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
@@ -145,7 +145,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreVideoVolumeTypes()
     {
-        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $types = [
             ReportType::VIDEO_ANNOTATIONS_CSV->value,
@@ -163,7 +163,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreInvalidImageAnnotations()
     {
-        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $typeId = ReportType::IMAGE_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
@@ -173,7 +173,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
     public function testStoreInvalidImageLabels()
     {
-        $volumeId = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $volumeId = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $typeId = ReportType::IMAGE_LABELS_CSV->value;
 
         $this->beGuest();
@@ -353,7 +353,7 @@ class VolumeReportControllerTest extends ApiTestCase
     public function testStoreVideoIfdo()
     {
         $volume = $this->volume([
-            'media_type' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO,
         ]);
         $volumeId = $volume->id;
         $typeId = ReportType::VIDEO_IFDO->value;

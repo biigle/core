@@ -25,7 +25,7 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
 
         $image = ImageTest::create(
             ['volume_id' => $this->volume(
-                ['media_type' => MediaType::IMAGE->value]
+                ['media_type' => MediaType::IMAGE]
             )->id]
         );
         $imageAnnotation = ImageAnnotationTest::create(['image_id' => $image->id]);
@@ -36,7 +36,7 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
         ]);
 
         $videoVolume = VolumeTest::create([
-            'media_type' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO,
         ]);
         $this->project()->addVolumeId($videoVolume->id);
 

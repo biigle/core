@@ -64,7 +64,7 @@ class UpdateImageAnnotation extends FormRequest
             // Attributes that are not updated must be validated with the current values
             // of the annotation, too, because e.g. a new shape may be invalid for the
             // existing points.
-            $rule = new AnnotationPoints($this->getShape()->value);
+            $rule = new AnnotationPoints($this->getShape());
 
             $rule->validate(
                 'points',

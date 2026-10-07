@@ -83,7 +83,7 @@ class ProjectReportControllerTest extends ApiTestCase
     {
         $projectId = $this->project()->id;
         // Create the volume by calling it.
-        $this->volume(['media_type' => MediaType::VIDEO->value]);
+        $this->volume(['media_type' => MediaType::VIDEO]);
         $typeId = ReportType::VIDEO_ANNOTATIONS_CSV->value;
 
         $this->beGuest();
@@ -103,7 +103,7 @@ class ProjectReportControllerTest extends ApiTestCase
     public function testStoreNoVideoVolumes()
     {
         $projectId = $this->project()->id;
-        $this->volume(['media_type' => MediaType::IMAGE->value]);
+        $this->volume(['media_type' => MediaType::IMAGE]);
 
         $types = [
             ReportType::VIDEO_ANNOTATIONS_CSV->value,
@@ -122,7 +122,7 @@ class ProjectReportControllerTest extends ApiTestCase
     public function testStoreNoImageVolumes()
     {
         $projectId = $this->project()->id;
-        $this->volume(['media_type' => MediaType::VIDEO->value]);
+        $this->volume(['media_type' => MediaType::VIDEO]);
 
         $types = [
             ReportType::IMAGE_ANNOTATIONS_AREA->value,
@@ -331,7 +331,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $projectId = $this->project()->id;
         // Create volume.
         $volume = $this->volume([
-            'media_type' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO,
         ]);
         $typeId = ReportType::VIDEO_IFDO->value;
 

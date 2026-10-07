@@ -32,7 +32,7 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
         ]);
 
         $videoVolume = VolumeTest::create([
-            'media_type' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO,
         ]);
         $this->project()->addVolumeId($videoVolume->id);
 

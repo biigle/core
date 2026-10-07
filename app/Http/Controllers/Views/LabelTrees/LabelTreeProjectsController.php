@@ -66,10 +66,7 @@ class LabelTreeProjectsController extends Controller
             })->pluck('id');
         }
 
-        $visibilities = collect([
-            Visibility::PUBLIC->value => Visibility::PUBLIC->label(),
-            Visibility::PRIVATE->value => Visibility::PRIVATE->label(),
-        ]);
+        $visibilities = Visibility::pluckById();
 
         return view('label-trees.show.projects', [
             'tree' => $tree,

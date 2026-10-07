@@ -11,10 +11,10 @@ class LabelTreeProjectsControllerTest extends TestCase
 {
     public function testShow()
     {
-        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC->value]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
         $user = UserTest::create();
 
-        $privateTree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value]);
+        $privateTree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE]);
 
         $response = $this->get("label-trees/{$tree->id}/projects");
         $response->assertRedirect('login');

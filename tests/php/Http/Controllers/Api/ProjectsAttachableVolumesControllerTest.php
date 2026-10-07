@@ -15,12 +15,12 @@ class ProjectsAttachableVolumesControllerTest extends ApiTestCase
         $validVolume = VolumeTest::create(['name' => 'test']);
         $validProject = ProjectTest::create();
         $validProject->addVolumeId($validVolume->id);
-        $validProject->addUserId($this->admin()->id, Role::ADMIN->value);
+        $validProject->addUserId($this->admin()->id, Role::ADMIN);
 
         $invalidVolume = VolumeTest::create(['name' => 'test']);
         $invalidProject = ProjectTest::create();
         $invalidProject->addVolumeId($invalidVolume->id);
-        $invalidProject->addUserId($this->admin()->id, Role::EDITOR->value);
+        $invalidProject->addUserId($this->admin()->id, Role::EDITOR);
 
         $existingVolume = $this->volume();
         $validProject->addVolumeId($existingVolume->id); // should not be returned
@@ -53,12 +53,12 @@ class ProjectsAttachableVolumesControllerTest extends ApiTestCase
         $validVolume = VolumeTest::create(['name' => 'my test']);
         $validProject = ProjectTest::create();
         $validProject->addVolumeId($validVolume->id);
-        $validProject->addUserId($this->admin()->id, Role::ADMIN->value);
+        $validProject->addUserId($this->admin()->id, Role::ADMIN);
 
         $invalidVolume = VolumeTest::create(['name' => 'my test']);
         $invalidProject = ProjectTest::create();
         $invalidProject->addVolumeId($invalidVolume->id);
-        $invalidProject->addUserId($this->admin()->id, Role::EDITOR->value);
+        $invalidProject->addUserId($this->admin()->id, Role::EDITOR);
 
         $existingVolume = $this->volume();
         $validProject->addVolumeId($existingVolume->id); // should not be returned

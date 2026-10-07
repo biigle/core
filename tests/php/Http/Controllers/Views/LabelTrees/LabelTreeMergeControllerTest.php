@@ -19,7 +19,7 @@ class LabelTreeMergeControllerTest extends TestCase
         $this->be($editor);
         $this->get("label-trees/{$baseTree->id}/merge")
             ->assertStatus(403);
-        $baseTree->addMember($editor, Role::EDITOR->value);
+        $baseTree->addMember($editor, Role::EDITOR);
         Cache::flush();
 
         $this->get("label-trees/{$baseTree->id}/merge")
@@ -29,18 +29,18 @@ class LabelTreeMergeControllerTest extends TestCase
     public function testShow()
     {
         $baseTree = LabelTreeTest::create();
-        $mergeTree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value]);
+        $mergeTree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE]);
         $editor = UserTest::create();
 
         $this->be($editor);
         $this->get("label-trees/{$baseTree->id}/merge/{$mergeTree->id}")
             ->assertStatus(403);
-        $baseTree->addMember($editor, Role::EDITOR->value);
+        $baseTree->addMember($editor, Role::EDITOR);
         Cache::flush();
 
         $this->get("label-trees/{$baseTree->id}/merge/{$mergeTree->id}")
             ->assertStatus(403);
-        $mergeTree->addMember($editor, Role::EDITOR->value);
+        $mergeTree->addMember($editor, Role::EDITOR);
         Cache::flush();
 
         $this->get("label-trees/{$baseTree->id}/merge/{$mergeTree->id}")

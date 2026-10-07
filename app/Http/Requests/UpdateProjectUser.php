@@ -6,6 +6,7 @@ use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProjectUser extends FormRequest
 {
@@ -45,23 +46,21 @@ class UpdateProjectUser extends FormRequest
     {
         if ($this->user->role === Role::GUEST) {
             $roles = [
-                Role::GUEST->value,
-                Role::EDITOR->value,
-                Role::EXPERT->value
+                Role::GUEST,
+                Role::EDITOR,
+                Role::EXPERT
             ];
         } else {
             $roles = [
-                Role::GUEST->value,
-                Role::EDITOR->value,
-                Role::EXPERT->value,
-                Role::ADMIN->value
+                Role::GUEST,
+                Role::EDITOR,
+                Role::EXPERT,
+                Role::ADMIN
             ];
         }
 
-        $roles = implode(',', $roles);
-
         return [
-            'project_role' => "required|integer|in:{$roles}",
+            'project_role' => ['required', 'integer', Rule::in($roles)],
         ];
     }
 

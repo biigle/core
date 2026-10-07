@@ -46,7 +46,7 @@ class VolumeUrlTest extends TestCase
         parent::setUp();
         config(['app.url' => 'https://biigle.de']);
         config(['volumes.editor_storage_disks' => ['test']]);
-        $this->user = User::factory()->make(['role' => Role::EDITOR->value]);
+        $this->user = User::factory()->make(['role' => Role::EDITOR]);
         $this->be($this->user);
     }
 

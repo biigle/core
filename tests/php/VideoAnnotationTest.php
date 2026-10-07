@@ -329,10 +329,10 @@ class VideoAnnotationTest extends ModelTestCase
     {
         $video = VideoTest::create();
         $user = UserTest::create();
-        $admin = UserTest::create(['role' => Role::ADMIN->value]);
+        $admin = UserTest::create(['role' => Role::ADMIN]);
         $otherUser = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::EDITOR->value);
+        $project->addUserId($user->id, Role::EDITOR);
         $project->addVolumeId($video->volume_id);
 
         $a = static::create([

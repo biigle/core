@@ -43,7 +43,7 @@ class FileLabelUserControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $vid = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $vid = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $video = VideoTest::create(['volume_id' => $vid]);
         $label = VideoLabelTest::create([

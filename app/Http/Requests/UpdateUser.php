@@ -5,6 +5,7 @@ namespace Biigle\Http\Requests;
 use Biigle\Role;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUser extends FormRequest
 {
@@ -34,11 +35,11 @@ class UpdateUser extends FormRequest
      */
     public function rules()
     {
-        $roles = implode(',', [
-            Role::GUEST->value,
-            Role::EDITOR->value,
-            Role::ADMIN->value,
-        ]);
+        $roles = [
+            Role::GUEST,
+            Role::EDITOR,
+            Role::ADMIN,
+        ];
 
         return [
             // Ignore the email of the own user.
@@ -46,7 +47,7 @@ class UpdateUser extends FormRequest
             'password' => 'nullable|min:8',
             'firstname' => 'filled|max:127',
             'lastname' => 'filled|max:127',
-            'role' => "filled|integer|in:{$roles}",
+            'role' => ['filled', 'integer', Rule::in($roles)],
             'auth_password' => 'required_with:role,password,email|current_password',
             'affiliation' => 'nullable|max:255',
             'super_user_mode' => 'filled|bool',

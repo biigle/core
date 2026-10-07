@@ -46,7 +46,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $this->assertNotNull($invitation->uuid);
         $this->assertNull($invitation->max_uses);
         $this->assertFalse($invitation->add_to_sessions);
-        $this->assertSame(Role::EDITOR->value, $invitation->role->value);
+        $this->assertSame(Role::EDITOR, $invitation->role);
     }
 
     public function testStoreOptionalAttributes()
@@ -96,7 +96,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
         $invitation = $this->project()->invitations()->first();
         $this->assertNotNull($invitation);
         $this->assertSame(10, $invitation->max_uses);
-        $this->assertSame(Role::EDITOR->value, $invitation->role->value);
+        $this->assertSame(Role::EDITOR, $invitation->role);
         $this->assertTrue($invitation->add_to_sessions);
     }
 
@@ -138,7 +138,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
     {
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role' => Role::GUEST->value,
+            'role' => Role::GUEST,
         ]);
         $id = $invitation->id;
         $this->doTestApiRoute('POST', "/api/v1/project-invitations/{$id}/join");
@@ -187,7 +187,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
     {
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role' => Role::GUEST->value,
+            'role' => Role::GUEST,
             'current_uses' => 1,
             'max_uses' => 1,
         ]);
@@ -205,7 +205,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
     {
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role' => Role::GUEST->value,
+            'role' => Role::GUEST,
             'expires_at' => '2022-11-09 00:00:00',
         ]);
         $id = $invitation->id;
@@ -245,7 +245,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role' => Role::EDITOR->value,
+            'role' => Role::EDITOR,
             'add_to_sessions' => true,
         ]);
 
@@ -269,7 +269,7 @@ class ProjectInvitationControllerTest extends ApiTestCase
 
         $invitation = ProjectInvitation::factory()->create([
             'project_id' => $this->project()->id,
-            'role' => Role::EDITOR->value,
+            'role' => Role::EDITOR,
             'add_to_sessions' => true,
         ]);
 

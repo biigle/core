@@ -14,8 +14,8 @@ class LabelTreeVersionControllerTest extends ApiTestCase
     {
         $master = $this->labelTree();
         $this->labelChild(); // Create label parent and label child.
-        $master->addMember($this->editor(), Role::EDITOR->value);
-        $master->addMember($this->admin(), Role::ADMIN->value);
+        $master->addMember($this->editor(), Role::EDITOR);
+        $master->addMember($this->admin(), Role::ADMIN);
         $master->authorizedProjects()->attach($this->project()->id);
 
         $this->doTestApiRoute('POST', "/api/v1/label-trees/{$master->id}/versions");
@@ -73,7 +73,7 @@ class LabelTreeVersionControllerTest extends ApiTestCase
     public function testStoreDoi()
     {
         $master = $this->labelTree();
-        $master->addMember($this->admin(), Role::ADMIN->value);
+        $master->addMember($this->admin(), Role::ADMIN);
         $this->beAdmin();
         $this
             ->postJson("/api/v1/label-trees/{$master->id}/versions", [
@@ -88,7 +88,7 @@ class LabelTreeVersionControllerTest extends ApiTestCase
     public function testStoreDoiEmpty()
     {
         $master = $this->labelTree();
-        $master->addMember($this->admin(), Role::ADMIN->value);
+        $master->addMember($this->admin(), Role::ADMIN);
         $this->beAdmin();
         $this
             ->postJson("/api/v1/label-trees/{$master->id}/versions", [
@@ -103,8 +103,8 @@ class LabelTreeVersionControllerTest extends ApiTestCase
     public function testUpdate()
     {
         $tree = $this->labelTree();
-        $tree->addMember($this->editor(), Role::EDITOR->value);
-        $tree->addMember($this->admin(), Role::ADMIN->value);
+        $tree->addMember($this->editor(), Role::EDITOR);
+        $tree->addMember($this->admin(), Role::ADMIN);
         $version = LabelTreeVersionTest::create(['label_tree_id' => $tree->id]);
 
         $this->doTestApiRoute('PUT', "/api/v1/label-tree-versions/{$version->id}");
@@ -129,8 +129,8 @@ class LabelTreeVersionControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $version = LabelTreeVersionTest::create();
-        $version->labelTree->addMember($this->editor(), Role::EDITOR->value);
-        $version->labelTree->addMember($this->admin(), Role::ADMIN->value);
+        $version->labelTree->addMember($this->editor(), Role::EDITOR);
+        $version->labelTree->addMember($this->admin(), Role::ADMIN);
         $this->labelTree()->version_id = $version->id;
         $this->labelTree()->save();
 

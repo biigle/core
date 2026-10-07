@@ -78,7 +78,7 @@ class VolumeTest extends ModelTestCase
         $image = ImageTest::create(['volume_id' => $this->model->id]);
         $video = VideoTest::create(['volume_id' => $this->model->id]);
         $this->assertSame($image->uuid, $this->model->files()->first()->uuid);
-        $this->model->media_type = MediaType::VIDEO->value;
+        $this->model->media_type = MediaType::VIDEO;
         $this->model->save();
         $this->assertSame($video->uuid, $this->model->files()->first()->uuid);
     }
@@ -86,7 +86,7 @@ class VolumeTest extends ModelTestCase
     public function testIsImageVolume()
     {
         $this->assertTrue($this->model->isImageVolume());
-        $this->model->media_type = MediaType::VIDEO->value;
+        $this->model->media_type = MediaType::VIDEO;
         $this->model->save();
         $this->assertFalse($this->model->isImageVolume());
     }
@@ -94,7 +94,7 @@ class VolumeTest extends ModelTestCase
     public function testIsVideoVolume()
     {
         $this->assertFalse($this->model->isVideoVolume());
-        $this->model->media_type = MediaType::VIDEO->value;
+        $this->model->media_type = MediaType::VIDEO;
         $this->model->save();
         $this->assertTrue($this->model->isVideoVolume());
     }
@@ -330,7 +330,7 @@ class VolumeTest extends ModelTestCase
 
     public function testOrderedFilesVideo()
     {
-        $this->model->media_type = MediaType::VIDEO->value;
+        $this->model->media_type = MediaType::VIDEO;
 
         VideoTest::create([
             'filename' => 'b.mp4',
@@ -373,7 +373,7 @@ class VolumeTest extends ModelTestCase
 
     public function testGetThumbnailAttributeVideo()
     {
-        $this->model->media_type = MediaType::VIDEO->value;
+        $this->model->media_type = MediaType::VIDEO;
 
         $v1 = VideoTest::create([
             'filename' => 'a.mp4',
@@ -446,7 +446,7 @@ class VolumeTest extends ModelTestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::GUEST->value);
+        $project->addUserId($user->id, Role::GUEST);
 
         $ids = Volume::accessibleBy($user)->pluck('id');
         $this->assertEmpty($ids);
@@ -520,7 +520,7 @@ class VolumeTest extends ModelTestCase
 
     public function testGetThumbnailUrlAttributeVideo()
     {
-        $this->model->media_type = MediaType::VIDEO->value;
+        $this->model->media_type = MediaType::VIDEO;
         $this->assertNull($this->model->thumbnailUrl);
 
         $v = VideoTest::create([
@@ -547,7 +547,7 @@ class VolumeTest extends ModelTestCase
 
     public function testGetThumbnailsUrlAttributeVideo()
     {
-        $this->model->media_type = MediaType::VIDEO->value;
+        $this->model->media_type = MediaType::VIDEO;
         $this->assertNull($this->model->thumbnailUrl);
 
         $v = VideoTest::create([

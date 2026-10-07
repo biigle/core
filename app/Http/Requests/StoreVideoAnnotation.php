@@ -86,7 +86,7 @@ class StoreVideoAnnotation extends FormRequest
             }
 
             $frameCount = count($this->input('frames', []));
-            $isWholeFrame = intval($this->input('shape')) === Shape::WHOLE_FRAME->value;
+            $isWholeFrame = $this->enum('shape', Shape::class) === Shape::WHOLE_FRAME;
 
             if ($isWholeFrame && $frameCount > 2) {
                 $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
@@ -113,11 +113,11 @@ class StoreVideoAnnotation extends FormRequest
                 }
 
                 $allowedShapes = [
-                    Shape::POINT->value,
-                    Shape::CIRCLE->value,
+                    Shape::POINT,
+                    Shape::CIRCLE,
                 ];
 
-                if (!in_array(intval($this->input('shape')), $allowedShapes)) {
+                if (!in_array($this->enum('shape', Shape::class), $allowedShapes, true)) {
                     $validator->errors()->add('id', 'Only point and circle annotations can be tracked.');
                 }
 
@@ -150,10 +150,11 @@ class StoreVideoAnnotation extends FormRequest
     {
         $radius = 0;
         $points = $this->input('points')[0];
+        $shape = $this->enum('shape', Shape::class);
 
-        if (intval($this->input('shape')) === Shape::POINT->value) {
+        if ($shape === Shape::POINT) {
             $radius = config('videos.tracking_point_padding');
-        } elseif (intval($this->input('shape')) === Shape::CIRCLE->value) {
+        } elseif ($shape === Shape::CIRCLE) {
             $radius = $points[2];
         } else {
             return false;

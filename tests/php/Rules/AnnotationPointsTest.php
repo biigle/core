@@ -13,7 +13,7 @@ class AnnotationPointsTest extends TestCase
     {
         $validator = Validator::make(
             ['points' => $points],
-            ['points' => new AnnotationPoints(Shape::fromLabel($shape)->value)]
+            ['points' => new AnnotationPoints(Shape::fromLabel($shape))]
         );
 
         return !$validator->fails();
@@ -39,7 +39,7 @@ class AnnotationPointsTest extends TestCase
     {
         $validator = Validator::make(
             ['points' => 'abc'],
-            ['points' => new AnnotationPoints(Shape::POINT->value)]
+            ['points' => new AnnotationPoints(Shape::POINT)]
         );
         $this->assertFalse($validator->fails());
     }

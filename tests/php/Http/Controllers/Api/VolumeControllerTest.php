@@ -100,7 +100,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $id = $this->volume(['media_type' => MediaType::IMAGE->value])->id;
+        $id = $this->volume(['media_type' => MediaType::IMAGE])->id;
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
@@ -350,7 +350,7 @@ class VolumeControllerTest extends ApiTestCase
             // No update permissions in the target project.
             ->assertStatus(403);
 
-        $project->addUserId($this->admin()->id, Role::ADMIN->value);
+        $project->addUserId($this->admin()->id, Role::ADMIN);
 
         Cache::flush();
 
@@ -372,7 +372,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         $volume = $this->volume(['name' => 'myvolume']);
         $project = ProjectTest::create();
-        $project->addUserId($this->admin()->id, Role::ADMIN->value);
+        $project->addUserId($this->admin()->id, Role::ADMIN);
 
         $this->beAdmin();
 
@@ -389,7 +389,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         $volume = $this->volume(['name' => 'myvolume', 'creator_id' => $this->user()->id]);
         $project = ProjectTest::create();
-        $project->addUserId($this->admin()->id, Role::ADMIN->value);
+        $project->addUserId($this->admin()->id, Role::ADMIN);
 
         $this->beAdmin();
 
@@ -468,7 +468,7 @@ class VolumeControllerTest extends ApiTestCase
             ->volume([
                 'created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',
-                'media_type' => MediaType::VIDEO->value
+                'media_type' => MediaType::VIDEO
             ])
             ->fresh();
 
@@ -522,7 +522,7 @@ class VolumeControllerTest extends ApiTestCase
     public function testStoreInvalidMediaType()
     {
         $project = ProjectTest::create();
-        $project->addUserId($this->admin()->id, Role::ADMIN->value);
+        $project->addUserId($this->admin()->id, Role::ADMIN);
 
         $this->beAdmin();
         $response = $this->json('POST', "/api/v1/projects/{$project->id}/volumes", [

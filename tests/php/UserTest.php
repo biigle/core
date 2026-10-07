@@ -95,7 +95,7 @@ class UserTest extends ModelTestCase
     public function testProjects()
     {
         $project = ProjectTest::create();
-        $project->addUserId($this->model->id, Role::EDITOR->value);
+        $project->addUserId($this->model->id, Role::EDITOR);
 
         $p = $this->model->projects()->first();
         $this->assertSame($project->id, $p->id);
@@ -111,7 +111,7 @@ class UserTest extends ModelTestCase
 
     public function testRole()
     {
-        $this->assertSame(Role::EDITOR->value, $this->model->role->value);
+        $this->assertSame(Role::EDITOR, $this->model->role);
     }
 
     public function testIsGlobalAdminAttribute()
@@ -141,7 +141,7 @@ class UserTest extends ModelTestCase
     public function testCheckCanBeDeletedProjects()
     {
         $project = ProjectTest::create();
-        $project->addUserId($this->model->id, Role::GUEST->value);
+        $project->addUserId($this->model->id, Role::GUEST);
 
         $this->model->checkCanBeDeleted();
         $this->expectException(HttpException::class);

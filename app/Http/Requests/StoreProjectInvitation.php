@@ -5,6 +5,7 @@ namespace Biigle\Http\Requests;
 use Biigle\Project;
 use Biigle\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProjectInvitation extends FormRequest
 {
@@ -34,15 +35,15 @@ class StoreProjectInvitation extends FormRequest
      */
     public function rules()
     {
-        $roles = implode(',', [
-            Role::GUEST->value,
-            Role::EDITOR->value,
-            Role::EXPERT->value,
-        ]);
+        $roles = [
+            Role::GUEST,
+            Role::EDITOR,
+            Role::EXPERT,
+        ];
 
         return [
             'expires_at' => "required|date|after:today",
-            'role' => "in:{$roles}",
+            'role' => Rule::in($roles),
             'max_uses' => "integer|min:1",
             'add_to_sessions' => "boolean",
         ];

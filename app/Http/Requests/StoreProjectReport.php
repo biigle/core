@@ -67,25 +67,25 @@ class StoreProjectReport extends StoreReport
     protected function validateReportType($validator)
     {
         $imageReports = [
-            ReportType::IMAGE_ANNOTATIONS_AREA->value,
-            ReportType::IMAGE_ANNOTATIONS_BASIC->value,
-            ReportType::IMAGE_ANNOTATIONS_CSV->value,
-            ReportType::IMAGE_ANNOTATIONS_EXTENDED->value,
-            ReportType::IMAGE_ANNOTATIONS_COCO->value,
-            ReportType::IMAGE_ANNOTATIONS_FULL->value,
-            ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value,
-            ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
-            ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
-            ReportType::IMAGE_LABELS_BASIC->value,
-            ReportType::IMAGE_LABELS_CSV->value,
-            ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
-            ReportType::IMAGE_IFDO->value,
+            ReportType::IMAGE_ANNOTATIONS_AREA,
+            ReportType::IMAGE_ANNOTATIONS_BASIC,
+            ReportType::IMAGE_ANNOTATIONS_CSV,
+            ReportType::IMAGE_ANNOTATIONS_EXTENDED,
+            ReportType::IMAGE_ANNOTATIONS_COCO,
+            ReportType::IMAGE_ANNOTATIONS_FULL,
+            ReportType::IMAGE_ANNOTATIONS_ABUNDANCE,
+            ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION,
+            ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION,
+            ReportType::IMAGE_LABELS_BASIC,
+            ReportType::IMAGE_LABELS_CSV,
+            ReportType::IMAGE_LABELS_IMAGE_LOCATION,
+            ReportType::IMAGE_IFDO,
         ];
 
         $videoReports = [
-            ReportType::VIDEO_ANNOTATIONS_CSV->value,
-            ReportType::VIDEO_LABELS_CSV->value,
-            ReportType::VIDEO_IFDO->value,
+            ReportType::VIDEO_ANNOTATIONS_CSV,
+            ReportType::VIDEO_LABELS_CSV,
+            ReportType::VIDEO_IFDO,
         ];
 
         if ($this->isType($imageReports) && !$this->project->imageVolumes()->exists()) {
@@ -103,9 +103,9 @@ class StoreProjectReport extends StoreReport
     protected function validateGeoInfo($validator)
     {
         $needsGeoInfo = [
-            ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value,
-            ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,
-            ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
+            ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION,
+            ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION,
+            ReportType::IMAGE_LABELS_IMAGE_LOCATION,
         ];
 
         if ($this->isType($needsGeoInfo)) {
@@ -127,7 +127,7 @@ class StoreProjectReport extends StoreReport
      */
     protected function validateImageMetadata($validator)
     {
-        if ($this->isType(ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION->value)) {
+        if ($this->isType(ReportType::IMAGE_ANNOTATIONS_ANNOTATION_LOCATION)) {
             $query = Image::join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
                 ->where('project_volume.project_id', $this->project->id);
 
@@ -158,7 +158,7 @@ class StoreProjectReport extends StoreReport
      */
     protected function validateIfdos($validator)
     {
-        if ($this->isType([ReportType::IMAGE_IFDO->value, ReportType::VIDEO_IFDO->value])) {
+        if ($this->isType([ReportType::IMAGE_IFDO, ReportType::VIDEO_IFDO])) {
             foreach ($this->project->volumes as $volume) {
                 if ($volume->metadata_parser === IfdoParser::class) {
                     return;

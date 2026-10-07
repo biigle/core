@@ -14,7 +14,7 @@ class LabelTreeMembersControllerTest extends TestCase
 {
     public function testShow()
     {
-        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC->value]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
         $user = UserTest::create();
 
         $this->get("label-trees/{$tree->id}/members")
