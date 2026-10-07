@@ -6,6 +6,7 @@ use Biigle\Project;
 use Biigle\Role;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProjectUser extends FormRequest
 {
@@ -43,25 +44,23 @@ class UpdateProjectUser extends FormRequest
      */
     public function rules()
     {
-        if ($this->user->role_id === Role::guestId()) {
+        if ($this->user->role === Role::GUEST) {
             $roles = [
-                Role::guestId(),
-                Role::editorId(),
-                Role::expertId()
+                Role::GUEST,
+                Role::EDITOR,
+                Role::EXPERT
             ];
         } else {
             $roles = [
-                Role::guestId(),
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId()
+                Role::GUEST,
+                Role::EDITOR,
+                Role::EXPERT,
+                Role::ADMIN
             ];
         }
 
-        $roles = implode(',', $roles);
-
         return [
-            'project_role_id' => "required|integer|in:{$roles}",
+            'project_role' => ['required', 'integer', Rule::in($roles)],
         ];
     }
 
@@ -87,9 +86,9 @@ class UpdateProjectUser extends FormRequest
      */
     public function messages()
     {
-        if ($this->user->role_id === Role::guestId()) {
+        if ($this->user->role === Role::GUEST) {
             return [
-                'project_role_id.in' => 'Guest users may not become project admins.',
+                'project_role.in' => 'Guest users may not become project admins.',
             ];
         }
 

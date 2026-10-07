@@ -12,9 +12,9 @@ class UserPolicyTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->guest = UserTest::create(['role_id' => Role::guestId()]);
-        $this->editor = UserTest::create(['role_id' => Role::editorId()]);
-        $this->admin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->guest = UserTest::create(['role' => Role::GUEST]);
+        $this->editor = UserTest::create(['role' => Role::EDITOR]);
+        $this->admin = UserTest::create(['role' => Role::ADMIN]);
     }
 
     public function testIndex()

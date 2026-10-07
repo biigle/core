@@ -54,7 +54,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         ]);
 
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [10, 10],
             'image_id' => $image->id,
         ]);
@@ -140,7 +140,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         ]);
 
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
             'points' => [10, 10, 10],
             'image_id' => $image->id,
         ]);
@@ -225,7 +225,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         ]);
 
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE,
             'points' => [10, 10, 20, 20],
             'image_id' => $image->id,
         ]);
@@ -313,7 +313,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         ]);
 
         $a = ImageAnnotationTest::create([
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON,
             'points' => [10, 10, 20, 20, 30, 30],
             'image_id' => $image->id,
         ]);
@@ -435,7 +435,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         ]);
 
         $annotation = ImageAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [10, 10],
             'image_id' => $image->id,
         ]);
@@ -539,7 +539,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         ]);
 
         $annotation = ImageAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [10, 10],
             'image_id' => $image->id,
         ]);
@@ -638,7 +638,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
         ]);
 
         $annotation = ImageAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [10, 10],
             'image_id' => $image->id,
         ]);

@@ -28,7 +28,7 @@ class ImageAnnotationExport extends Export
         $csv->fputcsv([
             'id',
             'image_id',
-            'shape_id',
+            'shape',
             'created_at',
             'updated_at',
             'points',
@@ -40,7 +40,7 @@ class ImageAnnotationExport extends Export
             ->select([
                 'image_annotations.id as annotation_id',
                 'image_annotations.image_id',
-                'image_annotations.shape_id',
+                'image_annotations.shape',
                 'image_annotations.created_at',
                 'image_annotations.updated_at',
                 'image_annotations.points',
@@ -52,7 +52,7 @@ class ImageAnnotationExport extends Export
                 $csv->fputcsv([
                     $row->annotation_id,
                     $row->image_id,
-                    $row->shape_id,
+                    $row->shape,
                     $row->created_at,
                     $row->updated_at,
                     $row->points,

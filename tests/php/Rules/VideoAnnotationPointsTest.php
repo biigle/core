@@ -11,11 +11,11 @@ class VideoAnnotationPointsTest extends TestCase
 {
     private function validate($shape, $points): bool
     {
-        $shapeId = is_null($shape) ? null : Shape::{$shape.'Id'}();
+        $shape = is_null($shape) ? null : Shape::fromLabel($shape);
 
         $validator = Validator::make(
             ['points' => $points],
-            ['points' => new VideoAnnotationPoints($shapeId)]
+            ['points' => new VideoAnnotationPoints($shape)]
         );
 
         return !$validator->fails();
@@ -26,13 +26,22 @@ class VideoAnnotationPointsTest extends TestCase
         $this->assertTrue($this->validate(null, [['x']]));
     }
 
+    public function testShapeId()
+    {
+        foreach ([Shape::WHOLE_FRAME->value, (string) Shape::WHOLE_FRAME->value] as $shapeId) {
+            $rule = new VideoAnnotationPoints($shapeId);
+            $this->assertNull($rule->getErrorMessage([]));
+            $this->assertNotNull($rule->getErrorMessage([[0, 0]]));
+        }
+    }
+
     public function testNoArray()
     {
         // The type is checked by the separate 'array' rule of the form requests, so
         // this rule accepts anything that is no array.
         $validator = Validator::make(
             ['points' => 'abc'],
-            ['points' => new VideoAnnotationPoints(Shape::pointId())]
+            ['points' => new VideoAnnotationPoints(Shape::POINT)]
         );
         $this->assertFalse($validator->fails());
     }

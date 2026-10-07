@@ -3,69 +3,29 @@
 namespace Biigle\Tests;
 
 use Biigle\Shape;
-use Illuminate\Database\QueryException;
-use ModelTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use ValueError;
 
-class ShapeTest extends ModelTestCase
+class ShapeTest extends TestCase
 {
-    /**
-     * The model class this class will test.
-     */
-    protected static $modelClass = Shape::class;
-
-    public function testAttributes()
+    #[DataProvider('shapeProvider')]
+    public function testFromLabel(Shape $shape): void
     {
-        $this->assertNotNull($this->model->name);
-        $this->assertNull($this->model->created_at);
-        $this->assertNull($this->model->updated_at);
+        $this->assertSame($shape, Shape::fromLabel($shape->label()));
     }
 
-    public function testNameRequired()
+    public static function shapeProvider(): array
     {
-        $this->model->name = null;
-        $this->expectException(QueryException::class);
-        $this->model->save();
+        return array_map(
+            fn (Shape $shape) => [$shape],
+            Shape::cases()
+        );
     }
 
-    public function testPoint()
+    public function testFromLabelInvalid(): void
     {
-        $this->assertNotNull(Shape::point());
-        $this->assertNotNull(Shape::pointId());
-    }
-
-    public function testLine()
-    {
-        $this->assertNotNull(Shape::line());
-        $this->assertNotNull(Shape::lineId());
-    }
-
-    public function testPolygon()
-    {
-        $this->assertNotNull(Shape::polygon());
-        $this->assertNotNull(Shape::polygonId());
-    }
-
-    public function testCircle()
-    {
-        $this->assertNotNull(Shape::circle());
-        $this->assertNotNull(Shape::circleId());
-    }
-
-    public function testRectangle()
-    {
-        $this->assertNotNull(Shape::rectangle());
-        $this->assertNotNull(Shape::rectangleId());
-    }
-
-    public function testEllipse()
-    {
-        $this->assertNotNull(Shape::ellipse());
-        $this->assertNotNull(Shape::ellipseId());
-    }
-
-    public function testWholeFrame()
-    {
-        $this->assertNotNull(Shape::wholeFrame());
-        $this->assertNotNull(Shape::wholeFrameId());
+        $this->expectException(ValueError::class);
+        Shape::fromLabel('whatever');
     }
 }

@@ -16,7 +16,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStore()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $existingParent = LabelTest::create(['label_tree_id' => $tree->id]);
         $existingChild = LabelTest::create([
             'label_tree_id' => $tree->id,
@@ -81,7 +81,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreValidateParentIds()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $sameParent = LabelTest::create(['label_tree_id' => $tree->id]);
         $otherParent = LabelTest::create();
 
@@ -141,7 +141,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreValidateCreateProperties()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $sameParent = LabelTest::create(['label_tree_id' => $tree->id]);
 
         $this->beEditor();
@@ -219,7 +219,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreRemoveIdsExist()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $otherTree = LabelTest::create();
 
         $this->beEditor();
@@ -241,7 +241,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreRemoveIdsCanBeDeletedImageAnnotationLabel()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
         $annotationLabel = ImageAnnotationLabelTest::create(['label_id' => $label->id]);
 
@@ -276,7 +276,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreRemoveIdsCanBeDeletedImageLabel()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
         $annotationLabel = ImageLabelTest::create(['label_id' => $label->id]);
 
@@ -300,7 +300,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreRemoveIdsCanBeDeletedVideoAnnotationLabel()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
         $annotationLabel = VideoAnnotationLabelTest::create(['label_id' => $label->id]);
 
@@ -324,7 +324,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreRemoveIdsCanBeDeletedVideoLabel()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
         $annotationLabel = VideoLabelTest::create(['label_id' => $label->id]);
 
@@ -348,7 +348,7 @@ class LabelTreeMergeControllerTest extends ApiTestCase
     public function testStoreRemoveIdsAreNotUsedInCreate()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::editor());
+        $tree->addMember($this->editor(), Role::EDITOR);
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
 
         $this->beEditor();

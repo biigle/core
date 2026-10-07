@@ -23,15 +23,15 @@ class LabelTreePolicyTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
+        $this->tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalGuest = UserTest::create(['role_id' => Role::guestId()]);
-        $this->globalEditor = UserTest::create(['role_id' => Role::editorId()]);
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
-        $this->tree->addMember($this->editor, Role::editor());
-        $this->tree->addMember($this->admin, Role::admin());
+        $this->globalGuest = UserTest::create(['role' => Role::GUEST]);
+        $this->globalEditor = UserTest::create(['role' => Role::EDITOR]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN]);
+        $this->tree->addMember($this->editor, Role::EDITOR);
+        $this->tree->addMember($this->admin, Role::ADMIN);
     }
 
     public function testCreate()
@@ -51,7 +51,7 @@ class LabelTreePolicyTest extends TestCase
 
     public function testAccessPrivate()
     {
-        $this->tree->visibility_id = Visibility::privateId();
+        $this->tree->visibility = Visibility::PRIVATE;
         $this->assertFalse($this->user->can('access', $this->tree));
         $this->assertTrue($this->editor->can('access', $this->tree));
         $this->assertTrue($this->admin->can('access', $this->tree));
@@ -60,7 +60,7 @@ class LabelTreePolicyTest extends TestCase
 
     public function testAccessViaProjectMembership()
     {
-        $this->tree->visibility_id = Visibility::privateId();
+        $this->tree->visibility = Visibility::PRIVATE;
         $project = ProjectTest::create();
         $this->assertFalse($project->creator->can('access', $this->tree));
         $project->labelTrees()->attach($this->tree);
@@ -70,12 +70,12 @@ class LabelTreePolicyTest extends TestCase
 
     public function testAccessViaMasterLabelTree()
     {
-        $this->tree->visibility_id = Visibility::privateId();
+        $this->tree->visibility = Visibility::PRIVATE;
         $this->tree->save();
         $version = LabelTreeVersionTest::create(['label_tree_id' => $this->tree->id]);
         $tree = LabelTreeTest::create([
             'version_id' => $version->id,
-            'visibility_id' => Visibility::privateId(),
+            'visibility' => Visibility::PRIVATE,
         ]);
         $this->assertFalse($this->user->can('access', $tree));
         $this->assertTrue($this->editor->can('access', $tree));

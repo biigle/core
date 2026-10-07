@@ -23,12 +23,12 @@ class ImageLabelPolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN]);
 
-        $this->project->addUserId($this->guest->id, Role::guestId());
-        $this->project->addUserId($this->editor->id, Role::editorId());
-        $this->project->addUserId($this->expert->id, Role::expertId());
-        $this->project->addUserId($this->admin->id, Role::adminId());
+        $this->project->addUserId($this->guest->id, Role::GUEST);
+        $this->project->addUserId($this->editor->id, Role::EDITOR);
+        $this->project->addUserId($this->expert->id, Role::EXPERT);
+        $this->project->addUserId($this->admin->id, Role::ADMIN);
     }
 
     public function testDestroy()

@@ -67,7 +67,7 @@ export default {
         },
         role() {
             return this.roles.find((role) => {
-                return this.member.role_id === role.id;
+                return this.member.role === role.id;
             });
         },
         labelClass() {
@@ -88,14 +88,14 @@ export default {
             this.$emit('remove', this.member);
         },
         changeRole() {
-            this.$emit('update', this.member, {role_id: this.roleId});
+            this.$emit('update', this.member, {role: this.roleId});
         },
         emitEnter() {
             this.$emit('enter', this.member);
         },
     },
     created() {
-        this.roleId = this.member.role_id;
+        this.roleId = this.member.role;
     },
 };
 </script>

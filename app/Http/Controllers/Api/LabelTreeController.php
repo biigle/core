@@ -55,7 +55,7 @@ class LabelTreeController extends Controller
      *
      * @apiParam {Number} id The label tree ID
      *
-     * @apiDescription The `role_id` of the members is their role in this label tree and not their global role.
+     * @apiDescription The `role` of the members is their role in this label tree and not their global role.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -63,7 +63,7 @@ class LabelTreeController extends Controller
      *    "id": 1,
      *    "name": "My Label Tree",
      *    "description": "My private label tree.",
-     *    "visibility_id": 2,
+     *    "visibility": 2,
      *    "created_at": "2015-02-10 09:45:30",
      *    "updated_at": "2015-02-10 09:45:30",
      *    "labels": [
@@ -82,7 +82,7 @@ class LabelTreeController extends Controller
      *          "id": 1,
      *          "firstname": "Cesar",
      *          "lastname": "Beier",
-     *          "role_id": 2
+     *          "role": 2
      *       }
      *    ],
      *    "version": {
@@ -116,7 +116,7 @@ class LabelTreeController extends Controller
      * @apiDescription The user creating a new label tree will automatically become label tree admin.
      *
      * @apiParam (Required attributes) {String} name Name of the new label tree.
-     * @apiParam (Required attributes) {Number} visibility_id ID of the visibility of the new label tree (public or private).
+     * @apiParam (Required attributes) {Number} visibility ID of the visibility of the new label tree (public or private).
      *
      * @apiParam (Optional attributes) {String} description Description of the new label tree.
      * @apiParam (Optional attributes) {Number} project_id Target project for the new label tree. If this attribute is set and the user is an admin of the project, the new label tree will be immediately attached to this project.
@@ -128,7 +128,7 @@ class LabelTreeController extends Controller
      *    "id": 1,
      *    "name": "Global",
      *    "description": "The global label category tree.",
-     *    "visibility_id": 1,
+     *    "visibility": 1,
      *    "created_at": "2015-02-10 09:45:30",
      *    "updated_at": "2015-02-10 09:45:30"
      * }
@@ -141,11 +141,11 @@ class LabelTreeController extends Controller
         $tree = DB::transaction(function () use ($request) {
             $tree = new LabelTree;
             $tree->name = $request->input('name');
-            $tree->visibility_id = $request->input('visibility_id');
+            $tree->visibility = $request->input('visibility');
             $tree->description = $request->input('description');
             $tree->uuid = Uuid::uuid4();
             $tree->save();
-            $tree->addMember($request->user(), Role::admin());
+            $tree->addMember($request->user(), Role::ADMIN);
 
             if (isset($request->project)) {
                 $tree->projects()->attach($request->project);
@@ -182,7 +182,7 @@ class LabelTreeController extends Controller
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the label tree.
      * @apiParam (Attributes that can be updated) {String} description Description of the label tree.
-     * @apiParam (Attributes that can be updated) {Number} visibility_id ID of the new visibility of the label tree (public or private).
+     * @apiParam (Attributes that can be updated) {Number} visibility ID of the new visibility of the label tree (public or private).
      *
      * @param UpdateLabelTree $request
      * @return \Illuminate\Http\RedirectResponse|void
@@ -192,16 +192,16 @@ class LabelTreeController extends Controller
         $tree = $request->tree;
         $tree->name = $request->input('name', $tree->name);
         $tree->description = $request->input('description', $tree->description);
-        $tree->visibility_id = $request->input('visibility_id', $tree->visibility_id);
+        $tree->visibility = $request->input('visibility', $tree->visibility);
 
         DB::transaction(function () use ($tree) {
-            if ($tree->isDirty('visibility_id')) {
+            if ($tree->isDirty('visibility')) {
                 // Propoagate the visibility change to all versions of the label tree.
                 LabelTree::join('label_tree_versions', 'label_trees.version_id', '=', 'label_tree_versions.id')
                     ->where('label_tree_versions.label_tree_id', $tree->id)
-                    ->update(['visibility_id' => $tree->visibility_id]);
+                    ->update(['visibility' => $tree->visibility]);
 
-                if ($tree->visibility_id === Visibility::privateId()) {
+                if ($tree->visibility === Visibility::PRIVATE) {
                     $tree->detachUnauthorizedProjects();
                 }
             }

@@ -29,9 +29,8 @@ class StorePendingVolume extends FormRequest
      */
     public function rules(): array
     {
-
         $rules = [
-            'media_type' => ['required', Rule::in(array_keys(MediaType::INSTANCES))],
+            'media_type' => ['required', Rule::enum(MediaType::class)],
             'metadata_parser' => [
                 'required_with:metadata_file',
             ],
@@ -43,8 +42,13 @@ class StorePendingVolume extends FormRequest
             ],
         ];
 
+        // media_type might be a string or an int id
+        // prepareForValidation turns it into an id
+        // if the string doesn't map to a type (typo 'imge' for example)
+        // then $this->input('media_type') will be that incorrect string
         $parserClass = $this->input('metadata_parser', false);
-        if ($this->has('media_type') && $parserClass && ParserFactory::has($this->input('media_type'), $parserClass)) {
+        $mediaType = MediaType::tryFromValueOrLabel($this->input('media_type'));
+        if ($mediaType && $parserClass && ParserFactory::has($mediaType->label(), $parserClass)) {
             $rules['metadata_file'][] = 'mimetypes:'.implode(',', $parserClass::getKnownMimeTypes());
         }
 
@@ -73,7 +77,7 @@ class StorePendingVolume extends FormRequest
             }
 
             if ($file = $this->file('metadata_file')) {
-                $type = $this->input('media_type');
+                $type = MediaType::from($this->input('media_type'))->label();
                 $parserClass = $this->input('metadata_parser');
 
                 if (!ParserFactory::has($type, $parserClass)) {
@@ -107,9 +111,9 @@ class StorePendingVolume extends FormRequest
     protected function prepareForValidation()
     {
         // Allow a string as media_type to be more conventient.
-        $type = $this->input('media_type');
-        if (in_array($type, array_keys(MediaType::INSTANCES))) {
-            $this->merge(['media_type_id' => MediaType::$type()->id]);
+        $mediaType = MediaType::tryFromValueOrLabel($this->input('media_type'));
+        if ($mediaType) {
+            $this->merge(['media_type' => $mediaType->value]);
         }
     }
 }

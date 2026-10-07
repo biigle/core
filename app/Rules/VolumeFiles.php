@@ -33,11 +33,11 @@ class VolumeFiles implements Rule
     protected $url;
 
     /**
-     * The media type ID.
+     * The media type.
      *
-     * @var int
+     * @var MediaType
      */
-    protected $typeId;
+    protected $type;
 
     /**
      * Number of sample images to check for existence.
@@ -50,10 +50,10 @@ class VolumeFiles implements Rule
      * Create a new instance.
      *
      * @param string $url
-     * @param int $typeId Media type ID
+     * @param MediaType $mediaType
      * @param int $sampleCount
      */
-    public function __construct(string $url, int $typeId, int $sampleCount = 5)
+    public function __construct(string $url, MediaType $mediaType, int $sampleCount = 5)
     {
         $this->message = 'The volume images are invalid.';
         // Remove trailing slash from URL because on some systems a double slash in the
@@ -62,7 +62,7 @@ class VolumeFiles implements Rule
             $url = rtrim($url, '/');
         }
         $this->url = $url;
-        $this->typeId = $typeId;
+        $this->type = $mediaType;
         $this->sampleCount = $sampleCount;
     }
 
@@ -115,13 +115,13 @@ class VolumeFiles implements Rule
             }
         }
 
-        if ($this->typeId === MediaType::imageId()) {
+        if ($this->type === MediaType::IMAGE) {
             if ($count !== count(preg_grep(Volume::IMAGE_FILE_REGEX, $value))) {
                 $this->message = 'Only JPEG, PNG, WebP or TIFF image formats are supported.';
 
                 return false;
             }
-        } elseif ($this->typeId === MediaType::videoId()) {
+        } elseif ($this->type === MediaType::VIDEO) {
             if ($count !== count(preg_grep(Volume::VIDEO_FILE_REGEX, $value))) {
                 $this->message = 'Only MPEG, MP4 or WebM video formats are supported.';
 

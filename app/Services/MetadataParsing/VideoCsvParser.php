@@ -11,7 +11,7 @@ class VideoCsvParser extends CsvParser
      */
     public function getMetadata(): VolumeMetadata
     {
-        $data = new VolumeMetadata(MediaType::video());
+        $data = new VolumeMetadata(MediaType::VIDEO);
 
         $file = $this->getCsvIterator();
         $line = $file->current();

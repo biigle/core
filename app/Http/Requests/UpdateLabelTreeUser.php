@@ -6,6 +6,7 @@ use Biigle\LabelTree;
 use Biigle\Role;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLabelTreeUser extends FormRequest
 {
@@ -51,17 +52,17 @@ class UpdateLabelTreeUser extends FormRequest
     public function rules()
     {
         $this->isGlobalGuest = User::where('id', $this->route('id2'))
-            ->where('role_id', Role::guestId())
+            ->where('role', Role::GUEST)
             ->exists();
 
         if ($this->isGlobalGuest) {
-            $roles = Role::editorId();
+            $roles = [Role::EDITOR];
         } else {
-            $roles = implode(',', [Role::adminId(), Role::editorId()]);
+            $roles = [Role::ADMIN, Role::EDITOR];
         }
 
         return [
-            'role_id' => "integer|in:{$roles}",
+            'role' => ['integer', Rule::in($roles)],
         ];
     }
 
@@ -74,9 +75,9 @@ class UpdateLabelTreeUser extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $shouldLooseAdminStatus = $this->input('role_id') !== Role::adminId();
+            $shouldLooseAdminStatus = $this->integer('role') !== Role::ADMIN->value;
             if ($shouldLooseAdminStatus && !$this->tree->memberCanLooseAdminStatus($this->member)) {
-                $validator->errors()->add('role_id', 'The last label tree admin cannot be demoted.');
+                $validator->errors()->add('role', 'The last label tree admin cannot be demoted.');
             }
         });
     }
@@ -90,12 +91,12 @@ class UpdateLabelTreeUser extends FormRequest
     {
         if ($this->isGlobalGuest) {
             return [
-                'role_id.in' => 'Guest users may only be label tree editors.',
+                'role.in' => 'Guest users may only be label tree editors.',
             ];
         }
 
         return [
-            'role_id.in' => 'Label tree members may only be either admins or editors.',
+            'role.in' => 'Label tree members may only be either admins or editors.',
         ];
     }
 }

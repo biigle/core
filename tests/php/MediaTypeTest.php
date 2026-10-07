@@ -3,46 +3,32 @@
 namespace Biigle\Tests;
 
 use Biigle\MediaType;
-use Illuminate\Database\QueryException;
-use ModelTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use TestCase;
 
-class MediaTypeTest extends ModelTestCase
+class MediaTypeTest extends TestCase
 {
-    /**
-     * The model class this class will test.
-     */
-    protected static $modelClass = MediaType::class;
-
-    public function testAttributes()
+    #[DataProvider('valueOrLabelProvider')]
+    public function testTryFromValueOrLabel(mixed $key, ?MediaType $expected): void
     {
-        $this->assertNotNull($this->model->name);
-        $this->assertNull($this->model->created_at);
-        $this->assertNull($this->model->updated_at);
+        $this->assertSame($expected, MediaType::tryFromValueOrLabel($key));
     }
 
-    public function testNameRequired()
+    public static function valueOrLabelProvider(): array
     {
-        $this->model->name = null;
-        $this->expectException(QueryException::class);
-        $this->model->save();
-    }
-
-    public function testNameUnique()
-    {
-        self::create(['name' => 'test']);
-        $this->expectException(QueryException::class);
-        self::create(['name' => 'test']);
-    }
-
-    public function testImage()
-    {
-        $this->assertNotNull(MediaType::image());
-        $this->assertNotNull(MediaType::imageId());
-    }
-
-    public function testVideo()
-    {
-        $this->assertNotNull(MediaType::video());
-        $this->assertNotNull(MediaType::videoId());
+        return [
+            'image int' => [1, MediaType::IMAGE],
+            'video int' => [2, MediaType::VIDEO],
+            'image string int' => ['1', MediaType::IMAGE],
+            'video string int' => ['2', MediaType::VIDEO],
+            'image label lower' => ['image', MediaType::IMAGE],
+            'video label lower' => ['video', MediaType::VIDEO],
+            'image label upper' => ['IMAGE', MediaType::IMAGE],
+            'video label mixed' => ['ViDeO', MediaType::VIDEO],
+            'invalid string' => ['whatever', null],
+            'invalid int' => [999, null],
+            'null' => [null, null],
+            'wrong type (array)' => [[], null],
+        ];
     }
 }

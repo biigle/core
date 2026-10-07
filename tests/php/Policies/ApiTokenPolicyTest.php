@@ -13,9 +13,9 @@ class ApiTokenPolicyTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->globalGuest = UserTest::create(['role_id' => Role::guestId()]);
-        $this->globalEditor = UserTest::create(['role_id' => Role::editorId()]);
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->globalGuest = UserTest::create(['role' => Role::GUEST]);
+        $this->globalEditor = UserTest::create(['role' => Role::EDITOR]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN]);
     }
 
     public function testCreate()

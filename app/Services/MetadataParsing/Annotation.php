@@ -9,12 +9,7 @@ use Exception;
 abstract class Annotation
 {
     /**
-     * Shape ID required for point validation.
-     */
-    public int $shape_id;
-
-    /**
-     * @param Shape $shape
+     * @param Shape $shape Required for point validation
      * @param array<float>|array<array<float>> $points
      * @param array<LabelAndUser> $labels
      */
@@ -23,7 +18,6 @@ abstract class Annotation
         public array $points,
         public array $labels,
     ) {
-        $this->shape_id = $shape->id;
         $this->setPointsAttribute($points);
 
         array_walk($labels, function ($label) {
@@ -43,7 +37,7 @@ abstract class Annotation
     {
         return [
             'points' => json_encode($this->points),
-            'shape_id' => $this->shape->id,
+            'shape' => $this->shape->value,
         ];
     }
 

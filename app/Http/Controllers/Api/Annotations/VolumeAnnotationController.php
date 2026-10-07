@@ -27,7 +27,7 @@ class VolumeAnnotationController extends Controller
      *    {
      *        "id": 1,
      *        "image_id": 1,
-     *        "shape_id": 4,
+     *        "shape": 4,
      *        "created_at": "2025-09-18T12:27:37.000000Z",
      *        "updated_at": "2025-09-18T12:27:37.000000Z",
      *        "points": [100, 200, 300],

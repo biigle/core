@@ -49,7 +49,7 @@ class PublicLabelTreeImportController extends Controller
                 }
                 $tree = DB::transaction(function () use ($import, $request) {
                     $tree = $import->perform();
-                    $tree->addMember($request->user(), Role::admin());
+                    $tree->addMember($request->user(), Role::ADMIN);
 
                     return $tree;
                 });

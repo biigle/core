@@ -17,7 +17,7 @@ class ProjectReportController extends Controller
      *
      * @apiParam {Number} id The project ID.
      *
-     * @apiParam (Required arguments) {Number} type_id The report type ID.
+     * @apiParam (Required arguments) {Number} type The report type ID.
      *
      * @apiParam (Optional arguments) {Boolean} export_area If `true`, restrict the report to the export area of the project. Only available for image annotation reports and the iFDO report.
      * @apiParam (Optional arguments) {Boolean} newest_label If `true`, restrict the report to the newest label of each annotation.
@@ -41,7 +41,7 @@ class ProjectReportController extends Controller
     {
         $report = new Report;
         $report->source()->associate($request->project);
-        $report->type_id = $request->input('type_id');
+        $report->type = $request->input('type');
         $report->user()->associate($request->user());
         $report->options = $request->getOptions();
         $report->save();

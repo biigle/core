@@ -6,6 +6,7 @@ use Biigle\LabelTree;
 use Biigle\Role;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLabelTreeUser extends FormRequest
 {
@@ -43,18 +44,18 @@ class StoreLabelTreeUser extends FormRequest
     public function rules()
     {
         $this->isGlobalGuest = User::where('id', $this->input('id'))
-            ->where('role_id', Role::guestId())
+            ->where('role', Role::GUEST)
             ->exists();
 
         if ($this->isGlobalGuest) {
-            $roles = Role::editorId();
+            $roles = [Role::EDITOR];
         } else {
-            $roles = implode(',', [Role::adminId(), Role::editorId()]);
+            $roles = [Role::ADMIN, Role::EDITOR];
         }
 
         return [
             'id' => 'required|integer|exists:users,id',
-            'role_id' => "required|integer|in:{$roles}",
+            'role' => ['required', 'integer', Rule::in($roles)],
         ];
     }
 
@@ -86,12 +87,12 @@ class StoreLabelTreeUser extends FormRequest
     {
         if ($this->isGlobalGuest) {
             return [
-                'role_id.in' => 'Guest users may only be label tree editors.',
+                'role.in' => 'Guest users may only be label tree editors.',
             ];
         }
 
         return [
-            'role_id.in' => 'Label tree members may only be either admins or editors.',
+            'role.in' => 'Label tree members may only be either admins or editors.',
         ];
     }
 }

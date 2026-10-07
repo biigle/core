@@ -33,9 +33,9 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         int $boxPadding = 0,
         int $minSize = 32
     ): array {
-        $box = match ($shape->id) {
-            Shape::pointId() => $this->getPointBoundingBox($points, $pointPadding),
-            Shape::circleId() => $this->getCircleBoundingBox($points),
+        $box = match ($shape) {
+            Shape::POINT => $this->getPointBoundingBox($points, $pointPadding),
+            Shape::CIRCLE => $this->getCircleBoundingBox($points),
             // An ellipse will not be handled correctly by this but I didn't bother
             // because this shape is almost never used anyway.
             default => $this->getPolygonBoundingBox($points),
@@ -194,7 +194,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
     {
         $boxes = [];
         foreach ($annotations as $a) {
-            if ($a->shape_id === Shape::wholeFrameId()) {
+            if ($a->shape === Shape::WHOLE_FRAME) {
                 $box = [0, 0, $file->width ?: 0, $file->height ?: 0];
             } else {
                 $points = $a->getPoints();
