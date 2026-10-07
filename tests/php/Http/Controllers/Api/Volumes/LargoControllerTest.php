@@ -491,6 +491,7 @@ class LargoControllerTest extends ApiTestCase
 
         $this->withoutExceptionHandling();
         $this->beEditor();
+        $this->withoutExceptionHandling();
         try {
             $this->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
                 'dismissed_image_annotations' => [
