@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Videos;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\VideoTest;
 
 class VideoControllerTest extends ApiTestCase

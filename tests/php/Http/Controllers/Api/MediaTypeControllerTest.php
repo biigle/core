@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class MediaTypeControllerTest extends ApiTestCase
 {

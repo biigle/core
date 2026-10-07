@@ -3,12 +3,12 @@
 namespace Biigle\Services\Reports\Volumes;
 
 use Biigle\Annotation;
+use Biigle\Enums\Shape;
 use Biigle\Ifdo\Ifdo;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\LabelSource;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
-use Biigle\Shape;
 use Biigle\Volume;
 use Exception;
 use File;

@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
+use Biigle\Enums\Shape;
 use Biigle\PendingVolume;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
@@ -10,7 +11,6 @@ use Biigle\Services\MetadataParsing\Label;
 use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
-use Biigle\Shape;
 use Illuminate\Support\Facades\Cache;
 
 class PendingVolumeControllerTest extends ApiTestCase

@@ -3,9 +3,9 @@
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
 use Arr;
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\Shape;
 use Biigle\User;
 use DB;
 

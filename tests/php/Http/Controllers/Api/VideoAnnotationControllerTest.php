@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\Jobs\TrackObject;
-use Biigle\MediaType;
-use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;

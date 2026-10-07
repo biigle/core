@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
+use Biigle\Enums\Shape;
 use Biigle\Modules\Laserpoints\Image as LImage;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\AreaReportGenerator;
-use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;

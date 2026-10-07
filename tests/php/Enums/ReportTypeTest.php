@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Tests;
+namespace Biigle\Tests\Enums;
 
-use Biigle\ReportType;
+use Biigle\Enums\ReportType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

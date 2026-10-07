@@ -2,15 +2,15 @@
 
 namespace Biigle\Tests\Services\MetadataParsing;
 
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\Label as DbLabel;
-use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
 use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
-use Biigle\Shape;
 use Biigle\User as DbUser;
 use TestCase;
 

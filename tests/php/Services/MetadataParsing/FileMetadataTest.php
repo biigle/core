@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Services\MetadataParsing;
 
+use Biigle\Enums\Shape;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
 use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
-use Biigle\Shape;
 use TestCase;
 
 class FileMetadataTest extends TestCase

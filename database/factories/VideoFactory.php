@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Volume;
 
 class VideoFactory extends VolumeFileFactory

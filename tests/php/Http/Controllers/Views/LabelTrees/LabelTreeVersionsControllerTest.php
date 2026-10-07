@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\LabelTrees;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\UserTest;
-use Biigle\Visibility;
 use TestCase;
 
 class LabelTreeVersionsControllerTest extends TestCase

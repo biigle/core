@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\Shape;
 use Biigle\Events\ObjectTrackingFailed;
 use Biigle\Events\ObjectTrackingSucceeded;
 use Biigle\Jobs\TrackObject;
-use Biigle\Shape;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\User;

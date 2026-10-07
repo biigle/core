@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Services\Reports\Volumes\VideoAnnotations;
 
 use App;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\Volumes\VideoAnnotations\CsvReportGenerator;
 use Biigle\Tests\AnnotationSessionTest;

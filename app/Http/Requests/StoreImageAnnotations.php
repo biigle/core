@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Shape;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\Rules\AnnotationPoints;
-use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

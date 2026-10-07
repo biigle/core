@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\MediaType;
 use Biigle\Image;
 use Biigle\Jobs\UpdateVolumeMetadata;
-use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Video;

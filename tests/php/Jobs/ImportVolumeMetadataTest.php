@@ -2,12 +2,13 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\Image;
 use Biigle\Jobs\ImportVolumeMetadata;
 use Biigle\Jobs\ProcessAnnotatedImage;
 use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\Label as DbLabel;
-use Biigle\MediaType;
 use Biigle\PendingVolume;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
@@ -16,7 +17,6 @@ use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VideoAnnotation;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
-use Biigle\Shape;
 use Biigle\User as DbUser;
 use Biigle\Video;
 use Biigle\Volume;

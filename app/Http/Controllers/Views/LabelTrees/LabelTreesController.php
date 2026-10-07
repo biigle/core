@@ -2,12 +2,12 @@
 
 namespace Biigle\Http\Controllers\Views\LabelTrees;
 
+use Biigle\Enums\Visibility;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelSource;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\User;
-use Biigle\Visibility;
 use Illuminate\Http\Request;
 
 class LabelTreesController extends Controller

@@ -4,9 +4,9 @@ namespace Biigle\Jobs;
 
 use Biigle\Annotation;
 use Biigle\Contracts\Annotation as AnnotationContract;
+use Biigle\Enums\Shape;
 use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Exception;

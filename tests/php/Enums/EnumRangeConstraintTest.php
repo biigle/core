@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Tests;
+namespace Biigle\Tests\Enums;
 
-use Biigle\MediaType;
-use Biigle\ReportType;
-use Biigle\Role;
-use Biigle\Shape;
-use Biigle\Visibility;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\ReportType;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
+use Biigle\Enums\Visibility;
 use DB;
 use PHPUnit\Framework\Attributes\DataProvider;
 use TestCase;

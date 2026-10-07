@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class LargoControllerTest extends ApiTestCase
 {

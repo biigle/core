@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\PendingVolume;
 use Biigle\Project;
 use Biigle\User;

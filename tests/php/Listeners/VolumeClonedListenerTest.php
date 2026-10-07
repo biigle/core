@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Listeners;
 
+use Biigle\Enums\MediaType;
 use Biigle\Events\VolumeCloned;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Jobs\ProcessAnnotatedImage;
 use Biigle\Jobs\ProcessAnnotatedVideo;
-use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Video;
 use Biigle\VideoAnnotation;

@@ -2,7 +2,7 @@
 
 namespace Biigle\Rules;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle;
+namespace Biigle\Enums;
 
 use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;

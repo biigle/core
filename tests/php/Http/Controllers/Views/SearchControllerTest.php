@@ -2,10 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
+use Biigle\Enums\ReportType;
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\ReportType;
-use Biigle\Role;
 use Biigle\Tests\FederatedSearchModelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTreeTest;
@@ -16,7 +17,6 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Video;
-use Biigle\Visibility;
 use Biigle\Volume;
 use TestCase;
 

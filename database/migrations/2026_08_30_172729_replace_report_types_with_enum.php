@@ -1,6 +1,6 @@
 <?php
 
-use Biigle\ReportType;
+use Biigle\Enums\ReportType;
 use Biigle\Support\EnumMigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

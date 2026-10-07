@@ -3,11 +3,11 @@
 namespace Biigle\Tests\Jobs;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
 use Biigle\Events\VolumeCloned;
 use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessCloneVolumeFiles;
-use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;

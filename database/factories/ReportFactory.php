@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use Biigle\Enums\ReportType;
 use Biigle\Report;
-use Biigle\ReportType;
 use Biigle\User;
 use Biigle\Volume;
 use Illuminate\Database\Eloquent\Factories\Factory;

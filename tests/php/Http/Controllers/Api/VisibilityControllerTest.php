@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Visibility;
+use Biigle\Enums\Visibility;
 
 class VisibilityControllerTest extends ApiTestCase
 {

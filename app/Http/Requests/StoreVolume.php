@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Project;
 use Biigle\Rules\Handle;
 use Biigle\Rules\ImageMetadata;

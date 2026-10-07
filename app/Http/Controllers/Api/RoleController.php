@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 
 class RoleController extends Controller
 {

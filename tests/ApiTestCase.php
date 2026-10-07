@@ -1,14 +1,14 @@
 <?php
 
 use Biigle\ApiToken;
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Label;
-use Biigle\Role;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Visibility;
 
 class ApiTestCase extends TestCase
 {

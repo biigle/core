@@ -2,9 +2,9 @@
 
 namespace Biigle\Console\Commands;
 
+use Biigle\Enums\MediaType;
 use Biigle\ImageAnnotation;
 use Biigle\Jobs\InitializeFeatureVectorChunk;
-use Biigle\MediaType;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Carbon\Carbon;

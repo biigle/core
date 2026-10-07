@@ -3,9 +3,9 @@
 namespace Biigle\Jobs;
 
 use Biigle\Annotation;
+use Biigle\Enums\Shape;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Illuminate\Queue\InteractsWithQueue;

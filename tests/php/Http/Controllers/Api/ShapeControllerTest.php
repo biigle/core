@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 
 class ShapeControllerTest extends ApiTestCase
 {

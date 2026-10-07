@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\LabelTreeVersion;
-use Biigle\Role;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
-use Biigle\Visibility;
 use Cache;
 use TestCase;
 
