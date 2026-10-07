@@ -29,7 +29,11 @@ export default {
                 separate_users: false,
                 only_labels: [],
                 aggregate_child_labels: false,
-                all_labels: false
+                all_labels: false,
+                yolo_image_path: '',
+                yolo_train_split: 0.7,
+                yolo_val_split: 0.2,
+                yolo_test_split: 0.1,
             },
         };
     },
@@ -98,6 +102,15 @@ export default {
             options.type_id = this.selectedReportTypeId;
 
             return options;
+        },
+        yoloSplitSum() {
+            let sum = ['yolo_train_split', 'yolo_val_split', 'yolo_test_split']
+                .reduce((carry, key) => carry + (Number(this.options[key]) || 0), 0);
+
+            return Math.round(sum * 1000) / 1000;
+        },
+        hasValidYoloSplit() {
+            return !this.wantsCombination('ImageAnnotations', 'Yolo') || this.yoloSplitSum === 1;
         },
         disableAllLabelsOption() {
             return this.options.aggregate_child_labels || this.hasOnlyLabels || this.options.newest_label;
