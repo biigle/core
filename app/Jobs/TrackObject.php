@@ -2,9 +2,9 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\Enums\Shape;
 use Biigle\Events\ObjectTrackingFailed;
 use Biigle\Events\ObjectTrackingSucceeded;
-use Biigle\Shape;
 use Biigle\User;
 use Biigle\VideoAnnotation;
 use Exception;

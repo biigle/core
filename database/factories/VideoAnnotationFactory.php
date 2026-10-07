@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Biigle\Video;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\ReportType;
 use Biigle\Image;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
-use Biigle\ReportType;
 use Illuminate\Validation\Rule;
 
 class StoreProjectReport extends StoreReport

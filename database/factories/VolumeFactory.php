@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

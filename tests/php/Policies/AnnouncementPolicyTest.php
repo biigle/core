@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\Announcement;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use TestCase;
 

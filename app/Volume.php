@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Enums\MediaType;
 use Biigle\Observers\VolumeObserver;
 use Biigle\Traits\HasJsonAttributes;
 use Biigle\Traits\HasMetadataFile;

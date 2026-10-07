@@ -2,14 +2,14 @@
 
 namespace Biigle\Tests\Services\Import;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
-use Biigle\Role;
 use Biigle\Services\Export\PublicLabelTreeExport;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
-use Biigle\Visibility;
 use Exception;
 use File;
 use TestCase;

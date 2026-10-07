@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Shape;
 use Biigle\Observers\VideoAnnotationObserver;
 use Exception;
 use Illuminate\Database\Eloquent\Attributes\Fillable;

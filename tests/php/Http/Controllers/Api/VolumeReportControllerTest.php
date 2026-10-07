@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\ReportType;
 use Biigle\Jobs\GenerateReportJob;
-use Biigle\MediaType;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
-use Biigle\ReportType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Cache;

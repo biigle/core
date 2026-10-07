@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\Reports\Projects;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Services\Reports\Projects\VideoIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;

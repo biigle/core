@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\ApiToken;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\ApiTokenTest;
 use Biigle\Tests\UserTest;
 use TestCase;

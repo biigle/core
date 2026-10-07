@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use Biigle\Enums\Shape;
 use Biigle\Image;
-use Biigle\Shape;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ImageAnnotationFactory extends Factory

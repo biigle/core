@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Enums\ReportType;
 use Biigle\Observers\ReportObserver;
 use Biigle\Services\Reports\ReportGenerator;
 use File;

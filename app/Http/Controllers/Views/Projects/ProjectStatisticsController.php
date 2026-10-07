@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\Enums\MediaType;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Image;
-use Biigle\MediaType;
 use Biigle\Project;
 use Biigle\Video;
 use DB;

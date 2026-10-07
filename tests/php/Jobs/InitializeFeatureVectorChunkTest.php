@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\Shape;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\InitializeFeatureVectorChunk;
 use Biigle\Jobs\ProcessAnnotatedFile;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoAnnotationLabelFeatureVector;

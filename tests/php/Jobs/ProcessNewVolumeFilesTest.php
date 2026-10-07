@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\ProcessNewImage;
 use Biigle\Jobs\ProcessNewVideo;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;

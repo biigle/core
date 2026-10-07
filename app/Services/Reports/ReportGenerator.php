@@ -2,8 +2,8 @@
 
 namespace Biigle\Services\Reports;
 
+use Biigle\Enums\ReportType;
 use Biigle\Label;
-use Biigle\ReportType;
 use Biigle\Services\Reports\File as FileHelper;
 use Biigle\Video;
 use Biigle\Volume;

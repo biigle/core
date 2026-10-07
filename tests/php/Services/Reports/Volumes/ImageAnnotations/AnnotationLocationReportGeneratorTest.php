@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Services\Reports\Volumes\ImageAnnotations;
 
 use App;
+use Biigle\Enums\Shape;
 use Biigle\Services\Reports\File;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\AnnotationLocationReportGenerator;
-use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;

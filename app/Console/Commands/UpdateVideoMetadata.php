@@ -2,8 +2,8 @@
 
 namespace Biigle\Console\Commands;
 
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\ProcessNewVideo;
-use Biigle\MediaType;
 use Biigle\Video;
 use Biigle\Volume;
 use FFMpeg\FFProbe;

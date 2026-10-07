@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Rules;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Rules\VolumeFiles;
 use Storage;
 use TestCase;

@@ -3,14 +3,14 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
-use Biigle\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Visibility;
 use Cache;
 
 class LabelTreeControllerTest extends ApiTestCase

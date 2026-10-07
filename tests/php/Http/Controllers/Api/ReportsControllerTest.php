@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\ReportType;
+use Biigle\Enums\ReportType;
 use Biigle\Tests\ReportTest;
 use Storage;
 

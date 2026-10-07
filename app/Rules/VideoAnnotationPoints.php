@@ -2,7 +2,7 @@
 
 namespace Biigle\Rules;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 
 class VideoAnnotationPoints extends AnnotationPoints
 {

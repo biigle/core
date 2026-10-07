@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Visibility;
+use Biigle\Enums\Visibility;
 
 class VisibilityController extends Controller
 {

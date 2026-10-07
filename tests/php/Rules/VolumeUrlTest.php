@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Rules;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Rules\VolumeUrl;
 use Biigle\User;
 use GuzzleHttp\Client;

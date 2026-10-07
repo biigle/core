@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class MediaTypeController extends Controller
 {

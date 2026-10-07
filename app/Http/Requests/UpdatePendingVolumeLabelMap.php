@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Visibility;
 use Biigle\Label;
 use Biigle\PendingVolume;
-use Biigle\Visibility;
 use DB;
 use Illuminate\Foundation\Http\FormRequest;
 

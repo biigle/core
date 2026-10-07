@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Shape;
 use Biigle\Rules\VideoAnnotationFrames;
 use Biigle\Rules\VideoAnnotationGaps;
 use Biigle\Rules\VideoAnnotationPoints;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

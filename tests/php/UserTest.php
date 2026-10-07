@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Illuminate\Database\QueryException;
 use ModelTestCase;

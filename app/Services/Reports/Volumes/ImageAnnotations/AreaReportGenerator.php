@@ -2,11 +2,11 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\Image;
 use Biigle\LabelTree;
 use Biigle\Modules\Laserpoints\Image as LImage;
 use Biigle\Services\Reports\CsvFile;
-use Biigle\Shape;
 use Biigle\User;
 use DB;
 use StdClass;

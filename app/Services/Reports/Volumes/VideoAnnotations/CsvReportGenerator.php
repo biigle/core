@@ -2,11 +2,11 @@
 
 namespace Biigle\Services\Reports\Volumes\VideoAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
 use Biigle\Services\Reports\Volumes\VolumeReportGenerator;
-use Biigle\Shape;
 use Biigle\Traits\RestrictsToNewestLabels;
 use Biigle\User;
 use DB;

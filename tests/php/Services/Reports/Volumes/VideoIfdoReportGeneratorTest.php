@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Services\Reports\Volumes;
 
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\LabelSource;
-use Biigle\MediaType;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Services\Reports\Volumes\VideoIfdoReportGenerator;
-use Biigle\Shape;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;

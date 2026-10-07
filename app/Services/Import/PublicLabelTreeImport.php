@@ -2,9 +2,9 @@
 
 namespace Biigle\Services\Import;
 
+use Biigle\Enums\Visibility;
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\Visibility;
 use DB;
 use Illuminate\Support\Collection;
 use Ramsey\Uuid\Uuid;

@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Services\Reports;
 
+use Biigle\Enums\ReportType;
 use Biigle\Project;
-use Biigle\ReportType;
 use Biigle\Services\Reports\ReportGenerator;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\BasicReportGenerator;
 use Biigle\Tests\LabelTest;

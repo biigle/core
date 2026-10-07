@@ -1,6 +1,6 @@
 <?php
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Biigle\Support\EnumMigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

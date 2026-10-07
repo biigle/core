@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\Export;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\Export\VolumeExport;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageLabelTest;

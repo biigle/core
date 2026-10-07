@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\ReportType;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
-use Biigle\ReportType;
 use Biigle\Volume;
 use Illuminate\Validation\Rule;
 

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
-use Biigle\Shape;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Storage;

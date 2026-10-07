@@ -2,10 +2,10 @@
 
 namespace Biigle\Policies;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
-use Biigle\Role;
 use Biigle\User;
-use Biigle\Visibility;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

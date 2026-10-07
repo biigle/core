@@ -2,7 +2,7 @@
 
 namespace Biigle\Traits;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Cache;
 use Illuminate\Http\UploadedFile;
