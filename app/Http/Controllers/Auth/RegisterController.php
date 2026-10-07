@@ -172,6 +172,12 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
+        if ($this->isEmailVerificationEnabled()) {
+            return redirect()->route('verification.notice')
+                ->with('messageType', 'info')
+                ->with('message', 'Please verify your email address before continuing.');
+        }
+
         if ($this->isAdminConfirmationEnabled()) {
             $notifiable = Notification::route('mail', config('biigle.admin_email'));
             Notification::send($notifiable, new RegistrationConfirmation($user));
@@ -180,5 +186,10 @@ class RegisterController extends Controller
         // Redirect to the intended path in case users came from a project invitation.
         return redirect()->intended($this->redirectPath())
             ->with('welcomeMessage', true);
+    }
+
+    protected function isEmailVerificationEnabled()
+    {
+        return config('biigle.email_verification') && !config('biigle.offline_mode');
     }
 }

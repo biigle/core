@@ -30,6 +30,10 @@ class DashboardController extends Controller
     public function index(Guard $auth)
     {
         if ($auth->check()) {
+            if (config('biigle.email_verification') && !config('biigle.offline_mode')) {
+                return redirect()->route('verification.notice');
+            }
+
             return $this->indexDashboard($auth->user());
         }
 

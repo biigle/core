@@ -25,7 +25,9 @@
         {{$shownUser->affiliation}}<br>
     @endif
     <span class="text-muted">
-        @if ($shownUser->login_at)
+        @if (!$shownUser->hasVerifiedEmail())
+            never logged in
+        @elseif ($shownUser->login_at)
             <span title="{{$shownUser->login_at}}">active {{$shownUser->login_at->diffForHumans()}}</span>
         @else
             never logged in
