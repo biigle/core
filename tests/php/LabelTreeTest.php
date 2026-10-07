@@ -48,7 +48,7 @@ class LabelTreeTest extends ModelTestCase
     public function testMembers()
     {
         $user = UserTest::create();
-        $this->model->members()->attach($user->id, ['role' => Role::ADMIN->value]);
+        $this->model->members()->attach($user->id, ['role' => Role::ADMIN]);
         $this->assertNotNull($this->model->members()->find($user->id));
     }
 
@@ -110,7 +110,7 @@ class LabelTreeTest extends ModelTestCase
     {
         $this->assertFalse($this->model->members()->exists());
         $this->model->addMember(UserTest::create(), Role::ADMIN);
-        $this->assertSame(Role::ADMIN->value, $this->model->members()->first()->role->value);
+        $this->assertSame(Role::ADMIN, $this->model->members()->first()->role);
     }
 
     public function testAddMemberUserExists()
@@ -137,9 +137,9 @@ class LabelTreeTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->addMember($user, Role::EDITOR);
-        $this->assertSame(Role::EDITOR->value, $this->model->members()->first()->role->value);
+        $this->assertSame(Role::EDITOR, $this->model->members()->first()->role);
         $this->model->updateMember($user, Role::ADMIN);
-        $this->assertSame(Role::ADMIN->value, $this->model->members()->first()->role->value);
+        $this->assertSame(Role::ADMIN, $this->model->members()->first()->role);
     }
 
     public function testProjects()
@@ -158,8 +158,8 @@ class LabelTreeTest extends ModelTestCase
 
     public function testPublicScope()
     {
-        $public = static::create(['visibility' => Visibility::PUBLIC->value]);
-        $private = static::create(['visibility' => Visibility::PRIVATE->value]);
+        $public = static::create(['visibility' => Visibility::PUBLIC]);
+        $private = static::create(['visibility' => Visibility::PRIVATE]);
 
         $ids = LabelTree::publicTrees()->pluck('id');
         $this->assertContains($public->id, $ids);
@@ -168,8 +168,8 @@ class LabelTreeTest extends ModelTestCase
 
     public function testPrivateScope()
     {
-        $public = static::create(['visibility' => Visibility::PUBLIC->value]);
-        $private = static::create(['visibility' => Visibility::PRIVATE->value]);
+        $public = static::create(['visibility' => Visibility::PUBLIC]);
+        $private = static::create(['visibility' => Visibility::PRIVATE]);
 
         $ids = LabelTree::privateTrees()->pluck('id');
         $this->assertContains($private->id, $ids);
@@ -221,9 +221,9 @@ class LabelTreeTest extends ModelTestCase
     {
         $this->model->delete();
         $user = UserTest::create();
-        $tree = self::create(['visibility' => Visibility::PUBLIC->value]);
-        $tree2 = self::create(['visibility' => Visibility::PRIVATE->value]);
-        $tree3 = self::create(['visibility' => Visibility::PRIVATE->value]);
+        $tree = self::create(['visibility' => Visibility::PUBLIC]);
+        $tree2 = self::create(['visibility' => Visibility::PRIVATE]);
+        $tree3 = self::create(['visibility' => Visibility::PRIVATE]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertSame([$tree->id], $ids);
@@ -243,8 +243,8 @@ class LabelTreeTest extends ModelTestCase
 
     public function testScopeAccessibleByAdmin()
     {
-        $user = UserTest::create(['role' => Role::ADMIN->value]);
-        $tree = self::create(['visibility' => Visibility::PRIVATE->value]);
+        $user = UserTest::create(['role' => Role::ADMIN]);
+        $tree = self::create(['visibility' => Visibility::PRIVATE]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertContains($tree->id, $ids);
@@ -303,7 +303,7 @@ class LabelTreeTest extends ModelTestCase
 
         $ids = LabelTree::global()->pluck('id')->all();
         $this->assertSame([$version->label_tree_id], $ids);
-        $version->labelTree->addMember(UserTest::create(), Role::ADMIN->value);
+        $version->labelTree->addMember(UserTest::create(), Role::ADMIN);
         $this->assertFalse(LabelTree::global()->exists());
     }
 

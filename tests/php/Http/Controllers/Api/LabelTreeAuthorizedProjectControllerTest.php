@@ -100,7 +100,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $project = $this->project();
-        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC->value]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
         $tree->addMember($this->editor(), Role::EDITOR);
         $tree->addMember($this->admin(), Role::ADMIN);
         $tree->authorizedProjects()->attach($project->id);
@@ -142,7 +142,7 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
 
     public function testDestroyFormRequest()
     {
-        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC->value]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
         $tree->addMember($this->admin(), Role::ADMIN);
         $project = $this->project();
         $tree->authorizedProjects()->attach($project->id);

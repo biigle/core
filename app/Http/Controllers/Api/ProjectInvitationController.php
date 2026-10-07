@@ -41,7 +41,7 @@ class ProjectInvitationController extends Controller
             'uuid' => Uuid::uuid4(),
             'project_id' => $request->project->id,
             'expires_at' => $request->input('expires_at'),
-            'role' => $request->input('role', Role::EDITOR->value),
+            'role' => $request->input('role', Role::EDITOR),
             'max_uses' => $request->input('max_uses'),
             'add_to_sessions' => $request->input('add_to_sessions', false),
         ]);

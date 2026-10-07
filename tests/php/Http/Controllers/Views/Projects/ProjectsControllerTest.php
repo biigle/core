@@ -28,7 +28,7 @@ class ProjectsControllerTest extends TestCase
         $response->assertStatus(403);
 
         // can't admin the project
-        $project->addUserId($user->id, Role::EDITOR->value);
+        $project->addUserId($user->id, Role::EDITOR);
         $volume = VolumeTest::create(['name' => 'test']);
         $project->addVolumeId($volume->id);
         Cache::flush();
@@ -46,7 +46,7 @@ class ProjectsControllerTest extends TestCase
 
     public function testCreate()
     {
-        $user = UserTest::create(['role' => Role::GUEST->value]);
+        $user = UserTest::create(['role' => Role::GUEST]);
 
         // not logged in
         $response = $this->get('projects/create');

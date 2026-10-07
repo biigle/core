@@ -23,7 +23,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $id = $this->volume(['media_type' => MediaType::VIDEO->value])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $this->video = VideoTest::create([
             'volume_id' => $id,
             'duration' => 2,
@@ -1018,7 +1018,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateValidatePoints()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::POINT->value,
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[10, 20]],
@@ -1036,7 +1036,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateInvalidPoints()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::RECTANGLE->value,
+            'shape' => Shape::RECTANGLE,
             'video_id' => $this->video->id,
             'frames' => [0],
             'points' => [[0, 1, 2, 3, 4, 5, 6, 7]],
@@ -1059,7 +1059,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateValidateFramesNumeric()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::POINT->value,
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[10, 20]],
@@ -1077,7 +1077,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateValidateFramesBounds()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::POINT->value,
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[10, 20]],
@@ -1095,7 +1095,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateValidatePointsArray()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::POINT->value,
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 20], [30, 40]],
@@ -1121,7 +1121,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateValidateFramesGapAtStart()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::POINT->value,
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 20], [30, 40]],
@@ -1140,7 +1140,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateValidateFramesGapAtEnd()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::POINT->value,
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 20], [30, 40]],
@@ -1159,7 +1159,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateWholeFrameAnnotation()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::WHOLE_FRAME->value,
+            'shape' => Shape::WHOLE_FRAME,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [],
@@ -1179,7 +1179,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
     public function testUpdateWholeFrameAnnotationValidateFramesBounds()
     {
         $annotation = VideoAnnotationTest::create([
-            'shape' => Shape::WHOLE_FRAME->value,
+            'shape' => Shape::WHOLE_FRAME,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [],

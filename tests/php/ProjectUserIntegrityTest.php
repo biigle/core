@@ -12,7 +12,7 @@ class ProjectUserIntegrityTest extends TestCase
     {
         $project = ProjectTest::create();
         $user = UserTest::create();
-        $project->addUserId($user->id, Role::EDITOR->value);
+        $project->addUserId($user->id, Role::EDITOR);
 
         $this->assertSame(1, $user->projects()->count());
         $project->delete();
@@ -23,7 +23,7 @@ class ProjectUserIntegrityTest extends TestCase
     {
         $member = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($member->id, Role::GUEST->value);
+        $project->addUserId($member->id, Role::GUEST);
 
         // count the project creator, too
         $this->assertSame(2, $project->users()->count());

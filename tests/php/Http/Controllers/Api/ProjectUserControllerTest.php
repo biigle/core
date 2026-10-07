@@ -89,7 +89,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $pid = $this->project()->id;
         $id = $this->globalGuest()->id;
 
-        $this->project()->addUserId($id, Role::GUEST->value);
+        $this->project()->addUserId($id, Role::GUEST);
 
         $this->beAdmin();
         $this
@@ -200,7 +200,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->project()->addUserId($this->editor()->id, Role::EDITOR->value);
+        $this->project()->addUserId($this->editor()->id, Role::EDITOR);
 
         // admins can delete anyone
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
@@ -210,7 +210,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->project()->addUserId($this->editor()->id, Role::EDITOR->value);
+        $this->project()->addUserId($this->editor()->id, Role::EDITOR);
 
         // but admins cannot delete themselves if they are the only admin left
         $response = $this->deleteJson("/api/v1/projects/{$id}/users/".$this->admin()->id);

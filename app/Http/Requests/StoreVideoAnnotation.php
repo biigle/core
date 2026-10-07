@@ -85,8 +85,9 @@ class StoreVideoAnnotation extends FormRequest
                 return;
             }
 
+            $shape = $this->enum('shape', Shape::class);
             $frameCount = count($this->input('frames', []));
-            $isWholeFrame = intval($this->input('shape')) === Shape::WHOLE_FRAME->value;
+            $isWholeFrame = $shape === Shape::WHOLE_FRAME;
 
             if ($isWholeFrame && $frameCount > 2) {
                 $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
@@ -113,18 +114,18 @@ class StoreVideoAnnotation extends FormRequest
                 }
 
                 $allowedShapes = [
-                    Shape::POINT->value,
-                    Shape::CIRCLE->value,
+                    Shape::POINT,
+                    Shape::CIRCLE,
                 ];
 
-                if (!in_array(intval($this->input('shape')), $allowedShapes)) {
+                if (!in_array($shape, $allowedShapes, true)) {
                     $validator->errors()->add('id', 'Only point and circle annotations can be tracked.');
                 }
 
                 // Only do this for videos with stored dimensions for backwards
                 // compatibility. Older videos may not have stored dimensions, yet.
                 // In this case, the Python script will fail without a graceful error.
-                if (!is_null($this->video->width) && !is_null($this->video->height) && !$this->annotationContained()) {
+                if (!is_null($this->video->width) && !is_null($this->video->height) && !$this->annotationContained($shape)) {
                     $validator->errors()->add('points', 'An annotation to track must be fully contained by the video boundaries.');
                 }
             }
@@ -144,16 +145,18 @@ class StoreVideoAnnotation extends FormRequest
     /**
      * Check if the point or circle annotation is fully contained by the video.
      *
+     * @param Shape|null $shape
+     *
      * @return bool
      */
-    protected function annotationContained()
+    protected function annotationContained(?Shape $shape)
     {
         $radius = 0;
         $points = $this->input('points')[0];
 
-        if (intval($this->input('shape')) === Shape::POINT->value) {
+        if ($shape === Shape::POINT) {
             $radius = config('videos.tracking_point_padding');
-        } elseif (intval($this->input('shape')) === Shape::CIRCLE->value) {
+        } elseif ($shape === Shape::CIRCLE) {
             $radius = $points[2];
         } else {
             return false;

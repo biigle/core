@@ -14,11 +14,11 @@ class VideoAnnotationPoints extends AnnotationPoints
      */
     public function getErrorMessage(array $points): ?string
     {
-        if (is_null($this->shapeId)) {
+        if (is_null($this->shape)) {
             return null;
         }
 
-        if ($this->shapeId === Shape::WHOLE_FRAME->value) {
+        if ($this->shape === Shape::WHOLE_FRAME) {
             return count($points) === 0
                 ? null
                 : 'Whole frame annotations cannot have point coordinates.';

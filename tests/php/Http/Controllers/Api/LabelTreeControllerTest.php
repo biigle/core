@@ -34,7 +34,7 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testIndexPrivate()
     {
         $tree = $this->labelTree();
-        $tree->visibility = Visibility::PRIVATE->value;
+        $tree->visibility = Visibility::PRIVATE;
         $tree->save();
 
         $this->beUser();
@@ -74,7 +74,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE,
         ]);
 
         $label = LabelTest::create([
@@ -120,7 +120,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE,
         ]);
         $id = $tree->id;
         $tree->addMember($this->editor(), Role::EDITOR);
@@ -176,7 +176,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE,
         ]);
         $id = $tree->id;
         $tree->addMember($this->user(), Role::ADMIN);
@@ -203,7 +203,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create([
             'name' => '123',
             'description' => '123',
-            'visibility' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC,
         ]);
         $id = $tree->id;
         $tree->addMember($this->admin(), Role::ADMIN);
@@ -222,11 +222,11 @@ class LabelTreeControllerTest extends ApiTestCase
 
     public function testUpdatePropagateVisibility()
     {
-        $master = LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value]);
+        $master = LabelTreeTest::create(['visibility' => Visibility::PRIVATE]);
         $version = LabelTreeVersionTest::create(['label_tree_id' => $master->id]);
         $tree = LabelTreeTest::create([
             'version_id' => $version->id,
-            'visibility' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE,
         ]);
         $master->addMember($this->admin(), Role::ADMIN);
         $this->beAdmin();
@@ -314,7 +314,7 @@ class LabelTreeControllerTest extends ApiTestCase
         // creator gets first label tree admin
         $member = $tree->members()->find($this->user()->id);
         $this->assertNotNull($member);
-        $this->assertSame(Role::ADMIN->value, $member->role->value);
+        $this->assertSame(Role::ADMIN, $member->role);
     }
 
     public function testStoreAuthorization()
@@ -396,7 +396,7 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testStoreFork()
     {
         $baseTree = LabelTreeTest::create([
-            'visibility' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE,
         ]);
         $baseParent = LabelTest::create(['label_tree_id' => $baseTree->id]);
         $baseChild = LabelTest::create([
@@ -429,7 +429,7 @@ class LabelTreeControllerTest extends ApiTestCase
             ->assertSuccessful();
 
         $this->beGuest();
-        $baseTree->visibility = Visibility::PUBLIC->value;
+        $baseTree->visibility = Visibility::PUBLIC;
         $baseTree->save();
         $this
             ->postJson('/api/v1/label-trees', [

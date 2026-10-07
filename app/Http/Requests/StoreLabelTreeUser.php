@@ -6,6 +6,7 @@ use Biigle\LabelTree;
 use Biigle\Role;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLabelTreeUser extends FormRequest
 {
@@ -47,14 +48,14 @@ class StoreLabelTreeUser extends FormRequest
             ->exists();
 
         if ($this->isGlobalGuest) {
-            $roles = Role::EDITOR->value;
+            $roles = [Role::EDITOR];
         } else {
-            $roles = implode(',', [Role::ADMIN->value, Role::EDITOR->value]);
+            $roles = [Role::ADMIN, Role::EDITOR];
         }
 
         return [
             'id' => 'required|integer|exists:users,id',
-            'role' => "required|integer|in:{$roles}",
+            'role' => ['required', 'integer', Rule::in($roles)],
         ];
     }
 

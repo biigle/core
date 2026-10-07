@@ -185,12 +185,11 @@ class LabelTreeImportTest extends TestCase
             ->get()
             // Pluck after get to get the correct role.
             ->pluck('role', 'uuid')
-            ->map->value
             ->toArray();
 
         $expect = [
-            $this->user->uuid => Role::ADMIN->value,
-            $this->member->uuid => Role::EDITOR->value,
+            $this->user->uuid => Role::ADMIN,
+            $this->member->uuid => Role::EDITOR,
         ];
         $this->assertEquals($expect, $members);
         $this->assertCount(2, $map['users']);

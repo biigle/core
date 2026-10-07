@@ -47,11 +47,11 @@ class VolumeImportTest extends TestCase
         $this->image = ImageTest::create(['volume_id' => $this->imageVolume->id]);
         $this->videoVolume = VolumeTest::create([
             'url' => 'test://files',
-            'media_type' => MediaType::VIDEO->value,
+            'media_type' => MediaType::VIDEO,
         ]);
         $this->video = VideoTest::create(['volume_id' => $this->videoVolume->id]);
         config(['volumes.admin_storage_disks' => ['test']]);
-        $this->user = User::factory()->make(['role' => Role::ADMIN->value]);
+        $this->user = User::factory()->make(['role' => Role::ADMIN]);
         $this->be($this->user);
     }
 

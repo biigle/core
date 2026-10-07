@@ -26,7 +26,7 @@ class ReportFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'type' => fn () => ReportType::IMAGE_ANNOTATIONS_CSV->value,
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV,
             'source_id' => Volume::factory(),
             'source_type' => Volume::class,
         ];

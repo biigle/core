@@ -16,18 +16,18 @@ class LabelTreeVersionsControllerTest extends TestCase
         $user = UserTest::create();
 
         $publicVersion = LabelTreeVersionTest::create([
-            'label_tree_id' => LabelTreeTest::create(['visibility' => Visibility::PUBLIC->value])->id,
+            'label_tree_id' => LabelTreeTest::create(['visibility' => Visibility::PUBLIC])->id,
         ]);
         $publicTree = LabelTreeTest::create([
-            'visibility' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC,
             'version_id' => $publicVersion->id,
         ]);
 
         $privateVersion = LabelTreeVersionTest::create([
-            'label_tree_id' => LabelTreeTest::create(['visibility' => Visibility::PRIVATE->value])->id,
+            'label_tree_id' => LabelTreeTest::create(['visibility' => Visibility::PRIVATE])->id,
         ]);
         $privateTree = LabelTreeTest::create([
-            'visibility' => Visibility::PRIVATE->value,
+            'visibility' => Visibility::PRIVATE,
             'version_id' => $privateVersion->id,
         ]);
 
@@ -56,9 +56,9 @@ class LabelTreeVersionsControllerTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $editor = UserTest::create();
-        $tree->addMember($editor, Role::EDITOR->value);
+        $tree->addMember($editor, Role::EDITOR);
         $admin = UserTest::create();
-        $tree->addMember($admin, Role::ADMIN->value);
+        $tree->addMember($admin, Role::ADMIN);
 
         $this->be($editor);
         $this->get("label-trees/{$tree->id}/versions/create")->assertStatus(403);

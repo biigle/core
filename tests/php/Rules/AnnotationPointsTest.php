@@ -13,7 +13,7 @@ class AnnotationPointsTest extends TestCase
     {
         $validator = Validator::make(
             ['points' => $points],
-            ['points' => new AnnotationPoints(Shape::fromLabel($shape)->value)]
+            ['points' => new AnnotationPoints(Shape::fromLabel($shape))]
         );
 
         return !$validator->fails();
@@ -35,11 +35,28 @@ class AnnotationPointsTest extends TestCase
         $this->assertFalse($validator->fails());
     }
 
+    public function testShapeId()
+    {
+        foreach ([Shape::POINT->value, (string) Shape::POINT->value] as $shapeId) {
+            $rule = new AnnotationPoints($shapeId);
+            $this->assertNull($rule->getErrorMessage([0, 0]));
+            $this->assertNotNull($rule->getErrorMessage([0, 0, 1, 1]));
+        }
+    }
+
+    public function testInvalidShapeId()
+    {
+        foreach ([999, 'abc'] as $shapeId) {
+            $rule = new AnnotationPoints($shapeId);
+            $this->assertNull($rule->getErrorMessage([0, 0, 1, 1]));
+        }
+    }
+
     public function testNoArray()
     {
         $validator = Validator::make(
             ['points' => 'abc'],
-            ['points' => new AnnotationPoints(Shape::POINT->value)]
+            ['points' => new AnnotationPoints(Shape::POINT)]
         );
         $this->assertFalse($validator->fails());
     }

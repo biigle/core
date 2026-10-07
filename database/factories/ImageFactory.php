@@ -28,7 +28,7 @@ class ImageFactory extends VolumeFileFactory
     protected function getVolumeFactory()
     {
         return Volume::factory()->state([
-            'media_type' => MediaType::IMAGE->value,
+            'media_type' => MediaType::IMAGE,
         ]);
     }
 }

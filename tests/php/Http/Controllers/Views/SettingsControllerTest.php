@@ -40,7 +40,7 @@ class SettingsControllerTest extends TestCase
 
     public function testTokensGlobalGuest()
     {
-        $this->be(UserTest::create(['role' => Role::GUEST->value]));
+        $this->be(UserTest::create(['role' => Role::GUEST]));
         $this->get("settings/tokens")->assertStatus(403);
     }
 

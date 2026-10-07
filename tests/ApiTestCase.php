@@ -191,7 +191,7 @@ class ApiTestCase extends TestCase
         $this->project();
 
         $attrs = array_merge($attrs, [
-            'visibility' => Visibility::PUBLIC->value,
+            'visibility' => Visibility::PUBLIC,
         ]);
 
         $this->labelTree = $this->labelTree = LabelTreeTest::create($attrs);
