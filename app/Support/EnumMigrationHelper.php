@@ -4,6 +4,7 @@ namespace Biigle\Support;
 
 use DB;
 use Illuminate\Database\Schema\Blueprint;
+use RuntimeException;
 use Schema;
 
 class EnumMigrationHelper
@@ -15,6 +16,7 @@ class EnumMigrationHelper
      * - Drops the specified table
      * - Removes the _id suffix from the column name
      * - Adds a validation constraint for each renamed column, checking that values are within enum [min, max]
+     *   (only for new rows, existing rows are guaranteed to be valid, see below)
      *
      * To update all values atomically, an SQL query like this is built:
      * ```UPDATE table_name
@@ -34,6 +36,17 @@ class EnumMigrationHelper
      */
     public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys, int $validationMin, int $validationMax): void
     {
+        // Referencing rows with an unmapped ID would keep their old value, which may
+        // silently fall into the valid enum range. This check is also what allows the
+        // range constraint below to skip the validation scan.
+        $unmapped = DB::table($tableName)
+            ->whereNotIn('id', array_keys($map))
+            ->pluck('id');
+
+        if ($unmapped->isNotEmpty()) {
+            throw new RuntimeException("Table {$tableName} contains IDs without enum mapping: {$unmapped->implode(', ')}");
+        }
+
         [$cases, $ids] = self::buildCaseMapping($map);
         foreach ($foreignKeys as $foreignKey) {
             [$table, $column] = $foreignKey;
@@ -58,10 +71,13 @@ class EnumMigrationHelper
                 $newColumn = $column;
             }
 
+            // Existing rows don't need to be validated (which would be a full table
+            // scan under an exclusive lock): The dropped foreign key guaranteed that
+            // all values exist in the old table and the check above guarantees that
+            // all of them were mapped to an enum value. New rows are still checked.
             $rangeConstraintName = "{$table}_{$newColumn}_check";
             $expression = "$newColumn BETWEEN {$validationMin} AND {$validationMax}";
             DB::statement("ALTER TABLE $table ADD CONSTRAINT $rangeConstraintName CHECK ($expression) NOT VALID");
-            DB::statement("ALTER TABLE $table VALIDATE CONSTRAINT $rangeConstraintName");
         }
 
         Schema::dropIfExists($tableName);

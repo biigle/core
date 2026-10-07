@@ -9,6 +9,11 @@ use Biigle\Traits\EnumSerialization;
  * A role of a user. Users have one global role and can have many project-
  * specific roles.
  * This used to be a eloquent db model and was turned into an enum later. To keep some compatibility, some methods were introduced.
+ *
+ * Adding a case requires a migration that updates the range check constraints of the
+ * referencing columns (users_role_check, project_user_project_role_check,
+ * label_tree_user_role_check, project_invitations_role_check).
+ * See EnumRangeConstraintTest.
 */
 enum Role: int implements \JsonSerializable
 {
