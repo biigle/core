@@ -437,7 +437,7 @@ export default {
             // then send the event of chose label_1
             // This also works if the image/video was changed while the popup was open
             if (!this.labelEventEmitted) {
-                Events.emit('labelbot.chose_label_1')
+                Events.emit('labelbot.chose_label_1');
             }
         }
     },
