@@ -26,6 +26,15 @@ class VideoAnnotationPointsTest extends TestCase
         $this->assertTrue($this->validate(null, [['x']]));
     }
 
+    public function testShapeId()
+    {
+        foreach ([Shape::WHOLE_FRAME->value, (string) Shape::WHOLE_FRAME->value] as $shapeId) {
+            $rule = new VideoAnnotationPoints($shapeId);
+            $this->assertNull($rule->getErrorMessage([]));
+            $this->assertNotNull($rule->getErrorMessage([[0, 0]]));
+        }
+    }
+
     public function testNoArray()
     {
         // The type is checked by the separate 'array' rule of the form requests, so

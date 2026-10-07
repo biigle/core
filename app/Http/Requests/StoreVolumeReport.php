@@ -106,7 +106,7 @@ class StoreVolumeReport extends StoreReport
                 }
             }
 
-            if ($this->isType([ReportType::IMAGE_IFDO, ReportType::VIDEO_IFDO]) &&$this->volume->metadata_parser !== IfdoParser::class) {
+            if ($this->isType([ReportType::IMAGE_IFDO, ReportType::VIDEO_IFDO]) && $this->volume->metadata_parser !== IfdoParser::class) {
                 $validator->errors()->add('id', 'The volume has no attached iFDO file.');
             }
         });
