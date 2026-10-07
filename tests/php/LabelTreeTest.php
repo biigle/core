@@ -2,11 +2,14 @@
 
 namespace Biigle\Tests;
 
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\LabelTree;
 use Biigle\Role;
 use Biigle\Visibility;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
+use Storage;
 
 class LabelTreeTest extends ModelTestCase
 {
@@ -325,6 +328,25 @@ class LabelTreeTest extends ModelTestCase
 
         $this->assertSame('master tree', $version->labelTree->versionedName);
         $this->assertSame('versioned tree @ v1.0', $this->model->versionedName);
+    }
+
+    public function testDeleteLabelTreeDeletesGuidelineLabelReferenceImages()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        Storage::fake('annotation_storage');
+
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $guideline = AnnotationGuideline::factory()->create();
+        $pivot = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+        ]);
+        Storage::disk('annotation_storage')->put("{$guideline->id}/{$pivot->uuid}", 'image');
+        $pivot->update(['reference_image_path' => "{$guideline->id}/{$pivot->uuid}"]);
+
+        $this->model->delete();
+
+        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/{$pivot->uuid}");
     }
 
     public function testReplicateLabelsOf()

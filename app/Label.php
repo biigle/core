@@ -2,8 +2,10 @@
 
 namespace Biigle;
 
+use Biigle\Observers\LabelObserver;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $uuid
  */
 #[Hidden(['uuid'])]
+#[ObservedBy(LabelObserver::class)]
 #[WithoutTimestamps]
 class Label extends Model
 {
