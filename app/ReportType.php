@@ -6,6 +6,10 @@ use Biigle\Traits\EloquentEnum;
 use Biigle\Traits\EnumSerialization;
 use Illuminate\Support\Collection;
 
+/**
+ * Adding a case requires a migration that updates the range check constraint of the
+ * referencing column (reports_type_check). See EnumRangeConstraintTest.
+ */
 enum ReportType: int implements \JsonSerializable
 {
     use EnumSerialization, EloquentEnum;

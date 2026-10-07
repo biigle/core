@@ -7,6 +7,10 @@ use Biigle\Traits\EnumSerialization;
 
 /**
  * Volumes can contain either images or videos as media type.
+ *
+ * Adding a case requires a migration that updates the range check constraints of the
+ * referencing columns (volumes_media_type_check, pending_volumes_media_type_check).
+ * See EnumRangeConstraintTest.
  */
 enum MediaType: int implements \JsonSerializable
 {
