@@ -36,7 +36,7 @@ enum Shape: int implements \JsonSerializable
         };
     }
 
-    public static function fromLabel(string $label)
+    public static function fromLabel(string $label): Shape
     {
         return match (strtoupper($label)) {
             self::POINT->name => self::POINT,
