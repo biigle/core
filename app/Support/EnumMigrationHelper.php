@@ -36,9 +36,63 @@ class EnumMigrationHelper
      */
     public static function replaceStaticTableWithEnum(array $map, string $tableName, array $foreignKeys, int $validationMin, int $validationMax): void
     {
+        EnumMigrationHelper::assertCompleteMap($map, $tableName);
+        foreach ($foreignKeys as $foreignKey) {
+            [$table, $column] = $foreignKey;
+            $constraint = $foreignKey[2] ?? "{$table}_{$column}_foreign";
+
+            Schema::table($table, fn (Blueprint $t) => $t->dropForeign($constraint));
+            EnumMigrationHelper::mapValues($map, $table, $column);
+            $newColumn = EnumMigrationHelper::renameEnumColumn($table, $column);
+            EnumMigrationHelper::addRangeValidationCheck($table, $newColumn, $validationMin, $validationMax);
+        }
+
+        Schema::dropIfExists($tableName);
+    }
+
+    public static function addRangeValidationCheck(string $table, string $newColumn, int $validationMin, int $validationMax)
+    {
+        // Existing rows don't need to be validated (which would be a full table
+        // scan under an exclusive lock): The dropped foreign key guaranteed that
+        // all values exist in the old table and assertCompleteMap() guarantees that
+        // all of them were mapped to an enum value. New rows are still checked.
+        $rangeConstraintName = "{$table}_{$newColumn}_check";
+        $expression = "$newColumn BETWEEN {$validationMin} AND {$validationMax}";
+        DB::statement("ALTER TABLE $table ADD CONSTRAINT $rangeConstraintName CHECK ($expression) NOT VALID");
+    }
+
+    public static function renameEnumColumn(string $table, string $column): string
+    {
+        if (!str_ends_with($column, '_id')) {
+            return $column;
+        }
+
+        $newColumn = substr($column, 0, -3);
+        Schema::table($table, function (Blueprint $t) use ($column, $newColumn) {
+            $t->renameColumn($column, $newColumn);
+        });
+
+        return $newColumn;
+    }
+
+    public static function mapValues(array $map, string $table, string $column): void
+    {
+        [$cases, $ids] = self::buildCaseMapping($map);
+        if ($cases === '') {
+            return;
+        }
+        DB::table($table)
+            ->whereIn($column, $ids)
+            ->update([
+                $column => DB::raw("CASE $column $cases END")
+            ]);
+    }
+
+    public static function assertCompleteMap(array $map, string $tableName): void
+    {
         // Referencing rows with an unmapped ID would keep their old value, which may
-        // silently fall into the valid enum range. This check is also what allows the
-        // range constraint below to skip the validation scan.
+        // silently fall into the valid enum range. This check is also what allows
+        // addRangeValidationCheck() to skip the validation scan.
         $unmapped = DB::table($tableName)
             ->whereNotIn('id', array_keys($map))
             ->pluck('id');
@@ -46,41 +100,6 @@ class EnumMigrationHelper
         if ($unmapped->isNotEmpty()) {
             throw new RuntimeException("Table {$tableName} contains IDs without enum mapping: {$unmapped->implode(', ')}");
         }
-
-        [$cases, $ids] = self::buildCaseMapping($map);
-        foreach ($foreignKeys as $foreignKey) {
-            [$table, $column] = $foreignKey;
-            $constraint = $foreignKey[2] ?? "{$table}_{$column}_foreign";
-
-            Schema::table($table, fn (Blueprint $t) => $t->dropForeign($constraint));
-
-            if ($cases !== '') {
-                DB::table($table)
-                    ->whereIn($column, $ids)
-                    ->update([
-                        $column => DB::raw("CASE $column $cases END")
-                    ]);
-            }
-
-            if (str_ends_with($column, '_id')) {
-                $newColumn = substr($column, 0, -3);
-                Schema::table($table, function (Blueprint $t) use ($column, $newColumn) {
-                    $t->renameColumn($column, $newColumn);
-                });
-            } else {
-                $newColumn = $column;
-            }
-
-            // Existing rows don't need to be validated (which would be a full table
-            // scan under an exclusive lock): The dropped foreign key guaranteed that
-            // all values exist in the old table and the check above guarantees that
-            // all of them were mapped to an enum value. New rows are still checked.
-            $rangeConstraintName = "{$table}_{$newColumn}_check";
-            $expression = "$newColumn BETWEEN {$validationMin} AND {$validationMax}";
-            DB::statement("ALTER TABLE $table ADD CONSTRAINT $rangeConstraintName CHECK ($expression) NOT VALID");
-        }
-
-        Schema::dropIfExists($tableName);
     }
 
     /**
