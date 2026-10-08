@@ -3,12 +3,18 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Events\AnnotationLabelAttached;
 use Biigle\MediaType;
+use Biigle\Role;
+use Biigle\Shape;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
+use Biigle\VideoAnnotation;
 use Illuminate\Support\Facades\Event;
 
 class VideoAnnotationLabelControllerTest extends ApiTestCase
@@ -74,6 +80,159 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
             ->assertStatus(422);
     }
 
+    public function testStoreGuidelineRequired()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        $id = $this->createAnnotation(Shape::pointId())->id;
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineOptional()
+    {
+        $this->createGuideline(['enforced' => true]);
+        // The editor can annotate in this project, too, and it has no guideline.
+        $project = ProjectTest::create();
+        $project->addVolumeId($this->volume()->id);
+        $project->addUserId($this->editor()->id, Role::editorId());
+        $id = $this->createAnnotation(Shape::pointId())->id;
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineNotExists()
+    {
+        $id = $this->createAnnotation(Shape::pointId())->id;
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => -1,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+    }
+
+    public function testStoreGuidelineNotEnforced()
+    {
+        $guideline = $this->createGuideline(['enforced' => false]);
+        $id = $this->createAnnotation(Shape::pointId())->id;
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('guideline_id');
+
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineLabel()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+        $id = $this->createAnnotation(Shape::pointId())->id;
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelChild()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('label_id');
+
+        $this
+            ->postJson("api/v1/video-annotations/{$id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineOnlyShapes()
+    {
+        $guideline = $this->createGuideline([
+            'enforced' => true,
+            'only_shapes' => [Shape::circleId()],
+        ]);
+        $pointId = $this->createAnnotation(Shape::pointId())->id;
+        $circleId = $this->createAnnotation(Shape::circleId())->id;
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$pointId}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('label_id');
+
+        $this
+            ->postJson("api/v1/video-annotations/{$circleId}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertSuccessful();
+    }
+
+    public function testStoreGuidelineLabelShape()
+    {
+        $guideline = $this->createGuideline(['enforced' => true]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $this->labelRoot()->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        $pointId = $this->createAnnotation(Shape::pointId())->id;
+        $circleId = $this->createAnnotation(Shape::circleId())->id;
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$pointId}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('label_id');
+
+        $this
+            ->postJson("api/v1/video-annotations/{$circleId}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'guideline_id' => $guideline->id,
+            ])
+            ->assertSuccessful();
+    }
+
     public function testDestroy()
     {
         $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
@@ -118,5 +277,22 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
             ->deleteJson("api/v1/video-annotation-labels/{$annotationLabel1->id}")
             // Cannot detach the last label.
             ->assertStatus(422);
+    }
+
+    protected function createGuideline(array $attrs = []): AnnotationGuideline
+    {
+        return AnnotationGuideline::factory()->create(array_merge([
+            'project_id' => $this->project()->id,
+        ], $attrs));
+    }
+
+    protected function createAnnotation(int $shapeId): VideoAnnotation
+    {
+        return VideoAnnotationTest::create([
+            'video_id' => $this->video->id,
+            'shape_id' => $shapeId,
+            'points' => $shapeId === Shape::circleId() ? [[10, 11, 5]] : [[10, 11]],
+            'frames' => [0.0],
+        ]);
     }
 }

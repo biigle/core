@@ -105,6 +105,13 @@ class StoreProjectLargoSession extends StoreLargoSession
             if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
                 $validator->errors()->add('changed_video_annotations', 'You may only attach labels that belong to one of the label trees available for the project.');
             }
+
+            // Project Largo sessions always use the enforced guideline of the project
+            // (if any). Labels and shapes are checked when the session is applied.
+            $guideline = $this->project->annotationGuideline;
+            if ($guideline?->enforced) {
+                $this->guideline = $guideline;
+            }
         });
     }
 

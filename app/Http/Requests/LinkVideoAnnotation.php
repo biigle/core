@@ -2,11 +2,15 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LinkVideoAnnotation extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The first annotation that should be linked.
      *
@@ -43,6 +47,7 @@ class LinkVideoAnnotation extends FormRequest
     {
         return [
             'annotation_id' => 'required|integer|exists:video_annotations,id',
+            'guideline_id' => 'nullable|integer',
         ];
     }
 
@@ -76,6 +81,39 @@ class LinkVideoAnnotation extends FormRequest
 
             if ($this->firstAnnotation->shape_id !== $this->secondAnnotation->shape_id) {
                 $validator->errors()->add('annotation_id', 'The two annotations must have the same shape.');
+            }
+
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $guideline = $this->validateGuideline(
+                $validator,
+                $this->firstAnnotation->video->volume_id,
+                $this->integer('guideline_id') ?: null
+            );
+
+            if (is_null($guideline)) {
+                return;
+            }
+
+            // The linked annotation gets all labels of both annotations.
+            $labelIds = VideoAnnotationLabel::whereIn('annotation_id', [
+                $this->firstAnnotation->id,
+                $this->secondAnnotation->id,
+            ])
+                ->distinct()
+                ->pluck('label_id');
+
+            foreach ($labelIds as $labelId) {
+                $this->validateGuidelineLabel($validator, $guideline, $labelId, 'annotation_id');
+                $this->validateGuidelineShape(
+                    $validator,
+                    $guideline,
+                    $this->firstAnnotation->shape_id,
+                    $labelId,
+                    'annotation_id'
+                );
             }
         });
     }

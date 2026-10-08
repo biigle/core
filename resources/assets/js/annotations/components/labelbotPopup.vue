@@ -147,7 +147,7 @@ export default {
             return this.popupKey === this.focusedPopupKey;
         },
         labels() {
-            return [this.annotation.labels[0].label].concat(this.annotation.labelBOTLabels);
+            return this.annotation.labelBOTLabels;
         },
         classObject() {
             return {

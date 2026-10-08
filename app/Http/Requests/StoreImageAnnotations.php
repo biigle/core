@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\Rules\AnnotationPoints;
@@ -11,6 +12,8 @@ use Illuminate\Validation\Rule;
 
 class StoreImageAnnotations extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * Maximum number of new annotations that can be created in a single request.
      *
@@ -28,7 +31,7 @@ class StoreImageAnnotations extends FormRequest
     /**
      * The images on which the annotations should be created.
      *
-     * @var \Illuminate\Database\Eloquent\Collection<\Biigle\Image>
+     * @var \Illuminate\Database\Eloquent\Collection<int, \Biigle\Image>
      */
     public $images;
 
@@ -89,6 +92,7 @@ class StoreImageAnnotations extends FormRequest
             '*.confidence' => 'required|numeric|between:0,1',
             '*.shape_id' => ['bail', 'required', 'integer', Rule::in($shapeIds)],
             '*.points' => 'bail|required|array',
+            '*.guideline_id' => 'nullable|integer',
         ];
     }
 
@@ -126,6 +130,42 @@ class StoreImageAnnotations extends FormRequest
 
             if ($this->labelIds->count() !== $this->labels->count()) {
                 $validator->errors()->add('label_id', 'The label id does not exist.');
+            }
+        });
+
+        $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            // The guideline lookups are memoized per volume, so this does not perform
+            // queries for each item.
+            foreach ($this->all() as $index => $annotation) {
+                $guideline = $this->validateGuideline(
+                    $validator,
+                    $this->images->find(intval($annotation['image_id']))->volume_id,
+                    intval($annotation['guideline_id'] ?? 0) ?: null,
+                    "{$index}.guideline_id"
+                );
+
+                if (is_null($guideline)) {
+                    continue;
+                }
+
+                $labelId = intval($annotation['label_id']);
+                $this->validateGuidelineLabel(
+                    $validator,
+                    $guideline,
+                    $labelId,
+                    "{$index}.label_id"
+                );
+                $this->validateGuidelineShape(
+                    $validator,
+                    $guideline,
+                    intval($annotation['shape_id']),
+                    $labelId,
+                    "{$index}.shape_id"
+                );
             }
         });
     }

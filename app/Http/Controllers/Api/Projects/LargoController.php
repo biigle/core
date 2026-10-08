@@ -22,7 +22,7 @@ class LargoController extends Controller
      * @apiName ProjectsStoreLargo
      * @apiParam {Number} id The project ID.
      * @apiPermission projectEditor
-     * @apiDescription See the 'Save a volume session' endpoint for more information
+     * @apiDescription See the 'Save a volume session' endpoint for more information. If the project has an enforced annotation guideline, changes that are not allowed by the guideline are skipped when the session is applied.
      *
      * @apiParam (Optional arguments) {Object} dismissed_image_annotations Map from a label ID to a list of IDs of image annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed_image_annotations Map from a label ID to a list of IDs of image annotations to which this label should be attached.
@@ -54,7 +54,7 @@ class LargoController extends Controller
         });
 
         try {
-            $job = new ApplyLargoSession($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
+            $job = new ApplyLargoSession($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force, $request->guideline?->id);
             Queue::pushOn($job->queue, $job);
         } catch (Throwable $e) {
             // We can't use DB::transaction to roll back the changes because this would

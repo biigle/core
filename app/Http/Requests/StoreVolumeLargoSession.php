@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Project;
 use Biigle\Role;
 use Biigle\Volume;
@@ -9,6 +10,8 @@ use DB;
 
 class StoreVolumeLargoSession extends StoreLargoSession
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The volume to store the Largo session for.
      *
@@ -46,6 +49,18 @@ class StoreVolumeLargoSession extends StoreLargoSession
     }
 
     /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            'guideline_id' => 'nullable|integer',
+        ]);
+    }
+
+    /**
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
@@ -65,6 +80,17 @@ class StoreVolumeLargoSession extends StoreLargoSession
                     $this->validateVideoVolume($validator);
                 }
             }
+
+            if ($this->emptyRequest || $validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            // Labels and shapes are checked when the session is applied.
+            $this->guideline = $this->validateGuideline(
+                $validator,
+                $this->volume->id,
+                $this->integer('guideline_id') ?: null
+            );
         });
     }
 
@@ -120,18 +146,13 @@ class StoreVolumeLargoSession extends StoreLargoSession
      */
     protected function getAvailableLabelTrees($volume)
     {
-        if ($this->user()->can('sudo')) {
-            // Global admins have no restrictions.
-            $projects = $volume->projects()->pluck('id');
-        } else {
-            // All projects that the user and the volume have in common
-            // and where the user is editor, expert or admin.
-            $projects = Project::inCommon($this->user(), $volume->id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
-            ])->pluck('id');
-        }
+        // All projects that the user and the volume have in common
+        // and where the user is editor, expert or admin.
+        $projects = Project::inCommon($this->user(), $volume->id, [
+            Role::editorId(),
+            Role::expertId(),
+            Role::adminId(),
+        ])->pluck('id');
 
         return DB::table('label_tree_project')
             ->whereIn('project_id', $projects)

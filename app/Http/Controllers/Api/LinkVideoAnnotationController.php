@@ -25,6 +25,7 @@ class LinkVideoAnnotationController extends Controller
      *
      * @apiParam {Number} id The video annotation ID.
      * @apiParam (Required attributes) {Number} annotation_id ID of the other video annotation.
+     * @apiParam (Optional attributes) {Number} guideline_id ID of the enforced annotation guideline that applies. All labels of both annotations must be allowed by the guideline and match the shape of the annotations. Required if all projects of the volume (where the user can create annotations) have an enforced guideline. See the "Get annotation guidelines" endpoint of volumes.
      *
      * @apiSuccessExample {json} Success example:
      * {

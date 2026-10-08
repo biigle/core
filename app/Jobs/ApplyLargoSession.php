@@ -36,77 +36,28 @@ class ApplyLargoSession extends Job implements ShouldQueue
     public $tries = 1;
 
     /**
-     * The job ID.
-     *
-     * @var string
-     */
-    public $id;
-
-    /**
-     * The user who submitted the Largo session.
-     *
-     * @var \Biigle\User
-     */
-    public $user;
-
-    /**
-     * Array of all dismissed image annotation IDs for each label.
-     *
-     * @var array
-     */
-    public $dismissedImageAnnotations;
-
-    /**
-     * Array of all changed image annotation IDs for each label.
-     *
-     * @var array
-     */
-    public $changedImageAnnotations;
-
-    /**
-     * Array of all dismissed video annotation IDs for each label.
-     *
-     * @var array
-     */
-    public $dismissedVideoAnnotations;
-
-    /**
-     * Array of all changed video annotation IDs for each label.
-     *
-     * @var array
-     */
-    public $changedVideoAnnotations;
-
-    /**
-     * Whether to dismiss labels even if they were created by other users.
-     *
-     * @var bool
-     */
-    public $force;
-
-    /**
      * Create a new job instance.
      *
-     * @param string $id
-     * @param \Biigle\User $user
-     * @param array $dismissedImageAnnotations
-     * @param array $changedImageAnnotations
-     * @param array $dismissedVideoAnnotations
-     * @param array $changedVideoAnnotations
-     * @param bool $force
-     *
-     * @return void
+     * @param string $id The job ID.
+     * @param User $user The user who submitted the Largo session.
+     * @param array $dismissedImageAnnotations Array of all dismissed image annotation IDs for each label.
+     * @param array $changedImageAnnotations Array of all changed image annotation IDs for each label.
+     * @param array $dismissedVideoAnnotations Array of all dismissed video annotation IDs for each label.
+     * @param array $changedVideoAnnotations Array of all changed video annotation IDs for each label.
+     * @param bool $force Whether to dismiss labels even if they were created by other users.
+     * @param int|null $guidelineId ID of the enforced annotation guideline that applies to the changed annotations.
      */
-    public function __construct($id, User $user, $dismissedImageAnnotations, $changedImageAnnotations, $dismissedVideoAnnotations, $changedVideoAnnotations, $force)
-    {
+    public function __construct(
+        public string $id,
+        public User $user,
+        public array $dismissedImageAnnotations,
+        public array $changedImageAnnotations,
+        public array $dismissedVideoAnnotations,
+        public array $changedVideoAnnotations,
+        public bool $force,
+        public ?int $guidelineId = null
+    ) {
         $this->queue = config('largo.apply_session_queue');
-        $this->id = $id;
-        $this->user = $user;
-        $this->dismissedImageAnnotations = $dismissedImageAnnotations;
-        $this->changedImageAnnotations = $changedImageAnnotations;
-        $this->dismissedVideoAnnotations = $dismissedVideoAnnotations;
-        $this->changedVideoAnnotations = $changedVideoAnnotations;
-        $this->force = $force;
     }
 
     /**
