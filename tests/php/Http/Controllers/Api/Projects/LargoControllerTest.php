@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
 use Biigle\ImageAnnotation;
 use Biigle\Jobs\ApplyLargoSession;
 use Biigle\Label;
@@ -55,6 +56,27 @@ class LargoControllerTest extends ApiTestCase
     public function testRoute()
     {
         $this->doTestApiRoute('POST', "/api/v1/projects/{$this->project()->id}/largo");
+    }
+
+    public function testGlobalAdminWithoutProjectRole()
+    {
+        $this->beGlobalAdmin();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+        ])
+            ->assertStatus(403);
+
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+            'force' => true,
+        ])
+            ->assertStatus(403);
+
+        Queue::assertNotPushed(ApplyLargoSession::class);
     }
 
     public function testErrorsImageAnnotations()
@@ -513,5 +535,54 @@ class LargoControllerTest extends ApiTestCase
         }
 
         $this->assertEmpty($this->imageVolume->fresh()->attrs);
+    }
+
+    public function testGuidelineEnforced()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+        ]);
+
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+        ])
+            ->assertStatus(200);
+
+        Queue::assertPushed(ApplyLargoSession::class, fn ($job) => $job->guidelineId === $guideline->id);
+    }
+
+    public function testGuidelineNotEnforced()
+    {
+        AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => false,
+        ]);
+
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+        ])
+            ->assertStatus(200);
+
+        Queue::assertPushed(ApplyLargoSession::class, fn ($job) => is_null($job->guidelineId));
+    }
+
+    public function testNoGuideline()
+    {
+        $this->beEditor();
+        $this->postJson("/api/v1/projects/{$this->project()->id}/largo", [
+            'dismissed_image_annotations' => [
+                $this->imageAnnotationLabel->label_id => [$this->imageAnnotation->id],
+            ],
+        ])
+            ->assertStatus(200);
+
+        Queue::assertPushed(ApplyLargoSession::class, fn ($job) => is_null($job->guidelineId));
     }
 }
