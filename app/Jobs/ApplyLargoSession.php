@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use Biigle\AnnotationGuideline;
 use Biigle\Events\LargoSessionFailed;
 use Biigle\Events\LargoSessionSaved;
 use Biigle\ImageAnnotation;
@@ -11,10 +12,12 @@ use Biigle\User;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
+use Cache;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Log;
 use Throwable;
 
 class ApplyLargoSession extends Job implements ShouldQueue
@@ -34,6 +37,46 @@ class ApplyLargoSession extends Job implements ShouldQueue
      * @var integer
      */
     public $tries = 1;
+
+    /**
+     * Number of seconds to keep the IDs of unchanged annotations in the cache.
+     *
+     * @var integer
+     */
+    const UNCHANGED_CACHE_TTL = 3600;
+
+    /**
+     * The enforced annotation guideline that applies to the changed annotations.
+     */
+    protected ?AnnotationGuideline $guideline = null;
+
+    /**
+     * IDs of image annotations that were not changed.
+     */
+    protected array $unchangedImageAnnotations = [];
+
+    /**
+     * IDs of video annotations that were not changed.
+     */
+    protected array $unchangedVideoAnnotations = [];
+
+    /**
+     * Whether changes were rejected because of the annotation guideline.
+     */
+    protected bool $rejectedByGuideline = false;
+
+    /**
+     * Whether labels of other users were not dismissed.
+     */
+    protected bool $rejectedOtherUser = false;
+
+    /**
+     * Get the cache key for the IDs of the unchanged annotations of a Largo session.
+     */
+    public static function getUnchangedCacheKey(string $id): string
+    {
+        return "largo-session-{$id}-unchanged";
+    }
 
     /**
      * Create a new job instance.
@@ -73,13 +116,28 @@ class ApplyLargoSession extends Job implements ShouldQueue
             return;
         }
 
+        if (!is_null($this->guidelineId)) {
+            // If the guideline was deleted or is no longer enforced in the meantime,
+            // nothing is restricted.
+            $this->guideline = AnnotationGuideline::where('enforced', true)->find($this->guidelineId);
+        }
+
         DB::transaction(function () {
             $this->handleImageAnnotations();
             $this->handleVideoAnnotations();
         });
 
         $this->cleanupJobId();
-        LargoSessionSaved::dispatch($this->id, $this->user);
+
+        try {
+            $hasUnchanged = $this->storeUnchangedAnnotations();
+        } catch (Throwable $e) {
+            // The changes are already committed so the job must not fail here.
+            Log::warning("Could not store unchanged annotations of Largo session {$this->id}: {$e->getMessage()}");
+            $hasUnchanged = false;
+        }
+
+        LargoSessionSaved::dispatch($this->id, $this->user, $hasUnchanged);
     }
 
     /**
@@ -116,6 +174,10 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // dangling annotations are deleted)!
         [$dismissed, $changed] = $this->ignoreNullChanges($dismissed, $changed);
 
+        [$dismissed, $changed, $rejected] = $this->ignoreGuidelineViolations($dismissed, $changed, ImageAnnotation::class);
+        $kept = $this->getKeptAnnotations($dismissed, $changed, ImageAnnotationLabel::class);
+        $this->unchangedImageAnnotations = $this->collectUnchanged($rejected, $kept);
+
         // Change labels first, then dismiss to keep the opportunity to copy feature
         // vectors. If labels are deleted first, the feature vectors will be immediately
         // deleted, too, and nothing can be copied any more.
@@ -136,12 +198,138 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // dangling annotations are deleted)!
         [$dismissed, $changed] = $this->ignoreNullChanges($dismissed, $changed);
 
+        [$dismissed, $changed, $rejected] = $this->ignoreGuidelineViolations($dismissed, $changed, VideoAnnotation::class);
+        $kept = $this->getKeptAnnotations($dismissed, $changed, VideoAnnotationLabel::class);
+        $this->unchangedVideoAnnotations = $this->collectUnchanged($rejected, $kept);
+
         // Change labels first, then dismiss to keep the opportunity to copy feature
         // vectors. If labels are deleted first, the feature vectors will be immediately
         // deleted, too, and nothing can be copied any more.
         $this->applyChangedLabels($this->user, $changed, VideoAnnotation::class, VideoAnnotationLabel::class);
         $this->applyDismissedLabels($this->user, $dismissed, $this->force, VideoAnnotationLabel::class);
         $this->deleteDanglingAnnotations($dismissed, $changed, VideoAnnotation::class);
+    }
+
+    /**
+     * Removes all changes and dismissals of annotations where a change is not allowed
+     * by the annotation guideline. The API does not tell which dismissed label is
+     * replaced by which changed label, so the whole annotation must be skipped.
+     * Otherwise an annotation could lose its old label without getting a new one and
+     * would be deleted as dangling annotation.
+     *
+     * @return array Containing 'dismissed', 'changed' and the IDs of the rejected annotations.
+     */
+    protected function ignoreGuidelineViolations(array $dismissed, array $changed, string $annotationModel): array
+    {
+        if (is_null($this->guideline) || empty($changed)) {
+            return [$dismissed, $changed, []];
+        }
+
+        $rejected = [];
+        // Annotations that require a shape check, grouped by the allowed shapes so
+        // labels with the same allowed shapes need only one check.
+        $shapeChecks = [];
+
+        foreach ($changed as $labelId => $annotationIds) {
+            if (!$this->guideline->allowsLabel($labelId)) {
+                $rejected[] = $annotationIds;
+                continue;
+            }
+
+            $shapeIds = $this->guideline->allowedShapes($labelId);
+            if (is_null($shapeIds)) {
+                continue;
+            }
+
+            sort($shapeIds);
+            $key = implode(',', $shapeIds);
+            $shapeChecks[$key]['shapeIds'] = $shapeIds;
+            $shapeChecks[$key]['annotationIds'][] = $annotationIds;
+        }
+
+        foreach ($shapeChecks as $check) {
+            $annotationIds = array_values(array_unique(array_merge(...$check['annotationIds'])));
+            $rejected[] = $this->getAnnotationsWithOtherShapes(
+                $annotationIds,
+                $check['shapeIds'],
+                $annotationModel
+            );
+        }
+
+        $rejected = array_values(array_unique(array_merge(...$rejected)));
+
+        if (empty($rejected)) {
+            return [$dismissed, $changed, []];
+        }
+
+        $rejectedLookup = array_flip($rejected);
+        $filter = fn ($ids) => array_values(array_filter($ids, fn ($id) => !isset($rejectedLookup[$id])));
+        // Use outermost array_filter to remove now empty elements.
+        $dismissed = array_filter(array_map($filter, $dismissed));
+        $changed = array_filter(array_map($filter, $changed));
+
+        return [$dismissed, $changed, $rejected];
+    }
+
+    /**
+     * Get the IDs of the annotations that have a shape other than the given shapes.
+     */
+    protected function getAnnotationsWithOtherShapes(array $annotationIds, array $shapeIds, string $annotationModel): array
+    {
+        $chunkSize = config('biigle.db_param_limit') - count($shapeIds);
+        $ids = [];
+
+        foreach (array_chunk($annotationIds, $chunkSize) as $chunk) {
+            $ids[] = $annotationModel::whereIn('id', $chunk)
+                ->whereNotIn('shape_id', $shapeIds)
+                ->pluck('id')
+                ->all();
+        }
+
+        return array_merge(...$ids);
+    }
+
+    /**
+     * Merge the IDs of the annotations that were not changed.
+     *
+     * @param array $rejected IDs of annotations rejected by the annotation guideline.
+     * @param array $kept IDs of annotations that were not deleted because labels of other users were not detached.
+     */
+    protected function collectUnchanged(array $rejected, array $kept): array
+    {
+        if (!empty($rejected)) {
+            $this->rejectedByGuideline = true;
+        }
+
+        if (!empty($kept)) {
+            $this->rejectedOtherUser = true;
+        }
+
+        return array_values(array_unique(array_map('intval', array_merge($rejected, $kept))));
+    }
+
+    /**
+     * Store the IDs of the unchanged annotations so the user can fetch them.
+     *
+     * @return bool Whether there are unchanged annotations.
+     */
+    protected function storeUnchangedAnnotations(): bool
+    {
+        if (empty($this->unchangedImageAnnotations) && empty($this->unchangedVideoAnnotations)) {
+            return false;
+        }
+
+        // The IDs are not sent with the broadcast event because the payload size is
+        // limited.
+        Cache::put(self::getUnchangedCacheKey($this->id), [
+            'user_id' => $this->user->id,
+            'image_annotations' => $this->unchangedImageAnnotations,
+            'video_annotations' => $this->unchangedVideoAnnotations,
+            'guideline' => $this->rejectedByGuideline,
+            'other_user' => $this->rejectedOtherUser,
+        ], self::UNCHANGED_CACHE_TTL);
+
+        return true;
     }
 
     /**
@@ -179,7 +367,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
     }
 
     /**
-     * Removes changes to annotations where the same label was dismissed than should be
+     * Removes changes to annotations where the same label was dismissed that should be
      * attached again later.
      */
     protected function ignoreNullChanges(array $dismissed, array $changed): array
@@ -212,6 +400,46 @@ class ApplyLargoSession extends Job implements ShouldQueue
     }
 
     /**
+     * Get the IDs of annotations that should be dismissed (without getting a new label)
+     * but won't be because the attached label is from another user. This does not
+     * include annotations where both the other user and the requesting user have the
+     * same label attached because the label of the requesting user *will* be detached.
+     */
+    protected function getKeptAnnotations(array $dismissed, array $changed, string $labelModel): array
+    {
+        if ($this->force || empty($dismissed)) {
+            return [];
+        }
+
+        // Account for additional parameters in the query (label_id and two user_id)
+        $chunkSize = config('biigle.db_param_limit') - 3;
+        $changedLookup = empty($changed) ? [] : array_flip(array_merge(...$changed));
+        $table = (new $labelModel)->getTable();
+        $kept = [];
+
+        foreach ($dismissed as $labelId => $annotationIds) {
+            $annotationIds = array_filter($annotationIds, fn ($id) => !isset($changedLookup[$id]));
+
+            foreach (array_chunk($annotationIds, $chunkSize) as $chunk) {
+                $kept[] = $labelModel::whereIn("{$table}.annotation_id", $chunk)
+                    ->where("{$table}.user_id", '!=', $this->user->id)
+                    ->where("{$table}.label_id", $labelId)
+                    // Only report annotations that were truly kept, i.e. did not have
+                    // the same label attached by the requesting user, too.
+                    ->whereNotExists(fn ($query) => $query->select(DB::raw(1))
+                        ->from("{$table} as own")
+                        ->whereColumn('own.annotation_id', "{$table}.annotation_id")
+                        ->whereColumn('own.label_id', "{$table}.label_id")
+                        ->where('own.user_id', $this->user->id))
+                    ->pluck("{$table}.annotation_id")
+                    ->all();
+            }
+        }
+
+        return array_merge(...$kept);
+    }
+
+    /**
      * Detach annotation labels that were dismissed in a Largo session.
      *
      * @param \Biigle\User $user
@@ -223,7 +451,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
     {
         // Account for additional parameters in the query (label_id and user_id)
         $chunkSize = config('biigle.db_param_limit') - 2;
-        
+
         foreach ($dismissed as $labelId => $annotationIds) {
             $chunks = array_chunk($annotationIds, $chunkSize);
             foreach ($chunks as $chunk) {

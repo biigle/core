@@ -158,6 +158,8 @@ $router->post('label-trees/import', [
     'uses' => 'Import\PublicLabelTreeImportController@store',
 ]);
 
+$router->get('largo-sessions/{uuid}/unchanged-annotations', 'LargoSessionUnchangedAnnotationController@index');
+
 $router->resource('media-types', 'MediaTypeController', [
     'only' => ['index', 'show'],
     'parameters' => ['media-types' => 'id'],

@@ -167,4 +167,53 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->assertTrue($this->model->allowsShape(Shape::circleId(), $labelWithoutShape->id));
         $this->assertFalse($this->model->allowsShape(Shape::rectangleId(), $labelWithoutShape->id));
     }
+
+    public function testAllowedShapesNotEnforced()
+    {
+        $label = LabelTest::create();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+            'shape_id' => Shape::pointId(),
+        ]);
+
+        $this->assertNull($this->model->allowedShapes());
+        $this->assertNull($this->model->allowedShapes($label->id));
+    }
+
+    public function testAllowedShapesWithoutRestrictions()
+    {
+        $this->model->update(['enforced' => true]);
+        $label = LabelTest::create();
+
+        $this->assertNull($this->model->allowedShapes());
+        $this->assertNull($this->model->allowedShapes($label->id));
+    }
+
+    public function testAllowedShapes()
+    {
+        $this->model->update([
+            'enforced' => true,
+            'only_shapes' => [Shape::pointId(), Shape::circleId()],
+        ]);
+        $label = LabelTest::create();
+        $labelWithoutShape = LabelTest::create();
+        $otherLabel = LabelTest::create();
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $label->id,
+            'shape_id' => Shape::circleId(),
+        ]);
+        AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $this->model->id,
+            'label_id' => $labelWithoutShape->id,
+        ]);
+
+        $onlyShapes = [Shape::pointId(), Shape::circleId()];
+        $this->assertSame($onlyShapes, $this->model->allowedShapes());
+        $this->assertSame([Shape::circleId()], $this->model->allowedShapes($label->id));
+        $this->assertSame($onlyShapes, $this->model->allowedShapes($labelWithoutShape->id));
+        // Labels outside of the guideline fall back to only_shapes, too.
+        $this->assertSame($onlyShapes, $this->model->allowedShapes($otherLabel->id));
+    }
 }

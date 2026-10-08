@@ -99,19 +99,32 @@ class AnnotationGuideline extends Model
      */
     public function allowsShape(int $shapeId, ?int $labelId = null): bool
     {
+        $shapeIds = $this->allowedShapes($labelId);
+
+        return is_null($shapeIds) || in_array($shapeId, $shapeIds, true);
+    }
+
+    /**
+     * Get the IDs of the shapes that are allowed by the guideline (optionally in
+     * combination with a label).
+     *
+     * @return array<int>|null Null if all shapes are allowed.
+     */
+    public function allowedShapes(?int $labelId = null): ?array
+    {
         if (!$this->enforced) {
-            return true;
+            return null;
         }
 
         if (!is_null($labelId)) {
             $labelShapes = $this->getLabelShapes();
             $labelShapeId = $labelShapes[$labelId] ?? null;
             if (!is_null($labelShapeId)) {
-                return $shapeId === $labelShapeId;
+                return [$labelShapeId];
             }
         }
 
-        return is_null($this->only_shapes) || in_array($shapeId, $this->only_shapes, true);
+        return $this->only_shapes;
     }
 
     /**

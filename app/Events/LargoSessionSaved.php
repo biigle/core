@@ -14,20 +14,6 @@ class LargoSessionSaved implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * The user that created the server.
-     *
-     * @var User
-     */
-    public $user;
-
-    /**
-     * The ID of the Largo session
-     *
-     * @var string
-     */
-    public $id;
-
-    /**
      * The name of the queue the job should be sent to.
      *
      * @var string|null
@@ -37,15 +23,16 @@ class LargoSessionSaved implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @param string $id
-     * @param User $user
-     * @return void
+     * @param string $id The ID of the Largo session.
+     * @param User $user The user who saved the Largo session.
+     * @param bool $hasUnchanged Whether some annotations of the Largo session were not changed.
      */
-    public function __construct($id, User $user)
-    {
+    public function __construct(
+        public string $id,
+        public User $user,
+        public bool $hasUnchanged = false
+    ) {
         $this->queue = config('largo.apply_session_queue');
-        $this->id = $id;
-        $this->user = $user;
     }
 
     /**
@@ -67,6 +54,9 @@ class LargoSessionSaved implements ShouldBroadcastNow
     {
         return [
             'id' => $this->id,
+            // The IDs of the unchanged annotations are not included because the
+            // payload size is limited. They have to be fetched from the API.
+            'has_unchanged' => $this->hasUnchanged,
         ];
     }
 }
