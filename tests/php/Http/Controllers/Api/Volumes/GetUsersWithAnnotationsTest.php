@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -32,7 +32,7 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
         ]);
 
         $videoVolume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
         ]);
         $this->project()->addVolumeId($videoVolume->id);
 

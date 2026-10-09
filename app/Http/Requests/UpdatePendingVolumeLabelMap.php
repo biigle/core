@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Visibility;
 use Biigle\Label;
 use Biigle\PendingVolume;
-use Biigle\Visibility;
 use DB;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -85,7 +85,7 @@ class UpdatePendingVolumeLabelMap extends FormRequest
                     // All public and all accessible private label trees.
                     $query->select('id')
                         ->from('label_trees')
-                        ->where('visibility_id', Visibility::publicId())
+                        ->where('visibility', Visibility::PUBLIC)
                         ->union(
                             DB::table('label_tree_user')
                                 ->select('label_tree_id as id')

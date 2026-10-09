@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 
 class ShapeControllerTest extends ApiTestCase
 {
@@ -21,10 +21,10 @@ class ShapeControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
+        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::CIRCLE->value);
 
         $this->beUser();
-        $response = $this->get('/api/v1/shapes/'.Shape::circleId());
+        $response = $this->get('/api/v1/shapes/'.Shape::CIRCLE->value);
         $content = $response->getContent();
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);

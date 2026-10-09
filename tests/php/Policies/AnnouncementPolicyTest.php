@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Policies;
 
 use Biigle\Announcement;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use TestCase;
 
@@ -17,7 +17,7 @@ class AnnouncementPolicyTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $this->globalAdmin = User::factory()->create(['role_id' => Role::adminId()]);
+        $this->globalAdmin = User::factory()->create(['role' => Role::ADMIN]);
         $this->announcement = Announcement::factory()->create();
     }
 

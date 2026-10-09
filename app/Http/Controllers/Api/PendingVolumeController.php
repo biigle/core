@@ -2,16 +2,18 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Requests\StorePendingVolume;
 use Biigle\Http\Requests\StorePendingVolumeFromVolume;
 use Biigle\Http\Requests\UpdatePendingVolume;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\PendingVolume;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\Volume;
 use DB;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Queue;
 use Storage;
 
@@ -45,7 +47,7 @@ class PendingVolumeController extends Controller
      *    "id": 2,
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
-     *    "media_type_id": 1,
+     *    "media_type": 1,
      *    "user_id": 2,
      *    "project_id": 3,
      *    "volume_id": null
@@ -53,11 +55,17 @@ class PendingVolumeController extends Controller
      */
     public function store(StorePendingVolume $request)
     {
-        $pv = $request->project->pendingVolumes()->create([
-            'media_type_id' => $request->input('media_type_id'),
-            'user_id' => $request->user()->id,
-            'metadata_parser' => $request->input('metadata_parser', null),
-        ]);
+        try {
+            $pv = $request->project->pendingVolumes()->create([
+                'media_type' => $request->input('media_type'),
+                'user_id' => $request->user()->id,
+                'metadata_parser' => $request->input('metadata_parser', null),
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages([
+                'id' => 'Only a single pending volume can be created at a time for each project and user.',
+            ]);
+        }
 
         if ($request->has('metadata_file')) {
             $pv->saveMetadata($request->file('metadata_file'));
@@ -86,20 +94,28 @@ class PendingVolumeController extends Controller
      */
     public function storeVolume(StorePendingVolumeFromVolume $request)
     {
-        $project = Project::inCommon($request->user(), $request->volume->id, [Role::adminId()])->first();
+        $project = Project::inCommon($request->user(), $request->volume->id, [Role::ADMIN])->first();
 
-        // Delete individually to trigger deletion of metadata files.
-        $project->pendingVolumes()->where('user_id', $request->user()->id)
-            ->eachById(fn ($pv) => $pv->delete());
+        try {
+            $pv = DB::transaction(function () use ($project, $request) {
+                // Delete individually to trigger deletion of metadata files.
+                $project->pendingVolumes()->where('user_id', $request->user()->id)
+                    ->eachById(fn ($pv) => $pv->delete());
 
-        $pv = $project->pendingVolumes()->create([
-            'volume_id' => $request->volume->id,
-            'media_type_id' => $request->volume->media_type_id,
-            'user_id' => $request->user()->id,
-            'metadata_parser' => $request->volume->metadata_parser,
-            'import_annotations' => $request->input('import_annotations', false),
-            'import_file_labels' => $request->input('import_file_labels', false),
-        ]);
+                return $project->pendingVolumes()->create([
+                    'volume_id' => $request->volume->id,
+                    'media_type' => $request->volume->media_type,
+                    'user_id' => $request->user()->id,
+                    'metadata_parser' => $request->volume->metadata_parser,
+                    'import_annotations' => $request->input('import_annotations', false),
+                    'import_file_labels' => $request->input('import_file_labels', false),
+                ]);
+            });
+        } catch (UniqueConstraintViolationException) {
+            throw ValidationException::withMessages([
+                'id' => 'Only one metadata import can be performed at a time.',
+            ]);
+        }
 
         $pv->update([
             'metadata_file_path' => $pv->id.'.'.pathinfo($request->volume->metadata_file_path, PATHINFO_EXTENSION),
@@ -145,7 +161,7 @@ class PendingVolumeController extends Controller
      *    "id": 2,
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
-     *    "media_type_id": 1,
+     *    "media_type": 1,
      *    "user_id": 2,
      *    "project_id": 3,
      *    "volume_id": 4,
@@ -161,7 +177,7 @@ class PendingVolumeController extends Controller
             $volume = Volume::create([
                 'name' => $request->input('name'),
                 'url' => $request->input('url'),
-                'media_type_id' => $pv->media_type_id,
+                'media_type' => $pv->media_type,
                 'handle' => $request->input('handle'),
                 'creator_id' => $request->user()->id,
             ]);

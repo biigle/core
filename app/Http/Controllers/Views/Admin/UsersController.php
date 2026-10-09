@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\VideoAnnotation;
@@ -22,7 +22,7 @@ class UsersController extends Controller
      */
     public function get(Request $request)
     {
-        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'created_at', 'role_id', 'affiliation')
+        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'created_at', 'role', 'affiliation')
             ->when($request->has('q'), function ($query) use ($request) {
                 $q = $request->get('q');
                 $query->where(function ($query) use ($q) {
@@ -42,9 +42,9 @@ class UsersController extends Controller
             ->paginate(100);
 
         $roleNames = [
-            Role::adminId() => 'Admin',
-            Role::editorId() => 'Editor',
-            Role::guestId() => 'Guest',
+            Role::ADMIN->value => 'Admin',
+            Role::EDITOR->value => 'Editor',
+            Role::GUEST->value => 'Guest',
         ];
 
         $usersCount = User::whereDate('created_at', '>=', now()->subWeek())
@@ -75,9 +75,9 @@ class UsersController extends Controller
         return view('admin.users.edit')
             ->with('affectedUser', User::findOrFail($id))
             ->with('roles', [
-                Role::admin(),
-                Role::editor(),
-                Role::guest(),
+                Role::ADMIN,
+                Role::EDITOR,
+                Role::GUEST,
             ]);
     }
 
@@ -99,7 +99,7 @@ class UsersController extends Controller
     public function show(Modules $modules, $id)
     {
         $user = User::findOrFail($id);
-        $roleClass = $this->roleClassMap($user->role_id);
+        $roleClass = $this->roleClassMap($user->role);
         $values = $this->showProject($user);
         $values = array_merge($values, $this->showVolume($user));
         $values = array_merge($values, $this->showAnnotations($user));
@@ -115,20 +115,20 @@ class UsersController extends Controller
     /**
      * Determines the Boostrap label class for a role label.
      *
-     * @param int $id
+     * @param Role|null $role
      *
      * @return string|array
      */
-    protected function roleClassMap($id = null)
+    protected function roleClassMap(?Role $role = null)
     {
         $map = [
-            Role::adminId() => 'danger',
-            Role::editorId() => 'primary',
-            Role::guestId() => 'default',
+            Role::ADMIN->value => 'danger',
+            Role::EDITOR->value => 'primary',
+            Role::GUEST->value => 'default',
         ];
 
-        if (!is_null($id)) {
-            return $map[$id];
+        if (!is_null($role)) {
+            return $map[$role->value];
         }
 
         return $map;

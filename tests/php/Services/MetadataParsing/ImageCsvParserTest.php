@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\MetadataParsing;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Symfony\Component\HttpFoundation\File\File;
 use TestCase;
@@ -33,7 +33,7 @@ class ImageCsvParserTest extends TestCase
         $file = new File(__DIR__."/../../../files/image-metadata.csv");
         $parser = new ImageCsvParser($file);
         $data = $parser->getMetadata();
-        $this->assertEquals(MediaType::imageId(), $data->type->id);
+        $this->assertSame(MediaType::IMAGE, $data->type);
         $this->assertNull($data->name);
         $this->assertNull($data->url);
         $this->assertNull($data->handle);
@@ -67,7 +67,7 @@ class ImageCsvParserTest extends TestCase
         $file = new File(__DIR__."/../../../files/test.mp4");
         $parser = new ImageCsvParser($file);
         $data = $parser->getMetadata();
-        $this->assertEquals(MediaType::imageId(), $data->type->id);
+        $this->assertSame(MediaType::IMAGE, $data->type);
         $this->assertCount(0, $data->getFiles());
     }
 

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Label;
-use Biigle\Role;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\LabelTreeImport;
 use Biigle\Services\Import\UserImport;
@@ -114,7 +114,7 @@ class ImportController extends Controller
 
         $excludedLabelTreeCandidatesCount = $importLabelTreesCount - $labelTreeCandidatesCount;
 
-        $adminRoleId = Role::adminId();
+        $adminRoleId = Role::ADMIN->value;
 
         return view('import.showLabelTree', compact(
             'importLabelTreesCount',
@@ -161,7 +161,7 @@ class ImportController extends Controller
         $userCandidates = $import->getUserImportCandidates()
             ->map([$this, 'hideUserCredentials']);
 
-        $adminRoleId = Role::adminId();
+        $adminRoleId = Role::ADMIN->value;
 
         return view('import.showVolume', compact(
             'volumeCandidates',

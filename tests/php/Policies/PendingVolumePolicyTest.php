@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\PendingVolume;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\User;
 use TestCase;
 
@@ -20,17 +20,17 @@ class PendingVolumePolicyTest extends TestCase
         $this->expert = User::factory()->create();
         $this->admin = User::factory()->create();
         $this->owner = User::factory()->create();
-        $this->globalAdmin = User::factory()->create(['role_id' => Role::adminId()]);
+        $this->globalAdmin = User::factory()->create(['role' => Role::ADMIN]);
         $this->pv = PendingVolume::factory()->create([
             'project_id' => $project->id,
             'user_id' => $this->owner->id,
         ]);
 
-        $project->addUserId($this->guest->id, Role::guestId());
-        $project->addUserId($this->editor->id, Role::editorId());
-        $project->addUserId($this->expert->id, Role::expertId());
-        $project->addUserId($this->admin->id, Role::adminId());
-        $project->addUserId($this->owner->id, Role::adminId());
+        $project->addUserId($this->guest->id, Role::GUEST);
+        $project->addUserId($this->editor->id, Role::EDITOR);
+        $project->addUserId($this->expert->id, Role::EXPERT);
+        $project->addUserId($this->admin->id, Role::ADMIN);
+        $project->addUserId($this->owner->id, Role::ADMIN);
     }
 
     public function testAccess()

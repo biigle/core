@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -225,7 +225,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testUpdateForceUsersVideoVolume()
     {
         $session = AnnotationSessionTest::create([
-            'volume_id' => $this->volume(['media_type_id' => MediaType::videoId()])->id,
+            'volume_id' => $this->volume(['media_type' => MediaType::VIDEO])->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-07',
         ]);
@@ -361,7 +361,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testSessionWithoutVideoVolumeUser()
     {
         $session = AnnotationSessionTest::create([
-            'volume_id' => $this->volume(['media_type_id' => MediaType::videoId()])->id,
+            'volume_id' => $this->volume(['media_type' => MediaType::VIDEO])->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-07',
         ]);
@@ -424,7 +424,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testSessionWithoutVideoVolumeUserNoAnnotations()
     {
         $session = AnnotationSessionTest::create([
-            'volume_id' => $this->volume(['media_type_id' => MediaType::videoId()])->id,
+            'volume_id' => $this->volume(['media_type' => MediaType::VIDEO])->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-07',
         ]);
