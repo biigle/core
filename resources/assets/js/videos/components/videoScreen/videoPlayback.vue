@@ -31,7 +31,7 @@ export default {
             mediabunnySink: null,
             cachedBitmap: null,
             cachedTime: null,
-            useMediabunnyFallback: true,
+            useMediaBunny: true,
             mediabunnyInitPromise: null,
         };
     },
@@ -115,7 +115,7 @@ export default {
             this.animationFrameId = null;
         },
         async renderPausedFrame(time = this.video.currentTime) {
-            if (!this.video.paused || !this.useMediabunnyFallback) {
+            if (!this.video.paused || !this.useMediaBunny) {
                 this.renderVideo(true);
                 return;
             }
@@ -269,7 +269,6 @@ export default {
             }
             this.cachedBitmap = null;
             this.cachedTime = null;
-            this.useMediabunnyFallback = true;
 
             try {
                 this.mediabunnyInput = new Input({
@@ -279,7 +278,7 @@ export default {
                 const track = await this.mediabunnyInput.getPrimaryVideoTrack();
                 this.mediabunnySink = new VideoSampleSink(track);
             } catch (e) {
-                this.useMediabunnyFallback = false;
+                this.useMediaBunny = false;
                 throw e;
             }
         },
@@ -288,7 +287,7 @@ export default {
                 await this.mediabunnyInitPromise;
             }
 
-            if (!this.useMediabunnyFallback || !this.mediabunnySink) {
+            if (!this.useMediaBunny || !this.mediabunnySink) {
                 this.renderVideo(true);
                 return;
             }
