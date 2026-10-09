@@ -99,19 +99,24 @@ export default {
                 .then((e) => {
                     if (e.data?.error) {
                         throw e.data.error;
+                    } else if (!this.selectedLabel) {
+                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    } else {
+                        this.terminateLabelbot();
                     }
-                    this.updateLabelbotState(LABELBOT_STATES.READY);
                 })
                 .catch((e) => {
                     Messages.danger('LabelBOT could not be initialized.');
-                    this.updateLabelbotState(LABELBOT_STATES.OFF);
-                    this.labelbotWorker.terminate();
-                    this.labelbotWorker = null;
-
+                    this.terminateLabelbot();
                     throw e;
                 });
 
             this.labelbotWorker.postMessage({type: 'init', url: modelUrl});
+        },
+        terminateLabelbot() {
+            this.updateLabelbotState(LABELBOT_STATES.OFF);
+            this.labelbotWorker.terminate();
+            this.labelbotWorker = null;
         },
         generateFeatureVector(labelbotImage) {
             const labelbotMessageID = this.labelbotMessageID++;
@@ -178,7 +183,9 @@ export default {
                     return saveCallback(annotation);
                 })
                 .then(annotation => {
-                    if (this.labelbotRequestsInFlight === 1) {
+                    if (this.selectedLabel) {
+                        this.updateLabelbotState(LABELBOT_STATES.OFF);
+                    } else if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
 
