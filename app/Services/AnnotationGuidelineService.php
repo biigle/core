@@ -56,12 +56,21 @@ class AnnotationGuidelineService
      */
     public function mustUseGuideline(User $user, int $volumeId): bool
     {
-        return once(fn () => !Project::inCommon($user, $volumeId, $this->getEditRoles())
-            ->whereDoesntHave(
+        return once(function () use ($user, $volumeId) {
+            $query = Project::inCommon($user, $volumeId, $this->getEditRoles());
+
+            // Without this check, users who can't create annotations (e.g. guests)
+            // would be required to use a guideline.
+            if (!$query->clone()->exists()) {
+                return false;
+            }
+
+            return !$query->whereDoesntHave(
                 'annotationGuideline',
                 fn ($query) => $query->where('enforced', true)
             )
-            ->exists());
+                ->exists();
+        });
     }
 
     /**

@@ -127,6 +127,15 @@ class AnnotationGuidelineServiceTest extends TestCase
         $this->assertTrue($this->service->mustUseGuideline($admin, $this->volume->id));
     }
 
+    public function testMustUseGuidelineNoEditProjects()
+    {
+        $guest = UserTest::create();
+        $this->guestProject->addUserId($guest->id, Role::guestId());
+        $this->createGuideline($this->guestProject, true);
+
+        $this->assertFalse($this->service->mustUseGuideline($guest, $this->volume->id));
+    }
+
     protected function createGuideline($project, bool $enforced): AnnotationGuideline
     {
         return AnnotationGuideline::factory()->create([

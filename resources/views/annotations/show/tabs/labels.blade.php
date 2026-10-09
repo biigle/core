@@ -4,7 +4,12 @@
         :project-ids="projectIds"
         :labelbot-state="labelbotState"
         :show-example-annotations="showExampleAnnotations"
+        :volume-id="volumeId"
+        :guidelines="annotationGuidelines"
+        :must-use-guideline="mustUseAnnotationGuideline"
+        :guideline="annotationGuideline"
         v-on:select="handleSelectedLabel"
+        v-on:select-guideline="handleSelectedAnnotationGuideline"
         v-on:open="openSidebarLabels"
         v-on:update-labelbot-state="updateLabelbotState"
         v-cloak
@@ -15,11 +20,19 @@
 <script type="text/html" id="labels-tab-template">
     <div class="labels-tab">
         @include('partials.labelbot-button')
+        <annotation-guideline-selector
+            :model-value="guideline"
+            :guidelines="guidelines"
+            :must-use-guideline="mustUseGuideline"
+            :volume-id="volumeId"
+            v-on:update:model-value="handleSelectedGuideline"
+            ></annotation-guideline-selector>
         <div class="labels-tab__trees">
             <label-trees
                 ref="labelTrees"
                 :trees="labelTrees"
                 :sorting-project-ids="projectIds"
+                :labels-in-guideline="labelsInGuideline"
                 :show-favourites="true"
                 :focus-input="focusInputFindlabel"
                 v-on:select="handleSelectedLabel"

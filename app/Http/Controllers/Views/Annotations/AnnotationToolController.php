@@ -7,6 +7,7 @@ use Biigle\Image;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Role;
+use Biigle\Services\AnnotationGuidelineService;
 use Biigle\Shape;
 use DB;
 use Illuminate\Http\Request;
@@ -18,9 +19,10 @@ class AnnotationToolController extends Controller
      * Shows the annotation tool.
      *
      * @param Request $request
+     * @param AnnotationGuidelineService $guidelineService
      * @param int $id the image ID
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, AnnotationGuidelineService $guidelineService, $id)
     {
         $image = Image::with('volume')->findOrFail($id);
         $this->authorize('access', $image);
@@ -65,6 +67,12 @@ class AnnotationToolController extends Controller
 
         $tilesUriTemplate = Storage::disk(config('image.tiles.disk'))->url(':uuid/');
 
+        $annotationGuidelines = $guidelineService->getGuidelines($user, $volume->id)
+            ->load('labels', 'project:id,name');
+
+        $mustUseAnnotationGuideline = $annotationGuidelines->isNotEmpty()
+            && $guidelineService->mustUseGuideline($user, $volume->id);
+
         return view('annotations.show', [
             'user' => $user,
             'image' => $image,
@@ -75,6 +83,8 @@ class AnnotationToolController extends Controller
             'annotationSessions' => $annotationSessions,
             'tilesUriTemplate' => $tilesUriTemplate,
             'projectIds' => $projectIds,
+            'annotationGuidelines' => $annotationGuidelines,
+            'mustUseAnnotationGuideline' => $mustUseAnnotationGuideline,
         ]);
     }
 }

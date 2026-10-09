@@ -1,4 +1,5 @@
 <script>
+import AnnotationGuidelineSelector from '@/volumes/components/annotationGuidelineSelector.vue';
 import ExampleAnnotations from '@/largo/components/exampleAnnotations.vue';
 import Keyboard from '@/core/keyboard.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
@@ -23,9 +24,11 @@ export default {
     emits: [
         'open',
         'select',
+        'select-guideline',
         'update-labelbot-state',
     ],
     components: {
+        annotationGuidelineSelector: AnnotationGuidelineSelector,
         labelTrees: LabelTrees,
         exampleAnnotations: ExampleAnnotations,
     },
@@ -53,10 +56,29 @@ export default {
             type: String,
             required: true,
         },
+        volumeId: {
+            type: Number,
+            required: true,
+        },
+        guidelines: {
+            type: Array,
+            default: () => [],
+        },
+        mustUseGuideline: {
+            type: Boolean,
+            default: false,
+        },
+        guideline: {
+            type: Object,
+            default: null,
+        },
     },
     computed: {
         plugins() {
             return plugins;
+        },
+        labelsInGuideline() {
+            return this.guideline?.labels.map(label => label.id) ?? [];
         },
         labelbotIsActive() {
             return this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;
@@ -97,6 +119,9 @@ export default {
         handleDeselectedLabel() {
             this.selectedLabel = null;
             this.$emit('select', null);
+        },
+        handleSelectedGuideline(guideline) {
+            this.$emit('select-guideline', guideline);
         },
         toggleLabelBot() {
             if (this.labelbotIsActive) {

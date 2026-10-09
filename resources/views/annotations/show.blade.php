@@ -11,6 +11,8 @@
     biigle.$declare('annotations.imageId', {!! $image->id !!});
     biigle.$declare('annotations.volumeId', {!! $image->volume_id !!});
     biigle.$declare('annotations.projectIds', {!! $projectIds !!});
+    biigle.$declare('annotations.annotationGuidelines', @json($annotationGuidelines));
+    biigle.$declare('annotations.mustUseAnnotationGuideline', @json($mustUseAnnotationGuideline));
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});

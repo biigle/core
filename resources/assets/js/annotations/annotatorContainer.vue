@@ -96,6 +96,9 @@ export default {
             imageFilenames: {},
             labelTrees: [],
             projectIds: [],
+            annotationGuidelines: [],
+            mustUseAnnotationGuideline: false,
+            annotationGuideline: null,
         };
     },
     provide() {
@@ -430,6 +433,9 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
         },
+        handleSelectedAnnotationGuideline(guideline) {
+            this.annotationGuideline = guideline;
+        },
         handleNewAnnotation(annotation, removeCallback) {
             if (!this.isEditor) {
                 return;
@@ -748,6 +754,8 @@ export default {
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
         this.labelTrees = biigle.$require('annotations.labelTrees');
         this.projectIds = biigle.$require('annotations.projectIds');
+        this.annotationGuidelines = biigle.$require('annotations.annotationGuidelines');
+        this.mustUseAnnotationGuideline = biigle.$require('annotations.mustUseAnnotationGuideline');
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');

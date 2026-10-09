@@ -8,6 +8,18 @@
         overflow: hidden;
     }
 
+    .annotation-guideline-selector__dropdown .dropdown-menu {
+        width: 100%;
+    }
+
+    .annotation-guideline-selector__info {
+        margin-top: 10px;
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+    }
+
     .labels-tab__plugins:not(:empty) {
         padding-top: 1em;
     }
