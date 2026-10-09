@@ -54,7 +54,7 @@ abstract class VolumeFileLabel extends Model
     public function user()
     {
         return $this->belongsTo(User::class)
-            ->select('id', 'firstname', 'lastname', 'role_id');
+            ->select('id', 'firstname', 'lastname', 'role');
     }
 
     /**

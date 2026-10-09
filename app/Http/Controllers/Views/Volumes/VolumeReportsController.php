@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
+use Biigle\Enums\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
-use Biigle\ReportType;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
@@ -24,10 +24,7 @@ class VolumeReportsController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
         $sessions = $volume->annotationSessions()->orderBy('starts_at', 'desc')->get();
-        $types = ReportType::when($volume->isImageVolume(), fn ($q) => $q->where('name', 'like', 'Image%'))
-            ->when($volume->isVideoVolume(), fn ($q) => $q->where('name', 'like', 'Video%'))
-            ->orderBy('name', 'asc')
-            ->get();
+        $types = ReportType::getSortedTypes($volume->isImageVolume(), $volume->isVideoVolume());
 
         $user = $request->user();
 

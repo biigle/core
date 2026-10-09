@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\ProcessNewImage;
 use Biigle\Jobs\ProcessNewVideo;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
@@ -46,7 +46,7 @@ class ProcessNewVolumeFilesTest extends TestCase
 
     public function testHandleVideos()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
         $v2 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
 
@@ -61,7 +61,7 @@ class ProcessNewVolumeFilesTest extends TestCase
 
     public function testHandleVideosWithOnly()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
         $v2 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
 
@@ -77,7 +77,7 @@ class ProcessNewVolumeFilesTest extends TestCase
     public function testHandleVideosQueue()
     {
         config(['videos.process_new_video_queue' => 'low']);
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
         $v1 = VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
 
         Queue::fake();

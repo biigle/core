@@ -32,7 +32,7 @@ class ImageAnnotationController extends Controller
      *    {
      *       "id": 1,
      *       "image_id": 1,
-     *       "shape_id": 1,
+     *       "shape": 1,
      *       "created_at": "2015-02-18 11:45:00",
      *       "updated_at": "2015-02-18 11:45:00",
      *       "points": [100, 200],
@@ -75,7 +75,7 @@ class ImageAnnotationController extends Controller
             'labels:id,annotation_id,label_id,user_id',
             // Hide label_source_id and source_id.
             'labels.label:id,name,parent_id,color,label_tree_id',
-            // Hide role_id.
+            // Hide role.
             'labels.user:id,firstname,lastname',
         ];
 
@@ -105,7 +105,7 @@ class ImageAnnotationController extends Controller
      * {
      *    "id":1,
      *    "image_id":1,
-     *    "shape_id":1,
+     *    "shape":1,
      *    "created_at":"2015-02-13 11:59:23",
      *    "updated_at":"2015-02-13 11:59:23",
      *    "points": [100, 100]
@@ -125,7 +125,7 @@ class ImageAnnotationController extends Controller
      * {
      *    "id":1,
      *    "image_id":1,
-     *    "shape_id":1,
+     *    "shape":1,
      *    "created_at":"2015-02-13 11:59:23",
      *    "updated_at":"2015-02-13 11:59:23",
      *    "points": [100, 100]
@@ -154,7 +154,7 @@ class ImageAnnotationController extends Controller
      *
      * @apiParam {Number} id The image ID.
      *
-     * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
+     * @apiParam (Required arguments) {Number} shape ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation. Required if 'feature_vector' is not provided.
      * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction with the LabelBOT service. Required if 'label_id' is not provided.
      * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
@@ -168,7 +168,7 @@ class ImageAnnotationController extends Controller
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
-     *    "shape_id": 3,
+     *    "shape": 3,
      *    "label_id": 1,
      *    "confidence": 0.75,
      *    "points": [10, 11, 20, 21]
@@ -179,7 +179,7 @@ class ImageAnnotationController extends Controller
      *    "created_at": "2015-02-18 11:45:00",
      *    "id": 1,
      *    "image_id": 1,
-     *    "shape_id": 3,
+     *    "shape": 3,
      *    "updated_at": "2015-02-18 11:45:00",
      *    "points": [10, 11, 20, 21],
      *    "labels": [
@@ -197,7 +197,7 @@ class ImageAnnotationController extends Controller
      *             "id": 4,
      *             "firstname": "Graham",
      *             "lastname": "Hahn",
-     *             "role_id": 2
+     *             "role": 2
      *          }
      *       }
      *    ]
@@ -211,7 +211,7 @@ class ImageAnnotationController extends Controller
         $points = $request->input('points');
 
         $annotation = new ImageAnnotation;
-        $annotation->shape_id = $request->input('shape_id');
+        $annotation->shape = $request->input('shape');
         $image = $request->image;
         $annotation->image()->associate($image);
         $annotation->points = $points;
@@ -253,12 +253,12 @@ class ImageAnnotationController extends Controller
      * @apiPermission projectEditor
      *
      * @apiParam {Number} id The annotation ID.
-     * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
+     * @apiParam (Attributes that can be updated) {Number} shape ID of the new shape of the annotation.
      * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
      * @apiParamExample {json} Request example (JSON):
      * {
      *    "points": [10, 11, 20, 21],
-     *    "shape_id": 3
+     *    "shape": 3
      * }
      */
 
@@ -271,12 +271,12 @@ class ImageAnnotationController extends Controller
      * @apiPermission projectEditor
      *
      * @apiParam {Number} id The annotation ID.
-     * @apiParam (Attributes that can be updated) {Number} shape_id ID of the new shape of the annotation.
+     * @apiParam (Attributes that can be updated) {Number} shape ID of the new shape of the annotation.
      * @apiParam (Attributes that can be updated) {Number[]} points Array of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
      * @apiParamExample {json} Request example (JSON):
      * {
      *    "points": [10, 11, 20, 21],
-     *    "shape_id": 3
+     *    "shape": 3
      * }
      *
      * @param UpdateImageAnnotation $request
@@ -284,7 +284,7 @@ class ImageAnnotationController extends Controller
     public function update(UpdateImageAnnotation $request)
     {
         $annotation = $request->annotation;
-        $annotation->shape_id = $request->getShapeId();
+        $annotation->shape = $request->getShape();
         $annotation->points = $request->getPoints();
         $annotation->save();
     }

@@ -2,12 +2,12 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\LabelTreeVersion;
-use Biigle\Role;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
-use Biigle\Visibility;
 use Cache;
 use TestCase;
 
@@ -26,9 +26,9 @@ class LabelTreeVersionPolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
-        $this->version->labelTree->addMember($this->editor, Role::editor());
-        $this->version->labelTree->addMember($this->admin, Role::admin());
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN]);
+        $this->version->labelTree->addMember($this->editor, Role::EDITOR);
+        $this->version->labelTree->addMember($this->admin, Role::ADMIN);
     }
 
     public function testCreate()
@@ -49,7 +49,7 @@ class LabelTreeVersionPolicyTest extends TestCase
 
     public function testAccessPrivate()
     {
-        $this->version->labelTree->visibility_id = Visibility::privateId();
+        $this->version->labelTree->visibility = Visibility::PRIVATE;
         $this->version->labelTree->save();
         $this->assertFalse($this->user->can('access', $this->version));
         $this->assertTrue($this->editor->can('access', $this->version));
@@ -59,7 +59,7 @@ class LabelTreeVersionPolicyTest extends TestCase
 
     public function testAccessViaProjectMembership()
     {
-        $this->version->labelTree->visibility_id = Visibility::privateId();
+        $this->version->labelTree->visibility = Visibility::PRIVATE;
         $this->version->labelTree->save();
         $project = ProjectTest::create();
         $this->assertFalse($project->creator->can('access', $this->version));

@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
 use Biigle\ImageAnnotationLabelFeatureVector;
-use Biigle\MediaType;
 use Biigle\VideoAnnotationLabelFeatureVector;
 
 class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
@@ -91,7 +91,7 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $l1 = VideoAnnotationLabelFeatureVector::factory()->create([
             'volume_id' => $id,
         ]);
@@ -147,7 +147,7 @@ class SortAnnotationsBySimilarityControllerTest extends ApiTestCase
 
     public function testIndexDuplicateVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $l1 = VideoAnnotationLabelFeatureVector::factory()->create([
             'volume_id' => $id,
         ]);

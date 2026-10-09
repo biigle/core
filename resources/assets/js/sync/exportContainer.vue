@@ -56,7 +56,7 @@ export default {
                     .map((project) => project.name)
                     .join(', ');
 
-                volume.icon = this.volumeIconMap[volume.media_type_id];
+                volume.icon = this.volumeIconMap[volume.media_type];
 
                 return volume;
             });

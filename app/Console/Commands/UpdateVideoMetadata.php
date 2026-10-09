@@ -2,8 +2,8 @@
 
 namespace Biigle\Console\Commands;
 
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\ProcessNewVideo;
-use Biigle\MediaType;
 use Biigle\Video;
 use Biigle\Volume;
 use FFMpeg\FFProbe;
@@ -51,7 +51,7 @@ class UpdateVideoMetadata extends Command
     {
         $this->dryRun = $this->option('dry-run');
         $volumeId = $this->option('volume');
-        $query = Volume::where('media_type_id', MediaType::videoId());
+        $query = Volume::where('media_type', MediaType::VIDEO);
 
         if ($volumeId) {
             $this->processVolume($query->find($volumeId));

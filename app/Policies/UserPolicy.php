@@ -2,7 +2,7 @@
 
 namespace Biigle\Policies;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function index(User $user)
     {
-        return $user->role_id === Role::editorId() || $user->role_id === Role::adminId();
+        return $user->role === Role::EDITOR || $user->role === Role::ADMIN;
     }
 
     /**
@@ -29,7 +29,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id === Role::adminId();
+        return $user->role === Role::ADMIN;
     }
 
     /**
@@ -41,7 +41,7 @@ class UserPolicy
      */
     public function update(User $user, User $updateUser)
     {
-        return $user->id === $updateUser->id || $user->role_id === Role::adminId();
+        return $user->id === $updateUser->id || $user->role === Role::ADMIN;
     }
 
     /**

@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
-use Biigle\Shape;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Storage;
@@ -37,7 +37,7 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = Shape::pluckById();
 
         return view('largo.project', [
             'project' => $project,

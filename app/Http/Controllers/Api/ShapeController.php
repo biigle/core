@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 
 class ShapeController extends Controller
 {
@@ -26,11 +26,11 @@ class ShapeController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection<int, array>
      */
     public function index()
     {
-        return Shape::all();
+        return collect(Shape::cases())->map->toArray()->values();
     }
 
     /**

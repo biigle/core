@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes\Filters;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoLabelTest;
@@ -44,7 +44,7 @@ class FileLabelControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $vid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $vid = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $video = VideoTest::create(['volume_id' => $vid]);
         $label = VideoLabelTest::create([

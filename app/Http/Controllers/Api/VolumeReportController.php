@@ -18,7 +18,7 @@ class VolumeReportController extends Controller
      *
      * @apiParam {Number} id The volume ID.
      *
-     * @apiParam (Required arguments) {Number} type_id The report type ID.
+     * @apiParam (Required arguments) {Number} type The report type ID.
      *
      * @apiParam (Optional arguments) {Boolean} export_area If `true`, restrict the report to the export area of the volume. Only available for image annotation reports and the iFDO report.
      * @apiParam (Optional arguments) {Boolean} newest_label If `true`, restrict the report to the newest label of each annotation.
@@ -43,7 +43,7 @@ class VolumeReportController extends Controller
     {
         $report = new Report;
         $report->source()->associate($request->volume);
-        $report->type_id = $request->input('type_id');
+        $report->type = $request->input('type');
         $report->user()->associate($request->user());
         $report->options = $request->getOptions();
         $report->save();
