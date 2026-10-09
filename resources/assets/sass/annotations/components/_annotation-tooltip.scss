@@ -5,6 +5,16 @@
     white-space: nowrap;
 }
 
+.annotation-tooltip--persistent {
+    cursor: grab;
+    pointer-events: auto;
+
+    &.annotation-tooltip--dragging {
+        cursor: grabbing;
+        user-select: none;
+    }
+}
+
 .annotation-tooltip__annotations, .annotation-tooltip__labels {
     list-style: none;
     margin: 0;
