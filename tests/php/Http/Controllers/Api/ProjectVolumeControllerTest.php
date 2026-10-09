@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\Role;
 use Biigle\Image;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\DeleteVolume;
-use Biigle\Role;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Tests\ProjectTest;
@@ -69,7 +69,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'random',
-            'media_type_id' => 99999,
+            'media_type' => 99999,
             'files' => '1.jpg, 2.jpg',
         ]);
         // media type does not exist
@@ -715,7 +715,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->post("/api/v1/projects/{$pid}/volumes/{$tid}");
         $response->assertStatus(403);
 
-        $secondProject->addUserId($this->admin()->id, Role::adminId());
+        $secondProject->addUserId($this->admin()->id, Role::ADMIN);
         Cache::flush();
 
         $this->assertEmpty($secondProject->fresh()->volumes);

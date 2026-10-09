@@ -126,7 +126,7 @@ export default {
                 Filename: {}
             },
             filterToKeyMapping: {
-                Shape: "shape_id",
+                Shape: "shape",
                 User: "user_id",
                 Filename: "filename"
             },

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\PendingVolume;
 use Biigle\Project;
 use Biigle\User;
@@ -30,7 +30,7 @@ class PendingVolumeFactory extends Factory
     public function definition(): array
     {
         return [
-            'media_type_id' => fn () => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => User::factory(),
             'project_id' => Project::factory(),
         ];

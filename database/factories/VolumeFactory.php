@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,7 +17,7 @@ class VolumeFactory extends Factory
     {
         return [
             'name' => $this->faker->company(),
-            'media_type_id' => fn () => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'creator_id' => User::factory(),
             'url' => 'test://files',
         ];

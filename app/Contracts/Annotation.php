@@ -2,7 +2,7 @@
 
 namespace Biigle\Contracts;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Biigle\VolumeFile;
 
 /**

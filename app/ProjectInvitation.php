@@ -2,11 +2,12 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Role;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['uuid', 'expires_at', 'max_uses', 'project_id', 'role_id', 'add_to_sessions'])]
+#[Fillable(['uuid', 'expires_at', 'max_uses', 'project_id', 'role', 'add_to_sessions'])]
 class ProjectInvitation extends Model
 {
     use HasFactory;
@@ -19,6 +20,7 @@ class ProjectInvitation extends Model
     protected function casts(): array
     {
         return [
+            'role' => Role::class,
             'expires_at' => 'datetime:c',
             'add_to_sessions' => 'bool',
         ];

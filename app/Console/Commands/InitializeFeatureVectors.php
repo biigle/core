@@ -2,9 +2,9 @@
 
 namespace Biigle\Console\Commands;
 
+use Biigle\Enums\MediaType;
 use Biigle\ImageAnnotation;
 use Biigle\Jobs\InitializeFeatureVectorChunk;
-use Biigle\MediaType;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -40,7 +40,7 @@ class InitializeFeatureVectors extends Command
     public function handle()
     {
         $query = Volume::select('id')
-            ->where('media_type_id', MediaType::imageId())
+            ->where('media_type', MediaType::IMAGE)
             ->when($this->option('older-than'), function ($query) {
                 $query->where('created_at', '<', new Carbon($this->option('older-than')));
             })
@@ -57,7 +57,7 @@ class InitializeFeatureVectors extends Command
         $this->line('');
 
         $query = Volume::select('id')
-            ->where('media_type_id', MediaType::videoId())
+            ->where('media_type', MediaType::VIDEO)
             ->when($this->option('older-than'), function ($query) {
                 $query->where('created_at', '<', new Carbon($this->option('older-than')));
             })

@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Annotations;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -61,7 +61,7 @@ class VolumeAnnotationLabelControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $tid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $tid = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $label1 = LabelTest::create();
         $video = VideoTest::create(['volume_id' => $tid]);

@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\ReportType;
+use Biigle\Enums\ReportType;
 use Biigle\Tests\ReportTest;
 use Storage;
 
@@ -13,7 +13,7 @@ class ReportsControllerTest extends ApiTestCase
     {
         config(['reports.storage_disk' => 'test']);
         $report = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV,
         ]);
 
         $this->doTestApiRoute('GET', "api/v1/reports/{$report->id}");

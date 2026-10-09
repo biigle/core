@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api\Import;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\LabelTree;
-use Biigle\Role;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use DB;
@@ -49,7 +49,7 @@ class PublicLabelTreeImportController extends Controller
                 }
                 $tree = DB::transaction(function () use ($import, $request) {
                     $tree = $import->perform();
-                    $tree->addMember($request->user(), Role::admin());
+                    $tree->addMember($request->user(), Role::ADMIN);
 
                     return $tree;
                 });

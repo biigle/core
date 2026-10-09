@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Visibility;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProjectLabelTree extends FormRequest
@@ -55,7 +55,7 @@ class StoreProjectLabelTree extends FormRequest
         $validator->after(function ($validator) {
             $tree = LabelTree::find($this->input('id'));
             if ($tree) {
-                $public = $tree->visibility_id === Visibility::publicId();
+                $public = $tree->visibility === Visibility::PUBLIC;
                 $authorized = $tree->authorizedProjects()->where('id', $this->project->id);
 
                 if (!$public && !$authorized->exists()) {
