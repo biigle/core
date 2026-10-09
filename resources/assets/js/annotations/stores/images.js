@@ -259,12 +259,22 @@ class Images {
                     blob = response.blob();
                 }
 
+                let urlCreator = window.URL || window.webkitURL;
+                let objectUrl;
+
                 return blob
                     .then(function (blob) {
-                        let urlCreator = window.URL || window.webkitURL;
-                        img.src = urlCreator.createObjectURL(blob);
+                        objectUrl = urlCreator.createObjectURL(blob);
+                        img.src = objectUrl;
                     })
-                    .then(() => promise);
+                    .then(() => promise)
+                    // The image is loaded and drawn to the canvas at this point so the
+                    // object URL is no longer needed. Revoke it to free the blob.
+                    .finally(function () {
+                        if (objectUrl) {
+                            urlCreator.revokeObjectURL(objectUrl);
+                        }
+                    });
             })
             .catch((error) => {
                 // fetch() will throw a TypeError if CORS is not allowed. Retry with
