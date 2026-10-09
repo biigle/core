@@ -132,7 +132,10 @@ class EnumMigrationHelper
      */
     public static function createForeignKeys(array $foreignKeys, string $tableName): void
     {
-        foreach ($foreignKeys as [$table, $column]) {
+        foreach ($foreignKeys as $foreignKey) {
+            [$table, $column] = $foreignKey;
+            $constraint = $foreignKey[2] ?? null;
+
             if (str_ends_with($column, '_id')) {
                 $oldColumn = substr($column, 0, -3);
                 $rangeConstraintName = "{$table}_{$oldColumn}_check";
@@ -142,8 +145,8 @@ class EnumMigrationHelper
                 });
             }
 
-            Schema::table($table, function (Blueprint $t) use ($column, $tableName) {
-                $t->foreign($column)
+            Schema::table($table, function (Blueprint $t) use ($column, $tableName, $constraint) {
+                $t->foreign($column, $constraint)
                     ->references('id')
                     ->on($tableName)
                     ->onDelete('restrict');
