@@ -455,6 +455,21 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertJsonMissingPath('labelBOTLabels.1');
     }
 
+    public function testStoreWithFeatureVectorWithEmptyDB()
+    {
+        $this->beEditor();
+
+        // Query an empty DB
+        $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'confidence' => 0.5,
+            'points' => [10, 11],
+        ]);
+        // We expect no content
+        $response->assertStatus(204);
+    }
+
     public function testStoreValidatePoints()
     {
         $this->beEditor();

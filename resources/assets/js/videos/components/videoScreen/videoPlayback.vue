@@ -13,6 +13,7 @@ export default {
     emits: [
         'seek',
         'start-seeking',
+        'close-all-labelbot-popups',
     ],
     data() {
         return {
@@ -108,6 +109,7 @@ export default {
         },
         setPlaying() {
             this.playing = true;
+            this.$emit('close-all-labelbot-popups');
             if (!this.animationFrameId) {
                 this.startRenderLoop();
             }
@@ -160,8 +162,8 @@ export default {
             let promise = new Promise((resolve) => {
                 this.video.requestVideoFrameCallback((now, metadata) => {
                     resolve(metadata);
-                })
-            })
+                });
+            });
             return promise;
         },
         async showPreviousFrame() {
@@ -187,7 +189,7 @@ export default {
                     const metadata = await this.frameInfoCallback();
                     if (metadata.mediaTime !== firstMetadata.mediaTime) break;
                 }
-            } catch(e) {console.error(e)}
+            } catch(e) {console.error(e);}
         },
         async showNextFrame() {
             try {
@@ -212,7 +214,7 @@ export default {
                     const metadata = await this.frameInfoCallback();
                     if (metadata.mediaTime !== firstMetadata.mediaTime) break;
                 }
-            } catch(e) {console.error(e)}
+            } catch(e) {console.error(e);}
         },
         // Methods to jump back and forward in video. Step is given by parameter jumpStep.
         jumpBackward() {

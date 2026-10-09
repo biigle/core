@@ -68,6 +68,7 @@ export default {
         'new',
         'delete',
         'requires-selected-label',
+        'create-restored-labelbot-annotation',
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
@@ -590,6 +591,12 @@ export default {
                 e.feature.set('color', '5bc0de');
                 e.feature.setStyle(Styles.editing);
 
+                // We add temporarily the feature to the annotation
+                // so in case LabelBOT did not return any results, the unique id of 
+                // the feature could be used as LabelBOT's popup id and also we need the geometry of the feature
+                // to place the LabelBOT's empty overlay/popup correctly.
+                newAnnotation.feature = e.feature;
+
                 // Move feature to the LabelBOT layer so it has opacity=1 while LabelBOT
                 // is computing.
                 this.labelbotSource.addFeature(e.feature);
@@ -689,7 +696,7 @@ export default {
             let source = this.annotationSource;
 
             let newFeature = this.createFeature(annotation);
-            let oldFeature = source.getFeatureById(annotation.id)
+            let oldFeature = source.getFeatureById(annotation.id);
 
             source.removeFeature(oldFeature);
             source.addFeature(newFeature);

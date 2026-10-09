@@ -15,7 +15,6 @@ use DB;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Pgvector\Laravel\Vector;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class LabelBotService
@@ -53,7 +52,7 @@ class LabelBotService
         }
 
         if (empty($topNLabels)) {
-            throw new NotFoundHttpException("LabelBOT could not find similar annotations.");
+            return [];
         }
         $labelModels = Label::whereIn('id', $topNLabels)->get()->keyBy('id');
 

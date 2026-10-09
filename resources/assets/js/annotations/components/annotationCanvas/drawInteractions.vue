@@ -26,7 +26,7 @@ export default {
             drawEnded: true,
             lastDrawnPoint: new Point(0, 0),
             lastDrawnPointTime: 0,
-        }
+        };
     },
     computed: {
         isDrawing() {
@@ -199,7 +199,7 @@ export default {
             this.updateDraftAnnotationColor(this.selectedLabel);
         },
         interactionMode(mode) {
-            this.maybeUpdateDrawInteractionMode(mode)
+            this.maybeUpdateDrawInteractionMode(mode);
         },
     },
     created() {

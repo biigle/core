@@ -988,6 +988,21 @@ class VideoAnnotationControllerTest extends ApiTestCase
         $response->assertJsonMissingPath('labelBOTLabels.1');
     }
 
+    public function testStoreWithFeatureVectorWithEmptyDB()
+    {
+        $this->beEditor();
+
+        // Query an empty DB
+        $response = $this->json('POST', "api/v1/videos/{$this->video->id}/annotations", [
+            'shape_id' => Shape::pointId(),
+            'feature_vector' => range(1, 384),
+            'points' => [[10, 11]],
+            'frames' => [0.0],
+        ]);
+        // We expect no content
+        $response->assertStatus(204);
+    }
+
     public function testUpdate()
     {
         $annotation = VideoAnnotationTest::create([

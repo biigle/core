@@ -198,7 +198,7 @@ class VideoAnnotationController extends Controller
      * }
      *
      * @param StoreVideoAnnotation $request
-     * @return VideoAnnotation
+     * @return VideoAnnotation|\Illuminate\Http\Response
      */
     public function store(StoreVideoAnnotation $request, LabelBotService $labelBotService)
     {
@@ -227,6 +227,9 @@ class VideoAnnotationController extends Controller
             // Add labelBOTlabels attribute to the response.
             $annotation->append('labelBOTLabels');
             $label = array_shift($labels);
+            if (is_null($label)) {
+                return response('', 204);
+            }
             if (!empty($labels)) {
                 // Attach the remaining labels (if any).
                 $annotation->labelBOTLabels = $labels;

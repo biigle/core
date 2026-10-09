@@ -105,7 +105,7 @@ export default {
             this.startLoading();
             InvitationApi.delete({id: id})
                 .then(() => {
-                    this.invitations = this.invitations.filter(i => i.id !== id)
+                    this.invitations = this.invitations.filter(i => i.id !== id);
                 }, handleErrorResponse)
                 .finally(this.finishLoading);
         },

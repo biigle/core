@@ -65,7 +65,7 @@ export default {
             data.append('parser', this.selectedParser.parserClass);
             MetadataApi.save({id: this.volumeId}, data)
                 .then((response) => {
-                    this.hasMetadata = true
+                    this.hasMetadata = true;
                     this.hasMetadataAnnotations = response.body.has_annotations;
                     this.hasMetadataFileLabels = response.body.has_file_labels;
                 })

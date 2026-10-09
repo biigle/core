@@ -40,15 +40,15 @@ export default {
 
             let userNames = this.volumeAnnotations.map(entry => {
                 if (entry.fullname === " ") {
-                    return "Deleted Account"
+                    return "Deleted Account";
                 }
                 return entry.fullname;
-            })
+            });
             userNames = [...new Set(userNames)];
 
             let userIds = this.volumeAnnotations.map(entry => {
                 return entry.user_id;
-            })
+            });
             userIds = [...new Set(userIds)];
 
             let volIds = this.volumeAnnotations.map(entry => {
@@ -136,5 +136,5 @@ export default {
         this.chart = markRaw(init(this.$refs.root, 'dark', { renderer: 'svg' }));
         this.chart.setOption(this.option);
     },
-}
+};
 </script>

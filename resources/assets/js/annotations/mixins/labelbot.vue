@@ -129,7 +129,7 @@ export default {
         },
         showLabelbotPopup(annotation) {
             this.labelbotOverlays.push(annotation);
-            this.focusedPopupKey = annotation.id;
+            this.focusedPopupKey = annotation.id ?? annotation.feature.ol_uid;
             Keyboard.setActiveSet('labelbot');
         },
         updateLabelbotState(labelbotState) {
@@ -139,9 +139,11 @@ export default {
             const index = this.labelbotOverlays.indexOf(annotation);
             if (index !== -1) {
                 this.labelbotOverlays.splice(index, 1);
-                this.focusedPopupKey = this.labelbotOverlays[this.labelbotOverlays.length - 1]?.id;
+                const lastOverlay = this.labelbotOverlays[this.labelbotOverlays.length - 1];
 
-                if (!this.focusedPopupKey) {
+                if (lastOverlay) {
+                    this.focusedPopupKey = lastOverlay.id ?? lastOverlay.feature.ol_uid;
+                } else {
                     Keyboard.setActiveSet('default');
                 }
             }
@@ -152,7 +154,7 @@ export default {
             Keyboard.setActiveSet('default');
         },
         changeLabelbotFocusedPopup(annotation) {
-            this.focusedPopupKey = annotation.id;
+            this.focusedPopupKey = annotation.id ?? annotation.feature.ol_uid;
         },
         saveLabelbotAnnotation(annotation, saveCallback) {
             if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
@@ -164,11 +166,32 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            // Make sure the LabelBOT image is not sent in the API request to create the
+            // Make sure the LabelBOT image, feature, pending video annotation and the remove callback function are not sent in the API request to create the
             // annotation.
             const labelbotImage = annotation.labelbotImage;
-            annotation.labelbotImage = undefined;
             delete annotation.labelbotImage;
+
+            const feature = annotation.feature;
+            delete annotation.feature;
+
+            // JSON serialisation drops functions, but we drop the callback manually anyway
+            const removeCallback = annotation.removeCallback;
+            delete annotation.removeCallback;
+
+            // Needed only in case of video annotations
+            let pendingVideoAnnotation;
+            let track;
+            if (annotation.pendingAnnotation) {
+                pendingVideoAnnotation = annotation.pendingAnnotation;
+                delete annotation.pendingAnnotation;
+
+                // We don't delete the track property because its needed by the video controller
+                track = annotation.track;
+            }
+
+            // We save the shape in case LabelBOT returns no results
+            // as the shape property is deleted in the create API function
+            const shape = annotation.shape;
 
             return this.generateFeatureVector(labelbotImage)
                 .then((featureVector) => {
@@ -177,12 +200,27 @@ export default {
 
                     return saveCallback(annotation);
                 })
-                .then(annotation => {
+                .then(savedAnnotation => {
                     if (this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
+                    if (!savedAnnotation) {
+                        // We return annotation and not savedAnnotation, because savedAnnotation is null 
+                        annotation.feature = feature;
+                        annotation.labels = [];
+                        annotation.shape = shape;
+                        annotation.removeCallback = removeCallback;
 
-                    return annotation;
+                        if (pendingVideoAnnotation) {
+                            annotation.pendingAnnotation = pendingVideoAnnotation;
+                            annotation.track = track;
+                        }
+
+                        delete annotation.feature_vector;
+
+                        return annotation;
+                    }
+                    return savedAnnotation;
                 })
                 .catch((e) => {
                     if (e.status === 429) {

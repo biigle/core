@@ -110,7 +110,7 @@ export default {
             // (e.g. "2022-11-11") is passed on with the correct time and timezone
             // as ISO string. Otherwise the date that the user sees would be interpreted
             // as UTC. See: https://stackoverflow.com/a/42626876/1796523
-            let date = this.expiresAt.split('-').map(s => parseInt(s))
+            let date = this.expiresAt.split('-').map(s => parseInt(s));
             date[1] = date[1] - 1; // adjust month
             let isoExpiresAt = (new Date(...date)).toISOString();
 
@@ -129,7 +129,7 @@ export default {
                 .finally(this.finishLoading);
         },
         handleCreated(response) {
-            this.$emit('created', response.body)
+            this.$emit('created', response.body);
         },
     },
     created() {
