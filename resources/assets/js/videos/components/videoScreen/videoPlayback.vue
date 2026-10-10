@@ -29,8 +29,6 @@ export default {
             shouldUseVideoFrameCallback: false,
             mediabunnyInput: null,
             mediabunnySink: null,
-            cachedBitmap: null,
-            cachedTime: null,
             mediabunnyInitPromise: null,
         };
     },
@@ -264,10 +262,7 @@ export default {
         async initMediabunny() {
             if (this.mediabunnyInput) {
                 this.mediabunnyInput.close();
-                this.cachedBitmap?.close();
             }
-            this.cachedBitmap = null;
-            this.cachedTime = null;
 
             this.mediabunnyInput = new Input({
                 source: new UrlSource(this.video.src),
@@ -285,29 +280,17 @@ export default {
                 throw new Error("mediabunny has not been initialized or is not available");
             }
 
-            const roundedTime = Math.round(time * 100) / 100;
-            if (this.cachedTime === roundedTime && this.cachedBitmap) {
-                this.drawBitmap(this.cachedBitmap);
-                return;
-            }
-
-            const sample = await this.mediabunnySink.getSample(roundedTime);
+            const sample = await this.mediabunnySink.getSample(time);
             const videoFrame = sample.toVideoFrame();
             const bitmap = await createImageBitmap(videoFrame);
             sample.close();
             videoFrame.close();
 
-            if (!this.video.paused || Math.round(this.video.currentTime * 100) / 100 !== roundedTime) {
+            if (!this.video.paused || this.video.currentTime !== time) {
                 bitmap.close();
                 return;
             }
 
-            if (this.cachedBitmap) {
-                this.cachedBitmap.close();
-            }
-
-            this.cachedTime = roundedTime;
-            this.cachedBitmap = bitmap;
             this.drawBitmap(bitmap);
         },
         drawBitmap(bitmap) {
