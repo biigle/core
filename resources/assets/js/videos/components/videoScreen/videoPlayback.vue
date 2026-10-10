@@ -297,7 +297,16 @@ export default {
             this.videoContext.drawImage(bitmap, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
             this.videoSource.changed();
         },
-
+        createInitMediabunnyPromise() {
+            const init = () => {
+                this.mediabunnyInitPromise = this.initMediabunny();
+            }
+            if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+                init();
+            } else {
+                this.video.addEventListener('loadedmetadata', init, {once: true});
+            }
+        }
     },
     watch: {
         seeking(seeking) {
@@ -307,20 +316,6 @@ export default {
                 this.startRenderLoop();
             }
         },
-        video: {
-            immediate: true,
-            deep: true,
-            handler() {
-                const init = () => {
-                    this.mediabunnyInitPromise = this.initMediabunny();
-                }
-                if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-                    init();
-                } else {
-                    this.video.addEventListener('loadedmetadata', init, {once: true});
-                }
-            }
-        }
     },
     created() {
         this.videoCanvas = document.createElement('canvas');
@@ -329,6 +324,7 @@ export default {
         this.video.addEventListener('pause', this.setPausedAndSeek);
         this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
+        this.createInitMediabunnyPromise();
 
         let mapPromise = new Promise((resolve) => {
             this.$watch('map', {
