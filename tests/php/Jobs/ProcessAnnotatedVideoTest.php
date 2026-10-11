@@ -917,7 +917,12 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
         return Mockery::mock(Video::class);
     }
 
-    public function getVideoFrame(string $sourcePath, float $time, int $trySeek = 3)
+    protected function calculateSeekWindow(string $path): float
+    {
+        return 0.05;
+    }
+
+    public function getVideoFrame(string $sourcePath, float $time, float $window, int $trySeek = 3)
     {
         if ($this->throwGetFrame !== false) {
             throw new $this->throwGetFrame;

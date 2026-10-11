@@ -6,7 +6,6 @@ use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use FFMpeg\Exception\RuntimeException;
-use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -28,6 +27,46 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     private ?FFProbe $ffprobe = null;
 
     /**
+     * Return the average video fps using ffprobe or fall back to 30 FPS if it failed
+     * @param string $path Path to the video file
+     * @return float The average FPS of the video
+     */
+    protected function getVideoFps(string $path): float
+    {
+        if (!isset($this->ffprobe)) {
+            $this->ffprobe = FFProbe::create();
+        }
+
+        $stream = $this->ffprobe->streams($path)->videos()->first();
+        if ($stream === null) {
+            return 30.0;
+        }
+
+        // FFProbe returns FPS as a rational like 60/1 (60 FPS) since decimals
+        // can't represent some values correctly
+        $rate = $stream->get('avg_frame_rate');
+        if (is_string($rate) && preg_match('/^(\d+)\/(\d+)$/', $rate, $matches) && (int) $matches[2] > 0) {
+            return (float) $matches[1] / (float) $matches[2];
+        }
+
+        return 30.0;
+    }
+
+    /**
+     * Calculates the length of a time window for a video at $path that is just long enough
+     * to contain a few frames.
+     * @param string $path Path to the video file
+     * @return float A time window that contains a few frames
+     */
+    protected function calculateSeekWindow(string $path): float
+    {
+        $fps = max($this->getVideoFps($path), 0.0001);
+        $window = max(0.05, 3 / $fps);
+
+        return $window;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function handleFile(VolumeFile $file, $path)
@@ -37,17 +76,21 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         // many annotated frames). With a chunk size too large, this could run into out
         // of memory issues.
         // Also (if feature vectors are generated), a PNG is stored for each frame in a
-        // chunk. Large chunks could comsume too much space.
+        // chunk. Large chunks could consume too much space.
+
+        $window = $this->calculateSeekWindow($path);
         $this->getAnnotationQuery()
-            ->chunkById(100, fn ($a) => $this->processAnnotationChunk($a, $path));
+            ->chunkById(100, fn ($a) => $this->processAnnotationChunk($a, $path, $window));
     }
 
     /**
      * Process a chunk of annotations of this job's file.
      *
      * @param Collection<int, VideoAnnotation> $annotations
+     * @param string $sourcePath Path to the video file
+     * @param float $window Length of the decoding window around the annotation to obtain a frame at or before the timestamp
      */
-    protected function processAnnotationChunk(Collection $annotations, string $sourcePath): void
+    protected function processAnnotationChunk(Collection $annotations, string $sourcePath, float $window): void
     {
         $frameFiles = [];
 
@@ -56,7 +99,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                 $points = $a->points[0] ?? null;
                 $frame = $a->frames[0];
                 try {
-                    $videoFrame = $this->getVideoFrame($sourcePath, $frame);
+                    $videoFrame = $this->getVideoFrame($sourcePath, $frame, $window);
                 } catch (RuntimeException $e) {
                     // FFMpeg can't extract the frame.
                     continue;
@@ -135,15 +178,13 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @param string $sourcePath
      * @param float $time
+     * @param float $window
      * @param int $trySeek
      *
      * @return Image
      */
-    protected function getVideoFrame(string $sourcePath, float $time, int $trySeek = 60)
+    protected function getVideoFrame(string $sourcePath, float $time, float $window, int $trySeek = 60)
     {
-        $fps = max($this->getVideoFps($sourcePath), 0.0001);
-        $window = max(0.05, 3 / $fps);
-
         // Sometimes an annotation is near the end of the video (or exactly at the end).
         // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
         // we try to seek backwards one frame until the buffer is not empty or the number
@@ -196,32 +237,6 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         } while ($trySeek > 0);
 
         throw new RuntimeException('Could not extract a video frame.');
-    }
-
-    /**
-     * Return the average video fps using ffprobe or fall back to 30 FPS if it failed
-     * @param string $path Path to the video file
-     * @return float The average FPS of the video
-     */
-    protected function getVideoFps(string $path): float
-    {
-        if (!isset($this->ffprobe)) {
-            $this->ffprobe = FFProbe::create();
-        }
-
-        $stream = $this->ffprobe->streams($path)->videos()->first();
-        if ($stream === null) {
-            return 30.0;
-        }
-
-        // FFProbe returns FPS as a rational like 60/1 (60 FPS) since decimals
-        // can't represent some values correctly
-        $rate = $stream->get('avg_frame_rate');
-        if (is_string($rate) && preg_match('/^(\d+)\/(\d+)$/', $rate, $matches) && (int) $matches[2] > 0) {
-            return (float) $matches[1] / (float) $matches[2];
-        }
-
-        return 30.0;
     }
 
     /**
