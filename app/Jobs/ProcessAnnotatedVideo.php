@@ -26,29 +26,45 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     private ?FFProbe $ffprobe = null;
 
     /**
+     * FPS of the video
+     */
+    private ?float $videoFps = null;
+
+    /**
+     * Path of the video that FPS was last calculated for
+     */
+    private ?string $videoFpsPath = null;
+
+    /**
      * Return the average video fps using ffprobe or fall back to 30 FPS if it failed
      * @param string $path Path to the video file
      * @return float The average FPS of the video
      */
     protected function getVideoFps(string $path): float
     {
+        if ($this->videoFpsPath === $path && $this->videoFps !== null) {
+            return $this->videoFps;
+        }
+
         if (!isset($this->ffprobe)) {
             $this->ffprobe = FFProbe::create();
         }
 
+        $this->videoFpsPath = $path;
+
         $stream = $this->ffprobe->streams($path)->videos()->first();
         if ($stream === null) {
-            return 30.0;
+            return $this->videoFps = 30.0;
         }
 
         // FFProbe returns FPS as a rational like 60/1 (60 FPS) since decimals
         // can't represent some values correctly
         $rate = $stream->get('avg_frame_rate');
         if (is_string($rate) && preg_match('/^(\d+)\/(\d+)$/', $rate, $matches) && (int) $matches[2] > 0) {
-            return (float) $matches[1] / (float) $matches[2];
+            return $this->videoFps = (float) $matches[1] / (float) $matches[2];
         }
 
-        return 30.0;
+        return $this->videoFps = 30.0;
     }
 
     /**
@@ -182,8 +198,14 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @return Image
      */
-    protected function getVideoFrame(string $sourcePath, float $time, float $window, int $trySeek = 60)
+    protected function getVideoFrame(string $sourcePath, float $time, float $window, ?int $trySeek = null)
     {
+        // We seek back up to 2 s by default (this is based on what was required
+        // for edge cases in 1.5M annotations on 16k videos).
+        $fps = $this->getVideoFps($sourcePath);
+        $seekStep = 1.0 / $fps;
+        $trySeek ??= max(1, (int) ceil(2.0 * $fps) + 1);
+
         // Sometimes an annotation is near the end of the video (or exactly at the end).
         // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
         // we try to seek backwards one frame until the buffer is not empty or the number
@@ -234,10 +256,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             }
 
             $trySeek -= 1;
-            // Roughly estimated framerate of 30 fps. With 60 iterations, we seek back up
-            // to 2 s by default (this is based on what was required for edge cases in
-            //  1.5M annotations on 16k videos).
-            $time = max(0, $time - (1 / 30.0));
+            $time = max(0, $time - $seekStep);
         } while ($trySeek > 0);
 
         throw new RuntimeException('Could not extract a video frame.');

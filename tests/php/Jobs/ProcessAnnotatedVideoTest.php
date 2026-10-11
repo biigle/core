@@ -922,7 +922,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
         return 0.05;
     }
 
-    public function getVideoFrame(string $sourcePath, float $time, float $window, int $trySeek = 3)
+    public function getVideoFrame(string $sourcePath, float $time, float $window, ?int $trySeek = 3)
     {
         if ($this->throwGetFrame !== false) {
             throw new $this->throwGetFrame;
