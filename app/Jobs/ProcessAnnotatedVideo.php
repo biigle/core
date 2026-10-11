@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image;
-use Throwable;
 
 /**
  * @extends ProcessAnnotatedFile<VideoAnnotation>
@@ -205,7 +204,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             File::move($tmpFile, $outputPath);
 
             try {
-                Process::forever()
+                $result = Process::forever()
                     ->run(sprintf(
                         'ffmpeg -copyts -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\'" -fps_mode passthrough -update 1 -y %s',
                         $seekTime,
@@ -213,19 +212,24 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                         escapeshellarg($sourcePath),
                         $timeString,
                         escapeshellarg($outputPath)
-                    ))
-                    ->throw();
+                    ));
 
-                $buffer = File::get($outputPath);
-            } catch (Throwable $e) {
-                $buffer = '';
+                if ($result->failed()) {
+                    // If ffmpeg failed, throw laravel exception not handled by
+                    // processAnnotationChunk, thereby stopping the process
+                    $result->throw();
+                }
+
+                $buffer = File::exists($outputPath)
+                    ? File::get($outputPath)
+                    : '';
             } finally {
                 if (File::exists($outputPath)) {
                     File::delete($outputPath);
                 }
             }
 
-            if (!empty($buffer)) {
+            if ($buffer !== '') {
                 return Image::newFromBuffer($buffer);
             }
 
