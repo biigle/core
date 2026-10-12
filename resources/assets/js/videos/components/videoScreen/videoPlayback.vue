@@ -128,14 +128,9 @@ export default {
             this.playing = false;
             this.stopRenderLoop();
         },
-        setPausedAndSeek() {
+        async setPausedAndSeek() {
             this.setPaused();
-            // Force render the video frame that belongs to currentTime. This is a
-            // workaround because the displayed frame not the one that belongs to
-            // currentTime (in most cases). With the workaround we can create annotations
-            // at currentTime and be sure that the same frame can be reproduced later for
-            // the annotations. See: https://github.com/biigle/core/issues/433
-            this.$emit('seek', this.video.currentTime, true);
+            await this.renderPausedFrame();
         },
         play() {
             this.video.play();
@@ -151,11 +146,7 @@ export default {
             this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
         },
         async handleSeeked() {
-            if (this.video.paused) {
-                await this.renderPausedFrame();
-            } else {
-                this.renderVideo(true);
-            }
+            await this.renderPausedFrame();
         },
         // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
         async emitPreviousFrame() {
