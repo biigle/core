@@ -65,6 +65,7 @@ export default {
             pendingAnnotation: null,
             annotations: [],
             seeking: false,
+            mediabunnyDecoding: false,
             settings: {
                 annotationOpacity: 1,
                 showMinimap: true,
@@ -228,6 +229,9 @@ export default {
             this.annotations.push(annotation);
 
             return annotation;
+        },
+        setMediabunnyDecoding(active) {
+            this.mediabunnyDecoding = active;
         },
         seek(time, force) {
             if (this.seeking || this.labelbotIsComputing) {

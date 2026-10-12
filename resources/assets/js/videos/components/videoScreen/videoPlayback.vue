@@ -14,6 +14,7 @@ export default {
     emits: [
         'seek',
         'start-seeking',
+        'mediabunny-decoding',
     ],
     data() {
         return {
@@ -263,26 +264,31 @@ export default {
             this.mediabunnySink = new VideoSampleSink(track);
         },
         async getFrameBitmap(time) {
-            if (this.mediabunnyInitPromise) {
-                await this.mediabunnyInitPromise;
+            this.$emit('mediabunny-decoding', true);
+            try {
+                if (this.mediabunnyInitPromise) {
+                    await this.mediabunnyInitPromise;
+                }
+
+                if (!this.mediabunnySink) {
+                    throw new Error("mediabunny has not been initialized or is not available");
+                }
+
+                const sample = await this.mediabunnySink.getSample(time);
+                const videoFrame = sample.toVideoFrame();
+                const bitmap = await createImageBitmap(videoFrame);
+                sample.close();
+                videoFrame.close();
+
+                if (!this.video.paused || this.video.currentTime !== time) {
+                    bitmap.close();
+                    return;
+                }
+
+                this.drawBitmap(bitmap);
+            } finally {
+                this.$emit('mediabunny-decoding', false);
             }
-
-            if (!this.mediabunnySink) {
-                throw new Error("mediabunny has not been initialized or is not available");
-            }
-
-            const sample = await this.mediabunnySink.getSample(time);
-            const videoFrame = sample.toVideoFrame();
-            const bitmap = await createImageBitmap(videoFrame);
-            sample.close();
-            videoFrame.close();
-
-            if (!this.video.paused || this.video.currentTime !== time) {
-                bitmap.close();
-                return;
-            }
-
-            this.drawBitmap(bitmap);
         },
         drawBitmap(bitmap) {
             this.videoContext.drawImage(bitmap, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
