@@ -4,6 +4,7 @@ import ImageLayer from '@biigle/ol/layer/Image';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
 import { Input, ALL_FORMATS, UrlSource, VideoSampleSink } from 'mediabunny';
+import Messages from '@/core/messages/store.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
@@ -114,7 +115,7 @@ export default {
             this.animationFrameId = null;
         },
         async renderPausedFrame(time = this.video.currentTime) {
-            if (!this.video.paused) {
+            if (!this.video.paused || !this.mediabunnySink) {
                 this.renderVideo(true);
                 return;
             }
@@ -266,6 +267,13 @@ export default {
                 formats: ALL_FORMATS
             });
             const track = await input.getPrimaryVideoTrack();
+            if (!track || !(await track.canDecode())) {
+                input.dispose();
+                this.mediabunnyInput = null;
+                this.mediabunnySink = null;
+                Messages.warning('The used video codec is not supported by the WebCodecs API. The browser might display incorrect frames for a given timestamp. Consider switching the browser or transcoding the video to a more widely supported codec like H.264 (AVC).');
+                return;
+            }
 
             if (revision !== this.videoSoureRevision) {
                 input.dispose();
@@ -284,9 +292,7 @@ export default {
             try {
                 await this.mediabunnyInitPromise;
 
-                if (!this.mediabunnySink) {
-                    throw new Error("mediabunny has not been initialized or is not available");
-                } else if (sourceHasChanged()) {
+                if (sourceHasChanged()) {
                     return;
                 }
 
@@ -302,6 +308,7 @@ export default {
                 }
 
                 this.drawBitmap(bitmap);
+                bitmap.close();
             } finally {
                 this.$emit('mediabunny-decoding', false);
             }
@@ -392,6 +399,10 @@ export default {
         this.video.removeEventListener('pause', this.setPausedAndSeek);
         this.video.removeEventListener('seeked', this.handleSeeked);
         this.video.removeEventListener('loadeddata', this.renderVideo);
+        this.video.removeEventListener('loadedmetadata', this.handleVideoMetadata);
+        if (this.mediabunnyInput) {
+            this.mediabunnyInput.dispose();
+        }
     },
 };
 </script>
