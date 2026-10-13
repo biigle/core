@@ -31,6 +31,7 @@ export default {
             mediabunnyInput: null,
             mediabunnySink: null,
             mediabunnyInitPromise: null,
+            videoSoureRevision: 0,
         };
     },
     methods: {
@@ -146,6 +147,11 @@ export default {
             // Update the layer (dimensions) if a new video is loaded.
             this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
         },
+        handleVideoMetadata() {
+            this.videoSoureRevision++;
+            this.mediabunnySink = null;
+            this.mediabunnyInitPromise = this.initMediabunny(this.videoSoureRevision);
+        },
         async handleSeeked() {
             await this.renderPausedFrame();
         },
@@ -251,27 +257,37 @@ export default {
         toggleFirefoxFullscreen() {
             document.body.requestFullscreen();
         },
-        async initMediabunny() {
+        async initMediabunny(revision) {
             if (this.mediabunnyInput) {
-                this.mediabunnyInput.close();
+                this.mediabunnyInput.dispose();
             }
-
-            this.mediabunnyInput = new Input({
+            const input = new Input({
                 source: new UrlSource(this.video.src),
                 formats: ALL_FORMATS
             });
-            const track = await this.mediabunnyInput.getPrimaryVideoTrack();
+            const track = await input.getPrimaryVideoTrack();
+
+            if (revision !== this.videoSoureRevision) {
+                input.dispose();
+                return;
+            }
+
+            this.mediabunnyInput = input;
             this.mediabunnySink = new VideoSampleSink(track);
         },
         async getFrameBitmap(time) {
+            const revision = this.videoSoureRevision;
+            const source = this.video.src;
+            const sourceHasChanged = () => revision !== this.videoSoureRevision || source !== this.video.src;
+
             this.$emit('mediabunny-decoding', true);
             try {
-                if (this.mediabunnyInitPromise) {
-                    await this.mediabunnyInitPromise;
-                }
+                await this.mediabunnyInitPromise;
 
                 if (!this.mediabunnySink) {
                     throw new Error("mediabunny has not been initialized or is not available");
+                } else if (sourceHasChanged()) {
+                    return;
                 }
 
                 const sample = await this.mediabunnySink.getSample(time);
@@ -280,7 +296,7 @@ export default {
                 sample.close();
                 videoFrame.close();
 
-                if (!this.video.paused || this.video.currentTime !== time) {
+                if (!this.video.paused || this.video.currentTime !== time || sourceHasChanged()) {
                     bitmap.close();
                     return;
                 }
@@ -304,20 +320,6 @@ export default {
                 this.startRenderLoop();
             }
         },
-        video: {
-            immediate: true,
-            deep: true,
-            handler() {
-                const init = () => {
-                    this.mediabunnyInitPromise = this.initMediabunny();
-                }
-                if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-                    init();
-                } else {
-                    this.video.addEventListener('loadedmetadata', init, {once: true});
-                }
-            }
-        }
     },
     created() {
         this.videoCanvas = document.createElement('canvas');
@@ -326,6 +328,7 @@ export default {
         this.video.addEventListener('pause', this.setPausedAndSeek);
         this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
+        this.video.addEventListener('loadedmetadata', this.handleVideoMetadata);
 
         let mapPromise = new Promise((resolve) => {
             this.$watch('map', {
@@ -340,12 +343,12 @@ export default {
         // If the video screen is shown in the popup and the video is already loaded.
         if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
             metadataPromise = Promise.resolve();
+            this.handleVideoMetadata();
         } else {
             metadataPromise = new Promise((resolve) => {
                 this.video.addEventListener('loadedmetadata', resolve);
             });
         }
-
 
         Promise.all([mapPromise, metadataPromise])
             .then(this.updateVideoLayer)
