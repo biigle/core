@@ -151,12 +151,17 @@
                 </p>
                 <form @submit.prevent="saveLabel" v-if="isAdmin && selectedLabel">
                     <div class="form-group">
+                        <span
+                            class="pull-right text-muted"
+                            :class="{'text-warning': labelDescription.length === labelDescriptionMaxLength}"
+                            v-text="`${labelDescription.length}/${labelDescriptionMaxLength}`"
+                        ></span>
                         <label for="label-description">Label description</label>
                         <textarea
                             v-model="labelDescription"
                             id="label-description"
                             class="form-control"
-                            maxlength="200"
+                            :maxlength="labelDescriptionMaxLength"
                             @input="isDirty = true"
                         ></textarea>
                         <p class="help-block">
@@ -242,7 +247,6 @@
                             id="label-description"
                             readonly
                             class="form-control"
-                            maxlength="200"
                         ></textarea>
                     </div>
 
@@ -331,6 +335,7 @@ export default {
             guidelineIsEnforced: false,
             guidelineShapes: new Set(),
             isEditingGuideline: false,
+            labelDescriptionMaxLength: 256,
         };
     },
     computed: {

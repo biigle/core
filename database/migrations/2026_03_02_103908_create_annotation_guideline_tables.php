@@ -41,7 +41,7 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('set null');
 
-            $table->text('description')->nullable();
+            $table->string('description', 256)->nullable();
 
             $table->string('reference_image_path')->nullable();
 

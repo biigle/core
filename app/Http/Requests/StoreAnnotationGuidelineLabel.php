@@ -55,7 +55,7 @@ class StoreAnnotationGuidelineLabel extends FormRequest
     {
         return [
             'label_id' => ['required', 'integer', 'exists:labels,id'],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'string', 'max:256'],
             'shape_id' => [
                 'nullable',
                 'integer',
