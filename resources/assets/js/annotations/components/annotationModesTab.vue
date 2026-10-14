@@ -193,6 +193,10 @@ export default {
             const seconds = Math.floor((Date.now() - timestamp) / 1000);
             const secondsPerDay = 86400;
 
+            if (seconds < 60) {
+                return 'just now';
+            }
+
             const units = [
                 { name: 'y', seconds: secondsPerDay * 365},
                 { name: 'd', seconds: secondsPerDay },
