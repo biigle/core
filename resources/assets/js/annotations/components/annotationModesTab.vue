@@ -84,6 +84,18 @@ export default {
             } else {
                 return PlayPauseState.INACTIVE;
             }
+        },
+        volarePlayStopButtonTitleText() {
+            return this.genericPlayStopButtonText(this.currentVolareState, 'cycling through annotations');
+        },
+        lawnmowerPlayStopButtonTitleText() {
+            return this.genericPlayStopButtonText(this.currentLawnmowerState, 'cycling through image sections');
+        },
+        volarePauseButtonTitleText() {
+            return this.genericPauseButtonTitleText(this.currentVolareState);
+        },
+        lawnmowerPauseButtonTitleText() {
+            return this.genericPauseButtonTitleText(this.currentLawnmowerState);
         }
     },
     methods: {
@@ -213,6 +225,22 @@ export default {
             }
 
             return '0s ago';
+        },
+        genericPlayStopButtonText(state, message) {
+            if (state === PlayPauseState.ACTIVE) {
+                return `Stop ${message} 𝗘𝘀𝗰`;
+            } else if (state === PlayPauseState.PAUSED) {
+                return `Continue ${message}`;
+            } else {
+                return `Start ${message}`;
+            }
+        },
+        genericPauseButtonTitleText(state) {
+            if (state === PlayPauseState.PAUSED) {
+                return 'Cancel and delete paused state';
+            } else {
+                return 'Pause and save the current state';
+            }
         },
     },
     watch: {

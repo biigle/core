@@ -12,9 +12,9 @@
         <div class="sidebar-tab__section">
             <h5 title="Cycle through all annotations">Volume Label Review<br><small>cycle through annotations</small></h5>
             <play-pause
-                playButtonTitleText="Start cycling through all annotations"
-                stopButtonTitleText="Stop cycling through all annotations 𝗘𝘀𝗰"
-                pauseButtonTitleText="Pause Volare"
+                :play-button-title-text="volarePlayStopButtonTitleText"
+                :stop-button-title-text="volarePlayStopButtonTitleText"
+                :pause-button-title-text="volarePauseButtonTitleText"
                 :state="currentVolareState"
                 @transition-requested="onVolarePlayPauseTransitionRequested"
             ></play-pause>
@@ -27,9 +27,9 @@
         <div class="sidebar-tab__section">
             <h5 title="Cycle through image sections">Lawnmower Mode<br><small>cycle through image sections</small></h5>
             <play-pause
-                playButtonTitleText="Start cycling through image sections"
-                stopButtonTitleText="Stop cycling through image sections 𝗘𝘀𝗰"
-                pauseButtonTitleText="Pause Lawnmower"
+                :play-button-title-text="lawnmowerPlayStopButtonTitleText"
+                :stop-button-title-text="lawnmowerPlayStopButtonTitleText"
+                :pause-button-title-text="lawnmowerPauseButtonTitleText"
                 :state="currentLawnmowerState"
                 @transition-requested="onLawnmowerPlayPauseTransitionRequested"
             ></play-pause>
