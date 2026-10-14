@@ -12,7 +12,7 @@ use Storage;
  * This Model describes the annotation guideline of a Project
  *
  * @property int $id
- * @property bool $can_annotate Only set by AnnotationGuidelineService::getGuidelines().
+ * @property bool $enforced_for_user Only set by AnnotationGuidelineService::getGuidelines().
  * @property int|string|null $project_role Only set temporarily by AnnotationGuidelineService::getGuidelines().
  */
 class AnnotationGuideline extends Model

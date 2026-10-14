@@ -1,13 +1,14 @@
 <template>
 <div class="label-indicator">
-    <div v-if="shapeName" class="pull-right">
-        <i class="icon" :class="`icon-${shapeName.toLowerCase()}`" :title="`Must be annotated with: ${shapeName}`"></i>
-    </div>
     <span title="Currently selected label">
         <span class="labelbot-indicator__color" :style="{ backgroundColor: '#'+label.color }"></span>
         {{ label.name }}
     </span>
     <div v-if="hasGuidelineInfo" class="label-indicator__guideline text-muted">
+        <div v-if="preferredShape">
+            Preferred shape:
+            <i class="icon" :class="`icon-${preferredShape.toLowerCase()}`" :title="preferredShape"></i>
+        </div>
         <p
             v-if="guidelineLabel.description"
             class="label-indicator__description"
@@ -44,11 +45,17 @@ export default {
         guidelineLabel() {
             return this.guideline?.labels.find(l => l.id === this.label.id)?.pivot;
         },
-        shapeName() {
+        preferredShape() {
+            // Enforced guidelines restrict the drawing tools instead.
+            if (this.guideline?.enforced_for_user) {
+                return undefined;
+            }
+
             return this.shapes[this.guidelineLabel?.shape];
         },
         hasGuidelineInfo() {
-            return this.guidelineLabel?.description
+            return this.preferredShape
+                || this.guidelineLabel?.description
                 || this.guidelineLabel?.reference_image_url;
         },
     },

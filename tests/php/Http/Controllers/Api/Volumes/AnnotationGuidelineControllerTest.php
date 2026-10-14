@@ -34,7 +34,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertJsonCount(1, 'guidelines')
             ->assertJsonPath('guidelines.0.id', $guideline->id)
             ->assertJsonPath('guidelines.0.enforced', true)
-            ->assertJsonPath('guidelines.0.can_annotate', true)
+            ->assertJsonPath('guidelines.0.enforced_for_user', true)
             ->assertJsonPath('guidelines.0.labels.0.id', $this->labelRoot()->id)
             ->assertJsonPath('guidelines.0.labels.0.pivot.uuid', $guidelineLabel->uuid);
     }
@@ -52,7 +52,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonCount(1, 'guidelines')
             ->assertJsonPath('guidelines.0.id', $guideline->id)
-            ->assertJsonPath('guidelines.0.can_annotate', false);
+            ->assertJsonPath('guidelines.0.enforced_for_user', false);
     }
 
     public function testIndexInformational()
@@ -69,7 +69,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertJsonPath('must_use_guideline', false)
             ->assertJsonCount(1, 'guidelines')
             ->assertJsonPath('guidelines.0.enforced', false)
-            ->assertJsonPath('guidelines.0.can_annotate', true);
+            ->assertJsonPath('guidelines.0.enforced_for_user', false);
     }
 
     public function testIndexMultipleProjects()
@@ -99,7 +99,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertJsonPath('must_use_guideline', false)
             ->assertJsonCount(1, 'guidelines')
             ->assertJsonPath('guidelines.0.id', $guideline->id)
-            ->assertJsonPath('guidelines.0.can_annotate', true);
+            ->assertJsonPath('guidelines.0.enforced_for_user', true);
     }
 
     public function testIndexNoGuidelines()
