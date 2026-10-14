@@ -89,14 +89,14 @@ export default {
         startVolare() {
             this.setMode('volare');
         },
-        pauseVolare(timestamp) {
+        pauseVolare(timestamp = Date.now()) {
             this.setMode('volarePaused');
             this.volarePausedAt = timestamp;
         },
         startLawnmower() {
             this.setMode('lawnmower');
         },
-        pauseLawnmower(timestamp) {
+        pauseLawnmower(timestamp = Date.now()) {
             this.setMode('lawnmowerPaused');
             this.lawnmowerPausedAt = timestamp;
         },
@@ -198,7 +198,6 @@ export default {
                 { name: 'd', seconds: secondsPerDay },
                 { name: 'h', seconds: 3600 },
                 { name: 'min', seconds: 60 },
-                { name: 's', seconds: 1 },
             ];
 
             for (const unit of units) {
