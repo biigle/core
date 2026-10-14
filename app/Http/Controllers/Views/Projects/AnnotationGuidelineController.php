@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
-use Biigle\Shape;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -47,7 +47,7 @@ class AnnotationGuidelineController extends Controller
 
         $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
 
-        $shapes = Shape::pluck('name', 'id');
+        $shapes = Shape::pluckById();
 
         return view('projects.show.annotation-guideline', [
             'project' => $project,

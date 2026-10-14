@@ -373,7 +373,7 @@ export default {
             const guidelineLabel = this.annotationGuidelineLabels.get(label?.id);
             if (guidelineLabel) {
                 this.labelDescription = guidelineLabel.description || '';
-                this.selectedShape = guidelineLabel.shape_id || null;
+                this.selectedShape = guidelineLabel.shape || null;
                 this.referenceImagePreview = guidelineLabel.reference_image_url;
                 this.isDirty = false;
             }
@@ -525,7 +525,7 @@ export default {
             formData.append('label_id', this.selectedLabel.id);
             formData.append('description', this.labelDescription || '');
             if (this.selectedShape) {
-                formData.append('shape_id', this.selectedShape);
+                formData.append('shape', this.selectedShape);
             }
             if (this.referenceImage !== null) {
                 formData.append('reference_image', this.referenceImage);
@@ -613,8 +613,8 @@ export default {
         maybeUnsetLabelShapes() {
             if (this.onlyShapeIds.size > 0) {
                 this.annotationGuidelineLabels.forEach((label) => {
-                    if (label.shape_id && !this.onlyShapeIds.has(Number(label.shape_id))) {
-                        label.shape_id = null;
+                    if (label.shape && !this.onlyShapeIds.has(label.shape)) {
+                        label.shape = null;
                     }
                 })
             }

@@ -4,11 +4,13 @@ namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Project;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AnnotationGuidelineController extends Controller
@@ -35,7 +37,7 @@ class AnnotationGuidelineController extends Controller
      *       "uuid": "...",
      *       "annotation_guideline_id": 1,
      *       "label_id": 4,
-     *       "shape_id": 7,
+     *       "shape": 7,
      *       "description": "description of a label",
      *       "reference_image_url": null
      *     }
@@ -77,7 +79,7 @@ class AnnotationGuidelineController extends Controller
             'description' => 'nullable|string|min:1',
             'enforced' => 'boolean',
             'only_shapes' => 'nullable|array|prohibited_unless:enforced,true',
-            'only_shapes.*' => 'distinct|integer|exists:shapes,id',
+            'only_shapes.*' => ['distinct', 'integer', Rule::enum(Shape::class)],
         ]);
 
         $guideline = AnnotationGuideline::firstOrCreate(
@@ -121,7 +123,7 @@ class AnnotationGuidelineController extends Controller
             'description' => 'nullable|string|min:1',
             'enforced' => 'boolean',
             'only_shapes' => 'nullable|array|prohibited_unless:enforced,true',
-            'only_shapes.*' => 'distinct|integer|exists:shapes,id',
+            'only_shapes.*' => ['distinct', 'integer', Rule::enum(Shape::class)],
         ]);
 
         $onlyShapes = $this->castOnlyShapes($request->only_shapes);
@@ -134,9 +136,9 @@ class AnnotationGuidelineController extends Controller
 
         if ($request->exists('only_shapes') && !is_null($onlyShapes)) {
             AnnotationGuidelineLabel::where('annotation_guideline_id', $guideline->id)
-                ->whereNotNull('shape_id')
-                ->whereNotIn('shape_id', $onlyShapes)
-                ->update(['shape_id' => null]);
+                ->whereNotNull('shape')
+                ->whereNotIn('shape', $onlyShapes)
+                ->update(['shape' => null]);
         }
     }
 

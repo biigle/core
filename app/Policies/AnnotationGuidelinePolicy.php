@@ -3,7 +3,7 @@
 namespace Biigle\Policies;
 
 use Biigle\AnnotationGuideline;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -26,7 +26,7 @@ class AnnotationGuidelinePolicy extends CachedPolicy
     {
         return $this->remember("annotation-guideline-can-update-{$user->id}-{$guideline->id}", fn () => DB::table('project_user')
             ->where('project_id', $guideline->project_id)
-            ->where('project_role_id', Role::adminId())
+            ->where('project_role', Role::ADMIN)
             ->where('user_id', $user->id)
             ->exists());
     }

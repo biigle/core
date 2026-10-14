@@ -31,7 +31,9 @@ class AnnotationGuidelineLabel extends Pivot
      */
     protected $casts = [
         'label_id' => 'int',
-        'shape_id' => 'int',
+        // Not cast to the Shape enum so the JSON contains the plain ID like only_shapes
+        // of the guideline.
+        'shape' => 'int',
         'annotation_guideline_id' => 'int',
     ];
 
@@ -59,15 +61,5 @@ class AnnotationGuidelineLabel extends Pivot
 
         return Storage::disk(config('projects.annotation_guideline_disk'))
             ->url($this->reference_image_path);
-    }
-
-    /**
-     * The defined shape for this label.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
-     */
-    public function shape()
-    {
-        return $this->belongsTo(Shape::class);
     }
 }

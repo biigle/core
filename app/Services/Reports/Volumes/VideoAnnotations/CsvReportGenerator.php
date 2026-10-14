@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\Reports\Volumes\VideoAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
@@ -209,8 +210,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             'users.lastname',
             'videos.id as video_id',
             'videos.filename as video_filename',
-            'shapes.id as shape_id',
-            'shapes.name as shape_name',
+            'video_annotations.shape',
             'video_annotations.points',
             'video_annotations.frames',
             'video_annotations.id as annotation_id',
@@ -223,7 +223,6 @@ class CsvReportGenerator extends VolumeReportGenerator
 
         $query = $this
             ->initQuery($itemsToSelect)
-            ->join('shapes', 'video_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'video_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('video_annotation_labels.id');
 
@@ -275,8 +274,8 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $row->lastname,
                 $row->video_id,
                 $row->video_filename,
-                $row->shape_id,
-                $row->shape_name,
+                $row->shape,
+                Shape::from($row->shape)->label(),
                 $row->points,
                 $row->frames,
                 $row->annotation_id,

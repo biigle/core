@@ -27,7 +27,7 @@ class AnnotationGuidelineLabelTest extends TestCase
         ]);
         $this->assertSame($this->guideline->id, $pivot->annotation_guideline_id);
         $this->assertSame($this->label->id, $pivot->label_id);
-        $this->assertNull($pivot->shape_id);
+        $this->assertNull($pivot->shape);
         $this->assertNull($pivot->description);
         $this->assertNotNull($pivot->uuid);
     }
@@ -43,19 +43,6 @@ class AnnotationGuidelineLabelTest extends TestCase
             'annotation_guideline_id' => $this->guideline->id,
             'label_id' => $this->label->id,
         ]);
-    }
-
-    public function testShapeOnDeleteSetNull()
-    {
-        $shape = ShapeTest::create();
-        AnnotationGuidelineLabel::factory()->create([
-            'annotation_guideline_id' => $this->guideline->id,
-            'label_id' => $this->label->id,
-            'shape_id' => $shape->id,
-        ]);
-        $this->assertNotNull($this->guideline->labels()->first()->pivot->shape_id);
-        $shape->delete();
-        $this->assertNull($this->guideline->labels()->first()->pivot->shape_id);
     }
 
     public function testGuidelineOnDeleteCascade()

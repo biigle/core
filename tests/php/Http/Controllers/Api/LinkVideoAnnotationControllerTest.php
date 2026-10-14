@@ -5,9 +5,9 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
-use Biigle\MediaType;
-use Biigle\Role;
-use Biigle\Shape;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
@@ -18,13 +18,13 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $this->video = VideoTest::create(['volume_id' => $id]);
     }
 
     public function testStoreValidation()
     {
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT);
 
         $this->doTestApiRoute('POST', "api/v1/video-annotations/{$a1->id}/link");
 
@@ -51,7 +51,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             // Other annotation must belong to the same video.
             ->assertStatus(422);
 
-        $a2->update(['video_id' => $this->video->id, 'shape_id' => Shape::circleId()]);
+        $a2->update(['video_id' => $this->video->id, 'shape' => Shape::CIRCLE]);
         $this
             ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
@@ -59,7 +59,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             // The shapes must match.
             ->assertStatus(422);
 
-        $a2->update(['shape_id' => Shape::pointId()]);
+        $a2->update(['shape' => Shape::POINT]);
         $this
             ->postJson("api/v1/video-annotations/{$a1->id}/link", [
                 'annotation_id' => $a2->id,
@@ -73,7 +73,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreValidateOverlap()
     {
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT);
         $a2->update(['frames' => [1.5, 2.5]]);
 
         $this->beEditor();
@@ -129,7 +129,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreBefore()
     {
         // The annotation that is linked starts after the other annotation.
-        [$a2, $a1] = $this->createAnnotations(Shape::pointId());
+        [$a2, $a1] = $this->createAnnotations(Shape::POINT);
 
         $this->beEditor();
         $this
@@ -145,7 +145,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreAfter()
     {
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT);
 
         $this->beEditor();
         $this
@@ -162,7 +162,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreMergeLabels()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[10, 10]],
@@ -173,7 +173,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [2.0],
             'points' => [[20, 20]],
@@ -211,7 +211,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreTouching()
     {
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId());
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT);
         $a2->update(['frames' => [2.09, 3.0]]);
 
         $this->beEditor();
@@ -229,14 +229,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreSingleFrameTouching()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[10, 10]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [[30, 30]],
@@ -254,14 +254,14 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreWholeFrame()
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME,
             'video_id' => $this->video->id,
             'frames' => [1.0],
             'points' => [],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME,
             'video_id' => $this->video->id,
             'frames' => [2.0],
             'points' => [],

@@ -2,13 +2,13 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\Shape;
 use Biigle\Image;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\InitializeFeatureVectorChunk;
 use Biigle\Jobs\ProcessAnnotatedFile;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoAnnotationLabelFeatureVector;
@@ -140,7 +140,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [100, 100],
             'image_id' => $image->id,
         ]);
@@ -160,7 +160,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
             'points' => [100, 100, 10],
             'image_id' => $image->id,
         ]);
@@ -180,7 +180,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON,
             'points' => [100, 90, 110, 100, 100, 110, 90, 100],
             'image_id' => $image->id,
         ]);
@@ -200,7 +200,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
             'attrs' => ['width' => 200, 'height' => 200],
         ]);
         $a = ImageAnnotation::factory()->create([
-            'shape_id' => Shape::wholeFrameId(),
+            'shape' => Shape::WHOLE_FRAME,
             'image_id' => $image->id,
         ]);
         $al = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);

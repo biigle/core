@@ -4,11 +4,11 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Role;
 use Biigle\ImageAnnotation;
 use Biigle\Jobs\ApplyLargoSession;
 use Biigle\Label;
-use Biigle\MediaType;
-use Biigle\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -29,7 +29,7 @@ class LargoControllerTest extends ApiTestCase
         $this->labelRoot();
 
         $this->imageVolume = VolumeTest::create([
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
         ]);
         $this->project()->addVolumeId($this->imageVolume->id);
 
@@ -42,7 +42,7 @@ class LargoControllerTest extends ApiTestCase
         ]);
 
         $this->videoVolume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
         ]);
         $this->project()->addVolumeId($this->videoVolume->id);
 
@@ -513,8 +513,8 @@ class LargoControllerTest extends ApiTestCase
     {
         Queue::shouldReceive('pushOn')->once()->andThrow(new \Exception('Queue error'));
 
-        $this->withoutExceptionHandling();
         $this->beEditor();
+        $this->withoutExceptionHandling();
         try {
             $this->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [
                 'dismissed_image_annotations' => [
