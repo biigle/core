@@ -38,7 +38,7 @@ export default {
                 this.resetInteractionMode();
             // The button is disabled for disallowed shapes but the keyboard shortcut
             // still calls this method.
-            } else if (this.canAdd && this.guidelineShapes.isAllowed('Polygon')) {
+            } else if (this.canAdd && this.isShapeAllowed('Polygon')) {
                 if ((!this.hasSelectedLabel && !this.labelbotIsActive)) {
                     this.requireSelectedLabel();
                 } else {

@@ -47,23 +47,23 @@
         <div class="btn-group drawing-controls" v-if="canAdd" @cannot('add-annotation') v-cloak @endcannot>
             <control-button
                 icon="icon-point"
-                :title="guidelineShapes.getTooltipTitle('Point', 'Set a point 𝗔')"
-                :disabled="!guidelineShapes.isAllowed('Point')"
+                :title="getShapeToolTitle('Point', 'Set a point 𝗔')"
+                :disabled="!isShapeAllowed('Point')"
                 :active="isDrawingPoint"
                 v-on:click="drawPoint"
                 ></control-button>
             <control-button
                 icon="icon-rectangle"
-                :title="guidelineShapes.getTooltipTitle('Rectangle', 'Draw a rectangle 𝗦')"
-                :disabled="!guidelineShapes.isAllowed('Rectangle')"
+                :title="getShapeToolTitle('Rectangle', 'Draw a rectangle 𝗦')"
+                :disabled="!isShapeAllowed('Rectangle')"
                 :active="isDrawingRectangle"
                 v-on:click="drawRectangle"
                 v-slot="{onActive}"
                 >
                 <control-button
                     icon="fa-vector-square"
-                    :title="guidelineShapes.getTooltipTitle('Rectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
-                    :disabled="!guidelineShapes.isAllowed('Rectangle')"
+                    :title="getShapeToolTitle('Rectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
+                    :disabled="!isShapeAllowed('Rectangle')"
                     :active="isDrawingAlignedRectangle"
                     v-on:click="drawAlignedRectangle"
                     v-on:active="onActive"
@@ -71,16 +71,16 @@
             </control-button>
             <control-button
                 icon="icon-circle"
-                :title="guidelineShapes.getTooltipTitle('Circle', 'Draw a circle 𝗗')"
-                :disabled="!guidelineShapes.isAllowed('Circle')"
+                :title="getShapeToolTitle('Circle', 'Draw a circle 𝗗')"
+                :disabled="!isShapeAllowed('Circle')"
                 :active="isDrawingCircle"
                 v-on:click="drawCircle"
                 v-slot="{onActive}"
                 >
                 <control-button
                     icon="icon-ellipse"
-                    :title="guidelineShapes.getTooltipTitle('Ellipse', 'Draw an ellipse 𝗦𝗵𝗶𝗳𝘁+𝗗')"
-                    :disabled="!guidelineShapes.isAllowed('Ellipse')"
+                    :title="getShapeToolTitle('Ellipse', 'Draw an ellipse 𝗦𝗵𝗶𝗳𝘁+𝗗')"
+                    :disabled="!isShapeAllowed('Ellipse')"
                     :active="isDrawingEllipse"
                     v-on:click="drawEllipse"
                     v-on:active="onActive"
@@ -88,8 +88,8 @@
             </control-button>
             <control-button
                 icon="icon-linestring"
-                :title="guidelineShapes.getTooltipTitle('LineString', 'Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand')"
-                :disabled="!guidelineShapes.isAllowed('LineString')"
+                :title="getShapeToolTitle('LineString', 'Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand')"
+                :disabled="!isShapeAllowed('LineString')"
                 :active="isDrawingLineString"
                 v-on:click="drawLineString"
                 v-slot="{onActive}"
@@ -103,24 +103,24 @@
                     ></control-button>
                 <control-button
                     icon="fa-check"
-                    :title="guidelineShapes.getTooltipTitle('LineString', 'Convert measurement to a line string 𝗘𝗻𝘁𝗲𝗿')"
-                    :disabled="cantConvertMeasureFeature || !guidelineShapes.isAllowed('LineString')"
+                    :title="getShapeToolTitle('LineString', 'Convert measurement to a line string 𝗘𝗻𝘁𝗲𝗿')"
+                    :disabled="cantConvertMeasureFeature || !isShapeAllowed('LineString')"
                     v-on:click="convertMeasurement"
                     v-on:active="onActive"
                     ></control-button>
             </control-button>
             <control-button
                 icon="icon-polygon"
-                :title="guidelineShapes.getTooltipTitle('Polygon', 'Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand')"
-                :disabled="!guidelineShapes.isAllowed('Polygon')"
+                :title="getShapeToolTitle('Polygon', 'Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand')"
+                :disabled="!isShapeAllowed('Polygon')"
                 :active="isDrawingPolygon"
                 v-on:click="drawPolygon"
                 v-slot="{onActive}"
                 >
                 <control-button
                     icon="fa-paint-brush"
-                    :title="guidelineShapes.getTooltipTitle('Polygon', 'Draw a polygon using the brush tool 𝗘')"
-                    :disabled="!guidelineShapes.isAllowed('Polygon')"
+                    :title="getShapeToolTitle('Polygon', 'Draw a polygon using the brush tool 𝗘')"
+                    :disabled="!isShapeAllowed('Polygon')"
                     :active="isUsingPolygonBrush"
                     v-on:click="togglePolygonBrush"
                     v-on:active="onActive"
@@ -148,8 +148,8 @@
                 <control-button
                     v-else
                     icon="fa-magic"
-                    :title="guidelineShapes.getTooltipTitle('Polygon', 'Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚')"
-                    :disabled="!guidelineShapes.isAllowed('Polygon')"
+                    :title="getShapeToolTitle('Polygon', 'Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚')"
+                    :disabled="!isShapeAllowed('Polygon')"
                     :active="isMagicWanding"
                     v-on:click="toggleMagicWand"
                     v-on:active="onActive"

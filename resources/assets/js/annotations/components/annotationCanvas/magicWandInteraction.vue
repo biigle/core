@@ -27,7 +27,7 @@ export default {
                 this.resetInteractionMode();
             // The button is disabled for disallowed shapes but the keyboard shortcut
             // still calls this method.
-            } else if (magicWandInteraction && this.canAdd && this.guidelineShapes.isAllowed('Polygon')) {
+            } else if (magicWandInteraction && this.canAdd && this.isShapeAllowed('Polygon')) {
                 this.interactionMode = 'magicWand';
             }
         },

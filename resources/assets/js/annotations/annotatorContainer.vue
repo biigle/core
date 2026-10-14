@@ -1,6 +1,7 @@
 <script>
 import AnnotationCanvas from './components/annotationCanvas.vue';
 import AnnotationCanvasMixins from './stores/annotationCanvasMixins.js';
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import AnnotationModesTab from './components/annotationModesTab.vue';
 import AnnotationsStore from './stores/annotations.js';
 import AnnotationsTab from './components/siaAnnotationsTab.vue';
@@ -104,14 +105,12 @@ export default {
     provide() {
         return {
             labelTrees: computed(() => this.labelTrees),
-            // Shape names, keyed by ID.
-            shapes: biigle.$require('annotations.shapes'),
         };
     },
     computed: {
         // Informational guidelines only affect what is shown and are not sent.
         annotationGuidelineId() {
-            if (this.annotationGuideline?.enforced_for_user) {
+            if (this.annotationGuideline?.isEnforcedForUser) {
                 return this.annotationGuideline.id;
             }
 
@@ -772,7 +771,9 @@ export default {
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
         this.labelTrees = biigle.$require('annotations.labelTrees');
         this.projectIds = biigle.$require('annotations.projectIds');
-        this.annotationGuidelines = biigle.$require('annotations.annotationGuidelines');
+        const shapes = biigle.$require('annotations.shapes');
+        this.annotationGuidelines = biigle.$require('annotations.annotationGuidelines')
+            .map(g => new AnnotationGuideline(g, shapes));
         this.mustUseAnnotationGuideline = biigle.$require('annotations.mustUseAnnotationGuideline');
 
         if (this.imagesIds.length === 0) {

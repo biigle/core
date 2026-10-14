@@ -78,10 +78,10 @@ export default {
             return plugins;
         },
         labelsInGuideline() {
-            return this.guideline?.labels.map(label => label.id) ?? [];
+            return this.guideline?.labelIds ?? [];
         },
         enforceGuideline() {
-            return !!this.guideline?.enforced_for_user;
+            return !!this.guideline?.isEnforcedForUser;
         },
         labelbotIsActive() {
             return this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;

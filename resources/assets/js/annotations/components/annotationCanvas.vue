@@ -1,5 +1,6 @@
 <script>
 import * as PolygonValidator from '../ol/PolygonValidator.js';
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import AnnotationTooltip from './annotationCanvas/annotationTooltip.vue';
 import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction.vue';
 import CanvasSource from '../ol/source/Canvas.js';
@@ -43,12 +44,11 @@ import ZoomifySource from '@biigle/ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
-import { isInvalidShape } from '../utils.js';
-import { INTERACTION_MODE_SHAPES, useAnnotationGuidelineShapes } from '../composables/annotationGuidelineShapes.js';
+import { isInvalidShape, INTERACTION_MODE_SHAPES } from '../utils.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
-import {markRaw, reactive} from 'vue';
+import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 
@@ -91,15 +91,6 @@ export default {
         labelIndicator: LabelIndicator,
         controlButton: ControlButton,
     },
-    setup(props) {
-        // Wrapped in reactive() so nested refs are unwrapped on access, too.
-        return reactive({
-            guidelineShapes: useAnnotationGuidelineShapes(
-                () => props.annotationGuideline,
-                () => props.selectedLabel
-            ),
-        });
-    },
     props: {
         canAdd: {
             type: Boolean,
@@ -141,7 +132,7 @@ export default {
             default: null,
         },
         annotationGuideline: {
-            type: Object,
+            type: AnnotationGuideline,
             default: null,
         },
         lastCreatedAnnotation: {
@@ -784,13 +775,26 @@ export default {
         getDraftColor() {
             return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
         },
+        // Determine if the selected annotation guideline allows the shape for the selected
+        // label. This can also be used by plugin tools.
+        isShapeAllowed(shape) {
+            return !this.annotationGuideline
+                || this.annotationGuideline.allowsShape(shape, this.selectedLabel?.id);
+        },
+        getShapeToolTitle(shape, title) {
+            return this.isShapeAllowed(shape) ? title : 'Not allowed by the annotation guideline';
+        },
         maybeResetDisallowedTool() {
-            if (this.interactionModeShape && !this.guidelineShapes.isAllowed(this.interactionModeShape)) {
+            if (this.interactionModeShape && !this.isShapeAllowed(this.interactionModeShape)) {
                 this.resetInteractionMode();
             }
         },
         maybeSwitchToAutomaticTool() {
-            const shape = this.guidelineShapes.preferred;
+            if (!this.hasSelectedLabel) {
+                return;
+            }
+
+            const shape = this.annotationGuideline?.getPreferredShape(this.selectedLabel.id);
             if (!this.canAdd || !shape || shape === this.interactionModeShape) {
                 return;
             }
@@ -932,15 +936,13 @@ export default {
         canDelete() {
             this.updateDeleteInteractions();
         },
-        'guidelineShapes.allowed'() {
-            this.maybeResetDisallowedTool();
-        },
-        // Don't watch guidelineShapes.preferred because the tool should also be switched if
-        // another label with the same shape is selected.
+        // The allowed shapes depend on the selected label and guideline.
         selectedLabel() {
+            this.maybeResetDisallowedTool();
             this.maybeSwitchToAutomaticTool();
         },
         annotationGuideline() {
+            this.maybeResetDisallowedTool();
             this.maybeSwitchToAutomaticTool();
         },
     },

@@ -65,7 +65,7 @@ export default {
         convertMeasurement() {
             // The button is disabled for disallowed shapes but the keyboard shortcut
             // still calls this method.
-            if (this.isMeasuring && !this.cantConvertMeasureFeature && this.guidelineShapes.isAllowed('LineString')) {
+            if (this.isMeasuring && !this.cantConvertMeasureFeature && this.isShapeAllowed('LineString')) {
                 if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                     this.requireSelectedLabel(false);
                 } else {

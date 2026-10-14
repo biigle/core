@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import {Dropdown} from 'uiv';
 
 /**
@@ -72,10 +73,10 @@ export default {
     },
     props: {
         modelValue: {
-            type: Object,
+            type: AnnotationGuideline,
             default: null,
         },
-        // Guidelines must include their project with name.
+        // AnnotationGuideline models. They must include their project with name.
         guidelines: {
             type: Array,
             default: () => [],
@@ -89,17 +90,13 @@ export default {
             required: true,
         },
     },
-    // Shape names, keyed by ID.
-    inject: ['shapes'],
     computed: {
         restrictedShapes() {
-            if (!this.modelValue?.enforced_for_user) {
+            if (!this.modelValue?.isEnforcedForUser) {
                 return [];
             }
 
-            return (this.modelValue.only_shapes ?? [])
-                .map(id => this.shapes[id])
-                .filter(Boolean);
+            return this.modelValue.onlyShapeNames;
         },
         hasGuidelines() {
             return this.guidelines.length > 0;
@@ -108,7 +105,7 @@ export default {
             return `biigle.volumes.${this.volumeId}.annotation-guideline`;
         },
         enforcedGuidelines() {
-            return this.guidelines.filter(g => g.enforced_for_user);
+            return this.guidelines.filter(g => g.isEnforcedForUser);
         },
         hasSingleEnforcedGuideline() {
             return this.mustUseGuideline && this.enforcedGuidelines.length === 1;
@@ -126,7 +123,7 @@ export default {
     },
     methods: {
         getOptionText(guideline) {
-            if (guideline.enforced_for_user) {
+            if (guideline.isEnforcedForUser) {
                 return `Project: ${guideline.project.name} (enforced)`;
             }
 

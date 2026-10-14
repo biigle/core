@@ -6,7 +6,7 @@
     </span>
     <div v-if="hasGuidelineInfo" class="label-indicator__guideline text-muted">
         <div v-if="guidelineLabelShape">
-            <span v-if="guideline?.enforced_for_user">
+            <span v-if="guideline?.isEnforcedForUser">
                 Allowed shape:
             </span>
             <span v-else>
@@ -29,6 +29,8 @@
 </div>
 </template>
 <script>
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
+
 /**
  * The label indicator of the canvas element
  *
@@ -42,18 +44,16 @@ export default {
         },
         // The currently selected annotation guideline.
         guideline: {
-            type: Object,
+            type: AnnotationGuideline,
             default: null,
         },
     },
-    // Shape names, keyed by ID.
-    inject: ['shapes'],
     computed: {
         guidelineLabel() {
-            return this.guideline?.labels.find(l => l.id === this.label.id)?.pivot;
+            return this.guideline?.getLabel(this.label.id);
         },
         guidelineLabelShape() {
-            return this.shapes[this.guidelineLabel?.shape];
+            return this.guideline?.getLabelShape(this.label.id);
         },
         hasGuidelineInfo() {
             return this.guidelineLabelShape
