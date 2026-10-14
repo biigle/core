@@ -23,7 +23,7 @@ class AnnotationGuidelineLabelController extends Controller
      *
      * @apiParam {Integer} id The ID of the annotation guideline
      * @apiParam {Integer} label_id The ID of the label
-     * @apiParam {Integer} shape_id (optional) The ID of the preferred shape for the label
+     * @apiParam {Integer} shape (optional) The ID of the preferred shape for the label
      * @apiParam {String} description (optional) A description of the label
      * @apiParam {File|null} reference_image (optional) The reference image for the label (JPEG, max. 5 MB, max. 300x300 px). Set to null to delete the previous reference image.
      */
@@ -34,7 +34,7 @@ class AnnotationGuidelineLabelController extends Controller
             $validated = $request->validated();
 
             $labelId = $validated['label_id'];
-            $shapeId = $validated['shape_id'] ?? null;
+            $shape = $validated['shape'] ?? null;
             $description = $validated['description'] ?? null;
 
             $label = $request->guideline->labels()
@@ -44,14 +44,14 @@ class AnnotationGuidelineLabelController extends Controller
             if ($label) {
                 $guidelineLabel = $label->pivot;
                 $guidelineLabel->update([
-                    'shape_id' => $shapeId,
+                    'shape' => $shape,
                     'description' => $description,
                 ]);
             } else {
                 $guidelineLabel = AnnotationGuidelineLabel::create([
                     'annotation_guideline_id' => $guidelineId,
                     'label_id' => $labelId,
-                    'shape_id' => $shapeId,
+                    'shape' => $shape,
                     'description' => $description,
                     'uuid' => Str::uuid(),
                 ]);

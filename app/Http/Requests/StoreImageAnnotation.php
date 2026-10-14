@@ -3,11 +3,12 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\AnnotationGuideline;
+use Biigle\Enums\Shape;
 use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Image;
 use Biigle\Rules\AnnotationPoints;
-use Biigle\Shape;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreImageAnnotation extends FormRequest
 {
@@ -61,12 +62,12 @@ class StoreImageAnnotation extends FormRequest
                 },
             ],
             'confidence'  => 'required|numeric|between:0,1',
-            'shape_id' => 'required|integer|exists:shapes,id',
+            'shape' => ['required', 'integer', Rule::enum(Shape::class)],
             'points'   => [
                 'bail',
                 'required',
                 'array',
-                new AnnotationPoints($this->input('shape_id')),
+                new AnnotationPoints($this->input('shape')),
             ],
             'guideline_id' => 'nullable|integer',
         ];
@@ -81,8 +82,8 @@ class StoreImageAnnotation extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if (intval($this->input('shape_id')) === Shape::wholeFrameId()) {
-                $validator->errors()->add('shape_id', 'Image annotations cannot have shape WholeFrame.');
+            if (intval($this->input('shape')) === Shape::WHOLE_FRAME->value) {
+                $validator->errors()->add('shape', 'Image annotations cannot have shape WholeFrame.');
             }
 
             if ($validator->errors()->isNotEmpty()) {
@@ -108,7 +109,7 @@ class StoreImageAnnotation extends FormRequest
             $this->validateGuidelineShape(
                 $validator,
                 $this->guideline,
-                $this->integer('shape_id'),
+                $this->enum('shape', Shape::class),
                 $labelId
             );
         });

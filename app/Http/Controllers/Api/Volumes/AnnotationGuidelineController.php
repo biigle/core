@@ -38,7 +38,7 @@ class AnnotationGuidelineController extends Controller
      *           "uuid": "...",
      *           "annotation_guideline_id": 1,
      *           "label_id": 4,
-     *           "shape_id": 1,
+     *           "shape": 1,
      *           "description": "description of a label",
      *           "reference_image_url": null
      *         }

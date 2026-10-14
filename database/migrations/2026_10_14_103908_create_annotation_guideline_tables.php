@@ -1,5 +1,6 @@
 <?php
 
+use Biigle\Support\EnumMigrationHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -36,10 +37,8 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('cascade');
 
-            $table->foreignId('shape_id')
-                ->nullable()
-                ->constrained()
-                ->onDelete('set null');
+            // Value of the Biigle\Enums\Shape enum.
+            $table->integer('shape')->nullable();
 
             $table->string('description', 256)->nullable();
 
@@ -49,6 +48,8 @@ return new class extends Migration {
             $table->index('label_id');
             $table->unique(['annotation_guideline_id', 'label_id']);
         });
+
+        EnumMigrationHelper::addRangeValidationCheck('annotation_guideline_label', 'shape', 1, 7);
     }
 
     /**

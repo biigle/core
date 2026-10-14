@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\Volume;
 use DB;
 
@@ -149,9 +149,9 @@ class StoreVolumeLargoSession extends StoreLargoSession
         // All projects that the user and the volume have in common
         // and where the user is editor, expert or admin.
         $projects = Project::inCommon($this->user(), $volume->id, [
-            Role::editorId(),
-            Role::expertId(),
-            Role::adminId(),
+            Role::EDITOR,
+            Role::EXPERT,
+            Role::ADMIN,
         ])->pluck('id');
 
         return DB::table('label_tree_project')

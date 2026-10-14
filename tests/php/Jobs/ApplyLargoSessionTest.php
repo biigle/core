@@ -4,6 +4,7 @@ namespace Biigle\Tests\Jobs;
 
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Enums\Shape;
 use Biigle\Events\LargoSessionFailed;
 use Biigle\Events\LargoSessionSaved;
 use Biigle\ImageAnnotation;
@@ -11,7 +12,6 @@ use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ApplyLargoSession;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
 use Biigle\Jobs\RemoveVideoAnnotationPatches;
-use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -879,12 +879,12 @@ class ApplyLargoSessionTest extends TestCase
         $l2 = LabelTest::create();
         $guideline = AnnotationGuideline::factory()->create([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
 
         $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [10, 10],
         ]);
         ImageAnnotationLabelTest::create([
@@ -894,7 +894,7 @@ class ApplyLargoSessionTest extends TestCase
         ]);
         $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
             'points' => [10, 10, 5],
         ]);
         ImageAnnotationLabelTest::create([
@@ -926,12 +926,12 @@ class ApplyLargoSessionTest extends TestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $l2->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
 
         $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [10, 10],
         ]);
         ImageAnnotationLabelTest::create([
@@ -941,7 +941,7 @@ class ApplyLargoSessionTest extends TestCase
         ]);
         $a2 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
             'points' => [10, 10, 5],
         ]);
         ImageAnnotationLabelTest::create([
@@ -1028,7 +1028,7 @@ class ApplyLargoSessionTest extends TestCase
         $notAllowed = LabelTest::create();
         $guideline = AnnotationGuideline::factory()->create([
             'enforced' => false,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
@@ -1037,7 +1037,7 @@ class ApplyLargoSessionTest extends TestCase
 
         $a1 = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'points' => [10, 10],
         ]);
         ImageAnnotationLabelTest::create([
@@ -1069,20 +1069,20 @@ class ApplyLargoSessionTest extends TestCase
         $l2 = LabelTest::create();
         $guideline = AnnotationGuideline::factory()->create([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
 
         $points = [];
         for ($i = 0; $i < 3; $i++) {
             $points[] = ImageAnnotationTest::create([
                 'image_id' => $image->id,
-                'shape_id' => Shape::pointId(),
+                'shape' => Shape::POINT,
                 'points' => [10, 10],
             ]);
         }
         $circle = ImageAnnotationTest::create([
             'image_id' => $image->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
             'points' => [10, 10, 5],
         ]);
         $annotations = array_merge($points, [$circle]);

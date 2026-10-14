@@ -4,11 +4,12 @@ namespace Biigle\Services\LabelBot;
 
 use Biigle\Annotation;
 use Biigle\AnnotationGuideline;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Cache;
@@ -67,7 +68,7 @@ class LabelBotService
      *
      * @param array<Label> $labels Suggested labels, sorted by similarity.
      */
-    public function chooseLabelByGuideline(array $labels, int $shapeId, ?AnnotationGuideline $guideline = null): Label
+    public function chooseLabelByGuideline(array $labels, Shape $shape, ?AnnotationGuideline $guideline = null): Label
     {
         if (is_null($guideline)) {
             return $labels[0];
@@ -77,7 +78,7 @@ class LabelBotService
             $labels,
             fn (Label $label) =>
             $guideline->allowsLabel($label->id)
-            && $guideline->allowsShape($shapeId, $label->id)
+            && $guideline->allowsShape($shape, $label->id)
         );
 
         if (is_null($label)) {
@@ -119,9 +120,9 @@ class LabelBotService
             // Array of all project IDs that the user and the image have in common
             // and where the user is editor, expert or admin.
             $projectIds = Project::inCommon($user, $volumeId, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
+                Role::EDITOR,
+                Role::EXPERT,
+                Role::ADMIN,
             ])->pluck('id');
         }
 

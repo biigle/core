@@ -5,8 +5,8 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
-use Biigle\Role;
-use Biigle\Shape;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
@@ -108,7 +108,7 @@ class ImageLabelControllerTest extends ApiTestCase
             'id' => $this->admin()->id,
             'firstname' => $this->admin()->firstname,
             'lastname' => $this->admin()->lastname,
-            'role_id' => $this->admin()->role_id,
+            'role' => $this->admin()->role->value,
         ]);
     }
 
@@ -153,7 +153,7 @@ class ImageLabelControllerTest extends ApiTestCase
         // The editor can annotate in this project, too, and it has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($this->volume()->id);
-        $project->addUserId($this->editor()->id, Role::editorId());
+        $project->addUserId($this->editor()->id, Role::EDITOR);
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/labels", [
@@ -227,12 +227,12 @@ class ImageLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelRoot()->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
 
         $this->beEditor();

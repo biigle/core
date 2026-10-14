@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Shape;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Storage;
  *
  * @property int $id
  * @property bool $can_annotate Only set by AnnotationGuidelineService::getGuidelines().
- * @property int|null $project_role_id Only set temporarily by AnnotationGuidelineService::getGuidelines().
+ * @property int|string|null $project_role Only set temporarily by AnnotationGuidelineService::getGuidelines().
  */
 class AnnotationGuideline extends Model
 {
@@ -76,7 +77,7 @@ class AnnotationGuideline extends Model
     {
         return $this->belongsToMany(Label::class)
             ->using(AnnotationGuidelineLabel::class)
-            ->withPivot('shape_id', 'description', 'uuid', 'reference_image_path');
+            ->withPivot('shape', 'description', 'uuid', 'reference_image_path');
     }
 
     /**
@@ -97,16 +98,19 @@ class AnnotationGuideline extends Model
      * Determine if the guideline allows the shape (optionally in combination with a
      * label).
      */
-    public function allowsShape(int $shapeId, ?int $labelId = null): bool
+    public function allowsShape(Shape $shape, ?int $labelId = null): bool
     {
         $shapeIds = $this->allowedShapes($labelId);
 
-        return is_null($shapeIds) || in_array($shapeId, $shapeIds, true);
+        return is_null($shapeIds) || in_array($shape->value, $shapeIds, true);
     }
 
     /**
      * Get the IDs of the shapes that are allowed by the guideline (optionally in
      * combination with a label).
+     *
+     * Returns plain IDs and not Shape enums because they match the format of
+     * only_shapes and are sorted/joined by ApplyLargoSession to group shape checks.
      *
      * @return array<int>|null Null if all shapes are allowed.
      */
@@ -138,7 +142,7 @@ class AnnotationGuideline extends Model
         // bulk annotation creation or Largo).
         if (is_null($this->labelShapes)) {
             $this->labelShapes = AnnotationGuidelineLabel::where('annotation_guideline_id', $this->id)
-                ->pluck('shape_id', 'label_id')
+                ->pluck('shape', 'label_id')
                 ->all();
         }
 

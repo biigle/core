@@ -2,8 +2,8 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\AnnotationGuideline;
+use Biigle\Enums\Shape;
 use Biigle\Label;
-use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -56,10 +56,10 @@ class StoreAnnotationGuidelineLabel extends FormRequest
         return [
             'label_id' => ['required', 'integer', 'exists:labels,id'],
             'description' => ['nullable', 'string', 'max:256'],
-            'shape_id' => [
+            'shape' => [
                 'nullable',
                 'integer',
-                'exists:shapes,id',
+                Rule::enum(Shape::class),
                 Rule::when($this->guideline->enforced && !is_null($this->guideline->only_shapes), [Rule::in($this->guideline->only_shapes)]),
             ],
             'reference_image' => [

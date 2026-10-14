@@ -5,10 +5,10 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\Events\AnnotationLabelAttached;
-use Biigle\MediaType;
-use Biigle\Role;
-use Biigle\Shape;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
@@ -22,7 +22,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $this->video = VideoTest::create(['volume_id' => $id]);
     }
 
@@ -83,7 +83,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
     public function testStoreGuidelineRequired()
     {
         $guideline = $this->createGuideline(['enforced' => true]);
-        $id = $this->createAnnotation(Shape::pointId())->id;
+        $id = $this->createAnnotation(Shape::POINT)->id;
 
         $this->beEditor();
         $this
@@ -107,8 +107,8 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
         // The editor can annotate in this project, too, and it has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($this->volume()->id);
-        $project->addUserId($this->editor()->id, Role::editorId());
-        $id = $this->createAnnotation(Shape::pointId())->id;
+        $project->addUserId($this->editor()->id, Role::EDITOR);
+        $id = $this->createAnnotation(Shape::POINT)->id;
 
         $this->beEditor();
         $this
@@ -120,7 +120,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
 
     public function testStoreGuidelineNotExists()
     {
-        $id = $this->createAnnotation(Shape::pointId())->id;
+        $id = $this->createAnnotation(Shape::POINT)->id;
 
         $this->beEditor();
         $this
@@ -135,7 +135,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
     public function testStoreGuidelineNotEnforced()
     {
         $guideline = $this->createGuideline(['enforced' => false]);
-        $id = $this->createAnnotation(Shape::pointId())->id;
+        $id = $this->createAnnotation(Shape::POINT)->id;
 
         $this->beEditor();
         $this
@@ -160,7 +160,7 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelRoot()->id,
         ]);
-        $id = $this->createAnnotation(Shape::pointId())->id;
+        $id = $this->createAnnotation(Shape::POINT)->id;
 
         $this->beEditor();
         $this
@@ -183,10 +183,10 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
     {
         $guideline = $this->createGuideline([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
-        $pointId = $this->createAnnotation(Shape::pointId())->id;
-        $circleId = $this->createAnnotation(Shape::circleId())->id;
+        $pointId = $this->createAnnotation(Shape::POINT)->id;
+        $circleId = $this->createAnnotation(Shape::CIRCLE)->id;
 
         $this->beEditor();
         $this
@@ -211,10 +211,10 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelRoot()->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
-        $pointId = $this->createAnnotation(Shape::pointId())->id;
-        $circleId = $this->createAnnotation(Shape::circleId())->id;
+        $pointId = $this->createAnnotation(Shape::POINT)->id;
+        $circleId = $this->createAnnotation(Shape::CIRCLE)->id;
 
         $this->beEditor();
         $this
@@ -286,12 +286,12 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
         ], $attrs));
     }
 
-    protected function createAnnotation(int $shapeId): VideoAnnotation
+    protected function createAnnotation(Shape $shape): VideoAnnotation
     {
         return VideoAnnotationTest::create([
             'video_id' => $this->video->id,
-            'shape_id' => $shapeId,
-            'points' => $shapeId === Shape::circleId() ? [[10, 11, 5]] : [[10, 11]],
+            'shape' => $shape,
+            'points' => $shape === Shape::CIRCLE ? [[10, 11, 5]] : [[10, 11]],
             'frames' => [0.0],
         ]);
     }

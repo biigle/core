@@ -28,7 +28,7 @@ class VideoAnnotationExport extends Export
         $csv->fputcsv([
             'id',
             'video_id',
-            'shape_id',
+            'shape',
             'created_at',
             'updated_at',
             'points',
@@ -41,7 +41,7 @@ class VideoAnnotationExport extends Export
             ->select([
                 'video_annotations.id as annotation_id',
                 'video_annotations.video_id',
-                'video_annotations.shape_id',
+                'video_annotations.shape',
                 'video_annotations.created_at',
                 'video_annotations.updated_at',
                 'video_annotations.points',
@@ -51,7 +51,7 @@ class VideoAnnotationExport extends Export
                 $csv->fputcsv([
                     $row->annotation_id,
                     $row->video_id,
-                    $row->shape_id,
+                    $row->shape,
                     $row->created_at,
                     $row->updated_at,
                     $row->points,

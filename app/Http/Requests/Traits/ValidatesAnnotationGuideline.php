@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests\Traits;
 
 use Biigle\AnnotationGuideline;
+use Biigle\Enums\Shape;
 use Biigle\Services\AnnotationGuidelineService;
 use Illuminate\Validation\Validator;
 
@@ -62,11 +63,11 @@ trait ValidatesAnnotationGuideline
     protected function validateGuidelineShape(
         Validator $validator,
         AnnotationGuideline $guideline,
-        int $shapeId,
+        Shape $shape,
         ?int $labelId = null,
-        string $attribute = 'shape_id'
+        string $attribute = 'shape'
     ): void {
-        if ($guideline->allowsShape($shapeId, $labelId)) {
+        if ($guideline->allowsShape($shape, $labelId)) {
             return;
         }
 

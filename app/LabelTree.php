@@ -2,6 +2,8 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Observers\LabelTreeObserver;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -19,6 +21,7 @@ use Ramsey\Uuid\Uuid;
  * that are authorized to use the tree. This list is maintained by label tree admins.
  *
  * @property string $uuid
+ * @property Visibility $visibility
  */
 #[Hidden(['pivot', 'uuid', 'version_id'])]
 #[ObservedBy(LabelTreeObserver::class)]
@@ -34,7 +37,7 @@ class LabelTree extends Model
     protected function casts(): array
     {
         return [
-            'visibility_id' => 'int',
+            'visibility' => Visibility::class,
             'label_tree_version_id' => 'int',
         ];
     }
@@ -48,7 +51,7 @@ class LabelTree extends Model
     public function memberCanLooseAdminStatus(User $member)
     {
         return $this->members()
-            ->wherePivot('role_id', Role::adminId())
+            ->wherePivot('role', Role::ADMIN)
             ->where('id', '!=', $member->id)
             ->exists();
     }
@@ -61,7 +64,7 @@ class LabelTree extends Model
      */
     public function scopePublicTrees($query)
     {
-        return $query->where('visibility_id', Visibility::publicId());
+        return $query->where('visibility', Visibility::PUBLIC);
     }
 
     /**
@@ -72,7 +75,7 @@ class LabelTree extends Model
      */
     public function scopePrivateTrees($query)
     {
-        return $query->where('visibility_id', Visibility::privateId());
+        return $query->where('visibility', Visibility::PRIVATE);
     }
 
     /**
@@ -89,7 +92,7 @@ class LabelTree extends Model
         }
 
         return $query->where(function ($query) use ($user) {
-            $query->where('label_trees.visibility_id', Visibility::publicId())
+            $query->where('label_trees.visibility', Visibility::PUBLIC)
                 // Do it like this instead of a join with label_tree_user because
                 // there can be global label trees without any members, too!
                 ->orWhere(function ($query) use ($user) {
@@ -136,7 +139,7 @@ class LabelTree extends Model
     {
         return $query->withoutVersions()
             ->whereDoesntHave('members')
-            ->where('label_trees.visibility_id', Visibility::publicId());
+            ->where('label_trees.visibility', Visibility::PUBLIC);
     }
 
     /**
@@ -160,16 +163,6 @@ class LabelTree extends Model
     }
 
     /**
-     * The visibility of the label tree.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Visibility, $this>
-     */
-    public function visibility()
-    {
-        return $this->belongsTo(Visibility::class);
-    }
-
-    /**
      * The members of this label tree. Every member has a tree-specific role.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
@@ -178,7 +171,7 @@ class LabelTree extends Model
     {
         return $this->belongsToMany(User::class)
             ->select('id', 'firstname', 'lastname')
-            ->withPivot('role_id as role_id');
+            ->withPivot('role as role');
     }
 
     /**
@@ -220,11 +213,7 @@ class LabelTree extends Model
             $user = $user->id;
         }
 
-        if ($role instanceof Role) {
-            $role = $role->id;
-        }
-
-        $this->members()->attach($user, ['role_id' => $role]);
+        $this->members()->attach($user, ['role' => $role]);
     }
 
     /**
@@ -239,11 +228,7 @@ class LabelTree extends Model
             $user = $user->id;
         }
 
-        if ($role instanceof Role) {
-            $role = $role->id;
-        }
-
-        $this->members()->updateExistingPivot($user, ['role_id' => $role]);
+        $this->members()->updateExistingPivot($user, ['role' => $role]);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Volume;
 
 class ImageFactory extends VolumeFileFactory
@@ -27,6 +27,8 @@ class ImageFactory extends VolumeFileFactory
      */
     protected function getVolumeFactory()
     {
-        return Volume::factory()->for(MediaType::image());
+        return Volume::factory()->state([
+            'media_type' => MediaType::IMAGE,
+        ]);
     }
 }
