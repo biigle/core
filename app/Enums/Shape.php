@@ -8,8 +8,8 @@ use ValueError;
 
 /**
  * Adding a case requires a migration that updates the range check constraints of the
- * referencing columns (image_annotations_shape_check, video_annotations_shape_check).
- * See EnumRangeConstraintTest.
+ * referencing columns (image_annotations_shape_check, video_annotations_shape_check,
+ * annotation_guideline_label_shape_check). See EnumRangeConstraintTest.
  */
 enum Shape: int implements \JsonSerializable
 {

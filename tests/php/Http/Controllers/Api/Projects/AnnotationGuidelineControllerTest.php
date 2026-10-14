@@ -5,8 +5,8 @@ namespace Biigle\Tests\Http\Controllers\Api\Projects;
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Enums\Shape;
 use Biigle\Label;
-use Biigle\Shape;
 use Storage;
 
 class AnnotationGuidelineControllerTest extends ApiTestCase
@@ -33,7 +33,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON->value,
             'description' => 'labelDescription',
         ]);
         $path = "/api/v1/projects/{$id}/annotation-guidelines";
@@ -45,7 +45,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
                 'labels' => [[
                     'id' => $label->id,
                     'pivot' => [
-                        'shape_id' => Shape::polygonId(),
+                        'shape' => Shape::POLYGON->value,
                         'description' => 'labelDescription',
                     ],
                 ]],
@@ -75,14 +75,14 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->json('POST', $path, [
             'description' => 'someDescription',
             'enforced' => true,
-            'only_shapes' => [Shape::polygonId(), Shape::circleId()],
+            'only_shapes' => [Shape::POLYGON->value, Shape::CIRCLE->value],
         ])->assertStatus(201);
 
         $guideline = $this->project()->annotationGuideline;
         $this->assertSame($id, $guideline->project_id);
         $this->assertSame('someDescription', $guideline->description);
         $this->assertTrue($guideline->enforced);
-        $this->assertEquals([Shape::polygonId(), Shape::circleId()], $guideline->only_shapes);
+        $this->assertEquals([Shape::POLYGON->value, Shape::CIRCLE->value], $guideline->only_shapes);
     }
 
     public function testStoreCastsOnlyShapesToInt()
@@ -93,11 +93,11 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', $path, [
             'enforced' => true,
-            'only_shapes' => [(string) Shape::polygonId()],
+            'only_shapes' => [(string) Shape::POLYGON->value],
         ])->assertStatus(201);
 
         $guideline = $this->project()->annotationGuideline;
-        $this->assertSame([Shape::polygonId()], $guideline->only_shapes);
+        $this->assertSame([Shape::POLYGON->value], $guideline->only_shapes);
     }
 
     public function testStoreDefaultsEnforcedToFalse()
@@ -121,7 +121,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', $path, [
             'enforced' => true,
-            'only_shapes' => [Shape::polygonId(), Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value, Shape::POLYGON->value],
         ])->assertStatus(422);
     }
 
@@ -144,12 +144,12 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('POST', $path, [
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ])->assertStatus(422);
 
         $this->json('POST', $path, [
             'enforced' => false,
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ])->assertStatus(422);
     }
 
@@ -220,12 +220,12 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('PUT', $path, [
             'enforced' => true,
-            'only_shapes' => [Shape::polygonId(), Shape::circleId()],
+            'only_shapes' => [Shape::POLYGON->value, Shape::CIRCLE->value],
         ])->assertStatus(200);
 
         $guideline->refresh();
         $this->assertTrue($guideline->enforced);
-        $this->assertEquals([Shape::polygonId(), Shape::circleId()], $guideline->only_shapes);
+        $this->assertEquals([Shape::POLYGON->value, Shape::CIRCLE->value], $guideline->only_shapes);
     }
 
     public function testUpdateNullOnlyShapesOnMissing()
@@ -233,7 +233,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
             'enforced' => true,
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
@@ -248,7 +248,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
             'enforced' => true,
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
@@ -281,7 +281,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('PUT', $path, [
             'enforced' => true,
-            'only_shapes' => [Shape::polygonId(), Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value, Shape::POLYGON->value],
         ])->assertStatus(422);
     }
 
@@ -295,10 +295,10 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('PUT', $path, [
             'enforced' => true,
-            'only_shapes' => [(string) Shape::polygonId()],
+            'only_shapes' => [(string) Shape::POLYGON->value],
         ])->assertStatus(200);
 
-        $this->assertSame([Shape::polygonId()], $guideline->fresh()->only_shapes);
+        $this->assertSame([Shape::POLYGON->value], $guideline->fresh()->only_shapes);
     }
 
     public function testUpdateNullsLabelShapesNotInOnlyShapes()
@@ -308,27 +308,27 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         ]);
         $keepLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON->value,
         ]);
         $clearLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $noShapeLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
-            'shape_id' => null,
+            'shape' => null,
         ]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
         $this->beAdmin();
         $this->json('PUT', $path, [
             'enforced' => true,
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ])->assertStatus(200);
 
-        $this->assertSame(Shape::polygonId(), $keepLabel->fresh()->shape_id);
-        $this->assertNull($clearLabel->fresh()->shape_id);
-        $this->assertNull($noShapeLabel->fresh()->shape_id);
+        $this->assertSame(Shape::POLYGON->value, $keepLabel->fresh()->shape);
+        $this->assertNull($clearLabel->fresh()->shape);
+        $this->assertNull($noShapeLabel->fresh()->shape);
     }
 
     public function testUpdateDoesNotNullLabelShapesIfOnlyShapesMissing()
@@ -338,32 +338,32 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         ]);
         $label = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
         $this->beAdmin();
         $this->json('PUT', $path, ['description' => 'new'])->assertStatus(200);
 
-        $this->assertSame(Shape::circleId(), $label->fresh()->shape_id);
+        $this->assertSame(Shape::CIRCLE->value, $label->fresh()->shape);
     }
 
     public function testUpdateDoesNotNullLabelShapesIfOnlyShapesNull()
     {
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ]);
         $label = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
         $this->beAdmin();
         $this->json('PUT', $path, ['only_shapes' => null])->assertStatus(200);
 
-        $this->assertSame(Shape::circleId(), $label->fresh()->shape_id);
+        $this->assertSame(Shape::CIRCLE->value, $label->fresh()->shape);
     }
 
     public function testUpdateValidatesOnlyShapesExist()
@@ -389,12 +389,12 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('PUT', $path, [
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ])->assertStatus(422);
 
         $this->json('PUT', $path, [
             'enforced' => false,
-            'only_shapes' => [Shape::polygonId()],
+            'only_shapes' => [Shape::POLYGON->value],
         ])->assertStatus(422);
     }
 
