@@ -45,7 +45,7 @@ export default {
             return this.guideline?.labels.find(l => l.id === this.label.id)?.pivot;
         },
         shapeName() {
-            return this.shapes[this.guidelineLabel?.shape_id];
+            return this.shapes[this.guidelineLabel?.shape];
         },
         hasGuidelineInfo() {
             return this.guidelineLabel?.description
