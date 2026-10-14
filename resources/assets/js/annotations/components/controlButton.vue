@@ -141,7 +141,8 @@ export default {
             }
         },
         handleMouseEnter() {
-            if (!this.disabled && this.hover) {
+            // Sub controls of a disabled button may still be enabled.
+            if ((!this.disabled || this.hasSubControls) && this.hover) {
                 this.mouseOver = true;
             }
             window.clearTimeout(this.timeout);

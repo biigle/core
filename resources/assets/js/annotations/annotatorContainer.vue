@@ -104,6 +104,8 @@ export default {
     provide() {
         return {
             labelTrees: computed(() => this.labelTrees),
+            // Shape names, keyed by ID.
+            shapes: biigle.$require('annotations.shapes'),
         };
     },
     computed: {

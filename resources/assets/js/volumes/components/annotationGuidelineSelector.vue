@@ -41,6 +41,16 @@
         </dropdown>
         <div v-if="modelValue" class="annotation-guideline-selector__info">
             <p v-text="getOptionText(modelValue)"></p>
+            <p v-if="restrictedShapes.length > 0">
+                Allowed shapes:
+                <i
+                    v-for="shape in restrictedShapes"
+                    :key="shape"
+                    class="icon annotation-guideline-selector__shape"
+                    :class="`icon-${shape.toLowerCase()}`"
+                    :title="shape"
+                    ></i>
+            </p>
             <p v-if="modelValue.description" v-text="modelValue.description"></p>
             <p v-else class="text-muted">The guideline has no description.</p>
         </div>
@@ -79,7 +89,18 @@ export default {
             required: true,
         },
     },
+    // Shape names, keyed by ID.
+    inject: ['shapes'],
     computed: {
+        restrictedShapes() {
+            if (!this.modelValue?.enforced_for_user) {
+                return [];
+            }
+
+            return (this.modelValue.only_shapes ?? [])
+                .map(id => this.shapes[id])
+                .filter(Boolean);
+        },
         hasGuidelines() {
             return this.guidelines.length > 0;
         },

@@ -5,9 +5,14 @@
         {{ label.name }}
     </span>
     <div v-if="hasGuidelineInfo" class="label-indicator__guideline text-muted">
-        <div v-if="preferredShape">
-            Preferred shape:
-            <i class="icon" :class="`icon-${preferredShape.toLowerCase()}`" :title="preferredShape"></i>
+        <div v-if="guidelineLabelShape">
+            <span v-if="guideline?.enforced_for_user">
+                Allowed shape:
+            </span>
+            <span v-else>
+                Preferred shape:
+            </span>
+            <i class="icon" :class="`icon-${guidelineLabelShape.toLowerCase()}`" :title="guidelineLabelShape"></i>
         </div>
         <p
             v-if="guidelineLabel.description"
@@ -41,26 +46,20 @@ export default {
             default: null,
         },
     },
+    // Shape names, keyed by ID.
+    inject: ['shapes'],
     computed: {
         guidelineLabel() {
             return this.guideline?.labels.find(l => l.id === this.label.id)?.pivot;
         },
-        preferredShape() {
-            // Enforced guidelines restrict the drawing tools instead.
-            if (this.guideline?.enforced_for_user) {
-                return undefined;
-            }
-
+        guidelineLabelShape() {
             return this.shapes[this.guidelineLabel?.shape];
         },
         hasGuidelineInfo() {
-            return this.preferredShape
+            return this.guidelineLabelShape
                 || this.guidelineLabel?.description
                 || this.guidelineLabel?.reference_image_url;
         },
-    },
-    created() {
-        this.shapes = biigle.$require('annotations.shapes');
     },
 };
 </script>

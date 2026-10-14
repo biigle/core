@@ -44,10 +44,11 @@ import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
 import { isInvalidShape } from '../utils.js';
+import { INTERACTION_MODE_SHAPES, useAnnotationGuidelineShapes } from '../composables/annotationGuidelineShapes.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
-import {markRaw} from 'vue';
+import {markRaw, reactive} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 
@@ -89,6 +90,15 @@ export default {
         minimap: Minimap,
         labelIndicator: LabelIndicator,
         controlButton: ControlButton,
+    },
+    setup(props) {
+        // Wrapped in reactive() so nested refs are unwrapped on access, too.
+        return reactive({
+            guidelineShapes: useAnnotationGuidelineShapes(
+                () => props.annotationGuideline,
+                () => props.selectedLabel
+            ),
+        });
     },
     props: {
         canAdd: {
@@ -216,6 +226,10 @@ export default {
         },
         hasSelectedLabel() {
             return Boolean(this.selectedLabel);
+        },
+        // The shape that is created by the current interaction mode (if any).
+        interactionModeShape() {
+            return INTERACTION_MODE_SHAPES[this.interactionMode];
         },
         hasSelectedAnnotations() {
             return this.selectedAnnotations.length > 0;
@@ -770,6 +784,31 @@ export default {
         getDraftColor() {
             return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
         },
+        maybeResetDisallowedTool() {
+            if (this.interactionModeShape && !this.guidelineShapes.isAllowed(this.interactionModeShape)) {
+                this.resetInteractionMode();
+            }
+        },
+        maybeSwitchToAutomaticTool() {
+            const shape = this.guidelineShapes.preferred;
+            if (!this.canAdd || !shape || shape === this.interactionModeShape) {
+                return;
+            }
+
+            // Don't interrupt modes like attach, swap, translate or measure, which also
+            // depend on the selected label.
+            if (!this.isDefaultInteractionMode && !this.interactionModeShape) {
+                return;
+            }
+
+            // E.g. WholeFrame can't be drawn in the image annotation tool.
+            const mode = 'draw' + shape;
+            if (!INTERACTION_MODE_SHAPES.hasOwnProperty(mode)) {
+                return;
+            }
+
+            this.interactionMode = mode;
+        },
     },
     watch: {
         image(image, oldImage) {
@@ -892,6 +931,17 @@ export default {
         },
         canDelete() {
             this.updateDeleteInteractions();
+        },
+        'guidelineShapes.allowed'() {
+            this.maybeResetDisallowedTool();
+        },
+        // Don't watch guidelineShapes.preferred because the tool should also be switched if
+        // another label with the same shape is selected.
+        selectedLabel() {
+            this.maybeSwitchToAutomaticTool();
+        },
+        annotationGuideline() {
+            this.maybeSwitchToAutomaticTool();
         },
     },
     created() {

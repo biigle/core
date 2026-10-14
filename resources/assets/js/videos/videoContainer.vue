@@ -125,6 +125,8 @@ export default {
     provide() {
         return {
             labelTrees: computed(() => this.labelTrees),
+            // Shape names, keyed by ID. this.shapes is the inverted map.
+            shapes: biigle.$require('annotations.shapes'),
         };
     },
     computed: {
