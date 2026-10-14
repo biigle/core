@@ -269,7 +269,7 @@ export default {
     mounted() {
         this.currentTimeInterval = setInterval(() => {
             this.currentTime = Date.now();
-        }, 60_000);
+        }, 60000);
     }
 };
 </script>
