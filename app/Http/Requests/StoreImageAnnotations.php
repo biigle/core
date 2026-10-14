@@ -162,9 +162,9 @@ class StoreImageAnnotations extends FormRequest
                 $this->validateGuidelineShape(
                     $validator,
                     $guideline,
-                    intval($annotation['shape_id']),
+                    Shape::from(intval($annotation['shape'])),
                     $labelId,
-                    "{$index}.shape_id"
+                    "{$index}.shape"
                 );
             }
         });

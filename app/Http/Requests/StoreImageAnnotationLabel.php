@@ -82,7 +82,7 @@ class StoreImageAnnotationLabel extends FormRequest
             $this->validateGuidelineShape(
                 $validator,
                 $guideline,
-                $this->annotation->shape_id,
+                $this->annotation->shape,
                 $this->label->id,
                 'label_id'
             );

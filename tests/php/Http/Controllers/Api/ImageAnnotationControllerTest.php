@@ -495,7 +495,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -504,7 +504,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             ->assertJsonValidationErrors('guideline_id');
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -519,11 +519,11 @@ class ImageAnnotationControllerTest extends ApiTestCase
         // The editor can annotate in this project, too, and it has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($this->volume()->id);
-        $project->addUserId($this->editor()->id, Role::editorId());
+        $project->addUserId($this->editor()->id, Role::EDITOR);
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -535,7 +535,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -551,7 +551,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -561,7 +561,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             ->assertJsonValidationErrors('guideline_id');
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -581,7 +581,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -595,7 +595,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $project = ProjectTest::create();
         $project->addVolumeId($this->volume()->id);
-        $project->addUserId($this->editor()->id, Role::guestId());
+        $project->addUserId($this->editor()->id, Role::GUEST);
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $project->id,
             'enforced' => true,
@@ -603,7 +603,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -623,7 +623,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelChild()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -633,7 +633,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             ->assertJsonValidationErrors('label_id');
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -646,22 +646,22 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $guideline = $this->createGuideline([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
             'guideline_id' => $guideline->id,
         ])
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11, 5],
@@ -676,22 +676,22 @@ class ImageAnnotationControllerTest extends ApiTestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelRoot()->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11],
             'guideline_id' => $guideline->id,
         ])
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => [10, 11, 5],
@@ -711,7 +711,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -732,7 +732,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label1->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
@@ -741,7 +741,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -763,7 +763,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
@@ -779,19 +779,19 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->createLabelBotLabels();
         $guideline = $this->createGuideline([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
             'guideline_id' => $guideline->id,
         ])
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
     }
 
     public function testUpdateDenyWholeFrameShape()
@@ -822,19 +822,19 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $guideline = $this->createGuideline(['enforced' => true]);
         $this->annotation->points = [10, 11];
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape = Shape::POINT;
         $this->annotation->save();
 
         $this->beEditor();
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
             'points' => [10, 11, 5],
         ])
             ->assertStatus(422)
             ->assertJsonValidationErrors('guideline_id');
 
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
             'points' => [10, 11, 5],
             'guideline_id' => $guideline->id,
         ])
@@ -845,7 +845,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->createGuideline(['enforced' => true]);
         $this->annotation->points = [10, 11];
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape = Shape::POINT;
         $this->annotation->save();
 
         $this->beEditor();
@@ -856,7 +856,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'points' => [30, 31],
         ])
             ->assertStatus(200);
@@ -866,10 +866,10 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $guideline = $this->createGuideline([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
         $this->annotation->points = [10, 20, 30, 40];
-        $this->annotation->shape_id = Shape::lineId();
+        $this->annotation->shape = Shape::LINE;
         $this->annotation->save();
         ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
@@ -878,15 +878,15 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'points' => [10, 11],
             'guideline_id' => $guideline->id,
         ])
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
 
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
             'points' => [10, 11, 5],
             'guideline_id' => $guideline->id,
         ])
@@ -899,10 +899,10 @@ class ImageAnnotationControllerTest extends ApiTestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelRoot()->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         $this->annotation->points = [10, 20, 30, 40];
-        $this->annotation->shape_id = Shape::lineId();
+        $this->annotation->shape = Shape::LINE;
         $this->annotation->save();
         ImageAnnotationLabelTest::create([
             'annotation_id' => $this->annotation->id,
@@ -915,16 +915,16 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'points' => [10, 11],
             'guideline_id' => $guideline->id,
         ])
             // The shape of labelRoot does not match.
             ->assertStatus(422)
-            ->assertJsonValidationErrors('shape_id');
+            ->assertJsonValidationErrors('shape');
 
         $this->putJson("api/v1/image-annotations/{$this->annotation->id}", [
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
             'points' => [10, 11, 5],
             'guideline_id' => $guideline->id,
         ])

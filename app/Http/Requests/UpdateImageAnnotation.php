@@ -83,8 +83,8 @@ class UpdateImageAnnotation extends FormRequest
             }
 
             // Only a new shape can violate the guideline, new points can't.
-            $shapeId = $this->getShapeId();
-            if ($shapeId === intval($this->annotation->shape_id)) {
+            $shape = $this->getShape();
+            if ($shape === $this->annotation->shape) {
                 return;
             }
 
@@ -102,7 +102,7 @@ class UpdateImageAnnotation extends FormRequest
 
             // Identical error messages are only added once.
             foreach ($labelIds as $labelId) {
-                $this->validateGuidelineShape($validator, $guideline, $shapeId, $labelId);
+                $this->validateGuidelineShape($validator, $guideline, $shape, $labelId);
             }
         });
     }

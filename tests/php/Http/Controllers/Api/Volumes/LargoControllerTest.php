@@ -565,7 +565,7 @@ class LargoControllerTest extends ApiTestCase
         // The editor can annotate in this project, too, and it has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($this->imageVolume->id);
-        $project->addUserId($this->editor()->id, Role::editorId());
+        $project->addUserId($this->editor()->id, Role::EDITOR);
 
         $this->beEditor();
         $this->postJson("/api/v1/volumes/{$this->imageVolume->id}/largo", [

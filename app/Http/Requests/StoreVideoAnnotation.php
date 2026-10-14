@@ -163,7 +163,7 @@ class StoreVideoAnnotation extends FormRequest
             $this->validateGuidelineShape(
                 $validator,
                 $this->guideline,
-                $this->integer('shape_id'),
+                $this->enum('shape', Shape::class),
                 $labelId
             );
         });

@@ -3,8 +3,8 @@
 namespace Biigle\Services;
 
 use Biigle\AnnotationGuideline;
+use Biigle\Enums\Role;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Database\Eloquent\Collection;
@@ -36,15 +36,17 @@ class AnnotationGuidelineService
                 Project::inCommon($user, $volumeId)->select('id')
             )
                 ->addSelect([
-                    'project_role_id' => DB::table('project_user')
-                        ->select('project_role_id')
+                    'project_role' => DB::table('project_user')
+                        ->select('project_role')
                         ->whereColumn('project_id', 'annotation_guidelines.project_id')
                         ->where('user_id', $user->id),
                 ])
                 ->get()
                 ->each(function (AnnotationGuideline $guideline) use ($editRoles) {
-                    $guideline->can_annotate = in_array($guideline->project_role_id, $editRoles);
-                    unset($guideline->project_role_id);
+                    // The subselect is not cast so it has to be converted to the enum.
+                    $role = Role::tryFrom((int) $guideline->project_role);
+                    $guideline->can_annotate = in_array($role, $editRoles, true);
+                    unset($guideline->project_role);
                 });
         });
     }
@@ -68,10 +70,10 @@ class AnnotationGuidelineService
      * Global admins get no exception here because they need a project role to create
      * annotations, too.
      *
-     * @return array<int>
+     * @return array<Role>
      */
     protected function getEditRoles(): array
     {
-        return [Role::editorId(), Role::expertId(), Role::adminId()];
+        return [Role::EDITOR, Role::EXPERT, Role::ADMIN];
     }
 }

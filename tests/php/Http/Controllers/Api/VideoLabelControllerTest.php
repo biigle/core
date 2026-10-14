@@ -5,8 +5,8 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
-use Biigle\Role;
-use Biigle\Shape;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VideoLabelTest;
 use Biigle\Tests\VideoTest;
@@ -157,7 +157,7 @@ class VideoLabelControllerTest extends ApiTestCase
         // The editor can annotate in this project, too, and it has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($this->volume()->id);
-        $project->addUserId($this->editor()->id, Role::editorId());
+        $project->addUserId($this->editor()->id, Role::EDITOR);
 
         $this->beEditor();
         $this->json('POST', "/api/v1/videos/{$this->video->id}/labels", [
@@ -231,12 +231,12 @@ class VideoLabelControllerTest extends ApiTestCase
         $guideline = AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelRoot()->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
 
         $this->beEditor();

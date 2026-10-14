@@ -5,6 +5,7 @@ namespace Biigle\Services\LabelBot;
 use Biigle\Annotation;
 use Biigle\AnnotationGuideline;
 use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
@@ -67,7 +68,7 @@ class LabelBotService
      *
      * @param array<Label> $labels Suggested labels, sorted by similarity.
      */
-    public function chooseLabelByGuideline(array $labels, int $shapeId, ?AnnotationGuideline $guideline = null): Label
+    public function chooseLabelByGuideline(array $labels, Shape $shape, ?AnnotationGuideline $guideline = null): Label
     {
         if (is_null($guideline)) {
             return $labels[0];
@@ -77,7 +78,7 @@ class LabelBotService
             $labels,
             fn (Label $label) =>
             $guideline->allowsLabel($label->id)
-            && $guideline->allowsShape($shapeId, $label->id)
+            && $guideline->allowsShape($shape, $label->id)
         );
 
         if (is_null($label)) {

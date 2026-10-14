@@ -282,7 +282,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreGuidelineRequired()
     {
         $guideline = $this->createGuideline(['enforced' => true]);
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT, $this->labelRoot()->id, $this->labelRoot()->id);
 
         $this->beEditor();
         $this
@@ -306,8 +306,8 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         // The editor can annotate in this project, too, and it has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($this->volume()->id);
-        $project->addUserId($this->editor()->id, Role::editorId());
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+        $project->addUserId($this->editor()->id, Role::EDITOR);
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT, $this->labelRoot()->id, $this->labelRoot()->id);
 
         $this->beEditor();
         $this
@@ -319,7 +319,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
 
     public function testStoreGuidelineNotExists()
     {
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT, $this->labelRoot()->id, $this->labelRoot()->id);
 
         $this->beEditor();
         $this
@@ -334,7 +334,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     public function testStoreGuidelineNotEnforced()
     {
         $guideline = $this->createGuideline(['enforced' => false]);
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT, $this->labelRoot()->id, $this->labelRoot()->id);
 
         $this->beEditor();
         $this
@@ -360,7 +360,7 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
             'label_id' => $this->labelRoot()->id,
         ]);
         // The label of the second annotation is not allowed.
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelChild()->id);
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT, $this->labelRoot()->id, $this->labelChild()->id);
 
         $this->beEditor();
         $this
@@ -378,9 +378,9 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     {
         $guideline = $this->createGuideline([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelRoot()->id);
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT, $this->labelRoot()->id, $this->labelRoot()->id);
 
         $this->beEditor();
         $this
@@ -404,10 +404,10 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelChild()->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
         // The label of the second annotation requires another shape.
-        [$a1, $a2] = $this->createAnnotations(Shape::pointId(), $this->labelRoot()->id, $this->labelChild()->id);
+        [$a1, $a2] = $this->createAnnotations(Shape::POINT, $this->labelRoot()->id, $this->labelChild()->id);
 
         $this->beEditor();
         $this
@@ -431,17 +431,17 @@ class LinkVideoAnnotationControllerTest extends ApiTestCase
     /**
      * Create two annotations that can be linked (optionally with one label each).
      */
-    protected function createAnnotations(int $shapeId, ?int $label1Id = null, ?int $label2Id = null): array
+    protected function createAnnotations(Shape $shape, ?int $label1Id = null, ?int $label2Id = null): array
     {
         $a1 = VideoAnnotationTest::create([
-            'shape_id' => $shapeId,
+            'shape' => $shape,
             'video_id' => $this->video->id,
             'frames' => [1.0, 2.0],
             'points' => [[10, 10], [20, 20]],
         ]);
 
         $a2 = VideoAnnotationTest::create([
-            'shape_id' => $shapeId,
+            'shape' => $shape,
             'video_id' => $this->video->id,
             'frames' => [3.0, 4.0],
             'points' => [[30, 30], [40, 40]],

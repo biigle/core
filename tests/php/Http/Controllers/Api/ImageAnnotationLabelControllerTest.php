@@ -5,9 +5,9 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\Events\AnnotationLabelAttached;
-use Biigle\Role;
-use Biigle\Shape;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -242,7 +242,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         // The editor can annotate in this project, too, and it has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($this->annotation->image->volume_id);
-        $project->addUserId($this->editor()->id, Role::editorId());
+        $project->addUserId($this->editor()->id, Role::EDITOR);
 
         $this->beEditor();
         $this->json('POST', "api/v1/image-annotations/{$this->annotation->id}/labels", [
@@ -315,9 +315,9 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
     {
         $guideline = $this->createGuideline([
             'enforced' => true,
-            'only_shapes' => [Shape::circleId()],
+            'only_shapes' => [Shape::CIRCLE->value],
         ]);
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape = Shape::POINT;
         $this->annotation->points = [10, 11];
         $this->annotation->save();
         $id = $this->annotation->id;
@@ -331,7 +331,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
             ->assertStatus(422)
             ->assertJsonValidationErrors('label_id');
 
-        $this->annotation->shape_id = Shape::circleId();
+        $this->annotation->shape = Shape::CIRCLE;
         $this->annotation->points = [10, 11, 5];
         $this->annotation->save();
 
@@ -349,9 +349,9 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->labelRoot()->id,
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE->value,
         ]);
-        $this->annotation->shape_id = Shape::pointId();
+        $this->annotation->shape = Shape::POINT;
         $this->annotation->points = [10, 11];
         $this->annotation->save();
         $id = $this->annotation->id;
@@ -365,7 +365,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
             ->assertStatus(422)
             ->assertJsonValidationErrors('label_id');
 
-        $this->annotation->shape_id = Shape::circleId();
+        $this->annotation->shape = Shape::CIRCLE;
         $this->annotation->points = [10, 11, 5];
         $this->annotation->save();
 

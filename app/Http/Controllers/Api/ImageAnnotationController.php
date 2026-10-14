@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Enums\Shape;
 use Biigle\Http\Requests\StoreImageAnnotation;
 use Biigle\Http\Requests\UpdateImageAnnotation;
 use Biigle\Image;
@@ -227,7 +228,7 @@ class ImageAnnotationController extends Controller
             $annotation->labelBOTLabels = $labels;
             $label = $labelBotService->chooseLabelByGuideline(
                 $labels,
-                $request->integer('shape_id'),
+                $request->enum('shape', Shape::class),
                 $request->guideline
             );
         }

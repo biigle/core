@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Enums\Shape;
 use Biigle\Http\Requests\StoreVideoAnnotation;
 use Biigle\Http\Requests\UpdateVideoAnnotation;
 use Biigle\Jobs\TrackObject;
@@ -230,7 +231,7 @@ class VideoAnnotationController extends Controller
             $annotation->labelBOTLabels = $labels;
             $label = $labelBotService->chooseLabelByGuideline(
                 $labels,
-                $request->integer('shape_id'),
+                $request->enum('shape', Shape::class),
                 $request->guideline
             );
         }

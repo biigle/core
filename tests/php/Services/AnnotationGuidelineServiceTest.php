@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Services;
 
 use Biigle\AnnotationGuideline;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\AnnotationGuidelineService;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
@@ -20,15 +20,15 @@ class AnnotationGuidelineServiceTest extends TestCase
 
         $this->editorProject = ProjectTest::create();
         $this->editorProject->addVolumeId($this->volume->id);
-        $this->editorProject->addUserId($this->user->id, Role::editorId());
+        $this->editorProject->addUserId($this->user->id, Role::EDITOR);
 
         $this->expertProject = ProjectTest::create();
         $this->expertProject->addVolumeId($this->volume->id);
-        $this->expertProject->addUserId($this->user->id, Role::expertId());
+        $this->expertProject->addUserId($this->user->id, Role::EXPERT);
 
         $this->guestProject = ProjectTest::create();
         $this->guestProject->addVolumeId($this->volume->id);
-        $this->guestProject->addUserId($this->user->id, Role::guestId());
+        $this->guestProject->addUserId($this->user->id, Role::GUEST);
 
         // The user is no member of this project.
         $this->otherProject = ProjectTest::create();
@@ -65,7 +65,7 @@ class AnnotationGuidelineServiceTest extends TestCase
         $this->assertTrue($guidelines[$g1->id]->can_annotate);
         $this->assertTrue($guidelines[$g2->id]->can_annotate);
         $this->assertFalse($guidelines[$g3->id]->can_annotate);
-        $this->assertArrayNotHasKey('project_role_id', $guidelines[$g1->id]->toArray());
+        $this->assertArrayNotHasKey('project_role', $guidelines[$g1->id]->toArray());
     }
 
     public function testGetGuidelinesMemoized()
@@ -118,8 +118,8 @@ class AnnotationGuidelineServiceTest extends TestCase
 
     public function testMustUseGuidelineGlobalAdmin()
     {
-        $admin = UserTest::create(['role_id' => Role::adminId()]);
-        $this->editorProject->addUserId($admin->id, Role::editorId());
+        $admin = UserTest::create(['role' => Role::ADMIN]);
+        $this->editorProject->addUserId($admin->id, Role::EDITOR);
         $this->createGuideline($this->editorProject, true);
 
         // The other projects without guideline must not count because the global admin

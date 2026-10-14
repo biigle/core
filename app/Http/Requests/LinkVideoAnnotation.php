@@ -110,7 +110,7 @@ class LinkVideoAnnotation extends FormRequest
                 $this->validateGuidelineShape(
                     $validator,
                     $guideline,
-                    $this->firstAnnotation->shape_id,
+                    $this->firstAnnotation->shape,
                     $labelId,
                     'annotation_id'
                 );

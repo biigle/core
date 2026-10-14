@@ -324,7 +324,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
 
         foreach (array_chunk($annotationIds, $chunkSize) as $chunk) {
             $ids[] = $annotationModel::whereIn('id', $chunk)
-                ->whereNotIn('shape_id', $shapeIds)
+                ->whereNotIn('shape', $shapeIds)
                 ->pluck('id')
                 ->all();
         }

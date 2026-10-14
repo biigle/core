@@ -5,7 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 use ApiTestCase;
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\ProjectTest;
 
 class AnnotationGuidelineControllerTest extends ApiTestCase
@@ -83,7 +83,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         // The editor can also annotate in this project, which has no guideline.
         $project = ProjectTest::create();
         $project->addVolumeId($id);
-        $project->addUserId($this->editor()->id, Role::editorId());
+        $project->addUserId($this->editor()->id, Role::EDITOR);
 
         // The editor is no member of this project.
         $otherProject = ProjectTest::create();
