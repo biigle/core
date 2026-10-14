@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\AnnotationGuideline;
 use Biigle\ImageAnnotation;
 use Biigle\Label;
 use Biigle\VideoAnnotation;
@@ -50,6 +51,11 @@ class StoreLargoSession extends FormRequest
      * @var bool
      */
     public $emptyRequest;
+
+    /**
+     * The enforced annotation guideline that applies to the changed annotations.
+     */
+    public ?AnnotationGuideline $guideline = null;
 
     /**
      * Determine if the user is authorized to make this request.
