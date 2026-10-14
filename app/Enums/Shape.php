@@ -1,0 +1,53 @@
+<?php
+
+namespace Biigle\Enums;
+
+use Biigle\Traits\EloquentEnum;
+use Biigle\Traits\EnumSerialization;
+use ValueError;
+
+/**
+ * Adding a case requires a migration that updates the range check constraints of the
+ * referencing columns (image_annotations_shape_check, video_annotations_shape_check).
+ * See EnumRangeConstraintTest.
+ */
+enum Shape: int implements \JsonSerializable
+{
+    use EnumSerialization, EloquentEnum;
+
+    case POINT = 1;
+    case LINE = 2;
+    case POLYGON = 3;
+    case CIRCLE = 4;
+    case RECTANGLE = 5;
+    case ELLIPSE = 6;
+    case WHOLE_FRAME = 7;
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::POINT => 'Point',
+            self::LINE => 'LineString',
+            self::POLYGON => 'Polygon',
+            self::CIRCLE => 'Circle',
+            self::RECTANGLE => 'Rectangle',
+            self::ELLIPSE => 'Ellipse',
+            self::WHOLE_FRAME => 'WholeFrame',
+        };
+    }
+
+    public static function fromLabel(string $label): Shape
+    {
+        return match (strtoupper($label)) {
+            self::POINT->name => self::POINT,
+            "LINE" => self::LINE,
+            "LINESTRING" => self::LINE,
+            self::POLYGON->name => self::POLYGON,
+            self::CIRCLE->name => self::CIRCLE,
+            self::RECTANGLE->name => self::RECTANGLE,
+            self::ELLIPSE->name => self::ELLIPSE,
+            "WHOLEFRAME" => self::WHOLE_FRAME,
+            default => throw new ValueError("Invalid shape label $label")
+        };
+    }
+}

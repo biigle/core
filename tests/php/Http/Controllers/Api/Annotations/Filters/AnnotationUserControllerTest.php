@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Annotations\Filters;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -87,7 +87,7 @@ class AnnotationUserControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $tid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $tid = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $video = VideoTest::create(['volume_id' => $tid]);
         $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
@@ -118,7 +118,7 @@ class AnnotationUserControllerTest extends ApiTestCase
 
     public function testIndexAnnotationSessionVideo()
     {
-        $tid = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $tid = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $session = AnnotationSessionTest::create([
             'volume_id' => $tid,

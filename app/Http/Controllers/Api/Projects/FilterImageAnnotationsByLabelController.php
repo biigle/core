@@ -21,7 +21,7 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiParam {Number} pid The project ID
      * @apiParam {Number} lid The Label ID
      * @apiParam (Optional arguments) {Number} take Number of image annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
-     * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter images
+     * @apiParam (Optional arguments) {Array} shape Array of shape ids to use to filter images
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
      * @apiParam (Optional arguments) {Array} volume_id Array of volume ids to use to filter annotations
@@ -41,8 +41,8 @@ class FilterImageAnnotationsByLabelController extends Controller
 
         $this->validate($request, [
             'take' => 'integer',
-            'shape_id' => 'array',
-            'shape_id.*' => 'integer',
+            'shape' => 'array',
+            'shape.*' => 'integer',
             'user_id' => 'array',
             'user_id.*' => 'integer',
             'filename' => 'array',
@@ -54,7 +54,7 @@ class FilterImageAnnotationsByLabelController extends Controller
 
         $take = $request->input('take');
         $filters = [
-            'shape_id' => $request->input('shape_id'),
+            'shape' => $request->input('shape'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
             'volume_id' => $request->input('volume_id'),

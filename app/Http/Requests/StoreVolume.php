@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Project;
 use Biigle\Rules\Handle;
 use Biigle\Rules\ImageMetadata;
@@ -71,7 +71,7 @@ class StoreVolume extends FormRequest
     {
         return [
             'name' => 'required|max:512',
-            'media_type' => ['filled', Rule::in(array_keys(MediaType::INSTANCES))],
+            'media_type' => ['filled', Rule::enum(MediaType::class)],
             'url' => ['bail', 'required', 'string', 'max:512', new VolumeUrl],
             'files' => [
                 'required',
@@ -101,16 +101,15 @@ class StoreVolume extends FormRequest
             }
 
             $files = $this->input('files');
-            $rule = new VolumeFiles($this->input('url'), $this->input('media_type_id'));
+            $mediaType = MediaType::from($this->input('media_type'));
+            $rule = new VolumeFiles($this->input('url'), $mediaType);
             if (!$rule->passes('files', $files)) {
                 $validator->errors()->add('files', $rule->message());
             }
 
             if ($file = $this->file('metadata_csv')) {
-                $type = $this->input('media_type');
-
-                $parser = match ($type) {
-                    'video' => new VideoCsvParser($file),
+                $parser = match ($mediaType) {
+                    MediaType::VIDEO => new VideoCsvParser($file),
                     default => new ImageCsvParser($file),
                 };
 
@@ -121,8 +120,8 @@ class StoreVolume extends FormRequest
                     return;
                 }
 
-                $rule = match ($type) {
-                    'video' => new VideoMetadata,
+                $rule = match ($mediaType) {
+                    MediaType::VIDEO => new VideoMetadata,
                     default => new ImageMetadata,
                 };
 
@@ -140,11 +139,13 @@ class StoreVolume extends FormRequest
      */
     protected function prepareForValidation()
     {
-        // Allow a string as media_type to be more conventient.
+        // Allow a string as media_type to be more convenient.
         // Default is image to be backwards compatible with custom import scripts.
-        $type = $this->input('media_type', 'image');
-        if (in_array($type, array_keys(MediaType::INSTANCES))) {
-            $this->merge(['media_type_id' => MediaType::$type()->id]);
+        $mediaType = $this->input('media_type') !== null
+            ? MediaType::tryFromValueOrLabel($this->input('media_type'))
+            : MediaType::IMAGE;
+        if ($mediaType) {
+            $this->merge(['media_type' => $mediaType->value]);
         }
 
         // This establishes backwards compatibility of the old 'images' attribute which

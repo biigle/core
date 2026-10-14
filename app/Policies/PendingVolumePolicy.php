@@ -2,8 +2,8 @@
 
 namespace Biigle\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\PendingVolume;
-use Biigle\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -38,7 +38,7 @@ class PendingVolumePolicy extends CachedPolicy
                     DB::table('project_user')
                         ->where('project_id', $pv->project_id)
                         ->where('user_id', $user->id)
-                        ->where('project_role_id', Role::adminId())
+                        ->where('project_role', Role::ADMIN)
                         ->exists()
             );
     }

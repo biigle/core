@@ -2,26 +2,32 @@
 
 namespace Biigle\Rules;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class AnnotationPoints implements ValidationRule
 {
     /**
-     * ID of the shape the points should be valid for.
+     * The shape the points should be valid for.
      */
-    protected ?int $shapeId;
+    protected ?Shape $shape;
 
     /**
      * Create a new instance.
      *
-     * @param mixed $shapeId Shape ID. Anything that is not a number is treated as
-     * unknown shape, in which case the points are not validated.
+     * @param mixed $shape Shape or shape ID. Anything that is not a valid shape is
+     * treated as unknown shape, in which case the points are not validated.
      */
-    public function __construct(mixed $shapeId)
+    public function __construct(mixed $shape)
     {
-        $this->shapeId = is_numeric($shapeId) ? intval($shapeId) : null;
+        if ($shape instanceof Shape) {
+            $this->shape = $shape;
+
+            return;
+        }
+
+        $this->shape = is_numeric($shape) ? Shape::tryFrom(intval($shape)) : null;
     }
 
     /**
@@ -52,7 +58,7 @@ class AnnotationPoints implements ValidationRule
     public function getErrorMessage(array $points): ?string
     {
         // The shape ID is validated by a separate rule.
-        if (is_null($this->shapeId)) {
+        if (is_null($this->shape)) {
             return null;
         }
 
@@ -85,8 +91,8 @@ class AnnotationPoints implements ValidationRule
     {
         $size = count($points);
 
-        switch ($this->shapeId) {
-            case Shape::circleId():
+        switch ($this->shape) {
+            case Shape::CIRCLE:
                 if ($size !== 3) {
                     return 'Invalid number of values for shape circle: Expected 3, got '.$size.'.';
                 }
@@ -112,24 +118,24 @@ class AnnotationPoints implements ValidationRule
     {
         $pointCount = intval(count($points) / 2);
 
-        switch ($this->shapeId) {
-            case Shape::pointId():
+        switch ($this->shape) {
+            case Shape::POINT:
                 if ($pointCount !== 1) {
                     return 'Invalid number of points for shape point: Need exactly 1 point, but '.$pointCount.' were given.';
                 }
                 break;
-            case Shape::rectangleId():
-            case Shape::ellipseId():
+            case Shape::RECTANGLE:
+            case Shape::ELLIPSE:
                 if ($pointCount !== 4) {
                     return 'Invalid number of points for shape rectangle or ellipse: Expected 4, got '.$pointCount.'';
                 }
                 break;
-            case Shape::polygonId():
+            case Shape::POLYGON:
                 if ($pointCount < 4) {
                     return 'Invalid number of points for shape polygon: At least 4 points are needed, but only '.$pointCount.' are present.';
                 }
                 break;
-            case Shape::lineId():
+            case Shape::LINE:
                 if ($pointCount < 2) {
                     return 'Invalid number of points for shape line: At least 2 points are needed, but only '.$pointCount.' are present.';
                 }
@@ -146,19 +152,19 @@ class AnnotationPoints implements ValidationRule
     {
         $distinctPointCount = $this->countDistinctPoints($points);
 
-        switch ($this->shapeId) {
-            case Shape::circleId():
+        switch ($this->shape) {
+            case Shape::CIRCLE:
                 if ($points[2] <= 0) {
                     return 'Invalid radius for circle: Must be > 0, but is '.$points[2].'';
                 }
                 break;
-            case Shape::rectangleId():
-            case Shape::ellipseId():
+            case Shape::RECTANGLE:
+            case Shape::ELLIPSE:
                 if ($distinctPointCount !== 4) {
                     return 'Invalid points for shape rectangle or ellipse: Not all 4 points are distinct.';
                 }
                 break;
-            case Shape::polygonId():
+            case Shape::POLYGON:
                 if ($distinctPointCount < 3) {
                     return 'Invalid points for shape polygon: A polygon requires at least 3 distinct points, but only '.$distinctPointCount.' were given.';
                 }
@@ -167,7 +173,7 @@ class AnnotationPoints implements ValidationRule
                     return 'Invalid points for shape polygon: The first and last coordinate of a polygon must be the same.';
                 }
                 break;
-            case Shape::lineId():
+            case Shape::LINE:
                 if ($distinctPointCount < 2) {
                     return 'Invalid points for shape line: A line requires at least 2 distinct points, but only 1 was given.';
                 }

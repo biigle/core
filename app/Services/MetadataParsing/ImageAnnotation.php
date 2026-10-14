@@ -24,7 +24,7 @@ class ImageAnnotation extends Annotation
     {
         parent::validate();
 
-        $message = (new AnnotationPoints($this->shape_id))->getErrorMessage($this->points);
+        $message = (new AnnotationPoints($this->shape))->getErrorMessage($this->points);
 
         if (!is_null($message)) {
             throw new Exception($message);

@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\MetadataParsing;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class VideoCsvParser extends CsvParser
 {
@@ -11,7 +11,7 @@ class VideoCsvParser extends CsvParser
      */
     public function getMetadata(): VolumeMetadata
     {
-        $data = new VolumeMetadata(MediaType::video());
+        $data = new VolumeMetadata(MediaType::VIDEO);
 
         $file = $this->getCsvIterator();
         $line = $file->current();

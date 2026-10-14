@@ -2,10 +2,10 @@
 
 namespace Biigle\Observers;
 
+use Biigle\Enums\Role;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Report;
-use Biigle\Role;
 use DB;
 use Exception;
 
@@ -28,7 +28,7 @@ class ProjectObserver
     {
         // set creator as project admin
         // this must be done *after* the project is saved so it already has an id
-        $project->addUserId($project->creator_id, Role::adminId());
+        $project->addUserId($project->creator_id, Role::ADMIN);
 
         // add global label trees (used by default)
         $ids = LabelTree::global()

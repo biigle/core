@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\Policies\LabelTreePolicy;
-use Biigle\Role;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
 use Cache;
@@ -19,7 +19,7 @@ class CachedPolicyTest extends TestCase
         $tree = LabelTreeTest::create();
 
         $this->assertFalse($policy->createLabel($user, $tree));
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
         // STILL false because cache is used
         $this->assertFalse($policy->createLabel($user, $tree));
         Cache::store('array')->flush();
