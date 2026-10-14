@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
 
+/**
+ * @extends ProcessAnnotatedFile<ImageAnnotation>
+ */
 class ProcessAnnotatedImage extends ProcessAnnotatedFile
 {
     /**
@@ -28,7 +31,7 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
             $image = null;
         }
 
-        $this->getAnnotationQuery($file)
+        $this->getAnnotationQuery()
             ->chunkById(1000, function ($annotations) use ($image, $path) {
                 if (!$this->skipPatches) {
                     $annotations->each(function ($a) use ($image) {
@@ -88,11 +91,8 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
      *
      * @return Builder<ImageAnnotation>
      */
-    protected function getAnnotationQuery(VolumeFile $file): Builder
+    protected function getBaseAnnotationQuery(): Builder
     {
-        return ImageAnnotation::where('image_id', $file->id)->when(
-            !empty($this->only),
-            fn ($q) => $q->whereIn('id', $this->only)
-        );
+        return ImageAnnotation::where('image_id', $this->file->id);
     }
 }

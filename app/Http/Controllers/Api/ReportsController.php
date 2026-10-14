@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Enums\ReportType;
 use Biigle\Report;
-use Biigle\ReportType;
 use Illuminate\Http\Response;
 use Storage;
 
@@ -85,10 +85,11 @@ class ReportsController extends Controller
      * @api {get} reports List all available report types
      * @apiGroup Reports
      * @apiName IndexReports
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @apiPermission user
+     * @return \Illuminate\Support\Collection
      */
     public function index()
     {
-        return ReportType::all();
+        return collect(ReportType::cases())->map->toArray()->values();
     }
 }

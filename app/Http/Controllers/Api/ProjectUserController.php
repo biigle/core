@@ -24,14 +24,14 @@ class ProjectUserController extends Controller
      *    {
      *       "id": 1,
      *       "firstname": "Joe",
-     *       "firstname": "User",
-     *       "project_role_id": 1
+     *       "lastname": "User",
+     *       "project_role": 1
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
-     *       "firstname": "User",
-     *       "project_role_id": 2
+     *       "lastname": "User",
+     *       "project_role": 2
      *    }
      * ]
      *
@@ -57,13 +57,13 @@ class ProjectUserController extends Controller
      * @apiParam {Number} pid The project ID.
      * @apiParam {Number} uid The user ID of the project member.
      *
-     * @apiParam (Attributes that can be updated) {Number} project_role_id The project role of the member. Users with the global guest role cannot become project admins.
+     * @apiParam (Attributes that can be updated) {Number} project_role The project role of the member. Users with the global guest role cannot become project admins.
      *
      * @param UpdateProjectUser $request
      */
     public function update(UpdateProjectUser $request)
     {
-        $request->project->changeRole($request->user->id, $request->input('project_role_id'));
+        $request->project->changeRole($request->user->id, $request->input('project_role'));
     }
 
     /**
@@ -77,20 +77,20 @@ class ProjectUserController extends Controller
      * @apiParam {Number} pid The project ID.
      * @apiParam {Number} uid The user ID of the new member.
      *
-     * @apiParam (Required attributes) {Number} project_role_id The project role of the member.
+     * @apiParam (Required attributes) {Number} project_role The project role of the member.
      *
      * @apiParamExample {String} Request example:
-     * project_role_id: 3
+     * project_role: 3
      *
      * @param AttachProjectUser $request
      */
     public function attach(AttachProjectUser $request)
     {
-        $request->project->addUserId($request->user->id, $request->input('project_role_id'));
+        $request->project->addUserId($request->user->id, $request->input('project_role'));
     }
 
     /**
-     * Removes a user form the specified project.
+     * Removes a user from the specified project.
      *
      * @api {delete} projects/:pid/users/:uid Remove a member
      * @apiGroup Projects

@@ -3,14 +3,21 @@
 namespace Biigle;
 
 use \Illuminate\Support\Facades\Storage;
+use Biigle\Observers\ImageObserver;
 use Exception;
 use FileCache;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Http\Response;
 use InvalidArgumentException;
 
 /**
  * This model stores information on an image file in the file system.
  */
+#[Fillable(['filename', 'volume_id', 'uuid', 'taken_at', 'lng', 'lat', 'attrs', 'tiled'])]
+#[Hidden(['labels'])]
+#[ObservedBy(ImageObserver::class)]
 class Image extends VolumeFile
 {
     /**
@@ -26,42 +33,20 @@ class Image extends VolumeFile
     ];
 
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'filename',
-        'volume_id',
-        'uuid',
-        'taken_at',
-        'lng',
-        'lat',
-        'attrs',
-        'tiled',
-    ];
-
-    /**
-     * The attributes hidden in the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'labels',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'attrs' => 'array',
-        'lat' => 'float',
-        'lng' => 'float',
-        'tiled' => 'bool',
-        'taken_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'attrs' => 'array',
+            'lat' => 'float',
+            'lng' => 'float',
+            'tiled' => 'bool',
+            'taken_at' => 'datetime',
+        ];
+    }
 
     /**
      * The annotations on this image.

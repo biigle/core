@@ -3,8 +3,9 @@
 namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
-use Biigle\Traits\HasPointsAttribute;
+use Biigle\Enums\Shape;
 use DB;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,30 +16,26 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property array $points
  * @property string $created_at
- * @property int $shape_id
+ * @property Shape $shape
  * @phpstan-consistent-constructor
  */
+#[Hidden(['pivot'])]
 abstract class Annotation extends Model implements AnnotationContract
 {
-    use HasPointsAttribute, HasFactory;
+    use HasFactory;
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $hidden = [
-        'pivot',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'points' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'shape' => Shape::class,
+            'points' => 'array',
+        ];
+    }
 
     /**
      * The additional labels suggested by the LabelBOT.
@@ -194,16 +191,6 @@ abstract class Annotation extends Model implements AnnotationContract
      * @return int
      */
     abstract public function getFileIdAttribute();
-
-    /**
-     * The shape of this annotation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
-     */
-    public function shape()
-    {
-        return $this->belongsTo(Shape::class);
-    }
 
     /**
      * {@inheritdoc}

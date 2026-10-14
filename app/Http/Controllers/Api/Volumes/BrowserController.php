@@ -21,14 +21,14 @@ class BrowserController extends Controller
      * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
-     * @apiParam {Number} disk Name of the storage disk to browse.
-     * @apiParam {Number} path Path in the storage disk to list directories for.
+     * @apiParam {String} disk Name of the storage disk to browse.
+     * @apiParam (Optional parameters) {String} path Path in the storage disk to list directories for.
      *
      * @apiSuccessExample {json} Success response:
      * [
-     *    'images_1_1',
-     *    'images_1_2',
-     *    'images_1_3',
+     *    "images_1_1",
+     *    "images_1_2",
+     *    "images_1_3"
      * ]
      *
      * @param  Request $request
@@ -70,14 +70,14 @@ class BrowserController extends Controller
      * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
-     * @apiParam {Number} disk Name of the storage disk to browse.
-     * @apiParam {Number} path Path in the storage disk to list images for.
+     * @apiParam {String} disk Name of the storage disk to browse.
+     * @apiParam (Optional parameters) {String} path Path in the storage disk to list images for.
      *
      * @apiSuccessExample {json} Success response:
      * [
-     *    'image_1.jpg',
-     *    'image_2.jpg',
-     *    'image_3.jpg',
+     *    "image_1.jpg",
+     *    "image_2.jpg",
+     *    "image_3.jpg"
      * ]
      *
      * @param  Request $request
@@ -102,14 +102,14 @@ class BrowserController extends Controller
      * @apiPermission editor
      * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
-     * @apiParam {Number} disk Name of the storage disk to browse.
-     * @apiParam {Number} path Path in the storage disk to list videos for.
+     * @apiParam {String} disk Name of the storage disk to browse.
+     * @apiParam (Optional parameters) {String} path Path in the storage disk to list videos for.
      *
      * @apiSuccessExample {json} Success response:
      * [
-     *    'video_1.mp4',
-     *    'video_2.mp4',
-     *    'video_3.mp4',
+     *    "video_1.mp4",
+     *    "video_2.mp4",
+     *    "video_3.mp4"
      * ]
      *
      * @param  Request $request

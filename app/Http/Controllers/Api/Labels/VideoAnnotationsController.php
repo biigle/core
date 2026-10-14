@@ -16,6 +16,7 @@ class VideoAnnotationsController extends Controller
      * @apiGroup Labels
      * @apiName ShowLabelVideoAnnotations
      * @apiParam {Number} id The Label ID
+     * @apiParam (Optional arguments) {Number} take Maximum number of annotations to return.
      * @apiPermission user
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs. Only annotations that are visible to the current user are returned.
      *

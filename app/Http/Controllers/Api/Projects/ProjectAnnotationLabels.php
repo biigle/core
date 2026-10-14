@@ -12,9 +12,9 @@ class ProjectAnnotationLabels extends Controller
     /**
      * Get all image labels and annotation count for a given project
      *
-     * @api {get} projects/:pid/label-count Get annotation labels with a annotation count
+     * @api {get} projects/:id/label-count Get annotation labels with a annotation count
      * @apiGroup Projects
-     * @apiName test
+     * @apiName GetProjectAnnotationLabelCounts
      * @apiParam {Number} id The Project ID
      * @apiPermission projectMember
      * @apiDescription Returns a collection of annotation labels and their counts in the project

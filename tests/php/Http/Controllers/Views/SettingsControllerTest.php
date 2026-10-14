@@ -2,7 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
+use Biigle\Tests\ApiTokenTest;
 use Biigle\Tests\UserTest;
 use TestCase;
 
@@ -39,7 +40,24 @@ class SettingsControllerTest extends TestCase
 
     public function testTokensGlobalGuest()
     {
-        $this->be(UserTest::create(['role_id' => Role::guestId()]));
+        $this->be(UserTest::create(['role' => Role::GUEST]));
         $this->get("settings/tokens")->assertStatus(403);
+    }
+
+    public function testTokensShowsNewlyCreatedToken()
+    {
+        $user = UserTest::create();
+        $this->be($user);
+
+        $flashedToken = ApiTokenTest::create(['owner_id' => $user->id]);
+        $flashedToken->setAttribute('token', 'mysecret');
+
+        $this->withSession(['token' => $flashedToken->toArray()]);
+
+        $response = $this->get('settings/tokens');
+        $response->assertStatus(200);
+        // The plaintext token secret must be displayed, not silently dropped
+        // because the session now flashes an array instead of the model.
+        $response->assertSee('mysecret');
     }
 }

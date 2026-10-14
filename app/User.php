@@ -2,43 +2,41 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Role;
+use Biigle\Observers\UserObserver;
 use Biigle\Traits\HasJsonAttributes;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /**
  * @property string $uuid
+ * @property Role $role
  */
+#[Hidden(['password', 'remember_token', 'pivot', 'uuid'])]
+#[ObservedBy(UserObserver::class)]
 class User extends Authenticatable
 {
     use Notifiable, HasJsonAttributes, HasFactory;
 
     /**
-     * The attributes hidden from the model's JSON form.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-        'pivot',
-        'uuid',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'role_id' => 'int',
-        'attrs' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'login_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'role' => Role::class,
+            'attrs' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'login_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
     /**
      * Set the email attribute and transform it to lowercase.
@@ -71,16 +69,6 @@ class User extends Authenticatable
     }
 
     /**
-     * The global role of this user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, $this>
-     */
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
-
-    /**
      * Api tokens of this user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<ApiToken, $this>
@@ -107,7 +95,7 @@ class User extends Authenticatable
      */
     public function getIsGlobalAdminAttribute()
     {
-        return $this->role_id === Role::adminId();
+        return $this->role === Role::ADMIN;
     }
 
     /**
@@ -198,7 +186,7 @@ class User extends Authenticatable
     public function getCanReviewAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role === Role::EDITOR &&
                 $this->getSettings('can_review', false));
     }
 
@@ -220,7 +208,7 @@ class User extends Authenticatable
     public function getHasNoRateLimitAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role === Role::EDITOR &&
                 $this->getSettings('disable_rate_limit', false));
     }
 

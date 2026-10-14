@@ -30,8 +30,8 @@ class SplitVideoAnnotationController extends Controller
      *       "created_at": "2015-02-18 11:45:00",
      *       "updated_at": "2018-02-06 09:34:00",
      *       "video_id": 1,
-     *       "shape_id": 1,
-     *       "frames": [10.0, 12.5]
+     *       "shape": 1,
+     *       "frames": [10.0, 12.5],
      *       "points": [[100, 200],[150, 250]],
      *       "labels": [
      *          {
@@ -40,23 +40,23 @@ class SplitVideoAnnotationController extends Controller
      *                "color": "bada55",
      *                "id": 3,
      *                "name": "My label",
-     *                "parent_id": null,
+     *                "parent_id": null
      *             },
      *             "user": {
      *                "id": 4,
      *                "firstname": "Graham",
-     *                "lastname": "Hahn",
+     *                "lastname": "Hahn"
      *             }
      *          }
      *       ]
      *    },
      *    {
      *       "id": 2,
-     *       "updated_at": "2018-02-06 09:34:00",
+     *       "created_at": "2018-02-06 09:34:00",
      *       "updated_at": "2018-02-06 09:34:00",
      *       "video_id": 1,
-     *       "shape_id": 1,
-     *       "frames": [12.5, 15.0]
+     *       "shape": 1,
+     *       "frames": [12.5, 15.0],
      *       "points": [[150, 250],[200, 300]],
      *       "labels": [
      *          {
@@ -65,12 +65,12 @@ class SplitVideoAnnotationController extends Controller
      *                "color": "bada55",
      *                "id": 3,
      *                "name": "My label",
-     *                "parent_id": null,
+     *                "parent_id": null
      *             },
      *             "user": {
      *                "id": 4,
      *                "firstname": "Graham",
-     *                "lastname": "Hahn",
+     *                "lastname": "Hahn"
      *             }
      *          }
      *       ]
@@ -131,7 +131,7 @@ class SplitVideoAnnotationController extends Controller
 
         $newAnnotation = new VideoAnnotation([
             'video_id' => $oldAnnotation->video_id,
-            'shape_id' => $oldAnnotation->shape_id,
+            'shape' => $oldAnnotation->shape,
             'points' => $newPoints,
             'frames' => $newFrames,
         ]);

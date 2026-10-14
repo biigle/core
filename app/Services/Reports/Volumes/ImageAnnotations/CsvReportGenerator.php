@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
@@ -70,6 +71,13 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
             }
+
+            // Annotations of deleted users have a null user_id.
+            if ($userIds->contains(null)) {
+                $csv = $this->createCsv($this->query()->whereNull('user_id'));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = 'deleted-users.csv';
+            }
         } else {
             $csv = $this->createCsv($this->query());
             $this->tmpFiles[] = $csv;
@@ -97,11 +105,10 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'images.filename',
             'images.lng as longitude',
             'images.lat as latitude',
-            'shapes.id as shape_id',
-            'shapes.name as shape_name',
             'image_annotations.points',
             'image_annotations.id as annotation_id',
             'image_annotation_labels.created_at',
+            'image_annotations.shape'
         ];
 
         if ($this->shouldGetAttributeColumn()) {
@@ -109,7 +116,6 @@ class CsvReportGenerator extends AnnotationReportGenerator
         }
         $query = $this
             ->initQuery($itemsToSelect)
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
@@ -166,8 +172,8 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_id,
-                $row->shape_name,
+                $row->shape,
+                Shape::from($row->shape)->label(),
                 $row->points,
             ];
 

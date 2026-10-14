@@ -41,7 +41,7 @@ export default {
             this.startLoading();
             LabelTreesApi.addUser({id: this.labelTree.id}, {
                     id: user.id,
-                    role_id: user.role_id,
+                    role: user.role,
                 })
                 .then(() => this.memberAttached(user), handleErrorResponse)
                 .finally(this.finishLoading);
@@ -52,13 +52,13 @@ export default {
         updateMember(user, props) {
             this.startLoading();
             LabelTreesApi.updateUser({id: this.labelTree.id, user_id: user.id}, {
-                    role_id: props.role_id,
+                    role: props.role,
                 })
                 .then(() => this.memberUpdated(user, props), handleErrorResponse)
                 .finally(this.finishLoading);
         },
         memberUpdated(user, props) {
-            user.role_id = props.role_id;
+            user.role = props.role;
         },
         removeMember(user) {
             this.startLoading();

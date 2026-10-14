@@ -41,7 +41,7 @@ class VolumeFileController extends Controller
      *
      * @api {post} volumes/:id/files Add images/videos
      * @apiGroup Volumes
-     * @apiName StoreVolumeVideos
+     * @apiName StoreVolumeFiles
      * @apiPermission projectAdmin
      *
      * @apiParam {Number} id The volume ID.

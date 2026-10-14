@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
@@ -70,6 +71,13 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'json');
             }
+
+            // Annotations of deleted users have a null user_id.
+            if ($userIds->contains(null)) {
+                $csv = $this->createCsv($this->query()->whereNull('user_id'));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = 'deleted-users.json';
+            }
         } else {
             $csv = $this->createCsv($this->query());
             $this->tmpFiles[] = $csv;
@@ -96,11 +104,10 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 'images.filename',
                 'images.lng as longitude',
                 'images.lat as latitude',
-                'shapes.name as shape_name',
+                'image_annotations.shape',
                 'image_annotations.points',
                 'images.attrs',
             ])
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
@@ -139,7 +146,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_name,
+                Shape::from($row->shape)->label(),
                 $row->points,
                 $row->attrs,
             ]);

@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use TestCase;
@@ -19,14 +19,14 @@ class ProjectPolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalGuest = UserTest::create(['role_id' => Role::guestId()]);
-        $this->globalEditor = UserTest::create(['role_id' => Role::editorId()]);
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->globalGuest = UserTest::create(['role' => Role::GUEST]);
+        $this->globalEditor = UserTest::create(['role' => Role::EDITOR]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN]);
 
-        $this->project->addUserId($this->guest->id, Role::guestId());
-        $this->project->addUserId($this->editor->id, Role::editorId());
-        $this->project->addUserId($this->expert->id, Role::expertId());
-        $this->project->addUserId($this->admin->id, Role::adminId());
+        $this->project->addUserId($this->guest->id, Role::GUEST);
+        $this->project->addUserId($this->editor->id, Role::EDITOR);
+        $this->project->addUserId($this->expert->id, Role::EXPERT);
+        $this->project->addUserId($this->admin->id, Role::ADMIN);
     }
 
     public function testCreate()

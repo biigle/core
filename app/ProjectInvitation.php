@@ -2,36 +2,29 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Role;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable(['uuid', 'expires_at', 'max_uses', 'project_id', 'role', 'add_to_sessions'])]
 class ProjectInvitation extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'uuid',
-        'expires_at',
-        'max_uses',
-        'project_id',
-        'role_id',
-        'add_to_sessions',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'expires_at' => "datetime:c",
-        'add_to_sessions' => 'bool',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'role' => Role::class,
+            'expires_at' => 'datetime:c',
+            'add_to_sessions' => 'bool',
+        ];
+    }
 
     /**
      * The accessors to append to the model's array form.

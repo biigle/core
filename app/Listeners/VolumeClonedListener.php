@@ -17,17 +17,13 @@ class VolumeClonedListener
         $event->volume->images()
             ->whereHas('annotations')
             ->eachById(function ($image) use ($delay) {
-                ProcessAnnotatedImage::dispatch($image)
-                    ->delay($delay)
-                    ->onQueue(config('largo.generate_annotation_patch_queue'));
+                ProcessAnnotatedImage::dispatch($image)->delay($delay);
             });
 
         $event->volume->videos()
             ->whereHas('annotations')
             ->eachById(function ($video) use ($delay) {
-                ProcessAnnotatedVideo::dispatch($video)
-                    ->delay($delay)
-                    ->onQueue(config('largo.generate_annotation_patch_queue'));
+                ProcessAnnotatedVideo::dispatch($video)->delay($delay);
             });
     }
 }

@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Services\Reports\Volumes\VideoAnnotations;
 
 use App;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\Volumes\VideoAnnotations\CsvReportGenerator;
 use Biigle\Tests\AnnotationSessionTest;
@@ -70,7 +70,7 @@ class CsvReportGeneratorTest extends TestCase
     {
         $volume = VolumeTest::create([
             'name' => 'My Cool Volume',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
         ]);
 
         $video = VideoTest::create([
@@ -110,8 +110,8 @@ class CsvReportGeneratorTest extends TestCase
                 $al->user->lastname,
                 $al->annotation->video_id,
                 $al->annotation->video->filename,
-                $al->annotation->shape->id,
-                $al->annotation->shape->name,
+                $al->annotation->shape->value,
+                $al->annotation->shape->label(),
                 json_encode($al->annotation->points),
                 json_encode($al->annotation->frames),
                 $al->annotation->id,
@@ -185,8 +185,8 @@ class CsvReportGeneratorTest extends TestCase
                 $al1->user->lastname,
                 $annotation->video_id,
                 $annotation->video->filename,
-                $annotation->shape->id,
-                $annotation->shape->name,
+                $annotation->shape->value,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
@@ -206,8 +206,8 @@ class CsvReportGeneratorTest extends TestCase
                 $al2->user->lastname,
                 $annotation->video_id,
                 $annotation->video->filename,
-                $annotation->shape->id,
-                $annotation->shape->name,
+                $annotation->shape->value,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
@@ -291,8 +291,8 @@ class CsvReportGeneratorTest extends TestCase
                 $al1->user->lastname,
                 $annotation->video_id,
                 $annotation->video->filename,
-                $annotation->shape->id,
-                $annotation->shape->name,
+                $annotation->shape->value,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
@@ -312,8 +312,8 @@ class CsvReportGeneratorTest extends TestCase
                 $al2->user->lastname,
                 $annotation->video_id,
                 $annotation->video->filename,
-                $annotation->shape->id,
-                $annotation->shape->name,
+                $annotation->shape->value,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
@@ -339,6 +339,107 @@ class CsvReportGeneratorTest extends TestCase
         $mock->shouldReceive('addFile')
             ->once()
             ->with('def', "{$user2->id}-jane-user.csv");
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, fn () => $mock);
+
+        $generator = new CsvReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($video->volume);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateUsersWithNullUserId()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $video = VideoTest::create();
+
+        $annotation = VideoAnnotationTest::create(['video_id' => $video->id]);
+
+        $al1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $user1->id,
+        ]);
+        $al2 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => null,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('putCsv')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $al1->id,
+                $al1->label->id,
+                $al1->label->name,
+                $al1->label->name,
+                $al1->user_id,
+                $al1->user->firstname,
+                $al1->user->lastname,
+                $annotation->video_id,
+                $annotation->video->filename,
+                $annotation->shape->value,
+                $annotation->shape->label(),
+                json_encode($annotation->points),
+                json_encode($annotation->frames),
+                $annotation->id,
+                $al1->created_at,
+                json_encode($video->attrs),
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $al2->id,
+                $al2->label->id,
+                $al2->label->name,
+                $al2->label->name,
+                null,
+                null,
+                null,
+                $annotation->video_id,
+                $annotation->video->filename,
+                $annotation->shape->value,
+                $annotation->shape->label(),
+                json_encode($annotation->points),
+                json_encode($annotation->frames),
+                $annotation->id,
+                $al2->created_at,
+                json_encode($video->attrs),
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', 'deleted-users.csv');
 
         $mock->shouldReceive('close')->once();
 
@@ -491,8 +592,8 @@ class CsvReportGeneratorTest extends TestCase
                 null,
                 $annotation->video_id,
                 $annotation->video->filename,
-                $annotation->shape->id,
-                $annotation->shape->name,
+                $annotation->shape->value,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
@@ -512,8 +613,8 @@ class CsvReportGeneratorTest extends TestCase
                 $al2->user->lastname,
                 $annotation->video_id,
                 $annotation->video->filename,
-                $annotation->shape->id,
-                $annotation->shape->name,
+                $annotation->shape->value,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 json_encode($annotation->frames),
                 $annotation->id,
@@ -548,7 +649,7 @@ class CsvReportGeneratorTest extends TestCase
     {
         $volume = VolumeTest::create([
             'name' => 'My Cool Volume',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
         ]);
 
         $video = VideoTest::create([
@@ -589,8 +690,8 @@ class CsvReportGeneratorTest extends TestCase
                 $al->user->lastname,
                 $al->annotation->video_id,
                 $al->annotation->video->filename,
-                $al->annotation->shape->id,
-                $al->annotation->shape->name,
+                $al->annotation->shape->value,
+                $al->annotation->shape->label(),
                 json_encode($al->annotation->points),
                 json_encode($al->annotation->frames),
                 $al->annotation->id,

@@ -28,7 +28,7 @@ class FederatedSearchIndexController extends Controller
      *            "created_at": "2020-08-19 13:19:06",
      *            "updated_at": "2020-08-19 13:19:06",
      *            "url": "/label-trees/1",
-     *            "members" => [2]
+     *            "members": [2]
      *        }
      *    ],
      *    "projects": [
@@ -55,8 +55,8 @@ class FederatedSearchIndexController extends Controller
      *            "thumbnail_url": "https://example.com/thumbs/2.jpg",
      *            "thumbnail_urls": [
      *                "https://example.com/thumbs/2.jpg",
-     *                "https://example.com/thumbs/3.jpg",
-     *            ],
+     *                "https://example.com/thumbs/3.jpg"
+     *            ]
      *        }
      *    ],
      *    "users": [

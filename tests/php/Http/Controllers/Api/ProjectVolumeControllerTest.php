@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\Role;
 use Biigle\Image;
 use Biigle\Jobs\CreateNewImagesOrVideos;
 use Biigle\Jobs\DeleteVolume;
-use Biigle\Role;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Tests\ProjectTest;
@@ -69,7 +69,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'random',
-            'media_type_id' => 99999,
+            'media_type' => 99999,
             'files' => '1.jpg, 2.jpg',
         ]);
         // media type does not exist
@@ -164,6 +164,40 @@ class ProjectVolumeControllerTest extends ApiTestCase
         Queue::assertPushed(CreateNewImagesOrVideos::class, fn ($job) => $job->volume->id === $id &&
                 in_array('1.jpg', $job->filenames) &&
                 in_array('2.jpg', $job->filenames));
+    }
+
+    public function testStoreUrlMaxLength()
+    {
+        $id = $this->project()->id;
+        $this->beAdmin();
+
+        // invalid url (>512 characters)
+        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://'.str_repeat('a', 506),
+            'media_type' => 'image',
+            'files' => '1.jpg',
+        ])->assertStatus(422);
+
+        $this->assertSame('The url must not be greater than 512 characters.', $response->exception->getMessage());
+
+        // Split the path in two parts because a single path segment is limited to 255
+        // characters by the filesystem.
+        $path = str_repeat('a', 252).'/'.str_repeat('b', 252);
+        Storage::disk('test')->put($path.'/1.jpg', 'abc');
+
+        // valid url (exactly 512 characters)
+        $url = 'test://'.$path;
+        $this->assertSame(512, strlen($url));
+
+        $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => $url,
+            'media_type' => 'image',
+            'files' => '1.jpg',
+        ])->assertStatus(201);
+
+        $this->assertSame($url, Volume::orderBy('id', 'desc')->first()->url);
     }
 
     public function testStoreHandle()
@@ -681,7 +715,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->post("/api/v1/projects/{$pid}/volumes/{$tid}");
         $response->assertStatus(403);
 
-        $secondProject->addUserId($this->admin()->id, Role::adminId());
+        $secondProject->addUserId($this->admin()->id, Role::ADMIN);
         Cache::flush();
 
         $this->assertEmpty($secondProject->fresh()->volumes);

@@ -283,6 +283,93 @@ class CsvReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsersWithNullUserId()
+    {
+        $user1 = UserTest::create([
+            'firstname' => 'Joe Jack',
+            'lastname' => 'User',
+        ]);
+
+        $video = VideoTest::create();
+
+        $il1 = VideoLabelTest::create([
+            'video_id' => $video->id,
+            'user_id' => $user1->id,
+        ]);
+        $il2 = VideoLabelTest::create([
+            'video_id' => $video->id,
+            'user_id' => null,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('putCsv')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $il1->id,
+                $video->id,
+                $video->filename,
+                $il1->user_id,
+                $il1->user->firstname,
+                $il1->user->lastname,
+                $il1->label->id,
+                $il1->label->name,
+                $il1->label->name,
+                $il1->created_at,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $il2->id,
+                $video->id,
+                $video->filename,
+                null,
+                null,
+                null,
+                $il2->label->id,
+                $il2->label->name,
+                $il2->label->name,
+                $il2->created_at,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('def', 'deleted-users.csv');
+
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, fn () => $mock);
+
+        $generator = new CsvReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($video->volume);
+        $generator->generateReport('my/path');
+    }
+
     public function testRestrictToLabels()
     {
         $video = VideoTest::create();

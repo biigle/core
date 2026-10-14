@@ -3,8 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\Jobs\CreateNewImagesOrVideos;
-use Biigle\MediaType;
 use Biigle\PendingVolume;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
@@ -14,10 +15,10 @@ use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
-use Biigle\Shape;
 use Biigle\Volume;
 use Exception;
 use FileCache;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
@@ -47,7 +48,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(201);
 
         $pv = PendingVolume::where('project_id', $id)->first();
-        $this->assertEquals(MediaType::imageId(), $pv->media_type_id);
+        $this->assertEquals(MediaType::IMAGE, $pv->media_type);
         $this->assertEquals($this->admin()->id, $pv->user_id);
     }
 
@@ -62,6 +63,29 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
             'media_type' => 'image',
         ])->assertStatus(422);
+    }
+
+    public function testStoreConcurrently()
+    {
+        $this->beAdmin();
+        $id = $this->project()->id;
+
+        PendingVolume::creating(function () {
+            throw new UniqueConstraintViolationException(
+                'testing',
+                'insert into pending_volumes',
+                [],
+                new Exception('duplicate'),
+            );
+        });
+
+        $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
+            'media_type' => 'image',
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('id')
+            ->assertJsonPath('errors.id.0', 'Only a single pending volume can be created at a time for each project and user.');
+
+        $this->assertSame(0, PendingVolume::count());
     }
 
     public function testStoreVideo()
@@ -259,7 +283,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -272,7 +296,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         ])->assertStatus(201);
 
         $pv = PendingVolume::where('volume_id', $id)->first();
-        $this->assertSame($this->volume()->media_type_id, $pv->media_type_id);
+        $this->assertSame($this->volume()->media_type, $pv->media_type);
         $this->assertSame($this->admin()->id, $pv->user_id);
         $this->assertSame("{$pv->id}.csv", $pv->metadata_file_path);
         $this->assertSame(ImageCsvParser::class, $pv->metadata_parser);
@@ -361,7 +385,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -409,7 +433,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
@@ -426,13 +450,68 @@ class PendingVolumeControllerTest extends ApiTestCase
         $this->assertNull($old->fresh());
     }
 
+    public function testStoreVolumeConcurrently()
+    {
+        config([
+            'volumes.metadata_storage_disk' => 'metadata',
+            'volumes.pending_metadata_storage_disk' => 'pending-metadata',
+        ]);
+        $metaDisk = Storage::fake('metadata');
+        $metaDisk->put('metadata.csv', 'abc');
+        Storage::fake('pending-metadata');
+
+        $id = $this->volume()->id;
+        $old = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $this->beAdmin();
+        $this->volume()->update([
+            'metadata_file_path' => 'metadata.csv',
+            'metadata_parser' => ImageCsvParser::class,
+        ]);
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata('1.jpg');
+        $metadata->addFile($file);
+        $label = new Label(123, 'my label');
+        $user = new User(321, 'joe user');
+        $lau = new LabelAndUser($label, $user);
+        $annotation = new ImageAnnotation(
+            shape: Shape::POINT,
+            points: [10, 10],
+            labels: [$lau],
+        );
+        $file->addAnnotation($annotation);
+        Cache::store('array')->put('metadata-metadata-metadata.csv', $metadata);
+
+        PendingVolume::creating(function () {
+            throw new UniqueConstraintViolationException(
+                'testing',
+                'insert into pending_volumes',
+                [],
+                new Exception('duplicate'),
+            );
+        });
+
+        $this->json('POST', "/api/v1/volumes/{$id}/pending-volumes", [
+            'import_annotations' => true,
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('id')
+            ->assertJsonPath('errors.id.0', 'Only one metadata import can be performed at a time.');
+
+        $this->assertNotNull($old->fresh());
+        $this->assertSame(1, PendingVolume::count());
+    }
+
     public function testUpdateImages()
     {
         config(['volumes.editor_storage_disks' => ['test']]);
         $disk = Storage::fake('test');
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->editor()->id,
         ]);
         $id = $pv->id;
@@ -462,6 +541,15 @@ class PendingVolumeControllerTest extends ApiTestCase
             'url' => 'random',
             'files' => ['1.jpg', '2.jpg'],
         ])->assertStatus(422);
+
+        // invalid url (>512 characters)
+        $response = $this->putJson("/api/v1/pending-volumes/{$id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://'.str_repeat('a', 513),
+            'files' => ['1.jpg', '2.jpg'],
+        ])->assertStatus(422);
+
+        $this->assertSame('The url must not be greater than 512 characters.', $response->exception->getMessage());
 
         // images directory dows not exist in storage disk
         $this->putJson("/api/v1/pending-volumes/{$id}", [
@@ -529,7 +617,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $volume = $this->project()->volumes()->first();
         $this->assertEquals('my volume no. 1', $volume->name);
         $this->assertEquals('test://images', $volume->url);
-        $this->assertEquals(MediaType::imageId(), $volume->media_type_id);
+        $this->assertEquals(MediaType::IMAGE, $volume->media_type);
     }
 
     public function testUpdateImagesWithMetadata()
@@ -540,7 +628,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         config(['volumes.editor_storage_disks' => ['test']]);
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
@@ -573,7 +661,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
@@ -607,7 +695,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => ImageCsvParser::class,
@@ -639,7 +727,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         config(['volumes.editor_storage_disks' => ['test']]);
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ]);
         $id = $pv->id;
@@ -664,7 +752,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         config(['volumes.editor_storage_disks' => ['test']]);
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ]);
         $id = $pv->id;
@@ -690,7 +778,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         config(['volumes.editor_storage_disks' => ['test']]);
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ]);
         $id = $pv->id;
@@ -716,7 +804,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         config(['volumes.editor_storage_disks' => ['test']]);
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ]);
         $id = $pv->id;
@@ -751,7 +839,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
 
@@ -776,7 +864,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
 
@@ -790,7 +878,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
 
@@ -814,7 +902,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
 
@@ -845,7 +933,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
         $this->beAdmin();
@@ -865,7 +953,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
         $this->beAdmin();
@@ -886,7 +974,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $disk = Storage::fake('test');
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
             'user_id' => $this->admin()->id,
         ]);
         $id = $pv->id;
@@ -961,7 +1049,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $volume = $this->project()->volumes()->first();
         $this->assertEquals('my volume no. 1', $volume->name);
         $this->assertEquals('test://videos', $volume->url);
-        $this->assertEquals(MediaType::videoId(), $volume->media_type_id);
+        $this->assertEquals(MediaType::VIDEO, $volume->media_type);
     }
 
     public function testUpdateVideosWithMetadata()
@@ -972,7 +1060,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         config(['volumes.editor_storage_disks' => ['test']]);
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
             'user_id' => $this->admin()->id,
             'metadata_file_path' => 'mymeta.csv',
             'metadata_parser' => VideoCsvParser::class,
@@ -1000,7 +1088,7 @@ class PendingVolumeControllerTest extends ApiTestCase
     {
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
         $this->beAdmin();
@@ -1024,7 +1112,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
         $this->beAdmin();
@@ -1042,7 +1130,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ])->id;
 
@@ -1069,7 +1157,7 @@ class PendingVolumeControllerTest extends ApiTestCase
 
         $id = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
             'volume_id' => $this->volume()->id,
         ])->id;
@@ -1085,7 +1173,7 @@ class PendingVolumeControllerTest extends ApiTestCase
     {
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ]);
 
@@ -1101,7 +1189,7 @@ class PendingVolumeControllerTest extends ApiTestCase
     {
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ]);
 
@@ -1121,7 +1209,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $disk = Storage::fake('test');
         $pv = PendingVolume::factory()->create([
             'project_id' => $this->project()->id,
-            'media_type_id' => MediaType::imageId(),
+            'media_type' => MediaType::IMAGE,
             'user_id' => $this->admin()->id,
         ]);
         $id = $pv->id;

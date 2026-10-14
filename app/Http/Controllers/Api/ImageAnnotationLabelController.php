@@ -35,7 +35,7 @@ class ImageAnnotationLabelController extends Controller
      *       },
      *       "user": {
      *          "id": 1,
-     *          "role_id": 2,
+     *          "role": 2,
      *          "firstname": "Joe",
      *          "lastname": "User"
      *       }
@@ -83,7 +83,7 @@ class ImageAnnotationLabelController extends Controller
         $load = [
             // Hide label_source_id and source_id.
             'label:id,name,parent_id,color,label_tree_id',
-            // Hide role_id.
+            // Hide role.
             'user:id,firstname,lastname',
         ];
 
@@ -118,7 +118,7 @@ class ImageAnnotationLabelController extends Controller
      *    },
      *    "user": {
      *       "id": 1,
-     *       "role_id": 2,
+     *       "role": 2,
      *       "firstname": "Joe",
      *       "lastname": "User"
      *    }
@@ -154,7 +154,7 @@ class ImageAnnotationLabelController extends Controller
      *    },
      *    "user": {
      *       "id": 1,
-     *       "role_id": 2,
+     *       "role": 2,
      *       "firstname": "Joe",
      *       "lastname": "User"
      *    }

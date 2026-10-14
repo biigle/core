@@ -28,7 +28,7 @@ class LabelTreeMergeController extends Controller
      *    "create": [
      *       {
      *          "name": "My new parent",
-     *          "color": "bada55"
+     *          "color": "bada55",
      *          "parent_id": 1337,
      *          "children": [
      *             {

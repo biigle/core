@@ -3,10 +3,10 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
+use Biigle\Enums\Role;
 use Biigle\Jobs\CloneImagesOrVideos;
 use Biigle\Jobs\ProcessNewVolumeFiles;
-use Biigle\MediaType;
-use Biigle\Role;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
@@ -38,7 +38,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get('/api/v1/volumes/')
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Only include projects to which the user has access.
             ->assertJsonMissing(['name' => $project->name]);
@@ -54,7 +54,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get('/api/v1/volumes/')
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             ->assertJsonFragment(['name' => $project->name]);
     }
@@ -75,7 +75,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get("/api/v1/volumes/{$id}")
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Only include projects to which the user has access.
             ->assertJsonMissing(['name' => $project->name]);
@@ -92,7 +92,7 @@ class VolumeControllerTest extends ApiTestCase
             ->get("/api/v1/volumes/{$id}")
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $this->volume()->id])
-            ->assertJsonFragment(['media_type_id' => $this->volume()->media_type_id])
+            ->assertJsonFragment(['media_type' => $this->volume()->media_type->value])
             ->assertJsonFragment(['name' => $this->project()->name])
             // Global admins should see all projects.
             ->assertJsonFragment(['name' => $project->name]);
@@ -100,7 +100,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+        $id = $this->volume(['media_type' => MediaType::IMAGE])->id;
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
@@ -115,12 +115,12 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
         $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO->value,
         ]);
         $response->assertStatus(200);
         $this->assertSame('the new volume', $this->volume()->fresh()->name);
         // Media type cannot be updated.
-        $this->assertSame(MediaType::imageId(), $this->volume()->fresh()->media_type_id);
+        $this->assertSame(MediaType::IMAGE, $this->volume()->fresh()->media_type);
         Queue::assertNothingPushed();
     }
 
@@ -240,18 +240,39 @@ class VolumeControllerTest extends ApiTestCase
         $volume = $this->volume();
 
         config(['volumes.admin_storage_disks' => ['admin-test']]);
-        $disk = Storage::fake('admin-test');
-        $disk->put('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/file.txt', 'abc');
 
         $this->beGlobalAdmin();
-        
-        // invalid url (>256 characters)
+
+        // invalid url (>512 characters)
         $response = $this->json('PUT', '/api/v1/volumes/'.$volume->id, [
-            'url' => 'admin-test://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            'url' => 'admin-test://'.str_repeat('a', 513),
         ])->assertStatus(422);
-        
-        $this->assertSame('The url must not be greater than 256 characters.', $response->exception->getMessage());
+
+        $this->assertSame('The url must not be greater than 512 characters.', $response->exception->getMessage());
         Queue::assertNothingPushed();
+    }
+
+    public function testUpdateUrlMaxLength()
+    {
+        $volume = $this->volume();
+
+        config(['volumes.admin_storage_disks' => ['admin-test']]);
+        $disk = Storage::fake('admin-test');
+        // Split the path in two parts because a single path segment is limited to 255
+        // characters by the filesystem.
+        $path = str_repeat('a', 249).'/'.str_repeat('b', 249);
+        $disk->put($path.'/file.txt', 'abc');
+
+        $this->beGlobalAdmin();
+
+        // valid url (exactly 512 characters)
+        $url = 'admin-test://'.$path;
+        $this->assertSame(512, strlen($url));
+
+        $this->json('PUT', '/api/v1/volumes/'.$volume->id, ['url' => $url])
+            ->assertStatus(200);
+
+        $this->assertSame($url, $volume->fresh()->url);
     }
 
     public function testUpdateUrlProviderDenylist()
@@ -329,7 +350,7 @@ class VolumeControllerTest extends ApiTestCase
             // No update permissions in the target project.
             ->assertStatus(403);
 
-        $project->addUserId($this->admin()->id, Role::adminId());
+        $project->addUserId($this->admin()->id, Role::ADMIN);
 
         Cache::flush();
 
@@ -341,7 +362,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertTrue($project->volumes()->exists());
         $copy = $project->volumes()->first();
         $this->assertEquals($copy->name, $this->volume()->name);
-        $this->assertEquals($copy->media_type_id, $this->volume()->media_type_id);
+        $this->assertEquals($copy->media_type, $this->volume()->media_type);
         $this->assertEquals($copy->url, $this->volume()->url);
         $this->assertTrue($copy->creating_async);
         $this->assertEquals("{$copy->id}.csv", $copy->metadata_file_path);
@@ -351,7 +372,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         $volume = $this->volume(['name' => 'myvolume']);
         $project = ProjectTest::create();
-        $project->addUserId($this->admin()->id, Role::adminId());
+        $project->addUserId($this->admin()->id, Role::ADMIN);
 
         $this->beAdmin();
 
@@ -368,7 +389,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         $volume = $this->volume(['name' => 'myvolume', 'creator_id' => $this->user()->id]);
         $project = ProjectTest::create();
-        $project->addUserId($this->admin()->id, Role::adminId());
+        $project->addUserId($this->admin()->id, Role::ADMIN);
 
         $this->beAdmin();
 
@@ -447,7 +468,7 @@ class VolumeControllerTest extends ApiTestCase
             ->volume([
                 'created_at' => '2022-11-09 14:37:00',
                 'updated_at' => '2022-11-09 14:37:00',
-                'media_type_id' => MediaType::videoId()
+                'media_type' => MediaType::VIDEO
             ])
             ->fresh();
 
@@ -496,5 +517,21 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertSame($content[0], $video2->id);
         $this->assertSame($content[1], $video->id);
         $this->assertSame($content[2], $video3->id);
+    }
+
+    public function testStoreInvalidMediaType()
+    {
+        $project = ProjectTest::create();
+        $project->addUserId($this->admin()->id, Role::ADMIN);
+
+        $this->beAdmin();
+        $response = $this->json('POST', "/api/v1/projects/{$project->id}/volumes", [
+            'name' => 'test volume',
+            'media_type' => 'whatever',
+            'url' => 'admin-test://volumes',
+            'files' => ['file.jpg'],
+        ]);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['media_type']);
     }
 }

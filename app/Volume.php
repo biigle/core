@@ -2,19 +2,28 @@
 
 namespace Biigle;
 
+use Biigle\Enums\MediaType;
+use Biigle\Observers\VolumeObserver;
 use Biigle\Traits\HasJsonAttributes;
 use Biigle\Traits\HasMetadataFile;
 use Cache;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
  * projects.
+ * @property MediaType $media_type
  */
+#[Fillable(['name', 'url', 'media_type', 'handle', 'creator_id', 'metadata_file_path', 'metadata_parser'])]
+#[Hidden(['pivot', 'attrs'])]
+#[ObservedBy(VolumeObserver::class)]
 class Volume extends Model
 {
     use HasJsonAttributes, HasFactory, HasMetadataFile;
@@ -40,39 +49,17 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
 
     /**
-     * The attributes that are mass assignable.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $fillable = [
-        'name',
-        'url',
-        'media_type_id',
-        'handle',
-        'creator_id',
-        'metadata_file_path',
-        'metadata_parser',
-    ];
-
-    /**
-     * The attributes hidden from the model's JSON form.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'pivot',
-        'attrs',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'attrs' => 'array',
-        'media_type_id' => 'int',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'attrs' => 'array',
+            'media_type' => MediaType::class,
+        ];
+    }
 
     /**
      * Parses a comma separated list of filenames to an array.
@@ -116,16 +103,6 @@ class Volume extends Model
     public function creator()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * The media type of this volume.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<MediaType, $this>
-     */
-    public function mediaType()
-    {
-        return $this->belongsTo(MediaType::class);
     }
 
     /**
@@ -481,7 +458,7 @@ class Volume extends Model
      */
     public function isImageVolume()
     {
-        return $this->media_type_id === MediaType::imageId();
+        return $this->media_type === MediaType::IMAGE;
     }
 
     /**
@@ -491,7 +468,7 @@ class Volume extends Model
      */
     public function isVideoVolume()
     {
-        return $this->media_type_id === MediaType::videoId();
+        return $this->media_type === MediaType::VIDEO;
     }
 
     /**

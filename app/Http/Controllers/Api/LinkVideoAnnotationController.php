@@ -32,8 +32,8 @@ class LinkVideoAnnotationController extends Controller
      *    "created_at": "2015-02-18 11:45:00",
      *    "updated_at": "2018-02-06 09:34:00",
      *    "video_id": 1,
-     *    "shape_id": 1,
-     *    "frames": [1.0, 2.0, null, 3.0, 4.0]
+     *    "shape": 1,
+     *    "frames": [1.0, 2.0, null, 3.0, 4.0],
      *    "points": [[10, 10], [20, 20], [], [30, 30], [40, 40]],
      *    "labels": [
      *       {
@@ -42,12 +42,12 @@ class LinkVideoAnnotationController extends Controller
      *             "color": "bada55",
      *             "id": 3,
      *             "name": "My label",
-     *             "parent_id": null,
+     *             "parent_id": null
      *          },
      *          "user": {
      *             "id": 4,
      *             "firstname": "Graham",
-     *             "lastname": "Hahn",
+     *             "lastname": "Hahn"
      *          }
      *       }
      *    ]

@@ -16,7 +16,7 @@ class FilenameController extends Controller
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The volume ID
-     * @apiParam {Number} pattern The filename pattern. May be a full filename like `abcde.jpg` or a pattern like `a*.jpg` where `*` matches any string of zero or more characters. Example: `a*.jpg` will match `abcde.jpg` as well as `a.jpg`. Example 2: `*3.jpg` will match `123.jpg` as well as `3.jpg`.
+     * @apiParam {String} pattern The filename pattern. May be a full filename like `abcde.jpg` or a pattern like `a*.jpg` where `*` matches any string of zero or more characters. Example: `a*.jpg` will match `abcde.jpg` as well as `a.jpg`. Example 2: `*3.jpg` will match `123.jpg` as well as `3.jpg`. Alternatively, a comma separated list of exact filenames (without wildcards) may be given, e.g. `a.jpg,b.jpg`.
      *
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]

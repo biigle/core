@@ -33,7 +33,7 @@ class VolumeController extends Controller
      *    {
      *       "id": 1,
      *       "name": "My Volume",
-     *       "media_type_id": 1,
+     *       "media_type": 1,
      *       "created_at": "2015-02-10 09:45:30",
      *       "updated_at": "2015-02-10 09:45:30",
      *       "projects": [
@@ -62,7 +62,7 @@ class VolumeController extends Controller
                     ->select('projects.id', 'projects.name', 'projects.description');
             }])
             ->orderByDesc('id')
-            ->select('id', 'name', 'created_at', 'updated_at', 'media_type_id');
+            ->select('id', 'name', 'created_at', 'updated_at', 'media_type');
 
         $generator = function () use ($query) {
             foreach ($query->lazy() as $volume) {
@@ -91,7 +91,7 @@ class VolumeController extends Controller
      * {
      *    "id": 1,
      *    "name": "volume 1",
-     *    "media_type_id": 3,
+     *    "media_type": 3,
      *    "creator_id": 7,
      *    "created_at": "2015-02-20 17:51:03",
      *    "updated_at": "2015-02-20 17:51:03",
@@ -192,7 +192,7 @@ class VolumeController extends Controller
      * @apiSuccessExample {json} Success response:
      * {
      * "name": "Kulas Group",
-     * "media_type_id": 3,
+     * "media_type": 3,
      * "creator_id": 5,
      * "url": "test://files",
      * "handle": null,
@@ -239,7 +239,7 @@ class VolumeController extends Controller
      *
      * @param int $id
      * @return object
-     * @api {get} volumes{/id}/files/annotation-timestamps Get file ids sorted by recently annotated
+     * @api {get} volumes/:id/files/annotation-timestamps Get file ids sorted by recently annotated
      * @apiGroup Volumes
      * @apiName VolumeSortByAnnotated
      * @apiPermission projectMember
@@ -248,9 +248,9 @@ class VolumeController extends Controller
      *
      * @apiSuccessExample {json} Success response:
      * {
-     *  1: 1,
-     *  2: 2,
-     *  3: 3,
+     *  "1": 1,
+     *  "2": 2,
+     *  "3": 3
      * }
      *
      */

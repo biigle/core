@@ -29,7 +29,7 @@ class UpdatePendingVolume extends FormRequest
     {
         return [
             'name' => 'required|max:512',
-            'url' => ['required', 'string', 'max:256', new VolumeUrl],
+            'url' => ['bail', 'required', 'string', 'max:512', new VolumeUrl],
             'files' => ['required', 'array', 'min:1'],
             'handle' => ['nullable', 'max:256', new Handle],
             'import_annotations' => 'bool',
@@ -56,7 +56,7 @@ class UpdatePendingVolume extends FormRequest
             }
 
             $files = $this->input('files');
-            $rule = new VolumeFiles($this->input('url'), $this->pendingVolume->media_type_id);
+            $rule = new VolumeFiles($this->input('url'), $this->pendingVolume->media_type);
             if (!$rule->passes('files', $files)) {
                 $validator->errors()->add('files', $rule->message());
             }

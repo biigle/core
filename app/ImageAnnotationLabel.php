@@ -2,31 +2,27 @@
 
 namespace Biigle;
 
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+
 /**
  * Pivot object for the connection between ImageAnnotation and Label.
  */
+#[Hidden(['created_at', 'updated_at'])]
 class ImageAnnotationLabel extends AnnotationLabel
 {
     /**
-     * The attributes excluded from the model's JSON form.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'user_id' => 'int',
-        'annotation_id' => 'int',
-        'confidence' => 'float',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'int',
+            'annotation_id' => 'int',
+            'confidence' => 'float',
+        ];
+    }
 
     /**
      * The annotation, this annotation label belongs to.

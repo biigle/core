@@ -38,7 +38,7 @@ class UpdateVolume extends FormRequest
     {
         return [
             'name' => 'filled|max:512',
-            'url' => ['bail', 'filled', 'string', 'max:256', new VolumeUrl],
+            'url' => ['bail', 'filled', 'string', 'max:512', new VolumeUrl],
             'handle' => ['bail', 'nullable', 'string', 'max:256', new Handle],
         ];
     }
@@ -73,7 +73,7 @@ class UpdateVolume extends FormRequest
                 return;
             }
 
-            $rule = new VolumeFiles($newUrl, $this->volume->media_type_id);
+            $rule = new VolumeFiles($newUrl, $this->volume->media_type);
             if (!$rule->passes('url', $filenames)) {
                 $validator->errors()->add('url', $rule->message());
             }

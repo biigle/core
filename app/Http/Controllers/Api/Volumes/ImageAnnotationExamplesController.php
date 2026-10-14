@@ -18,6 +18,7 @@ class ImageAnnotationExamplesController extends Controller
      * @apiName ShowVolumesExampleAnnotations
      * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The Label ID
+     * @apiParam (Optional arguments) {Number} take Maximum number of example annotations to return.
      * @apiPermission projectMember
      * @apiDescription The similarity is based on the Levenshtein distance between the label names. Only the sibling labels and the parent label are considered. This endpoint returns the image annotations of the specified label or of the most similar sibling/parent label if no annotations exist. Only available for image volumes.
      *
@@ -45,7 +46,8 @@ class ImageAnnotationExamplesController extends Controller
             ->where('images.volume_id', $vid)
             ->where('labels.label_tree_id', $label->label_tree_id)
             ->where(fn ($query) => $query->where('labels.parent_id', $label->parent_id)->orWhere('labels.id', $label->parent_id))
-            ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id');
+            ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id')
+            ->distinct();
 
         if ($session) {
             (new ImageAnnotation)->scopeAllowedBySession($query, $session, $user);

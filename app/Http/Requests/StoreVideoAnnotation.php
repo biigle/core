@@ -2,9 +2,13 @@
 
 namespace Biigle\Http\Requests;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
+use Biigle\Rules\VideoAnnotationFrames;
+use Biigle\Rules\VideoAnnotationGaps;
+use Biigle\Rules\VideoAnnotationPoints;
 use Biigle\Video;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreVideoAnnotation extends FormRequest
 {
@@ -36,17 +40,33 @@ class StoreVideoAnnotation extends FormRequest
     {
         return [
             'label_id'    => 'required_without:feature_vector|integer|exists:labels,id',
-            'feature_vector' => 'required_without:label_id|array|size:384',
-            'feature_vector.*' => 'numeric',
-            'shape_id' => 'required|integer|exists:shapes,id',
-            'points' => [
-                'required_unless:shape_id,'.Shape::wholeFrameId(),
+            // A wildcard rule (feature_vector.*) is not used here because it would be
+            // expanded to one rule per array element, which can consume excessive CPU
+            // and memory if a huge array is submitted.
+            'feature_vector' => [
+                'bail',
+                'required_without:label_id',
                 'array',
+                'size:384',
+                function ($attribute, $value, $fail) {
+                    if (array_filter($value, fn ($v) => !is_numeric($v))) {
+                        $fail("The {$attribute} must contain only numbers.");
+                    }
+                },
             ],
-            'points.*' => 'array',
-            'points.*.*' => 'numeric',
-            'frames' => 'required|array',
-            'frames.*' => 'required|numeric|min:0|max:'.$this->video->duration,
+            'shape' => ['required', 'integer', Rule::enum(Shape::class)],
+            'frames' => [
+                'bail',
+                'required',
+                'array',
+                new VideoAnnotationFrames($this->video->duration),
+            ],
+            'points' => [
+                'bail',
+                'required_unless:shape,'.Shape::WHOLE_FRAME->value,
+                'array',
+                new VideoAnnotationPoints($this->input('shape')),
+            ],
             'track' => 'filled|boolean',
         ];
     }
@@ -65,12 +85,23 @@ class StoreVideoAnnotation extends FormRequest
                 return;
             }
 
+            $shape = $this->enum('shape', Shape::class);
             $frameCount = count($this->input('frames', []));
+            $isWholeFrame = $shape === Shape::WHOLE_FRAME;
 
-            if ($this->input('shape_id') === Shape::wholeFrameId() && $frameCount > 2) {
+            if ($isWholeFrame && $frameCount > 2) {
                 $validator->errors()->add('frames', 'A new whole frame annotation must not have more than two frames.');
             }
 
+            // Whole frame annotations have no points, so there are no gaps to check.
+            if (!$isWholeFrame) {
+                $gapsRule = new VideoAnnotationGaps($this->input('frames', []));
+                $gapsRule->validate(
+                    'points',
+                    $this->input('points', []),
+                    fn ($message) => $validator->errors()->add('points', $message)
+                );
+            }
 
             if ($this->shouldTrack()) {
                 if ($frameCount !== 1) {
@@ -83,18 +114,18 @@ class StoreVideoAnnotation extends FormRequest
                 }
 
                 $allowedShapes = [
-                    Shape::pointId(),
-                    Shape::circleId(),
+                    Shape::POINT,
+                    Shape::CIRCLE,
                 ];
 
-                if (!in_array(intval($this->input('shape_id')), $allowedShapes)) {
+                if (!in_array($shape, $allowedShapes, true)) {
                     $validator->errors()->add('id', 'Only point and circle annotations can be tracked.');
                 }
 
                 // Only do this for videos with stored dimensions for backwards
                 // compatibility. Older videos may not have stored dimensions, yet.
                 // In this case, the Python script will fail without a graceful error.
-                if (!is_null($this->video->width) && !is_null($this->video->height) && !$this->annotationContained()) {
+                if (!is_null($this->video->width) && !is_null($this->video->height) && !$this->annotationContained($shape)) {
                     $validator->errors()->add('points', 'An annotation to track must be fully contained by the video boundaries.');
                 }
             }
@@ -114,16 +145,18 @@ class StoreVideoAnnotation extends FormRequest
     /**
      * Check if the point or circle annotation is fully contained by the video.
      *
+     * @param Shape|null $shape
+     *
      * @return bool
      */
-    protected function annotationContained()
+    protected function annotationContained(?Shape $shape)
     {
         $radius = 0;
         $points = $this->input('points')[0];
 
-        if (intval($this->input('shape_id')) === Shape::pointId()) {
+        if ($shape === Shape::POINT) {
             $radius = config('videos.tracking_point_padding');
-        } elseif (intval($this->input('shape_id')) === Shape::circleId()) {
+        } elseif ($shape === Shape::CIRCLE) {
             $radius = $points[2];
         } else {
             return false;

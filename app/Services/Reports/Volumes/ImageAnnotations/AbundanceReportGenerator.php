@@ -64,7 +64,11 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
             }
         } elseif ($this->shouldSeparateUsers()) {
             $annotatedImageRows = $annotatedImageRows->groupBy('user_id');
-            $users = User::whereIn('id', $annotatedImageRows->keys())
+            // Annotations of deleted users have a null user_id, which groupBy
+            // turns into an empty string key. Don't try to fetch their name.
+            $nullKey = '';
+            $ids = $annotatedImageRows->keys()->filter(fn ($id) => $id !== $nullKey);
+            $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
             $labels = null;
@@ -83,6 +87,18 @@ class AbundanceReportGenerator extends AnnotationReportGenerator
                 }
 
                 $this->tmpFiles[] = $this->createCsv($rowGroup, $name, $labels, $emptyImagesQueryTmp);
+            }
+
+            if ($annotatedImageRows->has($nullKey)) {
+                $usedImageIds = $annotatedImageRows->get($nullKey)->pluck('image_id')->unique();
+                $emptyImagesQueryTmp = $emptyImagesQuery->clone()->whereNotIn('id', $usedImageIds);
+                $rowGroup = $annotatedImageRows->get($nullKey);
+
+                if (!$this->shouldUseAllLabels()) {
+                    $labels = Label::whereIn('id', $rowGroup->pluck('label_id'))->get();
+                }
+
+                $this->tmpFiles[] = $this->createCsv($rowGroup, '(deleted users)', $labels, $emptyImagesQueryTmp);
             }
         } else {
             if ($this->shouldUseAllLabels()) {

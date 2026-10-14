@@ -75,7 +75,11 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
         } elseif ($this->shouldSeparateUsers() && $labels->isNotEmpty()) {
             $usedLabels = $usedLabelsQuery->pluck('labels.name', 'labels.id');
             $labels = $labels->groupBy('user_id');
-            $users = User::whereIn('id', $labels->keys())
+            // Annotations of deleted users have a null user_id, which groupBy
+            // turns into an empty string key. Don't try to fetch their name.
+            $nullKey = '';
+            $ids = $labels->keys()->filter(fn ($id) => $id !== $nullKey);
+            $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->orderBy('id')
                 ->pluck('name', 'id');
@@ -85,6 +89,13 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
                 $file = $this->createNdJSON($images, $usedLabels, $tmpLabels);
                 $this->tmpFiles[] = $file;
                 $toZip[$file->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'ndjson');
+            }
+
+            if ($labels->has($nullKey)) {
+                $tmpLabels = $labels->get($nullKey)->groupBy('image_id');
+                $file = $this->createNdJSON($images, $usedLabels, $tmpLabels);
+                $this->tmpFiles[] = $file;
+                $toZip[$file->getPath()] = 'deleted-users.ndjson';
             }
         } else {
             $usedLabels = $usedLabelsQuery->pluck('labels.name', 'labels.id');

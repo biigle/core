@@ -56,7 +56,7 @@ class FullReportGeneratorTest extends TestCase
                 $al->annotation->image->filename,
                 $al->annotation_id,
                 "{$root->name} > {$child->name}",
-                $al->annotation->shape->name,
+                $al->annotation->shape->label(),
                 json_encode($al->annotation->points),
                 3.1415,
             ]);
@@ -116,7 +116,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $label1->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -127,7 +127,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $label2->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -184,7 +184,7 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $al1->label->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
@@ -195,13 +195,85 @@ class FullReportGeneratorTest extends TestCase
                 $image->filename,
                 $annotation->id,
                 $al2->label->name,
-                $annotation->shape->name,
+                $annotation->shape->label(),
                 json_encode($annotation->points),
                 null,
             ]);
 
         $mock->shouldReceive('close')
             ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new FullReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSeparateUsersWithNullUserId()
+    {
+        $image = ImageTest::create([
+            'attrs' => ['some' => 'attrs'],
+        ]);
+
+        $annotation = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => null,
+        ]);
+
+        $mock = Mockery::mock();
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with("{$al1->user->firstname} {$al1->user->lastname}");
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $al1->label->name,
+                $annotation->shape->label(),
+                json_encode($annotation->points),
+                null,
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with("(deleted users)");
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $al2->label->name,
+                $annotation->shape->label(),
+                json_encode($annotation->points),
+                null,
+            ]);
+
+        $mock->shouldReceive('close')->twice();
 
         App::singleton(CsvFile::class, fn () => $mock);
 

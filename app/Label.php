@@ -3,6 +3,8 @@
 namespace Biigle;
 
 use DB;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,36 +19,25 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $uuid
  */
+#[Hidden(['uuid'])]
+#[WithoutTimestamps]
 class Label extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes hidden from the model's JSON form.
+     * Get the attributes that should be cast.
      *
-     * @var list<string>
+     * @return array<string, string>
      */
-    protected $hidden = [
-        'uuid',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'parent_id' => 'int',
-        'label_tree_id' => 'int',
-        'label_source_id' => 'int',
-    ];
-
-    /**
-     * Don't maintain timestamps for this model.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+    protected function casts(): array
+    {
+        return [
+            'parent_id' => 'int',
+            'label_tree_id' => 'int',
+            'label_source_id' => 'int',
+        ];
+    }
 
     /**
      * Scope a query to used labels.

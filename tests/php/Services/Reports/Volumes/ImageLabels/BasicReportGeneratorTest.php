@@ -183,6 +183,54 @@ class BasicReportGeneratorTest extends TestCase
         $generator->generateReport('my/path');
     }
 
+    public function testGenerateReportSeparateUsersWithNullUserId()
+    {
+        $image = ImageTest::create();
+
+        $il1 = ImageLabelTest::create([
+            'image_id' => $image->id,
+        ]);
+        $il2 = ImageLabelTest::create([
+            'image_id' => $image->id,
+            'user_id' => null,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with("{$il1->user->firstname} {$il1->user->lastname}");
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with('(deleted users)');
+
+        $mock->shouldReceive('putCsv')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image->id, $image->filename, $il1->label->name]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([$image->id, $image->filename, $il2->label->name]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new BasicReportGenerator([
+            'separateUsers' => true,
+        ]);
+        $generator->setSource($image->volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
     public function testRestrictToLabels()
     {
         $image = ImageTest::create();

@@ -18,7 +18,7 @@ class AnnouncementController extends Controller
      * @apiParam (Required parameters) {String} title Title of the announcement
      * @apiParam (Required parameters) {String} body The body text of the announcement. May be formatted with HTML.
      *
-     * @apiParam (Optional parameters) {Number} show_until Date and time until the announcement should be shown. Only one announcement can be shown at a time. If not specified, the announcement will be shown indefinitely.
+     * @apiParam (Optional parameters) {Date} show_until Date and time until the announcement should be shown. Only one announcement can be shown at a time. If not specified, the announcement will be shown indefinitely.
      *
      * @param StoreAnnouncement $request
      * @return Announcement|\Illuminate\Http\RedirectResponse

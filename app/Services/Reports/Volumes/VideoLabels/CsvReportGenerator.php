@@ -41,7 +41,13 @@ class CsvReportGenerator extends VolumeReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        if ($this->shouldSeparateLabelTrees() || $this->shouldSeparateUsers()) {
+            $rows = $this->query()->get();
+        } else {
+            // The rows are not grouped so they can be streamed to keep the memory
+            // usage low for large volumes.
+            $rows = $this->query()->cursor();
+        }
         $toZip = [];
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
@@ -55,7 +61,11 @@ class CsvReportGenerator extends VolumeReportGenerator
             }
         } elseif ($this->shouldSeparateUsers() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('user_id');
-            $users = User::whereIn('id', $rows->keys())
+            // Labels of deleted users have a null user_id, which groupBy turns
+            // into an empty string key. Don't try to fetch their name.
+            $nullKey = '';
+            $ids = $rows->keys()->filter(fn ($id) => $id !== $nullKey);
+            $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
                 ->pluck('name', 'id');
 
@@ -63,6 +73,12 @@ class CsvReportGenerator extends VolumeReportGenerator
                 $csv = $this->createCsv($rows->get($id));
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
+            }
+
+            if ($rows->has($nullKey)) {
+                $csv = $this->createCsv($rows->get($nullKey));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = 'deleted-users.csv';
             }
         } else {
             $csv = $this->createCsv($rows);
@@ -111,7 +127,7 @@ class CsvReportGenerator extends VolumeReportGenerator
     /**
      * Create a CSV file for this report.
      *
-     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param \Illuminate\Support\Enumerable $rows The rows for the CSV
      * @return CsvFile
      */
     protected function createCsv($rows)

@@ -17,12 +17,14 @@ use Biigle\VideoLabel;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
+#[DeleteWhenMissingModels]
 class CloneImagesOrVideos extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
@@ -84,13 +86,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      * @var array
      */
     protected $uuidMap;
-
-    /**
-     * Ignore this job if the project or volume does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.

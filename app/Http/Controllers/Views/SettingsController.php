@@ -62,11 +62,15 @@ class SettingsController extends Controller
     public function tokens(Guard $auth)
     {
         $this->authorize('create', ApiToken::class);
+        // The token is restored from the session as an array. Convert it to a plain
+        // object for convenience in the template.
+        $token = session('token');
+        $token = $token ? (object) $token : null;
 
         return view('settings.tokens')
             ->withUser($auth->user())
             ->withTokens($auth->user()->apiTokens()->orderBy('updated_at', 'desc')->get())
-            ->withToken(session('token'))
+            ->withToken($token)
             ->withDeleted(session('deleted'));
     }
 
