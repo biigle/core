@@ -45,6 +45,7 @@ export default {
             regularSamplingColumns: 3,
             lawnmowerPausedAt: null,
             volarePausedAt: null,
+            currentTime: Date.now(),
         };
     },
     computed: {
@@ -190,7 +191,7 @@ export default {
             }
         },
         timeAgo(timestamp) {
-            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            const seconds = Math.floor((this.currentTime - timestamp) / 1000);
             const secondsPerDay = 86400;
 
             if (seconds < 60) {
@@ -237,5 +238,10 @@ export default {
             Events.once('images.change', () => this.setMode(mode));
         }
     },
+    mounted() {
+        this.currentTimeInterval = setInterval(() => {
+            this.currentTime = Date.now();
+        }, 60_000);
+    }
 };
 </script>
