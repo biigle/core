@@ -130,6 +130,10 @@ export default {
         selectedLabel: {
             default: null,
         },
+        annotationGuideline: {
+            type: Object,
+            default: null,
+        },
         lastCreatedAnnotation: {
             default: null,
         },

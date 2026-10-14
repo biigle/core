@@ -6,7 +6,7 @@
         <zoom-level-indicator v-if="showZoomLevel" :resolution="resolution"></zoom-level-indicator>
     </div>
     <div class="annotation-canvas__right-indicators">
-        <label-indicator v-if="selectedLabel" :label="selectedLabel"></label-indicator>
+        <label-indicator v-if="selectedLabel" :label="selectedLabel" :guideline="annotationGuideline"></label-indicator>
         <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
     </div>
     <label-tooltip

@@ -87,6 +87,7 @@
             :center="mapCenter"
             :resolution="mapResolution"
             :selected-label="selectedLabel"
+            :annotation-guideline="annotationGuideline"
             :annotation-opacity="annotationOpacity"
             :annotation-mode="annotationMode"
             :show-mouse-position="showMousePosition"
