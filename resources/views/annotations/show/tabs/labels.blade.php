@@ -33,6 +33,7 @@
                 :trees="labelTrees"
                 :sorting-project-ids="projectIds"
                 :labels-in-guideline="labelsInGuideline"
+                :enforce-guideline="enforceGuideline"
                 :show-favourites="true"
                 :focus-input="focusInputFindlabel"
                 v-on:select="handleSelectedLabel"

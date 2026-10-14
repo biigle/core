@@ -80,6 +80,11 @@ export default {
         labelsInGuideline() {
             return this.guideline?.labels.map(label => label.id) ?? [];
         },
+        // Only enforced guidelines of projects where the user can annotate are sent as
+        // guideline_id. All others are informational.
+        enforceGuideline() {
+            return !!(this.guideline?.enforced && this.guideline?.can_annotate);
+        },
         labelbotIsActive() {
             return this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;
         },
