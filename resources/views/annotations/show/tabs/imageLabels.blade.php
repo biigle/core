@@ -1,5 +1,5 @@
 <sidebar-tab class="sidebar__tab--nopad" name="image-labels" icon="image" title="Image labels">
-    <image-label-tab :file-id="imageId" :selected-label="selectedLabel" type="image" v-cloak></image-label-tab>
+    <image-label-tab :file-id="imageId" :selected-label="selectedLabel" :guideline-id="annotationGuidelineId" type="image" v-cloak></image-label-tab>
 </sidebar-tab>
 
 

@@ -109,6 +109,14 @@ export default {
         };
     },
     computed: {
+        // Informational guidelines only affect what is shown and are not sent.
+        annotationGuidelineId() {
+            if (this.annotationGuideline?.enforced_for_user) {
+                return this.annotationGuideline.id;
+            }
+
+            return null;
+        },
         canAdd() {
             return this.isEditor && (this.image !== null);
         },
@@ -446,6 +454,10 @@ export default {
             // TODO: confidence control
             annotation.confidence = 1;
 
+            if (this.annotationGuidelineId) {
+                annotation.guideline_id = this.annotationGuidelineId;
+            }
+
             let promise;
 
             if (this.labelbotIsActive) {
@@ -478,6 +490,10 @@ export default {
                     // TODO: confidence control
                     confidence: 1,
                 };
+
+                if (this.annotationGuidelineId) {
+                    annotationLabel.guideline_id = this.annotationGuidelineId;
+                }
 
                 if (this.isVolareAnnotationMode) {
                     this.$refs.canvas.blinkAnnotation(annotation);
