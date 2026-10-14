@@ -33,6 +33,10 @@ export default class AnnotationGuideline {
         return (this.only_shapes ?? []).map(id => this.shapeNames[id]);
     }
 
+    hasLabel(labelId) {
+        return this.labels.some(label => label.id === labelId);
+    }
+
     /**
      * Get the pivot attributes (description, shape etc.) of a label of the guideline.
      */
@@ -69,7 +73,7 @@ export default class AnnotationGuideline {
             return true;
         }
 
-        return this.labels.some(label => label.id === labelId);
+        return this.hasLabel(labelId);
     }
 
     /**
