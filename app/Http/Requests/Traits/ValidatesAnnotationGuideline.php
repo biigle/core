@@ -31,7 +31,7 @@ trait ValidatesAnnotationGuideline
         }
 
         $guideline = $service->getGuidelines($user, $volumeId)
-            ->first(fn ($g) => $g->id === $guidelineId && $g->enforced && $g->can_annotate);
+            ->first(fn ($g) => $g->id === $guidelineId && $g->enforced_for_user);
 
         if (is_null($guideline)) {
             $validator->errors()->add($attribute, 'The annotation guideline does not exist, is not enforced or cannot be used for this volume.');

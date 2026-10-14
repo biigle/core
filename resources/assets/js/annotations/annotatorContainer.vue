@@ -1,6 +1,7 @@
 <script>
 import AnnotationCanvas from './components/annotationCanvas.vue';
 import AnnotationCanvasMixins from './stores/annotationCanvasMixins.js';
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import AnnotationModesTab from './components/annotationModesTab.vue';
 import AnnotationsStore from './stores/annotations.js';
 import AnnotationsTab from './components/siaAnnotationsTab.vue';
@@ -96,6 +97,9 @@ export default {
             imageFilenames: {},
             labelTrees: [],
             projectIds: [],
+            annotationGuidelines: [],
+            mustUseAnnotationGuideline: false,
+            annotationGuideline: null,
         };
     },
     provide() {
@@ -104,6 +108,14 @@ export default {
         };
     },
     computed: {
+        // Informational guidelines only affect what is shown and are not sent.
+        annotationGuidelineId() {
+            if (this.annotationGuideline?.isEnforcedForUser) {
+                return this.annotationGuideline.id;
+            }
+
+            return null;
+        },
         canAdd() {
             return this.isEditor && (this.image !== null);
         },
@@ -430,6 +442,9 @@ export default {
         handleSelectedLabel(label) {
             this.selectedLabel = label;
         },
+        handleSelectedAnnotationGuideline(guideline) {
+            this.annotationGuideline = guideline;
+        },
         handleNewAnnotation(annotation, removeCallback) {
             if (!this.isEditor) {
                 return;
@@ -437,6 +452,10 @@ export default {
 
             // TODO: confidence control
             annotation.confidence = 1;
+
+            if (this.annotationGuidelineId) {
+                annotation.guideline_id = this.annotationGuidelineId;
+            }
 
             let promise;
 
@@ -470,6 +489,10 @@ export default {
                     // TODO: confidence control
                     confidence: 1,
                 };
+
+                if (this.annotationGuidelineId) {
+                    annotationLabel.guideline_id = this.annotationGuidelineId;
+                }
 
                 if (this.isVolareAnnotationMode) {
                     this.$refs.canvas.blinkAnnotation(annotation);
@@ -748,6 +771,10 @@ export default {
         this.imageFilenames = biigle.$require('annotations.imagesFilenames');
         this.labelTrees = biigle.$require('annotations.labelTrees');
         this.projectIds = biigle.$require('annotations.projectIds');
+        const shapes = biigle.$require('annotations.shapes');
+        this.annotationGuidelines = biigle.$require('annotations.annotationGuidelines')
+            .map(g => new AnnotationGuideline(g, shapes));
+        this.mustUseAnnotationGuideline = biigle.$require('annotations.mustUseAnnotationGuideline');
 
         if (this.imagesIds.length === 0) {
             Messages.info('Your current volume filtering contains no images.');

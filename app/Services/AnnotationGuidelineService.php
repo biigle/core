@@ -20,9 +20,10 @@ class AnnotationGuidelineService
      * Get the guidelines (enforced and informational) of the projects that the user and
      * the volume have in common.
      *
-     * Each guideline has the additional attribute `can_annotate` (whether the user can
-     * create annotations in the project of the guideline). Guidelines that are enforced
-     * and where `can_annotate` is true can be chosen for new annotations.
+     * Each guideline has the additional attribute `enforced_for_user`. It is true if the
+     * guideline is enforced and the user can create annotations in the project of the
+     * guideline. Only these guidelines can be chosen for new annotations. All other
+     * guidelines are informational for the user.
      *
      * @return Collection<int, AnnotationGuideline>
      */
@@ -45,7 +46,8 @@ class AnnotationGuidelineService
                 ->each(function (AnnotationGuideline $guideline) use ($editRoles) {
                     // The subselect is not cast so it has to be converted to the enum.
                     $role = Role::tryFrom((int) $guideline->project_role);
-                    $guideline->can_annotate = in_array($role, $editRoles, true);
+                    $guideline->enforced_for_user = $guideline->enforced
+                        && in_array($role, $editRoles, true);
                     unset($guideline->project_role);
                 });
         });
@@ -58,12 +60,21 @@ class AnnotationGuidelineService
      */
     public function mustUseGuideline(User $user, int $volumeId): bool
     {
-        return once(fn () => !Project::inCommon($user, $volumeId, $this->getEditRoles())
-            ->whereDoesntHave(
+        return once(function () use ($user, $volumeId) {
+            $query = Project::inCommon($user, $volumeId, $this->getEditRoles());
+
+            // Without this check, users who can't create annotations (e.g. guests)
+            // would be required to use a guideline.
+            if (!$query->clone()->exists()) {
+                return false;
+            }
+
+            return !$query->whereDoesntHave(
                 'annotationGuideline',
                 fn ($query) => $query->where('enforced', true)
             )
-            ->exists());
+                ->exists();
+        });
     }
 
     /**

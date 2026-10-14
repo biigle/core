@@ -3,9 +3,30 @@
     display: flex;
     flex-direction: column;
 
+    // Match the padding of the sidebar tab.
+    > .well {
+        margin-bottom: 1em;
+    }
+
     .labels-tab__trees {
         flex: 1;
         overflow: hidden;
+    }
+
+    .annotation-guideline-selector__dropdown .dropdown-menu {
+        width: 100%;
+    }
+
+    .annotation-guideline-selector__info {
+        margin-top: 10px;
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .annotation-guideline-selector__shape {
+        margin-left: 4px;
     }
 
     .labels-tab__plugins:not(:empty) {

@@ -6,7 +6,7 @@
         <zoom-level-indicator v-if="showZoomLevel" :resolution="resolution"></zoom-level-indicator>
     </div>
     <div class="annotation-canvas__right-indicators">
-        <label-indicator v-if="selectedLabel" :label="selectedLabel"></label-indicator>
+        <label-indicator v-if="selectedLabel" :label="selectedLabel" :guideline="annotationGuideline"></label-indicator>
         <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
     </div>
     <label-tooltip
@@ -47,20 +47,23 @@
         <div class="btn-group drawing-controls" v-if="canAdd" @cannot('add-annotation') v-cloak @endcannot>
             <control-button
                 icon="icon-point"
-                title="Set a point 𝗔"
+                :title="getShapeToolTitle('Point', 'Set a point 𝗔')"
+                :disabled="!isShapeAllowed('Point')"
                 :active="isDrawingPoint"
                 v-on:click="drawPoint"
                 ></control-button>
             <control-button
                 icon="icon-rectangle"
-                title="Draw a rectangle 𝗦"
+                :title="getShapeToolTitle('Rectangle', 'Draw a rectangle 𝗦')"
+                :disabled="!isShapeAllowed('Rectangle')"
                 :active="isDrawingRectangle"
                 v-on:click="drawRectangle"
                 v-slot="{onActive}"
                 >
                 <control-button
                     icon="fa-vector-square"
-                    title="Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦"
+                    :title="getShapeToolTitle('Rectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
+                    :disabled="!isShapeAllowed('Rectangle')"
                     :active="isDrawingAlignedRectangle"
                     v-on:click="drawAlignedRectangle"
                     v-on:active="onActive"
@@ -68,14 +71,16 @@
             </control-button>
             <control-button
                 icon="icon-circle"
-                title="Draw a circle 𝗗"
+                :title="getShapeToolTitle('Circle', 'Draw a circle 𝗗')"
+                :disabled="!isShapeAllowed('Circle')"
                 :active="isDrawingCircle"
                 v-on:click="drawCircle"
                 v-slot="{onActive}"
                 >
                 <control-button
                     icon="icon-ellipse"
-                    title="Draw an ellipse 𝗦𝗵𝗶𝗳𝘁+𝗗"
+                    :title="getShapeToolTitle('Ellipse', 'Draw an ellipse 𝗦𝗵𝗶𝗳𝘁+𝗗')"
+                    :disabled="!isShapeAllowed('Ellipse')"
                     :active="isDrawingEllipse"
                     v-on:click="drawEllipse"
                     v-on:active="onActive"
@@ -83,7 +88,8 @@
             </control-button>
             <control-button
                 icon="icon-linestring"
-                title="Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand"
+                :title="getShapeToolTitle('LineString', 'Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand')"
+                :disabled="!isShapeAllowed('LineString')"
                 :active="isDrawingLineString"
                 v-on:click="drawLineString"
                 v-slot="{onActive}"
@@ -97,22 +103,24 @@
                     ></control-button>
                 <control-button
                     icon="fa-check"
-                    title="Convert measurement to a line string 𝗘𝗻𝘁𝗲𝗿"
-                    :disabled="cantConvertMeasureFeature"
+                    :title="getShapeToolTitle('LineString', 'Convert measurement to a line string 𝗘𝗻𝘁𝗲𝗿')"
+                    :disabled="cantConvertMeasureFeature || !isShapeAllowed('LineString')"
                     v-on:click="convertMeasurement"
                     v-on:active="onActive"
                     ></control-button>
             </control-button>
             <control-button
                 icon="icon-polygon"
-                title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand"
+                :title="getShapeToolTitle('Polygon', 'Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand')"
+                :disabled="!isShapeAllowed('Polygon')"
                 :active="isDrawingPolygon"
                 v-on:click="drawPolygon"
                 v-slot="{onActive}"
                 >
                 <control-button
                     icon="fa-paint-brush"
-                    title="Draw a polygon using the brush tool 𝗘"
+                    :title="getShapeToolTitle('Polygon', 'Draw a polygon using the brush tool 𝗘')"
+                    :disabled="!isShapeAllowed('Polygon')"
                     :active="isUsingPolygonBrush"
                     v-on:click="togglePolygonBrush"
                     v-on:active="onActive"
@@ -140,7 +148,8 @@
                 <control-button
                     v-else
                     icon="fa-magic"
-                    title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
+                    :title="getShapeToolTitle('Polygon', 'Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚')"
+                    :disabled="!isShapeAllowed('Polygon')"
                     :active="isMagicWanding"
                     v-on:click="toggleMagicWand"
                     v-on:active="onActive"

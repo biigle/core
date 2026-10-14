@@ -53,7 +53,7 @@ class AnnotationGuidelineServiceTest extends TestCase
         $this->assertSame([$g1->id, $g2->id, $g3->id], $ids);
     }
 
-    public function testGetGuidelinesCanAnnotate()
+    public function testGetGuidelinesEnforcedForUser()
     {
         $g1 = $this->createGuideline($this->editorProject, true);
         $g2 = $this->createGuideline($this->expertProject, false);
@@ -62,9 +62,11 @@ class AnnotationGuidelineServiceTest extends TestCase
         $guidelines = $this->service->getGuidelines($this->user, $this->volume->id)
             ->keyBy('id');
 
-        $this->assertTrue($guidelines[$g1->id]->can_annotate);
-        $this->assertTrue($guidelines[$g2->id]->can_annotate);
-        $this->assertFalse($guidelines[$g3->id]->can_annotate);
+        $this->assertTrue($guidelines[$g1->id]->enforced_for_user);
+        // Not enforced.
+        $this->assertFalse($guidelines[$g2->id]->enforced_for_user);
+        // The user can't annotate in the project.
+        $this->assertFalse($guidelines[$g3->id]->enforced_for_user);
         $this->assertArrayNotHasKey('project_role', $guidelines[$g1->id]->toArray());
     }
 
@@ -125,6 +127,15 @@ class AnnotationGuidelineServiceTest extends TestCase
         // The other projects without guideline must not count because the global admin
         // is no member there.
         $this->assertTrue($this->service->mustUseGuideline($admin, $this->volume->id));
+    }
+
+    public function testMustUseGuidelineNoEditProjects()
+    {
+        $guest = UserTest::create();
+        $this->guestProject->addUserId($guest->id, Role::GUEST);
+        $this->createGuideline($this->guestProject, true);
+
+        $this->assertFalse($this->service->mustUseGuideline($guest, $this->volume->id));
     }
 
     protected function createGuideline($project, bool $enforced): AnnotationGuideline
