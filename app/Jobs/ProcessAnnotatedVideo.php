@@ -185,7 +185,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     /**
      * Get a video frame from a specific time as VipsImage object.
      * If thumbnail creation only used ffmpeg -ss <timestamp> ... (or a library call
-     * that would resolve to the same command), ffmpeg would return the frame at or
+     * that resolves to the same command), ffmpeg would return the frame at or
      * after the timestamp. Browsers usually display the one at or before the timestamp.
      * To mimic browser behavior, we force ffmpeg to give the frame at or before the
      * timestamp by decoding a short window around the timestamp and using the
@@ -212,7 +212,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         // of tries is exceeded.
         do {
             $seekTime = sprintf('%F', max(0, $time - $window));
-            $decodeDuration = sprintf('%F', 2 * $window);
+            $decodeDuration = sprintf('%F', $window + $seekStep);
             $timeString = sprintf('%F', $time);
 
             // Use a temporary file with random name for the jpg thumbnail file
