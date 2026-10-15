@@ -12,7 +12,6 @@ use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
 use Exception;
-use FFMpeg\Media\Video;
 use FileCache;
 use Log;
 use Mockery;
@@ -890,6 +889,27 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame([300, 284, 100, 32], $box);
     }
 
+    public function testParseVideoFps()
+    {
+        $job = new ProcessAnnotatedVideoParseStub(VideoModel::factory()->make());
+
+        $this->assertSame(30.0, $job->parseVideoFpsForTest('0/0'));
+        $this->assertEqualsWithDelta(30000 / 1001, $job->parseVideoFpsForTest('30000/1001'), 1e-5);
+        $this->assertSame(30.0, $job->parseVideoFpsForTest(null));
+        $this->assertSame(30.0, $job->parseVideoFpsForTest('invalid'));
+    }
+
+    public function testCalculateSeekWindow()
+    {
+        $job = new ProcessAnnotatedVideoSeekWindowStub(VideoModel::factory()->make());
+
+        $job->fps = 60;
+        $this->assertSame(0.05, $job->calculateSeekWindowForTest('video.mp4'));
+
+        $job->fps = 1;
+        $this->assertSame(3.0, $job->calculateSeekWindowForTest('video.mp4'));
+    }
+
     protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();
@@ -912,12 +932,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     public $times = [];
     public $throwGetFrame = false;
 
-    public function getVideo($path)
-    {
-        return Mockery::mock(Video::class);
-    }
-
-    protected function calculateSeekWindow(string $path): float
+    public function calculateSeekWindow(string $path): float
     {
         return 0.05;
     }
@@ -936,7 +951,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     protected function getVipsImageForPyworker(string $path, array $options = [])
     {
         // Return the mock directly, skipping RGB conversion
-        return $this->getVideo($path);
+        return $this->mock;
     }
 
     protected function getCropBufferForPyworker($image, array $box): string
@@ -950,5 +965,28 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     protected function sendPyworkerRequest(string $buffer): array
     {
         return $this->featureVector ?: range(0, 383);
+    }
+}
+
+class ProcessAnnotatedVideoSeekWindowStub extends ProcessAnnotatedVideo
+{
+    public float $fps;
+
+    public function getVideoFps(string $path): float
+    {
+        return $this->fps;
+    }
+
+    public function calculateSeekWindowForTest(string $path): float
+    {
+        return $this->calculateSeekWindow($path);
+    }
+}
+
+class ProcessAnnotatedVideoParseStub extends ProcessAnnotatedVideo
+{
+    public function parseVideoFpsForTest(mixed $rate): float
+    {
+        return $this->parseVideoFps($rate);
     }
 }

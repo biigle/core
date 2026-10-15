@@ -36,6 +36,21 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     private ?string $videoFpsPath = null;
 
     /**
+     * FFProbe returns FPS as a rational like 60/1 (60 FPS) since decimals can't represent
+     * some values correctly. This function parses that output into a float.
+     * @param mixed $rate
+     * @return float
+     */
+    protected function parseVideoFps(mixed $rate): float
+    {
+        if (is_string($rate) && preg_match('/^(\d+)\/(\d+)$/', $rate, $matches) && (int) $matches[2] > 0) {
+            return $this->videoFps = (float) $matches[1] / (float) $matches[2];
+        }
+
+        return 30.0;
+    }
+
+    /**
      * Return the average video fps using ffprobe or fall back to 30 FPS if it failed
      * @param string $path Path to the video file
      * @return float The average FPS of the video
@@ -57,14 +72,8 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             return $this->videoFps = 30.0;
         }
 
-        // FFProbe returns FPS as a rational like 60/1 (60 FPS) since decimals
-        // can't represent some values correctly
         $rate = $stream->get('avg_frame_rate');
-        if (is_string($rate) && preg_match('/^(\d+)\/(\d+)$/', $rate, $matches) && (int) $matches[2] > 0) {
-            return $this->videoFps = (float) $matches[1] / (float) $matches[2];
-        }
-
-        return $this->videoFps = 30.0;
+        return $this->videoFps = $this->parseVideoFps($rate);
     }
 
     /**
