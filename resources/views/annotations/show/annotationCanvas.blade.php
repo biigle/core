@@ -14,14 +14,11 @@
         :position="mousePosition"
         :features="hoveredFeatures"
         ></label-tooltip>
-    <persistent-label-tooltip
-        v-for="feature in persistentLabelTooltips.visibleFeatures"
-        :key="feature.getId()"
-        :feature="feature"
-        :line-source="persistentLabelTooltips.lineSource"
+    <persistent-label-tooltips
+        :annotation-source="annotationSource"
         :map="map"
-        :show="persistentLabelTooltips.show"
-        ></persistent-label-tooltip>
+        :mode="showLabelTooltip"
+        ></persistent-label-tooltips>
     <measure-tooltip
         :show="showMeasureTooltip"
         :position="mousePosition"

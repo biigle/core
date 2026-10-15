@@ -9,14 +9,11 @@
             :show="showTooltip"
             :position="mousePosition"
             ></label-tooltip>
-        <persistent-label-tooltip
-            v-for="feature in persistentLabelTooltips.visibleFeatures"
-            :key="feature.getId()"
-            :feature="feature"
-            :line-source="persistentLabelTooltips.lineSource"
+        <persistent-label-tooltips
+            :annotation-source="annotationSource"
             :map="map"
-            :show="persistentLabelTooltips.show"
-            ></persistent-label-tooltip>
+            :mode="showLabelTooltip"
+            ></persistent-label-tooltips>
         <div class="controls">
             <div v-if="showPrevNext" class="btn-group">
                 <control-button
@@ -695,12 +692,6 @@ export default {
             return map;
         },
         initLayersAndInteractions(map) {
-            this.annotationFeatures = new Collection();
-
-            this.annotationSource = new VectorSource({
-                features: this.annotationFeatures,
-            });
-
             this.annotationLayer = new VectorLayer({
                 source: this.annotationSource,
                 updateWhileAnimating: true,
@@ -882,6 +873,11 @@ export default {
     created() {
         // markRaw is essential here!
         this.map = markRaw(this.createMap());
+        // These OpenLayers objects must not become reactive.
+        this.annotationFeatures = new Collection();
+        this.annotationSource = new VectorSource({
+            features: this.annotationFeatures,
+        });
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 

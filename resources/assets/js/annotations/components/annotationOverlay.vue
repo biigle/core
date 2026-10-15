@@ -1,6 +1,5 @@
 <template>
     <div
-        v-show="show"
         :class="[dragging && draggingClass]"
         @mousedown="handleRootMouseDown"
         >
@@ -25,6 +24,10 @@ export default {
         centered: {
             type: Boolean,
             default: false,
+        },
+        clampVertically: {
+            type: Boolean,
+            default: true,
         },
         connectorColor: {
             type: String,
@@ -58,10 +61,6 @@ export default {
             type: Object,
             required: true,
         },
-        show: {
-            type: Boolean,
-            default: true,
-        },
         zIndex: {
             type: Number,
             default: null,
@@ -74,7 +73,6 @@ export default {
             dragStartOverlayOffset: [0, 0],
             geometryUpdatePending: false,
             isUnmounting: false,
-            listenerKeys: [],
             wasDragged: false,
         };
     },
@@ -103,12 +101,14 @@ export default {
                 offset[0] = this.gap;
             }
 
-            const bottomOverflow = (viewportExtent[1] - centerY) / resolution + tooltipSize[1] / 2;
-            const topOverflow = tooltipSize[1] / 2 - (viewportExtent[3] - centerY) / resolution;
-            if (bottomOverflow > 0) {
-                offset[1] = -bottomOverflow;
-            } else if (topOverflow > 0) {
-                offset[1] = topOverflow;
+            if (this.clampVertically) {
+                const bottomOverflow = (viewportExtent[1] - centerY) / resolution + tooltipSize[1] / 2;
+                const topOverflow = tooltipSize[1] / 2 - (viewportExtent[3] - centerY) / resolution;
+                if (bottomOverflow > 0) {
+                    offset[1] = -bottomOverflow;
+                } else if (topOverflow > 0) {
+                    offset[1] = topOverflow;
+                }
             }
 
             return {position, positioning, offset};
@@ -145,7 +145,7 @@ export default {
             feature.set('color', this.getConnectorColor());
             feature.setStyle(Styles.editing);
             feature._updateCoordinates = () => {
-                if (!this.show || !this.overlay) return;
+                if (!this.overlay) return;
 
                 const position = this.overlay.getPosition();
                 const offset = this.overlay.getOffset();
@@ -293,12 +293,11 @@ export default {
         feature() {
             this.resetOverlay();
         },
-        show(show) {
-            if (show && this.lineFeature) {
-                this.lineFeature._updateCoordinates();
-            }
-        },
         zIndex: 'updateZIndex',
+    },
+    created() {
+        // Listener keys reference OpenLayers objects and must not become reactive.
+        this.listenerKeys = [];
     },
     mounted() {
         this.createOverlay();

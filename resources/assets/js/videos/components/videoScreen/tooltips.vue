@@ -1,7 +1,7 @@
 <script>
 import LabelTooltip from '@/annotations/components/labelTooltip.vue';
-import {PersistentLabelTooltip, usePersistentLabelTooltips} from '@/annotations/components/persistentLabelTooltips.js';
-import {computed, markRaw} from 'vue';
+import PersistentLabelTooltips from '@/annotations/components/persistentLabelTooltips.vue';
+import {markRaw} from 'vue';
 import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 
 /**
@@ -12,14 +12,13 @@ import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 export default {
     components: {
         labelTooltip: LabelTooltip,
-        persistentLabelTooltip: PersistentLabelTooltip,
+        persistentLabelTooltips: PersistentLabelTooltips,
     },
     data() {
         return {
             // Used to determine when to notify watchers for hovered annotations.
             hoveredFeaturesHash: '',
             hoveredFeatures: [],
-            persistentLabelTooltips: null,
         };
     },
     computed: {
@@ -66,23 +65,6 @@ export default {
                 this.updateTooltipEventListeners(this.map);
             },
         },
-    },
-    created() {
-        this.persistentLabelTooltips = usePersistentLabelTooltips({
-            annotationSource: computed(() => {
-                this.mapReadyRevision;
-                return this.annotationSource;
-            }),
-            map: computed(() => this.map),
-            mapReadyRevision: computed(() => this.mapReadyRevision),
-            mode: computed(() => this.showLabelTooltip),
-        });
-    },
-    mounted() {
-        this.persistentLabelTooltips.mount();
-    },
-    beforeUnmount() {
-        this.persistentLabelTooltips.unmount();
     },
 };
 </script>

@@ -1,8 +1,8 @@
 <script>
 import LabelTooltip from '../labelTooltip.vue';
 import MeasureTooltip from '../measureTooltip.vue';
-import {PersistentLabelTooltip, usePersistentLabelTooltips} from '../persistentLabelTooltips.js';
-import {computed, markRaw} from 'vue';
+import PersistentLabelTooltips from '../persistentLabelTooltips.vue';
+import {markRaw} from 'vue';
 import {LABEL_TOOLTIP_MODES} from '../../utils.js';
 
 /**
@@ -14,7 +14,7 @@ export default {
     components: {
         labelTooltip: LabelTooltip,
         measureTooltip: MeasureTooltip,
-        persistentLabelTooltip: PersistentLabelTooltip,
+        persistentLabelTooltips: PersistentLabelTooltips,
     },
     props: {
         showLabelTooltip: {
@@ -39,7 +39,6 @@ export default {
             // Used to determine when to notify watchers for hovered annotations.
             hoveredFeaturesHash: '',
             hoveredFeatures: [],
-            persistentLabelTooltips: null,
         };
     },
     methods: {
@@ -72,24 +71,9 @@ export default {
         },
     },
     mounted() {
-        this.persistentLabelTooltips.mount();
         // Wait until the OpenLayers map is created.
         this.updatePointerMoveHandler();
         this.$watch('showAnnotationTooltip', this.updatePointerMoveHandler);
-    },
-    created() {
-        this.persistentLabelTooltips = usePersistentLabelTooltips({
-            annotationSource: computed(() => {
-                this.mapReadyRevision;
-                return this.annotationSource;
-            }),
-            map: computed(() => this.map),
-            mapReadyRevision: computed(() => this.mapReadyRevision),
-            mode: computed(() => this.showLabelTooltip),
-        });
-    },
-    beforeUnmount() {
-        this.persistentLabelTooltips.unmount();
     },
 };
 </script>

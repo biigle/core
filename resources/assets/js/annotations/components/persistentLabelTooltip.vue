@@ -4,10 +4,10 @@
         drag-on-root
         dragging-class="annotation-tooltip--dragging"
         follow-geometry
+        :clamp-vertically="false"
         :feature="feature"
         :line-source="lineSource"
         :map="map"
-        :show="show"
         >
         <ul class="annotation-tooltip__annotations">
             <li>
@@ -38,10 +38,6 @@ export default {
         map: {
             type: Object,
             required: true,
-        },
-        show: {
-            type: Boolean,
-            default: true,
         },
     },
     computed: {
