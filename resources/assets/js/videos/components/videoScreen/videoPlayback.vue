@@ -33,6 +33,7 @@ export default {
             mediabunnySink: null,
             mediabunnyInitPromise: null,
             videoSourceRevision: 0,
+            mediabunnyDecodeCount: 0,
         };
     },
     methods: {
@@ -295,6 +296,7 @@ export default {
             const source = this.video.src;
             const sourceHasChanged = () => revision !== this.videoSourceRevision || source !== this.video.src;
 
+            this.mediabunnyDecodeCount++;
             this.$emit('mediabunny-decoding', true);
             try {
                 await this.mediabunnyInitPromise;
@@ -317,7 +319,8 @@ export default {
                 this.drawBitmap(bitmap);
                 bitmap.close();
             } finally {
-                this.$emit('mediabunny-decoding', false);
+                this.mediabunnyDecodeCount--;
+                this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
             }
         },
         drawBitmap(bitmap) {
