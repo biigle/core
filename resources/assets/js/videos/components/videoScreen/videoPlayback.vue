@@ -115,10 +115,17 @@ export default {
             this.animationFrameId = null;
         },
         async renderPausedFrame(time = this.video.currentTime) {
-            if (!this.video.paused || !this.mediabunnySink) {
+            if (!this.video.paused ) {
+                this.renderVideo(true);
+                return;
+            } else if (!this.mediabunnySink) {
+                // Use the old hack if mediabunny is not available (unsupported codec, etc.):
+                // Assign video.currentTime manually and hope the browser displays the correct frame
+                this.video.currentTime = time;
                 this.renderVideo(true);
                 return;
             }
+
             await this.getFrameBitmap(time);
         },
         setPlaying() {
