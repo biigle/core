@@ -194,7 +194,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      * @param string $sourcePath
      * @param float $time
      * @param float $window
-     * @param int $trySeek
+     * @param ?int $trySeek
      *
      * @return Image
      */

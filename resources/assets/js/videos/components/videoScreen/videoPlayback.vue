@@ -32,7 +32,7 @@ export default {
             mediabunnyInput: null,
             mediabunnySink: null,
             mediabunnyInitPromise: null,
-            videoSoureRevision: 0,
+            videoSourceRevision: 0,
         };
     },
     methods: {
@@ -156,9 +156,9 @@ export default {
             this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
         },
         handleVideoMetadata() {
-            this.videoSoureRevision++;
+            this.videoSourceRevision++;
             this.mediabunnySink = null;
-            this.mediabunnyInitPromise = this.initMediabunny(this.videoSoureRevision);
+            this.mediabunnyInitPromise = this.initMediabunny(this.videoSourceRevision);
         },
         async handleSeeked() {
             await this.renderPausedFrame();
@@ -282,7 +282,7 @@ export default {
                 return;
             }
 
-            if (revision !== this.videoSoureRevision) {
+            if (revision !== this.videoSourceRevision) {
                 input.dispose();
                 return;
             }
@@ -291,9 +291,9 @@ export default {
             this.mediabunnySink = new VideoSampleSink(track);
         },
         async getFrameBitmap(time) {
-            const revision = this.videoSoureRevision;
+            const revision = this.videoSourceRevision;
             const source = this.video.src;
-            const sourceHasChanged = () => revision !== this.videoSoureRevision || source !== this.video.src;
+            const sourceHasChanged = () => revision !== this.videoSourceRevision || source !== this.video.src;
 
             this.$emit('mediabunny-decoding', true);
             try {
