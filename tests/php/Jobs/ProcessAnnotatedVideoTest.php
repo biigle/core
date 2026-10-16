@@ -8,6 +8,7 @@ use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Jobs\ProcessAnnotatedVideo;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
@@ -557,6 +558,57 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame(0, VideoAnnotationLabelFeatureVector::count());
     }
 
+    public function testGenerateFeatureVectorDeletedAnnotationLabelInBatch()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock(3);
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = VideoTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 3; $i++) {
+            $annotation = VideoAnnotationTest::create(['video_id' => $file->id, 'points' => [[200, 200]], 'frames' => [1], 'shape' => Shape::POINT]);
+            $annotationLabels[] = VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        $deleted = $annotationLabels[1];
+
+        $job = new ProcessAnnotatedVideoStub($file);
+        $job->mock = $video;
+        // The labels are already loaded at this point, so this simulates a label that
+        // is deleted while the feature vectors are generated. All feature vectors are
+        // in the same batch, so the batch fails and each row must be retried.
+        $job->beforePyworkerRequest = fn () => $deleted->delete();
+        $job->handle();
+
+        $expect = [$annotationLabels[0]->id, $annotationLabels[2]->id];
+        $this->assertSame($expect, VideoAnnotationLabelFeatureVector::orderBy('id')->pluck('id')->all());
+    }
+
+    public function testGenerateFeatureVectorDeletedAnnotationLabelMultipleBatches()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock(4);
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = VideoTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 4; $i++) {
+            $annotation = VideoAnnotationTest::create(['video_id' => $file->id, 'points' => [[200, 200]], 'frames' => [1], 'shape' => Shape::POINT]);
+            $annotationLabels[] = VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        $deleted = $annotationLabels[0];
+
+        $job = new ProcessAnnotatedVideoBatchStub($file);
+        $job->mock = $video;
+        // Only the first batch contains the deleted label. The following batch must
+        // still be written.
+        $job->beforePyworkerRequest = fn () => $deleted->delete();
+        $job->handle();
+
+        $expect = array_map(fn ($al) => $al->id, array_slice($annotationLabels, 1));
+        $this->assertSame($expect, VideoAnnotationLabelFeatureVector::orderBy('id')->pluck('id')->all());
+    }
+
     public function testGenerateFeatureVectorManyLabels()
     {
         Storage::fake('test');
@@ -587,6 +639,36 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame($annotationLabel2->id, $vectors[1]->id);
         $this->assertSame($annotationLabel2->label_id, $vectors[1]->label_id);
         $this->assertSame(range(0, 383), $vectors[1]->vector->toArray());
+    }
+
+    public function testGenerateFeatureVectorBatches()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock(3);
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = VideoTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 3; $i++) {
+            $annotation = VideoAnnotationTest::create(['video_id' => $file->id, 'points' => [[200, 200]], 'frames' => [1], 'shape' => Shape::POINT]);
+            $annotationLabels[] = VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        // The labels of one annotation may be split across batches.
+        $annotationLabels[] = VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+
+        $job = new ProcessAnnotatedVideoBatchStub($file);
+        $job->mock = $video;
+        $job->handle();
+
+        $vectors = VideoAnnotationLabelFeatureVector::orderBy('id')->get();
+        $this->assertSame(array_map(fn ($al) => $al->id, $annotationLabels), $vectors->pluck('id')->all());
+        foreach ($vectors as $index => $vector) {
+            $this->assertSame($annotationLabels[$index]->annotation_id, $vector->annotation_id);
+            $this->assertSame($annotationLabels[$index]->label_id, $vector->label_id);
+            $this->assertSame($annotationLabels[$index]->label->label_tree_id, $vector->label_tree_id);
+            $this->assertSame($file->volume_id, $vector->volume_id);
+            $this->assertSame(range(0, 383), $vector->vector->toArray());
+        }
     }
 
     public function testGenerateFeatureVectorUpdate()
@@ -975,4 +1057,9 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 
         return $this->featureVector ?: range(0, 383);
     }
+}
+
+class ProcessAnnotatedVideoBatchStub extends ProcessAnnotatedVideoStub
+{
+    const FEATURE_VECTOR_BATCH_SIZE = 2;
 }
