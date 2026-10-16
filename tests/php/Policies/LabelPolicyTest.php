@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Policies;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
@@ -25,9 +25,9 @@ class LabelPolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
-        $this->tree->addMember($this->editor, Role::editor());
-        $this->tree->addMember($this->admin, Role::admin());
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN]);
+        $this->tree->addMember($this->editor, Role::EDITOR);
+        $this->tree->addMember($this->admin, Role::ADMIN);
         $this->label = LabelTest::create(['label_tree_id' => $this->tree->id]);
     }
 

@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\LabelTrees;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
-use Biigle\Visibility;
 use Cache;
 use TestCase;
 
@@ -13,7 +13,7 @@ class AnnotationCatalogControllerTest extends TestCase
 {
     public function testIndex()
     {
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE]);
 
         $this->get("label-trees/{$tree->id}/catalog")->assertStatus(302);
 
@@ -21,7 +21,7 @@ class AnnotationCatalogControllerTest extends TestCase
         $this->be($user);
         $this->get("label-trees/{$tree->id}/catalog")->assertStatus(403);
 
-        $tree->addMember($user, Role::admin());
+        $tree->addMember($user, Role::ADMIN);
         Cache::flush();
         $this->get("label-trees/{$tree->id}/catalog")->assertStatus(200);
     }

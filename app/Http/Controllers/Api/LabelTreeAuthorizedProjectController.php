@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\Enums\Visibility;
 use Biigle\Http\Requests\StoreLabelTreeAuthorizedProject;
 use Biigle\LabelTree;
-use Biigle\Visibility;
 use DB;
 use Illuminate\Http\Request;
 
@@ -83,7 +83,7 @@ class LabelTreeAuthorizedProjectController extends Controller
                 ->whereIn('label_tree_id', $treeIds)
                 ->delete();
 
-            if ($tree->visibility_id === Visibility::privateId()) {
+            if ($tree->visibility === Visibility::PRIVATE) {
                 DB::table('label_tree_project')
                     ->where('project_id', $pid)
                     ->whereIn('label_tree_id', $treeIds)

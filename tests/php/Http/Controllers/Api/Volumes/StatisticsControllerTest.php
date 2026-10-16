@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -143,7 +143,7 @@ class StatisticsControllerTest extends ApiTestCase
 
     public function testVideoStatistics()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $video = VideoTest::create([
             'volume_id' => $this->volume()->id,
@@ -180,7 +180,7 @@ class StatisticsControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$id}/statistics")
             ->assertStatus(200);
-        
+
         $expect = [
             'volumeType' => 'video',
             'annotationTimeSeries' => [

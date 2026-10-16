@@ -3,11 +3,11 @@
 namespace Biigle\Services\LabelBot;
 
 use Biigle\Annotation;
+use Biigle\Enums\Role;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Cache;
@@ -93,9 +93,9 @@ class LabelBotService
             // Array of all project IDs that the user and the image have in common
             // and where the user is editor, expert or admin.
             $projectIds = Project::inCommon($user, $volumeId, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
+                Role::EDITOR,
+                Role::EXPERT,
+                Role::ADMIN,
             ])->pluck('id');
         }
 

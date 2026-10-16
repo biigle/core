@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\LabelTrees;
 
+use Biigle\Enums\Visibility;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\User;
-use Biigle\Visibility;
 use Illuminate\Http\Request;
 
 class LabelTreeProjectsController extends Controller
@@ -66,10 +66,7 @@ class LabelTreeProjectsController extends Controller
             })->pluck('id');
         }
 
-        $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->name,
-            Visibility::privateId() => Visibility::private()->name,
-        ]);
+        $visibilities = Visibility::pluckById();
 
         return view('label-trees.show.projects', [
             'tree' => $tree,
@@ -77,7 +74,7 @@ class LabelTreeProjectsController extends Controller
             'visibilities' => $visibilities,
             'authorizedProjects' => $authorizedProjects,
             'authorizedOwnProjects' => $authorizedOwnProjects,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility === Visibility::PRIVATE,
             'activeTab' => 'projects',
         ]);
     }
@@ -108,7 +105,7 @@ class LabelTreeProjectsController extends Controller
             'tree' => $tree,
             'masterTree' => $tree->version->labelTree,
             'projects' => $projects,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility === Visibility::PRIVATE,
             'activeTab' => 'projects',
         ]);
     }

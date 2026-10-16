@@ -3,6 +3,7 @@
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
 use Arr;
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\User;
@@ -38,7 +39,13 @@ class FullReportGenerator extends AnnotationReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        if ($this->shouldSeparateLabelTrees() || $this->shouldSeparateUsers()) {
+            $rows = $this->query()->get();
+        } else {
+            // The rows are not grouped so they can be streamed to keep the memory
+            // usage low for large volumes.
+            $rows = $this->query()->cursor();
+        }
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
@@ -83,11 +90,10 @@ class FullReportGenerator extends AnnotationReportGenerator
                 'images.filename',
                 'image_annotations.id as annotation_id',
                 'image_annotation_labels.label_id',
-                'shapes.name as shape_name',
+                'image_annotations.shape',
                 'image_annotations.points',
                 'images.attrs',
             ])
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->orderBy('image_annotations.id');
 
         return $query;
@@ -96,7 +102,7 @@ class FullReportGenerator extends AnnotationReportGenerator
     /**
      * Create a CSV file for a single sheet of the spreadsheet of this report.
      *
-     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param \Illuminate\Support\Enumerable $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
      * @return CsvFile
      */
@@ -111,7 +117,7 @@ class FullReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->annotation_id,
                 $this->expandLabelName($row->label_id),
-                $row->shape_name,
+                Shape::from($row->shape)->label(),
                 $row->points,
                 $this->getArea($row->attrs),
             ]);
