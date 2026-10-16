@@ -20,12 +20,16 @@
                     Select volumes to export:
                 </p>
                 <entity-chooser v-bind:entities="volumes" v-on:select="handleChosenVolumes"></entity-chooser>
+                <div class="form-group">
+                    <label for="volume-export-description">Description (optional)</label>
+                    <input id="volume-export-description" type="text" class="form-control" maxlength="255" v-model="volumeExportDescription">
+                </div>
                 <div class="panel panel-warning">
                     <div class="panel-body text-warning text-center">
                         An export file contains user password hashes. Make sure no third party can read it!
                     </div>
                 </div>
-                <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenVolumes || null">Request volume export</a>
+                <button type="button" class="btn btn-success pull-right" v-on:click.prevent="requestVolumeExport" v-bind:disabled="(loading || hasNoChosenVolumes) || null">Request volume export</button>
             </tab>
         @endif
         @if (in_array('labelTrees', $allowedExports))

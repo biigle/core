@@ -11,6 +11,7 @@ use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\Video;
 use Biigle\Volume;
+use Biigle\VolumeExport;
 use DB;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
@@ -40,6 +41,9 @@ class SearchController extends Controller
         $values = array_merge($values, $this->searchAnnotations($user, $query, $type));
         $values = array_merge($values, $this->searchVideos($user, $query, $type));
         $values = array_merge($values, $this->searchReports($user, $query, $type));
+        if ($user->can('sudo')) {
+            $values = array_merge($values, $this->searchExports($user, $query, $type));
+        }
         $values = array_merge($values, $modules->callControllerMixins('search', $args));
 
         if (array_key_exists('results', $values)) {
@@ -401,5 +405,27 @@ class SearchController extends Controller
         }
 
         return $values;
+    }
+
+    /**
+     * Add requester-owned volume exports to the search view.
+     */
+    protected function searchExports(User $user, $query, $type): array
+    {
+        $queryBuilder = VolumeExport::where('user_id', $user->id)
+            ->when($query, function ($q) use ($query) {
+                $q->where('description', 'ilike', "%{$query}%");
+            });
+
+        if ($type === 'exports') {
+            $results = $queryBuilder->orderBy('ready_at', 'desc')->paginate(10);
+
+            return [
+                'results' => $results,
+                'exportResultCount' => $results->total(),
+            ];
+        }
+
+        return ['exportResultCount' => $queryBuilder->count()];
     }
 }
