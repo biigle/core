@@ -10,8 +10,8 @@ trait ComputesAnnotationStatistics
      * Compute the annotation statistics of image or video volumes.
      *
      * The statistics are derived from the same join of annotations, annotation labels
-     * and files. The join is computed only once (as materialized CTE) and the counts
-     * are fetched with a single query.
+     * and files. The join is computed only once (as materialized CTE) and all
+     * statistics are fetched with a single query.
      *
      * @param string $type 'image' or 'video'
      * @param callable $restrict Receives the base query and restricts it to the volumes
@@ -39,7 +39,8 @@ trait ComputesAnnotationStatistics
         $fullname = "concat(users.firstname, ' ', users.lastname)";
 
         $statistics = DB::selectOne("
-            WITH base AS MATERIALIZED ({$baseQuery->toSql()})
+            WITH base AS MATERIALIZED ({$baseQuery->toSql()}),
+            file_labels AS MATERIALIZED (SELECT DISTINCT file_id, label_id FROM base)
             SELECT
                 (SELECT count(DISTINCT file_id) FROM base) AS annotated_files,
                 (
@@ -56,47 +57,26 @@ trait ComputesAnnotationStatistics
                     SELECT json_agg(json_build_object('id', labels.id, 'name', labels.name, 'count', t.count, 'color', labels.color) ORDER BY labels.id)
                     FROM (SELECT label_id, count(*) FROM base GROUP BY label_id) t
                     JOIN labels ON labels.id = t.label_id
-                ) AS annotation_labels
+                ) AS annotation_labels,
+                (
+                    -- Labels that are attached to annotations of the same file. Each
+                    -- pair is listed once, keyed by the smaller label ID.
+                    SELECT json_object_agg(t.source, t.targets ORDER BY t.source)
+                    FROM (
+                        SELECT a.label_id AS source, array_agg(DISTINCT b.label_id ORDER BY b.label_id) AS targets
+                        FROM file_labels a
+                        JOIN file_labels b ON a.file_id = b.file_id AND a.label_id < b.label_id
+                        GROUP BY a.label_id
+                    ) t
+                ) AS source_target_labels
         ", $baseQuery->getBindings());
-
-        // The label pairs are still computed in PHP from a separate query. This keeps
-        // the order of the returned pairs exactly as it was.
-        $sourceTargetLabelsRaw = $joinQuery->clone()
-            ->select("{$type}s.id", "{$type}_annotation_labels.label_id")
-            ->distinct()
-            ->get()
-            ->groupBy('id');
-
-        $sourceTargetLabels = [];
-
-        foreach ($sourceTargetLabelsRaw as $value) {
-            foreach ($value as $label1) {
-                foreach ($value as $label2) {
-                    if ($label1->label_id === $label2->label_id) {
-                        continue;
-                    }
-                    // set source : target relation
-                    $id1 = min($label1->label_id, $label2->label_id);
-                    $id2 = max($label1->label_id, $label2->label_id);
-                    if (array_key_exists($id1, $sourceTargetLabels)) {
-                        // append to end of array $arr[]
-                        $sourceTargetLabels[$id1][] = $id2;
-                    } else {
-                        // first entry
-                        $sourceTargetLabels[$id1] = [$id2];
-                    }
-                }
-            }
-        }
-
-        $sourceTargetLabels = array_map('array_unique', $sourceTargetLabels);
-        $sourceTargetLabels = array_map('array_values', $sourceTargetLabels);
 
         return [
             'annotatedFiles' => $statistics->annotated_files,
             'annotationLabels' => collect(json_decode($statistics->annotation_labels ?? '[]')),
             'annotationTimeSeries' => collect(json_decode($statistics->annotation_time_series ?? '[]')),
-            'sourceTargetLabels' => collect($sourceTargetLabels),
+            // Decode as array so the label IDs are integer keys.
+            'sourceTargetLabels' => collect(json_decode($statistics->source_target_labels ?? '[]', true)),
             'volumeAnnotations' => collect(json_decode($statistics->volume_annotations ?? '[]')),
         ];
     }
