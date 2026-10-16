@@ -14,9 +14,33 @@ use Biigle\Volume;
 use DB;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class SearchController extends Controller
 {
+    /**
+     * Minimum length of a search term that is matched against filenames.
+     *
+     * A substring match cannot use an index, so every term results in a full
+     * scan of the (very large) file tables. Terms this short match almost
+     * everything and are not a useful query, so they are rejected instead.
+     *
+     * @var int
+     */
+    const MIN_FILE_QUERY_LENGTH = 3;
+
+    /**
+     * Upper bound for the result counts of the file tabs.
+     *
+     * Determining the exact number of matches means scanning every matching
+     * row. The number is only shown as a tab badge and in the result heading,
+     * so counting stops once this many matches are known to exist.
+     *
+     * @var int
+     */
+    const MAX_FILE_RESULT_COUNT = 1000;
+
     /**
      * Shows the search page.
      *
@@ -26,14 +50,21 @@ class SearchController extends Controller
      */
     public function index(Guard $auth, Request $request, Modules $modules)
     {
-        $query = $request->input('q', '');
+        // An empty "q=" in the query string arrives as null rather than as an
+        // empty string, because of the ConvertEmptyStringsToNull middleware, so
+        // the default of input() does not apply. Cast instead of relying on it.
+        $query = (string) $request->input('q', '');
         // Type (e.g. projects, volumes)
-        $type = $request->input('t', '');
+        $type = (string) $request->input('t', '');
         $user = $auth->user();
         $hasFederatedSearch = $user->FederatedSearchModels()->exists();
         $includeFederatedSearch = $hasFederatedSearch && $user->getSettings('include_federated_search', true);
 
-        $args = compact('user', 'query', 'type', 'hasFederatedSearch', 'includeFederatedSearch');
+        $fileResultCountCap = self::MAX_FILE_RESULT_COUNT;
+        $minFileQueryLength = self::MIN_FILE_QUERY_LENGTH;
+        $fileQueryTooShort = $this->fileQueryTooShort($query);
+
+        $args = compact('user', 'query', 'type', 'hasFederatedSearch', 'includeFederatedSearch', 'fileResultCountCap', 'minFileQueryLength', 'fileQueryTooShort');
         $values = $this->searchProjects($user, $query, $type, $includeFederatedSearch);
         $values = array_merge($values, $this->searchLabelTrees($user, $query, $type, $includeFederatedSearch));
         $values = array_merge($values, $this->searchVolumes($user, $query, $type, $includeFederatedSearch));
@@ -265,6 +296,169 @@ class SearchController extends Controller
     }
 
     /**
+     * Subquery for the IDs of all volumes that are accessible by a user.
+     *
+     * Restricting files with this instead of joining project_volume and
+     * project_user avoids the row multiplication of volumes that belong to more
+     * than one project, so no DISTINCT is required over the (large) file table.
+     *
+     * @param User $user
+     *
+     * @return \Closure
+     */
+    protected function accessibleVolumeIds(User $user)
+    {
+        return fn ($query) => $query->select('project_volume.volume_id')
+            ->from('project_volume')
+            ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
+            ->where('project_user.user_id', $user->id)
+            ->distinct();
+    }
+
+    /**
+     * Determine whether a search term is too short to be matched against
+     * filenames.
+     *
+     * @param string $query
+     *
+     * @return bool
+     */
+    protected function fileQueryTooShort($query)
+    {
+        return $query !== '' && mb_strlen($query) < self::MIN_FILE_QUERY_LENGTH;
+    }
+
+    /**
+     * Determine whether the result count of a file query should be capped.
+     *
+     * Counting every match of a search term is affordable because the term
+     * narrows the result set. Counting every file a user can access is not, and
+     * the exact number is of no use there anyway, so browsing without a term
+     * gets a capped count instead.
+     *
+     * @param string $query
+     *
+     * @return bool
+     */
+    protected function shouldCapCount($query)
+    {
+        return $query === '';
+    }
+
+    /**
+     * Determine whether a result count was limited by MAX_FILE_RESULT_COUNT.
+     *
+     * The count alone cannot tell: an exact count may legitimately exceed the
+     * cap, and must then still be displayed as the exact number.
+     *
+     * @param string $query
+     * @param int $count
+     *
+     * @return bool
+     */
+    protected function countWasCapped($query, $count)
+    {
+        return $this->shouldCapCount($query) && $count >= self::MAX_FILE_RESULT_COUNT;
+    }
+
+    /**
+     * Count the results of a file query.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
+     * @param string $query
+     *
+     * @return int
+     */
+    protected function fileResultCount($queryBuilder, $query)
+    {
+        if (!$this->shouldCapCount($query)) {
+            return $queryBuilder->clone()->reorder()->count();
+        }
+
+        $limited = $queryBuilder->clone()
+            ->reorder()
+            ->select(DB::raw('1'))
+            ->limit(self::MAX_FILE_RESULT_COUNT);
+
+        return DB::query()->fromSub($limited, 'capped')->count();
+    }
+
+    /**
+     * Fetch a single page of file results, ordered by descending ID.
+     *
+     * A filename filter cannot use an index, so the query planner is free to
+     * assume that walking the primary key backwards will fill the page quickly.
+     * For users whose files have low IDs that assumption is wrong and the whole
+     * table gets scanned (observed: 74 s for one page of 12). Collecting the
+     * matches in a materialized CTE takes that option away: they are gathered
+     * through the volume_id index first and sorted afterwards.
+     *
+     * Requires PostgreSQL 12 or later for the MATERIALIZED keyword; on older
+     * versions a CTE is always materialized anyway.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function fetchFilePage($queryBuilder, $page, $perPage)
+    {
+        $inner = $queryBuilder->clone()->reorder();
+
+        $rows = DB::select(
+            'with matches as materialized ('.$inner->toSql().')'
+            .' select * from matches order by id desc limit ? offset ?',
+            array_merge($inner->getBindings(), [$perPage, ($page - 1) * $perPage])
+        );
+
+        return $queryBuilder->hydrate($rows);
+    }
+
+    /**
+     * Paginate a file query.
+     *
+     * When the count is capped the number of pages is bounded by
+     * MAX_FILE_RESULT_COUNT as well, so that no page can be requested whose
+     * position is beyond what was counted.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
+     * @param string $query
+     * @param int $perPage
+     *
+     * @return LengthAwarePaginator
+     */
+    protected function paginateFiles($queryBuilder, $query, $perPage)
+    {
+        $total = $this->fileResultCount($queryBuilder, $query);
+        $page = Paginator::resolveCurrentPage();
+
+        $items = $total > 0
+            ? $this->fetchFilePage($queryBuilder, $page, $perPage)
+            : collect();
+
+        return new LengthAwarePaginator($items, $total, $perPage, $page, [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => 'page',
+        ]);
+    }
+
+    /**
+     * An empty paginator, used when a search term is rejected outright.
+     *
+     * @param int $perPage
+     *
+     * @return LengthAwarePaginator
+     */
+    protected function emptyPaginator($perPage)
+    {
+        return new LengthAwarePaginator(collect(), 0, $perPage, 1, [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => 'page',
+        ]);
+    }
+
+    /**
      * Add image results to the search view.
      *
      * @param User $user
@@ -275,14 +469,23 @@ class SearchController extends Controller
      */
     protected function searchAnnotations(User $user, $query, $type)
     {
+        $values = [];
+
+        if ($this->fileQueryTooShort($query)) {
+            $values['imageResultCount'] = 0;
+            $values['imageResultCountCapped'] = false;
+
+            if ($type === 'images') {
+                $values['results'] = $this->emptyPaginator(12);
+            }
+
+            return $values;
+        }
+
         if ($user->can('sudo')) {
             $imageQuery = Image::query();
         } else {
-            $imageQuery = Image::join('project_volume', 'images.volume_id', '=', 'project_volume.volume_id')
-                ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
-                ->where('project_user.user_id', $user->id)
-                // Use distinct as volumes may be attached to more than one project.
-                ->distinct();
+            $imageQuery = Image::whereIn('volume_id', $this->accessibleVolumeIds($user));
         }
 
         $imageQuery = $imageQuery->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id')
@@ -292,15 +495,16 @@ class SearchController extends Controller
                 });
             });
 
-        $values = [
-            'imageResultCount' => $imageQuery->count('images.id'),
-        ];
-
         if ($type === 'images') {
-            $values['results'] = $imageQuery
-                ->orderBy('images.id', 'desc')
-                ->paginate(12);
+            // The ordering is applied by paginateFiles().
+            $values['results'] = $this->paginateFiles($imageQuery, $query, 12);
+
+            $values['imageResultCount'] = $values['results']->total();
+        } else {
+            $values['imageResultCount'] = $this->fileResultCount($imageQuery, $query);
         }
+
+        $values['imageResultCountCapped'] = $this->countWasCapped($query, $values['imageResultCount']);
 
         return $values;
     }
@@ -316,14 +520,23 @@ class SearchController extends Controller
      */
     protected function searchVideos(User $user, $query, $type)
     {
+        $values = [];
+
+        if ($this->fileQueryTooShort($query)) {
+            $values['videoResultCount'] = 0;
+            $values['videoResultCountCapped'] = false;
+
+            if ($type === 'videos') {
+                $values['results'] = $this->emptyPaginator(12);
+            }
+
+            return $values;
+        }
+
         if ($user->can('sudo')) {
             $queryBuilder = Video::query();
         } else {
-            $queryBuilder = Video::join('project_volume', 'videos.volume_id', '=', 'project_volume.volume_id')
-                ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
-                ->where('project_user.user_id', $user->id)
-                // Use distinct as volumes may be attached to more than one project.
-                ->distinct();
+            $queryBuilder = Video::whereIn('volume_id', $this->accessibleVolumeIds($user));
         }
 
         $queryBuilder = $queryBuilder->select('videos.id', 'videos.filename', 'videos.uuid', 'videos.volume_id')
@@ -333,17 +546,16 @@ class SearchController extends Controller
                 });
             });
 
-        $values = [];
-
         if ($type === 'videos') {
-            $values['results'] = $queryBuilder
-                ->orderBy('videos.id', 'desc')
-                ->paginate(12);
+            // The ordering is applied by paginateFiles().
+            $values['results'] = $this->paginateFiles($queryBuilder, $query, 12);
 
             $values['videoResultCount'] = $values['results']->total();
         } else {
-            $values = ['videoResultCount' => $queryBuilder->count()];
+            $values['videoResultCount'] = $this->fileResultCount($queryBuilder, $query);
         }
+
+        $values['videoResultCountCapped'] = $this->countWasCapped($query, $values['videoResultCount']);
 
         return $values;
     }
