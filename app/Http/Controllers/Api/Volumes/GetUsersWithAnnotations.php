@@ -3,10 +3,9 @@
 namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\ImageAnnotationLabel;
-use Biigle\VideoAnnotationLabel;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GetUsersWithAnnotations extends Controller
 {
@@ -22,29 +21,31 @@ class GetUsersWithAnnotations extends Controller
      *
      * @param Request $request
      * @param int $vid Volume ID
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function index(Request $request, $vid)
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
+        // Determine the distinct user IDs first and fetch the users only once.
         if ($volume->isImageVolume()) {
-            $usersWithAnnotations = ImageAnnotationLabel::query()
+            $userIds = DB::table('image_annotation_labels')
                 ->join('image_annotations', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
                 ->join('images', 'image_annotations.image_id', '=', 'images.id')
-                ->where('images.volume_id', $vid)
-                ->join('users', 'image_annotation_labels.user_id', '=', 'users.id');
+                ->where('images.volume_id', $volume->id)
+                ->select('image_annotation_labels.user_id');
         } else {
-            $usersWithAnnotations = VideoAnnotationLabel::query()
+            $userIds = DB::table('video_annotation_labels')
                 ->join('video_annotations', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
                 ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
-                ->where('videos.volume_id', $vid)
-                ->join('users', 'video_annotation_labels.user_id', '=', 'users.id');
+                ->where('videos.volume_id', $volume->id)
+                ->select('video_annotation_labels.user_id');
         }
 
-        return $usersWithAnnotations
-            ->distinct('user_id')
-            ->selectRaw("user_id, CONCAT(users.firstname, ' ', users.lastname) as name")
+        return DB::table('users')
+            ->whereIn('id', $userIds)
+            ->selectRaw("id as user_id, CONCAT(firstname, ' ', lastname) as name")
+            ->orderBy('id')
             ->get();
     }
 };
