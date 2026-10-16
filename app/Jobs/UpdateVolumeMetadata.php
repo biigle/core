@@ -15,7 +15,8 @@ class UpdateVolumeMetadata extends Job implements ShouldQueue
     use SerializesModels;
 
     /**
-     * Number of files that are updated with a single query.
+     * Number of files that are updated with a single query. With 5 parameters per
+     * file this must stay below biigle.db_param_limit / 5.
      *
      * @var int
      */
@@ -37,7 +38,7 @@ class UpdateVolumeMetadata extends Job implements ShouldQueue
             return;
         }
 
-        $updates = [];
+        $files = [];
 
         foreach ($this->volume->files()->lazyById() as $file) {
             $fileMeta = $metadata->getFile($file->filename);
@@ -64,71 +65,62 @@ class UpdateVolumeMetadata extends Job implements ShouldQueue
             }
 
             if ($file->isDirty()) {
-                // Collect the changed attributes (as they would be saved by the model)
-                // and update the files in batches.
-                $updates[] = array_merge(['id' => $file->id], $file->getDirty());
+                $files[] = $file;
             }
 
-            if (count($updates) >= static::UPDATE_BATCH_SIZE) {
-                $this->updateFiles($updates);
-                $updates = [];
+            if (count($files) >= static::UPDATE_BATCH_SIZE) {
+                $this->updateFiles($files);
+                $files = [];
             }
         }
 
-        $this->updateFiles($updates);
+        $this->updateFiles($files);
 
         $this->volume->flushGeoInfoCache();
     }
 
     /**
-     * Update the files with the given attributes.
+     * Write the metadata of the given files to the database with a single query.
      *
-     * Files with the same set of changed attributes are updated together with a single
-     * UPDATE ... FROM (VALUES ...) query.
-     *
-     * @param array $updates Arrays of the file ID and the changed (raw) attributes.
+     * @param array<\Biigle\VolumeFile> $files
      */
-    protected function updateFiles(array $updates): void
+    protected function updateFiles(array $files): void
     {
-        if (empty($updates)) {
+        if (empty($files)) {
             return;
         }
 
-        $table = $this->volume->isImageVolume() ? 'images' : 'videos';
-        $types = DB::table('information_schema.columns')
-            ->where('table_schema', DB::raw('current_schema()'))
-            ->where('table_name', $table)
-            ->pluck('udt_name', 'column_name');
-
-        $groups = collect($updates)->groupBy(function ($update) {
-            $columns = array_keys($update);
-            sort($columns);
-
-            return implode(',', $columns);
-        });
-
-        foreach ($groups as $group) {
-            $columns = array_keys($group->first());
-            $placeholders = '('.implode(', ', array_map(fn ($c) => "?::{$types[$c]}", $columns)).')';
-            $set = implode(', ', array_map(
-                fn ($c) => "\"{$c}\" = v.\"{$c}\"",
-                array_filter($columns, fn ($c) => $c !== 'id')
-            ));
-            $alias = implode(', ', array_map(fn ($c) => "\"{$c}\"", $columns));
-            $chunkSize = intdiv(config('biigle.db_param_limit'), count($columns));
-
-            foreach ($group->chunk($chunkSize) as $chunk) {
-                $bindings = [];
-                foreach ($chunk as $update) {
-                    foreach ($columns as $column) {
-                        $bindings[] = $update[$column];
-                    }
-                }
-
-                $values = implode(', ', array_fill(0, $chunk->count(), $placeholders));
-
-                DB::update("UPDATE {$table} SET {$set} FROM (VALUES {$values}) AS v({$alias}) WHERE {$table}.id = v.id", $bindings);
-            }
+        if ($this->volume->isImageVolume()) {
+            $table = 'images';
+            // Parameters in a VALUES list are untyped so they need explicit casts.
+            $row = '(?::bigint, ?::timestamp, ?::float8, ?::float8, ?::json)';
+        } else {
+            $table = 'videos';
+            $row = '(?::bigint, ?::json, ?::json, ?::json, ?::json)';
         }
+
+        $values = implode(', ', array_fill(0, count($files), $row));
+
+        $bindings = [];
+        foreach ($files as $file) {
+            // Raw attributes are the values as Eloquent would store them (e.g. encoded
+            // JSON). Unchanged columns are written, too, so all files fit in one query.
+            $attributes = $file->getAttributes();
+            array_push(
+                $bindings,
+                $file->id,
+                $attributes['taken_at'] ?? null,
+                $attributes['lat'] ?? null,
+                $attributes['lng'] ?? null,
+                $attributes['attrs'] ?? null
+            );
+        }
+
+        DB::update("
+            UPDATE {$table}
+            SET taken_at = v.taken_at, lat = v.lat, lng = v.lng, attrs = v.attrs
+            FROM (VALUES {$values}) AS v(id, taken_at, lat, lng, attrs)
+            WHERE {$table}.id = v.id
+        ", $bindings);
     }
 }

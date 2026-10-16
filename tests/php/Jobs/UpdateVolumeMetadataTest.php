@@ -192,6 +192,56 @@ class UpdateVolumeMetadataTest extends TestCase
         $this->assertEquals(7, $e->lat);
     }
 
+    public function testHandleImageBatchesMixedColumns()
+    {
+        $volume = Volume::factory()->create([
+            'media_type' => MediaType::IMAGE,
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
+        ]);
+
+        $a = Image::factory()->create([
+            'filename' => 'a.jpg',
+            'volume_id' => $volume->id,
+            'taken_at' => '2024-03-12 11:23:00',
+            'lat' => 1,
+            'lng' => 2,
+            'attrs' => ['size' => 100, 'metadata' => ['yaw' => 90]],
+        ]);
+        $b = Image::factory()->create([
+            'filename' => 'b.jpg',
+            'volume_id' => $volume->id,
+            'taken_at' => '2024-03-12 12:00:00',
+            'lat' => 3,
+            'lng' => 4,
+            'attrs' => ['size' => 200, 'metadata' => ['yaw' => 45]],
+        ]);
+
+        // a only changes lat/lng, b only changes attrs. Both are in the same batch.
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,taken_at,lng,lat,area
+        a.jpg,,10,20,
+        b.jpg,,,,3.5
+        CSV);
+
+        with(new UpdateVolumeMetadataBatchStub($volume))->handle();
+
+        $a->refresh();
+        $this->assertEquals('2024-03-12 11:23:00', $a->taken_at);
+        $this->assertEquals(10, $a->lng);
+        $this->assertEquals(20, $a->lat);
+        $this->assertEquals(100, $a->size);
+        $this->assertSame(['yaw' => 90], $a->metadata);
+
+        $b->refresh();
+        $this->assertEquals('2024-03-12 12:00:00', $b->taken_at);
+        $this->assertEquals(4, $b->lng);
+        $this->assertEquals(3, $b->lat);
+        $this->assertEquals(200, $b->size);
+        $this->assertSame(['yaw' => 45, 'area' => 3.5], $b->metadata);
+    }
+
     public function testHandleVideoBatches()
     {
         $volume = Volume::factory()->create([
