@@ -41,7 +41,13 @@ class CsvReportGenerator extends VolumeReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        if ($this->shouldSeparateLabelTrees() || $this->shouldSeparateUsers()) {
+            $rows = $this->query()->get();
+        } else {
+            // The rows are not grouped so they can be streamed to keep the memory
+            // usage low for large volumes.
+            $rows = $this->query()->cursor();
+        }
         $toZip = [];
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
@@ -121,7 +127,7 @@ class CsvReportGenerator extends VolumeReportGenerator
     /**
      * Create a CSV file for this report.
      *
-     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param \Illuminate\Support\Enumerable $rows The rows for the CSV
      * @return CsvFile
      */
     protected function createCsv($rows)

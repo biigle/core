@@ -9,6 +9,8 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
+use Biigle\VideoAnnotation;
+use Biigle\VideoAnnotationLabel;
 use Illuminate\Support\Facades\Event;
 
 class VideoAnnotationLabelControllerTest extends ApiTestCase
@@ -72,6 +74,38 @@ class VideoAnnotationLabelControllerTest extends ApiTestCase
             ])
             // Label is already attached.
             ->assertStatus(422);
+    }
+
+    public function testStoreUniqueViolation()
+    {
+        $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
+        // Simulate a concurrent request that attaches the same label after the
+        // existence check.
+        VideoAnnotationLabel::creating(fn ($al) => $al->replicate()->saveQuietly());
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(400);
+    }
+
+    public function testStoreForeignKeyViolation()
+    {
+        $annotation = VideoAnnotationTest::create(['video_id' => $this->video->id]);
+        // Simulate a concurrent request that deletes the annotation after the
+        // existence check.
+        VideoAnnotationLabel::creating(
+            fn ($al) => VideoAnnotation::where('id', $al->annotation_id)->delete()
+        );
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/video-annotations/{$annotation->id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(404);
     }
 
     public function testDestroy()
