@@ -482,7 +482,7 @@ class ApplyLargoSession extends Job implements ShouldQueue
         }
 
         if (!empty($toDeleteArgs)) {
-            foreach ($chunks as $chunk) {
+            foreach (array_chunk(array_keys($toDeleteArgs), config('biigle.db_param_limit')) as $chunk) {
                 $toDeleteQuery($chunk)->delete();
             }
             // The annotation model observer does not fire for this query so we
