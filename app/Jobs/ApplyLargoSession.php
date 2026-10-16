@@ -352,13 +352,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
         $alreadyThere = [];
         foreach ($changed as $labelId => $annotationIds) {
             foreach (array_chunk($annotationIds, $chunkSize) as $chunk) {
-                $labelModel::select('annotation_id', 'label_id')
-                    ->where('user_id', $user->id)
+                $labelModel::where('user_id', $user->id)
                     ->where('label_id', $labelId)
                     ->whereIn('annotation_id', $chunk)
-                    ->get()
-                    ->each(function ($label) use (&$alreadyThere) {
-                        $alreadyThere["{$label->annotation_id}-{$label->label_id}"] = true;
+                    ->pluck('annotation_id')
+                    ->each(function ($annotationId) use (&$alreadyThere, $labelId) {
+                        $alreadyThere["{$annotationId}-{$labelId}"] = true;
                     });
             }
         }
@@ -366,11 +365,9 @@ class ApplyLargoSession extends Job implements ShouldQueue
         $annotationIds = array_unique(array_merge(...$changed));
         $existingAnnotations = [];
         foreach (array_chunk($annotationIds, config('biigle.db_param_limit')) as $chunk) {
-            $existingAnnotations = array_merge(
-                $existingAnnotations,
-                $annotationModel::whereIn('id', $chunk)->pluck('id')->toArray()
-            );
+            $existingAnnotations[] = $annotationModel::whereIn('id', $chunk)->pluck('id')->toArray();
         }
+        $existingAnnotations = array_merge(...$existingAnnotations);
 
         $newAnnotationLabels = [];
         $now = Carbon::now();
