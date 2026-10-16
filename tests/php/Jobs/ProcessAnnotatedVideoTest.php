@@ -534,6 +534,30 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame(range(0, 383), $vectors[0]->vector->toArray());
     }
 
+    public function testGenerateFeatureVectorDeletedAnnotationLabel()
+    {
+        Storage::fake('test');
+        $video = $this->getFrameMock();
+        $video->shouldReceive('crop')->andReturn($video);
+        $video->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[200, 200]],
+            'frames' => [1],
+            'shape' => Shape::POINT,
+        ]);
+        $annotationLabel = VideoAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+        // The labels are already loaded at this point, so this simulates a label that
+        // is deleted while the feature vector is generated.
+        $job->beforePyworkerRequest = fn () => $annotationLabel->delete();
+
+        $job->handle();
+        $this->assertSame(0, VideoAnnotationLabelFeatureVector::count());
+    }
+
     public function testGenerateFeatureVectorManyLabels()
     {
         Storage::fake('test');
@@ -942,6 +966,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     public $capturedCropBoxes = [];
     public $times = [];
     public $throwGetFrame = false;
+    public $beforePyworkerRequest;
 
     public function getVideo($path)
     {
@@ -975,6 +1000,10 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 
     protected function sendPyworkerRequest(string $buffer): array
     {
+        if ($this->beforePyworkerRequest) {
+            ($this->beforePyworkerRequest)();
+        }
+
         return $this->featureVector ?: range(0, 383);
     }
 }

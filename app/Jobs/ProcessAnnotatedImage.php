@@ -7,6 +7,8 @@ use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
 use Pgvector\Laravel\Vector;
@@ -98,11 +100,39 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
             return;
         }
 
-        ImageAnnotationLabelFeatureVector::upsert(
-            array_values($vectors),
+        try {
+            $this->doUpsertFeatureVectors(array_values($vectors));
+        } catch (QueryException $e) {
+            // SQLSTATE 23503 is a foreign key violation. An annotation or annotation
+            // label was deleted while the feature vectors were generated. A single
+            // violation fails the whole batch so retry each row individually to only
+            // skip the affected ones.
+            if ($e->getCode() !== '23503') {
+                throw $e;
+            }
+
+            foreach ($vectors as $vector) {
+                try {
+                    $this->doUpsertFeatureVectors([$vector]);
+                } catch (QueryException $e) {
+                    if ($e->getCode() !== '23503') {
+                        throw $e;
+                    }
+                }
+            }
+        }
+    }
+
+    protected function doUpsertFeatureVectors(array $vectors): void
+    {
+        // The transaction becomes a savepoint if this runs inside another
+        // transaction, which is rolled back on error so the outer transaction is
+        // not aborted.
+        DB::transaction(fn () => ImageAnnotationLabelFeatureVector::upsert(
+            $vectors,
             ['id'],
             ['annotation_id', 'label_id', 'label_tree_id', 'volume_id', 'vector']
-        );
+        ));
     }
 
     /**

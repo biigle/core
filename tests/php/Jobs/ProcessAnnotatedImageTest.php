@@ -588,6 +588,29 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertSame(range(1, 384), $iafv2->fresh()->vector->toArray());
     }
 
+    public function testGenerateFeatureVectorDeletedAnnotationLabel()
+    {
+        Storage::fake('test');
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape' => Shape::POINT,
+        ]);
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new ProcessAnnotatedImageStub(
+            $annotation->image,
+            skipPatches: true,
+            skipSvgs: true
+        );
+        // The labels are already loaded at this point, so this simulates a label that
+        // is deleted while the feature vector is generated.
+        $job->beforePyworkerRequest = fn () => $annotationLabel->delete();
+
+        $job->handle();
+        $this->assertSame(0, ImageAnnotationLabelFeatureVector::count());
+    }
+
     public function testHandlePatchOnly()
     {
         $disk = Storage::fake('test');
@@ -846,6 +869,7 @@ class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
     public $mock;
     public $featureVector;
     public $capturedCropBoxes = [];
+    public $beforePyworkerRequest;
 
     public function getVipsImage(string $path, array $options = [])
     {
@@ -868,6 +892,10 @@ class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
 
     protected function sendPyworkerRequest(string $buffer): array
     {
+        if ($this->beforePyworkerRequest) {
+            ($this->beforePyworkerRequest)();
+        }
+
         return $this->featureVector ?: range(0, 383);
     }
 }
