@@ -46,9 +46,16 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     /**
      * Number of feature vectors that are written to the database with a single query.
      *
+     * Feature vectors are only visible to other jobs once the batch is written. A
+     * CopyAnnotationFeatureVector job for a label that is attached in the meantime
+     * finds no feature vector to copy, and computed feature vectors of an unwritten
+     * batch are lost if the job fails. Generating a feature vector is much slower
+     * than writing it, so a small batch keeps most of the performance benefit while
+     * reducing these issues.
+     *
      * @var int
      */
-    const FEATURE_VECTOR_BATCH_SIZE = 1000;
+    const FEATURE_VECTOR_BATCH_SIZE = 100;
 
     /**
      * The maximum number of times the job may be redispatched.
