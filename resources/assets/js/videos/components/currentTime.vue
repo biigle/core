@@ -1,7 +1,12 @@
 <template>
     <div class="current-time">
         <loader :active="seeking"></loader>
-        <div ref="wrapper" class="current-time__wrapper" v-show="!seeking">
+        <img
+            class="current-time__mediabunny"
+            :class="{'current-time__mediabunny--active': mediabunnyDecoding}"
+            :src="mediabunnyLogo"
+        >
+        <div ref="wrapper" class="current-time__wrapper" v-show="!seeking && !mediabunnyDecoding">
             <canvas ref="canvas"></canvas>
         </div>
     </div>
@@ -10,6 +15,7 @@
 <script>
 import Loader from '@/core/components/loader.vue';
 import videoTime from '@/videos/filters/videoTime';
+import mediabunnyLogo from '@images/mediabunny-logo.svg';
 
 export default {
     props: {
@@ -17,10 +23,19 @@ export default {
             type: Number,
             required: true,
         },
+        mediabunnyDecoding: {
+            type: Boolean,
+            default: false,
+        },
         seeking: {
             type: Boolean,
             default: false,
         },
+    },
+    data() {
+        return {
+            mediabunnyLogo,
+        };
     },
     components: {
         loader: Loader,

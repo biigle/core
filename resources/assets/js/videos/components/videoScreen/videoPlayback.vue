@@ -3,6 +3,8 @@ import CanvasSource from '@/annotations/ol/source/Canvas.js';
 import ImageLayer from '@biigle/ol/layer/Image';
 import Projection from '@biigle/ol/proj/Projection';
 import View from '@biigle/ol/View';
+import { Input, ALL_FORMATS, UrlSource, VideoSampleSink } from 'mediabunny';
+import Messages from '@/core/messages/store.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the video playback.
@@ -13,6 +15,7 @@ export default {
     emits: [
         'seek',
         'start-seeking',
+        'mediabunny-decoding',
     ],
     data() {
         return {
@@ -26,6 +29,11 @@ export default {
             // parameter tracking seeking state specific for frame jump, needed because looking for seeking directly leads to error
             seekingFrame: this.seeking,
             shouldUseVideoFrameCallback: false,
+            mediabunnyInput: null,
+            mediabunnySink: null,
+            mediabunnyInitPromise: null,
+            videoSourceRevision: 0,
+            mediabunnyDecodeCount: 0,
         };
     },
     methods: {
@@ -76,11 +84,12 @@ export default {
         },
         renderVideo(force) {
             // Drop animation frame if the time has not changed.
-            if (force || this.renderCurrentTime !== this.video.currentTime) {
-                this.renderCurrentTime = this.video.currentTime;
-                this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-                this.videoSource.changed();
+            if (!force && this.renderCurrentTime === this.video.currentTime) {
+                return;
             }
+
+            this.renderCurrentTime = this.video.currentTime;
+            this.drawBitmap(this.video);
         },
         startRenderLoop() {
             let render;
@@ -106,6 +115,20 @@ export default {
             }
             this.animationFrameId = null;
         },
+        async renderPausedFrame(time = this.video.currentTime) {
+            if (!this.video.paused ) {
+                this.renderVideo(true);
+                return;
+            } else if (!this.mediabunnySink) {
+                // Use the old hack if mediabunny is not available (unsupported codec, etc.):
+                // Assign video.currentTime manually and hope the browser displays the correct frame
+                this.video.currentTime = time;
+                this.renderVideo(true);
+                return;
+            }
+
+            await this.getFrameBitmap(time);
+        },
         setPlaying() {
             this.playing = true;
             if (!this.animationFrameId) {
@@ -116,14 +139,9 @@ export default {
             this.playing = false;
             this.stopRenderLoop();
         },
-        setPausedAndSeek() {
+        async setPausedAndSeek() {
             this.setPaused();
-            // Force render the video frame that belongs to currentTime. This is a
-            // workaround because the displayed frame not the one that belongs to
-            // currentTime (in most cases). With the workaround we can create annotations
-            // at currentTime and be sure that the same frame can be reproduced later for
-            // the annotations. See: https://github.com/biigle/core/issues/433
-            this.$emit('seek', this.video.currentTime, true);
+            await this.renderPausedFrame();
         },
         play() {
             this.video.play();
@@ -138,8 +156,13 @@ export default {
             // Update the layer (dimensions) if a new video is loaded.
             this.video.addEventListener('loadedmetadata', this.updateVideoLayer);
         },
-        handleSeeked() {
-            this.renderVideo(true);
+        handleVideoMetadata() {
+            this.videoSourceRevision++;
+            this.mediabunnySink = null;
+            this.mediabunnyInitPromise = this.initMediabunny(this.videoSourceRevision);
+        },
+        async handleSeeked() {
+            await this.renderPausedFrame();
         },
         // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
         async emitPreviousFrame() {
@@ -243,6 +266,68 @@ export default {
         toggleFirefoxFullscreen() {
             document.body.requestFullscreen();
         },
+        async initMediabunny(revision) {
+            if (this.mediabunnyInput) {
+                this.mediabunnyInput.dispose();
+            }
+            const input = new Input({
+                source: new UrlSource(this.video.src),
+                formats: ALL_FORMATS
+            });
+            const track = await input.getPrimaryVideoTrack();
+            if (!track || !(await track.canDecode())) {
+                input.dispose();
+                this.mediabunnyInput = null;
+                this.mediabunnySink = null;
+                Messages.warning('The used video codec is not supported by the WebCodecs API. The browser might display incorrect frames for a given timestamp. Consider switching the browser or transcoding the video to a more widely supported codec like H.264 (AVC).');
+                return;
+            }
+
+            if (revision !== this.videoSourceRevision) {
+                input.dispose();
+                return;
+            }
+
+            this.mediabunnyInput = input;
+            this.mediabunnySink = new VideoSampleSink(track);
+        },
+        async getFrameBitmap(time) {
+            const revision = this.videoSourceRevision;
+            const source = this.video.src;
+            const sourceHasChanged = () => revision !== this.videoSourceRevision || source !== this.video.src;
+
+            this.mediabunnyDecodeCount++;
+            this.$emit('mediabunny-decoding', true);
+            try {
+                await this.mediabunnyInitPromise;
+
+                if (sourceHasChanged()) {
+                    return;
+                }
+
+                const sample = await this.mediabunnySink.getSample(time);
+                const videoFrame = sample.toVideoFrame();
+                const bitmap = await createImageBitmap(videoFrame);
+                sample.close();
+                videoFrame.close();
+
+                if (!this.video.paused || this.video.currentTime !== time || sourceHasChanged()) {
+                    bitmap.close();
+                    return;
+                }
+
+                this.drawBitmap(bitmap);
+                bitmap.close();
+            } finally {
+                this.mediabunnyDecodeCount--;
+                this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
+            }
+        },
+        drawBitmap(bitmap) {
+            this.videoContext.drawImage(bitmap, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+            this.videoSource.changed();
+        },
+
     },
     watch: {
         seeking(seeking) {
@@ -260,6 +345,7 @@ export default {
         this.video.addEventListener('pause', this.setPausedAndSeek);
         this.video.addEventListener('seeked', this.handleSeeked);
         this.video.addEventListener('loadeddata', this.renderVideo);
+        this.video.addEventListener('loadedmetadata', this.handleVideoMetadata);
 
         let mapPromise = new Promise((resolve) => {
             this.$watch('map', {
@@ -274,12 +360,12 @@ export default {
         // If the video screen is shown in the popup and the video is already loaded.
         if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
             metadataPromise = Promise.resolve();
+            this.handleVideoMetadata();
         } else {
             metadataPromise = new Promise((resolve) => {
                 this.video.addEventListener('loadedmetadata', resolve);
             });
         }
-
 
         Promise.all([mapPromise, metadataPromise])
             .then(this.updateVideoLayer)
@@ -323,6 +409,10 @@ export default {
         this.video.removeEventListener('pause', this.setPausedAndSeek);
         this.video.removeEventListener('seeked', this.handleSeeked);
         this.video.removeEventListener('loadeddata', this.renderVideo);
+        this.video.removeEventListener('loadedmetadata', this.handleVideoMetadata);
+        if (this.mediabunnyInput) {
+            this.mediabunnyInput.dispose();
+        }
     },
 };
 </script>

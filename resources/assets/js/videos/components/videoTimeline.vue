@@ -9,6 +9,7 @@
             <current-time
                 v-if="!fullHeight"
                 :current-time="currentTime"
+                :mediabunny-decoding="mediabunnyDecoding"
                 :seeking="seeking"
                 ></current-time>
             <track-headers
@@ -20,6 +21,7 @@
             <current-time
                 v-if="fullHeight"
                 :current-time="currentTime"
+                :mediabunny-decoding="mediabunnyDecoding"
                 :seeking="seeking"
                 ></current-time>
         </div>
@@ -84,6 +86,10 @@ export default {
             type: Number,
             required: true,
             default: 0
+        },
+        mediabunnyDecoding: {
+            type: Boolean,
+            default: false,
         },
         seeking: {
             type: Boolean,
