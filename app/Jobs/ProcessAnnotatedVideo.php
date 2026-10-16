@@ -11,6 +11,7 @@ use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
@@ -105,16 +106,25 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             $annotation = $annotations->get($row[0]);
 
             foreach ($annotation->labels as $al) {
-                VideoAnnotationLabelFeatureVector::updateOrCreate(
-                    ['id' => $al->id],
-                    [
-                        'annotation_id' => $annotation->id,
-                        'label_id' => $al->label_id,
-                        'label_tree_id' => $al->label->label_tree_id,
-                        'volume_id' => $this->file->volume_id,
-                        'vector' => $row[1],
-                    ]
-                );
+                try {
+                    VideoAnnotationLabelFeatureVector::updateOrCreate(
+                        ['id' => $al->id],
+                        [
+                            'annotation_id' => $annotation->id,
+                            'label_id' => $al->label_id,
+                            'label_tree_id' => $al->label->label_tree_id,
+                            'volume_id' => $this->file->volume_id,
+                            'vector' => $row[1],
+                        ]
+                    );
+                } catch (QueryException $e) {
+                    // SQLSTATE 23503 is a foreign key violation. The annotation or
+                    // annotation label was deleted while the feature vector was
+                    // generated.
+                    if ($e->getCode() !== '23503') {
+                        throw $e;
+                    }
+                }
             }
         }
     }
