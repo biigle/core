@@ -22,7 +22,6 @@ use Biigle\Tests\VolumeTest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -77,62 +76,6 @@ class CloneImagesOrVideosTest extends ApiTestCase
             $volume->makeHidden($ignore)->toArray(),
             $copy->makeHidden($ignore)->toArray()
         );
-    }
-
-    public function testCloneFilesCopiesAllColumns()
-    {
-        Event::fake();
-        foreach ([MediaType::IMAGE, MediaType::VIDEO] as $mediaType) {
-            $volume = VolumeTest::create(['media_type' => $mediaType])->fresh();
-            $isImage = $volume->isImageVolume();
-            $table = $isImage ? 'images' : 'videos';
-            $copy = $volume->replicate();
-            $copy->save();
-            $project = ProjectTest::create();
-            $project->addVolumeId($copy->id);
-
-            $files = [];
-            foreach (['c.jpg', 'a.jpg', 'b.jpg'] as $index => $filename) {
-                if ($isImage) {
-                    $files[] = ImageTest::create([
-                        'filename' => $filename,
-                        'volume_id' => $volume->id,
-                        'taken_at' => '2024-01-0'.($index + 1).' 10:00:00',
-                        'lng' => 1.5 + $index,
-                        'lat' => 5.3,
-                        'tiled' => $index === 1,
-                        'attrs' => ['size' => $index, 'metadata' => ['yaw' => 90]],
-                    ]);
-                } else {
-                    $files[] = VideoTest::create([
-                        'filename' => $filename,
-                        'volume_id' => $volume->id,
-                        'taken_at' => ['2024-01-0'.($index + 1).' 10:00:00'],
-                        'lng' => [1.5 + $index],
-                        'lat' => [5.3],
-                        'duration' => 10.5,
-                        'attrs' => ['size' => $index, 'metadata' => ['yaw' => [90]]],
-                    ]);
-                }
-            }
-
-            $request = new Request(['project' => $project, 'volume' => $volume]);
-            with(new CloneImagesOrVideos($request, $copy))->handle();
-
-            $strip = fn ($row) => array_diff_key((array) $row, ['id' => 1, 'uuid' => 1, 'volume_id' => 1]);
-            $original = DB::table($table)->where('volume_id', $volume->id)->orderBy('id')->get();
-            $cloned = DB::table($table)->where('volume_id', $copy->id)->orderBy('id')->get();
-            $this->assertCount(3, $cloned);
-            $this->assertSame($original->map($strip)->all(), $cloned->map($strip)->all());
-
-            $expectedMap = [];
-            foreach ($cloned as $index => $file) {
-                $this->assertNotSame($original[$index]->uuid, $file->uuid);
-                $expectedMap[$file->uuid] = $original[$index]->uuid;
-            }
-
-            Queue::assertPushed(ProcessCloneVolumeFiles::class, fn ($job) => (fn () => $this->volume->id === $copy->id && $this->uuidMap === $expectedMap)->call($job));
-        }
     }
 
     public function testCloneVideoVolume()
@@ -196,19 +139,32 @@ class CloneImagesOrVideosTest extends ApiTestCase
             'lng' => 1.5,
             'lat' => 5.3,
             'tiled' => true,
+            'attrs' => ['size' => 123, 'metadata' => ['yaw' => 90]],
         ])->fresh();
         ImageLabelTest::create(['image_id' => $oldImage->id]);
         $oldImageLabel = $oldImage->labels()->first();
+        // Sorts before the first image by filename to check that the ID order is kept.
+        $otherImage = ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $volume->id,
+        ]);
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched(VolumeFilesProcessed::class);
         Event::assertDispatched(VolumeCloned::class);
 
         $copy = $project->volumes()->first();
-        $newImage = $copy->images()->first();
+        $newImages = $copy->images()->orderBy('id')->get();
+        $this->assertSame(['j.jpg', 'a.jpg'], $newImages->pluck('filename')->all());
+        $expectedMap = [
+            $newImages[0]->uuid => $oldImage->uuid,
+            $newImages[1]->uuid => $otherImage->uuid,
+        ];
+        Queue::assertPushed(ProcessCloneVolumeFiles::class, fn ($job) => (fn () => $this->uuidMap === $expectedMap)->call($job));
+
+        $newImage = $newImages[0];
         $newImageLabel = $newImage->labels()->first();
 
         $this->assertNotNull($newImageLabel);
@@ -301,9 +257,15 @@ class CloneImagesOrVideosTest extends ApiTestCase
             'lng' => 1.5,
             'lat' => 5.3,
             'duration' => 42.42,
+            'attrs' => ['size' => 123, 'metadata' => ['yaw' => [90]]],
         ])->fresh();
         VideoLabelTest::create(['video_id' => $oldVideo->id]);
         $oldVideoLabel = $oldVideo->labels()->first();
+        // Sorts before the first video by filename to check that the ID order is kept.
+        $otherVideo = VideoTest::create([
+            'filename' => '0.jpg',
+            'volume_id' => $volume->id,
+        ]);
 
         $request = new Request([
             'project' => $project,
@@ -312,12 +274,19 @@ class CloneImagesOrVideosTest extends ApiTestCase
         ]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched(VolumeFilesProcessed::class);
         Event::assertDispatched(VolumeCloned::class);
 
         $copy = $project->volumes()->first();
-        $newVideo = $copy->videos()->first();
+        $newVideos = $copy->videos()->orderBy('id')->get();
+        $this->assertSame(['a.jpg', '0.jpg'], $newVideos->pluck('filename')->all());
+        $expectedMap = [
+            $newVideos[0]->uuid => $oldVideo->uuid,
+            $newVideos[1]->uuid => $otherVideo->uuid,
+        ];
+        Queue::assertPushed(ProcessCloneVolumeFiles::class, fn ($job) => (fn () => $this->uuidMap === $expectedMap)->call($job));
+
+        $newVideo = $newVideos[0];
         $newVideoLabel = $newVideo->labels()->first();
 
         $this->assertNotNull($newVideo);
