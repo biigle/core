@@ -101,9 +101,9 @@ class DashboardControllerTest extends TestCase
         $controller = new DashboardController;
         $user = UserTest::create();
 
-        // The most recent annotation labels all belong to the same image, so the
-        // controller must look at more than the first batch of annotation labels to
-        // find the second image.
+        // Many annotation labels of the same image must count as a single activity
+        // item and must not crowd out the other images of the scanned annotation
+        // labels.
         $old = ImageAnnotationLabelTest::create([
             'user_id' => $user->id,
             'created_at' => '2022-01-01 00:00:00',

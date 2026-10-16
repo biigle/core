@@ -17,10 +17,19 @@ return new class extends Migration {
         DB::statement('CREATE INDEX CONCURRENTLY IF NOT EXISTS video_annotation_labels_user_id_created_at_index ON video_annotation_labels (user_id, created_at)');
         // The dashboard also looks for the volumes that a user created recently.
         DB::statement('CREATE INDEX CONCURRENTLY IF NOT EXISTS volumes_creator_id_created_at_index ON volumes (creator_id, created_at)');
+
+        // The indices above start with user_id, so these are now redundant. They only
+        // take up space and slow down inserts. Queries for user_id alone scan the
+        // larger index instead, which is no slower in practice because the planner can
+        // still use an index only scan.
+        DB::statement('DROP INDEX CONCURRENTLY IF EXISTS annotation_labels_user_id_index');
+        DB::statement('DROP INDEX CONCURRENTLY IF EXISTS video_annotation_labels_user_id_index');
     }
 
     public function down(): void
     {
+        DB::statement('CREATE INDEX CONCURRENTLY IF NOT EXISTS annotation_labels_user_id_index ON image_annotation_labels (user_id)');
+        DB::statement('CREATE INDEX CONCURRENTLY IF NOT EXISTS video_annotation_labels_user_id_index ON video_annotation_labels (user_id)');
         DB::statement('DROP INDEX CONCURRENTLY IF EXISTS image_annotation_labels_user_id_created_at_index');
         DB::statement('DROP INDEX CONCURRENTLY IF EXISTS video_annotation_labels_user_id_created_at_index');
         DB::statement('DROP INDEX CONCURRENTLY IF EXISTS volumes_creator_id_created_at_index');

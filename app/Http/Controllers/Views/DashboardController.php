@@ -156,14 +156,20 @@ class DashboardController extends Controller
     }
 
     /**
+     * Number of annotation labels that are inspected to find recently annotated files.
+     *
+     * @var int
+     */
+    const ACTIVITY_SCAN_LIMIT = 500;
+
+    /**
      * Get the files that a user annotated most recently.
      *
      * Aggregating all annotation labels of a user is prohibitively expensive for users
-     * with many annotations. Instead, the annotation labels are scanned in reverse
-     * chronological order (which is cheap with the user_id/created_at index) and the
-     * files are collected in the order in which they first appear. The batch of scanned
-     * annotation labels is enlarged and the scan repeated in the unlikely case that a
-     * batch does not contain enough distinct files.
+     * with many annotations. Instead, only the most recent ACTIVITY_SCAN_LIMIT
+     * annotation labels are inspected, which is cheap with the user_id/created_at
+     * index. A user who spread fewer than $limit files over more annotation labels than
+     * that may see fewer activity items.
      *
      * @param string $labelTable
      * @param string $annotationTable
@@ -176,40 +182,26 @@ class DashboardController extends Controller
      */
     protected function recentlyAnnotatedFiles($labelTable, $annotationTable, $fileKey, User $user, $limit, $newerThan = null)
     {
-        $batchSize = max(10 * $limit, 50);
-        // Stop enlarging the batch at some point. Beyond this the scan is not faster
-        // than the aggregation of all annotation labels would be.
-        $maxBatchSize = 100000;
+        $recentLabels = DB::table($labelTable)
+            ->select('annotation_id', 'created_at')
+            ->where('user_id', $user->id)
+            ->when(!is_null($newerThan), function ($query) use ($newerThan) {
+                $query->where('created_at', '>', $newerThan);
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(self::ACTIVITY_SCAN_LIMIT);
 
-        while (true) {
-            $rows = DB::table($labelTable)
-                ->join($annotationTable, "{$annotationTable}.id", '=', "{$labelTable}.annotation_id")
-                ->where("{$labelTable}.user_id", $user->id)
-                ->when(!is_null($newerThan), function ($query) use ($labelTable, $newerThan) {
-                    $query->where("{$labelTable}.created_at", '>', $newerThan);
-                })
-                ->orderBy("{$labelTable}.created_at", 'desc')
-                ->limit($batchSize)
-                ->get([
-                    "{$annotationTable}.{$fileKey} as file_id",
-                    "{$labelTable}.created_at",
-                ]);
-
-            $timestamps = [];
-            foreach ($rows as $row) {
-                if (!array_key_exists($row->file_id, $timestamps)) {
-                    $timestamps[$row->file_id] = $row->created_at;
-                }
-            }
-
-            $exhausted = $rows->count() < $batchSize || $batchSize >= $maxBatchSize;
-
-            if (count($timestamps) >= $limit || $exhausted) {
-                return array_slice($timestamps, 0, $limit, true);
-            }
-
-            $batchSize = min($batchSize * 10, $maxBatchSize);
-        }
+        // Reduce the annotation labels to files in the database so only $limit rows are
+        // returned no matter how many annotation labels were scanned.
+        return DB::query()
+            ->fromSub($recentLabels, 'recent_labels')
+            ->join($annotationTable, "{$annotationTable}.id", '=', 'recent_labels.annotation_id')
+            ->selectRaw("{$annotationTable}.{$fileKey} as file_id, max(recent_labels.created_at) as max_created_at")
+            ->groupBy("{$annotationTable}.{$fileKey}")
+            ->orderBy('max_created_at', 'desc')
+            ->limit($limit)
+            ->pluck('max_created_at', 'file_id')
+            ->all();
     }
 
     /**
