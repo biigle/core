@@ -6,12 +6,8 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
-use Pgvector\Laravel\Vector;
 
 /**
  * @extends ProcessAnnotatedFile<ImageAnnotation>
@@ -55,84 +51,11 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     }
 
     /**
-     * Create the feature vectors based on the Python script output.
-     *
-     * @param Collection<int, ImageAnnotation> $annotations
+     * {@inheritdoc}
      */
-    protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
+    protected function getFeatureVectorModel(): string
     {
-        $annotations = $annotations->load('labels.label')->keyBy('id');
-        // Write the feature vectors in batches with a single query each instead of a
-        // query for each feature vector.
-        $vectors = [];
-        foreach ($output as $row) {
-            $annotation = $annotations->get($row[0]);
-            // Same conversion as the Vector cast of the model, which is not applied
-            // by upsert().
-            $vector = (string) new Vector($row[1]);
-
-            foreach ($annotation->labels as $al) {
-                $vectors[$al->id] = [
-                    'id' => $al->id,
-                    'annotation_id' => $annotation->id,
-                    'label_id' => $al->label_id,
-                    'label_tree_id' => $al->label->label_tree_id,
-                    'volume_id' => $this->file->volume_id,
-                    'vector' => $vector,
-                ];
-            }
-
-            if (count($vectors) >= static::FEATURE_VECTOR_BATCH_SIZE) {
-                $this->upsertFeatureVectors($vectors);
-                $vectors = [];
-            }
-        }
-
-        $this->upsertFeatureVectors($vectors);
-    }
-
-    /**
-     * Insert or update feature vectors.
-     */
-    protected function upsertFeatureVectors(array $vectors): void
-    {
-        if (empty($vectors)) {
-            return;
-        }
-
-        try {
-            $this->doUpsertFeatureVectors(array_values($vectors));
-        } catch (QueryException $e) {
-            // SQLSTATE 23503 is a foreign key violation. An annotation or annotation
-            // label was deleted while the feature vectors were generated. A single
-            // violation fails the whole batch so retry each row individually to only
-            // skip the affected ones.
-            if ($e->getCode() !== '23503') {
-                throw $e;
-            }
-
-            foreach ($vectors as $vector) {
-                try {
-                    $this->doUpsertFeatureVectors([$vector]);
-                } catch (QueryException $e) {
-                    if ($e->getCode() !== '23503') {
-                        throw $e;
-                    }
-                }
-            }
-        }
-    }
-
-    protected function doUpsertFeatureVectors(array $vectors): void
-    {
-        // The transaction becomes a savepoint if this runs inside another
-        // transaction, which is rolled back on error so the outer transaction is
-        // not aborted.
-        DB::transaction(fn () => ImageAnnotationLabelFeatureVector::upsert(
-            $vectors,
-            ['id'],
-            ['annotation_id', 'label_id', 'label_tree_id', 'volume_id', 'vector']
-        ));
+        return ImageAnnotationLabelFeatureVector::class;
     }
 
     /**
