@@ -4,7 +4,6 @@ namespace Biigle\Tests\Jobs;
 
 use Biigle\Events\LargoSessionFailed;
 use Biigle\Events\LargoSessionSaved;
-use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ApplyLargoSession;
 use Biigle\Jobs\RemoveImageAnnotationPatches;
