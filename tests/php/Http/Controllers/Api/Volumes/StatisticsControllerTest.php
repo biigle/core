@@ -12,7 +12,6 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
-use Illuminate\Testing\AssertableJsonString;
 
 class StatisticsControllerTest extends ApiTestCase
 {
@@ -136,13 +135,11 @@ class StatisticsControllerTest extends ApiTestCase
                     'name' => $annotationLabel2->label->name
                 ]
             ],
+            'sourceTargetLabels' => [
+                $annotationLabel1->label->id => [$annotationLabel2->label->id]
+            ]
         ];
-        $json = $response->json();
-        $this->assertSourceTargetLabels([
-            $annotationLabel1->label->id => [$annotationLabel2->label->id],
-        ], $json['sourceTargetLabels']);
-        unset($json['sourceTargetLabels']);
-        (new AssertableJsonString($json))->assertExact($expect);
+        $response->assertExactJson($expect);
     }
 
     public function testImageStatisticsAggregates()
@@ -185,7 +182,7 @@ class StatisticsControllerTest extends ApiTestCase
             ['id' => $label2->id, 'name' => $label2->name, 'count' => 1, 'color' => $label2->color],
             ['id' => $label3->id, 'name' => $label3->name, 'count' => 1, 'color' => $label3->color],
         ]);
-        $this->assertSourceTargetLabels([
+        $this->assertEquals([
             $label1->id => [$label2->id, $label3->id],
             $label2->id => [$label3->id],
         ], $response->json('sourceTargetLabels'));
@@ -281,23 +278,10 @@ class StatisticsControllerTest extends ApiTestCase
                     'name' => $annotationLabel2->label->name
                 ]
             ],
+            'sourceTargetLabels' => [
+                $annotationLabel1->label->id => [$annotationLabel2->label->id]
+            ]
         ];
-        $json = $response->json();
-        $this->assertSourceTargetLabels([
-            $annotationLabel1->label->id => [$annotationLabel2->label->id],
-        ], $json['sourceTargetLabels']);
-        unset($json['sourceTargetLabels']);
-        (new AssertableJsonString($json))->assertSimilar($expect);
-    }
-
-    /**
-     * Assert the label pairs regardless of the order of sources and targets.
-     */
-    protected function assertSourceTargetLabels(array $expected, array $actual): void
-    {
-        $this->assertEqualsCanonicalizing(array_keys($expected), array_keys($actual));
-        foreach ($expected as $source => $targets) {
-            $this->assertEqualsCanonicalizing($targets, $actual[$source]);
-        }
+        $response->assertSimilarJson($expect);
     }
 }

@@ -72,7 +72,7 @@ class ProjectStatisticsController extends Controller
             'annotatedImages' => $imageVolumeStatistics['annotatedFiles'],
             'annotationLabels' => $imageVolumeStatistics['annotationLabels'],
             'annotationTimeSeries' => $imageVolumeStatistics['annotationTimeSeries'],
-            'sourceTargetLabels' => collect($imageVolumeStatistics['sourceTargetLabels']),
+            'sourceTargetLabels' => $imageVolumeStatistics['sourceTargetLabels'],
             'totalImages' => $totalImages,
             'volumeAnnotations' => $imageVolumeStatistics['volumeAnnotations'],
             'volumeNames' => $volumeNames,
@@ -80,7 +80,7 @@ class ProjectStatisticsController extends Controller
             'annotatedVideos' => $videoVolumeStatistics['annotatedFiles'],
             'annotationLabelsVideo' => $videoVolumeStatistics['annotationLabels'],
             'annotationTimeSeriesVideo' => $videoVolumeStatistics['annotationTimeSeries'],
-            'sourceTargetLabelsVideo' => collect($videoVolumeStatistics['sourceTargetLabels']),
+            'sourceTargetLabelsVideo' => $videoVolumeStatistics['sourceTargetLabels'],
             'totalVideos' => $totalVideos,
             'volumeAnnotationsVideo' => $videoVolumeStatistics['volumeAnnotations'],
             'volumeNamesVideo' => $volumeNamesVideo,
@@ -97,7 +97,7 @@ class ProjectStatisticsController extends Controller
      */
     protected function getVolumeStatistics(Project $project, $type)
     {
-        return $this->getAnnotationStatistics($type, fn ($query) => $query->whereIn("{$type}s.volume_id", fn ($query) => $query->select('volume_id')
+        return $this->getAnnotationStatistics($type, fn ($query) => $query->whereIn("{$type}s.volume_id", fn ($q) => $q->select('volume_id')
             ->from('project_volume')
             ->where('project_id', $project->id)));
     }

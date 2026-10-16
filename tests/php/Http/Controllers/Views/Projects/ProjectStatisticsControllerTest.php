@@ -88,19 +88,8 @@ class ProjectStatisticsControllerTest extends TestCase
             ['id' => $label1->id, 'name' => $label1->name, 'count' => 2, 'color' => $label1->color],
             ['id' => $label2->id, 'name' => $label2->name, 'count' => 1, 'color' => $label2->color],
         ], $toArray($response->viewData('annotationLabels')));
-        $this->assertSourceTargetLabels([$label1->id => [$label2->id]], $response->viewData('sourceTargetLabels')->all());
+        $this->assertEquals([$label1->id => [$label2->id]], $response->viewData('sourceTargetLabels')->all());
         $response->assertViewHas('annotatedVideos', 0);
         $this->assertSame([], $response->viewData('sourceTargetLabelsVideo')->all());
-    }
-
-    /**
-     * Assert the label pairs regardless of the order of sources and targets.
-     */
-    protected function assertSourceTargetLabels(array $expected, array $actual): void
-    {
-        $this->assertEqualsCanonicalizing(array_keys($expected), array_keys($actual));
-        foreach ($expected as $source => $targets) {
-            $this->assertEqualsCanonicalizing($targets, $actual[$source]);
-        }
     }
 }

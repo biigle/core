@@ -19,15 +19,15 @@ trait ComputesAnnotationStatistics
      *
      * @return array
      */
-    protected function getAnnotationStatistics(string $type, callable $restrict)
+    protected function getAnnotationStatistics(string $type, callable $restrict): array
     {
-        $joinQuery = DB::table("{$type}_annotations")
+        $baseQuery = DB::table("{$type}_annotations")
             ->join("{$type}_annotation_labels", "{$type}_annotation_labels.annotation_id", '=', "{$type}_annotations.id")
             ->join("{$type}s", "{$type}s.id", '=', "{$type}_annotations.{$type}_id");
 
-        $restrict($joinQuery);
+        $restrict($baseQuery);
 
-        $baseQuery = $joinQuery->clone()
+        $baseQuery
             ->select(
                 "{$type}s.id as file_id",
                 "{$type}s.volume_id",
@@ -42,7 +42,7 @@ trait ComputesAnnotationStatistics
             WITH base AS MATERIALIZED ({$baseQuery->toSql()}),
             file_labels AS MATERIALIZED (SELECT DISTINCT file_id, label_id FROM base)
             SELECT
-                (SELECT count(DISTINCT file_id) FROM base) AS annotated_files,
+                (SELECT count(DISTINCT file_id) FROM file_labels) AS annotated_files,
                 (
                     SELECT json_agg(json_build_object('user_id', t.user_id, 'fullname', {$fullname}, 'count', t.count, 'yearmonth', t.yearmonth) ORDER BY t.user_id, t.yearmonth)
                     FROM (SELECT user_id, yearmonth, count(*) FROM base GROUP BY user_id, yearmonth) t
