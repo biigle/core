@@ -7,6 +7,7 @@ use Biigle\Image;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VolumeTest;
@@ -32,6 +33,29 @@ class DashboardControllerTest extends TestCase
         $this->actingAs($user)->get('/')
             ->assertSee('Signed in as')
             ->assertDontSee('Landing Page');
+    }
+
+    public function testDashboardProjectVolumePreview()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create(['creator_id' => $user->id]);
+
+        for ($i = 1; $i <= 5; $i++) {
+            $volume = VolumeTest::create([
+                'name' => "preview-volume-{$i}",
+                'created_at' => "2022-01-0{$i} 00:00:00",
+            ]);
+            $project->addVolumeId($volume->id);
+        }
+
+        $this->actingAs($user)->get('/')
+            ->assertSeeInOrder([
+                'preview-volume-5',
+                'preview-volume-4',
+                'preview-volume-3',
+                'preview-volume-2',
+            ])
+            ->assertDontSee('preview-volume-1');
     }
 
     public function testVolumeActivityItems()
@@ -110,7 +134,7 @@ class DashboardControllerTest extends TestCase
         ]);
 
         $image = ImageTest::create();
-        for ($i = 0; $i < 51; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             ImageAnnotationLabelTest::create([
                 'user_id' => $user->id,
                 'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id])->id,

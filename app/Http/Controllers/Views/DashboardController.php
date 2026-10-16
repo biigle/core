@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\View;
 class DashboardController extends Controller
 {
     /**
+     * Number of annotation labels that are inspected to find recently annotated files.
+     *
+     * @var int
+     */
+    const ACTIVITY_SCAN_LIMIT = 500;
+
+    /**
      * Create a new instance.
      */
     public function __construct()
@@ -154,13 +161,6 @@ class DashboardController extends Controller
             'videos.dashboardActivityItem'
         );
     }
-
-    /**
-     * Number of annotation labels that are inspected to find recently annotated files.
-     *
-     * @var int
-     */
-    const ACTIVITY_SCAN_LIMIT = 500;
 
     /**
      * Get the files that a user annotated most recently.
