@@ -31,11 +31,6 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     private ?float $videoFps = null;
 
     /**
-     * Path of the video that FPS was last calculated for
-     */
-    private ?string $videoFpsPath = null;
-
-    /**
      * FFProbe returns FPS as a rational like 60/1 (60 FPS) since decimals can't represent
      * some values correctly. This function parses that output into a float.
      * @param mixed $rate
@@ -57,15 +52,13 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      */
     protected function getVideoFps(string $path): float
     {
-        if ($this->videoFpsPath === $path && $this->videoFps !== null) {
+        if ($this->videoFps !== null) {
             return $this->videoFps;
         }
 
         if (!isset($this->ffprobe)) {
             $this->ffprobe = FFProbe::create();
         }
-
-        $this->videoFpsPath = $path;
 
         $stream = $this->ffprobe->streams($path)->videos()->first();
         if ($stream === null) {
