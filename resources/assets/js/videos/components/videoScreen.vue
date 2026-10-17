@@ -6,9 +6,14 @@
             ></minimap>
         <label-tooltip
             :features="hoveredFeatures"
-            :show="showLabelTooltip"
+            :show="showTooltip"
             :position="mousePosition"
             ></label-tooltip>
+        <persistent-label-tooltips
+            :annotation-source="annotationSource"
+            :map="map"
+            :mode="showLabelTooltip"
+            ></persistent-label-tooltips>
         <div class="controls">
             <div v-if="showPrevNext" class="btn-group">
                 <control-button
@@ -394,6 +399,9 @@
             :key="annotation.id"
             :focused-popup-key="focusedPopupKey"
             :annotation="annotation"
+            :feature="annotationSource.getFeatureById(annotation.id)"
+            :line-source="labelbotSource"
+            :map="map"
             :timeout="labelbotTimeout"
             @update="updateLabelbotLabel"
             @close="closeLabelbotPopup"
@@ -431,6 +439,7 @@ import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {markRaw} from 'vue';
+import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 
 export default {
     emits: [
@@ -522,8 +531,8 @@ export default {
             type: Object,
         },
         showLabelTooltip: {
-            type: Boolean,
-            default: false,
+            type: String,
+            default: LABEL_TOOLTIP_MODES.OFF,
         },
         showMinimap: {
             type: Boolean,
@@ -683,12 +692,6 @@ export default {
             return map;
         },
         initLayersAndInteractions(map) {
-            this.annotationFeatures = new Collection();
-
-            this.annotationSource = new VectorSource({
-                features: this.annotationFeatures,
-            });
-
             this.annotationLayer = new VectorLayer({
                 source: this.annotationSource,
                 updateWhileAnimating: true,
@@ -870,6 +873,11 @@ export default {
     created() {
         // markRaw is essential here!
         this.map = markRaw(this.createMap());
+        // These OpenLayers objects must not become reactive.
+        this.annotationFeatures = new Collection();
+        this.annotationSource = new VectorSource({
+            features: this.annotationFeatures,
+        });
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 

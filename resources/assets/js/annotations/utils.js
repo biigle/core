@@ -210,3 +210,21 @@ function addRightClickDragPanToMap(map, condition) {
 }
 
 export { isInvalidShape, clamp, trimCanvas, ScaleLineProperties, UnitMultipliers, UnitNames, addRightClickDragPanToMap };
+
+export const LABEL_TOOLTIP_MODES = Object.freeze({
+    OFF: 'off',
+    HOVER: 'hover',
+    ALWAYS: 'always',
+});
+
+export function normalizeLabelTooltipMode(value) {
+    if (value === true || value === 'true' || value === LABEL_TOOLTIP_MODES.HOVER) {
+        return LABEL_TOOLTIP_MODES.HOVER;
+    }
+
+    if (value === LABEL_TOOLTIP_MODES.ALWAYS) {
+        return LABEL_TOOLTIP_MODES.ALWAYS;
+    }
+
+    return LABEL_TOOLTIP_MODES.OFF;
+}

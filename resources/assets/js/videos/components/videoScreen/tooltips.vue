@@ -1,6 +1,8 @@
 <script>
 import LabelTooltip from '@/annotations/components/labelTooltip.vue';
+import PersistentLabelTooltips from '@/annotations/components/persistentLabelTooltips.vue';
 import {markRaw} from 'vue';
+import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the tooltips.
@@ -10,6 +12,7 @@ import {markRaw} from 'vue';
 export default {
     components: {
         labelTooltip: LabelTooltip,
+        persistentLabelTooltips: PersistentLabelTooltips,
     },
     data() {
         return {
@@ -20,7 +23,7 @@ export default {
     },
     computed: {
         showTooltip() {
-            return this.isDefaultInteractionMode && this.showLabelTooltip;
+            return this.isDefaultInteractionMode && this.showLabelTooltip === LABEL_TOOLTIP_MODES.HOVER;
         },
     },
     methods: {
