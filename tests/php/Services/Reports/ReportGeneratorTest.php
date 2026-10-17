@@ -4,8 +4,12 @@ namespace Biigle\Tests\Services\Reports;
 
 use Biigle\Enums\ReportType;
 use Biigle\Project;
+use Biigle\Services\Reports\Projects\ImageMetadataReportGenerator as ProjectImageMetadataReportGenerator;
+use Biigle\Services\Reports\Projects\VideoMetadataReportGenerator as ProjectVideoMetadataReportGenerator;
 use Biigle\Services\Reports\ReportGenerator;
 use Biigle\Services\Reports\Volumes\ImageAnnotations\BasicReportGenerator;
+use Biigle\Services\Reports\Volumes\ImageMetadataReportGenerator;
+use Biigle\Services\Reports\Volumes\VideoMetadataReportGenerator;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Video;
@@ -38,6 +42,30 @@ class ReportGeneratorTest extends TestCase
         foreach (collect(ReportType::cases()) as $type) {
             $this->assertNotNull(ReportGenerator::get(Project::class, $type));
         }
+    }
+
+    public function testGetVideoMetadata()
+    {
+        $this->assertInstanceOf(
+            VideoMetadataReportGenerator::class,
+            ReportGenerator::get(Volume::class, ReportType::VIDEO_METADATA)
+        );
+        $this->assertInstanceOf(
+            ProjectVideoMetadataReportGenerator::class,
+            ReportGenerator::get(Project::class, ReportType::VIDEO_METADATA)
+        );
+    }
+
+    public function testGetImageMetadata()
+    {
+        $this->assertInstanceOf(
+            ImageMetadataReportGenerator::class,
+            ReportGenerator::get(Volume::class, ReportType::IMAGE_METADATA)
+        );
+        $this->assertInstanceOf(
+            ProjectImageMetadataReportGenerator::class,
+            ReportGenerator::get(Project::class, ReportType::IMAGE_METADATA)
+        );
     }
 
     public function testGetAllVideoLegacyExist()

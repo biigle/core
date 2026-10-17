@@ -98,6 +98,10 @@ class ProjectReportControllerTest extends ApiTestCase
 
             return true;
         });
+
+        $this->json('POST', "api/v1/projects/{$projectId}/reports", [
+            'type' => ReportType::VIDEO_METADATA->value,
+        ])->assertStatus(201);
     }
 
     public function testStoreNoVideoVolumes()
@@ -108,6 +112,7 @@ class ProjectReportControllerTest extends ApiTestCase
         $types = [
             ReportType::VIDEO_ANNOTATIONS_CSV->value,
             ReportType::VIDEO_LABELS_CSV->value,
+            ReportType::VIDEO_METADATA->value,
             ReportType::VIDEO_IFDO->value,
         ];
 
@@ -137,6 +142,7 @@ class ProjectReportControllerTest extends ApiTestCase
             ReportType::IMAGE_LABELS_BASIC->value,
             ReportType::IMAGE_LABELS_CSV->value,
             ReportType::IMAGE_LABELS_IMAGE_LOCATION->value,
+            ReportType::IMAGE_METADATA->value,
             ReportType::IMAGE_IFDO->value,
         ];
 
@@ -146,6 +152,17 @@ class ProjectReportControllerTest extends ApiTestCase
                 'type' => $typeId,
             ])->assertStatus(422);
         }
+    }
+
+    public function testStoreImageMetadata()
+    {
+        $projectId = $this->project()->id;
+        $this->volume(['media_type' => MediaType::IMAGE]);
+        $this->beGuest();
+
+        $this->postJson("api/v1/projects/{$projectId}/reports", [
+            'type' => ReportType::IMAGE_METADATA->value,
+        ])->assertStatus(201);
     }
 
     public function testStoreOnlyLabels()
