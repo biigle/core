@@ -14,28 +14,6 @@
             display: block;
         }
     }
-
-    .current-time__mediabunny {
-        display: none;
-        width: 18px;
-        height: 18px;
-        vertical-align: middle;
-        animation: mediabunny-pulse 0.5s ease-in-out infinite;
-    }
-
-    .current-time__mediabunny--active {
-        display: inline-block;
-    }
-}
-
-@keyframes mediabunny-pulse {
-    0%, 100% {
-        opacity: 0.35;
-    }
-
-    50% {
-        opacity: 1;
-    }
 }
 
 .video-timeline.full-height .current-time {
