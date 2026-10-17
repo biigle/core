@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Services\Reports;
 
+use Biigle\Enums\ReportType;
 use Biigle\Project;
-use Biigle\ReportType;
 use Biigle\Services\Reports\Projects\ImageMetadataReportGenerator as ProjectImageMetadataReportGenerator;
 use Biigle\Services\Reports\Projects\VideoMetadataReportGenerator as ProjectVideoMetadataReportGenerator;
 use Biigle\Services\Reports\ReportGenerator;
@@ -21,15 +21,9 @@ use TestCase;
 
 class ReportGeneratorTest extends TestCase
 {
-    public function testGetNotExists()
-    {
-        $this->expectException(Exception::class);
-        ReportGenerator::get(Volume::class, ReportType::factory()->make());
-    }
-
     public function testGet()
     {
-        $type = ReportType::whereName('ImageAnnotations\Basic')->first();
+        $type = ReportType::IMAGE_ANNOTATIONS_BASIC;
         $this->assertInstanceOf(
             BasicReportGenerator::class,
             ReportGenerator::get(Volume::class, $type)
@@ -38,14 +32,14 @@ class ReportGeneratorTest extends TestCase
 
     public function testGetAllVolumeExist()
     {
-        foreach (ReportType::get() as $type) {
+        foreach (collect(ReportType::cases()) as $type) {
             $this->assertNotNull(ReportGenerator::get(Volume::class, $type));
         }
     }
 
     public function testGetAllProjectExist()
     {
-        foreach (ReportType::get() as $type) {
+        foreach (collect(ReportType::cases()) as $type) {
             $this->assertNotNull(ReportGenerator::get(Project::class, $type));
         }
     }
@@ -54,11 +48,11 @@ class ReportGeneratorTest extends TestCase
     {
         $this->assertInstanceOf(
             VideoMetadataReportGenerator::class,
-            ReportGenerator::get(Volume::class, ReportType::videoMetadata())
+            ReportGenerator::get(Volume::class, ReportType::VIDEO_METADATA)
         );
         $this->assertInstanceOf(
             ProjectVideoMetadataReportGenerator::class,
-            ReportGenerator::get(Project::class, ReportType::videoMetadata())
+            ReportGenerator::get(Project::class, ReportType::VIDEO_METADATA)
         );
     }
 
@@ -66,17 +60,17 @@ class ReportGeneratorTest extends TestCase
     {
         $this->assertInstanceOf(
             ImageMetadataReportGenerator::class,
-            ReportGenerator::get(Volume::class, ReportType::imageMetadata())
+            ReportGenerator::get(Volume::class, ReportType::IMAGE_METADATA)
         );
         $this->assertInstanceOf(
             ProjectImageMetadataReportGenerator::class,
-            ReportGenerator::get(Project::class, ReportType::imageMetadata())
+            ReportGenerator::get(Project::class, ReportType::IMAGE_METADATA)
         );
     }
 
     public function testGetAllVideoLegacyExist()
     {
-        $this->assertNotNull(ReportGenerator::get(Video::class, ReportType::videoAnnotationsCsv()));
+        $this->assertNotNull(ReportGenerator::get(Video::class, ReportType::VIDEO_ANNOTATIONS_CSV));
     }
 
     public function testHandleException()

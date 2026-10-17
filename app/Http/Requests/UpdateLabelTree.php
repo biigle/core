@@ -2,8 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLabelTree extends FormRequest
 {
@@ -35,7 +37,7 @@ class UpdateLabelTree extends FormRequest
     {
         return [
             'name' => 'filled|max:256',
-            'visibility_id' => 'integer|exists:visibilities,id',
+            'visibility' => ['integer', Rule::enum(Visibility::class)],
         ];
     }
 }

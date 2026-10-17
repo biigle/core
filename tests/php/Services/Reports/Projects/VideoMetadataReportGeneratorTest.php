@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\Reports\Projects;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\Reports\Projects\VideoMetadataReportGenerator;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VideoTest;
@@ -15,9 +15,9 @@ class VideoMetadataReportGeneratorTest extends TestCase
     public function testGenerateReportContainsOneCsvPerVideoVolume()
     {
         $project = ProjectTest::create();
-        $first = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $second = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
-        $image = VolumeTest::create(['media_type_id' => MediaType::imageId()]);
+        $first = VolumeTest::create(['media_type' => MediaType::VIDEO]);
+        $second = VolumeTest::create(['media_type' => MediaType::VIDEO]);
+        $image = VolumeTest::create(['media_type' => MediaType::IMAGE]);
         $project->volumes()->attach([$first->id, $second->id, $image->id]);
         VideoTest::create(['volume_id' => $first->id]);
         VideoTest::create(['volume_id' => $second->id]);

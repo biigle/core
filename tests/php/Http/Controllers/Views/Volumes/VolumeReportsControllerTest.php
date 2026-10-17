@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class VolumeReportsControllerTest extends ApiTestCase
 {
@@ -41,7 +41,7 @@ class VolumeReportsControllerTest extends ApiTestCase
 
     public function testShowVideoMetadataReport()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $this->beGuest();
 
         $this->get("volumes/{$id}/reports")
@@ -52,7 +52,7 @@ class VolumeReportsControllerTest extends ApiTestCase
 
     public function testShowImageMetadataReport()
     {
-        $id = $this->volume(['media_type_id' => MediaType::imageId()])->id;
+        $id = $this->volume(['media_type' => MediaType::IMAGE])->id;
         $this->beGuest();
 
         $this->get("volumes/{$id}/reports")

@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
+use Biigle\Enums\Shape;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property array $points
  * @property string $created_at
- * @property int $shape_id
+ * @property Shape $shape
  * @phpstan-consistent-constructor
  */
 #[Hidden(['pivot'])]
@@ -31,6 +32,7 @@ abstract class Annotation extends Model implements AnnotationContract
     protected function casts(): array
     {
         return [
+            'shape' => Shape::class,
             'points' => 'array',
         ];
     }
@@ -67,21 +69,22 @@ abstract class Annotation extends Model implements AnnotationContract
             return $query;
         }
 
-        $table = $this->getTable();
+        $ownerKeyName = $this->file()->getQualifiedOwnerKeyName();
+        $ownerTable = explode('.', $ownerKeyName)[0];
 
-        return $query->whereIn("{$table}.id", function ($query) use ($user, $table) {
-            $ownerKeyName = $this->file()->getQualifiedOwnerKeyName();
-            $ownerTable = explode('.', $ownerKeyName)[0];
-            $foreignKeyName = $this->file()->getQualifiedForeignKeyName();
-
-            $query->select("{$table}.id")
-                ->from($table)
-                ->join($ownerTable, $ownerKeyName, '=', $foreignKeyName)
-                ->join('project_volume', 'project_volume.volume_id', '=', "{$ownerTable}.volume_id")
-                ->whereIn('project_volume.project_id', function ($query) use ($user) {
-                    $query->select('project_id')
-                        ->from('project_user')
-                        ->where('user_id', $user->id);
+        // Restrict the files instead of the annotations. This is much faster than
+        // restricting the annotations with a join on the (huge) annotation table.
+        return $query->whereIn($this->file()->getQualifiedForeignKeyName(), function ($query) use ($user, $ownerKeyName, $ownerTable) {
+            $query->select($ownerKeyName)
+                ->from($ownerTable)
+                ->whereIn("{$ownerTable}.volume_id", function ($query) use ($user) {
+                    $query->select('volume_id')
+                        ->from('project_volume')
+                        ->whereIn('project_id', function ($query) use ($user) {
+                            $query->select('project_id')
+                                ->from('project_user')
+                                ->where('user_id', $user->id);
+                        });
                 });
         });
     }
@@ -189,16 +192,6 @@ abstract class Annotation extends Model implements AnnotationContract
      * @return int
      */
     abstract public function getFileIdAttribute();
-
-    /**
-     * The shape of this annotation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Shape, $this>
-     */
-    public function shape()
-    {
-        return $this->belongsTo(Shape::class);
-    }
 
     /**
      * {@inheritdoc}

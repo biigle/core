@@ -22,7 +22,7 @@
                     <label for="report-type">Report type</label>
                     <select id="report-type" class="form-control" v-model="selectedReportTypeName" required="">
                         @foreach ($reportTypes as $type)
-                            <option value="{{$type->name}}" @disabled(!$hasIfdos && str_ends_with($type->name, 'Ifdo'))>{{str_replace('Ifdo', 'iFDO', Str::headline(str_replace('\\', ' ', $type->name)))}}</option>
+                            <option value="{{$type->label()}}" @disabled(!$hasIfdos && str_ends_with($type->label(), 'Ifdo'))>{{str_replace('Ifdo', 'iFDO', Str::headline(str_replace('\\', ' ', $type->label())))}}</option>
                         @endforeach
                     </select>
                     @include('partials.reportTypeInfo')

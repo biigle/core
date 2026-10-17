@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\Reports\Volumes;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\Reports\Volumes\VideoMetadataReportGenerator;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
@@ -33,7 +33,7 @@ class VideoMetadataReportGeneratorTest extends TestCase
 
     public function testGenerateReportIncludesVideoWithoutSamples()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
         $video = VideoTest::create([
             'volume_id' => $volume->id,
             'filename' => 'video.mp4',
@@ -79,7 +79,7 @@ class VideoMetadataReportGeneratorTest extends TestCase
 
     public function testGenerateReportExpandsAndOrdersUnequalSamples()
     {
-        $volume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
         $second = VideoTest::create([
             'id' => 20,
             'volume_id' => $volume->id,

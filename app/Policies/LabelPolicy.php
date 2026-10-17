@@ -2,9 +2,9 @@
 
 namespace Biigle\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\Label;
 use Biigle\LabelTree;
-use Biigle\Role;
 use Biigle\User;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -30,7 +30,7 @@ class LabelPolicy extends CachedPolicy
             return $sudo || DB::table('label_tree_user')
                 ->where('label_tree_id', $label->label_tree_id)
                 ->where('user_id', $user->id)
-                ->whereIn('role_id', [Role::adminId(), Role::editorId()])
+                ->whereIn('role', [Role::ADMIN, Role::EDITOR])
                 ->exists();
         });
     }

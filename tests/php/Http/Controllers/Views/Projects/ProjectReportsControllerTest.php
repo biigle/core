@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\VolumeTest;
 
 class ProjectReportsControllerTest extends ApiTestCase
@@ -34,7 +34,7 @@ class ProjectReportsControllerTest extends ApiTestCase
     {
         $id = $this->project()->id;
         $this->volume();
-        $videoVolume = VolumeTest::create(['media_type_id' => MediaType::videoId()]);
+        $videoVolume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
         $this->project()->volumes()->attach($videoVolume);
         $this->beGuest();
 

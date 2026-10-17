@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\Import;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -39,7 +39,7 @@ class UserImport extends Import
 
         $insert = $candidates->map(function ($u) use ($now) {
             unset($u['id']);
-            $u['role_id'] = Role::editorId();
+            $u['role'] = Role::EDITOR;
             $u['attrs'] = json_encode(['settings' => $u['settings']]);
             unset($u['settings']);
             $u['updated_at'] = $now;

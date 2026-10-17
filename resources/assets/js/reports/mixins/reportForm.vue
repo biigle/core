@@ -82,7 +82,7 @@ export default {
                 }
             });
 
-            options.type_id = this.selectedReportTypeId;
+            options.type = this.selectedReportTypeId;
 
             return options;
         },
