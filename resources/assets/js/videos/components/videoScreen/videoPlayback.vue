@@ -266,20 +266,40 @@ export default {
         toggleFirefoxFullscreen() {
             document.body.requestFullscreen();
         },
+        clearMediabunnyInputWithWarning(input, revision, warning) {
+            input?.dispose();
+
+            if (revision !== this.videoSourceRevision) {
+                return;
+            }
+
+            this.mediabunnyInput = null;
+            this.mediabunnySink = null;
+            Messages.warning(warning);
+        },
         async initMediabunny(revision) {
             if (this.mediabunnyInput) {
                 this.mediabunnyInput.dispose();
             }
-            const input = new Input({
-                source: new UrlSource(this.video.src),
-                formats: ALL_FORMATS
-            });
-            const track = await input.getPrimaryVideoTrack();
-            if (!track || !(await track.canDecode())) {
-                input.dispose();
-                this.mediabunnyInput = null;
-                this.mediabunnySink = null;
-                Messages.warning('The used video codec is not supported by the WebCodecs API. The browser might display incorrect frames for a given timestamp. Consider switching the browser or transcoding the video to a more widely supported codec like H.264 (AVC).');
+
+            let input;
+            let track;
+            try {
+                input = new Input({
+                    source: new UrlSource(this.video.src),
+                    formats: ALL_FORMATS
+                });
+                track = await input.getPrimaryVideoTrack();
+
+                if (!track) {
+                    this.clearMediabunnyInputWithWarning(input, revision, 'Unable to read a video track from this video.');
+                    return;
+                } else if (!(await track.canDecode())) {
+                    this.clearMediabunnyInputWithWarning(input, revision, 'The used video codec is not supported by the WebCodecs API. The browser might display incorrect frames for a given timestamp. Consider switching the browser or transcoding the video to a more widely supported codec like H.264 (AVC).');
+                    return;
+                }
+            } catch (error) {
+                this.clearMediabunnyInputWithWarning(input, revision, 'Unable to read the video. Check the video URL and CORS configuration.');
                 return;
             }
 
@@ -301,7 +321,7 @@ export default {
             try {
                 await this.mediabunnyInitPromise;
 
-                if (sourceHasChanged()) {
+                if (sourceHasChanged() || !this.mediabunnySink) {
                     return;
                 }
 
