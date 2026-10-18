@@ -202,19 +202,21 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      */
     protected function getVideoFrame(string $sourcePath, float $time, float $window, ?int $trySeek = null)
     {
-        // We seek back up to 2 s by default (this is based on what was required
-        // for edge cases in 1.5M annotations on 16k videos).
         $fps = $this->getVideoFps($sourcePath);
-        $seekStep = 1.0 / $fps;
-        $trySeek ??= max(1, (int) ceil(2.0 * $fps) + 1);
+        $frameStep = 1.0 / $fps;
+
+        // We seek back up to 2 s, rounded up to complete decoding windows, by default
+        // (this is based on what was required for edge cases in 1.5M annotations on 16k videos).
+        // Since every step we decode $window seconds, calculate how many times $window fits in 2s
+        $trySeek ??= max(1, (int) ceil(2.0 / $window) + 1);
 
         // Sometimes an annotation is near the end of the video (or exactly at the end).
         // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
-        // we try to seek backwards one frame until the buffer is not empty or the number
+        // we try to seek backwards by $window until the buffer is not empty or the number
         // of tries is exceeded.
         do {
             $seekTime = sprintf('%F', max(0, $time - $window));
-            $decodeDuration = sprintf('%F', $window + $seekStep);
+            $decodeDuration = sprintf('%F', $window + $frameStep);
             $timeString = sprintf('%F', $time);
 
             // Use a temporary file with random name for the jpg thumbnail file
@@ -258,7 +260,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             }
 
             $trySeek -= 1;
-            $time = max(0, $time - $seekStep);
+            $time = max(0, $time - $window);
         } while ($trySeek > 0);
 
         throw new RuntimeException('Could not extract a video frame.');
