@@ -116,6 +116,8 @@ export default {
             this.animationFrameId = null;
         },
         async renderPausedFrame(time = this.video.currentTime) {
+            await this.mediabunnyInitPromise;
+
             if (!this.video.paused ) {
                 this.renderVideo(true);
                 return;
@@ -319,8 +321,6 @@ export default {
             this.mediabunnyDecodeCount++;
             this.$emit('mediabunny-decoding', true);
             try {
-                await this.mediabunnyInitPromise;
-
                 if (sourceHasChanged() || !this.mediabunnySink) {
                     return;
                 }
