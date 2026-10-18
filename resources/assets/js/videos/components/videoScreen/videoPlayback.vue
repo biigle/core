@@ -115,6 +115,12 @@ export default {
             }
             this.animationFrameId = null;
         },
+        renderPausedFrameWithNativeSeeking(time) {
+            // Use native seeking in case mediabunny is not available (unsupported codec, etc.):
+            // Assign video.currentTime manually and hope the browser displays the correct frame
+            this.video.currentTime = time;
+            this.renderVideo(true);
+        },
         async renderPausedFrame(time = this.video.currentTime) {
             await this.mediabunnyInitPromise;
 
@@ -122,10 +128,7 @@ export default {
                 this.renderVideo(true);
                 return;
             } else if (!this.mediabunnySink) {
-                // Use the old hack if mediabunny is not available (unsupported codec, etc.):
-                // Assign video.currentTime manually and hope the browser displays the correct frame
-                this.video.currentTime = time;
-                this.renderVideo(true);
+                this.renderPausedFrameWithNativeSeeking(time);
                 return;
             }
 
@@ -338,6 +341,9 @@ export default {
 
                 this.drawBitmap(bitmap);
                 bitmap.close();
+            } catch (error) {
+                console.warn("Mediabunny frame decoding failed. Falling back to native seeking. The error was: ", error);
+                this.renderPausedFrameWithNativeSeeking(time);
             } finally {
                 this.mediabunnyDecodeCount--;
                 this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
