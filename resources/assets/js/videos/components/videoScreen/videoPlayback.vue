@@ -296,7 +296,10 @@ export default {
                 });
                 track = await input.getPrimaryVideoTrack();
 
-                if (!track) {
+                if (revision !== this.videoSourceRevision) {
+                    input.dispose();
+                    return;
+                } else if (!track) {
                     this.clearMediabunnyInputWithWarning(input, revision, 'Unable to read a video track from this video.');
                     return;
                 } else if (!(await track.canDecode())) {
@@ -305,11 +308,6 @@ export default {
                 }
             } catch (error) {
                 this.clearMediabunnyInputWithWarning(input, revision, 'Unable to read the video. Check the video URL and CORS configuration.');
-                return;
-            }
-
-            if (revision !== this.videoSourceRevision) {
-                input.dispose();
                 return;
             }
 
