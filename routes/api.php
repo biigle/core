@@ -50,8 +50,12 @@ $router->resource('api-tokens', 'ApiTokenController', [
     'parameters' => ['api-tokens' => 'id'],
 ]);
 
-$router->get('export/users', 'Export\UserExportController@show');
-$router->get('export/label-trees', 'Export\LabelTreeExportController@show');
+$router->post('export/users', 'Export\UserExportController@store');
+$router->get('export/users/{id}', 'Export\UserExportController@download');
+$router->delete('export/users/{id}', 'Export\UserExportController@destroy');
+$router->post('export/label-trees', 'Export\LabelTreeExportController@store');
+$router->get('export/label-trees/{id}', 'Export\LabelTreeExportController@download');
+$router->delete('export/label-trees/{id}', 'Export\LabelTreeExportController@destroy');
 $router->post('export/volumes', 'Export\VolumeExportController@store');
 $router->get('export/volumes/{id}', 'Export\VolumeExportController@download');
 $router->delete('export/volumes/{id}', 'Export\VolumeExportController@destroy');

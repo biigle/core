@@ -24,7 +24,7 @@ return [
     /*
     | Storage disk for generated volume exports.
     */
-    'volume_export_storage_disk' => env('SYNC_VOLUME_EXPORT_STORAGE_DISK', 'volume-exports'),
+    'export_storage_disk' => env('SYNC_EXPORT_STORAGE_DISK', env('SYNC_VOLUME_EXPORT_STORAGE_DISK', 'volume-exports')),
 
     /*
     | Set which imports should be allowed for this instance.
@@ -40,5 +40,5 @@ return [
      */
     'postprocess_volume_import_queue' => env('SYNC_POSTPROCESS_VOLUME_IMPORT_QUEUE', 'default'),
 
-    'generate_volume_export_queue' => env('SYNC_GENERATE_VOLUME_EXPORT_QUEUE', 'default'),
+    'generate_export_queue' => env('SYNC_GENERATE_EXPORT_QUEUE', env('SYNC_GENERATE_VOLUME_EXPORT_QUEUE', 'default')),
 ];

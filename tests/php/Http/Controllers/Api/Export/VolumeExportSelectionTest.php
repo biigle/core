@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
+use Biigle\ExportFile;
 use Biigle\Tests\VolumeTest;
-use Biigle\VolumeExport;
 
 class VolumeExportSelectionTest extends ApiTestCase
 {
@@ -19,7 +19,7 @@ class VolumeExportSelectionTest extends ApiTestCase
 
         $this->assertSame(
             [$first->id, $second->id],
-            VolumeExport::firstOrFail()->volume_ids
+            ExportFile::firstOrFail()->entity_ids
         );
     }
 }

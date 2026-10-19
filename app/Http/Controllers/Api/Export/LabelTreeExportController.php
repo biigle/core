@@ -3,18 +3,17 @@
 namespace Biigle\Http\Controllers\Api\Export;
 
 use Biigle\LabelTree;
-use Biigle\Services\Export\LabelTreeExport;
 
 class LabelTreeExportController extends Controller
 {
     /**
-     * @api {get} export/label-trees Get a label tree export
+     * @api {post} export/label-trees Request a label tree export
      * @apiGroup Sync
      * @apiName ShowLabelTreeExport
      *
      * @apiParam (Optional arguments) {String} except Comma separated IDs of the label trees that should not be included in the export file.
      * @apiParam (Optional arguments) {String} only Comma separated IDs of the label trees that should only be included in the export file.
-     * @apiDescription Exactly one of `except` or `only` must be provided (not both). The response is a ZIP archive that can be used for the label tree import.
+     * @apiDescription Exactly one of `except` or `only` must be provided (not both). The response acknowledges the queued export.
      * @apiPermission admin
      */
 
@@ -29,9 +28,9 @@ class LabelTreeExportController extends Controller
     /**
      * {@inheritdoc}
      */
-    protected function getExport(array $ids)
+    protected function getType(): string
     {
-        return new LabelTreeExport($ids);
+        return 'labelTrees';
     }
 
     /**
@@ -40,13 +39,5 @@ class LabelTreeExportController extends Controller
     protected function getExportFilename()
     {
         return 'biigle_label_tree_export.zip';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function isAllowed()
-    {
-        return in_array('labelTrees', config('sync.allowed_exports'));
     }
 }

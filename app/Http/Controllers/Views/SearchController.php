@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Biigle\ExportFile;
 use Biigle\FederatedSearchModel;
 use Biigle\Image;
 use Biigle\LabelTree;
@@ -11,7 +12,6 @@ use Biigle\Services\Modules;
 use Biigle\User;
 use Biigle\Video;
 use Biigle\Volume;
-use Biigle\VolumeExport;
 use DB;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
@@ -415,7 +415,7 @@ class SearchController extends Controller
      */
     protected function searchExports(User $user, $query, $type): array
     {
-        $queryBuilder = VolumeExport::where('user_id', $user->id)
+        $queryBuilder = ExportFile::where('user_id', $user->id)
             ->when($query, function ($q) use ($query) {
                 $q->where('description', 'ilike', "%{$query}%");
             });

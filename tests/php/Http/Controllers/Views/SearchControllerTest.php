@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
+use Biigle\ExportFile;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\ReportType;
@@ -18,7 +19,6 @@ use Biigle\Tests\VolumeTest;
 use Biigle\Video;
 use Biigle\Visibility;
 use Biigle\Volume;
-use Biigle\VolumeExport;
 use TestCase;
 
 class SearchControllerTest extends TestCase
@@ -400,12 +400,30 @@ class SearchControllerTest extends TestCase
             ->assertSee('q=Batch&amp;t=exports&amp;page=2', false);
     }
 
-    private function createExport($user, $description, $readyAt = null): VolumeExport
+    public function testIndexExportsShowsEachType()
     {
-        $export = new VolumeExport;
+        $sudo = UserTest::create(['role_id' => Role::adminId()]);
+        $userExport = $this->createExport($sudo, null, now());
+        $userExport->type = 'users';
+        $userExport->save();
+        $treeExport = $this->createExport($sudo, null, now());
+        $treeExport->type = 'labelTrees';
+        $treeExport->save();
+        $this->be($sudo);
+
+        $this->get('search?t=exports')
+            ->assertSeeText('User export')
+            ->assertSeeText('Label tree export')
+            ->assertSee("api/v1/export/users/{$userExport->id}")
+            ->assertSee("api/v1/export/label-trees/{$treeExport->id}");
+    }
+
+    private function createExport($user, $description, $readyAt = null): ExportFile
+    {
+        $export = new ExportFile;
         $export->user()->associate($user);
         $export->description = $description;
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->ready_at = $readyAt;
         $export->save();
 

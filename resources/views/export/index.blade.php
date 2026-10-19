@@ -43,7 +43,7 @@
                         An export file contains user password hashes. Make sure no third party can read it!
                     </div>
                 </div>
-                <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenLabelTrees || null">Request label tree export</a>
+                <button type="button" class="btn btn-success pull-right" v-on:click.prevent="requestLabelTreeExport" v-bind:disabled="(loading || hasNoChosenLabelTrees) || null">Request label tree export</button>
             </tab>
         @endif
         @if (in_array('users', $allowedExports))
@@ -57,7 +57,7 @@
                         An export file contains user password hashes. Make sure no third party can read it!
                     </div>
                 </div>
-                <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenUsers || null">Request user export</a>
+                <button type="button" class="btn btn-success pull-right" v-on:click.prevent="requestUserExport" v-bind:disabled="(loading || hasNoChosenUsers) || null">Request user export</button>
             </tab>
         @endif
     </tabs>

@@ -2,9 +2,8 @@
 
 namespace Biigle\Jobs;
 
-use Biigle\Notifications\VolumeExportReady;
-use Biigle\Services\Export\VolumeExport as VolumeExportGenerator;
-use Biigle\VolumeExport;
+use Biigle\ExportFile;
+use Biigle\Notifications\ExportReady;
 use Carbon\Carbon;
 use File;
 use Illuminate\Queue\InteractsWithQueue;
@@ -13,7 +12,7 @@ use RuntimeException;
 use SplFileInfo;
 use Storage;
 
-class GenerateVolumeExportJob extends Job
+class GenerateExportJob extends Job
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -27,14 +26,14 @@ class GenerateVolumeExportJob extends Job
     /**
      * The export to generate.
      *
-     * @var VolumeExport
+     * @var ExportFile
      */
     public $export;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(VolumeExport $export)
+    public function __construct(ExportFile $export)
     {
         $this->export = $export;
     }
@@ -51,16 +50,14 @@ class GenerateVolumeExportJob extends Job
         }
 
         if ($export->ready_at) {
-            $export->user->notify(new VolumeExportReady($export));
-
             return;
         }
 
-        $path = (new VolumeExportGenerator($export->volume_ids))->getArchive();
+        $path = $export->getGenerator()->getArchive();
         $filename = $export->getStorageFilename();
 
         try {
-            $disk = Storage::disk(config('sync.volume_export_storage_disk'));
+            $disk = Storage::disk(config('sync.export_storage_disk'));
 
             if (!$disk->putFileAs('', new SplFileInfo($path), $filename)) {
                 throw new RuntimeException('Could not store volume export.');
@@ -69,7 +66,7 @@ class GenerateVolumeExportJob extends Job
             File::delete($path);
         }
 
-        $updated = VolumeExport::whereKey($export->id)
+        $updated = ExportFile::whereKey($export->id)
             ->whereNull('ready_at')
             ->update(['ready_at' => new Carbon]);
 
@@ -79,6 +76,8 @@ class GenerateVolumeExportJob extends Job
             return;
         }
 
-        $export->user->notify(new VolumeExportReady($export));
+        /** @var \Biigle\User $user */
+        $user = $export->user;
+        $user->notify(new ExportReady($export));
     }
 }

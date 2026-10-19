@@ -1,5 +1,3 @@
-const acknowledgement = 'The volume export was requested. You will be notified when it is ready.';
-
 export function getEntitySelection(entities, chosen) {
     if ((entities.length / 2) > chosen.length) {
         return {only: chosen.map((entity) => entity.id)};
@@ -12,12 +10,14 @@ export function getEntitySelection(entities, chosen) {
     };
 }
 
-export function requestVolumeExport({chosen, description, entities, messages, post, url}) {
+export function requestExport({chosen, description, entities, messages, post, type, url}) {
     if (chosen.length === 0) {
         return Promise.resolve();
     }
 
     let payload = {description, ...getEntitySelection(entities, chosen)};
 
-    return post(url, payload).then(() => messages.success(acknowledgement));
+    return post(url, payload).then(() => messages.success(
+        `The ${type} export was requested. You will be notified when it is ready.`
+    ));
 }

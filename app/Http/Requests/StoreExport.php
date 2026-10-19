@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
-class StoreVolumeExport extends ShowExport
+class StoreExport extends ShowExport
 {
     /**
      * Get the validation rules that apply to the request.

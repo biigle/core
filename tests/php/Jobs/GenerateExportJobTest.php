@@ -2,10 +2,10 @@
 
 namespace Biigle\Tests\Jobs;
 
-use Biigle\Jobs\GenerateVolumeExportJob;
-use Biigle\Notifications\VolumeExportReady;
+use Biigle\ExportFile;
+use Biigle\Jobs\GenerateExportJob;
+use Biigle\Notifications\ExportReady;
 use Biigle\User;
-use Biigle\VolumeExport;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -15,38 +15,38 @@ use RuntimeException;
 use SplFileInfo;
 use TestCase;
 
-class GenerateVolumeExportJobTest extends TestCase
+class GenerateExportJobTest extends TestCase
 {
     public function testHandleStoresArchiveAndNotifiesRequester(): void
     {
         Storage::fake('volume-exports');
         Notification::fake();
-        config(['sync.volume_export_storage_disk' => 'volume-exports']);
+        config(['sync.export_storage_disk' => 'volume-exports']);
         $user = User::factory()->create();
-        $export = new VolumeExport;
+        $export = new ExportFile;
         $export->user()->associate($user);
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->save();
 
-        (new GenerateVolumeExportJob($export))->handle();
+        (new GenerateExportJob($export))->handle();
 
         Storage::disk('volume-exports')->assertExists("{$export->id}.zip");
         $this->assertNotNull($export->fresh()->ready_at);
-        Notification::assertSentTo($user, VolumeExportReady::class);
+        Notification::assertSentTo($user, ExportReady::class);
     }
 
     public function testHandleStopsIfExportWasDeleted(): void
     {
         Storage::fake('volume-exports');
         Notification::fake();
-        config(['sync.volume_export_storage_disk' => 'volume-exports']);
-        $export = new VolumeExport;
+        config(['sync.export_storage_disk' => 'volume-exports']);
+        $export = new ExportFile;
         $export->user()->associate(User::factory()->create());
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->save();
         $export->delete();
 
-        (new GenerateVolumeExportJob($export))->handle();
+        (new GenerateExportJob($export))->handle();
 
         Storage::disk('volume-exports')->assertDirectoryEmpty('/');
         Notification::assertNothingSent();
@@ -55,10 +55,10 @@ class GenerateVolumeExportJobTest extends TestCase
     public function testHandleRemovesArchiveIfExportIsDeletedWhileStoring(): void
     {
         Notification::fake();
-        config(['sync.volume_export_storage_disk' => 'volume-exports']);
-        $export = new VolumeExport;
+        config(['sync.export_storage_disk' => 'volume-exports']);
+        $export = new ExportFile;
         $export->user()->associate(User::factory()->create());
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->save();
         $path = null;
         $disk = Mockery::mock(Filesystem::class);
@@ -76,9 +76,9 @@ class GenerateVolumeExportJobTest extends TestCase
         $delete->atLeast()->once()->with("{$export->id}.zip");
         Storage::shouldReceive('disk')->andReturn($disk);
 
-        (new GenerateVolumeExportJob($export))->handle();
+        (new GenerateExportJob($export))->handle();
 
-        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $this->assertDatabaseMissing('exports', ['id' => $export->id]);
         $this->assertFileDoesNotExist($path);
         Notification::assertNothingSent();
     }
@@ -86,10 +86,10 @@ class GenerateVolumeExportJobTest extends TestCase
     public function testHandleCleansTemporaryArchiveIfStorageFails(): void
     {
         Notification::fake();
-        config(['sync.volume_export_storage_disk' => 'volume-exports']);
-        $export = new VolumeExport;
+        config(['sync.export_storage_disk' => 'volume-exports']);
+        $export = new ExportFile;
         $export->user()->associate(User::factory()->create());
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->save();
         $path = null;
         $disk = Mockery::mock(Filesystem::class);
@@ -104,7 +104,7 @@ class GenerateVolumeExportJobTest extends TestCase
         Storage::shouldReceive('disk')->once()->andReturn($disk);
 
         try {
-            (new GenerateVolumeExportJob($export))->handle();
+            (new GenerateExportJob($export))->handle();
             $this->fail('Storage failure did not fail the job.');
         } catch (RuntimeException) {
             // Expected.
@@ -115,23 +115,23 @@ class GenerateVolumeExportJobTest extends TestCase
         Notification::assertNothingSent();
     }
 
-    public function testHandleRetryKeepsReadyArchiveAndRetriesNotification(): void
+    public function testHandleRetryKeepsReadyArchiveWithoutAnotherNotification(): void
     {
         Storage::fake('volume-exports');
         Notification::fake();
-        config(['sync.volume_export_storage_disk' => 'volume-exports']);
+        config(['sync.export_storage_disk' => 'volume-exports']);
         $user = User::factory()->create();
-        $export = new VolumeExport;
+        $export = new ExportFile;
         $export->user()->associate($user);
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->ready_at = now();
         $export->save();
         Storage::disk('volume-exports')->put("{$export->id}.zip", 'archive');
 
-        (new GenerateVolumeExportJob($export))->handle();
+        (new GenerateExportJob($export))->handle();
 
         Storage::disk('volume-exports')->assertExists("{$export->id}.zip");
-        Notification::assertSentTo($user, VolumeExportReady::class);
+        Notification::assertNothingSent();
     }
 
     public function testHandleCleansTemporaryArchiveIfStorageDiskFails(): void
@@ -141,16 +141,16 @@ class GenerateVolumeExportJobTest extends TestCase
         mkdir($directory);
         config([
             'sync.tmp_storage' => $directory,
-            'sync.volume_export_storage_disk' => 'volume-exports',
+            'sync.export_storage_disk' => 'volume-exports',
         ]);
-        $export = new VolumeExport;
+        $export = new ExportFile;
         $export->user()->associate(User::factory()->create());
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->save();
         Storage::shouldReceive('disk')->once()->andThrow(new RuntimeException);
 
         try {
-            (new GenerateVolumeExportJob($export))->handle();
+            (new GenerateExportJob($export))->handle();
             $this->fail('Storage disk failure did not fail the job.');
         } catch (RuntimeException) {
             // Expected.

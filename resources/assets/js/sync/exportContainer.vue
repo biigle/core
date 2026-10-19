@@ -6,7 +6,7 @@ import Messages from '@/core/messages/store.js';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
-import {getEntitySelection, requestVolumeExport} from './volumeExport.js';
+import {requestExport} from './volumeExport.js';
 import {Http} from 'vue-resource';
 import {Tabs} from 'uiv';
 import {Tab} from 'uiv';
@@ -97,15 +97,6 @@ export default {
         hasNoChosenUsers() {
             return this.chosenEntities.users.length === 0;
         },
-        volumeRequestUrl() {
-            return this.exportApiUrl + '/volumes' + this.getQueryString('volumes');
-        },
-        labelTreeRequestUrl() {
-            return this.exportApiUrl + '/label-trees' + this.getQueryString('labelTrees');
-        },
-        userRequestUrl() {
-            return this.exportApiUrl + '/users' + this.getQueryString('users');
-        },
     },
     methods: {
         handleSwitchedTab(index) {
@@ -123,14 +114,26 @@ export default {
             this.chosenEntities.volumes = volumes;
         },
         requestVolumeExport() {
+            return this.requestExport('volumes');
+        },
+        requestLabelTreeExport() {
+            return this.requestExport('labelTrees');
+        },
+        requestUserExport() {
+            return this.requestExport('users');
+        },
+        requestExport(type) {
             this.startLoading();
-            return requestVolumeExport({
-                chosen: this.chosenEntities.volumes,
-                description: this.volumeExportDescription,
-                entities: this.entities.volumes,
+            const path = type === 'labelTrees' ? 'label-trees' : type;
+            const name = type === 'labelTrees' ? 'label tree' : type.slice(0, -1);
+            return requestExport({
+                chosen: this.chosenEntities[type],
+                description: type === 'volumes' ? this.volumeExportDescription : null,
+                entities: this.entities[type],
                 messages: Messages,
                 post: Http.post.bind(Http),
-                url: this.exportApiUrl + '/volumes',
+                type: name,
+                url: this.exportApiUrl + '/' + path,
             })
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
@@ -141,19 +144,6 @@ export default {
         handleChosenUsers(users) {
             this.chosenEntities.users = users;
         },
-        getQueryString(name) {
-            let entities = this.entities[name];
-            let chosenEntities = this.chosenEntities[name];
-            let selection = getEntitySelection(entities, chosenEntities);
-
-            if (selection.only) {
-                return '?only=' + (selection.only.join(',') || -1);
-            } else if (selection.except.length > 0) {
-                return '?except=' + selection.except.join(',');
-            }
-
-            return '';
-        }
     },
     watch: {
         currentTab(index) {

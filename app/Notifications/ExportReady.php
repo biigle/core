@@ -2,16 +2,17 @@
 
 namespace Biigle\Notifications;
 
-use Biigle\VolumeExport;
+use Biigle\ExportFile;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use InvalidArgumentException;
 
-class VolumeExportReady extends Notification
+class ExportReady extends Notification
 {
     /**
      * Create a new notification instance.
      */
-    public function __construct(protected VolumeExport $export)
+    public function __construct(protected ExportFile $export)
     {
         //
     }
@@ -40,12 +41,13 @@ class VolumeExportReady extends Notification
      */
     public function toMail($notifiable): MailMessage
     {
+        $name = strtolower($this->export->getTypeName());
         $message = (new MailMessage)
-            ->subject('Your BIIGLE volume export is ready')
-            ->line('Your volume export is ready for download!');
+            ->subject("Your BIIGLE {$name} export is ready")
+            ->line("Your {$name} export is ready for download!");
 
         if (config('app.url')) {
-            $message->action('Download volume export', $this->getUrl());
+            $message->action("Download {$name} export", $this->getUrl());
         }
 
         return $message;
@@ -59,13 +61,14 @@ class VolumeExportReady extends Notification
      */
     public function toArray($notifiable)
     {
+        $name = strtolower($this->export->getTypeName());
         $array = [
-            'title' => 'Your BIIGLE volume export is ready',
-            'message' => 'Your volume export is ready for download!',
+            'title' => "Your BIIGLE {$name} export is ready",
+            'message' => "Your {$name} export is ready for download!",
         ];
 
         if (config('app.url')) {
-            $array['action'] = 'Download volume export';
+            $array['action'] = "Download {$name} export";
             $array['actionLink'] = $this->getUrl();
         }
 
@@ -77,6 +80,13 @@ class VolumeExportReady extends Notification
      */
     protected function getUrl(): string
     {
-        return url("api/v1/export/volumes/{$this->export->id}");
+        $path = match ($this->export->type) {
+            'volumes' => 'volumes',
+            'labelTrees' => 'label-trees',
+            'users' => 'users',
+            default => throw new InvalidArgumentException('Unknown export type.'),
+        };
+
+        return url("api/v1/export/{$path}/{$this->export->id}");
     }
 }

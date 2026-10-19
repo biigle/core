@@ -16,7 +16,7 @@ class VolumeExportUiTest extends ApiTestCase
             ->assertSee('maxlength="255"', false)
             ->assertSee('v-on:click.prevent="requestVolumeExport"', false)
             ->assertSee('v-bind:disabled="(loading || hasNoChosenVolumes) || null"', false)
-            ->assertSee('v-bind:href="labelTreeRequestUrl"', false)
-            ->assertSee('v-bind:href="userRequestUrl"', false);
+            ->assertSee('v-on:click.prevent="requestLabelTreeExport"', false)
+            ->assertSee('v-on:click.prevent="requestUserExport"', false);
     }
 }

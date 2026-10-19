@@ -3,12 +3,12 @@
 namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
-use Biigle\Jobs\GenerateVolumeExportJob;
+use Biigle\ExportFile;
+use Biigle\Jobs\GenerateExportJob;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\User;
-use Biigle\VolumeExport;
 use Queue;
 use Storage;
 
@@ -37,7 +37,7 @@ class VolumeExportControllerTest extends ApiTestCase
 
     public function testDownloadReadyExportRepeatedly()
     {
-        config(['sync.volume_export_storage_disk' => 'test']);
+        config(['sync.export_storage_disk' => 'test']);
         $disk = Storage::fake('test');
         $owner = $this->globalAdmin();
         $export = $this->createExport($owner, now());
@@ -60,7 +60,7 @@ class VolumeExportControllerTest extends ApiTestCase
 
     public function testDownloadReadyExportWithoutFileReturnsNotFound()
     {
-        config(['sync.volume_export_storage_disk' => 'test']);
+        config(['sync.export_storage_disk' => 'test']);
         Storage::fake('test');
         $owner = $this->globalAdmin();
         $export = $this->createExport($owner, now());
@@ -72,7 +72,7 @@ class VolumeExportControllerTest extends ApiTestCase
 
     public function testDestroyAuthorizationAndReadyExportCleanup()
     {
-        config(['sync.volume_export_storage_disk' => 'test']);
+        config(['sync.export_storage_disk' => 'test']);
         $disk = Storage::fake('test');
         $owner = $this->globalAdmin();
         $export = $this->createExport($owner, now());
@@ -93,13 +93,13 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->deleteJson("/api/v1/export/volumes/{$export->id}")
             ->assertStatus(200);
 
-        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $this->assertDatabaseMissing('exports', ['id' => $export->id]);
         $disk->assertMissing($export->getStorageFilename());
     }
 
     public function testDestroyPendingExport()
     {
-        config(['sync.volume_export_storage_disk' => 'test']);
+        config(['sync.export_storage_disk' => 'test']);
         $disk = Storage::fake('test');
         $owner = $this->globalAdmin();
         $export = $this->createExport($owner);
@@ -108,7 +108,7 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->deleteJson("/api/v1/export/volumes/{$export->id}")
             ->assertStatus(200);
 
-        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $this->assertDatabaseMissing('exports', ['id' => $export->id]);
         $disk->assertMissing($export->getStorageFilename());
     }
 
@@ -122,12 +122,12 @@ class VolumeExportControllerTest extends ApiTestCase
             ->post("/api/v1/export/volumes/{$export->id}", ['_method' => 'DELETE'])
             ->assertRedirect('/search?t=exports');
 
-        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $this->assertDatabaseMissing('exports', ['id' => $export->id]);
     }
 
     public function testDeletingOwnerCleansUpExports()
     {
-        config(['sync.volume_export_storage_disk' => 'test']);
+        config(['sync.export_storage_disk' => 'test']);
         $disk = Storage::fake('test');
         $owner = $this->globalAdmin();
         $export = $this->createExport($owner, now());
@@ -135,7 +135,7 @@ class VolumeExportControllerTest extends ApiTestCase
 
         $owner->delete();
 
-        $this->assertDatabaseMissing('volume_exports', ['id' => $export->id]);
+        $this->assertDatabaseMissing('exports', ['id' => $export->id]);
         $disk->assertMissing($export->getStorageFilename());
     }
 
@@ -163,15 +163,15 @@ class VolumeExportControllerTest extends ApiTestCase
             ->assertJson([
                 'user_id' => $user->id,
                 'description' => 'For migration',
-                'volume_ids' => [$volume->id],
+                'entity_ids' => [$volume->id],
                 'ready_at' => null,
             ])
             ->assertJsonMissingPath('user');
 
-        $export = VolumeExport::firstOrFail();
+        $export = ExportFile::firstOrFail();
         $this->assertSame($user->id, $export->user_id);
         $this->assertSame('For migration', $export->description);
-        $this->assertSame([$volume->id], $export->volume_ids);
+        $this->assertSame([$volume->id], $export->entity_ids);
         $this->assertNull($export->ready_at);
     }
 
@@ -185,12 +185,12 @@ class VolumeExportControllerTest extends ApiTestCase
             'except' => (string) $excluded->id,
         ])->assertStatus(201);
 
-        $this->assertSame([$included->id], VolumeExport::firstOrFail()->volume_ids);
+        $this->assertSame([$included->id], ExportFile::firstOrFail()->entity_ids);
     }
 
     public function testStoreQueuesGeneration()
     {
-        config(['sync.generate_volume_export_queue' => 'volume-exports']);
+        config(['sync.generate_export_queue' => 'volume-exports']);
         $volume = VolumeTest::create();
         $this->beGlobalAdmin();
 
@@ -198,7 +198,7 @@ class VolumeExportControllerTest extends ApiTestCase
             'only' => [$volume->id],
         ])->assertStatus(201);
 
-        Queue::assertPushedOn('volume-exports', function (GenerateVolumeExportJob $job) use ($response) {
+        Queue::assertPushedOn('volume-exports', function (GenerateExportJob $job) use ($response) {
             $response->assertJson(['id' => $job->export->id]);
 
             return true;
@@ -214,7 +214,7 @@ class VolumeExportControllerTest extends ApiTestCase
             'only' => [1],
         ])->assertStatus(422);
 
-        $this->assertDatabaseCount('volume_exports', 0);
+        $this->assertDatabaseCount('exports', 0);
     }
 
     public function testStoreAllowsNoDescription()
@@ -228,7 +228,7 @@ class VolumeExportControllerTest extends ApiTestCase
             ->assertStatus(201)
             ->assertJson(['description' => null]);
 
-        $this->assertNull(VolumeExport::firstOrFail()->description);
+        $this->assertNull(ExportFile::firstOrFail()->description);
     }
 
     public function testStoreValidatesSelection()
@@ -245,7 +245,7 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->postJson('/api/v1/export/volumes', ['except' => 'abc'])->assertStatus(422);
         $this->postJson('/api/v1/export/volumes', ['except' => 0])->assertStatus(422);
 
-        $this->assertDatabaseCount('volume_exports', 0);
+        $this->assertDatabaseCount('exports', 0);
         Queue::assertNothingPushed();
     }
 
@@ -257,7 +257,7 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->postJson('/api/v1/export/volumes', ['only' => [1]])
             ->assertStatus(404);
 
-        $this->assertDatabaseCount('volume_exports', 0);
+        $this->assertDatabaseCount('exports', 0);
     }
 
     public function testGetDoesNotCreateExport()
@@ -267,15 +267,15 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->getJson('/api/v1/export/volumes?only=1')
             ->assertStatus(405);
 
-        $this->assertDatabaseCount('volume_exports', 0);
+        $this->assertDatabaseCount('exports', 0);
         Queue::assertNothingPushed();
     }
 
-    private function createExport(User $owner, $readyAt = null): VolumeExport
+    private function createExport(User $owner, $readyAt = null): ExportFile
     {
-        $export = new VolumeExport;
+        $export = new ExportFile;
         $export->user()->associate($owner);
-        $export->volume_ids = [];
+        $export->entity_ids = [];
         $export->ready_at = $readyAt;
         $export->save();
 

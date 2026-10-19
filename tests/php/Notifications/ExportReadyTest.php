@@ -2,18 +2,18 @@
 
 namespace Biigle\Tests\Notifications;
 
-use Biigle\Notifications\VolumeExportReady;
+use Biigle\ExportFile;
+use Biigle\Notifications\ExportReady;
 use Biigle\User;
-use Biigle\VolumeExport;
 use TestCase;
 
-class VolumeExportReadyTest extends TestCase
+class ExportReadyTest extends TestCase
 {
     public function testUsesReportNotificationPreference(): void
     {
         config(['reports.notifications.allow_user_settings' => true]);
         $user = new User;
-        $notification = new VolumeExportReady(new VolumeExport);
+        $notification = new ExportReady(new ExportFile);
 
         $user->setSettings(['report_notifications' => 'web']);
         $this->assertSame(['database'], $notification->via($user));
@@ -25,9 +25,10 @@ class VolumeExportReadyTest extends TestCase
     public function testIncludesDownloadLink(): void
     {
         config(['app.url' => 'https://biigle.test']);
-        $export = new VolumeExport;
+        $export = new ExportFile;
         $export->id = 123;
-        $notification = new VolumeExportReady($export);
+        $export->type = 'volumes';
+        $notification = new ExportReady($export);
         $link = '/api/v1/export/volumes/123';
 
         $this->assertStringEndsWith(
@@ -35,5 +36,20 @@ class VolumeExportReadyTest extends TestCase
             $notification->toArray(null)['actionLink']
         );
         $this->assertStringEndsWith($link, $notification->toMail(null)->actionUrl);
+    }
+
+    public function testIncludesUserAndLabelTreeLinks(): void
+    {
+        $export = new ExportFile;
+        $export->id = 123;
+
+        foreach (['users' => 'users', 'labelTrees' => 'label-trees'] as $type => $path) {
+            $export->type = $type;
+            $notification = new ExportReady($export);
+            $this->assertStringEndsWith(
+                "/api/v1/export/{$path}/123",
+                $notification->toArray(null)['actionLink']
+            );
+        }
     }
 }

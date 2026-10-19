@@ -3,105 +3,46 @@
 namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
+use Biigle\ExportFile;
+use Biigle\Jobs\GenerateExportJob;
 use Biigle\User;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
 class UserExportControllerTest extends ApiTestCase
 {
-    public function testShow()
+    public function testRequestGenerateAndDownloadUserExport(): void
     {
-        $this->doTestApiRoute('GET', '/api/v1/export/users');
-
-        $this->beAdmin();
-        $this->get('/api/v1/export/users')->assertStatus(403);
-
+        Queue::fake();
+        Notification::fake();
+        Storage::fake('test');
+        config(['sync.export_storage_disk' => 'test']);
         $this->beGlobalAdmin();
-        $this->getJson('/api/v1/export/users')->assertStatus(422);
+        $this->user();
+        $ids = User::pluck('id')->all();
 
-        $id = $this->user()->id;
-        $response = $this->get("/api/v1/export/users?only={$id}")
+        $this->postJson('/api/v1/export/users', ['except' => []])
+            ->assertStatus(201)
+            ->assertJson(['type' => 'users', 'entity_ids' => $ids, 'ready_at' => null]);
+
+        $export = ExportFile::firstOrFail();
+        Queue::assertPushed(GenerateExportJob::class);
+        (new GenerateExportJob($export))->handle();
+
+        Storage::disk('test')->assertExists("{$export->id}.zip");
+        $zip = new ZipArchive;
+        $zip->open(Storage::disk('test')->path("{$export->id}.zip"));
+        $exportedIds = array_column(json_decode($zip->getFromName('users.json'), true), 'id');
+        sort($exportedIds);
+        sort($ids);
+        $this->assertSame($ids, $exportedIds);
+        $zip->close();
+
+        $this->get("/api/v1/export/users/{$export->id}")
             ->assertStatus(200)
-            ->assertHeader('content-type', 'application/zip')
             ->assertHeader('content-disposition', 'attachment; filename=biigle_user_export.zip');
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('users.json')));
-        $this->assertEquals(collect([$id]), $contents->pluck('id'));
-    }
-
-    public function testShowExcept()
-    {
-        $id = $this->user()->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/users?except={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('users.json')));
-        $expect = User::where('id', '!=', $id)->pluck('id');
-        $this->assertEquals($expect, $contents->pluck('id'));
-    }
-
-    public function testShowOnly()
-    {
-        $id = $this->user()->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/users?only={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('users.json')));
-        $this->assertEquals(collect([$id]), $contents->pluck('id'));
-    }
-
-    public function testShowOnlyAndExceptMutuallyExclusive()
-    {
-        $id = $this->user()->id;
-        $this->beGlobalAdmin();
-        $this->getJson("/api/v1/export/users?only={$id}&except={$id}")->assertStatus(422);
-    }
-
-    public function testShowInvalidFilter()
-    {
-        $this->beGlobalAdmin();
-        $this->getJson('/api/v1/export/users?only=,')->assertStatus(422);
-        $this->getJson('/api/v1/export/users?only=abc')->assertStatus(422);
-        $this->getJson('/api/v1/export/users?only=0')->assertStatus(422);
-        $this->getJson('/api/v1/export/users?except=,')->assertStatus(422);
-        $this->getJson('/api/v1/export/users?except=abc')->assertStatus(422);
-        $this->getJson('/api/v1/export/users?except=0')->assertStatus(422);
-    }
-
-    public function testShowOnlyArray()
-    {
-        $id = $this->user()->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/users?only[]={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('users.json')));
-        $this->assertEquals(collect([$id]), $contents->pluck('id'));
-    }
-
-    public function testShowExceptArray()
-    {
-        $id = $this->user()->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/users?except[]={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('users.json')));
-        $expect = User::where('id', '!=', $id)->pluck('id');
-        $this->assertEquals($expect, $contents->pluck('id'));
-    }
-
-    public function testIsAllowed()
-    {
-        config(['sync.allowed_exports' => ['volumes', 'labelTrees']]);
-        $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/users?only=1')->assertStatus(404);
+        $this->getJson("/api/v1/export/volumes/{$export->id}")->assertStatus(404);
     }
 }

@@ -2,19 +2,18 @@
 
 namespace Biigle\Http\Controllers\Api\Export;
 
-use Biigle\Services\Export\UserExport;
 use Biigle\User;
 
 class UserExportController extends Controller
 {
     /**
-     * @api {get} export/users Get a user export
+     * @api {post} export/users Request a user export
      * @apiGroup Sync
      * @apiName ShowUserExport
      *
      * @apiParam (Optional arguments) {String} except Comma separated IDs of the users that should not be included in the export file.
      * @apiParam (Optional arguments) {String} only Comma separated IDs of the users that should only be included in the export file.
-     * @apiDescription Exactly one of `except` or `only` must be provided (not both). The response is a ZIP archive that can be used for the user import.
+     * @apiDescription Exactly one of `except` or `only` must be provided (not both). The response acknowledges the queued export.
      * @apiPermission admin
      */
 
@@ -29,9 +28,9 @@ class UserExportController extends Controller
     /**
      * {@inheritdoc}
      */
-    protected function getExport(array $ids)
+    protected function getType(): string
     {
-        return new UserExport($ids);
+        return 'users';
     }
 
     /**
@@ -40,13 +39,5 @@ class UserExportController extends Controller
     protected function getExportFilename()
     {
         return 'biigle_user_export.zip';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function isAllowed()
-    {
-        return in_array('users', config('sync.allowed_exports'));
     }
 }
