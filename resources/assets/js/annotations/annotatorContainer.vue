@@ -448,17 +448,19 @@ export default {
                 promise = this.saveLabelbotAnnotation(
                     annotation,
                     (annotation) => AnnotationsStore.create(this.imageId, annotation)
-                );
-
-                promise.then((annotation) => {
+                ).then((annotation) => {
                     labelBotReturnedNoResults = annotation.labels?.length === 0;
                     this.showLabelbotPopup(annotation);
+                    return annotation;
                 });
             } else {
                 if (!annotation.label_id) {
                     annotation.label_id = this.selectedLabel.id;
                 }
-                promise = AnnotationsStore.create(this.imageId, annotation);
+                promise = AnnotationsStore.create(this.imageId, annotation)
+                    .then((annotation) => {
+                        return annotation;
+                    });
             }
 
             promise
