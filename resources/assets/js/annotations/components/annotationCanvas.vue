@@ -68,7 +68,6 @@ export default {
         'new',
         'delete',
         'requires-selected-label',
-        'create-restored-labelbot-annotation',
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.

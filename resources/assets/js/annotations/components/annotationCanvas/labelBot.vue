@@ -16,7 +16,8 @@ export default {
         'change-labelbot-focused-popup',
         'close-labelbot-popup',
         'swap',
-        'new',
+        'delete',
+        'create-restored-labelbot-annotation',
     ],
     props: {
         labelbotState: {
