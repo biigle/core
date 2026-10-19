@@ -174,7 +174,7 @@ export default {
             const feature = annotation.feature;
             delete annotation.feature;
 
-            // JSON serialisation drops functions, but we drop the callback manually anyway
+            // JSON serialization drops functions, but we drop the callback manually anyway
             const removeCallback = annotation.removeCallback;
             delete annotation.removeCallback;
 

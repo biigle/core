@@ -198,6 +198,9 @@ export default {
     methods: {
         createAndClose(label) {
             this.annotationWithoutLabel = false;
+            // We remove feature and labels because we don't need them anymore
+            // when sending a create request to the controller. 
+            // Also this event bypass the save function in the mixin
             // eslint-disable-next-line no-unused-vars
             const {removeCallback, feature, labels, ...annotation} = this.annotation;
             annotation.label_id = label.id;
