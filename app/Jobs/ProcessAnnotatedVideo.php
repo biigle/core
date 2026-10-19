@@ -230,7 +230,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             File::move($tmpFile, $outputPath);
 
             try {
-                $result = Process::forever()
+                $result = Process::timeout(30)
                     ->run(sprintf(
                         'ffmpeg -copyts -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\'" -fps_mode passthrough -update 1 -y %s',
                         $seekTime,
