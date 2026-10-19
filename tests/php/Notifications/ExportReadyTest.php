@@ -9,16 +9,29 @@ use TestCase;
 
 class ExportReadyTest extends TestCase
 {
-    public function testUsesReportNotificationPreference(): void
+    public function testUsesExportNotificationPreference(): void
     {
-        config(['reports.notifications.allow_user_settings' => true]);
+        config([
+            'sync.notifications.allow_user_settings' => true,
+            'sync.notifications.default_settings' => 'email',
+        ]);
         $user = new User;
         $notification = new ExportReady(new ExportFile);
 
         $user->setSettings(['report_notifications' => 'web']);
+        $this->assertSame(['mail'], $notification->via($user));
+
+        $user->setSettings(['export_notifications' => 'web']);
         $this->assertSame(['database'], $notification->via($user));
 
         $user->setSettings(['report_notifications' => 'email']);
+        $this->assertSame(['database'], $notification->via($user));
+
+        $user->setSettings(['export_notifications' => 'email']);
+        $this->assertSame(['mail'], $notification->via($user));
+
+        config(['sync.notifications.allow_user_settings' => false]);
+        $user->setSettings(['export_notifications' => 'web']);
         $this->assertSame(['mail'], $notification->via($user));
     }
 

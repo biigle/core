@@ -26,6 +26,11 @@ return [
     */
     'export_storage_disk' => env('SYNC_EXPORT_STORAGE_DISK', env('SYNC_VOLUME_EXPORT_STORAGE_DISK', 'volume-exports')),
 
+    'notifications' => [
+        'default_settings' => 'email',
+        'allow_user_settings' => true,
+    ],
+
     /*
     | Set which imports should be allowed for this instance.
     */

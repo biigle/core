@@ -25,10 +25,10 @@ class ExportReady extends Notification
      */
     public function via($notifiable)
     {
-        $settings = config('reports.notifications.default_settings');
+        $settings = config('sync.notifications.default_settings');
 
-        if (config('reports.notifications.allow_user_settings') === true) {
-            $settings = $notifiable->getSettings('report_notifications', $settings);
+        if (config('sync.notifications.allow_user_settings') === true) {
+            $settings = $notifiable->getSettings('export_notifications', $settings);
         }
 
         return $settings === 'web' ? ['database'] : ['mail'];
