@@ -16,7 +16,7 @@ class UserExport extends Export
             $user->makeVisible('uuid');
             // The role should not be exported. All imported users should become editors
             // by default.
-            $user->makeHidden(['password', 'role_id', 'created_at', 'updated_at', 'login_at', 'attrs']);
+            $user->makeHidden(['password', 'role', 'created_at', 'updated_at', 'login_at', 'attrs']);
             $user->append('settings');
         });
 

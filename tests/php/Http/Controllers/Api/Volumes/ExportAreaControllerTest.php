@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class ExportAreaControllerTest extends ApiTestCase
 {
@@ -27,7 +27,7 @@ class ExportAreaControllerTest extends ApiTestCase
 
     public function testShowVideoVolume()
     {
-        $volume = $this->volume(['media_type_id' => MediaType::videoId()]);
+        $volume = $this->volume(['media_type' => MediaType::VIDEO]);
 
         $this->beGuest();
         $this->get("/api/v1/volumes/{$volume->id}/export-area")->assertStatus(404);
@@ -65,7 +65,7 @@ class ExportAreaControllerTest extends ApiTestCase
 
     public function testStoreVideoVolume()
     {
-        $volume = $this->volume(['media_type_id' => MediaType::videoId()]);
+        $volume = $this->volume(['media_type' => MediaType::VIDEO]);
 
         $this->beAdmin();
         $this->postJson("/api/v1/volumes/{$volume->id}/export-area", [
@@ -94,7 +94,7 @@ class ExportAreaControllerTest extends ApiTestCase
 
     public function testDestroyVideoVolume()
     {
-        $volume = $this->volume(['media_type_id' => MediaType::videoId()]);
+        $volume = $this->volume(['media_type' => MediaType::VIDEO]);
 
         $this->beAdmin();
         $this->delete("/api/v1/volumes/{$volume->id}/export-area")->assertStatus(404);

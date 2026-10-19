@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\Visibility;
+use Biigle\Enums\Visibility;
 
 class VisibilityControllerTest extends ApiTestCase
 {
@@ -21,10 +21,10 @@ class VisibilityControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/visibilities/'.Visibility::publicId());
+        $this->doTestApiRoute('GET', '/api/v1/visibilities/'.Visibility::PUBLIC->value);
 
         $this->beUser();
-        $response = $this->get('/api/v1/visibilities/'.Visibility::publicId());
+        $response = $this->get('/api/v1/visibilities/'.Visibility::PUBLIC->value);
         $content = $response->getContent();
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);

@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\Reports\Projects;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Services\Reports\Projects\VideoIfdoReportGenerator;
 use Biigle\Tests\ProjectTest;
@@ -23,7 +23,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
     public function testProcessIfdoVolumesOnly()
     {
         $volume1 = Volume::factory()->create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
             'metadata_file_path' => 'mymeta.json',
             'metadata_parser' => IfdoParser::class,
         ]);
@@ -31,7 +31,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
         $disk->put('mymeta.json', 'abc');
 
         $volume2 = Volume::factory()->create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
         ]);
 
         $project = ProjectTest::create();
@@ -49,7 +49,7 @@ class VideoIfdoReportGeneratorTest extends TestCase
     public function testThrowIfNoIfdo()
     {
         $volume = Volume::factory()->create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
         ]);
         $project = ProjectTest::create();
         $project->addVolumeId($volume->id);

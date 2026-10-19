@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
+use Biigle\Enums\Role;
 use Biigle\ExportFile;
 use Biigle\Jobs\GenerateExportJob;
-use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\User;
@@ -25,7 +25,7 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->getJson("/api/v1/export/volumes/{$export->id}")
             ->assertStatus(403);
 
-        $other = UserTest::create(['role_id' => Role::adminId()]);
+        $other = UserTest::create(['role' => Role::ADMIN]);
         $this->be($other);
         $this->getJson("/api/v1/export/volumes/{$export->id}")
             ->assertStatus(403);
@@ -84,7 +84,7 @@ class VolumeExportControllerTest extends ApiTestCase
         $this->deleteJson("/api/v1/export/volumes/{$export->id}")
             ->assertStatus(403);
 
-        $other = UserTest::create(['role_id' => Role::adminId()]);
+        $other = UserTest::create(['role' => Role::ADMIN]);
         $this->be($other);
         $this->deleteJson("/api/v1/export/volumes/{$export->id}")
             ->assertStatus(403);

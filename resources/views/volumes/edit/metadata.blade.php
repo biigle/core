@@ -39,7 +39,7 @@
             <input type="hidden" name="import_annotations" v-model="importForm.importAnnotations">
             <input type="hidden" name="import_file_labels" v-model="importForm.importFileLabels">
         </form>
-        @if ($errors->hasAny(['import_annotations', 'import_file_labels']))
+        @if ($errors->hasAny(['id', 'import_annotations', 'import_file_labels']))
             <p class="text-danger">
                 {{ $errors->first() }}
             </p>

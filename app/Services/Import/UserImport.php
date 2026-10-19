@@ -2,7 +2,7 @@
 
 namespace Biigle\Services\Import;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -43,7 +43,7 @@ class UserImport extends Import
             unset($u['id']);
             // Imported users must set a new password instead of reusing an exported hash.
             $u['password'] = Hash::make(Str::random(40));
-            $u['role_id'] = Role::editorId();
+            $u['role'] = Role::EDITOR;
             $u['attrs'] = json_encode(['settings' => $u['settings']]);
             unset($u['settings']);
             $u['updated_at'] = $now;

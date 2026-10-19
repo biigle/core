@@ -48,7 +48,7 @@ export default {
             return this.volumes.length > 0;
         },
         hasMixedMediaTypes() {
-            return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
+            return this.volumes.some((v) => v.media_type_label === 'image') && this.volumes.some((v) => v.media_type_label === 'video');
         },
         computedData() {
             if (this.showImageVolumes && !this.showVideoVolumes) {

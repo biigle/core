@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
 use Biigle\Jobs\UpdateVolumeMetadata;
-use Biigle\MediaType;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Illuminate\Http\UploadedFile;
@@ -128,7 +128,7 @@ class MetadataControllerTest extends ApiTestCase
     {
         Storage::fake('metadata');
         $id = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::videoId();
+        $this->volume()->media_type = MediaType::VIDEO;
         $this->volume()->save();
 
         $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata.csv", 'metadata.csv', 'text/csv', null, true);

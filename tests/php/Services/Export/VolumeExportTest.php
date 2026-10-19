@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Services\Export;
 
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Services\Export\VolumeExport;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageLabelTest;
@@ -21,7 +21,7 @@ class VolumeExportTest extends TestCase
         ]);
 
         $videoVolume = VolumeTest::create([
-            'media_type_id' => MediaType::videoId(),
+            'media_type' => MediaType::VIDEO,
         ]);
 
         $export = new VolumeExport([$imageVolume->id, $videoVolume->id]);
