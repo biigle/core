@@ -916,8 +916,6 @@ export default {
                 return;
             }
 
-            this.closeAllLabelbotPopups();
-
             if (this.video.paused) {
                 if (this.autoPauseTimeout) {
                     this.cancelAutoPlay();
@@ -942,7 +940,6 @@ export default {
                     if (this.autoPauseTimeout > 0 && this.settings.autoPause < AUTO_PAUSE_INDEFINITE) {
                         this.autoPauseTimeoutId = window.setTimeout(() => {
                             this.video.play();
-                            this.closeAllLabelbotPopups(); // We close all labelbot popups if played
                             this.autoPauseTimeout = 0;
                         }, this.autoPauseTimeout);
                     }
