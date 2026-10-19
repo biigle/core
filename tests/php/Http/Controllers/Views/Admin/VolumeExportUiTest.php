@@ -17,6 +17,7 @@ class VolumeExportUiTest extends ApiTestCase
             ->assertSee('v-on:click.prevent="requestVolumeExport"', false)
             ->assertSee('v-bind:disabled="(loading || hasNoChosenVolumes) || null"', false)
             ->assertSee('v-on:click.prevent="requestLabelTreeExport"', false)
-            ->assertSee('v-on:click.prevent="requestUserExport"', false);
+            ->assertSee('v-on:click.prevent="requestUserExport"', false)
+            ->assertDontSee('An export file contains user password hashes');
     }
 }
