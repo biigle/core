@@ -180,13 +180,9 @@ export default {
 
             // Needed only in case of video annotations
             let pendingVideoAnnotation;
-            let track;
             if (annotation.pendingAnnotation) {
                 pendingVideoAnnotation = annotation.pendingAnnotation;
                 delete annotation.pendingAnnotation;
-
-                // We don't delete the track property because its needed by the video controller
-                track = annotation.track;
             }
 
             // We save the shape in case LabelBOT returns no results
@@ -213,7 +209,6 @@ export default {
 
                         if (pendingVideoAnnotation) {
                             annotation.pendingAnnotation = pendingVideoAnnotation;
-                            annotation.track = track;
                         }
 
                         delete annotation.feature_vector;
