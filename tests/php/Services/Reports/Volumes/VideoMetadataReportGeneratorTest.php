@@ -79,6 +79,7 @@ class VideoMetadataReportGeneratorTest extends TestCase
 
     public function testGenerateReportExpandsAndOrdersUnequalSamples()
     {
+        config(['app.timezone' => 'Europe/Berlin']);
         $volume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
         $second = VideoTest::create([
             'id' => 20,
@@ -87,7 +88,7 @@ class VideoMetadataReportGeneratorTest extends TestCase
             'duration' => 20,
             'lng' => [10.1],
             'lat' => [20.1, 20.2],
-            'taken_at' => ['2024-01-01 12:00:00', '2024-01-01 12:00:01'],
+            'taken_at' => ['2024-01-01T12:00:00+01:00', '2024-01-01T12:00:01+01:00'],
             'attrs' => [
                 'width' => 1280,
                 'height' => 720,

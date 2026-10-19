@@ -58,8 +58,12 @@ class VideoMetadataReportGenerator extends VolumeReportGenerator
 
         $this->source->videos()->orderBy('id')->each(function ($video) use ($csv) {
             $metadata = $video->metadata;
+            $takenAt = array_map(
+                fn ($timestamp) => $timestamp->tz(config('app.timezone'))->toDateTimeString(),
+                $video->taken_at ?? []
+            );
             $samples = [
-                $video->taken_at ?? [],
+                $takenAt,
                 $video->lng ?? [],
                 $video->lat ?? [],
                 $metadata['gps_altitude'] ?? [],
