@@ -159,29 +159,11 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     }
 
     /**
-     * Create the feature vectors based on the Python script output.
-     *
-     * @param Collection<int, VideoAnnotation> $annotations
+     * {@inheritdoc}
      */
-    protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
+    protected function getFeatureVectorModel(): string
     {
-        $annotations = $annotations->load('labels.label')->keyBy('id');
-        foreach ($output as $row) {
-            $annotation = $annotations->get($row[0]);
-
-            foreach ($annotation->labels as $al) {
-                VideoAnnotationLabelFeatureVector::updateOrCreate(
-                    ['id' => $al->id],
-                    [
-                        'annotation_id' => $annotation->id,
-                        'label_id' => $al->label_id,
-                        'label_tree_id' => $al->label->label_tree_id,
-                        'volume_id' => $this->file->volume_id,
-                        'vector' => $row[1],
-                    ]
-                );
-            }
-        }
+        return VideoAnnotationLabelFeatureVector::class;
     }
 
     /**
