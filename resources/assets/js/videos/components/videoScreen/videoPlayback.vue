@@ -145,14 +145,14 @@ export default {
         },
         // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
         async emitPreviousFrame() {
-            if (this.video.currentTime == 0 || this.seekingFrame) return;
+            if (this.video.currentTime == 0 || this.seekingFrame || this.labelbotIsComputing) return;
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showPreviousFrame();
             this.seekingFrame = false;
         },
         async emitNextFrame() {
-            if (this.video.duration - this.video.currentTime == 0 || this.seekingFrame) return;
+            if (this.video.duration - this.video.currentTime == 0 || this.seekingFrame || this.labelbotIsComputing) return;
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showNextFrame();

@@ -202,7 +202,7 @@ export default {
             return (index + this.imagesIds.length - 1) % this.imagesIds.length;
         },
         handleNext() {
-            if (this.loading) {
+            if (this.loading || this.labelbotIsComputing) {
                 return;
             }
 
@@ -242,7 +242,7 @@ export default {
             this.imageIndex = this.getNextIndex(this.imageIndex);
         },
         handlePrevious() {
-            if (this.loading) {
+            if (this.loading || this.labelbotIsComputing) {
                 return;
             }
 
@@ -444,18 +444,15 @@ export default {
             // and the user inputs a label in the typeahead, so we skip this step
             // and save the annotation with its label.
             if (!annotation.label_id && this.labelbotIsActive) {
-                let imageId = this.imageId;
                 annotation.removeCallback = removeCallback;
                 promise = this.saveLabelbotAnnotation(
                     annotation,
-                    (annotation) => AnnotationsStore.create(imageId, annotation)
+                    (annotation) => AnnotationsStore.create(this.imageId, annotation)
                 );
 
                 promise.then((annotation) => {
                     labelBotReturnedNoResults = annotation.labels?.length === 0;
-                    if (imageId === this.imageId) {
-                        this.showLabelbotPopup(annotation);
-                    }
+                    this.showLabelbotPopup(annotation);
                 });
             } else {
                 if (!annotation.label_id) {

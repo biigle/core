@@ -382,16 +382,11 @@ export default {
                 return;
             }
 
-            const videoId = this.videoId;
             return this.saveLabelbotAnnotation(
                 newAnnotation,
                 (annotation) => this.saveAnnotation(annotation, pendingAnnotation, track)
             )
-                .then((annotation) => {
-                    if (videoId === this.videoId) {
-                        this.showLabelbotPopup(annotation);
-                    }
-                })
+                .then(this.showLabelbotPopup)
                 .catch(handleErrorResponse);
         },
         saveAnnotation(newAnnotation, pendingAnnotation, track = false) {
