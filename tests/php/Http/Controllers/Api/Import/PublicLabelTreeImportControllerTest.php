@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Import;
 
 use ApiTestCase;
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Services\Import\ArchiveManager;
 use Biigle\Services\Import\PublicLabelTreeImport;
 use Biigle\Tests\LabelTreeTest;
@@ -56,7 +56,7 @@ class PublicLabelTreeImportControllerTest extends ApiTestCase
 
         $hasMember = $newTree->members()
             ->where('id', $this->user()->id)
-            ->where('label_tree_user.role_id', Role::adminId())
+            ->where('label_tree_user.role', Role::ADMIN)
             ->exists();
         $this->assertTrue($hasMember);
     }

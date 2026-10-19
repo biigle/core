@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 
 class RoleController extends Controller
 {
@@ -30,11 +30,11 @@ class RoleController extends Controller
      *    }
      * ]
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection<int, array>
      */
     public function index()
     {
-        return Role::all();
+        return collect(Role::cases())->map->toArray()->values();
     }
 
     /**
@@ -56,7 +56,7 @@ class RoleController extends Controller
      * @param  int  $id
      * @return Role
      */
-    public function show($id)
+    public function show($id): Role
     {
         return Role::findOrFail($id);
     }

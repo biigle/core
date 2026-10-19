@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Shape;
 use Biigle\Rules\VideoAnnotationFrames;
 use Biigle\Rules\VideoAnnotationGaps;
 use Biigle\Rules\VideoAnnotationPoints;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -49,7 +49,7 @@ class UpdateVideoAnnotation extends FormRequest
                 'bail',
                 Rule::when(!$this->isWholeFrame(), 'required'),
                 'array',
-                new VideoAnnotationPoints($this->annotation->shape_id),
+                new VideoAnnotationPoints($this->annotation->shape),
             ],
         ];
     }
@@ -85,6 +85,6 @@ class UpdateVideoAnnotation extends FormRequest
      */
     protected function isWholeFrame(): bool
     {
-        return $this->annotation->shape_id === Shape::wholeFrameId();
+        return $this->annotation->shape === Shape::WHOLE_FRAME;
     }
 }

@@ -19,11 +19,9 @@ class ImageAnnotation extends Annotation
      */
     protected function casts(): array
     {
-        return [
+        return array_merge(parent::casts(), [
             'image_id' => 'int',
-            'shape_id' => 'int',
-            'points' => 'array',
-        ];
+        ]);
     }
 
     /**

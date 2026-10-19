@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\Visibility;
+use Biigle\Enums\Visibility;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LabelTreeFactory extends Factory
@@ -17,7 +17,7 @@ class LabelTreeFactory extends Factory
         return [
             'name' => $this->faker->username(),
             'description' => $this->faker->sentence(),
-            'visibility_id' => fn () => Visibility::publicId(),
+            'visibility' => Visibility::PUBLIC,
             'uuid' => $this->faker->unique()->uuid(),
         ];
     }

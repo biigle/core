@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Cache;
@@ -21,7 +21,7 @@ class ProjectLabelTreeControllerTest extends TestCase
         $this->be($user);
         $this->get("projects/{$id}/label-trees")->assertStatus(403);
 
-        $project->addUserId($user->id, Role::editorId());
+        $project->addUserId($user->id, Role::EDITOR);
         Cache::flush();
         $this->get("projects/{$id}/label-trees")->assertStatus(200);
 

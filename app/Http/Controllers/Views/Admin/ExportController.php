@@ -2,8 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
+use Biigle\Enums\MediaType;
 use Biigle\Http\Controllers\Views\Controller;
-use Biigle\MediaType;
 
 class ExportController extends Controller
 {
@@ -19,7 +19,10 @@ class ExportController extends Controller
             abort(404);
         }
 
-        $mediaTypes = MediaType::pluck('id', 'name');
+        $mediaTypes = collect(MediaType::cases())->mapWithKeys(
+            fn (MediaType $mediaType)
+            => [$mediaType->label() => $mediaType->value]
+        );
 
         return view('export.index', compact('allowedExports', 'mediaTypes'));
     }

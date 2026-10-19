@@ -4,6 +4,8 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Events\AnnotationLabelAttached;
+use Biigle\ImageAnnotation;
+use Biigle\ImageAnnotationLabel;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
@@ -186,7 +188,7 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
             'id' => $this->admin()->id,
             'firstname' => $this->admin()->firstname,
             'lastname' => $this->admin()->lastname,
-            'role_id' => $this->admin()->role_id,
+            'role' => $this->admin()->role->value,
         ]);
         $response->assertJsonFragment(['confidence' => 0.1]);
 
@@ -197,6 +199,38 @@ class ImageAnnotationLabelControllerTest extends ApiTestCase
         // the same user cannot attach the same label twice
         $response->assertStatus(400);
         $this->assertSame(2, $this->annotation->labels()->count());
+    }
+
+    public function testStoreUniqueViolation()
+    {
+        // Simulate a concurrent request that attaches the same label after the
+        // existence check.
+        ImageAnnotationLabel::creating(fn ($al) => $al->replicate()->saveQuietly());
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/image-annotations/{$this->annotation->id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 0.1,
+            ])
+            ->assertStatus(400);
+    }
+
+    public function testStoreForeignKeyViolation()
+    {
+        // Simulate a concurrent request that deletes the annotation after the
+        // existence check.
+        ImageAnnotationLabel::creating(
+            fn ($al) => ImageAnnotation::where('id', $al->annotation_id)->delete()
+        );
+
+        $this->beEditor();
+        $this
+            ->postJson("api/v1/image-annotations/{$this->annotation->id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 0.1,
+            ])
+            ->assertStatus(404);
     }
 
     public function testStoreLabelIdTypeString()
