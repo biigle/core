@@ -16,7 +16,7 @@ class PublicLabelTreeExport extends Export
             ->first();
 
         $tree->makeVisible(['uuid']);
-        $tree->makeHidden(['visibility_id']);
+        $tree->makeHidden(['visibility']);
         if ($tree->version) {
             $tree->version->makeHidden(['label_tree_id']);
         }

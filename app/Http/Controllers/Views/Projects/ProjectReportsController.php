@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Projects;
 
+use Biigle\Enums\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Modules\MetadataIfdo\IfdoParser;
 use Biigle\Project;
-use Biigle\ReportType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -38,11 +38,7 @@ class ProjectReportsController extends Controller
             ->wherePivot('pinned', true)
             ->count();
 
-        $types = ReportType::when($hasImageVolume, fn ($q) => $q->where('name', 'like', 'Image%'))
-            ->when($hasVideoVolume, fn ($q) => $q->orWhere('name', 'like', 'Video%'))
-            ->orderBy('name', 'asc')
-            ->get();
-
+        $types = ReportType::getSortedTypes($hasImageVolume, $hasVideoVolume);
 
         $hasExportArea = $project->imageVolumes()
             ->whereNotNull('attrs->export_area')

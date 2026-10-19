@@ -325,7 +325,7 @@ export default {
                 this.pendingAnnotation = markRaw(new Annotation({
                     points: points,
                     frames: frames,
-                    shape_id: this.shapes[pendingAnnotation.shape],
+                    shape: this.shapes[pendingAnnotation.shape],
                     labels: this.getCurrentLabelsArray(),
                     pending: true,
                     screenshotPromise: pendingAnnotation.screenshotPromise,
@@ -353,7 +353,7 @@ export default {
             let newAnnotation = {
                 points: pendingAnnotation.points,
                 frames: pendingAnnotation.frames,
-                shape_id: this.shapes[pendingAnnotation.shape],
+                shape: this.shapes[pendingAnnotation.shape],
             };
 
             if (track) {

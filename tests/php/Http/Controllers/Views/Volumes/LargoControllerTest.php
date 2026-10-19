@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 
 class LargoControllerTest extends ApiTestCase
 {
@@ -25,7 +25,7 @@ class LargoControllerTest extends ApiTestCase
 
     public function testIndexVideoVolume()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $this->get("volumes/{$id}/largo")->assertStatus(302);
 
         $this->beGuest();

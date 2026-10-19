@@ -116,7 +116,7 @@ export default {
 
             let payload = {
                 expires_at: isoExpiresAt,
-                role_id: this.roleId,
+                role: this.roleId,
                 add_to_sessions: this.addToSessions,
             };
 

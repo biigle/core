@@ -79,11 +79,11 @@ export default {
             let volumes = this.sortedVolumes;
 
             if (!this.showImageVolumes) {
-                volumes = volumes.filter((volume) => volume.media_type.name !== 'image');
+                volumes = volumes.filter((volume) => volume.media_type_label !== 'image');
             }
 
             if (!this.showVideoVolumes) {
-                volumes = volumes.filter((volume) => volume.media_type.name !== 'video');
+                volumes = volumes.filter((volume) => volume.media_type_label !== 'video');
             }
 
             if (this.hasFiltering) {
@@ -107,7 +107,7 @@ export default {
             return this.hasVolumes && this.filteredVolumes.length === 0;
         },
         hasMixedMediaTypes() {
-            return this.volumes.some((v) => v.media_type.name === 'image') && this.volumes.some((v) => v.media_type.name === 'video');
+            return this.volumes.some((v) => v.media_type_label === 'image') && this.volumes.some((v) => v.media_type_label === 'video');
         },
         toggleImageVolumesClass() {
             return this.showVideoVolumes ? 'btn-default' : 'btn-info active';
@@ -232,7 +232,7 @@ export default {
             }
         },
         processVolumes(volume) {
-            volume.icon = volume.media_type.name === 'image' ? 'image' : 'film';
+            volume.icon = volume.media_type_label === 'image' ? 'image' : 'film';
 
             return volume;
         },

@@ -3,9 +3,9 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Enums\Role;
 use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
-use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Notification;
 
@@ -15,7 +15,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         Notification::fake();
         config(['biigle.user_registration_confirmation' => true]);
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
         $this->doTestApiRoute('GET', "/api/v1/accept-user-registration/{$user->id}");
 
         $this->beAdmin();
@@ -25,7 +25,7 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(200);
-        $this->assertSame(Role::editorId(), $user->fresh()->role_id);
+        $this->assertSame(Role::EDITOR, $user->fresh()->role);
 
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(404);
@@ -36,7 +36,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         Notification::fake();
         config(['biigle.user_registration_confirmation' => true]);
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
         $this->beGlobalReviewer();
         $this->get("/api/v1/accept-user-registration/{$user->id}")
             ->assertRedirectToRoute('home');
@@ -46,7 +46,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         Notification::fake();
         config(['biigle.user_registration_confirmation' => true]);
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
         $this->beGlobalAdmin();
         $this->get("/api/v1/accept-user-registration/{$user->id}")
             ->assertRedirectToRoute('admin-users-show', $user->id);
@@ -55,7 +55,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     public function testAcceptRegistrationDisabled()
     {
         config(['biigle.user_registration_confirmation' => false]);
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
         $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(404);
@@ -65,7 +65,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         Notification::fake();
         config(['biigle.user_registration_confirmation' => true]);
-        $user = UserTest::create(['role_id' => Role::editorId()]);
+        $user = UserTest::create(['role' => Role::EDITOR]);
         $this->doTestApiRoute('GET', "/api/v1/reject-user-registration/{$user->id}");
 
         $this->beAdmin();
@@ -76,7 +76,7 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->getJson("/api/v1/reject-user-registration/{$user->id}")
             ->assertStatus(404);
 
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
 
         $this->getJson("/api/v1/reject-user-registration/{$user->id}")
             ->assertStatus(200);
@@ -88,7 +88,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         Notification::fake();
         config(['biigle.user_registration_confirmation' => true]);
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
         $this->beGlobalReviewer();
         $this->get("/api/v1/reject-user-registration/{$user->id}")
             ->assertRedirectToRoute('home');
@@ -98,7 +98,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     {
         Notification::fake();
         config(['biigle.user_registration_confirmation' => true]);
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
         $this->beGlobalAdmin();
         $this->get("/api/v1/reject-user-registration/{$user->id}")
             ->assertRedirectToRoute('admin-users');
@@ -107,7 +107,7 @@ class UserRegistrationControllerTest extends ApiTestCase
     public function testRejectRegistrationDisabled()
     {
         config(['biigle.user_registration_confirmation' => false]);
-        $user = UserTest::create(['role_id' => Role::guestId()]);
+        $user = UserTest::create(['role' => Role::GUEST]);
         $this->beGlobalReviewer();
         $this->getJson("/api/v1/reject-user-registration/{$user->id}")
             ->assertStatus(404);

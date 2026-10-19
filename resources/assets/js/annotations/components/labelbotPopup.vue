@@ -111,6 +111,7 @@ export default {
             shouldHaveProgressBar: true,
             maybeGetsAttention: false,
             typeaheadFocused: false,
+            labelEventEmitted: false,
             annotationWithoutLabel: false,
             selectedLabel: null,
             overlay: null,
@@ -220,6 +221,7 @@ export default {
             Events.emit('labelbot.chose_label_1');
         },
         emitClose() {
+            this.labelEventEmitted = true;
             this.$emit('close', this.annotation);
         },
         handleTypeaheadFocus() {
@@ -482,6 +484,13 @@ export default {
             Keyboard.off('1', this.selectLabel1, 'labelbot');
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');
+
+            // If the popup is closed and no event is sent, 
+            // then send the event of chose label_1
+            // This also works if the image/video was changed while the popup was open
+            if (!this.labelEventEmitted) {
+                Events.emit('labelbot.chose_label_1');
+            }
         }
         // We can't use a plain else here because the annotation may get a label via the typeahead.
         else if (this.annotationWithoutLabel) { 
