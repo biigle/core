@@ -386,7 +386,10 @@ export default {
                 newAnnotation,
                 (annotation) => this.saveAnnotation(annotation, pendingAnnotation, track)
             )
-                .then(this.showLabelbotPopup)
+                .then((annotation) => {
+                    this.showLabelbotPopup(annotation);
+                    return annotation;
+                })
                 .catch(handleErrorResponse);
         },
         saveAnnotation(newAnnotation, pendingAnnotation, track = false) {
