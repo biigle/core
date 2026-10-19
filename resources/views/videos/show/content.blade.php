@@ -69,7 +69,7 @@
       v-on:swap="swapAnnotationLabelTo"
       v-on:create-restored-labelbot-annotation="createRestoredLabelbotAnnotation"
       v-on:close-labelbot-popup="closeLabelbotPopup"
-      v-on:close-all-labelbot-popups="closeAllLabelbotPopups"
+      v-on:start-playing="closeAllLabelbotPopups"
       v-on:init-map="handleInitMap"
       v-on:create-annotation="createAnnotation"
       v-on:track-annotation="trackAnnotation"

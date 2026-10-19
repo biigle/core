@@ -443,7 +443,7 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
-        'close-all-labelbot-popups',
+        'start-playing',
         'create-restored-labelbot-annotation',
     ],
     mixins: [

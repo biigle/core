@@ -13,7 +13,7 @@ export default {
     emits: [
         'seek',
         'start-seeking',
-        'close-all-labelbot-popups',
+        'start-playing',
     ],
     data() {
         return {
@@ -109,7 +109,7 @@ export default {
         },
         setPlaying() {
             this.playing = true;
-            this.$emit('close-all-labelbot-popups');
+            this.$emit('start-playing');
             if (!this.animationFrameId) {
                 this.startRenderLoop();
             }
