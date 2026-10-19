@@ -99,10 +99,10 @@ export default {
                 .then((e) => {
                     if (e.data?.error) {
                         throw e.data.error;
-                    } else if (!this.selectedLabel) {
+                    } else if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     } else {
-                        this.terminateLabelbot();
+                        this.updateLabelbotState(LABELBOT_STATES.OFF);
                     }
                 })
                 .catch((e) => {
@@ -112,11 +112,6 @@ export default {
                 });
 
             this.labelbotWorker.postMessage({type: 'init', url: modelUrl});
-        },
-        terminateLabelbot() {
-            this.updateLabelbotState(LABELBOT_STATES.OFF);
-            this.labelbotWorker.terminate();
-            this.labelbotWorker = null;
         },
         generateFeatureVector(labelbotImage) {
             const labelbotMessageID = this.labelbotMessageID++;
@@ -183,10 +178,10 @@ export default {
                     return saveCallback(annotation);
                 })
                 .then(annotation => {
-                    if (this.selectedLabel) {
-                        this.updateLabelbotState(LABELBOT_STATES.OFF);
-                    } else if (this.labelbotRequestsInFlight === 1) {
-                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    if (this.labelbotIsComputing) {
+                        if (this.labelbotRequestsInFlight === 1) {
+                            this.updateLabelbotState(LABELBOT_STATES.READY);
+                        }
                     }
 
                     return annotation;
@@ -194,8 +189,10 @@ export default {
                 .catch((e) => {
                     if (e.status === 429) {
                         this.updateLabelbotState(LABELBOT_STATES.BUSY);
-                    } else if (this.labelbotRequestsInFlight === 1) {
-                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    } else if (this.labelbotIsComputing) {
+                        if (this.labelbotRequestsInFlight === 1) {
+                            this.updateLabelbotState(LABELBOT_STATES.READY);
+                        }
                     }
 
                     throw e;
