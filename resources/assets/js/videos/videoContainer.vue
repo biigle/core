@@ -422,12 +422,13 @@ export default {
                 track: annotation.track,
             };
 
-            this.saveAnnotation(newAnnotation, annotation.pendingAnnotation)
+            this.saveAnnotation(newAnnotation, annotation.pendingAnnotation, annotation.track)
                 .then((savedAnnotation) => {
                     if (annotation.track) {
                         this.setAnnotationTrackingState(savedAnnotation);
                     }
-                });
+                })
+                .catch(handleErrorResponse);
         },
         trackAnnotation(pendingAnnotation) {
             this.createAnnotation(pendingAnnotation, true)
