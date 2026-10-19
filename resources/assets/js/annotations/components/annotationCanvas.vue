@@ -595,7 +595,7 @@ export default {
                 // so in case LabelBOT did not return any results, the unique id of 
                 // the feature could be used as LabelBOT's popup id and also we need the geometry of the feature
                 // to place the LabelBOT's empty overlay/popup correctly.
-                newAnnotation.feature = e.feature;
+                newAnnotation.feature = markRaw(e.feature);
 
                 // Move feature to the LabelBOT layer so it has opacity=1 while LabelBOT
                 // is computing.

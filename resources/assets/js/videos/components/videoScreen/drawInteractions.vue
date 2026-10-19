@@ -8,6 +8,7 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
+import {markRaw} from 'vue';
 import { never, primaryAction } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
@@ -350,7 +351,7 @@ export default {
             // so in case LabelBOT did not return any results, the unique id of 
             // the feature could be used as LabelBOT popup id and also we need the geometry of the feature
             // to place the LabelBOT's empty overlay/popup correctly.
-            this.pendingAnnotation.feature = e.feature;
+            this.pendingAnnotation.feature = markRaw(e.feature);
 
             // The LabelBOT image is always created because the user could decide to
             // enable LabelBOT while they draw the pending annotation.
