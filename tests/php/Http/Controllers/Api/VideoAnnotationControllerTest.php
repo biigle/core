@@ -994,7 +994,7 @@ class VideoAnnotationControllerTest extends ApiTestCase
 
         // Query an empty DB
         $response = $this->json('POST', "api/v1/videos/{$this->video->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'points' => [[10, 11]],
             'frames' => [0.0],

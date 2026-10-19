@@ -461,7 +461,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
 
         // Query an empty DB
         $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT->value,
             'feature_vector' => range(1, 384),
             'confidence' => 0.5,
             'points' => [10, 11],
