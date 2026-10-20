@@ -561,10 +561,14 @@ export default {
             this.$refs.annotationModesTab.pauseVolare(timestamp);
         },
         showImageWithId(imageId) {
+            // Return value indicates whether the image was successfully shown or not
+            // For example, if the image has since been deleted, this function returns false
             const index = this.imagesIds.indexOf(imageId);
             if (index !== -1) {
                 this.imageIndex = index;
+                return true;
             }
+            return false;
         },
         handleAnnotationModeChange(mode, data) {
             this.annotationMode = mode;

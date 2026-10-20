@@ -142,7 +142,13 @@ export function useVolareMode({
 
         resuming = true;
         if (state.imageId !== image.value.id) {
-            showImageWithId(state.imageId);
+            const imageShown = showImageWithId(state.imageId);
+            if (!imageShown) {
+                discardSavedVolareState();
+                resuming = false;
+                nextTick(updateFocussedAnnotation);
+            }
+
             return;
         }
 
