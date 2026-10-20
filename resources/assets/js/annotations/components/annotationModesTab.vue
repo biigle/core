@@ -173,6 +173,10 @@ export default {
             switch (oldMode) {
                 case 'volare':
                     Keyboard.off('Enter', this.emitAttachLabel);
+                    Keyboard.off('Escape', this.resetMode);
+                    break;
+                case 'lawnmower':
+                    Keyboard.off('Escape', this.resetMode);
                     break;
                 case 'randomSampling':
                 case 'regularSampling':
@@ -183,6 +187,10 @@ export default {
             switch (newMode) {
                 case 'volare':
                     Keyboard.on('Enter', this.emitAttachLabel);
+                    Keyboard.on('Escape', this.resetMode, 1);
+                    break;
+                case 'lawnmower':
+                    Keyboard.on('Escape', this.resetMode, 1);
                     break;
                 case 'randomSampling':
                 case 'regularSampling':
