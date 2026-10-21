@@ -209,15 +209,13 @@ function addRightClickDragPanToMap(map, condition) {
     });
 }
 
-export { isInvalidShape, clamp, trimCanvas, ScaleLineProperties, UnitMultipliers, UnitNames, addRightClickDragPanToMap };
-
-export const LABEL_TOOLTIP_MODES = Object.freeze({
+const LABEL_TOOLTIP_MODES = Object.freeze({
     OFF: 'off',
     HOVER: 'hover',
     ALWAYS: 'always',
 });
 
-export function normalizeLabelTooltipMode(value) {
+function normalizeLabelTooltipMode(value) {
     if (value === true || value === 'true' || value === LABEL_TOOLTIP_MODES.HOVER) {
         return LABEL_TOOLTIP_MODES.HOVER;
     }
@@ -228,3 +226,15 @@ export function normalizeLabelTooltipMode(value) {
 
     return LABEL_TOOLTIP_MODES.OFF;
 }
+
+export {
+    isInvalidShape,
+    clamp,
+    trimCanvas,
+    ScaleLineProperties,
+    UnitMultipliers,
+    UnitNames,
+    addRightClickDragPanToMap,
+    LABEL_TOOLTIP_MODES,
+    normalizeLabelTooltipMode,
+};

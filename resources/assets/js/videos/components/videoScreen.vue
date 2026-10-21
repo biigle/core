@@ -10,6 +10,7 @@
             :position="mousePosition"
             ></label-tooltip>
         <persistent-label-tooltips
+            v-if="mapReadyRevision"
             :annotation-source="annotationSource"
             :map="map"
             :mode="showLabelTooltip"
@@ -692,6 +693,12 @@ export default {
             return map;
         },
         initLayersAndInteractions(map) {
+            this.annotationFeatures = new Collection();
+
+            this.annotationSource = new VectorSource({
+                features: this.annotationFeatures,
+            });
+
             this.annotationLayer = new VectorLayer({
                 source: this.annotationSource,
                 updateWhileAnimating: true,
@@ -873,11 +880,6 @@ export default {
     created() {
         // markRaw is essential here!
         this.map = markRaw(this.createMap());
-        // These OpenLayers objects must not become reactive.
-        this.annotationFeatures = new Collection();
-        this.annotationSource = new VectorSource({
-            features: this.annotationFeatures,
-        });
         this.map.on('pointermove', this.updateMousePosition);
         this.map.on('moveend', this.emitMoveend);
 

@@ -1,9 +1,13 @@
 <template>
-    <div
-        :class="[dragging && draggingClass]"
-        @mousedown="handleRootMouseDown"
-        >
-        <slot :dragging="dragging" :start-drag="startDrag"></slot>
+    <div hidden>
+        <div
+            ref="overlayElement"
+            v-bind="$attrs"
+            :class="[dragging && draggingClass]"
+            @mousedown="handleRootMouseDown"
+            >
+            <slot :dragging="dragging" :start-drag="startDrag"></slot>
+        </div>
     </div>
 </template>
 
@@ -16,6 +20,7 @@ import {markRaw} from 'vue';
 import {unByKey} from '@biigle/ol/Observable';
 
 export default {
+    inheritAttrs: false,
     emits: [
         'dragstart',
         'dragend',
@@ -83,7 +88,7 @@ export default {
         getInitialPlacement(extent) {
             const viewportExtent = this.map.getView().calculateExtent(this.map.getSize());
             const resolution = this.map.getView().getResolution();
-            const tooltipSize = [this.$el.offsetWidth, this.$el.offsetHeight];
+            const tooltipSize = [this.$refs.overlayElement.offsetWidth, this.$refs.overlayElement.offsetHeight];
             const centerY = (extent[1] + extent[3]) / 2;
             const rightSpace = (viewportExtent[2] - extent[2]) / resolution;
             const horizontalWidth = this.centered ? tooltipSize[0] / 2 : tooltipSize[0];
@@ -118,7 +123,7 @@ export default {
             const extent = geometry.getExtent();
             const centerY = (extent[1] + extent[3]) / 2;
             const overlay = new Overlay({
-                element: this.$el,
+                element: this.$refs.overlayElement,
                 position: [extent[2], centerY],
                 positioning: this.centered ? 'center-center' : 'center-left',
                 offset: [this.gap, 0],
@@ -220,8 +225,8 @@ export default {
             this.dragging = true;
             this.dragStartMousePosition = [event.clientX, event.clientY];
             this.dragStartOverlayOffset = this.overlay.getOffset();
-            this.$el.ownerDocument.addEventListener('mousemove', this.handleDrag);
-            this.$el.ownerDocument.addEventListener('mouseup', this.endDrag);
+            this.$refs.overlayElement.ownerDocument.addEventListener('mousemove', this.handleDrag);
+            this.$refs.overlayElement.ownerDocument.addEventListener('mouseup', this.endDrag);
             this.$emit('dragstart');
         },
         handleDrag(event) {
@@ -255,8 +260,8 @@ export default {
             this.$emit('dragend');
         },
         removeDragListeners() {
-            this.$el.ownerDocument.removeEventListener('mousemove', this.handleDrag);
-            this.$el.ownerDocument.removeEventListener('mouseup', this.endDrag);
+            this.$refs.overlayElement.ownerDocument.removeEventListener('mousemove', this.handleDrag);
+            this.$refs.overlayElement.ownerDocument.removeEventListener('mouseup', this.endDrag);
         },
         updateZIndex() {
             if (!this.overlay) return;

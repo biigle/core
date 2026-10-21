@@ -40,9 +40,10 @@ export default {
         };
     },
     computed: {
+        activeSource() {
+            return this.mode === LABEL_TOOLTIP_MODES.ALWAYS ? this.annotationSource : null;
+        },
         visibleFeatures() {
-            if (this.mode !== LABEL_TOOLTIP_MODES.ALWAYS) return [];
-
             return this.features.filter(feature => {
                 return feature.get('annotation')?.labels.length > 0;
             });
@@ -88,7 +89,7 @@ export default {
         },
     },
     watch: {
-        annotationSource: 'attachSource',
+        activeSource: 'attachSource',
         mode(mode) {
             this.lineLayer.setVisible(mode === LABEL_TOOLTIP_MODES.ALWAYS);
         },
@@ -97,16 +98,16 @@ export default {
         // OpenLayers objects must not become reactive because this hurts rendering performance.
         this.source = null;
         this.syncPending = false;
-        this.lineSource = markRaw(new VectorSource());
-        this.lineLayer = markRaw(new VectorLayer({
+        this.lineSource = new VectorSource();
+        this.lineLayer = new VectorLayer({
             source: this.lineSource,
             zIndex: 101,
             updateWhileAnimating: true,
             updateWhileInteracting: true,
             style: Styles.features,
-        }));
+        });
         this.lineLayer.setVisible(this.mode === LABEL_TOOLTIP_MODES.ALWAYS);
-        this.attachSource(this.annotationSource);
+        this.attachSource(this.activeSource);
     },
     mounted() {
         this.map.addLayer(this.lineLayer);
