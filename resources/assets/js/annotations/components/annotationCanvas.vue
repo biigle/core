@@ -911,7 +911,11 @@ export default {
 
         this.map.on('change:size', this.updateMapSize);
         this.map.on('moveend', this.updateMapView);
-        this.map.on('movestart', () => this.$emit('movestart'));
+        this.map.on('movestart', () => {
+            if (this.map.getView().getInteracting()) {
+                this.$emit('movestart');
+            }
+        });
         this.map.on('pointermove', this.updateMousePosition);
 
         this.selectInteraction.on('select', this.handleFeatureSelect);
