@@ -124,3 +124,34 @@ export let escapeHtml = function (item) {
     escItem.name = escItem.name.replace(/[&<>"']/g, replaceDangerous);
     return escItem;
 }
+
+/**
+ * Describes current delta to a given timestamp with appropriate units, examples:
+ * 30s -> just now
+ * 180s -> 3min ago
+ * @param {*} start Unix timestamp in milliseconds
+ * @param {*} end Unix timestamp in milliseconds
+ * @returns String description of current delta to the timestamp
+ */
+export function timeAgo(start, end) {
+    const seconds = Math.floor((end - start) / 1000);
+    const secondsPerDay = 86400;
+
+    if (seconds < 60) {
+        return 'just now';
+    }
+
+    const units = [
+        { name: 'y', seconds: secondsPerDay * 365},
+        { name: 'd', seconds: secondsPerDay },
+        { name: 'h', seconds: 3600 },
+        { name: 'min', seconds: 60 },
+    ];
+
+    for (const unit of units) {
+        if (seconds >= unit.seconds) {
+            const value = Math.round(seconds / unit.seconds);
+            return `${value}${unit.name} ago`;
+        }
+    }
+}

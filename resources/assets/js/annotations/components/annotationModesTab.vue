@@ -5,7 +5,7 @@ import PowerToggle from '@/core/components/powerToggle.vue';
 import PlayPause from '@/core/components/playPause.vue';
 import { PlayPauseState } from '@/core/components/playPause.vue';
 import Settings from '../stores/settings.js';
-import {urlParams as UrlParams} from '@/core/utils.js';
+import {urlParams as UrlParams, timeAgo} from '@/core/utils.js';
 
 /**
  * The annotation modes tab of the annotator
@@ -62,10 +62,10 @@ export default {
             return this.mode === 'regularSampling';
         },
         lawnmowerPausedAtText() {
-            return this.lawnmowerPausedAt ? this.timeAgo(this.lawnmowerPausedAt) : null;
+            return this.lawnmowerPausedAt ? timeAgo(this.lawnmowerPausedAt, this.currentTime) : null;
         },
         volarePausedAtText() {
-            return this.volarePausedAt ? this.timeAgo(this.volarePausedAt) : null;
+            return this.volarePausedAt ? timeAgo(this.volarePausedAt, this.currentTime) : null;
         },
         currentLawnmowerState() {
             if (this.mode === 'lawnmower') {
@@ -210,30 +210,6 @@ export default {
                     this.$emit('annotation-mode-changed', newMode);
             }
         },
-        timeAgo(timestamp) {
-            const seconds = Math.floor((this.currentTime - timestamp) / 1000);
-            const secondsPerDay = 86400;
-
-            if (seconds < 60) {
-                return 'just now';
-            }
-
-            const units = [
-                { name: 'y', seconds: secondsPerDay * 365},
-                { name: 'd', seconds: secondsPerDay },
-                { name: 'h', seconds: 3600 },
-                { name: 'min', seconds: 60 },
-            ];
-
-            for (const unit of units) {
-                if (seconds >= unit.seconds) {
-                    const value = Math.round(seconds / unit.seconds);
-                    return `${value}${unit.name} ago`;
-                }
-            }
-
-            return '0s ago';
-        },
         genericPlayStopButtonText(state, message) {
             if (state === PlayPauseState.ACTIVE) {
                 return `Stop ${message} 𝗘𝘀𝗰`;
@@ -277,7 +253,7 @@ export default {
     mounted() {
         this.currentTimeInterval = setInterval(() => {
             this.currentTime = Date.now();
-        }, 60000);
+        }, 30000);
     }
 };
 </script>
