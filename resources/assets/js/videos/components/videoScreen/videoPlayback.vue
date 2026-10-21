@@ -116,10 +116,18 @@ export default {
             this.animationFrameId = null;
         },
         renderPausedFrameWithNativeSeeking(time) {
-            // Use native seeking in case mediabunny is not available (unsupported codec, etc.):
-            // Assign video.currentTime manually and hope the browser displays the correct frame
-            this.video.currentTime = time;
-            this.renderVideo(true);
+            if (this.video.seeking) {
+                return;
+            }
+
+            // Check if we seeked before to avoid recursion
+            if (this.video.currentTime !== time) {
+                // Use native seeking in case mediabunny is not available (unsupported codec, etc.):
+                // Assign video.currentTime manually and hope the browser displays the correct frame
+                this.$emit('seek', time, true);
+            } else {
+                this.renderVideo(true);
+            }
         },
         async renderPausedFrame(time = this.video.currentTime) {
             await this.mediabunnyInitPromise;
