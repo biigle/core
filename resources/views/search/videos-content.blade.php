@@ -1,5 +1,7 @@
 @if($type === 'videos')
+@unless ($fileQueryTooShort)
 <h2 class="lead">@if($videoResultCountCapped)more than {{number_format($fileResultCountCap)}}@else{{number_format($videoResultCount)}}@endif video results</h2>
+@endunless
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $video)
         <li class="col-xs-4">

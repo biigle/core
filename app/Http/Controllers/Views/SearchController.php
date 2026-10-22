@@ -14,8 +14,6 @@ use Biigle\Volume;
 use DB;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class SearchController extends Controller
 {
@@ -35,7 +33,8 @@ class SearchController extends Controller
      *
      * Determining the exact number of matches means scanning every matching
      * row. The number is only shown as a tab badge and in the result heading,
-     * so counting stops once this many matches are known to exist.
+     * and nobody pages through more results than this, so counting stops once
+     * more than this many matches are known to exist.
      *
      * @var int
      */
@@ -103,8 +102,8 @@ class SearchController extends Controller
         $queryBuilder->selectRaw("id, name, description, updated_at, false as external")
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
-                    $q->where('name', 'ilike', "%{$query}%")
-                        ->orWhere('description', 'ilike', "%{$query}%");
+                    $q->where('name', 'ilike', $this->likePattern($query))
+                        ->orWhere('description', 'ilike', $this->likePattern($query));
                 });
             });
 
@@ -117,8 +116,8 @@ class SearchController extends Controller
                     // The where must be added separately to the second select statement
                     // of the union. See: https://github.com/laravel/framework/pull/34813
                     $q->where(function ($q) use ($query) {
-                        $q->where('name', 'ilike', "%{$query}%")
-                            ->orWhere('description', 'ilike', "%{$query}%");
+                        $q->where('name', 'ilike', $this->likePattern($query))
+                            ->orWhere('description', 'ilike', $this->likePattern($query));
                     });
                 });
 
@@ -177,8 +176,8 @@ class SearchController extends Controller
         $queryBuilder->selectRaw("id, name, description, updated_at, false as external")
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
-                    $q->where('name', 'ilike', "%{$query}%")
-                        ->orWhere('description', 'ilike', "%{$query}%");
+                    $q->where('name', 'ilike', $this->likePattern($query))
+                        ->orWhere('description', 'ilike', $this->likePattern($query));
                 });
             });
 
@@ -191,8 +190,8 @@ class SearchController extends Controller
                     // The where must be added separately to the second select statement
                     // of the union. See: https://github.com/laravel/framework/pull/34813
                     $q->where(function ($q) use ($query) {
-                        $q->where('name', 'ilike', "%{$query}%")
-                            ->orWhere('description', 'ilike', "%{$query}%");
+                        $q->where('name', 'ilike', $this->likePattern($query))
+                            ->orWhere('description', 'ilike', $this->likePattern($query));
                     });
                 });
 
@@ -247,7 +246,7 @@ class SearchController extends Controller
         $queryBuilder->selectRaw("id, name, updated_at, false as external")
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
-                    $q->where('name', 'ilike', "%{$query}%");
+                    $q->where('name', 'ilike', $this->likePattern($query));
                 });
             });
 
@@ -260,7 +259,7 @@ class SearchController extends Controller
                     // The where must be added separately to the second select statement
                     // of the union. See: https://github.com/laravel/framework/pull/34813
                     $q->where(function ($q) use ($query) {
-                        $q->where('name', 'ilike', "%{$query}%");
+                        $q->where('name', 'ilike', $this->likePattern($query));
                     });
                 });
 
@@ -299,23 +298,20 @@ class SearchController extends Controller
     }
 
     /**
-     * Subquery for the IDs of all volumes that are accessible by a user.
+     * Turn a search term into a pattern for a substring match with (i)like.
      *
-     * Restricting files with this instead of joining project_volume and
-     * project_user avoids the row multiplication of volumes that belong to more
-     * than one project, so no DISTINCT is required over the (large) file table.
+     * Wildcards in the term are escaped, so they are matched literally. Else
+     * a term like "%%%" would get past the minimum length and match everything.
      *
-     * @param User $user
+     * @param string $query
      *
-     * @return \Closure
+     * @return string
      */
-    protected function accessibleVolumeIds(User $user)
+    protected function likePattern($query)
     {
-        return fn ($query) => $query->select('project_volume.volume_id')
-            ->from('project_volume')
-            ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
-            ->where('project_user.user_id', $user->id)
-            ->distinct();
+        $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $query);
+
+        return "%{$escaped}%";
     }
 
     /**
@@ -332,133 +328,54 @@ class SearchController extends Controller
     }
 
     /**
-     * Determine whether the result count of a file query should be capped.
-     *
-     * Counting every match of a search term is affordable because the term
-     * narrows the result set. Counting every file a user can access is not, and
-     * the exact number is of no use there anyway, so browsing without a term
-     * gets a capped count instead.
-     *
-     * @param string $query
-     *
-     * @return bool
-     */
-    protected function shouldCapCount($query)
-    {
-        return $query === '';
-    }
-
-    /**
-     * Determine whether a result count was limited by MAX_FILE_RESULT_COUNT.
-     *
-     * The count alone cannot tell: an exact count may legitimately exceed the
-     * cap, and must then still be displayed as the exact number.
-     *
-     * @param string $query
-     * @param int $count
-     *
-     * @return bool
-     */
-    protected function countWasCapped($query, $count)
-    {
-        return $this->shouldCapCount($query) && $count >= self::MAX_FILE_RESULT_COUNT;
-    }
-
-    /**
-     * Count the results of a file query.
+     * Count the results of a file query, up to one more than
+     * MAX_FILE_RESULT_COUNT.
      *
      * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
-     * @param string $query
      *
      * @return int
      */
-    protected function fileResultCount($queryBuilder, $query)
+    protected function cappedFileResultCount($queryBuilder)
     {
-        if (!$this->shouldCapCount($query)) {
-            return $queryBuilder->clone()->reorder()->count();
-        }
-
         $limited = $queryBuilder->clone()
             ->reorder()
             ->select(DB::raw('1'))
-            ->limit(self::MAX_FILE_RESULT_COUNT);
+            ->limit(self::MAX_FILE_RESULT_COUNT + 1);
 
         return DB::query()->fromSub($limited, 'capped')->count();
     }
 
     /**
-     * Fetch a single page of file results, ordered by descending ID.
+     * Paginate a file query, ordered by descending ID.
+     *
+     * The total is capped at MAX_FILE_RESULT_COUNT, which bounds the number of
+     * pages as well.
      *
      * A filename filter cannot use an index, so the query planner is free to
      * assume that walking the primary key backwards will fill the page quickly.
      * For users whose files have low IDs that assumption is wrong and the whole
-     * table gets scanned (observed: 74 s for one page of 12). Collecting the
-     * matches in a materialized CTE takes that option away: they are gathered
-     * through the volume_id index first and sorted afterwards.
-     *
-     * Requires PostgreSQL 12 or later for the MATERIALIZED keyword; on older
-     * versions a CTE is always materialized anyway.
+     * table gets scanned (observed: 74 s for one page of 12). For restricted
+     * users, "id + 0" prevents the primary key scan, so the matches are
+     * collected through the volume_id index and sorted afterwards.
      *
      * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
-     * @param int $page
+     * @param int $count Result of cappedFileResultCount()
      * @param int $perPage
+     * @param bool $restricted Whether the query is restricted to some volumes
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    protected function fetchFilePage($queryBuilder, $page, $perPage)
+    protected function paginateFiles($queryBuilder, $count, $perPage, $restricted)
     {
-        $inner = $queryBuilder->clone()->reorder();
+        $total = min($count, self::MAX_FILE_RESULT_COUNT);
 
-        $rows = DB::select(
-            'with matches as materialized ('.$inner->toSql().')'
-            .' select * from matches order by id desc limit ? offset ?',
-            array_merge($inner->getBindings(), [$perPage, ($page - 1) * $perPage])
-        );
+        if ($restricted) {
+            $queryBuilder->orderByRaw('id + 0 desc');
+        } else {
+            $queryBuilder->orderBy('id', 'desc');
+        }
 
-        return $queryBuilder->hydrate($rows);
-    }
-
-    /**
-     * Paginate a file query.
-     *
-     * When the count is capped the number of pages is bounded by
-     * MAX_FILE_RESULT_COUNT as well, so that no page can be requested whose
-     * position is beyond what was counted.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
-     * @param string $query
-     * @param int $perPage
-     *
-     * @return LengthAwarePaginator
-     */
-    protected function paginateFiles($queryBuilder, $query, $perPage)
-    {
-        $total = $this->fileResultCount($queryBuilder, $query);
-        $page = Paginator::resolveCurrentPage();
-
-        $items = $total > 0
-            ? $this->fetchFilePage($queryBuilder, $page, $perPage)
-            : collect();
-
-        return new LengthAwarePaginator($items, $total, $perPage, $page, [
-            'path' => Paginator::resolveCurrentPath(),
-            'pageName' => 'page',
-        ]);
-    }
-
-    /**
-     * An empty paginator, used when a search term is rejected outright.
-     *
-     * @param int $perPage
-     *
-     * @return LengthAwarePaginator
-     */
-    protected function emptyPaginator($perPage)
-    {
-        return new LengthAwarePaginator(collect(), 0, $perPage, 1, [
-            'path' => Paginator::resolveCurrentPath(),
-            'pageName' => 'page',
-        ]);
+        return $queryBuilder->paginate($perPage, total: $total);
     }
 
     /**
@@ -479,35 +396,34 @@ class SearchController extends Controller
             $values['imageResultCountCapped'] = false;
 
             if ($type === 'images') {
-                $values['results'] = $this->emptyPaginator(12);
+                $values['results'] = Image::query()->paginate(12, total: 0);
             }
 
             return $values;
         }
 
-        if ($user->can('sudo')) {
-            $imageQuery = Image::query();
+        $restricted = !$user->can('sudo');
+
+        if ($restricted) {
+            $imageQuery = Image::whereIn('volume_id', Volume::accessibleBy($user)->select('id'));
         } else {
-            $imageQuery = Image::whereIn('volume_id', $this->accessibleVolumeIds($user));
+            $imageQuery = Image::query();
         }
 
         $imageQuery = $imageQuery->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id')
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
-                    $q->where('images.filename', 'ilike', "%{$query}%");
+                    $q->where('images.filename', 'ilike', $this->likePattern($query));
                 });
             });
 
+        $count = $this->cappedFileResultCount($imageQuery);
+        $values['imageResultCount'] = min($count, self::MAX_FILE_RESULT_COUNT);
+        $values['imageResultCountCapped'] = $count > self::MAX_FILE_RESULT_COUNT;
+
         if ($type === 'images') {
-            // The ordering is applied by paginateFiles().
-            $values['results'] = $this->paginateFiles($imageQuery, $query, 12);
-
-            $values['imageResultCount'] = $values['results']->total();
-        } else {
-            $values['imageResultCount'] = $this->fileResultCount($imageQuery, $query);
+            $values['results'] = $this->paginateFiles($imageQuery, $count, 12, $restricted);
         }
-
-        $values['imageResultCountCapped'] = $this->countWasCapped($query, $values['imageResultCount']);
 
         return $values;
     }
@@ -530,35 +446,34 @@ class SearchController extends Controller
             $values['videoResultCountCapped'] = false;
 
             if ($type === 'videos') {
-                $values['results'] = $this->emptyPaginator(12);
+                $values['results'] = Video::query()->paginate(12, total: 0);
             }
 
             return $values;
         }
 
-        if ($user->can('sudo')) {
-            $queryBuilder = Video::query();
+        $restricted = !$user->can('sudo');
+
+        if ($restricted) {
+            $queryBuilder = Video::whereIn('volume_id', Volume::accessibleBy($user)->select('id'));
         } else {
-            $queryBuilder = Video::whereIn('volume_id', $this->accessibleVolumeIds($user));
+            $queryBuilder = Video::query();
         }
 
         $queryBuilder = $queryBuilder->select('videos.id', 'videos.filename', 'videos.uuid', 'videos.volume_id')
             ->when($query, function ($q) use ($query) {
                 $q->where(function ($q) use ($query) {
-                    $q->where('videos.filename', 'ilike', "%{$query}%");
+                    $q->where('videos.filename', 'ilike', $this->likePattern($query));
                 });
             });
 
+        $count = $this->cappedFileResultCount($queryBuilder);
+        $values['videoResultCount'] = min($count, self::MAX_FILE_RESULT_COUNT);
+        $values['videoResultCountCapped'] = $count > self::MAX_FILE_RESULT_COUNT;
+
         if ($type === 'videos') {
-            // The ordering is applied by paginateFiles().
-            $values['results'] = $this->paginateFiles($queryBuilder, $query, 12);
-
-            $values['videoResultCount'] = $values['results']->total();
-        } else {
-            $values['videoResultCount'] = $this->fileResultCount($queryBuilder, $query);
+            $values['results'] = $this->paginateFiles($queryBuilder, $count, 12, $restricted);
         }
-
-        $values['videoResultCountCapped'] = $this->countWasCapped($query, $values['videoResultCount']);
 
         return $values;
     }
@@ -586,7 +501,7 @@ class SearchController extends Controller
                                     $q->select(DB::raw(1))
                                         ->from('volumes')
                                         ->whereRaw('reports.source_id = volumes.id')
-                                        ->where('volumes.name', 'ilike', "%{$query}%");
+                                        ->where('volumes.name', 'ilike', $this->likePattern($query));
                                 });
                         })
                         ->orWhere(function ($q) use ($query) {
@@ -595,11 +510,11 @@ class SearchController extends Controller
                                     $q->select(DB::raw(1))
                                         ->from('projects')
                                         ->whereRaw('reports.source_id = projects.id')
-                                        ->where('projects.name', 'ilike', "%{$query}%");
+                                        ->where('projects.name', 'ilike', $this->likePattern($query));
                                 });
                         })
                         // Kept for backwards compatibility of single video reports.
-                        ->orWhere('reports.source_name', 'ilike', "%{$query}%");
+                        ->orWhere('reports.source_name', 'ilike', $this->likePattern($query));
                 });
         }
 
