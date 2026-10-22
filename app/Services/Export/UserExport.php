@@ -13,10 +13,10 @@ class UserExport extends Export
     {
         $users = User::whereIn('id', $this->ids)->get();
         $users->each(function ($user) {
-            $user->makeVisible(['password', 'uuid']);
+            $user->makeVisible('uuid');
             // The role should not be exported. All imported users should become editors
             // by default.
-            $user->makeHidden(['role',  'created_at', 'updated_at', 'login_at', 'attrs']);
+            $user->makeHidden(['password', 'role', 'created_at', 'updated_at', 'login_at', 'attrs']);
             $user->append('settings');
         });
 

@@ -2,51 +2,22 @@
 
 namespace Biigle\Http\Controllers\Api\Export;
 
-use Biigle\Services\Export\VolumeExport;
 use Biigle\Volume;
 
 class VolumeExportController extends Controller
 {
-    /**
-     * @api {get} export/volumes Get volume export
-     * @apiGroup Sync
-     * @apiName ShowVolumeExport
-     *
-     * @apiParam (Optional arguments) {String} except Comma separated IDs of the volumes that should not be included in the export file.
-     * @apiParam (Optional arguments) {String} only Comma separated IDs of the volumes that should only be included in the export file.
-     * @apiDescription Exactly one of `except` or `only` must be provided (not both). The response is a ZIP archive that can be used for the volume import.
-     * @apiPermission admin
-     */
-
-    /**
-     * {@inheritdoc}
-     */
     protected function getQuery()
     {
         return Volume::getQuery();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getExport(array $ids)
+    protected function getType(): string
     {
-        return new VolumeExport($ids);
+        return 'volumes';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getExportFilename()
     {
         return 'biigle_volume_export.zip';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function isAllowed()
-    {
-        return in_array('volumes', config('sync.allowed_exports'));
     }
 }

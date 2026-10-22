@@ -3,115 +3,42 @@
 namespace Biigle\Tests\Http\Controllers\Api\Export;
 
 use ApiTestCase;
+use Biigle\ExportFile;
+use Biigle\Jobs\GenerateExportJob;
 use Biigle\Tests\LabelTreeTest;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
 class LabelTreeExportControllerTest extends ApiTestCase
 {
-    public function testShow()
+    public function testRequestGenerateAndDownloadLabelTreeExport(): void
     {
+        Queue::fake();
+        Notification::fake();
+        Storage::fake('test');
+        config(['sync.export_storage_disk' => 'test']);
         $tree = LabelTreeTest::create();
-        $this->doTestApiRoute('GET', '/api/v1/export/label-trees');
-
-        $this->beAdmin();
-        $this->get('/api/v1/export/label-trees')->assertStatus(403);
-
         $this->beGlobalAdmin();
-        $this->getJson('/api/v1/export/label-trees')->assertStatus(422);
 
-        $response = $this->get("/api/v1/export/label-trees?only={$tree->id}")
+        $this->postJson('/api/v1/export/label-trees', ['only' => [$tree->id]])
+            ->assertStatus(201)
+            ->assertJson(['type' => 'labelTrees', 'entity_ids' => [$tree->id], 'ready_at' => null]);
+
+        $export = ExportFile::firstOrFail();
+        Queue::assertPushed(GenerateExportJob::class);
+        (new GenerateExportJob($export))->handle();
+
+        Storage::disk('test')->assertExists("{$export->id}.zip");
+        $zip = new ZipArchive;
+        $zip->open(Storage::disk('test')->path("{$export->id}.zip"));
+        $this->assertSame([$tree->id], array_column(json_decode($zip->getFromName('label_trees.json'), true), 'id'));
+        $zip->close();
+
+        $this->get("/api/v1/export/label-trees/{$export->id}")
             ->assertStatus(200)
-            ->assertHeader('content-type', 'application/zip')
             ->assertHeader('content-disposition', 'attachment; filename=biigle_label_tree_export.zip');
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
-        $this->assertEquals($tree->id, $contents->pluck('id')[0]);
-        $this->assertNotNull($zip->getFromName('users.json'));
-    }
-
-    public function testShowExcept()
-    {
-        $tree1 = LabelTreeTest::create();
-        $tree2 = LabelTreeTest::create();
-        $id = $tree1->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/label-trees?except={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
-        $this->assertEquals($tree2->id, $contents->pluck('id')[0]);
-    }
-
-    public function testShowOnly()
-    {
-        $tree1 = LabelTreeTest::create();
-        $tree2 = LabelTreeTest::create();
-        $id = $tree1->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/label-trees?only={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
-        $this->assertEquals($tree1->id, $contents->pluck('id')[0]);
-    }
-
-    public function testShowOnlyAndExceptMutuallyExclusive()
-    {
-        $tree = LabelTreeTest::create();
-        $id = $tree->id;
-        $this->beGlobalAdmin();
-        $this->getJson("/api/v1/export/label-trees?only={$id}&except={$id}")->assertStatus(422);
-    }
-
-    public function testShowInvalidFilter()
-    {
-        $this->beGlobalAdmin();
-        $this->getJson('/api/v1/export/label-trees?only=,')->assertStatus(422);
-        $this->getJson('/api/v1/export/label-trees?only=abc')->assertStatus(422);
-        $this->getJson('/api/v1/export/label-trees?only=0')->assertStatus(422);
-        $this->getJson('/api/v1/export/label-trees?except=,')->assertStatus(422);
-        $this->getJson('/api/v1/export/label-trees?except=abc')->assertStatus(422);
-        $this->getJson('/api/v1/export/label-trees?except=0')->assertStatus(422);
-    }
-
-    public function testShowOnlyArray()
-    {
-        $tree1 = LabelTreeTest::create();
-        $tree2 = LabelTreeTest::create();
-        $id = $tree1->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/label-trees?only[]={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
-        $this->assertEquals($tree1->id, $contents->pluck('id')[0]);
-        $this->assertCount(1, $contents);
-    }
-
-    public function testShowExceptArray()
-    {
-        $tree1 = LabelTreeTest::create();
-        $tree2 = LabelTreeTest::create();
-        $id = $tree1->id;
-        $this->beGlobalAdmin();
-        $response = $this->get("/api/v1/export/label-trees?except[]={$id}")->assertStatus(200);
-
-        $zip = new ZipArchive;
-        $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
-        $this->assertEquals($tree2->id, $contents->pluck('id')[0]);
-        $this->assertCount(1, $contents);
-    }
-
-    public function testIsAllowed()
-    {
-        config(['sync.allowed_exports' => ['volumes', 'users']]);
-        $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/export/label-trees?only=1')->assertStatus(404);
+        $this->getJson("/api/v1/export/users/{$export->id}")->assertStatus(404);
     }
 }

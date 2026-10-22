@@ -18,7 +18,6 @@ class UserExportTest extends TestCase
             'id' => $user1->id,
             'firstname' => $user1->firstname,
             'lastname' => $user1->lastname,
-            'password' => $user1->password,
             'email' => $user1->email,
             'settings' => ['a' => 'b'],
             'uuid' => $user1->uuid,
@@ -29,5 +28,7 @@ class UserExportTest extends TestCase
 
         $this->assertCount(2, $content);
         $this->assertEquals($expect, $content[0]);
+        $this->assertArrayNotHasKey('password', $content[0]);
+        $this->assertArrayNotHasKey('password', $content[1]);
     }
 }
