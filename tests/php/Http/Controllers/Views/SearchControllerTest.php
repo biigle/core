@@ -250,7 +250,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST);
 
         $image = ImageTest::create(['filename' => 'my image']);
         $project->addVolumeId($image->volume_id);
@@ -270,7 +270,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST);
 
         $image1 = ImageTest::create(['filename' => 'my image']);
         $project->addVolumeId($image1->volume_id);
@@ -294,7 +294,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST);
         $volume = VolumeTest::create();
         $project->addVolumeId($volume->id);
 
