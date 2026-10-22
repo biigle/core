@@ -18,6 +18,7 @@ use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Video;
 use Biigle\Volume;
+use DB;
 use TestCase;
 
 class SearchControllerTest extends TestCase
@@ -232,10 +233,96 @@ class SearchControllerTest extends TestCase
         $response->assertSeeText('other image');
         $response->assertDontSeeText('third image');
 
-        $response = $this->get('search?t=images&q=my')->assertStatus(200);
+        // An empty term arrives as null because of ConvertEmptyStringsToNull,
+        // and must still list everything.
+        $response = $this->get('search?t=images&q=')->assertStatus(200);
+        $response->assertSeeText('my image');
+        $response->assertSeeText('other image');
+        $response->assertDontSeeText('third image');
+
+        $response = $this->get('search?t=images&q=my+i')->assertStatus(200);
         $response->assertSeeText('my image');
         $response->assertDontSeeText('other image');
         $response->assertDontSeeText('third image');
+    }
+
+    public function testIndexAnnotationsQueryTooShort()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::GUEST);
+
+        $image = ImageTest::create(['filename' => 'my image']);
+        $project->addVolumeId($image->volume_id);
+
+        $this->be($user);
+        // A substring match cannot use an index, so terms that are too short to
+        // narrow anything down are rejected instead of scanned.
+        $response = $this->get('search?t=images&q=my')->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertSeeText('at least 3 characters');
+        $response->assertDontSeeText('image results');
+        $this->assertMatchesRegularExpression('/Images <span class="badge">-<\/span>/', $response->getContent());
+        $this->assertMatchesRegularExpression('/Videos <span class="badge">-<\/span>/', $response->getContent());
+    }
+
+    public function testIndexAnnotationsEscapeWildcards()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::GUEST);
+
+        $image1 = ImageTest::create(['filename' => 'my image']);
+        $project->addVolumeId($image1->volume_id);
+        $image2 = ImageTest::create(['filename' => '50%_off\\image']);
+        $project->addVolumeId($image2->volume_id);
+
+        $this->be($user);
+        $response = $this->get('search?t=images&q='.urlencode('%%%'))->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertDontSeeText('50%_off');
+
+        $response = $this->get('search?t=images&q='.urlencode('my_image'))->assertStatus(200);
+        $response->assertDontSeeText('my image');
+
+        $response = $this->get('search?t=images&q='.urlencode('0%_off\\'))->assertStatus(200);
+        $response->assertSeeText('50%_off');
+        $response->assertDontSeeText('my image');
+    }
+
+    public function testIndexAnnotationsCountCapped()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::GUEST);
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume->id);
+
+        $insert = function ($count, $prefix) use ($volume) {
+            DB::insert("INSERT INTO images (filename, uuid, volume_id, tiled) SELECT ? || i, md5(? || i)::uuid, ?, false FROM generate_series(1, ?) i", [
+                $prefix, $prefix, $volume->id, $count,
+            ]);
+        };
+
+        $insert(1000, 'exact');
+
+        $this->be($user);
+        $response = $this->get('search?t=images&q=exact')->assertStatus(200);
+        $response->assertSeeText('1,000 image results');
+        $response->assertDontSeeText('more than');
+
+        $insert(1, 'exact-extra');
+
+        // The cap applies with and without a search term.
+        foreach (['', 'exact'] as $q) {
+            $response = $this->get("search?t=images&q={$q}")->assertStatus(200);
+            $response->assertSeeText('more than 1,000 image results');
+            $this->assertMatchesRegularExpression('/Images <span class="badge">1k\+<\/span>/', $response->getContent());
+        }
+
+        // Paging is bounded by the cap as well.
+        $response = $this->get('search?t=images&q=exact&page=84')->assertStatus(200);
+        $this->assertSame(84, $response->viewData('results')->lastPage());
     }
 
     public function testIndexVideos()
