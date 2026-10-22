@@ -15,7 +15,7 @@
         <dropdown
             v-else
             tag="section"
-            class="annotation-guideline-selector__dropdown"
+            class="selector-dropdown"
             >
             <button
                 type="button"
@@ -39,14 +39,14 @@
                 </li>
             </template>
         </dropdown>
-        <div v-if="modelValue" class="annotation-guideline-selector__info">
+        <div v-if="modelValue" class="info">
             <p v-text="getOptionText(modelValue)"></p>
             <p v-if="restrictedShapes.length > 0">
                 Allowed shapes:
                 <i
                     v-for="shape in restrictedShapes"
                     :key="shape"
-                    class="icon annotation-guideline-selector__shape"
+                    class="icon shape"
                     :class="`icon-${shape.toLowerCase()}`"
                     :title="shape"
                     ></i>
@@ -64,7 +64,8 @@ import {Dropdown} from 'uiv';
 /**
  * Select one of the annotation guidelines that are available for a volume.
  *
- * The choice is remembered per volume so it is shared by all views of the volume.
+ * The choice is remembered per volume so it is shared by all views of the volume (or
+ * per project in project Largo).
  */
 export default {
     emits: ['update:modelValue'],
@@ -85,14 +86,25 @@ export default {
             type: Boolean,
             default: false,
         },
+        // Either a volume or a project ID is required.
         volumeId: {
             type: Number,
-            required: true,
+            default: null,
+        },
+        // Project Largo is not associated with a single volume.
+        projectId: {
+            type: Number,
+            default: null,
+        },
+        // Largo does not create annotations, so the allowed shapes are not relevant.
+        showShapes: {
+            type: Boolean,
+            default: true,
         },
     },
     computed: {
         restrictedShapes() {
-            if (!this.modelValue?.isEnforcedForUser) {
+            if (!this.showShapes || !this.modelValue?.isEnforcedForUser) {
                 return [];
             }
 
@@ -102,6 +114,10 @@ export default {
             return this.guidelines.length > 0;
         },
         storageKey() {
+            if (this.projectId !== null) {
+                return `biigle.projects.${this.projectId}.annotation-guideline`;
+            }
+
             return `biigle.volumes.${this.volumeId}.annotation-guideline`;
         },
         enforcedGuidelines() {
@@ -195,3 +211,22 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+/* The dropdown menu is rendered by the dropdown component. */
+.selector-dropdown :deep(.dropdown-menu) {
+    width: 100%;
+}
+
+.info {
+    margin-top: 10px;
+}
+
+.info p:last-child {
+    margin-bottom: 0;
+}
+
+.shape {
+    margin-left: 4px;
+}
+</style>
