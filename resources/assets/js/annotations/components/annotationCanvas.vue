@@ -790,7 +790,9 @@ export default {
             }
         },
         maybeSwitchToAutomaticTool() {
-            if (!this.hasSelectedLabel) {
+            // Sampling creates annotations with Enter at the sample location, so a draw
+            // tool would only interfere.
+            if (!this.hasSelectedLabel || this.isSamplingAnnotationMode) {
                 return;
             }
 
