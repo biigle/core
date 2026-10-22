@@ -349,7 +349,9 @@ export default {
                 bitmap.close();
             } catch (error) {
                 console.warn("Mediabunny frame decoding failed. Falling back to native seeking. The error was: ", error);
-                this.renderPausedFrameWithNativeSeeking(time);
+                if (!sourceHasChanged()) {
+                    this.renderPausedFrameWithNativeSeeking(time);
+                }
             } finally {
                 this.mediabunnyDecodeCount--;
                 this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
