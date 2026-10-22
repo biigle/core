@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VideoTest;
 
@@ -38,7 +38,7 @@ class FilenamesControllerTest extends ApiTestCase
 
     public function testIndexVideo()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
 
         $video1 = VideoTest::create([
             'volume_id' => $id,

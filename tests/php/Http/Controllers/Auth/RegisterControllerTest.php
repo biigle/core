@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Auth;
 
+use Biigle\Enums\Role;
 use Biigle\Notifications\RegistrationConfirmation;
-use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Honeypot;
@@ -68,7 +68,7 @@ class RegisterControllerTest extends TestCase
         $this->assertSame('a', $user->firstname);
         $this->assertSame('b', $user->lastname);
         $this->assertSame('something', $user->affiliation);
-        $this->assertSame(Role::editorId(), $user->role_id);
+        $this->assertSame(Role::EDITOR, $user->role);
     }
 
     public function testRegisterHoneypot()
@@ -264,7 +264,7 @@ class RegisterControllerTest extends TestCase
             return true;
         });
         $this->assertNotNull($user);
-        $this->assertSame(Role::guestId(), $user->role_id);
+        $this->assertSame(Role::GUEST, $user->role);
     }
 
     public function testRegisterAdminConfirmationPossibleDuplicates()

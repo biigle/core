@@ -135,7 +135,6 @@ class SearchController extends Controller
 
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
-            /** @phpstan-ignore argument.type */
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
                 /** @phpstan-ignore property.notFound */
                 if ($item->external) {
@@ -209,7 +208,6 @@ class SearchController extends Controller
 
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
-            /** @phpstan-ignore argument.type */
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
                 /** @phpstan-ignore property.notFound */
                 if ($item->external) {
@@ -277,7 +275,6 @@ class SearchController extends Controller
 
             $external = FederatedSearchModel::whereIn('id', $collection->where('external', true)->pluck('id'))->get()->keyBy('id');
 
-            /** @phpstan-ignore argument.type */
             $results->setCollection($collection->map(function ($item) use ($internal, $external) {
                 /** @phpstan-ignore property.notFound */
                 if ($item->external) {

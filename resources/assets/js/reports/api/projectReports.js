@@ -8,7 +8,7 @@ import {Resource} from 'vue-resource';
  * Request a basic annotation report:
  *
  * resource.save({id: 1}, {
- *     type_id: 2,
+ *     type: 2,
  *     export_area: 1,
  *     separate_label_trees: 0,
  * }).then(...)

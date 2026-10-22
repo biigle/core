@@ -2,14 +2,15 @@
 
 namespace Biigle\Tests\Jobs;
 
+use Biigle\Enums\Shape;
 use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
 use Biigle\Image;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ProcessAnnotatedImage;
-use Biigle\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
 use Bus;
 use Exception;
 use FileCache;
@@ -38,7 +39,7 @@ class ProcessAnnotatedImageTest extends TestCase
     {
         $disk = Storage::fake('test');
         $image = $this->getImageMock();
-        $annotation = ImageAnnotationTest::create(['shape_id' => Shape::pointId()]);
+        $annotation = ImageAnnotationTest::create(['shape' => Shape::POINT]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
 
@@ -61,7 +62,7 @@ class ProcessAnnotatedImageTest extends TestCase
     {
         $disk = Storage::fake('test2');
         $image = $this->getImageMock();
-        $annotation = ImageAnnotationTest::create(['shape_id' => Shape::pointId()]);
+        $annotation = ImageAnnotationTest::create(['shape' => Shape::POINT]);
         $job = new ProcessAnnotatedImageStub($annotation->image, targetDisk: 'test2');
         $job->mock = $image;
 
@@ -87,7 +88,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [100, 100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -116,7 +117,7 @@ class ProcessAnnotatedImageTest extends TestCase
             // Make the circle large enough so the crop is not affected by the minimum
             // dimension.
             'points' => [300.4, 300.4, 200],
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -142,7 +143,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [300, 300, 200, 200, 300, 200, 300, 300],
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -168,7 +169,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [300, 300, 200, 200, 300, 200],
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -196,7 +197,7 @@ class ProcessAnnotatedImageTest extends TestCase
             // Make the rectangle large enough so the crop is not affected by the minimum
             // dimension.
             'points' => [100, 100, 100, 300, 300, 300, 300, 100],
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -222,7 +223,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [100, 100, 100, 300, 300, 300, 300, 100],
-            'shape_id' => Shape::ellipseId(),
+            'shape' => Shape::ELLIPSE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -248,7 +249,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [0, 0],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -269,7 +270,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [1000, 750],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -293,7 +294,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $annotation = ImageAnnotationTest::create([
             'points' => [50, 50],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -314,7 +315,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
             'points' => [60, 60, 10],
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -337,7 +338,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image->height = 25;
         $annotation = ImageAnnotationTest::create([
             'points' => [10, 10, 15],
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -360,7 +361,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image->height = 25;
         $annotation = ImageAnnotationTest::create([
             'points' => [15, 15, 15],
-            'shape_id' => Shape::circleId(),
+            'shape' => Shape::CIRCLE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -466,7 +467,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image->shouldReceive('writeToBuffer')->andReturn('abc123');
         $annotation = ImageAnnotationTest::create([
             'points' => [200, 200],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         $annotationLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -495,7 +496,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image->shouldReceive('writeToBuffer')->andReturn('abc123');
         $annotation = ImageAnnotationTest::create([
             'points' => [200, 200],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         $annotationLabel1 = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -518,6 +519,36 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertSame(range(0, 383), $vectors[1]->vector->toArray());
     }
 
+    public function testGenerateFeatureVectorBatches()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(3);
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = ImageTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 3; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $file->id, 'points' => [200, 200], 'shape' => Shape::POINT]);
+            $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        // The labels of one annotation may be split across batches.
+        $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+
+        $job = new ProcessAnnotatedImageBatchStub($file);
+        $job->mock = $image;
+        $job->handle();
+
+        $vectors = ImageAnnotationLabelFeatureVector::orderBy('id')->get();
+        $this->assertSame(array_map(fn ($al) => $al->id, $annotationLabels), $vectors->pluck('id')->all());
+        foreach ($vectors as $index => $vector) {
+            $this->assertSame($annotationLabels[$index]->annotation_id, $vector->annotation_id);
+            $this->assertSame($annotationLabels[$index]->label_id, $vector->label_id);
+            $this->assertSame($annotationLabels[$index]->label->label_tree_id, $vector->label_tree_id);
+            $this->assertSame($file->volume_id, $vector->volume_id);
+            $this->assertSame(range(0, 383), $vector->vector->toArray());
+        }
+    }
+
     public function testGenerateFeatureVectorUpdate()
     {
         Storage::fake('test');
@@ -526,7 +557,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image->shouldReceive('writeToBuffer')->andReturn('abc123');
         $annotation = ImageAnnotationTest::create([
             'points' => [200, 200],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         $annotationLabel = ImageAnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -557,6 +588,80 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertSame(range(1, 384), $iafv2->fresh()->vector->toArray());
     }
 
+    public function testGenerateFeatureVectorDeletedAnnotationLabel()
+    {
+        Storage::fake('test');
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape' => Shape::POINT,
+        ]);
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new ProcessAnnotatedImageStub(
+            $annotation->image,
+            skipPatches: true,
+            skipSvgs: true
+        );
+        // The labels are already loaded at this point, so this simulates a label that
+        // is deleted while the feature vector is generated.
+        $job->beforePyworkerRequest = fn () => $annotationLabel->delete();
+
+        $job->handle();
+        $this->assertSame(0, ImageAnnotationLabelFeatureVector::count());
+    }
+
+    public function testGenerateFeatureVectorDeletedAnnotationLabelInBatch()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(3);
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = ImageTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 3; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $file->id, 'points' => [200, 200], 'shape' => Shape::POINT]);
+            $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        $deleted = $annotationLabels[1];
+
+        $job = new ProcessAnnotatedImageStub($file);
+        $job->mock = $image;
+        // The labels are already loaded at this point, so this simulates a label that
+        // is deleted while the feature vectors are generated. All feature vectors are
+        // in the same batch, so the batch fails and each row must be retried.
+        $job->beforePyworkerRequest = fn () => $deleted->delete();
+        $job->handle();
+
+        $expect = [$annotationLabels[0]->id, $annotationLabels[2]->id];
+        $this->assertSame($expect, ImageAnnotationLabelFeatureVector::orderBy('id')->pluck('id')->all());
+    }
+
+    public function testGenerateFeatureVectorDeletedAnnotationLabelMultipleBatches()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(4);
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = ImageTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 4; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $file->id, 'points' => [200, 200], 'shape' => Shape::POINT]);
+            $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        $deleted = $annotationLabels[0];
+
+        $job = new ProcessAnnotatedImageBatchStub($file);
+        $job->mock = $image;
+        // Only the first batch contains the deleted label. The following batch must
+        // still be written.
+        $job->beforePyworkerRequest = fn () => $deleted->delete();
+        $job->handle();
+
+        $expect = array_map(fn ($al) => $al->id, array_slice($annotationLabels, 1));
+        $this->assertSame($expect, ImageAnnotationLabelFeatureVector::orderBy('id')->pluck('id')->all());
+    }
+
     public function testHandlePatchOnly()
     {
         $disk = Storage::fake('test');
@@ -566,7 +671,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $annotation = ImageAnnotationTest::create([
             'points' => [200, 200],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
         $job = new ProcessAnnotatedImageStub(
@@ -588,7 +693,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk = Storage::fake('test');
         $annotation = ImageAnnotationTest::create([
             'points' => [200, 200],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
         $job = new ProcessAnnotatedImageStub(
@@ -611,7 +716,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $annotation = ImageAnnotationTest::create([
             'points' => [200, 200],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
         $job = new ProcessAnnotatedImageStub(
@@ -633,12 +738,12 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock(2);
         $annotation1 = ImageAnnotationTest::create([
             'points' => [100, 100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
         $annotation2 = ImageAnnotationTest::create([
             'points' => [120, 120],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'image_id' => $annotation1->image_id,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
@@ -666,12 +771,12 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock(1);
         $annotation1 = ImageAnnotationTest::create([
             'points' => [100, 100],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation1->id]);
         $annotation2 = ImageAnnotationTest::create([
             'points' => [120, 120],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'image_id' => $annotation1->image_id,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation2->id]);
@@ -702,7 +807,7 @@ class ProcessAnnotatedImageTest extends TestCase
             // This is a real-world example where someone managed to create a zero-sized
             // rectangle.
             'points' => [844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44, 844.69, 1028.44],
-            'shape_id' => Shape::rectangleId(),
+            'shape' => Shape::RECTANGLE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
         $job->mock = $image;
@@ -729,7 +834,7 @@ class ProcessAnnotatedImageTest extends TestCase
         ]);
         $annotation = ImageAnnotationTest::create([
             'points' => [20000, 20000],
-            'shape_id' => Shape::pointId(),
+            'shape' => Shape::POINT,
             'image_id' => $image->id,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
@@ -760,7 +865,7 @@ class ProcessAnnotatedImageTest extends TestCase
         ]);
         $annotation = ImageAnnotationTest::create([
             'points' => [0, 0, 10000, 0, 10000, 10000, 0, 10000, 0, 0],
-            'shape_id' => Shape::polygonId(),
+            'shape' => Shape::POLYGON,
             'image_id' => $image->id,
         ]);
         ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
@@ -785,7 +890,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $image = $this->getImageMock(0);
         $annotation = ImageAnnotationTest::create([
             'points' => [300, 300, 400, 300],
-            'shape_id' => Shape::lineId(),
+            'shape' => Shape::LINE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image, skipPatches: true, skipSvgs: true);
         $job->mock = $image;
@@ -815,6 +920,7 @@ class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
     public $mock;
     public $featureVector;
     public $capturedCropBoxes = [];
+    public $beforePyworkerRequest;
 
     public function getVipsImage(string $path, array $options = [])
     {
@@ -837,6 +943,15 @@ class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
 
     protected function sendPyworkerRequest(string $buffer): array
     {
+        if ($this->beforePyworkerRequest) {
+            ($this->beforePyworkerRequest)();
+        }
+
         return $this->featureVector ?: range(0, 383);
     }
+}
+
+class ProcessAnnotatedImageBatchStub extends ProcessAnnotatedImageStub
+{
+    const FEATURE_VECTOR_BATCH_SIZE = 2;
 }

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\Shape;
+use Biigle\Enums\Shape;
 use Biigle\Video;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +19,7 @@ class VideoAnnotationFactory extends Factory
             'frames' => [],
             'points' => [],
             'video_id' => Video::factory(),
-            'shape_id' => Shape::factory(),
+            'shape' => Shape::POINT,
         ];
     }
 }

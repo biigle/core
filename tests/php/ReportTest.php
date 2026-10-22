@@ -19,7 +19,7 @@ class ReportTest extends ModelTestCase
     public function testAttributes()
     {
         $this->assertNotNull($this->model->user_id);
-        $this->assertNotNull($this->model->type_id);
+        $this->assertNotNull($this->model->type);
         $this->assertNotNull($this->model->source_id);
         $this->assertNotNull($this->model->source_type);
         $this->assertNotNull($this->model->created_at);

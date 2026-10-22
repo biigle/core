@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
+use Biigle\Enums\Shape;
 use Biigle\PendingVolume;
 use Biigle\Services\MetadataParsing\ImageAnnotation;
 use Biigle\Services\MetadataParsing\ImageMetadata;
@@ -10,7 +11,6 @@ use Biigle\Services\MetadataParsing\Label;
 use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
-use Biigle\Shape;
 use Illuminate\Support\Facades\Cache;
 
 class PendingVolumeControllerTest extends ApiTestCase
@@ -191,7 +191,7 @@ class PendingVolumeControllerTest extends ApiTestCase
         $user = new User(321, 'joe user');
         $lau = new LabelAndUser($label, $user);
         $annotation = new ImageAnnotation(
-            shape: Shape::point(),
+            shape: Shape::POINT,
             points: [10, 10],
             labels: [$lau],
         );
