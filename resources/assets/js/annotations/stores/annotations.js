@@ -78,15 +78,20 @@ class Annotations {
         annotation.shape = this.inverseShapeMap[annotation.shape];
 
         return ImagesApi.saveAnnotations({id: imageId}, annotation)
-            .then(this.parseResponse.bind(this))
-            .then(this.resolveShape.bind(this))
-            .then(this.setDeselected.bind(this))
-            .then((annotation) => {
-                this.cache[imageId].then(function (annotations) {
-                    annotations.unshift(annotation);
-                });
+            .then((response) =>  {
+                // If LabelBOT is active and returns no result we receive 204 and return null
+                if (response.status === 204) return null;
 
-                return annotation;
+                return Promise.resolve(this.parseResponse(response))
+                    .then(this.resolveShape.bind(this))
+                    .then(this.setDeselected.bind(this))
+                    .then((annotation) => {
+                        this.cache[imageId].then(function (annotations) {
+                            annotations.unshift(annotation);
+                        });
+
+                        return annotation;
+                    });
             });
     }
 

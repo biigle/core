@@ -243,7 +243,7 @@ export default {
             // decimals. otherwise the comparison below may not work correctly.
             // Example: 12.3 is smaller than 12.33 although the comparison expects
             // it to be equal.
-            return Math.round(t * 1e4) / 1e4
+            return Math.round(t * 1e4) / 1e4;
         },
         startUpdateLoop() {
             let now = Date.now();
@@ -279,7 +279,7 @@ export default {
 
             if (this.watchForCrossedFrame && time >= startFrame) {
                 this.watchForCrossedFrame = false;
-                this.$emit('reached-annotation', this.nextAnnotationStartFrame)
+                this.$emit('reached-annotation', this.nextAnnotationStartFrame);
                 this.findNextAnnotationStartFrame(this.nextAnnotationStartFrame);
             }
 

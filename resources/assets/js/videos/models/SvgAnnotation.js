@@ -68,7 +68,7 @@ export default class SvgAnnotation {
             if (s.gap) {
                 this._drawGap(s);
             } else {
-                const singleAfterGap = hasSingleAfterGap && i === (segments.length - 1)
+                const singleAfterGap = hasSingleAfterGap && i === (segments.length - 1);
                 this._drawSegment(s, singleAfterGap);
             }
         });
@@ -239,7 +239,7 @@ export default class SvgAnnotation {
             } else if (k.hasClass('svg-keyframe--selected')) {
                 k.attr({fill: this.fill}).removeClass('svg-keyframe--selected');
             }
-        })
+        });
     }
 
     _drawBorder(strokeWidth) {

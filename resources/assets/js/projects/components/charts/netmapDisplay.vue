@@ -38,7 +38,7 @@ export default {
                 color: null
             },
             selectedNodeId: null,
-        }
+        };
     },
     methods: {
         toggleForceLayout() {
@@ -137,7 +137,7 @@ export default {
                 nodes: nodes,
                 categories: cat,
                 links: this.createLinks(),
-            }
+            };
         },
         option() {
             return {
