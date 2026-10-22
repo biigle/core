@@ -104,7 +104,7 @@ export default {
     },
     computed: {
         restrictedShapes() {
-            if (!this.showShapes || !this.modelValue?.isEnforcedForUser) {
+            if (!this.showShapes || !this.modelValue?.isEnforced) {
                 return [];
             }
 
@@ -121,7 +121,7 @@ export default {
             return `biigle.volumes.${this.volumeId}.annotation-guideline`;
         },
         enforcedGuidelines() {
-            return this.guidelines.filter(g => g.isEnforcedForUser);
+            return this.guidelines.filter(g => g.isEnforced);
         },
         hasSingleEnforcedGuideline() {
             return this.mustUseGuideline && this.enforcedGuidelines.length === 1;
@@ -139,7 +139,7 @@ export default {
     },
     methods: {
         getOptionText(guideline) {
-            if (guideline.isEnforcedForUser) {
+            if (guideline.isEnforced) {
                 return `Project: ${guideline.project.name} (enforced)`;
             }
 
@@ -184,6 +184,10 @@ export default {
         },
     },
     created() {
+        if (this.volumeId === null && this.projectId === null) {
+            throw new Error('The annotation guideline selector requires a volume or project ID.');
+        }
+
         if (!this.hasGuidelines) {
             return;
         }
@@ -200,8 +204,6 @@ export default {
             return;
         }
 
-        // A guideline must be used even if there are informational guidelines of
-        // projects where the user is a guest, as these don't count for mustUseGuideline.
         if (this.mustUseGuideline || this.enforcedGuidelines.length === this.guidelines.length) {
             this.select(this.enforcedGuidelines[0]?.id ?? null);
             return;

@@ -134,7 +134,7 @@ export default {
     computed: {
         // Informational guidelines only affect what is shown and are not sent.
         annotationGuidelineId() {
-            if (this.annotationGuideline?.isEnforcedForUser) {
+            if (this.annotationGuideline?.isEnforced) {
                 return this.annotationGuideline.id;
             }
 

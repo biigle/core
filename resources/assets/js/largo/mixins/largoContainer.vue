@@ -226,7 +226,7 @@ export default {
         },
         // Choosing the label whose annotations should be reviewed is not restricted.
         enforceGuideline() {
-            return this.isInRelabelStep && !!this.annotationGuideline?.isEnforcedForUser;
+            return this.isInRelabelStep && !!this.annotationGuideline?.isEnforced;
         },
         showLabelIndicator() {
             if (!this.selectedLabel) {

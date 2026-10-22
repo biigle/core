@@ -41,7 +41,8 @@ class AnnotationGuidelineServiceTest extends TestCase
     {
         $g1 = $this->createGuideline($this->editorProject, true);
         $g2 = $this->createGuideline($this->expertProject, false);
-        $g3 = $this->createGuideline($this->guestProject, true);
+        // The user can't annotate in the project.
+        $this->createGuideline($this->guestProject, true);
         $this->createGuideline($this->otherProject, true);
 
         $ids = $this->service->getGuidelines($this->user, $this->volume->id)
@@ -50,24 +51,7 @@ class AnnotationGuidelineServiceTest extends TestCase
             ->values()
             ->all();
 
-        $this->assertSame([$g1->id, $g2->id, $g3->id], $ids);
-    }
-
-    public function testGetGuidelinesEnforcedForUser()
-    {
-        $g1 = $this->createGuideline($this->editorProject, true);
-        $g2 = $this->createGuideline($this->expertProject, false);
-        $g3 = $this->createGuideline($this->guestProject, true);
-
-        $guidelines = $this->service->getGuidelines($this->user, $this->volume->id)
-            ->keyBy('id');
-
-        $this->assertTrue($guidelines[$g1->id]->enforced_for_user);
-        // Not enforced.
-        $this->assertFalse($guidelines[$g2->id]->enforced_for_user);
-        // The user can't annotate in the project.
-        $this->assertFalse($guidelines[$g3->id]->enforced_for_user);
-        $this->assertArrayNotHasKey('project_role', $guidelines[$g1->id]->toArray());
+        $this->assertSame([$g1->id, $g2->id], $ids);
     }
 
     public function testGetGuidelinesMemoized()

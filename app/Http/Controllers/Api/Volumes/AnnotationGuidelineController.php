@@ -16,7 +16,7 @@ class AnnotationGuidelineController extends Controller
      * @apiGroup Volumes
      * @apiName IndexVolumeAnnotationGuidelines
      * @apiPermission projectMember
-     * @apiDescription Returns the annotation guidelines of all projects that the user and the volume have in common. `enforced_for_user` indicates whether the guideline is enforced and the user can create annotations in the project of the guideline. The ID of a guideline with `enforced_for_user: true` can be sent as `guideline_id` when annotations are created or modified and when labels are attached files. If `must_use_guideline` is true, a `guideline_id` is required.
+     * @apiDescription Returns the annotation guidelines of all projects that the user and the volume have in common and where the user can create annotations. The ID of an enforced guideline can be sent as `guideline_id` when annotations are created or modified and when labels are attached files. If `must_use_guideline` is true, a `guideline_id` is required.
      *
      * @apiParam {Number} id The volume ID.
      *
@@ -30,7 +30,6 @@ class AnnotationGuidelineController extends Controller
      *       "description": "guideline description",
      *       "enforced": true,
      *       "only_shapes": [1, 3],
-     *       "enforced_for_user": true,
      *       "labels": [{
      *         "id": 4,
      *         "name": "some label",

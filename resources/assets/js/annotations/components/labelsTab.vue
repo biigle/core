@@ -81,7 +81,7 @@ export default {
             return this.guideline?.labelIds ?? [];
         },
         enforceGuideline() {
-            return !!this.guideline?.isEnforcedForUser;
+            return !!this.guideline?.isEnforced;
         },
         labelbotIsActive() {
             return this.labelbotState !== LABELBOT_STATES.OFF && !this.labelbotIsDisabled;

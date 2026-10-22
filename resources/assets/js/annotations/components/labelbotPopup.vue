@@ -29,7 +29,7 @@
                     <span>{{ label.name }}</span>
                     <span class="labelbot-label__indicators">
                         <i
-                            v-if="guideline && !guideline.isEnforcedForUser && guideline.hasLabel(label.id)"
+                            v-if="guideline && !guideline.isEnforced && guideline.hasLabel(label.id)"
                             class="fa fa-fw fa-clipboard-list"
                             title="This label is included in the annotation guideline"
                             ></i>

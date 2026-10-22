@@ -1,9 +1,8 @@
 /**
  * An annotation guideline as returned by the volume annotation guidelines endpoint.
  *
- * The methods mirror the AnnotationGuideline Eloquent model. In contrast to the backend,
- * a guideline is only enforced if it is enforced for the current user (see
- * enforced_for_user). Shapes are identified by their names instead of IDs.
+ * The methods mirror the AnnotationGuideline Eloquent model. Shapes are identified by
+ * their names instead of IDs.
  */
 import {markRaw} from 'vue';
 
@@ -29,8 +28,12 @@ export default class AnnotationGuideline {
             || value.constructor.name === AnnotationGuideline.name;
     }
 
-    get isEnforcedForUser() {
-        return this.enforced_for_user === true;
+    /**
+     * The user's project role is not checked here because the backend only provides
+     * guidelines of projects where the user can create annotations.
+     */
+    get isEnforced() {
+        return this.enforced === true;
     }
 
     get labelIds() {
@@ -82,7 +85,7 @@ export default class AnnotationGuideline {
      * Determine if the guideline allows the label.
      */
     allowsLabel(labelId) {
-        if (!this.isEnforcedForUser || this.labels.length === 0) {
+        if (!this.isEnforced || this.labels.length === 0) {
             return true;
         }
 
@@ -115,7 +118,7 @@ export default class AnnotationGuideline {
     }
 
     computeAllowedShapes(labelId) {
-        if (!this.isEnforcedForUser) {
+        if (!this.isEnforced) {
             return null;
         }
 

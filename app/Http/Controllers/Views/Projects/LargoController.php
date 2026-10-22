@@ -40,12 +40,11 @@ class LargoController extends Controller
         $shapes = Shape::pluckById();
 
         // Project Largo sessions always apply the enforced guideline of the project
-        // (see StoreProjectLargoSession), so other guidelines are not offered and the
-        // guideline is enforced for all users who can open the view.
+        // (see StoreProjectLargoSession), so other guidelines are not offered. This
+        // includes global admins without a project role.
         $annotationGuidelines = $project->annotationGuideline()
             ->with('labels', 'project:id,name')
-            ->get()
-            ->each(fn ($guideline) => $guideline->enforced_for_user = $guideline->enforced);
+            ->get();
 
         $mustUseAnnotationGuideline = $annotationGuidelines->contains('enforced', true);
 

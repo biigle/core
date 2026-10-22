@@ -6,7 +6,6 @@ use Biigle\AnnotationGuideline;
 use Biigle\Enums\Role;
 use Biigle\Project;
 use Biigle\User;
-use DB;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -18,39 +17,20 @@ class AnnotationGuidelineService
 {
     /**
      * Get the guidelines (enforced and informational) of the projects that the user and
-     * the volume have in common.
+     * the volume have in common and where the user can create annotations.
      *
-     * Each guideline has the additional attribute `enforced_for_user`. It is true if the
-     * guideline is enforced and the user can create annotations in the project of the
-     * guideline. Only these guidelines can be chosen for new annotations. All other
-     * guidelines are informational for the user.
+     * Guidelines of projects where the user can't create annotations (e.g. as guest) are
+     * omitted because they can't be used and their labels may not be available to the
+     * user.
      *
      * @return Collection<int, AnnotationGuideline>
      */
     public function getGuidelines(User $user, int $volumeId): Collection
     {
-        return once(function () use ($user, $volumeId) {
-            $editRoles = $this->getEditRoles();
-
-            return AnnotationGuideline::whereIn(
-                'project_id',
-                Project::inCommon($user, $volumeId)->select('id')
-            )
-                ->addSelect([
-                    'project_role' => DB::table('project_user')
-                        ->select('project_role')
-                        ->whereColumn('project_id', 'annotation_guidelines.project_id')
-                        ->where('user_id', $user->id),
-                ])
-                ->get()
-                ->each(function (AnnotationGuideline $guideline) use ($editRoles) {
-                    // The subselect is not cast so it has to be converted to the enum.
-                    $role = Role::tryFrom((int) $guideline->project_role);
-                    $guideline->enforced_for_user = $guideline->enforced
-                        && in_array($role, $editRoles, true);
-                    unset($guideline->project_role);
-                });
-        });
+        return once(fn () => AnnotationGuideline::whereIn(
+            'project_id',
+            Project::inCommon($user, $volumeId, $this->getEditRoles())->select('id')
+        )->get());
     }
 
     /**
