@@ -782,7 +782,7 @@ export default {
                 || this.annotationGuideline.allowsShape(shape, this.selectedLabel?.id);
         },
         getShapeToolTitle(shape, title) {
-            return this.isShapeAllowed(shape) ? title : 'Not allowed by the annotation guideline';
+            return this.isShapeAllowed(shape) ? title : 'This shape is not allowed by the annotation guideline';
         },
         maybeResetDisallowedTool() {
             if (this.interactionModeShape && !this.isShapeAllowed(this.interactionModeShape)) {
