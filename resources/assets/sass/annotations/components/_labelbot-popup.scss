@@ -67,7 +67,6 @@
 
 .labelbot-label__keyboard {
     display: none;
-    color: $text-muted;
 }
 
 .labelbot-popup-grab-area {
@@ -107,7 +106,7 @@
             color: white;
             cursor: pointer;
 
-            .labelbot-label__keyboard {
+            .labelbot-label__indicators {
                 color: white;
             }
         }

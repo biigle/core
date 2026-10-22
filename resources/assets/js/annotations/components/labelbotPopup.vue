@@ -29,7 +29,7 @@
                     <span>{{ label.name }}</span>
                     <span class="labelbot-label__indicators">
                         <i
-                            v-if="guideline?.hasLabel(label.id)"
+                            v-if="guideline && !guideline.isEnforcedForUser && guideline.hasLabel(label.id)"
                             class="fa fa-fw fa-clipboard-list"
                             title="This label is included in the annotation guideline"
                             ></i>
@@ -228,7 +228,7 @@ export default {
         },
         getLabelTitle(label) {
             if (this.guideline && !this.guideline.allowsLabel(label.id)) {
-                return `The label ${label.name} is not allowed by the annotation guideline`;
+                return 'The label cannot be selected because it is not allowed by the annotation guideline';
             }
 
             if (!this.canChoose(label)) {
