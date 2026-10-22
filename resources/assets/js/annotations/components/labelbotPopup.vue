@@ -108,7 +108,7 @@ export default {
         },
         // The selected annotation guideline.
         guideline: {
-            type: AnnotationGuideline,
+            validator: AnnotationGuideline.validate,
             default: null,
         },
     },

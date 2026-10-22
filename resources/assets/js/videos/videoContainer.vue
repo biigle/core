@@ -1,5 +1,6 @@
 <script>
 import Annotation from './models/Annotation.js';
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import AnnotationsTab from './components/viaAnnotationsTab.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
@@ -120,6 +121,9 @@ export default {
             autoPauseTimeout: 0,
             autoPauseTimeoutId: undefined,
             projectIds: [],
+            annotationGuidelines: [],
+            mustUseAnnotationGuideline: false,
+            annotationGuideline: null,
         };
     },
     provide() {
@@ -128,6 +132,14 @@ export default {
         };
     },
     computed: {
+        // Informational guidelines only affect what is shown and are not sent.
+        annotationGuidelineId() {
+            if (this.annotationGuideline?.isEnforcedForUser) {
+                return this.annotationGuideline.id;
+            }
+
+            return null;
+        },
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.isSelected);
         },
@@ -353,6 +365,10 @@ export default {
                 newAnnotation.track = true;
             }
 
+            if (this.annotationGuidelineId) {
+                newAnnotation.guideline_id = this.annotationGuidelineId;
+            }
+
             if (!this.labelbotIsActive) {
                 newAnnotation.label_id = this.selectedLabel.id;
 
@@ -427,6 +443,9 @@ export default {
         handleDeselectedLabel() {
             this.handleSelectedLabel(null);
         },
+        handleSelectedAnnotationGuideline(guideline) {
+            this.annotationGuideline = guideline;
+        },
         // This is used when the video popout is open and no videoScreen with the delete
         // event handler exists in this window.
         deleteSelectedAnnotationsOrKeyframes() {
@@ -493,7 +512,7 @@ export default {
             annotation.split(time).then(this.addCreatedAnnotation, handleErrorResponse);
         },
         linkAnnotations(annotations) {
-            annotations[0].link(annotations[1])
+            annotations[0].link(annotations[1], this.annotationGuidelineId)
                 .then(() => this.removeAnnotation(annotations[1]))
                 .catch(handleErrorResponse);
         },
@@ -556,7 +575,7 @@ export default {
         },
         attachAnnotationLabel(annotation) {
             annotation
-                .attachAnnotationLabel(this.selectedLabel)
+                .attachAnnotationLabel(this.selectedLabel, this.annotationGuidelineId)
                 .catch(handleErrorResponse);
         },
         swapAnnotationLabel(annotation, options) {
@@ -569,7 +588,7 @@ export default {
 
             // Can't use this.attachAnnotationLabel() because detachAnnotationLabel()
             // should not be called on error.
-            annotation.attachAnnotationLabel(newLabel)
+            annotation.attachAnnotationLabel(newLabel, this.annotationGuidelineId)
                 .then(() => {
                     if (lastLabel) {
                         this.detachAnnotationLabel(annotation, lastLabel);
@@ -954,6 +973,9 @@ export default {
         this.user = biigle.$require('videos.user');
         this.videoFilenames = biigle.$require('videos.videoFilenames');
         this.projectIds = biigle.$require('videos.projectIds');
+        this.annotationGuidelines = biigle.$require('videos.annotationGuidelines')
+            .map(g => new AnnotationGuideline(g, shapes));
+        this.mustUseAnnotationGuideline = biigle.$require('videos.mustUseAnnotationGuideline');
 
         this.restoreUrlParams();
         this.video.muted = this.settings.muteVideo;

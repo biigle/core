@@ -20,6 +20,15 @@ export default class AnnotationGuideline {
         this.allowedShapesCache = markRaw(new Map());
     }
 
+    /**
+     * Prop validator. In the video popout, guidelines are objects of the main window
+     * whose class is a different one than the class of the popout, so instanceof fails.
+     */
+    static validate(value) {
+        return value instanceof AnnotationGuideline
+            || value.constructor.name === AnnotationGuideline.name;
+    }
+
     get isEnforcedForUser() {
         return this.enforced_for_user === true;
     }
@@ -106,9 +115,12 @@ export default class AnnotationGuideline {
             return null;
         }
 
-        const labelShape = this.getLabelShape(labelId);
-        if (labelShape) {
-            return new Set([labelShape]);
+        const labelShapeId = this.getLabel(labelId)?.shape;
+        if (labelShapeId) {
+            const labelShape = this.shapeNames[labelShapeId];
+            // The shape may not be available in the current tool (e.g. Ellipse in the
+            // video annotation tool) so no shape can be used for the label.
+            return labelShape ? new Set([labelShape]) : new Set();
         }
 
         if (!this.only_shapes) {
