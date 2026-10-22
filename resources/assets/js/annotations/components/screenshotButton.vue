@@ -114,6 +114,47 @@ export default {
             ctx.fillStyle = '#FFF';
             ctx.fillText(text, centerX, y);
         },
+        drawPersistentLabelTooltips(canvas) {
+            const viewport = this.map.getViewport();
+            const viewportRect = viewport.getBoundingClientRect();
+            const scaleX = canvas.width / viewportRect.width;
+            const scaleY = canvas.height / viewportRect.height;
+            const ctx = canvas.getContext('2d');
+
+            ctx.save();
+            ctx.scale(scaleX, scaleY);
+            viewport.querySelectorAll('.annotation-tooltip--persistent').forEach(tooltip => {
+                const box = tooltip.querySelector('.annotation-tooltip__annotations > li');
+                const boxRect = box.getBoundingClientRect();
+                const boxStyle = window.getComputedStyle(box);
+                const x = boxRect.left - viewportRect.left;
+                const y = boxRect.top - viewportRect.top;
+                const radius = parseFloat(boxStyle.borderRadius);
+
+                ctx.beginPath();
+                ctx.roundRect(x, y, boxRect.width, boxRect.height, radius);
+                ctx.fillStyle = boxStyle.backgroundColor;
+                ctx.fill();
+                ctx.lineWidth = parseFloat(boxStyle.borderTopWidth);
+                ctx.strokeStyle = boxStyle.borderTopColor;
+                ctx.stroke();
+
+                box.querySelectorAll('.annotation-tooltip__labels > li').forEach(label => {
+                    const labelRect = label.getBoundingClientRect();
+                    const labelStyle = window.getComputedStyle(label);
+                    ctx.font = labelStyle.font;
+                    ctx.fillStyle = labelStyle.color;
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(
+                        label.textContent,
+                        labelRect.left - viewportRect.left,
+                        labelRect.top - viewportRect.top + labelRect.height / 2
+                    );
+                });
+            });
+            ctx.restore();
+        },
         makeBlob(canvas) {
             try {
                 canvas = trimCanvas(canvas);
@@ -158,6 +199,7 @@ export default {
             clone.height = canvas.height;
             const ctx = clone.getContext('2d');
             ctx.drawImage(canvas, 0, 0);
+            this.drawPersistentLabelTooltips(clone);
 
             this.makeBlob(clone).then(this.download).catch(this.handleError);
         },

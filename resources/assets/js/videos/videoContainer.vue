@@ -22,6 +22,7 @@ import {handleErrorResponse} from '@/core/messages/store.js';
 import {computed, markRaw} from 'vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
 import {AUTO_PAUSE_INDEFINITE} from './components/settingsTab.vue';
+import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 
 class VideoError extends Error {}
 class VideoNotProcessedError extends VideoError {}
@@ -70,7 +71,7 @@ export default {
                 showMinimap: true,
                 autoplayDraw: 0,
                 autoPause: 0,
-                showLabelTooltip: false,
+                showLabelTooltip: LABEL_TOOLTIP_MODES.OFF,
                 showMousePosition: false,
                 playbackRate: 1.0,
                 jumpStep: 5.0,
