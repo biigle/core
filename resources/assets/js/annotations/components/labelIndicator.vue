@@ -6,7 +6,7 @@
     </span>
     <div v-if="hasGuidelineInfo" class="label-indicator__guideline text-muted">
         <div v-if="guidelineLabelShape">
-            <span v-if="guideline?.isEnforcedForUser">
+            <span v-if="guideline.isEnforcedForUser">
                 Allowed shape:
             </span>
             <span v-else>

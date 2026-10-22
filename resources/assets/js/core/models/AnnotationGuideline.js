@@ -37,9 +37,13 @@ export default class AnnotationGuideline {
         return this.labels.map(label => label.id);
     }
 
-    // Names of the shapes of only_shapes or an empty array if there are none.
+    // Names of the shapes of only_shapes or an empty array if there are none. Shapes
+    // that are not available in the current tool (e.g. Ellipse in the video annotation
+    // tool) are omitted, as they can't be used anyway.
     get onlyShapeNames() {
-        return (this.only_shapes ?? []).map(id => this.shapeNames[id]);
+        return (this.only_shapes ?? [])
+            .map(id => this.shapeNames[id])
+            .filter(Boolean);
     }
 
     hasLabel(labelId) {
