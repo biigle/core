@@ -49,12 +49,14 @@ class StoreVolumeReport extends StoreReport
                 ReportType::IMAGE_LABELS_BASIC,
                 ReportType::IMAGE_LABELS_CSV,
                 ReportType::IMAGE_LABELS_IMAGE_LOCATION,
+                ReportType::IMAGE_METADATA,
                 ReportType::IMAGE_IFDO,
             ];
         } else {
             $types = [
                 ReportType::VIDEO_ANNOTATIONS_CSV,
                 ReportType::VIDEO_LABELS_CSV,
+                ReportType::VIDEO_METADATA,
                 ReportType::VIDEO_IFDO,
             ];
         }
