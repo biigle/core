@@ -65,6 +65,7 @@ export default {
             pendingAnnotation: null,
             annotations: [],
             seeking: false,
+            mediabunnyDecoding: false,
             settings: {
                 annotationOpacity: 1,
                 showMinimap: true,
@@ -228,6 +229,9 @@ export default {
             this.annotations.push(annotation);
 
             return annotation;
+        },
+        setMediabunnyDecoding(active) {
+            this.mediabunnyDecoding = active;
         },
         seek(time, force) {
             if (this.seeking || this.labelbotIsComputing) {
@@ -1006,11 +1010,6 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
-
-        // See: https://github.com/biigle/core/issues/391
-        if (navigator.userAgent.toLowerCase().includes('firefox')) {
-            Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
-        }
     },
 };
 </script>
