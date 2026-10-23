@@ -34,6 +34,9 @@ export default {
             mediabunnyInitPromise: null,
             videoSourceRevision: 0,
             mediabunnyDecodeCount: 0,
+            // If videos start with a positive timestamp, we need to subtract the start timestamp
+            // when decoding frames at a given time because mediabunny doesn't handle that natively
+            mediabunnyPositiveOffset: 0,
         };
     },
     methods: {
@@ -320,6 +323,8 @@ export default {
                 return;
             }
 
+            const firstTimestamp = await track.getFirstTimestamp();
+            this.mediabunnyPositiveOffset = firstTimestamp > 0 ? firstTimestamp : 0;
             this.mediabunnyInput = input;
             this.mediabunnySink = new VideoSampleSink(track);
         },
@@ -335,7 +340,7 @@ export default {
                     return;
                 }
 
-                const sample = await this.mediabunnySink.getSample(time);
+                const sample = await this.mediabunnySink.getSample(time + this.mediabunnyPositiveOffset);
                 if (!sample) {
                     console.warn("Could not get a video sample at the specified time. Falling back to native seeking.");
                     this.renderPausedFrameWithNativeSeeking(time);
