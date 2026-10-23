@@ -39,7 +39,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     protected function parseVideoFps(mixed $rate): float
     {
         if (is_string($rate) && preg_match('/^(\d+)\/(\d+)$/', $rate, $matches) && (int) $matches[2] > 0) {
-            return $this->videoFps = (float) $matches[1] / (float) $matches[2];
+            return (float) $matches[1] / (float) $matches[2];
         }
 
         return 30.0;
