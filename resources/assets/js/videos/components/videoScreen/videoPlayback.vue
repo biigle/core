@@ -89,7 +89,7 @@ export default {
             }
 
             this.renderCurrentTime = this.video.currentTime;
-            this.drawBitmap(this.video);
+            this.drawVideoFrame(this.video);
         },
         startRenderLoop() {
             let render;
@@ -132,7 +132,7 @@ export default {
         async renderPausedFrame(time = this.video.currentTime) {
             await this.mediabunnyInitPromise;
 
-            if (!this.video.paused ) {
+            if (!this.video.paused) {
                 this.renderVideo(true);
                 return;
             } else if (!this.mediabunnySink) {
@@ -140,7 +140,7 @@ export default {
                 return;
             }
 
-            await this.getFrameBitmap(time);
+            await this.renderFrameWithMediabunny(time);
         },
         setPlaying() {
             this.playing = true;
@@ -293,6 +293,7 @@ export default {
         async initMediabunny(revision) {
             if (this.mediabunnyInput) {
                 this.mediabunnyInput.dispose();
+                this.mediabunnyInput = null;
             }
 
             let input;
@@ -322,7 +323,7 @@ export default {
             this.mediabunnyInput = input;
             this.mediabunnySink = new VideoSampleSink(track);
         },
-        async getFrameBitmap(time) {
+        async renderFrameWithMediabunny(time) {
             const revision = this.videoSourceRevision;
             const source = this.video.src;
             const sourceHasChanged = () => revision !== this.videoSourceRevision || source !== this.video.src;
@@ -336,17 +337,15 @@ export default {
 
                 const sample = await this.mediabunnySink.getSample(time);
                 const videoFrame = sample.toVideoFrame();
-                const bitmap = await createImageBitmap(videoFrame);
                 sample.close();
-                videoFrame.close();
 
                 if (!this.video.paused || this.video.currentTime !== time || sourceHasChanged()) {
-                    bitmap.close();
+                    videoFrame.close();
                     return;
                 }
 
-                this.drawBitmap(bitmap);
-                bitmap.close();
+                this.drawVideoFrame(videoFrame);
+                videoFrame.close();
             } catch (error) {
                 console.warn("Mediabunny frame decoding failed. Falling back to native seeking. The error was: ", error);
                 if (!sourceHasChanged()) {
@@ -357,8 +356,8 @@ export default {
                 this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
             }
         },
-        drawBitmap(bitmap) {
-            this.videoContext.drawImage(bitmap, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+        drawVideoFrame(videoFrame) {
+            this.videoContext.drawImage(videoFrame, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
             this.videoSource.changed();
         },
 
