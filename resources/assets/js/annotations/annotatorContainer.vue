@@ -703,7 +703,6 @@ export default {
             }
         },
         annotationMode(newMode, oldMode) {
-            console.log(oldMode, "->", newMode);
             if (newMode === 'lawnmowerPaused') {
                 this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
             } else if (oldMode === 'lawnmowerPaused' && newMode === 'lawnmower') {
