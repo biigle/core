@@ -30,6 +30,7 @@ enum ReportType: int implements \JsonSerializable
     case IMAGE_IFDO = 14;
     case VIDEO_IFDO = 15;
     case IMAGE_ANNOTATIONS_COCO = 16;
+    case IMAGE_ANNOTATIONS_YOLO = 17;
 
     public static function getSortedTypes(bool $imageReports, bool $videoReports): Collection
     {
@@ -67,6 +68,7 @@ enum ReportType: int implements \JsonSerializable
             self::IMAGE_IFDO => 'ImageIfdo',
             self::VIDEO_IFDO => 'VideoIfdo',
             self::IMAGE_ANNOTATIONS_COCO => 'ImageAnnotations\Coco',
+            self::IMAGE_ANNOTATIONS_YOLO => 'ImageAnnotations\Yolo',
         };
     }
 }

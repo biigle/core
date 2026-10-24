@@ -26,6 +26,7 @@
                     <li><a href="#annotation-csv-report">CSV</a></li>
                     <li><a href="#annotation-extended-report">Extended</a></li>
                     <li><a href="#annotation-coco-report">Coco</a></li>
+                    <li><a href="#annotation-yolo-report">YOLO</a></li>
                     <li><a href="#annotation-full-report">Full</a></li>
                     <li><a href="#annotation-image-location-report">ImageLocation</a></li>
                 </ul>
@@ -229,6 +230,38 @@ Animalia
         <h4><a name="annotation-coco-report"></a>Coco</h4>
         <p>
             The Coco file format is a common format for machine learning applications. The data is stored in a JSON file, which is readable by most deep learning frameworks. For more information please have a look at <a href="https://towardsdatascience.com/how-to-work-with-object-detection-datasets-in-coco-format-9bf4fb5848a4" target="_blank">this article</a>. Point annotations are incompatible and will not be included in this report. All remaining annotations will be transformed to polygons which might cause slight changes in their appearance.
+        </p>
+
+        <h4><a name="annotation-yolo-report"></a>YOLO</h4>
+        <p>
+            The YOLO format is a common format to train object detection models (e.g. with <a href="https://docs.ultralytics.com/datasets/detect/" target="_blank">Ultralytics YOLO</a>). This report contains a ZIP file with a <code>data.yaml</code> configuration file, a <code>classes.txt</code> file with the label names and one text file per image with the normalized bounding boxes of its annotations. All annotations are converted to bounding boxes that are clipped to the image. Point annotations and annotations on images without known dimensions are not included. The images are split into a training, a validation and a test set. You can choose the fraction of images in each set. The assignment of images to sets is random but stays the same if the report is requested again.
+        </p>
+        <p>
+            The report does not contain the image files. You can provide the path to the directory that contains the images on your computer. In this case, the report contains symbolic links to the images in the <code>images/train</code>, <code>images/val</code> and <code>images/test</code> directories. The links only work if the ZIP file is extracted with a tool that supports symbolic links (e.g. <code>unzip</code> on Linux or macOS). Otherwise, copy the images to the directory that matches the directory of their label file. If the label trees or users are separated, the ZIP file contains one dataset for each label tree or user in a separate directory.
+        </p>
+        <p>
+            The ZIP file has the following structure:
+<pre>
+data.yaml
+classes.txt
+README.txt
+images/
+├─ train/
+│  ├─ image1.jpg
+│  └─ ...
+├─ val/
+│  └─ ...
+└─ test/
+   └─ ...
+labels/
+├─ train/
+│  ├─ image1.txt
+│  └─ ...
+├─ val/
+│  └─ ...
+└─ test/
+   └─ ...
+</pre>
         </p>
 
         <h4><a name="annotation-full-report"></a>Full</h4>
