@@ -33,6 +33,7 @@ export function useVolareMode({
     }
 
     function saveCurrentVolareState() {
+        // Prevent a page reload in paused state from overwriting the saved state
         if (getSavedVolareState()) {
             return;
         }
