@@ -147,6 +147,8 @@ export default {
             return `lawnmower-state-${volumeId}`;
         },
         saveCurrentLawnmowerState() {
+            // After a page reload the image() watcher may restore the lawnmower state lawnmowerPaused,
+            // which also triggers this function. In that case we don't want to save the current state
             if (this.getSavedLawnmowerState()) {
                 return;
             }
