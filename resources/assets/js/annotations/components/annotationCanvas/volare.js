@@ -4,7 +4,7 @@ import { required } from '@/utils.js';
 
 export function useVolareMode({
     filteredAnnotations = required('filteredAnnotations'),
-    selectedAnnotations = required('selectedAnnotations'),
+    allAnnotations = required('allAnnotations'),
     focusAnnotationInCanvas = required('focusAnnotationInCanvas'),
     fitImageInCanvas = required('fitImageInCanvas'),
     annotationFilter = required('annotationFilter'),
@@ -62,7 +62,7 @@ export function useVolareMode({
     }
 
     function selectAndFocusAnnotation(annotation, keepResolution = false) {
-        selectedAnnotations.value.forEach(a => {
+        allAnnotations.value.forEach(a => {
             a.selected = false;
         });
         annotation.selected = true;

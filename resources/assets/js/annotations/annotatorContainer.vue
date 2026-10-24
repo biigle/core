@@ -789,10 +789,10 @@ export default {
 
         this.volare = useVolareMode({
             filteredAnnotations: computed(() => this.filteredAnnotations),
-            selectedAnnotations: computed(() => this.selectedAnnotations),
+            allAnnotations: computed(() => this.annotations),
             focusAnnotationInCanvas: this.focusAnnotation,
             fitImageInCanvas: (...args) => this.$refs.canvas.fitImage(...args),
-            annotationFilter: this.annotationFilter,
+            annotationFilter: computed(() => this.annotationFilter),
             image: computed(() => this.image),
             mapResolution: computed(() => this.mapResolution),
             showImageWithId: this.showImageWithId,
