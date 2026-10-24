@@ -190,8 +190,8 @@ class ScaleLineProperties {
 }
 
 /**
- * Adds right click panning with the given condition to the map. Prevents right click for opening the context menu. 
- * 
+ * Adds right click panning with the given condition to the map. Prevents right click for opening the context menu.
+ *
  * @param map The ol map used for displaying videos/images
  * @param condition Condition for enabling right click panning
  */
