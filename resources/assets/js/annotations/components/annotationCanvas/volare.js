@@ -154,13 +154,15 @@ export function useVolareMode({
         }
 
         const savedID = state.focussedAnnotationId;
-        discardSavedVolareState();
         resuming = false;
 
         focussedAnnotationIndex.value = null;
         nextTick(() => {
             const index = filteredAnnotations.value.findIndex(a => a.id === savedID);
             focussedAnnotationIndex.value = index === -1 ? 0 : index;
+            // Discard at the end of restoring the state so we don't focus annotation 0
+            // first in the volareModeIsActive watcher
+            discardSavedVolareState();
         });
     }
 
