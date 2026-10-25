@@ -96,6 +96,21 @@ export default {
                 section[1] * this.imageSectionStepSize[1] + this.imageSectionStartCenter[1],
             ];
         },
+        getImageSectionForCenter(center) {
+            return [
+                Math.round(
+                    (center[0] - this.imageSectionStartCenter[0]) /
+                    this.imageSectionStepSize[0]
+                ),
+                Math.round(
+                    (center[1] - this.imageSectionStartCenter[1]) /
+                    this.imageSectionStepSize[1]
+                ),
+            ].map((index, axis) => Math.max(
+                0,
+                Math.min(index, this.imageSectionSteps[axis] - 1)
+            ));
+        },
         showImageSection(section) {
             if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
                 this.$emit('lawnmower-pre-viewport-change');
@@ -197,20 +212,23 @@ export default {
             }
 
             this.$emit('lawnmower-pre-viewport-change');
-
             const view = this.map.getView();
-            view.setResolution(state.resolution);
 
+            // In case the map has been resized, getImageSectionForCenter needs the
+            // current map size for calculating the new grid position
+            this.map.updateSize();
+            this.updateMapSize();
+
+            view.setResolution(state.resolution);
             this.$nextTick(() => {
                 this.imageSectionCenter = state.center;
-                this.imageSection = state.imageSection;
+                this.imageSection = this.getImageSectionForCenter(state.center);
                 view.setCenter(state.center);
                 this.discardSavedLawnmowerState();
                 this.map.once('rendercomplete', () => {
                     this.$emit('lawnmower-post-viewport-change');
                 });
             });
-
         },
     },
     watch: {
