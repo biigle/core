@@ -1,7 +1,7 @@
 <template>
     <div class="current-time">
-        <loader :active="seeking"></loader>
-        <div ref="wrapper" class="current-time__wrapper" v-show="!seeking">
+        <loader :active="seeking || mediabunnyDecoding"></loader>
+        <div ref="wrapper" class="current-time__wrapper" v-show="!seeking && !mediabunnyDecoding">
             <canvas ref="canvas"></canvas>
         </div>
     </div>
@@ -16,6 +16,10 @@ export default {
         currentTime: {
             type: Number,
             required: true,
+        },
+        mediabunnyDecoding: {
+            type: Boolean,
+            default: false,
         },
         seeking: {
             type: Boolean,
