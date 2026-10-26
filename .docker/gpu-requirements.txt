@@ -4,7 +4,7 @@ scipy==1.14.1
 scikit-learn==1.6.1
 matplotlib==3.8.4
 PyExcelerate==0.6.7
-Pillow==11.3.0
+Pillow==13.0.0
 Shapely==2.0.7
 pandas==2.2.3
 
@@ -16,4 +16,6 @@ pandas==2.2.3
 # Special gpu-worker requirements.
 albumentations
 scikit-image
+pycocotools
+sahi
 git+https://github.com/facebookresearch/segment-anything.git
