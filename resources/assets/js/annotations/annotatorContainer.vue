@@ -134,8 +134,8 @@ export default {
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.selected);
         },
-        isDefaultAnnotationMode() {
-            return this.annotationMode === 'default' || this.annotationMode === 'volarePaused' || this.annotationMode === 'lawnmowerPaused';
+        shouldHighlightAnnotationMode() {
+            return !(this.annotationMode === 'default' || this.annotationMode === 'volarePaused' || this.annotationMode === 'lawnmowerPaused');
         },
         isLawnmowerAnnotationMode() {
             return this.annotationMode === 'lawnmower';

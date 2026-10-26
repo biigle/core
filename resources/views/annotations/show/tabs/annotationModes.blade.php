@@ -1,4 +1,4 @@
-<sidebar-tab name="annotation-modes" icon="th" title="Annotation modes" :highlight="!isDefaultAnnotationMode">
+<sidebar-tab name="annotation-modes" icon="th" title="Annotation modes" :highlight="shouldHighlightAnnotationMode">
     <annotation-modes-tab
         ref="annotationModesTab"
         v-on:attach-label="handleAttachAllSelected"
