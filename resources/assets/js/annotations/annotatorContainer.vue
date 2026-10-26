@@ -24,7 +24,7 @@ import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 import {LawnmowerSaveState} from './components/annotationCanvas/lawnmower.vue';
-import {useVolareMode} from './components/annotationCanvas/volare.js';
+import {useVolareMode} from './composables/volare.js';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
     loader: function () {
