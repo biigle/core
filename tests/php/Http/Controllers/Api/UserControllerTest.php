@@ -515,6 +515,42 @@ class UserControllerTest extends ApiTestCase
         $this->assertSame('My Company', $this->guest()->fresh()->affiliation);
     }
 
+    public function testUpdateInvalidUtf8()
+    {
+        $this->beGlobalAdmin();
+        $firstname = $this->guest()->firstname;
+        // Invalid UTF-8 byte sequences would produce a database error. Don't use
+        // putJson() here because it would remove the invalid sequences.
+        $this
+            ->put('/api/v1/users/'.$this->guest()->id, [
+                'firstname' => "jack\xc0\xa7",
+                'lastname' => "jackson\xc0\xa7",
+                'affiliation' => "My Company\xc0\xa7",
+            ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['firstname', 'lastname', 'affiliation']);
+
+        $this->assertSame($firstname, $this->guest()->fresh()->firstname);
+    }
+
+    public function testUpdateOwnInvalidUtf8()
+    {
+        $this->beGuest();
+        $firstname = $this->guest()->firstname;
+        // Invalid UTF-8 byte sequences would produce a database error. Don't use
+        // putJson() here because it would remove the invalid sequences.
+        $this
+            ->put('api/v1/users/my', [
+                'firstname' => "jack\xc0\xa7",
+                'lastname' => "jackson\xc0\xa7",
+                'affiliation' => "My Company\xc0\xa7",
+            ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['firstname', 'lastname', 'affiliation']);
+
+        $this->assertSame($firstname, $this->guest()->fresh()->firstname);
+    }
+
     public function testStoreWithToken()
     {
         // API key authentication **is** allowed for this route.
@@ -578,6 +614,25 @@ class UserControllerTest extends ApiTestCase
             'email' => 'new3@email.me',
         ]);
         $response->assertRedirect('/');
+    }
+
+    public function testStoreInvalidUtf8()
+    {
+        $this->beGlobalAdmin();
+        // Invalid UTF-8 byte sequences would produce a database error. Don't use
+        // postJson() here because it would remove the invalid sequences.
+        $this
+            ->post('/api/v1/users', [
+                'password' => 'newpassword',
+                'firstname' => "jack\xc0\xa7",
+                'lastname' => "jackson\xc0\xa7",
+                'email' => 'new@email.me',
+                'affiliation' => "My Company\xc0\xa7",
+            ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['firstname', 'lastname', 'affiliation']);
+
+        $this->assertFalse(User::where('email', 'new@email.me')->exists());
     }
 
     public function testStoreUuid()
