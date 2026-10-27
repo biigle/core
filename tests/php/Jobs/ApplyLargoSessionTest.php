@@ -617,6 +617,163 @@ class ApplyLargoSessionTest extends TestCase
         Event::assertDispatched(function (LargoSessionSaved $event) use ($user) {
             $this->assertSame($user->id, $event->user->id);
             $this->assertSame('job_id', $event->id);
+            $this->assertFalse($event->keptDismissedLabels);
+            $this->assertFalse($event->keptReplacedLabels);
+            return true;
+        });
+    }
+
+    public function testDispatchEventKeptDismissedLabelsImageAnnotations()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create();
+        $this->setJobId($al1->annotation->image, 'job_id');
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, [], [], [], false);
+        $job->handle();
+
+        $this->assertNotNull($al1->fresh());
+        Event::assertDispatched(function (LargoSessionSaved $event) {
+            $this->assertTrue($event->keptDismissedLabels);
+            $this->assertFalse($event->keptReplacedLabels);
+            return true;
+        });
+    }
+
+    public function testDispatchEventKeptDismissedLabelsVideoAnnotations()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = VideoAnnotationLabelTest::create();
+        $this->setJobId($al1->annotation->video, 'job_id');
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, [], [], $dismissed, [], false);
+        $job->handle();
+
+        $this->assertNotNull($al1->fresh());
+        Event::assertDispatched(function (LargoSessionSaved $event) {
+            $this->assertTrue($event->keptDismissedLabels);
+            $this->assertFalse($event->keptReplacedLabels);
+            return true;
+        });
+    }
+
+    public function testDispatchEventKeptReplacedLabelsImageAnnotations()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create();
+        $this->setJobId($al1->annotation->image, 'job_id');
+        $l1 = LabelTest::create();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
+        $job->handle();
+
+        $this->assertNotNull($al1->fresh());
+        Event::assertDispatched(function (LargoSessionSaved $event) {
+            $this->assertFalse($event->keptDismissedLabels);
+            $this->assertTrue($event->keptReplacedLabels);
+            return true;
+        });
+    }
+
+    public function testDispatchEventKeptReplacedLabelsVideoAnnotations()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = VideoAnnotationLabelTest::create();
+        $this->setJobId($al1->annotation->video, 'job_id');
+        $l1 = LabelTest::create();
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $changed = [$l1->id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, [], [], $dismissed, $changed, false);
+        $job->handle();
+
+        $this->assertNotNull($al1->fresh());
+        Event::assertDispatched(function (LargoSessionSaved $event) {
+            $this->assertFalse($event->keptDismissedLabels);
+            $this->assertTrue($event->keptReplacedLabels);
+            return true;
+        });
+    }
+
+    public function testDispatchEventKeptDismissedAndReplacedLabels()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create();
+        $this->setJobId($al1->annotation->image, 'job_id');
+        $al2 = VideoAnnotationLabelTest::create();
+        $this->setJobId($al2->annotation->video, 'job_id');
+        $l1 = LabelTest::create();
+
+        // The image annotation label is not removed, the video annotation label is not
+        // replaced.
+        $dismissedImage = [$al1->label_id => [$al1->annotation_id]];
+        $dismissedVideo = [$al2->label_id => [$al2->annotation_id]];
+        $changedVideo = [$l1->id => [$al2->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissedImage, [], $dismissedVideo, $changedVideo, false);
+        $job->handle();
+
+        Event::assertDispatched(function (LargoSessionSaved $event) {
+            $this->assertTrue($event->keptDismissedLabels);
+            $this->assertTrue($event->keptReplacedLabels);
+            return true;
+        });
+    }
+
+    public function testDispatchEventForceKeepsNoLabels()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        $al1 = ImageAnnotationLabelTest::create();
+        $this->setJobId($al1->annotation->image, 'job_id');
+        $al2 = ImageAnnotationLabelTest::create();
+        $l1 = LabelTest::create();
+
+        $dismissed = [
+            $al1->label_id => [$al1->annotation_id],
+            $al2->label_id => [$al2->annotation_id],
+        ];
+        $changed = [$l1->id => [$al2->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], true);
+        $job->handle();
+
+        $this->assertNull($al1->fresh());
+        $this->assertNull($al2->fresh());
+        Event::assertDispatched(function (LargoSessionSaved $event) {
+            $this->assertFalse($event->keptDismissedLabels);
+            $this->assertFalse($event->keptReplacedLabels);
+            return true;
+        });
+    }
+
+    public function testDispatchEventOwnAndOtherLabelKept()
+    {
+        Event::fake();
+        $user = UserTest::create();
+        // The same label was attached by the user and another user.
+        $al1 = ImageAnnotationLabelTest::create(['user_id' => $user->id]);
+        $this->setJobId($al1->annotation->image, 'job_id');
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $al1->annotation_id,
+            'label_id' => $al1->label_id,
+        ]);
+
+        $dismissed = [$al1->label_id => [$al1->annotation_id]];
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, [], [], [], false);
+        $job->handle();
+
+        $this->assertNull($al1->fresh());
+        $this->assertNotNull($al2->fresh());
+        Event::assertDispatched(function (LargoSessionSaved $event) {
+            $this->assertTrue($event->keptDismissedLabels);
             return true;
         });
     }

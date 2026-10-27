@@ -92,7 +92,7 @@
         </ul>
 
         <p>
-            When the Largo session has been saved, Largo is reset and you can start a new session.
+            When the Largo session has been saved, Largo is reset and you can start a new session. If labels of other users were not detached or replaced, you will see a warning message.
         </p>
 
 

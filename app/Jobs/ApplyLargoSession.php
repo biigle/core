@@ -85,6 +85,22 @@ class ApplyLargoSession extends Job implements ShouldQueue
     public $force;
 
     /**
+     * Whether dismissed labels of other users were not removed from annotations that
+     * did not get a new label.
+     *
+     * @var bool
+     */
+    protected $keptDismissedLabels = false;
+
+    /**
+     * Whether dismissed labels of other users were not removed from annotations that
+     * got a new label.
+     *
+     * @var bool
+     */
+    protected $keptReplacedLabels = false;
+
+    /**
      * Create a new job instance.
      *
      * @param string $id
@@ -126,12 +142,20 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // transactions may lock the annotations in an arbitrary order (see
         // deleteDanglingAnnotations()).
         DB::transaction(function () {
+            // Reset in case the transaction is retried.
+            $this->keptDismissedLabels = false;
+            $this->keptReplacedLabels = false;
             $this->handleImageAnnotations();
             $this->handleVideoAnnotations();
         }, 3);
 
         $this->cleanupJobId();
-        LargoSessionSaved::dispatch($this->id, $this->user);
+        LargoSessionSaved::dispatch(
+            $this->id,
+            $this->user,
+            $this->keptDismissedLabels,
+            $this->keptReplacedLabels
+        );
     }
 
     /**
@@ -174,7 +198,8 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // vectors. If labels are deleted first, the feature vectors will be immediately
         // deleted, too, and nothing can be copied any more.
         $this->applyChangedLabels($this->user, $changed, ImageAnnotation::class, ImageAnnotationLabel::class);
-        $this->applyDismissedLabels($this->user, $dismissed, $this->force, ImageAnnotationLabel::class);
+        $kept = $this->applyDismissedLabels($this->user, $dismissed, $this->force, ImageAnnotationLabel::class);
+        $this->updateKeptLabels($kept, $changed);
         $this->deleteDanglingAnnotations($dismissed, $changed, ImageAnnotation::class);
     }
 
@@ -196,7 +221,8 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // vectors. If labels are deleted first, the feature vectors will be immediately
         // deleted, too, and nothing can be copied any more.
         $this->applyChangedLabels($this->user, $changed, VideoAnnotation::class, VideoAnnotationLabel::class);
-        $this->applyDismissedLabels($this->user, $dismissed, $this->force, VideoAnnotationLabel::class);
+        $kept = $this->applyDismissedLabels($this->user, $dismissed, $this->force, VideoAnnotationLabel::class);
+        $this->updateKeptLabels($kept, $changed);
         $this->deleteDanglingAnnotations($dismissed, $changed, VideoAnnotation::class);
     }
 
@@ -311,12 +337,16 @@ class ApplyLargoSession extends Job implements ShouldQueue
      * @param array $dismissed
      * @param bool $force
      * @param string $labelModel The annotation label model class.
+     *
+     * @return array IDs of the annotations where dismissed labels of other users were
+     * not detached.
      */
     protected function applyDismissedLabels($user, $dismissed, $force, $labelModel)
     {
         // Account for additional parameters in the query (label_id and user_id)
         $chunkSize = config('biigle.db_param_limit') - 2;
-        
+        $kept = [];
+
         foreach ($dismissed as $labelId => $annotationIds) {
             $chunks = array_chunk($annotationIds, $chunkSize);
             foreach ($chunks as $chunk) {
@@ -324,6 +354,42 @@ class ApplyLargoSession extends Job implements ShouldQueue
                     ->when(!$force, fn ($query) => $query->where('user_id', $user->id))
                     ->where('label_id', $labelId)
                     ->delete();
+
+                if (!$force) {
+                    // Labels of other users are not detached without force.
+                    $kept[] = $labelModel::whereIn('annotation_id', $chunk)
+                        ->where('label_id', $labelId)
+                        ->pluck('annotation_id')
+                        ->all();
+                }
+            }
+        }
+
+        return array_unique(array_merge(...$kept));
+    }
+
+    /**
+     * Determine if dismissed labels of other users were not detached from annotations
+     * so the user can be notified.
+     *
+     * @param array $kept IDs of annotations where dismissed labels were not detached.
+     * @param array $changed
+     */
+    protected function updateKeptLabels($kept, $changed)
+    {
+        if (empty($kept)) {
+            return;
+        }
+
+        $changed = array_flip(array_merge(...array_values($changed)));
+
+        foreach ($kept as $id) {
+            if (array_key_exists($id, $changed)) {
+                // The annotation got a new label but the old label was not replaced.
+                $this->keptReplacedLabels = true;
+            } else {
+                // The annotation was not deleted (unless it has other labels).
+                $this->keptDismissedLabels = true;
             }
         }
     }

@@ -427,7 +427,16 @@ export default {
         handleSessionSaved(event) {
             if (event.id == this.waitForSessionId) {
                 this.finishLoading();
-                Messages.success('Saved. You can now start a new re-evaluation session.');
+                // Labels of other users are not removed unless force is enabled.
+                if (event.kept_dismissed_labels && event.kept_replaced_labels) {
+                    Messages.warning('Saved, but some dismissed or replaced labels were attached by other users and were not removed.');
+                } else if (event.kept_dismissed_labels) {
+                    Messages.warning('Saved, but some dismissed labels were attached by other users and were not removed. Annotations with these labels were not deleted.');
+                } else if (event.kept_replaced_labels) {
+                    Messages.warning('Saved, but some replaced labels were attached by other users and were not removed. The new labels were attached in addition.');
+                } else {
+                    Messages.success('Saved. You can now start a new re-evaluation session.');
+                }
                 this.step = 0;
                 for (let key in this.annotationsCache) {
                     if (!this.annotationsCache.hasOwnProperty(key)) continue;
