@@ -130,6 +130,25 @@ class VolumeTest extends ModelTestCase
 
         $return = Volume::parseFilesQueryString('"1.jpg", "2.jpg"');
         $this->assertSame(['1.jpg', '2.jpg'], $return);
+
+        // Filenames with commas can be enclosed in double quotes.
+        $return = Volume::parseFilesQueryString('"1,2.jpg", 3.jpg,"4, 5.jpg"');
+        $this->assertSame(['1,2.jpg', '3.jpg', '4, 5.jpg'], $return);
+
+        // Double quotes in enclosed filenames are escaped with another double quote.
+        $return = Volume::parseFilesQueryString('"1 ""a"", 2.jpg", 3"b.jpg');
+        $this->assertSame(['1 "a", 2.jpg', '3"b.jpg'], $return);
+    }
+
+    public function testJoinFilesQueryString()
+    {
+        $this->assertSame('', Volume::joinFilesQueryString([]));
+        $this->assertSame('1.jpg,2.jpg', Volume::joinFilesQueryString(['1.jpg', '2.jpg']));
+
+        $files = ['1,2.jpg', '3.jpg', '4 "a", 5.jpg', '6"b.jpg'];
+        $string = Volume::joinFilesQueryString($files);
+        $this->assertSame('"1,2.jpg",3.jpg,"4 ""a"", 5.jpg","6""b.jpg"', $string);
+        $this->assertSame($files, Volume::parseFilesQueryString($string));
     }
 
     public function testImagesDeletedEventOnDelete()

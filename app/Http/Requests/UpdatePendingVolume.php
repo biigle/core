@@ -6,6 +6,7 @@ use Biigle\PendingVolume;
 use Biigle\Rules\Handle;
 use Biigle\Rules\VolumeFiles;
 use Biigle\Rules\VolumeUrl;
+use Biigle\Volume;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePendingVolume extends FormRequest
@@ -76,7 +77,7 @@ class UpdatePendingVolume extends FormRequest
     {
         $files = $this->input('files');
         if (!is_array($files)) {
-            $files = explode(',', $files);
+            $files = Volume::parseFilesQueryString($files ?? '');
         }
 
         $files = array_map(fn ($f) => trim($f, " \n\r\t\v\x00'\""), $files);
