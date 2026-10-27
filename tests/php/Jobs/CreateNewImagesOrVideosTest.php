@@ -69,6 +69,34 @@ class CreateNewImagesOrVideosTest extends TestCase
         Event::assertDispatched(VolumeFilesProcessed::class);
     }
 
+    public function testHandleWithinParamLimit()
+    {
+        Event::fake();
+        $volume = VolumeTest::create([
+            'media_type' => MediaType::IMAGE,
+            'metadata_file_path' => 'mymeta.csv',
+            'metadata_parser' => ImageCsvParser::class,
+        ]);
+        $disk = Storage::fake('metadata');
+        $disk->put($volume->metadata_file_path, <<<CSV
+        filename,lng,lat
+        a.jpg,52.220,28.123
+        e.jpg,52.230,28.133
+        CSV);
+        $filenames = ['a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg'];
+
+        // Each image has 5 columns (filename, volume_id, uuid, lng and lat), so the
+        // images are inserted in chunks of two.
+        config(['biigle.db_param_limit' => 10]);
+        $this->assertQueriesWithinParamLimit();
+        with(new CreateNewImagesOrVideos($volume, $filenames))->handle();
+
+        $images = $volume->images()->orderBy('filename')->get();
+        $this->assertSame($filenames, $images->pluck('filename')->all());
+        $this->assertSame([52.220, null, null, null, 52.230], $images->pluck('lng')->all());
+        $this->assertSame([28.123, null, null, null, 28.133], $images->pluck('lat')->all());
+    }
+
     public function testHandleImageMetadata()
     {
         $volume = VolumeTest::create([

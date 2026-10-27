@@ -10,6 +10,7 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\Project;
+use Biigle\Traits\ChunksInserts;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
@@ -27,7 +28,7 @@ use Ramsey\Uuid\Uuid;
 #[DeleteWhenMissingModels]
 class CloneImagesOrVideos extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, SerializesModels, ChunksInserts;
 
 
     /**
@@ -183,7 +184,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     unset($original['id']);
                     return $original;
                 });
-                Image::insert($insert->all());
+                $this->insertInChunks(Image::class, $insert->all());
             });
 
     }
@@ -203,7 +204,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             $volume->images()->pluck('id')->sortBy('id') : $selectedFileIds;
 
         $chunkSize = 100;
-        $parameterLimit = 10000;
         $newImageIds = $copy->images()->orderBy('id')->pluck('id');
         $volume->images()
             ->with([
@@ -217,7 +217,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ->chunkById($chunkSize, function ($chunk, $page) use (
                 $newImageIds,
                 $chunkSize,
-                $parameterLimit,
             ) {
                 $insertData = [];
                 $chunkNewImageIds = [];
@@ -241,7 +240,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
                     }
                 }
-                collect($insertData)->chunk($parameterLimit)->each(fn ($chunk) => ImageAnnotation::insert($chunk->toArray()));
+                $this->insertInChunks(ImageAnnotation::class, $insertData);
 
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = ImageAnnotation::whereIn('image_id', $chunkNewImageIds)
@@ -265,7 +264,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                         }
                     }
                 }
-                collect($insertData)->chunk($parameterLimit)->each(fn ($chunk) => ImageAnnotationLabel::insert($chunk->toArray()));
+                $this->insertInChunks(ImageAnnotationLabel::class, $insertData);
 
             });
     }
@@ -295,14 +294,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ->orderBy('id')
             ->get()->map(function ($oldImage) use ($newImageIds) {
                 $newImageId = $newImageIds->shift();
-                $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
+                $labels = $oldImage->labels->map(function ($oldLabel) use ($newImageId) {
                     $origin = $oldLabel->getRawOriginal();
                     $origin['image_id'] = $newImageId;
                     unset($origin['id']);
                     return $origin;
-                })->chunk(10000)->each(function ($chunk) {
-                    ImageLabel::insert($chunk->toArray());
                 });
+                $this->insertInChunks(ImageLabel::class, $labels->all());
             });
     }
 
@@ -331,7 +329,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                     unset($original['id']);
                     return $original;
                 });
-                Video::insert($insert->all());
+                $this->insertInChunks(Video::class, $insert->all());
             });
 
     }
@@ -351,7 +349,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             $volume->videos()->pluck('id')->sortBy('id') : $selectedFileIds;
 
         $chunkSize = 100;
-        $parameterLimit = 10000;
         $newVideoIds = $copy->videos()->orderBy('id')->pluck('id');
         $volume->videos()
             ->with([
@@ -365,7 +362,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ->chunkById($chunkSize, function ($chunk, $page) use (
                 $newVideoIds,
                 $chunkSize,
-                $parameterLimit,
             ) {
                 $insertData = [];
                 $chunkNewVideoIds = [];
@@ -389,7 +385,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
 
                     }
                 }
-                collect($insertData)->chunk($parameterLimit)->each(fn ($chunk) => VideoAnnotation::insert($chunk->toArray()));
+                $this->insertInChunks(VideoAnnotation::class, $insertData);
 
                 // Get the IDs of all newly inserted annotations. Ordering is essential.
                 $newAnnotationIds = VideoAnnotation::whereIn('video_id', $chunkNewVideoIds)
@@ -413,7 +409,7 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
                         }
                     }
                 }
-                collect($insertData)->chunk($parameterLimit)->each(fn ($chunk) => VideoAnnotationLabel::insert($chunk->toArray()));
+                $this->insertInChunks(VideoAnnotationLabel::class, $insertData);
 
             });
     }
@@ -444,14 +440,13 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
             ->get()
             ->map(function ($oldVideo) use ($newVideoIds) {
                 $newVideoId = $newVideoIds->shift();
-                $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
+                $labels = $oldVideo->labels->map(function ($oldLabel) use ($newVideoId) {
                     $origin = $oldLabel->getRawOriginal();
                     $origin['video_id'] = $newVideoId;
                     unset($origin['id']);
                     return $origin;
-                })->chunk(10000)->each(function ($chunk) {
-                    VideoLabel::insert($chunk->toArray());
                 });
+                $this->insertInChunks(VideoLabel::class, $labels->all());
             });
     }
 

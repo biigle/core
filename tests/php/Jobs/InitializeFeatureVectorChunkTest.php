@@ -133,6 +133,32 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $this->assertSame(range(0, 383), $model->vector->toArray());
     }
 
+    public function testHandleWithinParamLimit()
+    {
+        $disk = Storage::fake(config('largo.patch_storage_disk'));
+        $labels = [];
+        for ($i = 0; $i < 2; $i++) {
+            $a = ImageAnnotation::factory()->create();
+            $labels[] = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
+            $labels[] = ImageAnnotationLabel::factory()->create(['annotation_id' => $a->id]);
+            $disk->put(ProcessAnnotatedFile::getTargetPath($a), 'abc');
+        }
+        $ids = array_unique(array_map(fn ($l) => $l->annotation_id, $labels));
+        $job = new InitializeFeatureVectorChunkStub($ids, []);
+
+        // Each feature vector has 6 columns, so they are inserted one by one.
+        config(['biigle.db_param_limit' => 6]);
+        $this->assertQueriesWithinParamLimit();
+        $job->handle();
+
+        foreach ($labels as $label) {
+            $model = ImageAnnotationLabelFeatureVector::find($label->id);
+            $this->assertNotNull($model);
+            $this->assertSame($label->annotation_id, $model->annotation_id);
+            $this->assertSame($label->label_id, $model->label_id);
+        }
+    }
+
     public function testHandlePoint()
     {
         $disk = Storage::fake(config('largo.patch_storage_disk'));
