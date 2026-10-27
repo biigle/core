@@ -9,6 +9,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Project;
 use Biigle\Services\Modules;
 use Biigle\User;
+use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
@@ -187,7 +188,13 @@ class UsersController extends Controller
             ->count();
         $imagesPercent = $imagesCount > 0 ? round($imagesCount / $imagesTotal * 100, 2) : 0;
 
-        return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent');
+        $videosTotal = Video::count();
+        $videosCount = Video::join('volumes', 'volumes.id', '=', 'videos.volume_id')
+            ->where('volumes.creator_id', $user->id)
+            ->count();
+        $videosPercent = $videosCount > 0 ? round($videosCount / $videosTotal * 100, 2) : 0;
+
+        return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent', 'videosCount', 'videosPercent');
     }
 
     /**
