@@ -57,11 +57,12 @@ class StoreVideoAnnotationLabel extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
         $validator->after(function ($validator) {
+            // Only run these checks if all other validation rules passed.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             $alreadyExists = $this->annotation->labels()
                 ->where('label_id', $this->label->id)
                 ->where('user_id', $this->user()->id)

@@ -67,11 +67,12 @@ class StoreLabelTreeUser extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
         $validator->after(function ($validator) {
+            // Only run these checks if all other validation rules passed.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             if ($this->tree->members()->where('id', $this->input('id'))->exists()) {
                 $validator->errors()->add('id', 'The user is already member of this label tree.');
             }
