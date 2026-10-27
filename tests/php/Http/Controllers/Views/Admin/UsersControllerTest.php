@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Admin;
 
+use Biigle\Enums\MediaType;
 use Biigle\Enums\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageTest;
@@ -175,6 +176,59 @@ class UsersControllerTest extends TestCase
 
         $this->be($admin);
         $this->get("admin/users/{$user->id}")->assertStatus(200);
+    }
+
+    public function testShowImageAndVideoCount()
+    {
+        $user = UserTest::create();
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+
+        $volume = VolumeTest::create(['creator_id' => $user->id]);
+        ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $volume = VolumeTest::create([
+            'creator_id' => $user->id,
+            'media_type' => MediaType::VIDEO,
+        ]);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
+
+        $this->be($admin);
+        $this->get("admin/users/{$user->id}")
+            ->assertSeeText('with 1 image(s) (100%) and 2 video(s) (100%).');
+    }
+
+    public function testShowVideoCount()
+    {
+        $user = UserTest::create();
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+
+        $volume = VolumeTest::create([
+            'creator_id' => $user->id,
+            'media_type' => MediaType::VIDEO,
+        ]);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
+        // Video of another user.
+        VideoTest::create();
+
+        $this->be($admin);
+        $this->get("admin/users/{$user->id}")
+            ->assertSeeText('with 2 video(s) (66.67%).')
+            ->assertDontSeeText('with no images');
+    }
+
+    public function testShowNoFiles()
+    {
+        $user = UserTest::create();
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+        VolumeTest::create(['creator_id' => $user->id]);
+
+        $this->be($admin);
+        $this->get("admin/users/{$user->id}")
+            ->assertSeeText('with no images or videos.');
     }
 
     public function testShowWhenReviewer()
