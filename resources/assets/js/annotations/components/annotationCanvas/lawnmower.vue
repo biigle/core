@@ -5,11 +5,6 @@ export const LawnmowerSaveState = Object.freeze({
     DISCARD: 'discard'
 });
 
-/**
- * Mixin for the annotationCanvas component that contains logic for Lawnmower Mode.
- *
- * @type {Object}
- */
 export default {
     emits: [
         'restore-lawnmower-image',
@@ -23,112 +18,12 @@ export default {
             required: true
         }
     },
-    data() {
-        return {
-            // The image section information is needed for the lawnmower cycling mode
-            // Index of the current image section in x and y direction.
-            imageSection: [0, 0],
-            // Actual center point of the current image section.
-            imageSectionCenter: [0, 0],
-            restoringLawnmowerImageInProgress: false,
-            pageReloaded: true,
-        };
-    },
     computed: {
-        // Number of available image sections in x and y direction.
-        imageSectionSteps() {
-            return [
-                Math.ceil(this.image.width / (this.viewExtent[2] - this.viewExtent[0])),
-                Math.ceil(this.image.height / (this.viewExtent[3] - this.viewExtent[1])),
-            ];
-        },
-        // Distance to travel between image sections in x and y direction.
-        imageSectionStepSize() {
-            let stepSize = [
-                this.viewExtent[2] - this.viewExtent[0],
-                this.viewExtent[3] - this.viewExtent[1],
-            ];
-            let overlap;
-            if (this.imageSectionSteps[0] > 1) {
-                overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.image.width;
-                stepSize[0] -= overlap / (this.imageSectionSteps[0] - 1);
-            } else {
-                stepSize[0] = this.viewExtent[2];
-            }
-
-            if (this.imageSectionSteps[1] > 1) {
-                overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.image.height;
-                stepSize[1] -= overlap / (this.imageSectionSteps[1] - 1);
-            } else {
-                stepSize[1] = this.viewExtent[3];
-            }
-
-
-            return stepSize;
-        },
-        // Center position of the first image section [0, 0].
-        imageSectionStartCenter() {
-            let startCenter = [
-                (this.viewExtent[2] - this.viewExtent[0]) / 2,
-                (this.viewExtent[3] - this.viewExtent[1]) / 2,
-            ];
-
-            if (this.imageSectionSteps[0] <= 1) {
-                startCenter[0] = this.extent[2] / 2;
-            }
-
-            if (this.imageSectionSteps[1] <= 1) {
-                startCenter[1] = this.extent[3] / 2;
-            }
-
-            return startCenter;
-        },
         isLawnmowerAnnotationMode() {
             return this.annotationMode === 'lawnmower';
         },
     },
     methods: {
-        // Calculate the center point of an image section based on its index in x and
-        // y direction (e.g. [0, 0] for the first section).
-        getImageSectionCenter(section) {
-            return [
-                section[0] * this.imageSectionStepSize[0] + this.imageSectionStartCenter[0],
-                section[1] * this.imageSectionStepSize[1] + this.imageSectionStartCenter[1],
-            ];
-        },
-        getImageSectionForCenter(center) {
-            return [
-                Math.round(
-                    (center[0] - this.imageSectionStartCenter[0]) /
-                    this.imageSectionStepSize[0]
-                ),
-                Math.round(
-                    (center[1] - this.imageSectionStartCenter[1]) /
-                    this.imageSectionStepSize[1]
-                ),
-            ].map((index, axis) => Math.max(
-                0,
-                Math.min(index, this.imageSectionSteps[axis] - 1)
-            ));
-        },
-        showImageSection(section) {
-            if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
-                this.$emit('lawnmower-pre-viewport-change');
-                this.imageSection = section;
-                // Don't make imageSectionCenter a computed property because it
-                // would automatically update when the resolution changes. But we
-                // need the old value to compute the new image section in the
-                // resolution watcher first!
-                this.imageSectionCenter = this.getImageSectionCenter(section);
-                this.map.getView().setCenter(this.imageSectionCenter);
-                this.map.once('rendercomplete', () => {
-                    this.$emit('lawnmower-post-viewport-change');
-                });
-                return true;
-            }
-
-            return false;
-        },
         showLastImageSection() {
             this.showImageSection([
                 this.imageSectionSteps[0] - 1,
