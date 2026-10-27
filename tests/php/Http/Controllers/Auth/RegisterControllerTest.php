@@ -71,6 +71,28 @@ class RegisterControllerTest extends TestCase
         $this->assertSame(Role::EDITOR, $user->role);
     }
 
+    public function testRegisterInvalidUtf8()
+    {
+        $this->get('register');
+        // Invalid UTF-8 byte sequences would produce a database error. Don't use
+        // postJson() here because it would remove the invalid sequences.
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => "a\xc0\xa7",
+            'lastname'  => "b\xc0\xa7",
+            'affiliation' => "something\xc0\xa7",
+            'homepage' => 'honeypotvalue',
+        ])
+            ->assertRedirect('register')
+            ->assertSessionHasErrors(['firstname', 'lastname', 'affiliation']);
+
+        $this->assertFalse(User::where('email', 'e@ma.il')->exists());
+        // The form can be shown again with the old input.
+        $this->get('register')->assertStatus(200);
+    }
+
     public function testRegisterHoneypot()
     {
         Honeypot::enable();

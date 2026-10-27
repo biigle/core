@@ -6,6 +6,7 @@ use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Http\Requests\StoreUser;
 use Biigle\Notifications\RegistrationConfirmation;
+use Biigle\Rules\Utf8;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -69,7 +70,7 @@ class RegisterController extends Controller
         $additionalRules = [
             'website' => 'honeypot',
             'homepage' => 'honeytime:10|required',
-            'affiliation' => 'required|max:255',
+            'affiliation' => ['required', 'max:255', new Utf8],
         ];
 
         if (View::exists('privacy')) {
