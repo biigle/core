@@ -9,6 +9,7 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\User;
 use TestCase;
 
 class UsersControllerTest extends TestCase
@@ -49,6 +50,28 @@ class UsersControllerTest extends TestCase
         $this->call('GET', 'admin/users', ['q' => 'joe'])
             ->assertSee('joe@user.com')
             ->assertDontSee('jane@user.com');
+    }
+
+    public function testGetPaginationKeepsSearch()
+    {
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+        User::factory()->count(101)->create(['lastname' => 'Paginated']);
+        $this->be($admin);
+
+        $this->call('GET', 'admin/users', ['q' => 'Paginated'])
+            ->assertSee('q=Paginated&page=2');
+    }
+
+    public function testGetPaginationKeepsRecent()
+    {
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+        User::factory()->count(101)->create();
+        $this->be($admin);
+
+        $this->call('GET', 'admin/users', ['recent' => 1])
+            ->assertSee('recent=1&page=2');
     }
 
     public function testNewWhenNotLoggedIn()
