@@ -39,6 +39,12 @@ class LabelControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('PUT', "/api/v1/labels/{$label->id}", [
+            'name' => str_repeat('a', 513),
+        ]);
+        // name too long
+        $response->assertStatus(422);
+
+        $response = $this->json('PUT', "/api/v1/labels/{$label->id}", [
             'color' => '',
         ]);
         // color must be filled

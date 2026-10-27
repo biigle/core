@@ -43,6 +43,7 @@ class UpdateFederatedSearchInstance extends FormRequest
             'url' => [
                 'filled',
                 'url',
+                'max:512',
                 Rule::unique('federated_search_instances')->ignore($this->instance->id),
             ],
             'remote_token' => 'nullable|string',
