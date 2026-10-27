@@ -18,7 +18,6 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use TestCase;
@@ -797,7 +796,8 @@ class ApplyLargoSessionTest extends TestCase
 
     public function testChunkChangedAnnotations()
     {
-        config(['biigle.db_param_limit' => 5]);
+        // Each new image annotation label has 6 columns.
+        config(['biigle.db_param_limit' => 6]);
 
         $user = UserTest::create();
         $image = ImageTest::create();
@@ -837,20 +837,6 @@ class ApplyLargoSessionTest extends TestCase
             $this->assertSame([$label2->id], $annotation->labels()->pluck('label_id')->all());
         }
         Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
-    }
-
-    protected function assertQueriesWithinParamLimit(): void
-    {
-        $limit = config('biigle.db_param_limit');
-        DB::listen(function ($query) use ($limit) {
-            // The bulk insert of new annotation labels is chunked by a fixed number
-            // of rows that stays below the real limit, not by the configured limit.
-            if (str_starts_with(strtolower($query->sql), 'insert')) {
-                return;
-            }
-
-            $this->assertLessThanOrEqual($limit, count($query->bindings), $query->sql);
-        });
     }
 
     protected function setJobId(VolumeFile $file, string $id): void

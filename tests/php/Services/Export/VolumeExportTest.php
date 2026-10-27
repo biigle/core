@@ -45,6 +45,19 @@ class VolumeExportTest extends TestCase
         $this->assertEquals($expect, $export->getContent());
     }
 
+    public function testGetContentSortedById()
+    {
+        $volume1 = VolumeTest::create();
+        $volume2 = VolumeTest::create();
+        // The update moves the row of the first volume behind the row of the second
+        // volume in the table.
+        $volume1->update(['name' => 'updated']);
+
+        $export = new VolumeExport([$volume1->id, $volume2->id]);
+        $ids = array_column($export->getContent(), 'id');
+        $this->assertSame([$volume1->id, $volume2->id], $ids);
+    }
+
     public function testGetAdditionalExports()
     {
         $imageAnnotationLabel = ImageAnnotationLabelTest::create();

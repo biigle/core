@@ -5,6 +5,7 @@ namespace Biigle\Jobs;
 use Biigle\Events\VolumeFilesProcessed;
 use Biigle\Image;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
+use Biigle\Traits\ChunksInserts;
 use Biigle\Video;
 use Biigle\Volume;
 use DB;
@@ -15,7 +16,7 @@ use Ramsey\Uuid\Uuid;
 
 class CreateNewImagesOrVideos extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, SerializesModels, ChunksInserts;
 
     /**
      * The volume to create the files for.
@@ -63,16 +64,17 @@ class CreateNewImagesOrVideos extends Job implements ShouldQueue
         $hasFiles = $this->volume->files()->exists();
 
         DB::transaction(function () {
+            // Create the insert data in chunks to save memory.
             $chunks = collect($this->filenames)->chunk(1000);
             $metadata = $this->volume->getMetadata();
 
             if ($this->volume->isImageVolume()) {
                 $chunks->each(
-                    fn ($chunk) => Image::insert($this->createFiles($chunk->toArray(), $metadata))
+                    fn ($chunk) => $this->insertInChunks(Image::class, $this->createFiles($chunk->toArray(), $metadata))
                 );
             } else {
                 $chunks->each(
-                    fn ($chunk) => Video::insert($this->createFiles($chunk->toArray(), $metadata))
+                    fn ($chunk) => $this->insertInChunks(Video::class, $this->createFiles($chunk->toArray(), $metadata))
                 );
             }
         });

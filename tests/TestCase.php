@@ -3,6 +3,7 @@
 use Biigle\Tests\CreatesApplication;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
@@ -29,6 +30,18 @@ class TestCase extends BaseTestCase
         ]]);
 
         $this->withoutVite();
+    }
+
+    /**
+     * Assert that all following database queries stay within the configured parameter
+     * limit (biigle.db_param_limit).
+     */
+    protected function assertQueriesWithinParamLimit(): void
+    {
+        $limit = config('biigle.db_param_limit');
+        DB::listen(function ($query) use ($limit) {
+            $this->assertLessThanOrEqual($limit, count($query->bindings), $query->sql);
+        });
     }
 
     /**

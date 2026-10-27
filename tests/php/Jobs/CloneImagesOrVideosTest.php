@@ -606,6 +606,93 @@ class CloneImagesOrVideosTest extends ApiTestCase
         $this->assertEmpty($newVideo->annotations()->get());
     }
 
+    public function testCloneVolumeImagesWithinParamLimit()
+    {
+        Event::fake();
+        $volume = VolumeTest::create(['media_type' => MediaType::IMAGE]);
+        $copy = $volume->replicate();
+        $copy->save();
+        $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
+
+        foreach (['a.jpg', 'b.jpg', 'c.jpg'] as $filename) {
+            $image = ImageTest::create([
+                'volume_id' => $volume->id,
+                'filename' => $filename,
+            ]);
+            for ($i = 0; $i < 3; $i++) {
+                ImageLabelTest::create(['image_id' => $image->id]);
+                $annotation = ImageAnnotationTest::create([
+                    'image_id' => $image->id,
+                    'points' => [$i, $i],
+                ]);
+                ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+                ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+            }
+        }
+
+        $request = new Request([
+            'project' => $project,
+            'volume' => $volume,
+            'clone_annotations' => true,
+            'clone_file_labels' => true,
+        ]);
+
+        // Images are inserted one by one and all labels and annotations in chunks of
+        // two.
+        config(['biigle.db_param_limit' => 12]);
+        $this->assertQueriesWithinParamLimit();
+        with(new CloneImagesOrVideos($request, $copy))->handle();
+
+        $expect = $this->getImageVolumeContents($volume);
+        $this->assertCount(3, $expect);
+        $this->assertSame($expect, $this->getImageVolumeContents($copy));
+    }
+
+    public function testCloneVolumeVideosWithinParamLimit()
+    {
+        Event::fake();
+        $volume = VolumeTest::create(['media_type' => MediaType::VIDEO]);
+        $copy = $volume->replicate();
+        $copy->save();
+        $project = ProjectTest::create();
+        $project->addVolumeId($copy->id);
+
+        foreach (['a.mp4', 'b.mp4', 'c.mp4'] as $filename) {
+            $video = VideoTest::create([
+                'volume_id' => $volume->id,
+                'filename' => $filename,
+            ]);
+            for ($i = 0; $i < 3; $i++) {
+                VideoLabelTest::create(['video_id' => $video->id]);
+                $annotation = VideoAnnotationTest::create([
+                    'video_id' => $video->id,
+                    'points' => [[$i, $i]],
+                    'frames' => [$i],
+                ]);
+                VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+                VideoAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+            }
+        }
+
+        $request = new Request([
+            'project' => $project,
+            'volume' => $volume,
+            'clone_annotations' => true,
+            'clone_file_labels' => true,
+        ]);
+
+        // Videos are inserted one by one and all labels and annotations in chunks of
+        // two.
+        config(['biigle.db_param_limit' => 12]);
+        $this->assertQueriesWithinParamLimit();
+        with(new CloneImagesOrVideos($request, $copy))->handle();
+
+        $expect = $this->getVideoVolumeContents($volume);
+        $this->assertCount(3, $expect);
+        $this->assertSame($expect, $this->getVideoVolumeContents($copy));
+    }
+
     public function testCloneVolumeMetadataFile()
     {
         Storage::fake('metadata');
@@ -658,5 +745,40 @@ class CloneImagesOrVideosTest extends ApiTestCase
         (new CloneImagesOrVideos($request, $copy))->handle();
 
         Queue::assertPushed(ProcessCloneVolumeFiles::class);
+    }
+
+    protected function getImageVolumeContents($volume)
+    {
+        return $volume->images()
+            ->with('labels', 'annotations.labels')
+            ->orderBy('id')
+            ->get()
+            ->map(fn ($image) => [
+                'filename' => $image->filename,
+                'labels' => $image->labels->sortBy('id')->pluck('label_id')->values()->all(),
+                'annotations' => $image->annotations->sortBy('id')->map(fn ($a) => [
+                    'points' => $a->points,
+                    'labels' => $a->labels->sortBy('id')->pluck('label_id')->values()->all(),
+                ])->values()->all(),
+            ])
+            ->all();
+    }
+
+    protected function getVideoVolumeContents($volume)
+    {
+        return $volume->videos()
+            ->with('labels', 'annotations.labels')
+            ->orderBy('id')
+            ->get()
+            ->map(fn ($video) => [
+                'filename' => $video->filename,
+                'labels' => $video->labels->sortBy('id')->pluck('label_id')->values()->all(),
+                'annotations' => $video->annotations->sortBy('id')->map(fn ($a) => [
+                    'points' => $a->points,
+                    'frames' => $a->frames,
+                    'labels' => $a->labels->sortBy('id')->pluck('label_id')->values()->all(),
+                ])->values()->all(),
+            ])
+            ->all();
     }
 }
