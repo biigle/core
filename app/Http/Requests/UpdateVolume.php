@@ -36,9 +36,19 @@ class UpdateVolume extends FormRequest
      */
     public function rules()
     {
+        $urlRules = ['bail', 'filled', 'string', 'max:512'];
+
+        // Validate the URL only if it should be changed. Otherwise users who can
+        // update the volume but have no access to the storage disk of the volume
+        // URL (e.g. the user disk of another user) could not update any other
+        // attributes of the volume.
+        if ($this->input('url') !== $this->volume->url) {
+            $urlRules[] = new VolumeUrl;
+        }
+
         return [
             'name' => 'filled|max:512',
-            'url' => ['bail', 'filled', 'string', 'max:512', new VolumeUrl],
+            'url' => $urlRules,
             'handle' => ['bail', 'nullable', 'string', 'max:256', new Handle],
         ];
     }
