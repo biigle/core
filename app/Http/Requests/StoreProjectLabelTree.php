@@ -48,11 +48,12 @@ class StoreProjectLabelTree extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
         $validator->after(function ($validator) {
+            // Only run these checks if all other validation rules passed.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             $tree = LabelTree::find($this->input('id'));
             if ($tree) {
                 $public = $tree->visibility === Visibility::PUBLIC;

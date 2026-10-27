@@ -9,6 +9,7 @@ use Biigle\Tests\LabelSourceTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use DB;
 use Illuminate\Validation\ValidationException;
 use Mockery;
 
@@ -114,6 +115,28 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         $this->assertSame(2, $tree->labels()->count());
         $response->assertRedirect('/settings');
         $response->assertSessionHas('saved', true);
+    }
+
+    public function testStoreValidatesOnce()
+    {
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::EDITOR);
+        $parent = LabelTest::create(['label_tree_id' => $tree->id]);
+        $this->beEditor();
+
+        DB::enableQueryLog();
+        $this->postJson("/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'parent_id' => $parent->id,
+        ])->assertSuccessful();
+
+        // The exists rule of parent_id should be checked only once.
+        $queries = array_filter(
+            DB::getQueryLog(),
+            fn ($q) => str_contains($q['query'], 'count(*)') && str_contains($q['query'], 'from "labels"')
+        );
+        $this->assertCount(1, $queries);
     }
 
     public function testStoreLabelSource()

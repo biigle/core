@@ -7,6 +7,7 @@ use Biigle\Enums\Visibility;
 use Biigle\Project;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use DB;
 
 class ProjectLabelTreeControllerTest extends ApiTestCase
 {
@@ -136,6 +137,24 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
             'description' => $private->description,
             'version' => null,
         ]]);
+    }
+
+    public function testStoreValidatesOnce()
+    {
+        $p = $this->project();
+        $public = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
+        $this->beAdmin();
+
+        DB::enableQueryLog();
+        $this->postJson("/api/v1/projects/{$p->id}/label-trees", ['id' => $public->id])
+            ->assertSuccessful();
+
+        // The exists rule of the label tree ID should be checked only once.
+        $queries = array_filter(
+            DB::getQueryLog(),
+            fn ($q) => str_contains($q['query'], 'count(*)') && str_contains($q['query'], 'from "label_trees"')
+        );
+        $this->assertCount(1, $queries);
     }
 
     public function testStore()
