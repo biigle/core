@@ -42,6 +42,13 @@ class AreaReportGenerator extends AnnotationReportGenerator
     protected $images;
 
     /**
+     * Cached areas of the images in px² and m², indexed by image ID.
+     *
+     * @var array
+     */
+    protected $imageAreas = [];
+
+    /**
      * Generate the report.
      *
      * @param string $path Path to the report file that should be generated
@@ -141,6 +148,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
             'annotation_width_px',
             'annotation_height_px',
             'annotation_area_sqpx',
+            'image_area_sqm',
+            'image_area_sqpx',
         ]);
 
         foreach ($rows as $row) {
@@ -158,6 +167,8 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $row->width_px,
                 $row->height_px,
                 $row->area_sqpx,
+                $row->image_area_sqm,
+                $row->image_area_sqpx,
             ]);
         }
 
@@ -189,6 +200,11 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $annotation->label_names = [$row->label_name];
                 $annotation->image_id = $row->image_id;
                 $annotation->image_filename = $this->images[$row->image_id]->filename;
+
+                // The image area can be used to compute the percentage cover.
+                $imageArea = $this->getImageArea($row->image_id);
+                $annotation->image_area_sqm = $imageArea['sqm'] ?? '';
+                $annotation->image_area_sqpx = $imageArea['sqpx'] ?? '';
 
                 $this->setSize($annotation, $row);
 
@@ -311,37 +327,49 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 return;
         }
 
-        // If the laserpoint detection module exists and the laserpoint detection was
-        // performed for the image of the annotation, compute the dimensions and area
-        // in m (m²) as well.
-        if (class_exists(LImage::class)) {
-            $image = $this->images[$row->image_id];
+        // If the area of the image in m² is known, compute the dimensions and area of
+        // the annotation in m (m²) as well.
+        $imageArea = $this->getImageArea($row->image_id);
+        if (!is_null($imageArea['sqm']) && !is_null($imageArea['sqpx'])) {
+            // If we assume a pixel is a little square then this is the area of a
+            // single pixel.
+            $area = $imageArea['sqm'] / $imageArea['sqpx'];
+            // And this is the width/height of a single pixel.
+            $widthHeight = sqrt($area);
 
-            // Cache the area and number of pixels in the original image object so we
-            // don't have to convert the object and fetch the values again for each
-            // annotation.
-            if (!property_exists($image, 'area') || !property_exists($image, 'px')) {
-                $laserpointsImage = LImage::convert($image);
-                /** @phpstan-ignore property.notFound */
-                $image->area = $laserpointsImage->area;
-                if ($image->width && $image->height) {
-                    /** @phpstan-ignore property.notFound */
-                    $image->px = $image->width * $image->height;
-                }
-            }
-
-            /** @phpstan-ignore property.notFound, property.notFound */
-            if (!is_null($image->area) && !is_null($image->px)) {
-                // If we assume a pixel is a little square then this is the area of a
-                // single pixel.
-                $area = $image->area / $image->px;
-                // And this is the width/height of a single pixel.
-                $widthHeight = sqrt($area);
-
-                $annotation->width_m = $widthHeight * $annotation->width_px;
-                $annotation->height_m = $widthHeight * $annotation->height_px;
-                $annotation->area_sqm = $area * $annotation->area_sqpx;
-            }
+            $annotation->width_m = $widthHeight * $annotation->width_px;
+            $annotation->height_m = $widthHeight * $annotation->height_px;
+            $annotation->area_sqm = $area * $annotation->area_sqpx;
         }
+    }
+
+    /**
+     * Get the area of an image in px² and m² (if available).
+     *
+     * @param int $id Image ID
+     *
+     * @return array With keys 'sqpx' and 'sqm', which may be null.
+     */
+    protected function getImageArea($id)
+    {
+        if (!array_key_exists($id, $this->imageAreas)) {
+            $image = $this->images[$id];
+            $sqpx = null;
+            $sqm = null;
+
+            if ($image->width && $image->height) {
+                $sqpx = $image->width * $image->height;
+            }
+
+            // The area in m² is only known if the laserpoint detection module exists
+            // and the laserpoint detection was performed for the image.
+            if (class_exists(LImage::class)) {
+                $sqm = LImage::convert($image)->area;
+            }
+
+            $this->imageAreas[$id] = ['sqpx' => $sqpx, 'sqm' => $sqm];
+        }
+
+        return $this->imageAreas[$id];
     }
 }
