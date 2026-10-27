@@ -38,7 +38,7 @@ class StoreLabel extends FormRequest
             'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
             'parent_id' => 'integer|exists:labels,id',
             'label_source_id' => 'integer|exists:label_sources,id',
-            'source_id' => 'required_with:label_source_id',
+            'source_id' => 'required_with:label_source_id|max:255',
         ];
     }
 
