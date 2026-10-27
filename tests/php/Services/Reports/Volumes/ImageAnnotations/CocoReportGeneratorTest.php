@@ -97,7 +97,7 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$volume->id}-my-cool-volume.json");
+            ->with('abc', "{$volume->id}_coco_image_annotation_report/{$volume->id}-my-cool-volume.json");
 
         $mock->shouldReceive('close')->once();
 
@@ -186,11 +186,11 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$tree1->id}-{$tree1->name}.json");
+            ->with('abc', "{$image->volume->id}_coco_image_annotation_report/{$tree1->id}-{$tree1->name}.json");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$tree2->id}-{$tree2->name}.json");
+            ->with('def', "{$image->volume->id}_coco_image_annotation_report/{$tree2->id}-{$tree2->name}.json");
 
         $mock->shouldReceive('close')->once();
 
@@ -285,11 +285,11 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$user1->id}-joe-jack-user.json");
+            ->with('abc', "{$image->volume->id}_coco_image_annotation_report/{$user1->id}-joe-jack-user.json");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$user2->id}-jane-user.json");
+            ->with('def', "{$image->volume->id}_coco_image_annotation_report/{$user2->id}-jane-user.json");
 
         $mock->shouldReceive('close')->once();
 
@@ -379,11 +379,11 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$user1->id}-joe-jack-user.json");
+            ->with('abc', "{$image->volume->id}_coco_image_annotation_report/{$user1->id}-joe-jack-user.json");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', 'deleted-users.json');
+            ->with('def', "{$image->volume->id}_coco_image_annotation_report/deleted-users.json");
 
         $mock->shouldReceive('close')->once();
 
@@ -473,7 +473,7 @@ class CocoReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$image->volume->id}-{$volName}.json");
+            ->with('abc', "{$image->volume->id}_coco_image_annotation_report/{$image->volume->id}-{$volName}.json");
 
         $mock->shouldReceive('close')->once();
 
