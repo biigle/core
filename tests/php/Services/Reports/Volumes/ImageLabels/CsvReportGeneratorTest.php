@@ -182,11 +182,11 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$tree1->id}-{$tree1->name}.csv");
+            ->with('abc', "{$image->volume->id}_csv_image_label_report/{$tree1->id}-{$tree1->name}.csv");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$tree2->id}-{$tree2->name}.csv");
+            ->with('def', "{$image->volume->id}_csv_image_label_report/{$tree2->id}-{$tree2->name}.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -276,7 +276,10 @@ class CsvReportGeneratorTest extends TestCase
             ->once()
             ->andReturn(true);
         
-        $expectedTargets = ["{$user1->id}-joe-jack-user.csv", "{$user2->id}-jane-user.csv"];
+        $expectedTargets = [
+            "{$image->volume->id}_csv_image_label_report/{$user1->id}-joe-jack-user.csv",
+            "{$image->volume->id}_csv_image_label_report/{$user2->id}-jane-user.csv",
+        ];
 
         $mock->shouldReceive('addFile')
             ->once()
@@ -380,11 +383,11 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+            ->with('abc', "{$image->volume->id}_csv_image_label_report/{$user1->id}-joe-jack-user.csv");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', 'deleted-users.csv');
+            ->with('def', "{$image->volume->id}_csv_image_label_report/deleted-users.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -488,7 +491,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$image->volume->id}-{$volName}.csv");
+            ->with('abc', "{$image->volume->id}_csv_image_label_report/{$image->volume->id}-{$volName}.csv");
 
         $mock->shouldReceive('close')->once();
 
