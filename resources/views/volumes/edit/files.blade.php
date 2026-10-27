@@ -18,7 +18,7 @@
                     @endif
                     <button type="submit" class="btn btn-success" :disabled="loading || null">Add {{$type}}(s)</button>
                     <p class="help-block" v-text="getError('files')" v-if="hasError('files')"></p>
-                    <span v-else class="help-block">Mutliple files may be added by submitting the filenames as comma separated values.</span>
+                    <span v-else class="help-block">Mutliple files may be added by submitting the filenames as comma separated values. Enclose filenames that contain a comma in double quotes.</span>
                 </div>
             </form>
         </div>

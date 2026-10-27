@@ -830,6 +830,35 @@ class PendingVolumeControllerTest extends ApiTestCase
         });
     }
 
+    public function testUpdateFileStringWithComma()
+    {
+        $disk = Storage::fake('test');
+        config(['volumes.editor_storage_disks' => ['test']]);
+        $pv = PendingVolume::factory()->create([
+            'project_id' => $this->project()->id,
+            'media_type' => MediaType::VIDEO,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $disk->makeDirectory('videos');
+        $disk->put('videos/1,2.mp4', 'abc');
+        $disk->put('videos/3.mp4', 'abc');
+
+        $this->beAdmin();
+        // Use a form request like the volume creation form.
+        $this->put("/api/v1/pending-volumes/{$pv->id}", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://videos',
+            'files' => '"1,2.mp4",3.mp4',
+        ], ['Accept' => 'application/json'])->assertSuccessful();
+
+        Queue::assertPushed(CreateNewImagesOrVideos::class, function ($job) {
+            $this->assertSame(['1,2.mp4', '3.mp4'], $job->filenames);
+
+            return true;
+        });
+    }
+
     public function testUpdateHandle()
     {
         config(['volumes.editor_storage_disks' => ['test']]);

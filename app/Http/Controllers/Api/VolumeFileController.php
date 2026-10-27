@@ -46,7 +46,7 @@ class VolumeFileController extends Controller
      *
      * @apiParam {Number} id The volume ID.
      *
-     * @apiParam (Required attributes) {String} files List of file names, formatted as comma separated values or as array.
+     * @apiParam (Required attributes) {String} files List of file names, formatted as comma separated values (filenames that contain a comma must be enclosed in double quotes) or as array.
      *
      * @apiParam (Deprecated attributes) {String} images This attribute has been replaced by the `files` attribute which should be used instead.
      *
