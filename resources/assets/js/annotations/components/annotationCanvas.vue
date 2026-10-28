@@ -249,17 +249,25 @@ export default {
     },
     methods: {
         createMap() {
+            const zoomControl = new ZoomControl();
+            zoomControl.element.addEventListener('click', () => {
+                this.$emit('movestart');
+            });
+
             let control = new ZoomToExtentControl({
                 tipLabel: 'Zoom to show whole image',
                 // fontawesome compress icon
                 label: '\uf066'
             });
 
-            Keyboard.on('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
+            Keyboard.on('-', () => {
+                this.$emit('movestart');
+                control.zoomToNative();
+            }, 0, this.listenerSet);
 
             let map = new Map({
                 controls: [
-                    new ZoomControl(),
+                    zoomControl,
                     control,
                 ],
                 interactions: defaultInteractions({
@@ -289,7 +297,10 @@ export default {
                 label: '\uf065'
             });
 
-            Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
+            Keyboard.on('+', () => {
+                this.$emit('movestart');
+                control.zoomToNative();
+            }, 0, this.listenerSet);
 
             map.addControl(control);
 
@@ -912,6 +923,11 @@ export default {
         this.map.on('change:size', this.updateMapSize);
         this.map.on('moveend', this.updateMapView);
         this.map.on('movestart', () => {
+            if (this.map.getView().getInteracting()) {
+                this.$emit('movestart');
+            }
+        });
+        this.map.on('change:resolution', () => {
             if (this.map.getView().getInteracting()) {
                 this.$emit('movestart');
             }
