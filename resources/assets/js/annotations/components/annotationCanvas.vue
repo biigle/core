@@ -249,26 +249,29 @@ export default {
     },
     methods: {
         createMap() {
-            const zoomControl = new ZoomControl();
-            zoomControl.element.addEventListener('click', () => {
+            const emitMovestart = () => {
                 this.$emit('movestart');
-            });
+            };
 
-            let control = new ZoomToExtentControl({
+            const zoomControl = new ZoomControl();
+            zoomControl.element.addEventListener('click', emitMovestart, true);
+
+            const extentControl = new ZoomToExtentControl({
                 tipLabel: 'Zoom to show whole image',
                 // fontawesome compress icon
                 label: '\uf066'
             });
+            extentControl.element.addEventListener('click', emitMovestart, true);
 
             Keyboard.on('-', () => {
                 this.$emit('movestart');
-                control.zoomToNative();
+                this.$nextTick(() => extentControl.handleZoomToExtent());
             }, 0, this.listenerSet);
 
             let map = new Map({
                 controls: [
                     zoomControl,
-                    control,
+                    extentControl,
                 ],
                 interactions: defaultInteractions({
                     altShiftDragRotate: false,
@@ -292,17 +295,18 @@ export default {
                 },
             }));
 
-            control = new ZoomToNativeControl({
+            const nativeControl = new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'
             });
+            nativeControl.element.addEventListener('click', emitMovestart, true);
 
             Keyboard.on('+', () => {
                 this.$emit('movestart');
-                control.zoomToNative();
+                this.$nextTick(() => nativeControl.zoomToNative());
             }, 0, this.listenerSet);
 
-            map.addControl(control);
+            map.addControl(nativeControl);
 
             return map;
         },
