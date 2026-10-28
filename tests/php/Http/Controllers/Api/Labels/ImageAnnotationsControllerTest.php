@@ -36,14 +36,50 @@ class ImageAnnotationsControllerTest extends ApiTestCase
                 $a1->id => $image->uuid
             ]);
 
+        $this->getJson("/api/v1/labels/{$label->id}/image-annotations?take=0")
+            ->assertStatus(422);
+
+        $this->getJson("/api/v1/labels/{$label->id}/image-annotations?take=-1")
+            ->assertStatus(422);
+
         // Show the newest annotation first.
         $this->get("/api/v1/labels/{$label->id}/image-annotations?take=1")
             ->assertStatus(200)
             ->assertExactJson([$a2->id => $image->uuid]);
 
         $this->beGlobalAdmin();
+        $this->get("/api/v1/labels/{$label->id}/image-annotations")
+            ->assertStatus(200)
+            ->assertExactJson([
+                $a2->id => $image->uuid,
+                $a1->id => $image->uuid
+            ]);
+
         $this->get("/api/v1/labels/{$label->id}/image-annotations?take=1")
-            ->assertStatus(200);
+            ->assertStatus(200)
+            ->assertExactJson([$a2->id => $image->uuid]);
+    }
+
+    public function testIndexOtherVolume()
+    {
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $otherImage = ImageTest::create();
+        $label = LabelTest::create();
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $otherImage->id]);
+        ImageAnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a2->id]);
+
+        $this->beGuest();
+        $this->get("/api/v1/labels/{$label->id}/image-annotations")
+            ->assertExactJson([$a1->id => $image->uuid]);
+
+        $this->beGlobalAdmin();
+        $this->get("/api/v1/labels/{$label->id}/image-annotations")
+            ->assertExactJson([
+                $a2->id => $otherImage->uuid,
+                $a1->id => $image->uuid,
+            ]);
     }
 
     public function testIndexDuplicates()

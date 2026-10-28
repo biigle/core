@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Enums\Role;
 use Biigle\ImageAnnotation;
 use ModelTestCase;
 
@@ -238,33 +237,6 @@ class ImageAnnotationTest extends ModelTestCase
 
         $ids = ImageAnnotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
         $this->assertSame([$a3->id], $ids);
-    }
-
-    public function testScopeVisibleFor()
-    {
-        $image = ImageTest::create();
-        $user = UserTest::create();
-        $admin = UserTest::create(['role' => Role::ADMIN]);
-        $otherUser = UserTest::create();
-        $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::EDITOR);
-        $project->addVolumeId($image->volume_id);
-
-        $a = static::create([
-            'image_id' => $image->id,
-        ]);
-
-        $this->assertEmpty(ImageAnnotation::visibleFor($otherUser)->pluck('image_annotations.id'));
-        $this->assertTrue(ImageAnnotation::visibleFor($user)->where('image_annotations.id', $a->id)->exists());
-        $this->assertTrue(ImageAnnotation::visibleFor($admin)->where('image_annotations.id', $a->id)->exists());
-    }
-
-    public function testScopeWithLabel()
-    {
-        $al1 = ImageAnnotationLabelTest::create();
-        $al2 = ImageAnnotationLabelTest::create();
-
-        $this->assertSame($al1->annotation->id, ImageAnnotation::withLabel($al1->label)->first()->id);
     }
 
     public function testGetPoints()

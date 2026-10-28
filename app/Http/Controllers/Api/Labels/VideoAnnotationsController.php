@@ -27,14 +27,24 @@ class VideoAnnotationsController extends Controller
     public function index(Request $request, $id)
     {
         $label = Label::findOrFail($id);
-        $this->validate($request, ['take' => 'integer']);
+        $this->validate($request, ['take' => 'integer|min:1']);
+        $user = $request->user();
 
-        return VideoAnnotation::visibleFor($request->user())
-            ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
-            ->withLabel($label)
+        $visibleVolumeIds = fn ($query) => $query->select('project_volume.volume_id')
+            ->from('project_volume')
+            ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
+            ->where('project_user.user_id', $user->id);
+
+        return VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
+            ->when(!$user->can('sudo'), fn ($query) => $query->whereIn('videos.volume_id', $visibleVolumeIds))
+            // Use a subquery instead of a join because an annotation can have the same
+            // label multiple times. The join would require a DISTINCT which prevents the
+            // query from stopping early if "take" is given.
+            ->whereIn('video_annotations.id', fn ($query) => $query->select('annotation_id')
+                ->from('video_annotation_labels')
+                ->where('label_id', $label->id))
             ->when($request->filled('take'), fn ($query) => $query->take($request->input('take')))
             ->select('videos.uuid', 'video_annotations.id')
-            ->distinct()
             ->orderBy('video_annotations.id', 'desc')
             ->pluck('videos.uuid', 'video_annotations.id');
     }
