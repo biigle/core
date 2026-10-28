@@ -22,7 +22,7 @@ class VideoAnnotationsController extends Controller
      *
      * @param Request $request
      * @param int $id Label ID
-     * @return \Illuminate\Support\Collection
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */
     public function index(Request $request, $id)
     {
@@ -35,7 +35,7 @@ class VideoAnnotationsController extends Controller
             ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
             ->where('project_user.user_id', $user->id);
 
-        return VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
+        $annotations = VideoAnnotation::join('videos', 'videos.id', '=', 'video_annotations.video_id')
             ->when(!$user->can('sudo'), fn ($query) => $query->whereIn('videos.volume_id', $visibleVolumeIds))
             // Use a subquery instead of a join because an annotation can have the same
             // label multiple times. The join would require a DISTINCT which prevents the
@@ -45,7 +45,13 @@ class VideoAnnotationsController extends Controller
                 ->where('label_id', $label->id))
             ->when($request->filled('take'), fn ($query) => $query->take($request->input('take')))
             ->select('videos.uuid', 'video_annotations.id')
-            ->orderBy('video_annotations.id', 'desc')
-            ->pluck('videos.uuid', 'video_annotations.id');
+            ->toBase()
+            ->lazyByIdDesc(column: 'video_annotations.id', alias: 'id')
+            ->mapWithKeys(fn ($annotation) => [$annotation->id => $annotation->uuid])
+            // The LazyCollection itself is JsonSerializable and would be encoded at
+            // once. The iterator is streamed instead.
+            ->getIterator();
+
+        return response()->streamJson($annotations);
     }
 }
