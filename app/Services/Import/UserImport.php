@@ -5,6 +5,8 @@ namespace Biigle\Services\Import;
 use Biigle\Enums\Role;
 use Biigle\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserImport extends Import
@@ -39,6 +41,8 @@ class UserImport extends Import
 
         $insert = $candidates->map(function ($u) use ($now) {
             unset($u['id']);
+            // Imported users must set a new password instead of reusing an exported hash.
+            $u['password'] = Hash::make(Str::random(40));
             $u['role'] = Role::EDITOR;
             $u['attrs'] = json_encode(['settings' => $u['settings']]);
             unset($u['settings']);
@@ -108,7 +112,6 @@ class UserImport extends Import
                 'id',
                 'firstname',
                 'lastname',
-                'password',
                 'email',
                 'settings',
                 'uuid',

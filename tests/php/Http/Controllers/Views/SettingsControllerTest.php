@@ -44,6 +44,17 @@ class SettingsControllerTest extends TestCase
         $this->get("settings/tokens")->assertStatus(403);
     }
 
+    public function testNotificationSettingsShowSeparateExportPreference()
+    {
+        $this->be(UserTest::create());
+
+        $this->get('settings/notifications')
+            ->assertStatus(200)
+            ->assertSee('Report notifications')
+            ->assertSee('Export notifications')
+            ->assertSee("settingsKey: 'export_notifications'", false);
+    }
+
     public function testTokensShowsNewlyCreatedToken()
     {
         $user = UserTest::create();

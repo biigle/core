@@ -20,12 +20,11 @@
                     Select volumes to export:
                 </p>
                 <entity-chooser v-bind:entities="volumes" v-on:select="handleChosenVolumes"></entity-chooser>
-                <div class="panel panel-warning">
-                    <div class="panel-body text-warning text-center">
-                        An export file contains user password hashes. Make sure no third party can read it!
-                    </div>
+                <div class="form-group">
+                    <label for="volume-export-description">Description (optional)</label>
+                    <input id="volume-export-description" type="text" class="form-control" maxlength="255" v-model="volumeExportDescription">
                 </div>
-                <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenVolumes || null">Request volume export</a>
+                <button type="button" class="btn btn-success pull-right" v-on:click.prevent="requestVolumeExport" v-bind:disabled="(loading || hasNoChosenVolumes) || null">Request volume export</button>
             </tab>
         @endif
         @if (in_array('labelTrees', $allowedExports))
@@ -34,12 +33,7 @@
                     Select label trees to export:
                 </p>
                 <entity-chooser v-bind:entities="labelTrees" v-on:select="handleChosenLabelTrees"></entity-chooser>
-                <div class="panel panel-warning">
-                    <div class="panel-body text-warning text-center">
-                        An export file contains user password hashes. Make sure no third party can read it!
-                    </div>
-                </div>
-                <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenLabelTrees || null">Request label tree export</a>
+                <button type="button" class="btn btn-success pull-right" v-on:click.prevent="requestLabelTreeExport" v-bind:disabled="(loading || hasNoChosenLabelTrees) || null">Request label tree export</button>
             </tab>
         @endif
         @if (in_array('users', $allowedExports))
@@ -48,12 +42,7 @@
                     Select users to export:
                 </p>
                 <entity-chooser v-bind:entities="users" v-on:select="handleChosenUsers"></entity-chooser>
-                <div class="panel panel-warning">
-                    <div class="panel-body text-warning text-center">
-                        An export file contains user password hashes. Make sure no third party can read it!
-                    </div>
-                </div>
-                <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenUsers || null">Request user export</a>
+                <button type="button" class="btn btn-success pull-right" v-on:click.prevent="requestUserExport" v-bind:disabled="(loading || hasNoChosenUsers) || null">Request user export</button>
             </tab>
         @endif
     </tabs>

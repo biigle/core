@@ -2,9 +2,12 @@
 import EntityChooser from './components/entityChooser.vue';
 import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.js';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
+import {requestExport} from './volumeExport.js';
+import {Http} from 'vue-resource';
 import {Tabs} from 'uiv';
 import {Tab} from 'uiv';
 
@@ -39,6 +42,7 @@ export default {
                 users: [],
             },
             currentTab: 0,
+            volumeExportDescription: '',
             volumeIconMap: {},
         };
     },
@@ -93,15 +97,6 @@ export default {
         hasNoChosenUsers() {
             return this.chosenEntities.users.length === 0;
         },
-        volumeRequestUrl() {
-            return this.exportApiUrl + '/volumes' + this.getQueryString('volumes');
-        },
-        labelTreeRequestUrl() {
-            return this.exportApiUrl + '/label-trees' + this.getQueryString('labelTrees');
-        },
-        userRequestUrl() {
-            return this.exportApiUrl + '/users' + this.getQueryString('users');
-        },
     },
     methods: {
         handleSwitchedTab(index) {
@@ -118,27 +113,37 @@ export default {
         handleChosenVolumes(volumes) {
             this.chosenEntities.volumes = volumes;
         },
+        requestVolumeExport() {
+            return this.requestExport('volumes');
+        },
+        requestLabelTreeExport() {
+            return this.requestExport('labelTrees');
+        },
+        requestUserExport() {
+            return this.requestExport('users');
+        },
+        requestExport(type) {
+            this.startLoading();
+            const path = type === 'labelTrees' ? 'label-trees' : type;
+            const name = type === 'labelTrees' ? 'label tree' : type.slice(0, -1);
+            return requestExport({
+                chosen: this.chosenEntities[type],
+                description: type === 'volumes' ? this.volumeExportDescription : null,
+                entities: this.entities[type],
+                messages: Messages,
+                post: Http.post.bind(Http),
+                type: name,
+                url: this.exportApiUrl + '/' + path,
+            })
+                .catch(handleErrorResponse)
+                .finally(this.finishLoading);
+        },
         handleChosenLabelTrees(labelTrees) {
             this.chosenEntities.labelTrees = labelTrees;
         },
         handleChosenUsers(users) {
             this.chosenEntities.users = users;
         },
-        getQueryString(name) {
-            let entities = this.entities[name];
-            let chosenEntities = this.chosenEntities[name];
-
-            if ((entities.length / 2) > chosenEntities.length) {
-                return '?only=' + (chosenEntities.map((e) => e.id).join(',') || -1);
-            } else if (entities.length > chosenEntities.length) {
-                return '?except=' + entities
-                    .filter((e) => chosenEntities.indexOf(e) === -1)
-                    .map((e) => e.id)
-                    .join(',');
-            }
-
-            return '';
-        }
     },
     watch: {
         currentTab(index) {

@@ -22,6 +22,16 @@ return [
     'import_storage_disk' => env('SYNC_IMPORT_STORAGE_DISK', 'imports'),
 
     /*
+    | Storage disk for generated volume exports.
+    */
+    'export_storage_disk' => env('SYNC_EXPORT_STORAGE_DISK', env('SYNC_VOLUME_EXPORT_STORAGE_DISK', 'volume-exports')),
+
+    'notifications' => [
+        'default_settings' => 'email',
+        'allow_user_settings' => true,
+    ],
+
+    /*
     | Set which imports should be allowed for this instance.
     */
     'allowed_imports' => [
@@ -34,4 +44,6 @@ return [
      | Specifies which queue should be used for which job.
      */
     'postprocess_volume_import_queue' => env('SYNC_POSTPROCESS_VOLUME_IMPORT_QUEUE', 'default'),
+
+    'generate_export_queue' => env('SYNC_GENERATE_EXPORT_QUEUE', env('SYNC_GENERATE_VOLUME_EXPORT_QUEUE', 'default')),
 ];
