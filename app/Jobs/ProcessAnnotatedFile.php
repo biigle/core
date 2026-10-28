@@ -13,14 +13,18 @@ use Exception;
 use FileCache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image;
+use Pgvector\Laravel\Vector;
 use Str;
 use SVG\Nodes\Shapes\SVGCircle;
 use SVG\Nodes\Shapes\SVGEllipse;
@@ -38,6 +42,20 @@ use SVG\SVG;
 abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 {
     use SerializesModels, InteractsWithQueue;
+
+    /**
+     * Number of feature vectors that are written to the database with a single query.
+     *
+     * Feature vectors are only visible to other jobs once the batch is written. A
+     * CopyAnnotationFeatureVector job for a label that is attached in the meantime
+     * finds no feature vector to copy, and computed feature vectors of an unwritten
+     * batch are lost if the job fails. Generating a feature vector is much slower
+     * than writing it, so a small batch keeps most of the performance benefit while
+     * reducing these issues.
+     *
+     * @var int
+     */
+    const FEATURE_VECTOR_BATCH_SIZE = 100;
 
     /**
      * The maximum number of times the job may be redispatched.
@@ -385,7 +403,90 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      *
      * @param Collection<int, TAnnotation> $annotations
      */
-    abstract protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void;
+    protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
+    {
+        $annotations = $annotations->load('labels.label')->keyBy('id');
+        // Write the feature vectors in batches with a single query each instead of a
+        // query for each feature vector.
+        $vectors = [];
+        foreach ($output as $row) {
+            $annotation = $annotations->get($row[0]);
+            // Same conversion as the Vector cast of the model, which is not applied
+            // by upsert().
+            $vector = (string) new Vector($row[1]);
+
+            foreach ($annotation->labels as $al) {
+                $vectors[$al->id] = [
+                    'id' => $al->id,
+                    'annotation_id' => $annotation->id,
+                    'label_id' => $al->label_id,
+                    'label_tree_id' => $al->label->label_tree_id,
+                    'volume_id' => $this->file->volume_id,
+                    'vector' => $vector,
+                ];
+            }
+
+            if (count($vectors) >= static::FEATURE_VECTOR_BATCH_SIZE) {
+                $this->upsertFeatureVectors($vectors);
+                $vectors = [];
+            }
+        }
+
+        $this->upsertFeatureVectors($vectors);
+    }
+
+    /**
+     * Insert or update feature vectors.
+     */
+    protected function upsertFeatureVectors(array $vectors): void
+    {
+        if (empty($vectors)) {
+            return;
+        }
+
+        // The transactions become savepoints if this runs inside another transaction,
+        // which are rolled back on error so the outer transaction is not aborted.
+        try {
+            DB::transaction(fn () => $this->doUpsertFeatureVectors(array_values($vectors)));
+        } catch (QueryException $e) {
+            // SQLSTATE 23503 is a foreign key violation. An annotation or annotation
+            // label was deleted while the feature vectors were generated. A single
+            // violation fails the whole batch so retry each row individually to only
+            // skip the affected ones.
+            if ($e->getCode() !== '23503') {
+                throw $e;
+            }
+
+            foreach ($vectors as $vector) {
+                try {
+                    DB::transaction(fn () => $this->doUpsertFeatureVectors([$vector]));
+                } catch (QueryException $e) {
+                    if ($e->getCode() !== '23503') {
+                        throw $e;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Perform the upsert query for a batch of feature vectors.
+     */
+    protected function doUpsertFeatureVectors(array $vectors): void
+    {
+        $this->getFeatureVectorModel()::upsert(
+            $vectors,
+            ['id'],
+            ['annotation_id', 'label_id', 'label_tree_id', 'volume_id', 'vector']
+        );
+    }
+
+    /**
+     * Get the class name of the feature vector model of the annotation labels.
+     *
+     * @return class-string<Model>
+     */
+    abstract protected function getFeatureVectorModel(): string;
 
     /**
      * Get the query builder for all annotations of the file of this job.
