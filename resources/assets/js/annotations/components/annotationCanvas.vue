@@ -14,7 +14,7 @@ import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '@/core/keyboard.js';
 import LabelBot from './annotationCanvas/labelBot.vue';
 import LabelIndicator from './labelIndicator.vue';
-import Lawnmower from './annotationCanvas/lawnmower.vue';
+import { useLawnmowerMode, LawnmowerEmits } from '@/annotations/composables/lawnmower.js';
 import LineString from '@biigle/ol/geom/LineString';
 import MagicWandInteraction from './annotationCanvas/magicWandInteraction.vue';
 import Map from '@biigle/ol/Map';
@@ -47,7 +47,7 @@ import { isInvalidShape } from '../utils.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
-import {markRaw} from 'vue';
+import {computed, markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 
@@ -69,6 +69,7 @@ export default {
         'new',
         'delete',
         'requires-selected-label',
+        ...LawnmowerEmits,
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
@@ -933,6 +934,13 @@ export default {
 
         this.updateModifyInteractions();
         this.updateDeleteInteractions();
+
+        this.lawnmower = useLawnmowerMode({
+            viewExtent: computed(() => this.viewExtent),
+            image: computed(() => this.image),
+            map: computed(() => this.map),
+            emit: (event, ...args) => this.$emit(event, ...args),
+        })
     },
     mounted() {
         this.map.setTarget(this.$el);
