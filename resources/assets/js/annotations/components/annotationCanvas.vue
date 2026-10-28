@@ -77,7 +77,6 @@ export default {
         AttachLabelInteraction,
         DrawInteractions,
         LabelBot,
-        Lawnmower,
         MagicWandInteraction,
         MeasureInteraction,
         MousePosition,
@@ -939,6 +938,7 @@ export default {
             viewExtent: computed(() => this.viewExtent),
             image: computed(() => this.image),
             map: computed(() => this.map),
+            updateMapSize: () => this.updateMapSize(),
             emit: (event, ...args) => this.$emit(event, ...args),
         })
     },

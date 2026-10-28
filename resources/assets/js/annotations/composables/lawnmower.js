@@ -12,6 +12,7 @@ export function useLawnmowerMode({
     viewExtent = required('viewExtent'),
     image = required('image'),
     map = required('map'),
+    updateMapSize = required('updateMapSize'),
     emit = required('emit'),
 }) {
     // The image section information is needed for the lawnmower cycling mode
@@ -37,12 +38,12 @@ export function useLawnmowerMode({
             (viewExtent.value[3] - viewExtent.value[1]) / 2,
         ];
 
-        if (imageSectionSteps[0] <= 1) {
-            startCenter[0] = extent[2] / 2;
+        if (imageSectionSteps.value[0] <= 1) {
+            startCenter[0] = image.value.width / 2;
         }
 
-        if (imageSectionSteps[1] <= 1) {
-            startCenter[1] = extent[3] / 2;
+        if (imageSectionSteps.value[1] <= 1) {
+            startCenter[1] = image.value.height / 2;
         }
 
         return startCenter;
@@ -55,16 +56,16 @@ export function useLawnmowerMode({
             viewExtent.value[3] - viewExtent.value[1],
         ];
         let overlap;
-        if (imageSectionSteps[0] > 1) {
-            overlap = (stepSize[0] * imageSectionSteps[0]) - image.value.width;
-            stepSize[0] -= overlap / (imageSectionSteps[0] - 1);
+        if (imageSectionSteps.value[0] > 1) {
+            overlap = (stepSize[0] * imageSectionSteps.value[0]) - image.value.width;
+            stepSize[0] -= overlap / (imageSectionSteps.value[0] - 1);
         } else {
             stepSize[0] = viewExtent.value[2];
         }
 
-        if (imageSectionSteps[1] > 1) {
-            overlap = (stepSize[1] * imageSectionSteps[1]) - image.value.height;
-            stepSize[1] -= overlap / (imageSectionSteps[1] - 1);
+        if (imageSectionSteps.value[1] > 1) {
+            overlap = (stepSize[1] * imageSectionSteps.value[1]) - image.value.height;
+            stepSize[1] -= overlap / (imageSectionSteps.value[1] - 1);
         } else {
             stepSize[1] = viewExtent.value[3];
         }
@@ -75,29 +76,29 @@ export function useLawnmowerMode({
     // y direction (e.g. [0, 0] for the first section).
     function getImageSectionCenter(section) {
         return [
-            section[0] * imageSectionStepSize[0] + imageSectionStartCenter[0],
-            section[1] * imageSectionStepSize[1] + imageSectionStartCenter[1],
+            section[0] * imageSectionStepSize.value[0] + imageSectionStartCenter.value[0],
+            section[1] * imageSectionStepSize.value[1] + imageSectionStartCenter.value[1],
         ];
     }
 
     function getImageSectionForCenter(center) {
         return [
             Math.round(
-                (center[0] - imageSectionStartCenter[0]) /
-                imageSectionStepSize[0]
+                (center[0] - imageSectionStartCenter.value[0]) /
+                imageSectionStepSize.value[0]
             ),
             Math.round(
-                (center[1] - imageSectionStartCenter[1]) /
-                imageSectionStepSize[1]
+                (center[1] - imageSectionStartCenter.value[1]) /
+                imageSectionStepSize.value[1]
             ),
         ].map((index, axis) => Math.max(
             0,
-            Math.min(index, imageSectionSteps[axis] - 1)
+            Math.min(index, imageSectionSteps.value[axis] - 1)
         ));
     }
 
     function showImageSection(section) {
-        if (section[0] < imageSectionSteps[0] && section[1] < imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
+        if (section[0] < imageSectionSteps.value[0] && section[1] < imageSectionSteps.value[1] && section[0] >= 0 && section[1] >= 0) {
             emit('lawnmower-pre-viewport-change');
             imageSection = section;
             // Don't make imageSectionCenter a computed property because it
@@ -117,8 +118,8 @@ export function useLawnmowerMode({
 
     function showLastImageSection() {
         showImageSection([
-            imageSectionSteps[0] - 1,
-            imageSectionSteps[1] - 1,
+            imageSectionSteps.value[0] - 1,
+            imageSectionSteps.value[1] - 1,
         ]);
     }
 
@@ -132,7 +133,7 @@ export function useLawnmowerMode({
             return showImageSection([x, imageSection[1]]);
         } else {
             return showImageSection([
-                imageSectionSteps[0] - 1,
+                imageSectionSteps.value[0] - 1,
                 imageSection[1] - 1,
             ]);
         }
@@ -140,7 +141,7 @@ export function useLawnmowerMode({
 
     function showNextImageSection() {
         let x = imageSection[0] + 1;
-        if (x < imageSectionSteps[0]) {
+        if (x < imageSectionSteps.value[0]) {
             return showImageSection([x, imageSection[1]]);
         } else {
             return showImageSection([0, imageSection[1] + 1]);
@@ -230,7 +231,7 @@ export function useLawnmowerMode({
         const state = getSavedLawnmowerState();
         if (pageReloaded) {
             if (state) {
-                $emit('restore-lawnmower-pause-state', state.timestamp);
+                emit('restore-lawnmower-pause-state', state.timestamp);
             }
             pageReloaded = false;
 

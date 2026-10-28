@@ -23,7 +23,6 @@ import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
-import {LawnmowerSaveState} from './components/annotationCanvas/lawnmower.vue';
 import {useVolareMode} from './composables/volare.js';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
@@ -96,7 +95,6 @@ export default {
             imageFilenames: {},
             labelTrees: [],
             projectIds: [],
-            lawnmowerSaveState: "",
             volare: null,
             pauseLawnmowerAutomatically: false,
         };
@@ -208,7 +206,7 @@ export default {
             } else if (this.isLawnmowerAnnotationMode) {
                 // This returns false if the image section can't be advanced (i.e.
                 // the last section is shown).
-                if (this.$refs.canvas.showNextImageSection()) {
+                if (this.$refs.canvas.lawnmower.showNextImageSection()) {
                     return;
                 } else {
                     // Show the first image section in the next image in this case,
@@ -236,7 +234,7 @@ export default {
             } else if (this.isLawnmowerAnnotationMode) {
                 // This returns false if the image section can't be reversed (i.e.
                 // the first section is shown).
-                if (this.$refs.canvas.showPreviousImageSection()) {
+                if (this.$refs.canvas.lawnmower.showPreviousImageSection()) {
                     return;
                 } else {
                     // Show the last image section in the previous image in this
@@ -258,9 +256,9 @@ export default {
         maybeUpdateShownImageSection() {
             if (this.isLawnmowerAnnotationMode) {
                 if (this.annotationModeCarry === Infinity) {
-                    this.$refs.canvas.showLastImageSection();
+                    this.$refs.canvas.lawnmower.showLastImageSection();
                 } else {
-                    this.$refs.canvas.showFirstImageSection();
+                    this.$refs.canvas.lawnmower.showFirstImageSection();
                 }
             }
         },
@@ -704,11 +702,11 @@ export default {
         },
         annotationMode(newMode, oldMode) {
             if (newMode === 'lawnmowerPaused') {
-                this.lawnmowerSaveState = LawnmowerSaveState.SAVE;
+                this.$refs.canvas.lawnmower.saveCurrentLawnmowerState();
             } else if (oldMode === 'lawnmowerPaused' && newMode === 'lawnmower') {
-                this.lawnmowerSaveState = LawnmowerSaveState.LOAD;
+                this.$refs.canvas.lawnmower.loadSavedLawnmowerState();
             } else {
-                this.lawnmowerSaveState = LawnmowerSaveState.DISCARD;
+                this.$refs.canvas.lawnmower.discardSavedLawnmowerState();
             }
         }
     },
