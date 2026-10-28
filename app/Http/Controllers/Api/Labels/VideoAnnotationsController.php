@@ -52,6 +52,7 @@ class VideoAnnotationsController extends Controller
             // once. The iterator is streamed instead.
             ->getIterator();
 
+        // @phpstan-ignore argument.type (StreamedJsonResponse accepts any iterable at runtime.)
         return response()->streamJson($annotations);
     }
 }
