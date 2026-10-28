@@ -77,5 +77,5 @@ export default {
     created() {
         this.show = false;
     }
-}
+};
 </script>

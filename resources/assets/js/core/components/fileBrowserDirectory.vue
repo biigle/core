@@ -254,13 +254,13 @@ export default {
             this.$emit('select-file', file, directory, path, event);
         },
         handleSelectFile(file, event) {
-            this.emitSelectFile(file, this.directory, this.fullPath, event)
+            this.emitSelectFile(file, this.directory, this.fullPath, event);
         },
         emitUnselectFile(file, directory, path, event) {
             this.$emit('unselect-file', file, directory, path, event);
         },
         handleUnselectFile(file, event) {
-            this.emitUnselectFile(file, this.directory, this.fullPath, event)
+            this.emitUnselectFile(file, this.directory, this.fullPath, event);
         },
     },
     watch: {

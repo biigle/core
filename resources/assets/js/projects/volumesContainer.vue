@@ -254,7 +254,7 @@ export default {
     },
     watch: {
         volumesCount(count) {
-            Events.emit('project.volumes.count', count)
+            Events.emit('project.volumes.count', count);
         },
         currentSorting(sorting) {
             if (sorting === SORTING.DATE_DOWN) {

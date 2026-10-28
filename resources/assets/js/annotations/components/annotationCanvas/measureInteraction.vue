@@ -118,7 +118,7 @@ export default {
         measureInteraction.on('drawstart', this.handleMeasureDrawStart);
         measureInteraction.on('drawend', this.handleMeasureDrawEnd);
         Keyboard.on('Shift+f', this.toggleMeasuring, 0, this.listenerSet);
-        Keyboard.on('Enter', this.convertMeasurement, 0, this.listenerSet)
+        Keyboard.on('Enter', this.convertMeasurement, 0, this.listenerSet);
 
         // Do not make this reactive.
         // See: https://github.com/biigle/annotations/issues/108

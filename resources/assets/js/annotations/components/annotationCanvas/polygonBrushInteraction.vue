@@ -177,7 +177,7 @@ export default {
         shiftClickSelectInteraction.setActive(false);
         this.map.addInteraction(shiftClickSelectInteraction);
 
-        addRightClickDragPanToMap(this.map, () => !this.isNotAPolygonTool)
+        addRightClickDragPanToMap(this.map, () => !this.isNotAPolygonTool);
     },
 };
 </script>

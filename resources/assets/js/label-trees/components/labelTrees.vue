@@ -150,7 +150,7 @@ export default {
     },
     computed: {
         customOrderStorageKeys() {
-            return this.sortingProjectIds.map(id => `biigle.projects.${id}.label-trees.custom-order`)
+            return this.sortingProjectIds.map(id => `biigle.projects.${id}.label-trees.custom-order`);
         },
         sortedTrees() {
             return this.customOrder.map(id => this.trees.find(tree => id === tree.id));

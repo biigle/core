@@ -375,7 +375,7 @@ class Images {
                     ? this.cachedIds.pop()
                     : this.cachedIds.shift();
                 if (id !== deleteId) {
-                    delete this.cache[deleteId]
+                    delete this.cache[deleteId];
                 }
             }
         }

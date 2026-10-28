@@ -11,7 +11,7 @@ export let exitFullscreen = function () {
             document.webkitExitFullscreen();
         }
     }
-}
+};
 
 let debounceTimeouts = {};
 export let debounce = function (callback, wait, id) {
@@ -104,10 +104,10 @@ export let throttle = function (callback, wait, id) {
 
 
 export let capitalize = function (s) {
-  if (typeof s !== 'string') return ''
+  if (typeof s !== 'string') return '';
 
-  return s.charAt(0).toUpperCase() + s.slice(1)
-}
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
 
 export let escapeHtml = function (item) {
     let escItem = { ...item };
@@ -123,4 +123,4 @@ export let escapeHtml = function (item) {
     };
     escItem.name = escItem.name.replace(/[&<>"']/g, replaceDangerous);
     return escItem;
-}
+};

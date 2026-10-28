@@ -44,9 +44,9 @@ export default {
     },
     methods: {
         emitSelectLabel() {
-            this.labelItem.selected = !this.labelItem.selected
+            this.labelItem.selected = !this.labelItem.selected;
             if (this.labelItem.selected) {
-                this.$emit('select', this.labelItem)
+                this.$emit('select', this.labelItem);
             } else {
                 this.$emit('deselect');
             }

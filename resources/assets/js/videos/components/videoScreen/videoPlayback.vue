@@ -13,6 +13,7 @@ export default {
     emits: [
         'seek',
         'start-seeking',
+        'start-playing',
     ],
     data() {
         return {
@@ -108,6 +109,7 @@ export default {
         },
         setPlaying() {
             this.playing = true;
+            this.$emit('start-playing');
             if (!this.animationFrameId) {
                 this.startRenderLoop();
             }
@@ -143,14 +145,14 @@ export default {
         },
         // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
         async emitPreviousFrame() {
-            if (this.video.currentTime == 0 || this.seekingFrame) return;
+            if (this.video.currentTime == 0 || this.seekingFrame || this.labelbotIsComputing) return;
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showPreviousFrame();
             this.seekingFrame = false;
         },
         async emitNextFrame() {
-            if (this.video.duration - this.video.currentTime == 0 || this.seekingFrame) return;
+            if (this.video.duration - this.video.currentTime == 0 || this.seekingFrame || this.labelbotIsComputing) return;
             this.$emit('start-seeking');
             this.seekingFrame = true;
             await this.showNextFrame();
@@ -160,8 +162,8 @@ export default {
             let promise = new Promise((resolve) => {
                 this.video.requestVideoFrameCallback((now, metadata) => {
                     resolve(metadata);
-                })
-            })
+                });
+            });
             return promise;
         },
         async showPreviousFrame() {
@@ -187,7 +189,7 @@ export default {
                     const metadata = await this.frameInfoCallback();
                     if (metadata.mediaTime !== firstMetadata.mediaTime) break;
                 }
-            } catch(e) {console.error(e)}
+            } catch(e) {console.error(e);}
         },
         async showNextFrame() {
             try {
@@ -212,7 +214,7 @@ export default {
                     const metadata = await this.frameInfoCallback();
                     if (metadata.mediaTime !== firstMetadata.mediaTime) break;
                 }
-            } catch(e) {console.error(e)}
+            } catch(e) {console.error(e);}
         },
         // Methods to jump back and forward in video. Step is given by parameter jumpStep.
         jumpBackward() {
