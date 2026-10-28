@@ -99,15 +99,15 @@ export default {
                 .then((e) => {
                     if (e.data?.error) {
                         throw e.data.error;
+                    } else if (this.labelbotState === LABELBOT_STATES.INITIALIZING) {
+                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    } else {
+                        this.updateLabelbotState(LABELBOT_STATES.OFF);
                     }
-                    this.updateLabelbotState(LABELBOT_STATES.READY);
                 })
                 .catch((e) => {
                     Messages.danger('LabelBOT could not be initialized.');
-                    this.updateLabelbotState(LABELBOT_STATES.OFF);
-                    this.labelbotWorker.terminate();
-                    this.labelbotWorker = null;
-
+                    this.terminateLabelbot();
                     throw e;
                 });
 
@@ -178,8 +178,10 @@ export default {
                     return saveCallback(annotation);
                 })
                 .then(annotation => {
-                    if (this.labelbotRequestsInFlight === 1) {
-                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    if (this.labelbotIsComputing) {
+                        if (this.labelbotRequestsInFlight === 1) {
+                            this.updateLabelbotState(LABELBOT_STATES.READY);
+                        }
                     }
 
                     return annotation;
@@ -187,8 +189,10 @@ export default {
                 .catch((e) => {
                     if (e.status === 429) {
                         this.updateLabelbotState(LABELBOT_STATES.BUSY);
-                    } else if (this.labelbotRequestsInFlight === 1) {
-                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    } else if (this.labelbotIsComputing) {
+                        if (this.labelbotRequestsInFlight === 1) {
+                            this.updateLabelbotState(LABELBOT_STATES.READY);
+                        }
                     }
 
                     throw e;
