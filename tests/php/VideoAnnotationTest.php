@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests;
 
-use Biigle\Enums\Role;
 use Biigle\Enums\Shape;
 use Biigle\VideoAnnotation;
 use Exception;
@@ -323,60 +322,6 @@ class VideoAnnotationTest extends ModelTestCase
 
         $ids = VideoAnnotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
         $this->assertSame([$a3->id], $ids);
-    }
-
-    public function testScopeVisibleFor()
-    {
-        $video = VideoTest::create();
-        $user = UserTest::create();
-        $admin = UserTest::create(['role' => Role::ADMIN]);
-        $otherUser = UserTest::create();
-        $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::EDITOR);
-        $project->addVolumeId($video->volume_id);
-
-        $a = static::create([
-            'video_id' => $video->id,
-        ]);
-
-        $this->assertEmpty(VideoAnnotation::visibleFor($otherUser)->pluck('video_annotations.id'));
-        $this->assertTrue(VideoAnnotation::visibleFor($user)->where('video_annotations.id', $a->id)->exists());
-        $this->assertTrue(VideoAnnotation::visibleFor($admin)->where('video_annotations.id', $a->id)->exists());
-    }
-
-    public function testScopeVisibleForMultipleProjects()
-    {
-        $file = VideoTest::create();
-        $otherFile = VideoTest::create();
-        $user = UserTest::create();
-        $project1 = ProjectTest::create();
-        $project2 = ProjectTest::create();
-        // The user is member of project 2 only. The volume belongs to both projects.
-        $project2->addUserId($user->id, Role::GUEST);
-        $project1->addVolumeId($file->volume_id);
-        $project2->addVolumeId($file->volume_id);
-        $project1->addVolumeId($otherFile->volume_id);
-
-        $a1 = static::create(['video_id' => $file->id]);
-        $a2 = static::create(['video_id' => $file->id]);
-        static::create(['video_id' => $otherFile->id]);
-
-        // Join the files like the controllers do.
-        $ids = VideoAnnotation::visibleFor($user)
-            ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
-            ->orderBy('video_annotations.id')
-            ->pluck('video_annotations.id')
-            ->all();
-
-        $this->assertSame([$a1->id, $a2->id], $ids);
-    }
-
-    public function testScopeWithLabel()
-    {
-        $al1 = VideoAnnotationLabelTest::create();
-        $al2 = VideoAnnotationLabelTest::create();
-
-        $this->assertSame($al1->annotation->id, VideoAnnotation::withLabel($al1->label)->first()->id);
     }
 
     public function testGetPoints()

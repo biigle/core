@@ -56,60 +56,6 @@ abstract class Annotation extends Model implements AnnotationContract
     }
 
     /**
-     * Scope a query to only include annotations that are visible for a certain user.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @param User $user The user to whom the restrictions should apply ('own' user)
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function scopeVisibleFor($query, User $user)
-    {
-        if ($user->can('sudo')) {
-            return $query;
-        }
-
-        $ownerKeyName = $this->file()->getQualifiedOwnerKeyName();
-        $ownerTable = explode('.', $ownerKeyName)[0];
-
-        // Restrict the files instead of the annotations. This is much faster than
-        // restricting the annotations with a join on the (huge) annotation table.
-        return $query->whereIn($this->file()->getQualifiedForeignKeyName(), function ($query) use ($user, $ownerKeyName, $ownerTable) {
-            $query->select($ownerKeyName)
-                ->from($ownerTable)
-                ->whereIn("{$ownerTable}.volume_id", function ($query) use ($user) {
-                    $query->select('volume_id')
-                        ->from('project_volume')
-                        ->whereIn('project_id', function ($query) use ($user) {
-                            $query->select('project_id')
-                                ->from('project_user')
-                                ->where('user_id', $user->id);
-                        });
-                });
-        });
-    }
-
-    /**
-     * Scope a query to only include annotations that have a certain label attached.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @param Label $label
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function scopeWithLabel($query, Label $label)
-    {
-        $foreignKeyName = $this->labels()->getQualifiedForeignKeyName();
-        $foreignTable = explode('.', $foreignKeyName)[0];
-        $parentKeyName = $this->labels()->getQualifiedParentKeyName();
-        $table = $this->getTable();
-
-        return $query->join($foreignTable, $foreignKeyName, '=', $parentKeyName)
-            ->where("{$foreignTable}.label_id", $label->id)
-            ->select("{$table}.*");
-    }
-
-    /**
      * Scope a query to only include annotations allowed by the session for the user.
      *
      * @param \Illuminate\Contracts\Database\Query\Builder $query
