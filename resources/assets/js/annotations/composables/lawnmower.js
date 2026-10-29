@@ -99,17 +99,23 @@ export function useLawnmowerMode({
 
     function showImageSection(section) {
         if (section[0] < imageSectionSteps.value[0] && section[1] < imageSectionSteps.value[1] && section[0] >= 0 && section[1] >= 0) {
-            emit('lawnmower-pre-viewport-change');
+            const currentCenter = map.value.getView().getCenter();
+            const newCenter = getImageSectionCenter(section);
+            const centerChanged = !currentCenter || currentCenter[0] !== newCenter[0] || currentCenter[1] !== newCenter[1];
+
             imageSection = section;
-            // Don't make imageSectionCenter a computed property because it
-            // would automatically update when the resolution changes. But we
-            // need the old value to compute the new image section in the
-            // resolution watcher first!
-            imageSectionCenter = getImageSectionCenter(section);
-            map.value.getView().setCenter(imageSectionCenter);
+            imageSectionCenter = newCenter;
+
+            if (!centerChanged) {
+                return true;
+            }
+
+            emit('lawnmower-pre-viewport-change');
             map.value.once('rendercomplete', () => {
                 emit('lawnmower-post-viewport-change');
             });
+            map.value.getView().setCenter(imageSectionCenter);
+
             return true;
         }
 
@@ -219,11 +225,11 @@ export function useLawnmowerMode({
         nextTick(() => {
             imageSectionCenter = state.center;
             imageSection = getImageSectionForCenter(state.center);
-            view.setCenter(state.center);
-            discardSavedLawnmowerState();
             map.value.once('rendercomplete', () => {
                 emit('lawnmower-post-viewport-change');
             });
+            view.setCenter(state.center);
+            discardSavedLawnmowerState();
         });
     }
 

@@ -96,7 +96,7 @@ export default {
             labelTrees: [],
             projectIds: [],
             volare: null,
-            pauseLawnmowerAutomatically: false,
+            pauseLawnmowerAutomatically: true,
         };
     },
     provide() {
