@@ -10,6 +10,7 @@ use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Jobs\ProcessAnnotatedImage;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
 use Bus;
 use Exception;
 use FileCache;
@@ -518,6 +519,36 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertSame(range(0, 383), $vectors[1]->vector->toArray());
     }
 
+    public function testGenerateFeatureVectorBatches()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(3);
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = ImageTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 3; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $file->id, 'points' => [200, 200], 'shape' => Shape::POINT]);
+            $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        // The labels of one annotation may be split across batches.
+        $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+
+        $job = new ProcessAnnotatedImageBatchStub($file);
+        $job->mock = $image;
+        $job->handle();
+
+        $vectors = ImageAnnotationLabelFeatureVector::orderBy('id')->get();
+        $this->assertSame(array_map(fn ($al) => $al->id, $annotationLabels), $vectors->pluck('id')->all());
+        foreach ($vectors as $index => $vector) {
+            $this->assertSame($annotationLabels[$index]->annotation_id, $vector->annotation_id);
+            $this->assertSame($annotationLabels[$index]->label_id, $vector->label_id);
+            $this->assertSame($annotationLabels[$index]->label->label_tree_id, $vector->label_tree_id);
+            $this->assertSame($file->volume_id, $vector->volume_id);
+            $this->assertSame(range(0, 383), $vector->vector->toArray());
+        }
+    }
+
     public function testGenerateFeatureVectorUpdate()
     {
         Storage::fake('test');
@@ -555,6 +586,80 @@ class ProcessAnnotatedImageTest extends TestCase
         $this->assertSame(2, $count);
         $this->assertSame(range(1, 384), $iafv->fresh()->vector->toArray());
         $this->assertSame(range(1, 384), $iafv2->fresh()->vector->toArray());
+    }
+
+    public function testGenerateFeatureVectorDeletedAnnotationLabel()
+    {
+        Storage::fake('test');
+        $annotation = ImageAnnotationTest::create([
+            'points' => [200, 200],
+            'shape' => Shape::POINT,
+        ]);
+        $annotationLabel = ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $job = new ProcessAnnotatedImageStub(
+            $annotation->image,
+            skipPatches: true,
+            skipSvgs: true
+        );
+        // The labels are already loaded at this point, so this simulates a label that
+        // is deleted while the feature vector is generated.
+        $job->beforePyworkerRequest = fn () => $annotationLabel->delete();
+
+        $job->handle();
+        $this->assertSame(0, ImageAnnotationLabelFeatureVector::count());
+    }
+
+    public function testGenerateFeatureVectorDeletedAnnotationLabelInBatch()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(3);
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = ImageTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 3; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $file->id, 'points' => [200, 200], 'shape' => Shape::POINT]);
+            $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        $deleted = $annotationLabels[1];
+
+        $job = new ProcessAnnotatedImageStub($file);
+        $job->mock = $image;
+        // The labels are already loaded at this point, so this simulates a label that
+        // is deleted while the feature vectors are generated. All feature vectors are
+        // in the same batch, so the batch fails and each row must be retried.
+        $job->beforePyworkerRequest = fn () => $deleted->delete();
+        $job->handle();
+
+        $expect = [$annotationLabels[0]->id, $annotationLabels[2]->id];
+        $this->assertSame($expect, ImageAnnotationLabelFeatureVector::orderBy('id')->pluck('id')->all());
+    }
+
+    public function testGenerateFeatureVectorDeletedAnnotationLabelMultipleBatches()
+    {
+        Storage::fake('test');
+        $image = $this->getImageMock(4);
+        $image->shouldReceive('crop')->andReturn($image);
+        $image->shouldReceive('writeToBuffer')->andReturn('abc123');
+        $file = ImageTest::create();
+        $annotationLabels = [];
+        for ($i = 0; $i < 4; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $file->id, 'points' => [200, 200], 'shape' => Shape::POINT]);
+            $annotationLabels[] = ImageAnnotationLabelTest::create(['annotation_id' => $annotation->id]);
+        }
+        $deleted = $annotationLabels[0];
+
+        $job = new ProcessAnnotatedImageBatchStub($file);
+        $job->mock = $image;
+        // Only the first batch contains the deleted label. The following batch must
+        // still be written.
+        $job->beforePyworkerRequest = fn () => $deleted->delete();
+        $job->handle();
+
+        $expect = array_map(fn ($al) => $al->id, array_slice($annotationLabels, 1));
+        $this->assertSame($expect, ImageAnnotationLabelFeatureVector::orderBy('id')->pluck('id')->all());
     }
 
     public function testHandlePatchOnly()
@@ -815,6 +920,7 @@ class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
     public $mock;
     public $featureVector;
     public $capturedCropBoxes = [];
+    public $beforePyworkerRequest;
 
     public function getVipsImage(string $path, array $options = [])
     {
@@ -837,6 +943,15 @@ class ProcessAnnotatedImageStub extends ProcessAnnotatedImage
 
     protected function sendPyworkerRequest(string $buffer): array
     {
+        if ($this->beforePyworkerRequest) {
+            ($this->beforePyworkerRequest)();
+        }
+
         return $this->featureVector ?: range(0, 383);
     }
+}
+
+class ProcessAnnotatedImageBatchStub extends ProcessAnnotatedImageStub
+{
+    const FEATURE_VECTOR_BATCH_SIZE = 2;
 }
