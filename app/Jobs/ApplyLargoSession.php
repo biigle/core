@@ -122,10 +122,16 @@ class ApplyLargoSession extends Job implements ShouldQueue
             $this->guideline = AnnotationGuideline::where('enforced', true)->find($this->guidelineId);
         }
 
+        // Retry on deadlocks. These can't be prevented entirely because other
+        // transactions may lock the annotations in an arbitrary order (see
+        // deleteDanglingAnnotations()).
         DB::transaction(function () {
+            // Reset the results of a previous attempt that was rolled back.
+            $this->rejectedByGuideline = false;
+            $this->rejectedOtherUser = false;
             $this->handleImageAnnotations();
             $this->handleVideoAnnotations();
-        });
+        }, 3);
 
         $this->cleanupJobId();
 
@@ -527,25 +533,28 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // in the next step.
         // This is built as a map of annotation ID and label ID pair keys to make the
         // existence check later much faster.
-        $alreadyThere = $labelModel::select('annotation_id', 'label_id')
-            ->where('user_id', $user->id)
-            ->where(function ($query) use ($changed) {
-                foreach ($changed as $labelId => $annotationIds) {
-                    $query->orWhere(function ($query) use ($labelId, $annotationIds) {
-                        $query->where('label_id', $labelId)
-                            ->whereIn('annotation_id', $annotationIds);
+        // The annotation IDs are chunked because they may exceed the parameter limit of
+        // a single database query.
+        $chunkSize = config('biigle.db_param_limit') - 2;
+        $alreadyThere = [];
+        foreach ($changed as $labelId => $annotationIds) {
+            foreach (array_chunk($annotationIds, $chunkSize) as $chunk) {
+                $labelModel::where('user_id', $user->id)
+                    ->where('label_id', $labelId)
+                    ->whereIn('annotation_id', $chunk)
+                    ->pluck('annotation_id')
+                    ->each(function ($annotationId) use (&$alreadyThere, $labelId) {
+                        $alreadyThere["{$annotationId}-{$labelId}"] = true;
                     });
-                }
-            })
-            ->get()
-            ->map(fn ($label) => "{$label->annotation_id}-{$label->label_id}")
-            ->flip()
-            ->toArray();
+            }
+        }
 
         $annotationIds = array_unique(array_merge(...$changed));
-        $existingAnnotations = $annotationModel::whereIn('id', $annotationIds)
-            ->pluck('id')
-            ->toArray();
+        $existingAnnotations = [];
+        foreach (array_chunk($annotationIds, config('biigle.db_param_limit')) as $chunk) {
+            $existingAnnotations[] = $annotationModel::whereIn('id', $chunk)->pluck('id')->toArray();
+        }
+        $existingAnnotations = array_merge(...$existingAnnotations);
 
         $newAnnotationLabels = [];
         $now = Carbon::now();
@@ -630,33 +639,50 @@ class ApplyLargoSession extends Job implements ShouldQueue
         }
 
         $affected = array_values(array_unique(array_merge($dismissed, $changed)));
+        // Sort globally so the lock order is consistent across chunks.
+        sort($affected);
+        // The annotation IDs are chunked because they may exceed the parameter limit of
+        // a single database query.
+        $chunks = array_chunk($affected, config('biigle.db_param_limit'));
 
         $relation = (new $annotationModel)->file();
         $fileTable = $relation->getRelated()->getTable();
 
-        $toDeleteQuery = $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $affected)
+        $toDeleteQuery = fn ($chunk) => $annotationModel::whereIn($relation->getQualifiedParentKeyName(), $chunk)
             ->whereDoesntHave('labels');
 
         // Upgrade the locks of lockAnnotations() in a separate statement before the
         // delete. A label attached concurrently by a user would otherwise not be seen
         // by the snapshot of the delete statement and the annotation (including the
         // new label) would be deleted. With the lock acquired first, the delete takes
-        // a fresh snapshot that sees the new label. This can't deadlock with other
-        // jobs because they are already serialized by lockAnnotations().
-        $toDeleteQuery->clone()->orderBy('id')->lockForUpdate()->pluck('id');
+        // a fresh snapshot that sees the new label.
+        //
+        // This can still deadlock with transactions that hold KEY SHARE locks on the
+        // annotations (via FK checks of label inserts or feature vector upserts) while
+        // they wait for rows that this job modified. The transaction in handle() is
+        // retried in this case.
+        foreach ($chunks as $chunk) {
+            $toDeleteQuery($chunk)->orderBy('id')->lockForUpdate()->pluck('id');
+        }
 
-        $toDeleteArgs = $toDeleteQuery->clone()->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
-            ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
-            ->toArray();
+        $toDeleteArgs = [];
+        foreach ($chunks as $chunk) {
+            $toDeleteArgs += $toDeleteQuery($chunk)->join($fileTable, $relation->getQualifiedOwnerKeyName(), '=', $relation->getQualifiedForeignKeyName())
+                ->pluck("{$fileTable}.uuid", $relation->getQualifiedParentKeyName())
+                ->toArray();
+        }
 
         if (!empty($toDeleteArgs)) {
-            $toDeleteQuery->delete();
+            foreach (array_chunk(array_keys($toDeleteArgs), config('biigle.db_param_limit')) as $chunk) {
+                $toDeleteQuery($chunk)->delete();
+            }
             // The annotation model observer does not fire for this query so we
-            // dispatch the remove patch job manually here.
+            // dispatch the remove patch job manually here. Only dispatch after commit
+            // because the transaction may be rolled back and retried.
             if ($annotationModel === ImageAnnotation::class) {
-                RemoveImageAnnotationPatches::dispatch($toDeleteArgs);
+                RemoveImageAnnotationPatches::dispatch($toDeleteArgs)->afterCommit();
             } else {
-                RemoveVideoAnnotationPatches::dispatch($toDeleteArgs);
+                RemoveVideoAnnotationPatches::dispatch($toDeleteArgs)->afterCommit();
             }
         }
     }

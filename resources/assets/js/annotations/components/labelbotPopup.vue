@@ -118,6 +118,7 @@ export default {
             shouldHaveProgressBar: true,
             maybeGetsAttention: false,
             typeaheadFocused: false,
+            labelEventEmitted: false,
             overlay: null,
             lineFeature: null,
             listenerKeys: [],
@@ -247,6 +248,9 @@ export default {
         },
         confirmAndClose() {
             this.emitClose();
+            this.emitAttachedLabelEvent();
+        },
+        emitAttachedLabelEvent() {
             if (this.attachedIndex === -1) {
                 Events.emit('labelbot.chose_label_other');
             } else {
@@ -254,6 +258,7 @@ export default {
             }
         },
         emitClose() {
+            this.labelEventEmitted = true;
             this.$emit('close', this.annotation);
         },
         handleTypeaheadFocus() {
@@ -491,6 +496,15 @@ export default {
             Keyboard.off('1', this.selectLabel1, 'labelbot');
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');
+
+            // If the popup is closed and no event is sent,
+            // then send the event of chose label_1
+            // This also works if the image/video was changed while the popup was open
+            // With an annotation guideline, the attached label is not necessarily
+            // label 1.
+            if (!this.labelEventEmitted) {
+                this.emitAttachedLabelEvent();
+            }
         }
     },
 };

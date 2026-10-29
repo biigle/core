@@ -66,4 +66,29 @@ class GetUsersWithAnnotationsTest extends ApiTestCase
             ->assertStatus(200)
             ->assertExactJson($expected);
     }
+
+    public function testGetUsersWithAnnotationsDistinct()
+    {
+        $user2 = UserTest::create();
+        $user3 = UserTest::create();
+
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'user_id' => $user2->id]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'user_id' => $user2->id]);
+        // Label of a deleted user.
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'user_id' => null]);
+
+        // Annotation in another volume.
+        $a3 = ImageAnnotationTest::create();
+        ImageAnnotationLabelTest::create(['annotation_id' => $a3->id, 'user_id' => $user3->id]);
+
+        $this->beEditor();
+        $this->get('api/v1/volumes/'.$this->volume()->id.'/users-with-annotations')
+            ->assertStatus(200)
+            ->assertExactJson([
+                ['user_id' => $user2->id, 'name' => "{$user2->firstname} {$user2->lastname}"],
+            ]);
+    }
 }
