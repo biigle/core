@@ -3,6 +3,15 @@
     <div class="clearfix">
         <div class="pull-right">
             <loader :active="loading"></loader>
+            <a
+                v-if="annotationGuideline"
+                class="btn btn-default"
+                :href="printUrl"
+                target="_blank"
+                title="Print the guideline or save it as PDF"
+                >
+                <i class="fa fa-print"></i> Print
+            </a>
         </div>
         <p class="text-muted">
             An annotation guideline can provide detailed instructions and constraints for new annotations in a project. <a href="/manual/tutorials/projects/about#guideline" title="Learn more about annotation guidelines" target="_blank">Learn more.</a>
@@ -115,7 +124,7 @@
             </div>
 
             <div class="form-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="submit" :disabled="loading">
                     Save
                 </button>
                 <button class="btn btn-default" type="button" @click="cancelEditingGuideline">
@@ -313,6 +322,10 @@ export default {
     props: {
         isAdmin: {
             type: Boolean,
+            required: true,
+        },
+        printUrl: {
+            type: String,
             required: true,
         },
         imageMaxWidth: {
