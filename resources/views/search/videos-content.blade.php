@@ -1,5 +1,7 @@
 @if($type === 'videos')
-<h2 class="lead">{{number_format($videoResultCount)}} video results</h2>
+@unless ($fileQueryTooShort)
+<h2 class="lead">@if($videoResultCountCapped)more than {{number_format($fileResultCountCap)}}@else{{number_format($videoResultCount)}}@endif video results</h2>
+@endunless
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $video)
         <li class="col-xs-4">
@@ -16,11 +18,15 @@
 
     @if ($results->isEmpty())
         <p class="well well-lg text-center">
-            We couldn't find any videos
-            @if ($query)
-                matching '{{$query}}'.
+            @if ($fileQueryTooShort)
+                Please use at least {{$minFileQueryLength}} characters to search for videos.
             @else
-                for you.
+                We couldn't find any videos
+                @if ($query)
+                    matching '{{$query}}'.
+                @else
+                    for you.
+                @endif
             @endif
         </p>
     @endif
