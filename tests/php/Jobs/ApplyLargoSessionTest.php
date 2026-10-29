@@ -24,6 +24,7 @@ use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use Cache;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Log;
@@ -774,14 +775,92 @@ class ApplyLargoSessionTest extends TestCase
             ]);
         }
         
+        // This annotation keeps a label of another user.
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $annotations[6]->id,
+            'label_id' => $label->id,
+        ]);
+
         $annotationIds = collect($annotations)->pluck('id')->toArray();
         $dismissed = [$label->id => $annotationIds];
-        
+
         $job = new ApplyLargoSession('job_id', $user, $dismissed, [], [], [], false);
+        $this->assertQueriesWithinParamLimit();
         $job->handle();
-        
+
         // All annotation labels should be dismissed and annotations deleted
-        $this->assertFalse(ImageAnnotation::whereIn('id', $annotationIds)->exists());
+        $expect = [];
+        foreach (array_slice($annotations, 0, 6) as $annotation) {
+            $this->assertNull($annotation->fresh());
+            $expect[$annotation->id] = $image->uuid;
+        }
+        $this->assertNotNull($annotations[6]->fresh());
+
+        Queue::assertPushed(RemoveImageAnnotationPatches::class, 1);
+        Queue::assertPushed(RemoveImageAnnotationPatches::class, function ($job) use ($expect) {
+            $args = (fn () => $this->annotationIds)->call($job);
+            ksort($args);
+
+            return $args === $expect;
+        });
+    }
+
+    public function testChunkChangedAnnotations()
+    {
+        config(['biigle.db_param_limit' => 5]);
+
+        $user = UserTest::create();
+        $image = ImageTest::create();
+        $this->setJobId($image, 'job_id');
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+
+        $annotations = [];
+        for ($i = 0; $i < 7; $i++) {
+            $annotation = ImageAnnotationTest::create(['image_id' => $image->id]);
+            $annotations[] = $annotation;
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $annotation->id,
+                'user_id' => $user->id,
+                'label_id' => $label1->id,
+            ]);
+        }
+        // Two annotations already have the new label.
+        foreach ([$annotations[0], $annotations[5]] as $annotation) {
+            ImageAnnotationLabelTest::create([
+                'annotation_id' => $annotation->id,
+                'user_id' => $user->id,
+                'label_id' => $label2->id,
+            ]);
+        }
+
+        $annotationIds = collect($annotations)->pluck('id')->toArray();
+        $dismissed = [$label1->id => $annotationIds];
+        $changed = [$label2->id => $annotationIds];
+
+        $job = new ApplyLargoSession('job_id', $user, $dismissed, $changed, [], [], false);
+        $this->assertQueriesWithinParamLimit();
+        $job->handle();
+
+        foreach ($annotations as $annotation) {
+            $this->assertNotNull($annotation->fresh());
+            $this->assertSame([$label2->id], $annotation->labels()->pluck('label_id')->all());
+        }
+        Queue::assertNotPushed(RemoveImageAnnotationPatches::class);
+    }
+
+    protected function assertQueriesWithinParamLimit(): void
+    {
+        $limit = config('biigle.db_param_limit');
+        DB::listen(function ($query) use ($limit) {
+            // The bulk insert of new annotation labels is chunked by a fixed number
+            // of rows that stays below the real limit, not by the configured limit.
+            if (str_starts_with(strtolower($query->sql), 'insert')) {
+                return;
+            }
+
+            $this->assertLessThanOrEqual($limit, count($query->bindings), $query->sql);
+        });
     }
 
     public function testGuidelineLabelImageAnnotations()

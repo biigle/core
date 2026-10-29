@@ -139,19 +139,32 @@ class CloneImagesOrVideosTest extends ApiTestCase
             'lng' => 1.5,
             'lat' => 5.3,
             'tiled' => true,
+            'attrs' => ['size' => 123, 'metadata' => ['yaw' => 90]],
         ])->fresh();
         ImageLabelTest::create(['image_id' => $oldImage->id]);
         $oldImageLabel = $oldImage->labels()->first();
+        // Sorts before the first image by filename to check that the ID order is kept.
+        $otherImage = ImageTest::create([
+            'filename' => 'a.jpg',
+            'volume_id' => $volume->id,
+        ]);
 
         $request = new Request(['project' => $project, 'volume' => $volume, 'clone_file_labels' => true]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched(VolumeFilesProcessed::class);
         Event::assertDispatched(VolumeCloned::class);
 
         $copy = $project->volumes()->first();
-        $newImage = $copy->images()->first();
+        $newImages = $copy->images()->orderBy('id')->get();
+        $this->assertSame(['j.jpg', 'a.jpg'], $newImages->pluck('filename')->all());
+        $expectedMap = [
+            $newImages[0]->uuid => $oldImage->uuid,
+            $newImages[1]->uuid => $otherImage->uuid,
+        ];
+        Queue::assertPushed(ProcessCloneVolumeFiles::class, fn ($job) => (fn () => $this->uuidMap === $expectedMap)->call($job));
+
+        $newImage = $newImages[0];
         $newImageLabel = $newImage->labels()->first();
 
         $this->assertNotNull($newImageLabel);
@@ -244,9 +257,15 @@ class CloneImagesOrVideosTest extends ApiTestCase
             'lng' => 1.5,
             'lat' => 5.3,
             'duration' => 42.42,
+            'attrs' => ['size' => 123, 'metadata' => ['yaw' => [90]]],
         ])->fresh();
         VideoLabelTest::create(['video_id' => $oldVideo->id]);
         $oldVideoLabel = $oldVideo->labels()->first();
+        // Sorts before the first video by filename to check that the ID order is kept.
+        $otherVideo = VideoTest::create([
+            'filename' => '0.jpg',
+            'volume_id' => $volume->id,
+        ]);
 
         $request = new Request([
             'project' => $project,
@@ -255,12 +274,19 @@ class CloneImagesOrVideosTest extends ApiTestCase
         ]);
 
         with(new CloneImagesOrVideos($request, $copy))->handle();
-        Queue::assertPushed(ProcessCloneVolumeFiles::class);
         Event::assertDispatched(VolumeFilesProcessed::class);
         Event::assertDispatched(VolumeCloned::class);
 
         $copy = $project->volumes()->first();
-        $newVideo = $copy->videos()->first();
+        $newVideos = $copy->videos()->orderBy('id')->get();
+        $this->assertSame(['a.jpg', '0.jpg'], $newVideos->pluck('filename')->all());
+        $expectedMap = [
+            $newVideos[0]->uuid => $oldVideo->uuid,
+            $newVideos[1]->uuid => $otherVideo->uuid,
+        ];
+        Queue::assertPushed(ProcessCloneVolumeFiles::class, fn ($job) => (fn () => $this->uuidMap === $expectedMap)->call($job));
+
+        $newVideo = $newVideos[0];
         $newVideoLabel = $newVideo->labels()->first();
 
         $this->assertNotNull($newVideo);
