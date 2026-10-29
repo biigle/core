@@ -5,7 +5,9 @@ namespace Biigle\Logging;
 use Carbon\Carbon;
 use File;
 use Illuminate\Log\ParsesLogConfiguration;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class LogManager
 {
@@ -95,19 +97,55 @@ class LogManager
      * Get the log messages.
      *
      * @param string $level Minimum log level.
+     * @param string|null $search Case-insensitive search term.
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getRedisLogMessages($level = 'debug')
+    public function getRedisLogMessages($level = 'debug', $search = null)
     {
         $level = $this->level(compact('level'));
         $connection = $this->channel['connection'] ?? null;
         $client = Redis::connection($connection)->client();
 
-        return collect($client->lrange('log', 0, -1))
+        $messages = collect($client->lrange('log', 0, -1))
             ->map(fn ($message) => json_decode($message, true))
             /** @phpstan-ignore property.nonObject */
             ->filter(fn ($message) => $message['level'] >= $level->value);
+
+        if (is_null($search) || $search === '') {
+            return $messages;
+        }
+
+        return $messages->filter(fn ($message) => $this->messageContains($message, $search));
+    }
+
+    /**
+     * Determine whether a log message contains the search term.
+     *
+     * @param array $message
+     * @param string $search
+     *
+     * @return boolean
+     */
+    protected function messageContains(array $message, $search)
+    {
+        // The context is searched as well because exception classes and messages are
+        // stored there.
+        $haystack = Arr::flatten([
+            $message['message'] ?? '',
+            $message['context'] ?? [],
+            $message['extra'] ?? [],
+        ]);
+
+        foreach ($haystack as $value) {
+            // Booleans are excluded because their string casts ("1" and "") would
+            // produce false positives.
+            if ((is_string($value) || is_int($value) || is_float($value)) && Str::contains((string) $value, $search, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
