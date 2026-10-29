@@ -284,6 +284,21 @@ $router->get('projects/{id}/label-count', [
     'uses' => 'Projects\ProjectAnnotationLabels@getProjectAnnotationLabelCounts',
 ]);
 
+$router->resource('projects.annotation-guidelines', 'Projects\AnnotationGuidelineController', [
+    'only' => ['index', 'store',],
+    'parameters' => ['projects' => 'id'],
+]);
+
+$router->resource('annotation-guidelines', 'Projects\AnnotationGuidelineController', [
+    'only' => ['update', 'destroy'],
+    'parameters' => ['annotation-guidelines' => 'id'],
+]);
+
+$router->resource('annotation-guidelines.labels', 'Projects\AnnotationGuidelineLabelController', [
+    'only' => ['store', 'destroy'],
+    'parameters' => ['annotation-guidelines' => 'id'],
+]);
+
 $router->get('public-export/label-trees/{id}', [
     'as' => 'get-public-label-tree-export',
     'uses' => 'Export\PublicLabelTreeExportController@show',
