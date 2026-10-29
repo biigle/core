@@ -109,6 +109,9 @@
                 <p class="help-block">
                     Limit available shapes for new annotations. Select none to allow all.
                 </p>
+                <div v-if="mediaTypeShapeWarning" class="panel panel-warning">
+                    <div class="panel-body text-warning" v-text="mediaTypeShapeWarning"></div>
+                </div>
             </div>
 
             <div class="form-group">
@@ -193,6 +196,9 @@
                         <p class="help-block">
                             Select a shape tool that should be used for annotations with this label.
                         </p>
+                        <div v-if="labelMediaTypeShapeWarning" class="panel panel-warning">
+                            <div class="panel-body text-warning" v-text="labelMediaTypeShapeWarning"></div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -371,6 +377,12 @@ export default {
 
             return this.availableShapes;
         },
+        mediaTypeShapeWarning() {
+            return this.getMediaTypeShapeWarning(this.guidelineShapes);
+        },
+        labelMediaTypeShapeWarning() {
+            return this.getMediaTypeShapeWarning(this.selectedShape ? [this.selectedShape] : []);
+        },
     },
     watch: {
         selectedLabel(label) {
@@ -411,6 +423,25 @@ export default {
         }
     },
     methods: {
+        getMediaTypeShapeWarning(shapeIds) {
+            const ids = [...shapeIds];
+
+            if (ids.length !== 1) {
+                return '';
+            }
+
+            const name = this.availableShapes.get(ids[0]);
+
+            if (name === 'Ellipse') {
+                return 'Only image annotations can be created using the selected shape.';
+            }
+
+            if (name === 'WholeFrame') {
+                return 'Only video annotations can be created using the selected shape.';
+            }
+
+            return '';
+        },
         async selectLabel(label) {
             if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
                 if (!await this.saveLabel()) {
