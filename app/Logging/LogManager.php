@@ -138,7 +138,9 @@ class LogManager
         ]);
 
         foreach ($haystack as $value) {
-            if (is_string($value) && Str::contains($value, $search, true)) {
+            // Booleans are excluded because their string casts ("1" and "") would
+            // produce false positives.
+            if ((is_string($value) || is_int($value) || is_float($value)) && Str::contains((string) $value, $search, true)) {
                 return true;
             }
         }

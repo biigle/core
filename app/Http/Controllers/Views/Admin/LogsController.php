@@ -24,6 +24,8 @@ class LogsController extends Controller
         if ($manager->isFile()) {
             $logs = $manager->getLogFilenames();
         } elseif ($manager->isRedis()) {
+            $request->validate(['q' => 'nullable|string']);
+
             $logLevel = $request->input('level', 'error');
             $search = $request->input('q');
 

@@ -18,7 +18,7 @@
     <button type="submit" class="btn btn-default">Search</button>
 </form>
 @forelse ($paginator as $item)
-<?php if (!config('app.env') !== 'testing') dump($item) ?>
+<?php if (config('app.env') !== 'testing') dump($item) ?>
 @empty
 No log entries.
 @endforelse
