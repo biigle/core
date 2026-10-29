@@ -24,6 +24,10 @@ export default {
                 'only_labels',
                 'aggregate_child_labels',
                 'all_labels',
+                'yolo_image_path',
+                'yolo_train_split',
+                'yolo_val_split',
+                'yolo_test_split',
                 'skip_attributes',
             ],
             'ImageLabels': [
