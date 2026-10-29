@@ -6,6 +6,7 @@ use Biigle\Enums\MediaType;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\Services\AnnotationGuidelineService;
 use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\User;
 use Biigle\Volume;
@@ -51,14 +52,16 @@ class VolumeController extends Controller
      * Shows the volume index page.
      *
      * @param Request $request
+     * @param AnnotationGuidelineService $guidelineService
      * @param int $id volume ID
      */
-    public function index(Request $request, $id)
+    public function index(Request $request, AnnotationGuidelineService $guidelineService, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
+        $user = $request->user();
 
-        $projects = $this->getProjects($request->user(), $volume);
+        $projects = $this->getProjects($user, $volume);
 
         // all label trees that are used by all projects which are visible to the user
         $labelTrees = LabelTree::select('id', 'name', 'version_id')
@@ -80,13 +83,27 @@ class VolumeController extends Controller
 
         $type = $volume->media_type->label();
 
+        // Guidelines are only needed in the file label mode.
+        if ($user->can('edit-in', $volume)) {
+            $annotationGuidelines = $guidelineService->getGuidelines($user, $volume->id)
+                ->load('labels', 'project:id,name');
+
+            $mustUseAnnotationGuideline = $annotationGuidelines->isNotEmpty()
+                && $guidelineService->mustUseGuideline($user, $volume->id);
+        } else {
+            $annotationGuidelines = collect();
+            $mustUseAnnotationGuideline = false;
+        }
+
         return view('volumes.show', compact(
             'volume',
             'labelTrees',
             'projects',
             'fileIds',
             'thumbUriTemplate',
-            'type'
+            'type',
+            'annotationGuidelines',
+            'mustUseAnnotationGuideline'
         ));
     }
 

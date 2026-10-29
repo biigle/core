@@ -58,6 +58,11 @@ export default {
             type: Object,
             default: null,
         },
+        // ID of the selected enforced annotation guideline.
+        guidelineId: {
+            type: Number,
+            default: null,
+        },
         showFilename: {
             type: Boolean,
             default: false,
@@ -111,13 +116,16 @@ export default {
             }
 
             this.saving = true;
+            let payload = {label_id: this.selectedLabel.id};
+            if (this.guidelineId) {
+                payload.guideline_id = this.guidelineId;
+            }
+
             let promise;
             if (this.type === 'image') {
-                promise = ImageLabelsApi
-                    .save({image_id: this.image.id}, {label_id: this.selectedLabel.id});
+                promise = ImageLabelsApi.save({image_id: this.image.id}, payload);
             } else {
-                promise = VideoLabelsApi
-                    .save({video_id: this.image.id}, {label_id: this.selectedLabel.id});
+                promise = VideoLabelsApi.save({video_id: this.image.id}, payload);
             }
 
             promise.then(this.labelAttached, this.attachingFailed)

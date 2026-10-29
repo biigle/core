@@ -7,6 +7,7 @@ use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\Services\AnnotationGuidelineService;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Storage;
@@ -17,10 +18,11 @@ class LargoController extends Controller
      * Show the the Largo view for a volume.
      *
      * @param Request $request
+     * @param AnnotationGuidelineService $guidelineService
      * @param int $id Volume ID
      * @return \Illuminate\View\View
      */
-    public function index(Request $request, $id)
+    public function index(Request $request, AnnotationGuidelineService $guidelineService, $id)
     {
         $volume = Volume::findOrFail($id);
 
@@ -60,6 +62,13 @@ class LargoController extends Controller
             $shapes = Shape::pluckById(except: Shape::WHOLE_FRAME);
         }
 
+        $user = $request->user();
+        $annotationGuidelines = $guidelineService->getGuidelines($user, $volume->id)
+            ->load('labels', 'project:id,name');
+
+        $mustUseAnnotationGuideline = $annotationGuidelines->isNotEmpty()
+            && $guidelineService->mustUseGuideline($user, $volume->id);
+
         return view('largo.show', [
             'volume' => $volume,
             'projects' => $projects,
@@ -67,6 +76,8 @@ class LargoController extends Controller
             'target' => $volume,
             'patchUrlTemplate' => $patchUrlTemplate,
             'shapes' => $shapes,
+            'annotationGuidelines' => $annotationGuidelines,
+            'mustUseAnnotationGuideline' => $mustUseAnnotationGuideline,
         ]);
     }
 }

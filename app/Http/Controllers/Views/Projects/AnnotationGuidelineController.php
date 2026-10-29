@@ -62,4 +62,47 @@ class AnnotationGuidelineController extends Controller
             'availableShapes' => $shapes,
         ]);
     }
+
+    /**
+     * Shows a printable version of the annotation guideline of the project.
+     *
+     * The browser prints the page or saves it as PDF. This avoids a PDF library and
+     * the reference images (which may be on another origin) are displayed as usual.
+     *
+     * @param int $id Id of the project
+     *
+     * @return \Illuminate\View\View
+     */
+    public function printable(int $id)
+    {
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
+
+        $guideline = $project->annotationGuideline;
+
+        if (is_null($guideline)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $guideline->load([
+            'labels' => fn ($query) => $query->orderBy('name'),
+            'labels.tree:id,name',
+        ]);
+
+        $labelsByTree = $guideline->labels
+            ->groupBy('label_tree_id')
+            ->sortBy(fn ($labels) => $labels->first()->tree->name);
+
+        $shapes = Shape::pluckById();
+
+        $onlyShapes = collect($guideline->only_shapes)->map(fn ($id) => $shapes[$id]);
+
+        return view('projects.annotation-guideline-print', [
+            'project' => $project,
+            'guideline' => $guideline,
+            'labelsByTree' => $labelsByTree,
+            'onlyShapes' => $onlyShapes,
+            'shapes' => $shapes,
+        ]);
+    }
 }

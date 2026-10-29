@@ -7,6 +7,7 @@ use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
+use Biigle\Services\AnnotationGuidelineService;
 use Biigle\Video;
 use DB;
 use Illuminate\Http\Request;
@@ -17,9 +18,10 @@ class VideoController extends Controller
      * Show the video annotation tool.
      *
      * @param Request $request
+     * @param AnnotationGuidelineService $guidelineService
      * @param int $id
      */
-    public function show(Request $request, $id)
+    public function show(Request $request, AnnotationGuidelineService $guidelineService, $id)
     {
         $video = Video::findOrFail($id);
         $this->authorize('access', $video);
@@ -78,6 +80,12 @@ class VideoController extends Controller
         $spritesMaxThumbnails = config('videos.sprites_max_thumbnails');
         $spritesMinThumbnails = config('videos.thumbnail_count');
 
+        $annotationGuidelines = $guidelineService->getGuidelines($user, $volume->id)
+            ->load('labels', 'project:id,name');
+
+        $mustUseAnnotationGuideline = $annotationGuidelines->isNotEmpty()
+            && $guidelineService->mustUseGuideline($user, $volume->id);
+
         return view(
             'videos.show',
             compact(
@@ -95,6 +103,8 @@ class VideoController extends Controller
                 'spritesMaxThumbnails',
                 'spritesMinThumbnails',
                 'projectIds',
+                'annotationGuidelines',
+                'mustUseAnnotationGuideline',
             )
         );
     }

@@ -110,6 +110,11 @@
                         Target project: <strong v-text="targetProject.name"></strong>
                     </div>
                 </div>
+                <div v-if="targetProjectHasEnforcedGuideline" class="panel panel-warning" v-cloak>
+                    <div class="panel-body text-warning">
+                        The target project has an enforced annotation guideline. The guideline is not applied to the imported annotations and file labels, so they may have labels and shapes that the guideline does not allow.
+                    </div>
+                </div>
             </div>
 
             <div v-if="success" v-cloak class="alert alert-success">

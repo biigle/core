@@ -1,5 +1,6 @@
 <script>
 import * as PolygonValidator from '../ol/PolygonValidator.js';
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import AnnotationTooltip from './annotationCanvas/annotationTooltip.vue';
 import AttachLabelInteraction from './annotationCanvas/attachLabelInteraction.vue';
 import CanvasSource from '../ol/source/Canvas.js';
@@ -43,7 +44,7 @@ import ZoomifySource from '@biigle/ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
-import { isInvalidShape } from '../utils.js';
+import { isInvalidShape, INTERACTION_MODE_SHAPES } from '../utils.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
@@ -130,6 +131,10 @@ export default {
         selectedLabel: {
             default: null,
         },
+        annotationGuideline: {
+            type: AnnotationGuideline,
+            default: null,
+        },
         lastCreatedAnnotation: {
             default: null,
         },
@@ -212,6 +217,10 @@ export default {
         },
         hasSelectedLabel() {
             return Boolean(this.selectedLabel);
+        },
+        // The shape that is created by the current interaction mode (if any).
+        interactionModeShape() {
+            return INTERACTION_MODE_SHAPES[this.interactionMode];
         },
         hasSelectedAnnotations() {
             return this.selectedAnnotations.length > 0;
@@ -766,6 +775,46 @@ export default {
         getDraftColor() {
             return this.draftAnnotationUsesLabelColor && this.selectedLabel ? this.selectedLabel.color : null;
         },
+        // Determine if the selected annotation guideline allows the shape for the selected
+        // label. This can also be used by plugin tools.
+        isShapeAllowed(shape) {
+            return !this.annotationGuideline
+                || this.annotationGuideline.allowsShape(shape, this.selectedLabel?.id);
+        },
+        getShapeToolTitle(shape, title) {
+            return this.isShapeAllowed(shape) ? title : 'This shape is not allowed by the annotation guideline';
+        },
+        maybeResetDisallowedTool() {
+            if (this.interactionModeShape && !this.isShapeAllowed(this.interactionModeShape)) {
+                this.resetInteractionMode();
+            }
+        },
+        maybeSwitchToAutomaticTool() {
+            // Sampling creates annotations with Enter at the sample location, so a draw
+            // tool would only interfere.
+            if (!this.hasSelectedLabel || this.isSamplingAnnotationMode) {
+                return;
+            }
+
+            const shape = this.annotationGuideline?.getPreferredShape(this.selectedLabel.id);
+            if (!this.canAdd || !shape || shape === this.interactionModeShape) {
+                return;
+            }
+
+            // Don't interrupt modes like attach, swap, translate or measure, which also
+            // depend on the selected label.
+            if (!this.isDefaultInteractionMode && !this.interactionModeShape) {
+                return;
+            }
+
+            // E.g. WholeFrame can't be drawn in the image annotation tool.
+            const mode = 'draw' + shape;
+            if (!INTERACTION_MODE_SHAPES.hasOwnProperty(mode)) {
+                return;
+            }
+
+            this.interactionMode = mode;
+        },
     },
     watch: {
         image(image, oldImage) {
@@ -888,6 +937,15 @@ export default {
         },
         canDelete() {
             this.updateDeleteInteractions();
+        },
+        // The allowed shapes depend on the selected label and guideline.
+        selectedLabel() {
+            this.maybeResetDisallowedTool();
+            this.maybeSwitchToAutomaticTool();
+        },
+        annotationGuideline() {
+            this.maybeResetDisallowedTool();
+            this.maybeSwitchToAutomaticTool();
         },
     },
     created() {

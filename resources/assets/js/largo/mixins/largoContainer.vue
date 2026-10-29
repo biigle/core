@@ -1,11 +1,15 @@
 <script>
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
+import AnnotationGuidelineSelector from '@/volumes/components/annotationGuidelineSelector.vue';
 import DismissImageGrid from '../components/dismissImageGrid.vue';
 import Echo from '@/core/echo.js';
 import Events from '@/core/events.js';
 import FilteringTab from '../components/filteringTab.vue';
 import Keyboard from '@/core/keyboard.js';
+import LabelIndicator from '@/annotations/components/labelIndicator.vue';
 import LabelList from '../components/labelList.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
+import LargoSessionsApi from '../api/largoSessions.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
@@ -35,6 +39,8 @@ export default {
         sortingTab: SortingTab,
         filteringTab: FilteringTab,
         labelList: LabelList,
+        annotationGuidelineSelector: AnnotationGuidelineSelector,
+        labelIndicator: LabelIndicator,
     },
     data() {
         return {
@@ -62,6 +68,13 @@ export default {
             labels: [],
             filtersCache: {},
             fetchedLabelCount: false,
+            annotationGuidelines: [],
+            mustUseAnnotationGuideline: false,
+            annotationGuideline: null,
+            // After saving, annotations that were not changed are kept for review in the
+            // relabel step. The annotation cache only contains these annotations then.
+            keepsUnchangedAnnotations: false,
+            canForceEdit: false,
         };
     },
     provide() {
@@ -207,7 +220,23 @@ export default {
         },
         hasActiveFilters() {
             return this.activeFilters.length > 0
-        }
+        },
+        labelsInGuideline() {
+            return this.annotationGuideline?.labelIds ?? [];
+        },
+        // Choosing the label whose annotations should be reviewed is not restricted.
+        enforceGuideline() {
+            return this.isInRelabelStep && !!this.annotationGuideline?.isEnforced;
+        },
+        showLabelIndicator() {
+            if (!this.selectedLabel) {
+                return false;
+            }
+
+            const label = this.annotationGuideline?.getLabel(this.selectedLabel.id);
+
+            return !!(label?.description || label?.reference_image_url);
+        },
     },
     methods: {
         compileFilters(filters, union) {
@@ -366,6 +395,14 @@ export default {
             this.resetFilteringTab();
         },
         goToDismiss() {
+            if (this.keepsUnchangedAnnotations) {
+                if (!confirm('Going back discards the review of the annotations that were not changed. Do you want to continue?')) {
+                    return;
+                }
+
+                this.resetSession();
+            }
+
             this.step = 0;
             this.lastSelectedImage = null;
             if (this.selectedLabel) {
@@ -425,20 +462,99 @@ export default {
                 );
         },
         handleSessionSaved(event) {
-            if (event.id == this.waitForSessionId) {
-                this.finishLoading();
-                Messages.success('Saved. You can now start a new re-evaluation session.');
-                this.step = 0;
-                for (let key in this.annotationsCache) {
-                    if (!this.annotationsCache.hasOwnProperty(key)) continue;
+            if (event.id != this.waitForSessionId) {
+                return;
+            }
+
+            if (event.has_unchanged) {
+                LargoSessionsApi.getUnchangedAnnotations({id: event.id})
+                    .then(
+                        (response) => this.keepUnchangedAnnotations(response.body),
+                        () => {
+                            // The session was saved, so it must not be saved again.
+                            this.resetSession();
+                            this.goToDismiss();
+                            Messages.warning('Saved, but the annotations that were not changed could not be loaded.');
+                        }
+                    )
+                    .finally(this.finishLoading);
+
+                return;
+            }
+
+            this.finishLoading();
+            Messages.success('Saved. You can now start a new re-evaluation session.');
+            this.resetSession();
+            this.goToDismiss();
+        },
+        resetSession() {
+            this.keepsUnchangedAnnotations = false;
+            for (let key in this.annotationsCache) {
+                if (!this.annotationsCache.hasOwnProperty(key)) continue;
+                delete this.annotationsCache[key];
+            }
+            for (let key in this.sortingSequenceCache) {
+                if (!this.sortingSequenceCache.hasOwnProperty(key)) continue;
+                delete this.sortingSequenceCache[key];
+            }
+        },
+        keepUnchangedAnnotations(unchanged) {
+            // The IDs of the annotation objects are strings.
+            const ids = {
+                [IMAGE_ANNOTATION]: new Set(unchanged.image_annotations.map(String)),
+                [VIDEO_ANNOTATION]: new Set(unchanged.video_annotations.map(String)),
+            };
+
+            // An annotation that was dismissed for several labels is kept for each of
+            // them.
+            for (let key in this.annotationsCache) {
+                if (!this.annotationsCache.hasOwnProperty(key)) continue;
+                const annotations = this.annotationsCache[key]
+                    .filter(a => a.dismissed && ids[a.type].has(a.id));
+
+                if (annotations.length > 0) {
+                    this.annotationsCache[key] = annotations;
+                } else {
                     delete this.annotationsCache[key];
                 }
-                for (let key in this.sortingSequenceCache) {
-                    if (!this.sortingSequenceCache.hasOwnProperty(key)) continue;
-                    delete this.sortingSequenceCache[key];
-                }
-                this.handleSelectedLabel(this.selectedLabel);
             }
+
+            for (let key in this.sortingSequenceCache) {
+                if (!this.sortingSequenceCache.hasOwnProperty(key)) continue;
+                delete this.sortingSequenceCache[key];
+            }
+
+            this.keepsUnchangedAnnotations = true;
+            this.lastSelectedImage = null;
+            Messages.warning(this.getUnchangedMessage(unchanged));
+        },
+        getUnchangedMessage(unchanged) {
+            // Saving annotations with labels of other users again without force would
+            // keep them again, so the user has to know how to get past them.
+            let otherUserHint = 'Go back to discard them.';
+            if (this.canForceEdit) {
+                otherUserHint = 'Use "Force delete/relabel" to change them or go back to discard them.';
+            }
+
+            if (unchanged.guideline && unchanged.other_user) {
+                return `Saved, but some annotations were not changed because the annotation guideline does not allow the new label (or its shape) or because they have labels of other users. Please review them. ${otherUserHint}`;
+            }
+
+            if (unchanged.guideline) {
+                return 'Saved, but some annotations were not changed because the annotation guideline does not allow the new label (or its shape). Please review them.';
+            }
+
+            return `Saved, but some annotations were not deleted because they have labels of other users. ${otherUserHint}`;
+        },
+        handleSelectedAnnotationGuideline(guideline) {
+            this.annotationGuideline = guideline;
+        },
+        // Not called in created() because the annotation catalog has no guidelines.
+        initAnnotationGuidelines() {
+            const shapes = biigle.$require('largo.availableShapes');
+            this.annotationGuidelines = biigle.$require('largo.annotationGuidelines')
+                .map(g => new AnnotationGuideline(g, shapes));
+            this.mustUseAnnotationGuideline = biigle.$require('largo.mustUseAnnotationGuideline');
         },
         handleSessionFailed(event) {
             if (event.id == this.waitForSessionId) {

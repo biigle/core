@@ -34,7 +34,6 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertJsonCount(1, 'guidelines')
             ->assertJsonPath('guidelines.0.id', $guideline->id)
             ->assertJsonPath('guidelines.0.enforced', true)
-            ->assertJsonPath('guidelines.0.can_annotate', true)
             ->assertJsonPath('guidelines.0.labels.0.id', $this->labelRoot()->id)
             ->assertJsonPath('guidelines.0.labels.0.pivot.uuid', $guidelineLabel->uuid);
     }
@@ -42,17 +41,19 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
     public function testIndexGuest()
     {
         $id = $this->volume()->id;
-        $guideline = AnnotationGuideline::factory()->create([
+        AnnotationGuideline::factory()->create([
             'project_id' => $this->project()->id,
             'enforced' => true,
         ]);
 
+        // Guests can't create annotations so the guideline is not relevant for them.
         $this->beGuest();
         $this->get("/api/v1/volumes/{$id}/annotation-guidelines")
             ->assertStatus(200)
-            ->assertJsonCount(1, 'guidelines')
-            ->assertJsonPath('guidelines.0.id', $guideline->id)
-            ->assertJsonPath('guidelines.0.can_annotate', false);
+            ->assertExactJson([
+                'must_use_guideline' => false,
+                'guidelines' => [],
+            ]);
     }
 
     public function testIndexInformational()
@@ -68,8 +69,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonPath('must_use_guideline', false)
             ->assertJsonCount(1, 'guidelines')
-            ->assertJsonPath('guidelines.0.enforced', false)
-            ->assertJsonPath('guidelines.0.can_annotate', true);
+            ->assertJsonPath('guidelines.0.enforced', false);
     }
 
     public function testIndexMultipleProjects()
@@ -98,8 +98,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonPath('must_use_guideline', false)
             ->assertJsonCount(1, 'guidelines')
-            ->assertJsonPath('guidelines.0.id', $guideline->id)
-            ->assertJsonPath('guidelines.0.can_annotate', true);
+            ->assertJsonPath('guidelines.0.id', $guideline->id);
     }
 
     public function testIndexNoGuidelines()

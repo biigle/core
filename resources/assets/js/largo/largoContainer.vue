@@ -15,6 +15,16 @@ export default {
             projectIds: [],
         };
     },
+    computed: {
+        // Informational guidelines only affect what is shown and are not sent.
+        annotationGuidelineId() {
+            if (this.annotationGuideline?.isEnforced) {
+                return this.annotationGuideline.id;
+            }
+
+            return null;
+        },
+    },
     methods: {
         queryAnnotations(label, filters = []) {
             let imagePromise;
@@ -31,6 +41,10 @@ export default {
             return Promise.all([imagePromise, videoPromise]);
         },
         performSave(payload) {
+            if (this.annotationGuidelineId) {
+                payload.guideline_id = this.annotationGuidelineId;
+            }
+
             return VolumesApi.save({id: this.volumeId}, payload);
         },
         querySortByOutlier(labelId) {
@@ -62,6 +76,8 @@ export default {
         this.labelTrees = biigle.$require('largo.labelTrees');
         this.mediaType = biigle.$require('largo.mediaType');
         this.projectIds = biigle.$require("largo.projectIds");
+        this.canForceEdit = biigle.$require('largo.canForceEdit');
+        this.initAnnotationGuidelines();
     },
 };
 </script>

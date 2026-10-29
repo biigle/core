@@ -1,4 +1,5 @@
 <script>
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import Events from '@/core/events.js';
 import Keyboard from '@/core/keyboard.js';
 import PowerToggle from '@/core/components/powerToggle.vue';
@@ -19,6 +20,12 @@ export default {
     ],
     components: {
         powerToggle: PowerToggle,
+    },
+    props: {
+        guideline: {
+            type: AnnotationGuideline,
+            default: null,
+        },
     },
     data() {
         return {
@@ -53,6 +60,20 @@ export default {
         isRegularSamplingActive() {
             return this.mode === 'regularSampling';
         },
+        isSamplingActive() {
+            return this.isRandomSamplingActive || this.isRegularSamplingActive;
+        },
+        // Labels can't have a shape that is not in only_shapes, so this is enough to
+        // determine if any point annotations can be created at all.
+        canSample() {
+            return !this.guideline || this.guideline.allowsShape('Point');
+        },
+        randomSamplingTitle() {
+            return this.canSample ? 'Start random sampling of annotations' : 'Random sampling is not allowed by the annotation guideline';
+        },
+        regularSamplingTitle() {
+            return this.canSample ? 'Start regular sampling of annotations' : 'Regular sampling is not allowed by the annotation guideline';
+        },
     },
     methods: {
         startVolare() {
@@ -68,9 +89,15 @@ export default {
             this.setMode('regularSampling');
         },
         setMode(mode) {
-            if (this.modes.indexOf(mode) !== -1) {
-                this.mode = mode;
+            if (this.modes.indexOf(mode) === -1) {
+                return;
             }
+
+            if (mode.endsWith('Sampling') && !this.canSample) {
+                return;
+            }
+
+            this.mode = mode;
         },
         resetMode() {
             this.mode = 'default';
@@ -114,6 +141,11 @@ export default {
                     break;
                 default:
                     this.$emit('change', mode);
+            }
+        },
+        canSample(can) {
+            if (!can && this.isSamplingActive) {
+                this.resetMode();
             }
         },
         randomSamplingNumber(number) {

@@ -54,7 +54,26 @@
                 <power-toggle :active="forceChange" type="danger" title="Delete or replace annotation labels created by other users" v-on:on="enableForceChange" :disabled="loading || null" v-on:off="disableForceChange">Force delete/relabel</power-toggle>
             </div>
         @endcan
-        <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" :sorting-project-ids="projectIds" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
+        <annotation-guideline-selector
+            class="largo-tab__guideline-selector"
+            :model-value="annotationGuideline"
+            :guidelines="annotationGuidelines"
+            :must-use-guideline="mustUseAnnotationGuideline"
+            :show-shapes="false"
+            @if ($target instanceof \Biigle\Project)
+                :project-id="projectId"
+            @else
+                :volume-id="volumeId"
+            @endif
+            v-on:update:model-value="handleSelectedAnnotationGuideline"
+            ></annotation-guideline-selector>
+        <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" :sorting-project-ids="projectIds" :labels-in-guideline="labelsInGuideline" :enforce-guideline="enforceGuideline" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
+        <label-indicator
+            v-if="showLabelIndicator"
+            class="largo-tab__label-indicator"
+            :label="selectedLabel"
+            :guideline="annotationGuideline"
+            ></label-indicator>
     </sidebar-tab>
     @include('largo.labelList')
     <sidebar-tab :disabled="isInRelabelStep || null" name="sorting" icon="exchange-alt fa-rotate-90" title="Sort patches" :highlight="sortingIsActive">

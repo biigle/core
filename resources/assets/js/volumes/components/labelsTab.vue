@@ -11,10 +11,20 @@
         </power-toggle>
         <loader :active="loadingLabels"></loader>
     </div>
+    <annotation-guideline-selector
+        :model-value="guideline"
+        :guidelines="guidelines"
+        :must-use-guideline="mustUseGuideline"
+        :volume-id="volumeId"
+        :show-shapes="false"
+        v-on:update:model-value="handleSelectedGuideline"
+        ></annotation-guideline-selector>
     <label-trees
         :trees="labelTrees"
         :sorting-project-ids="projectIds"
         :show-favourites="true"
+        :labels-in-guideline="labelsInGuideline"
+        :enforce-guideline="enforceGuideline"
         v-on:select="handleSelectedLabel"
         v-on:deselect="handleDeselectedLabel"
         v-on:clear="handleDeselectedLabel"
@@ -22,6 +32,8 @@
 </div>
 </template>
 <script>
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
+import AnnotationGuidelineSelector from './annotationGuidelineSelector.vue';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import PowerToggle from '@/core/components/powerToggle.vue';
@@ -35,9 +47,11 @@ export default {
         'disable-labels',
         'enable-labels',
         'select',
+        'select-guideline',
     ],
     mixins: [LoaderMixin],
     components: {
+        annotationGuidelineSelector: AnnotationGuidelineSelector,
         labelTrees: LabelTrees,
         powerToggle: PowerToggle,
     },
@@ -63,7 +77,18 @@ export default {
         return {
             labelTrees: [],
             projectIds: [],
+            guidelines: [],
+            mustUseGuideline: false,
+            guideline: null,
         };
+    },
+    computed: {
+        labelsInGuideline() {
+            return this.guideline?.labelIds ?? [];
+        },
+        enforceGuideline() {
+            return !!this.guideline?.isEnforced;
+        },
     },
     methods: {
         handleSelectedLabel(label) {
@@ -71,6 +96,10 @@ export default {
         },
         handleDeselectedLabel(label) {
             this.$emit('deselect', label);
+        },
+        handleSelectedGuideline(guideline) {
+            this.guideline = guideline;
+            this.$emit('select-guideline', guideline);
         },
         enableLabels() {
             this.$emit('enable-labels');
@@ -82,6 +111,10 @@ export default {
     created() {
         this.labelTrees = biigle.$require('volumes.labelTrees');
         this.projectIds = biigle.$require('volumes.projectIds');
+        // File labels have no shape, so no shape names are required.
+        this.guidelines = biigle.$require('volumes.annotationGuidelines')
+            .map(g => new AnnotationGuideline(g, {}));
+        this.mustUseGuideline = biigle.$require('volumes.mustUseAnnotationGuideline');
     },
 };
 </script>

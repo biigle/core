@@ -11,6 +11,9 @@
         biigle.$declare('largo.showVideoAnnotationRoute', '{{ route('show-video-annotation', '/') }}/');
         biigle.$declare('largo.patchUrlTemplate', '{{$patchUrlTemplate}}');
         biigle.$declare('largo.availableShapes', {!! $shapes !!});
+        biigle.$declare('largo.annotationGuidelines', @json($annotationGuidelines));
+        biigle.$declare('largo.mustUseAnnotationGuideline', @json($mustUseAnnotationGuideline));
+        biigle.$declare('largo.canForceEdit', @can('force-edit-in', $project) true @else false @endcan);
     </script>
 @endpush
 

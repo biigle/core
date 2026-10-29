@@ -1,4 +1,5 @@
 <script>
+import AnnotationGuidelineApi from '@/projects/api/annotationGuideline.js';
 import ImportApi from './api/import.js';
 import ImportContainer from './mixins/importContainer.vue';
 import LabelTreeImportContainer from './mixins/labelTreeImportContainer.vue';
@@ -29,6 +30,7 @@ export default {
             labelTreeCandidates: [],
             availableProjects: [],
             targetProject: null,
+            targetProjectHasEnforcedGuideline: false,
         };
     },
     computed: {
@@ -171,6 +173,20 @@ export default {
     methods: {
         selectTargetProject(item) {
             this.targetProject = item;
+            this.targetProjectHasEnforcedGuideline = false;
+            // The import is exempt from annotation guidelines but users are notified.
+            AnnotationGuidelineApi.get({id: item.id})
+                .then((response) => {
+                    // Ignore the response if another project was selected meanwhile.
+                    if (this.targetProject?.id === item.id) {
+                        this.targetProjectHasEnforcedGuideline = response.body.enforced;
+                    }
+                }, (response) => {
+                    // The project has no guideline.
+                    if (response.status !== 404) {
+                        handleErrorResponse(response);
+                    }
+                });
         },
         handleChosenVolumes(items) {
             this.chosenVolumes = items;

@@ -13,13 +13,13 @@
         <li
             v-for="(label, index) in labels"
             class="labelbot-label"
-            :class="{'labelbot-label--progress': index === 0 && hasProgressBar}"
+            :class="getLabelClass(index)"
             :key="index"
             @click="selectLabel(index)"
-            :title="`Choose label ${label.name}`"
+            :title="getLabelTitle(label)"
             >
                 <div
-                    v-if="index === 0 && hasProgressBar"
+                    v-if="index === attachedIndex && hasProgressBar"
                     class="labelbot-label__progress-bar"
                     :style="progressBarStyle"
                     @animationend="confirmAndClose"
@@ -27,15 +27,22 @@
                 <div class="labelbot-label__name">
                     <span class="labelbot-label__color" :style="{ backgroundColor: '#'+label.color }"></span>
                     <span>{{ label.name }}</span>
-                    <span class="labelbot-label__keyboard">
-                        <span class="fa fa-keyboard" aria-hidden="true"></span>
-                        <span v-text="index + 1"></span>
+                    <span class="labelbot-label__indicators">
+                        <i
+                            v-if="guideline && !guideline.isEnforced && guideline.hasLabel(label.id)"
+                            class="fa fa-fw fa-clipboard-list"
+                            title="This label is included in the annotation guideline"
+                            ></i>
+                        <span class="labelbot-label__keyboard">
+                            <span class="fa fa-keyboard" aria-hidden="true"></span>
+                            <span v-text="index + 1"></span>
+                        </span>
                     </span>
                 </div>
         </li>
         <li>
             <typeahead
-                :items="allLabels"
+                :items="choosableLabels"
                 class="typeahead--block"
                 more-info="tree.versionedName"
                 placeholder="Find label"
@@ -50,6 +57,7 @@
 </template>
 
 <script>
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import Events from '@/core/events';
 import Feature from '@biigle/ol/Feature';
 import Keyboard from '@/core/keyboard';
@@ -98,6 +106,11 @@ export default {
             type: Number,
             default: 1,
         },
+        // The selected annotation guideline.
+        guideline: {
+            validator: AnnotationGuideline.validate,
+            default: null,
+        },
     },
     inject: ['labelTrees'],
     data() {
@@ -106,7 +119,6 @@ export default {
             maybeGetsAttention: false,
             typeaheadFocused: false,
             labelEventEmitted: false,
-            selectedLabel: null,
             overlay: null,
             lineFeature: null,
             listenerKeys: [],
@@ -147,8 +159,19 @@ export default {
         isFocused() {
             return this.popupKey === this.focusedPopupKey;
         },
+        choosableLabels() {
+            return this.allLabels.filter(this.canChoose);
+        },
         labels() {
             return this.annotation.labelBOTLabels;
+        },
+        attachedLabel() {
+            return this.annotation.labels[0]?.label;
+        },
+        // The attached label is not necessarily the top 1 label of LabelBOT because the
+        // backend chooses the first label that is allowed by the annotation guideline.
+        attachedIndex() {
+            return this.labels.findIndex(l => l.id === this.attachedLabel?.id);
         },
         classObject() {
             return {
@@ -183,9 +206,41 @@ export default {
         },
     },
     methods: {
+        canChoose(label) {
+            if (!this.guideline) {
+                return true;
+            }
+
+            return this.guideline.allowsLabel(label.id)
+                && this.guideline.allowsShape(this.annotation.shape, label.id);
+        },
+        getLabelClass(index) {
+            return {
+                'labelbot-label--attached': index === this.attachedIndex,
+                'labelbot-label--progress': index === this.attachedIndex && this.hasProgressBar,
+                'labelbot-label--disabled': !this.canChoose(this.labels[index]),
+                'labelbot-label--muted': this.isOutsideOfGuideline(this.labels[index]),
+            };
+        },
+        // Labels of informational guidelines can be chosen but labels outside of the
+        // guideline are muted (like in the label trees).
+        isOutsideOfGuideline(label) {
+            return this.guideline?.labels.length > 0 && !this.guideline.hasLabel(label.id);
+        },
+        getLabelTitle(label) {
+            if (this.guideline && !this.guideline.allowsLabel(label.id)) {
+                return 'The label cannot be selected because it is not allowed by the annotation guideline';
+            }
+
+            if (!this.canChoose(label)) {
+                return `The annotation guideline does not allow the shape ${this.annotation.shape} for the label ${label.name}`;
+            }
+
+            return `Choose label ${label.name}`;
+        },
         updateAndClose(label) {
-            // Top 1 label is already attached/selected
-            if (this.selectedLabel.id !== label.id) {
+            // The attached label doesn't have to be updated.
+            if (this.attachedLabel?.id !== label.id) {
                 this.$emit('update', {label: label, annotation: this.annotation});
             }
 
@@ -193,7 +248,14 @@ export default {
         },
         confirmAndClose() {
             this.emitClose();
-            Events.emit('labelbot.chose_label_1');
+            this.emitAttachedLabelEvent();
+        },
+        emitAttachedLabelEvent() {
+            if (this.attachedIndex === -1) {
+                Events.emit('labelbot.chose_label_other');
+            } else {
+                Events.emit(`labelbot.chose_label_${this.attachedIndex + 1}`);
+            }
         },
         emitClose() {
             this.labelEventEmitted = true;
@@ -346,7 +408,7 @@ export default {
             const line = new LineString([popupPosition, popupPosition]);
             this.lineFeature = markRaw(new Feature(line));
             this.lineFeature.set('unselectable', true);
-            this.lineFeature.set('color', this.labels[0].color);
+            this.lineFeature.set('color', this.attachedLabel.color);
             this.lineFeature.setStyle(Styles.editing);
 
             this.lineFeature._updateCoordinates = () => {
@@ -367,34 +429,37 @@ export default {
             this.listenerKeys.push(annotationCanvas.map.getView().on('change:resolution', this.lineFeature._updateCoordinates));
             this.listenerKeys.push(annotationGeometry.on('change', this.lineFeature._updateCoordinates));
         },
-        selectLabel1() {
+        confirmAttachedLabel() {
             if (this.isFocused) {
                 this.confirmAndClose();
             }
         },
+        selectLabel1() {
+            this.selectLabel(0);
+        },
         selectLabel2() {
-            if (this.isFocused && this.labels[1]) {
-                this.updateAndClose(this.labels[1]);
-                Events.emit('labelbot.chose_label_2');
-            }
+            this.selectLabel(1);
         },
         selectLabel3() {
-            if (this.isFocused && this.labels[2]) {
-                this.updateAndClose(this.labels[2]);
-                Events.emit('labelbot.chose_label_3');
-            }
+            this.selectLabel(2);
         },
         selectTypeaheadLabel(label) {
             this.updateAndClose(label);
             Events.emit('labelbot.chose_label_other');
         },
         selectLabel(index) {
-            switch (index) {
-                case 0: return this.selectLabel1();
-                case 1: return this.selectLabel2();
-                case 2: return this.selectLabel3();
+            const label = this.labels[index];
+            if (!this.isFocused || !label || !this.canChoose(label)) {
+                return;
             }
-        }
+
+            if (index === this.attachedIndex) {
+                this.confirmAndClose();
+            } else {
+                this.updateAndClose(label);
+                Events.emit(`labelbot.chose_label_${index + 1}`);
+            }
+        },
     },
     created() {
         if (this.timeout === (TIMEOUTS.length - 1)) {
@@ -406,8 +471,7 @@ export default {
         Keyboard.on('Tab', this.enterTypeahead, 0, 'labelbot');
 
         if (this.labels.length > 0) {
-            this.selectedLabel = this.labels[0];
-            Keyboard.on('Enter', this.selectLabel1, 0, 'labelbot');
+            Keyboard.on('Enter', this.confirmAttachedLabel, 0, 'labelbot');
             Keyboard.on('1', this.selectLabel1, 0, 'labelbot');
             Keyboard.on('2', this.selectLabel2, 0, 'labelbot');
             Keyboard.on('3', this.selectLabel3, 0, 'labelbot');
@@ -428,16 +492,18 @@ export default {
         Keyboard.off('Tab', this.enterTypeahead, 'labelbot');
 
         if (this.labels.length > 0) {
-            Keyboard.off('Enter', this.selectLabel1, 'labelbot');
+            Keyboard.off('Enter', this.confirmAttachedLabel, 'labelbot');
             Keyboard.off('1', this.selectLabel1, 'labelbot');
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');
 
-            // If the popup is closed and no event is sent, 
+            // If the popup is closed and no event is sent,
             // then send the event of chose label_1
             // This also works if the image/video was changed while the popup was open
+            // With an annotation guideline, the attached label is not necessarily
+            // label 1.
             if (!this.labelEventEmitted) {
-                Events.emit('labelbot.chose_label_1');
+                this.emitAttachedLabelEvent();
             }
         }
     },

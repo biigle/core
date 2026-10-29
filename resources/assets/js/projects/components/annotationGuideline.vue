@@ -3,6 +3,15 @@
     <div class="clearfix">
         <div class="pull-right">
             <loader :active="loading"></loader>
+            <a
+                v-if="annotationGuideline"
+                class="btn btn-default"
+                :href="printUrl"
+                target="_blank"
+                title="Print the guideline or save it as PDF"
+                >
+                <i class="fa fa-print"></i> Print
+            </a>
         </div>
         <p class="text-muted">
             An annotation guideline can provide detailed instructions and constraints for new annotations in a project. <a href="/manual/tutorials/projects/about#guideline" title="Learn more about annotation guidelines" target="_blank">Learn more.</a>
@@ -109,10 +118,13 @@
                 <p class="help-block">
                     Limit available shapes for new annotations. Select none to allow all.
                 </p>
+                <div v-if="mediaTypeShapeWarning" class="panel panel-warning">
+                    <div class="panel-body text-warning" v-text="mediaTypeShapeWarning"></div>
+                </div>
             </div>
 
             <div class="form-group">
-                <button class="btn btn-success" type="submit">
+                <button class="btn btn-success" type="submit" :disabled="loading">
                     Save
                 </button>
                 <button class="btn btn-default" type="button" @click="cancelEditingGuideline">
@@ -151,12 +163,17 @@
                 </p>
                 <form @submit.prevent="saveLabel" v-if="isAdmin && selectedLabel">
                     <div class="form-group">
+                        <span
+                            class="pull-right text-muted"
+                            :class="{'text-warning': labelDescription.length === labelDescriptionMaxLength}"
+                            v-text="`${labelDescription.length}/${labelDescriptionMaxLength}`"
+                        ></span>
                         <label for="label-description">Label description</label>
                         <textarea
                             v-model="labelDescription"
                             id="label-description"
                             class="form-control"
-                            maxlength="200"
+                            :maxlength="labelDescriptionMaxLength"
                             @input="isDirty = true"
                         ></textarea>
                         <p class="help-block">
@@ -188,6 +205,9 @@
                         <p class="help-block">
                             Select a shape tool that should be used for annotations with this label.
                         </p>
+                        <div v-if="labelMediaTypeShapeWarning" class="panel panel-warning">
+                            <div class="panel-body text-warning" v-text="labelMediaTypeShapeWarning"></div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -242,7 +262,6 @@
                             id="label-description"
                             readonly
                             class="form-control"
-                            maxlength="200"
                         ></textarea>
                     </div>
 
@@ -305,6 +324,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        printUrl: {
+            type: String,
+            required: true,
+        },
         imageMaxWidth: {
             type: Number,
             default: 300,
@@ -331,6 +354,7 @@ export default {
             guidelineIsEnforced: false,
             guidelineShapes: new Set(),
             isEditingGuideline: false,
+            labelDescriptionMaxLength: 256,
         };
     },
     computed: {
@@ -365,6 +389,12 @@ export default {
             }
 
             return this.availableShapes;
+        },
+        mediaTypeShapeWarning() {
+            return this.getMediaTypeShapeWarning(this.guidelineShapes);
+        },
+        labelMediaTypeShapeWarning() {
+            return this.getMediaTypeShapeWarning(this.selectedShape ? [this.selectedShape] : []);
         },
     },
     watch: {
@@ -406,6 +436,25 @@ export default {
         }
     },
     methods: {
+        getMediaTypeShapeWarning(shapeIds) {
+            const ids = [...shapeIds];
+
+            if (ids.length !== 1) {
+                return '';
+            }
+
+            const name = this.availableShapes.get(ids[0]);
+
+            if (name === 'Ellipse') {
+                return 'Only image annotations can be created using the selected shape.';
+            }
+
+            if (name === 'WholeFrame') {
+                return 'Only video annotations can be created using the selected shape.';
+            }
+
+            return '';
+        },
         async selectLabel(label) {
             if (this.isDirty && confirm(`Save unsaved changes for "${this.selectedLabel.name}"?`)) {
                 if (!await this.saveLabel()) {

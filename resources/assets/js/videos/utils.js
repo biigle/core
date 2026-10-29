@@ -24,4 +24,18 @@ let getRoundToPrecision = function (reference) {
     };
 };
 
-export {getRoundToPrecision};
+// Interaction modes of the video annotation tool that create new annotations and the
+// shape they create.
+const INTERACTION_MODE_SHAPES = {
+    drawPoint: 'Point',
+    drawRectangle: 'Rectangle',
+    drawAlignedRectangle: 'Rectangle',
+    drawCircle: 'Circle',
+    drawLineString: 'LineString',
+    drawPolygon: 'Polygon',
+    drawMagicWand: 'Polygon',
+    polygonBrush: 'Polygon',
+    drawWholeFrame: 'WholeFrame',
+};
+
+export {getRoundToPrecision, INTERACTION_MODE_SHAPES};

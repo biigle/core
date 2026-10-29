@@ -2,6 +2,7 @@
     <video-labels-tab
         :file-id="videoId"
         :selected-label="selectedLabel"
+        :guideline-id="annotationGuidelineId"
         type="video"
         v-cloak></video-labels-tab>
 </sidebar-tab>

@@ -6,6 +6,7 @@
     type="{{$type}}"
     v-on:select="handleSelectedLabel"
     v-on:deselect="handleDeselectedLabel"
+    v-on:select-guideline="handleSelectedAnnotationGuideline"
     v-on:enable-labels="enableLabels"
     v-on:disable-labels="disableLabels"
     ></labels-tab>

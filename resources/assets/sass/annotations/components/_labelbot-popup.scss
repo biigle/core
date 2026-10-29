@@ -3,7 +3,7 @@
     border-radius: $border-radius-base;
 
     &:not(.labelbot-popup--typing) {
-        .labelbot-label:first-child {
+        .labelbot-label--attached {
             border-color: $brand-info;
         }
     }
@@ -37,8 +37,8 @@
 
 .labelbot-label__name {
     position: relative;
-    // 45px for the keyboard icon, 30px for the color dot.
-    padding: $padding-large-vertical 45px $padding-large-vertical 30px;
+    // 65px for the guideline and keyboard icons, 30px for the color dot.
+    padding: $padding-large-vertical 65px $padding-large-vertical 30px;
     word-wrap: break-word;
     color: $text-muted;
 }
@@ -59,11 +59,14 @@
     animation: linear 1 labelbot-progressbar;
 }
 
-.labelbot-label__keyboard {
-    display: none;
+.labelbot-label__indicators {
     color: $text-muted;
     position: absolute;
     right: $padding-small-horizontal;
+}
+
+.labelbot-label__keyboard {
+    display: none;
 }
 
 .labelbot-popup-grab-area {
@@ -99,17 +102,35 @@
     }
 
     .labelbot-label {
-        &.labelbot-label--progress, &:hover {
+        &.labelbot-label--progress, &:not(.labelbot-label--disabled):hover {
             color: white;
             cursor: pointer;
 
-            .labelbot-label__keyboard {
+            .labelbot-label__indicators {
                 color: white;
             }
         }
 
-        &:hover {
+        &:not(.labelbot-label--disabled):hover {
             background-color: $gray-lighter;
+        }
+
+        &.labelbot-label--disabled {
+            cursor: not-allowed;
+
+            .labelbot-label__name {
+                color: $text-muted;
+            }
+
+            .labelbot-label__keyboard {
+                visibility: hidden;
+            }
+        }
+
+        &.labelbot-label--muted:not(:hover):not(.labelbot-label--progress) {
+            .labelbot-label__name {
+                color: $text-muted;
+            }
         }
     }
 

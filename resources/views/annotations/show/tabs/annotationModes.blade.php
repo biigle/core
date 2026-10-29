@@ -1,5 +1,5 @@
 <sidebar-tab name="annotation-modes" icon="th" title="Annotation modes" :highlight="!isDefaultAnnotationMode">
-    <annotation-modes-tab v-on:attach-label="handleAttachAllSelected" v-on:change="handleAnnotationModeChange" v-on:create-sample="createSampledAnnotation"></annotation-modes-tab>
+    <annotation-modes-tab :guideline="annotationGuideline" v-on:attach-label="handleAttachAllSelected" v-on:change="handleAnnotationModeChange" v-on:create-sample="createSampledAnnotation"></annotation-modes-tab>
 </sidebar-tab>
 
 @push('scripts')
@@ -20,14 +20,14 @@
         @can('add-annotation', $image)
             <div class="sidebar-tab__section">
                 <h5 title="Randomly sample annotations">Random Sampling<br><small>randomly sample annotations</small></h5>
-                <power-toggle :active="isRandomSamplingActive" title-off="Start random sampling of annotations" title-on="Stop random sampling of annotations 𝗘𝘀𝗰" v-on:on="startRandomSampling" v-on:off="resetMode"></power-toggle>
+                <power-toggle :active="isRandomSamplingActive" :disabled="!canSample" :title-off="randomSamplingTitle" title-on="Stop random sampling of annotations 𝗘𝘀𝗰" v-on:on="startRandomSampling" v-on:off="resetMode"></power-toggle>
                 <button class="btn btn-default" :disabled="!isRandomSamplingActive || null" v-on:click="emitCreateSample" title="Create a new annotation at the current location 𝗘𝗻𝘁𝗲𝗿"><span class="fa fa-plus" aria-hidden="true"></span></button>
                 <input type="number" class="form-control form-control--small" min="1" step="1" title="Number of random samples per image" v-model="randomSamplingNumber" v-bind:disabled="isRandomSamplingActive || null">
             </div>
 
             <div class="sidebar-tab__section">
                 <h5 title="Regularly sample annotations">Regular Sampling<br><small>regularly sample annotations</small></h5>
-                <power-toggle :active="isRegularSamplingActive" title-off="Start regular sampling of annotations" title-on="Stop regular sampling of annotations 𝗘𝘀𝗰" v-on:on="startRegularSampling" v-on:off="resetMode"></power-toggle>
+                <power-toggle :active="isRegularSamplingActive" :disabled="!canSample" :title-off="regularSamplingTitle" title-on="Stop regular sampling of annotations 𝗘𝘀𝗰" v-on:on="startRegularSampling" v-on:off="resetMode"></power-toggle>
                 <button class="btn btn-default" :disabled="!isRegularSamplingActive || null" v-on:click="emitCreateSample" title="Create a new annotation at the current location 𝗘𝗻𝘁𝗲𝗿"><span class="fa fa-plus" aria-hidden="true"></span></button>
                 <input type="number" class="form-control form-control--small" min="1" step="1" title="Number of regular sample rows per image" v-model="regularSamplingRows" v-bind:disabled="isRegularSamplingActive || null">
                 &times;
