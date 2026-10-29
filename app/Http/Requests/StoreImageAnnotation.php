@@ -2,7 +2,9 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\AnnotationGuideline;
 use Biigle\Enums\Shape;
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Image;
 use Biigle\Rules\AnnotationPoints;
 use Illuminate\Foundation\Http\FormRequest;
@@ -10,12 +12,19 @@ use Illuminate\Validation\Rule;
 
 class StoreImageAnnotation extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The image on which the annotation should be created.
      *
      * @var Image
      */
     public $image;
+
+    /**
+     * The enforced annotation guideline that applies to the new annotation.
+     */
+    public ?AnnotationGuideline $guideline = null;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -60,6 +69,7 @@ class StoreImageAnnotation extends FormRequest
                 'array',
                 new AnnotationPoints($this->input('shape')),
             ],
+            'guideline_id' => 'nullable|integer',
         ];
     }
 
@@ -75,6 +85,33 @@ class StoreImageAnnotation extends FormRequest
             if (intval($this->input('shape')) === Shape::WHOLE_FRAME->value) {
                 $validator->errors()->add('shape', 'Image annotations cannot have shape WholeFrame.');
             }
+
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $this->guideline = $this->validateGuideline(
+                $validator,
+                $this->image->volume_id,
+                $this->integer('guideline_id') ?: null
+            );
+
+            if (is_null($this->guideline)) {
+                return;
+            }
+
+            $labelId = $this->integer('label_id') ?: null;
+            if (!is_null($labelId)) {
+                $this->validateGuidelineLabel($validator, $this->guideline, $labelId);
+            }
+
+            // Without label_id, this rejects shapes that are not allowed for any label.
+            $this->validateGuidelineShape(
+                $validator,
+                $this->guideline,
+                $this->enum('shape', Shape::class),
+                $labelId
+            );
         });
     }
 }

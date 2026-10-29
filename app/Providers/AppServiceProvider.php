@@ -26,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
         // via dependency injection.
         $this->app->alias('modules', \Biigle\Services\Modules::class);
 
+        // Scoped so the memoized lookups are shared during a request but reset between
+        // queued jobs.
+        $this->app->scoped(\Biigle\Services\AnnotationGuidelineService::class);
+
         // The custom implementation allows "config resolvers" which are required by
         // the user-storage and user-disks modules, for example.
         Storage::swap(new FilesystemManager($this->app));

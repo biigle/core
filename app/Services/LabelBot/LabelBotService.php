@@ -3,7 +3,9 @@
 namespace Biigle\Services\LabelBot;
 
 use Biigle\Annotation;
+use Biigle\AnnotationGuideline;
 use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\Label;
@@ -59,6 +61,31 @@ class LabelBotService
 
         // Get labels sorted by their top N order.
         return array_map(fn ($id) => $labelModels->get($id), $topNLabels);
+    }
+
+    /**
+     * Choose the suggested label that should be attached to the new annotation.
+     *
+     * @param array<Label> $labels Suggested labels, sorted by similarity.
+     */
+    public function chooseLabelByGuideline(array $labels, Shape $shape, ?AnnotationGuideline $guideline = null): Label
+    {
+        if (is_null($guideline)) {
+            return $labels[0];
+        }
+
+        $label = array_find(
+            $labels,
+            fn (Label $label) =>
+            $guideline->allowsLabel($label->id)
+            && $guideline->allowsShape($shape, $label->id)
+        );
+
+        if (is_null($label)) {
+            throw new NotFoundHttpException("None of the labels suggested by LabelBOT are allowed by the annotation guideline.");
+        }
+
+        return $label;
     }
 
     protected function enforceRateLimit($user)

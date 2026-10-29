@@ -89,7 +89,7 @@
         <h3><a name="guideline"></a><i class="fa fa-clipboard-list"></i> Guideline</h3>
 
         <p>
-            An annotation guideline can provide detailed instructions and constraints for new annotations in a project. There can be general instructions and instructions for individual labels. The general instructions describe the guideline and can limit the available shape tools for new annotations. The label instructions can describe a label in more detail, choose a single preferred shape tool and provide a reference image. Annotation guidelines can be enforced. If a guideline is enforced, only the selected shape tools and labels are available for new annotations in the project.
+            An annotation guideline can provide detailed instructions and constraints for new annotations in a project. There can be general instructions and instructions for individual labels. The general instructions describe the guideline and can limit the available shape tools for new annotations. The label instructions can describe a label in more detail, choose a single preferred shape tool and provide a reference image. Annotation guidelines can be enforced. If a guideline is enforced, only the selected shape tools and labels are available for new annotations in the project. The same labels are also the only ones that can be attached to files.
         </p>
 
         <p>
